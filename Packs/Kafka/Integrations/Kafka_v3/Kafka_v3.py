@@ -39,7 +39,7 @@ class KafkaCommunicator:
             offset = 'earliest'
 
         self.conf_consumer = {'bootstrap.servers': brokers,
-                              'session.timeout.ms': 2000,
+                              'session.timeout.ms': 5000,
                               'auto.offset.reset': offset,
                               'group.id': group_id,  # TODO: Need to sort this
                               'enable.auto.commit': enable_auto_commit}
@@ -49,14 +49,14 @@ class KafkaCommunicator:
 
         if ca_cert:
             ca_path = 'ca.cert'  # type: ignore
-            with open(ca_path, 'wb') as file:
+            with open(ca_path, 'w') as file:
                 file.write(ca_cert)
                 ca_path = os.path.abspath(ca_path)
             self.conf_producer.update({'ssl.ca.location': ca_path})
             self.conf_consumer.update({'ssl.ca.location': ca_path})
         if client_cert:
             client_path = 'client.cert'
-            with open(client_path, 'wb') as file:
+            with open(client_path, 'w') as file:
                 file.write(client_cert)
                 client_path = os.path.abspath(client_path)
             self.conf_producer.update({'ssl.certificate.location': client_path,
@@ -65,7 +65,7 @@ class KafkaCommunicator:
                                        'security.protocol': 'ssl'})
         if client_cert_key:
             client_key_path = 'client_key.key'
-            with open(client_key_path, 'wb') as file:
+            with open(client_key_path, 'w') as file:
                 file.write(client_cert_key)
                 self.conf_producer.update({'ssl.key.location': client_key_path})
                 self.conf_consumer.update({'ssl.key.location': client_key_path})
@@ -75,11 +75,14 @@ class KafkaCommunicator:
 
     def update_conf_for_fetch(self, offset: str = 'earliest', message_max_bytes: int = None,
                               enable_auto_commit: bool = False):
-        if message_max_bytes:
-            self.conf_consumer.update({'message.max.bytes': int(message_max_bytes)})
+        if self.conf_consumer:
+            if message_max_bytes:
+                self.conf_consumer.update({'message.max.bytes': int(message_max_bytes)})
 
-        self.conf_consumer.update({'auto.offset.reset': offset,
-                                   'enable.auto.commit': enable_auto_commit})
+            self.conf_consumer.update({'auto.offset.reset': offset,
+                                       'enable.auto.commit': enable_auto_commit})
+        else:
+            raise DemistoException('Kafka consumer was not yet initialized.')
 
     def test_connection(self) -> str:
         try:
@@ -115,7 +118,7 @@ class KafkaCommunicator:
     def get_partition_offsets(self, topic: str, partition: int) -> Tuple[int, int]:
         kafka_consumer = KConsumer(self.conf_consumer)
         partition = TopicPartition(topic=topic, partition=partition)
-        return kafka_consumer.get_watermark_offsets(partition=partition)
+        return kafka_consumer.get_watermark_offsets(partition=partition, timeout=3.0)
 
     def produce(self, topic: str, value: str, partition: Union[int, None]) -> None:
         kafka_producer = KProducer(self.conf_producer)
@@ -389,7 +392,7 @@ def check_params(kafka: KafkaCommunicator, topic: str, partitions: list = None,
     return True
 
 
-def fetch_incidents(kafka, demisto_params: dict) -> None:
+def fetch_incidents(kafka: KafkaCommunicator, demisto_params: dict) -> None:
     """
     Fetches incidents
     """
@@ -445,10 +448,10 @@ def fetch_incidents(kafka, demisto_params: dict) -> None:
 
 
 def main():
-    command = demisto.command()
+    demisto_command = demisto.command()
     demisto_params = demisto.params()
     demisto_args = demisto.args()
-    demisto.debug(f'Command being called is {command}')
+    demisto.debug(f'Command being called is {demisto_command}')
     brokers = demisto_params.get('brokers')
     offset = handle_empty(demisto_params.get('offset', 'earliest'), 'earliest')
 
@@ -465,8 +468,6 @@ def main():
                                   client_cert_key=client_cert_key, ssl_password=ssl_password, offset=offset)
     else:
         kafka = KafkaCommunicator(brokers=brokers, offset=offset)
-
-    demisto_command = demisto.command()
 
     try:
         if demisto_command == 'test-module':

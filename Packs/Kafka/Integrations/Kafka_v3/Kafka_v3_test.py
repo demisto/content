@@ -1,6 +1,6 @@
 from CommonServerPython import DemistoException, demisto
 
-from Kafka_v3 import KafkaCommunicator, command_test_module, KConsumer, KProducer, print_topics, fetch_partitions,\
+from Kafka_v3 import KafkaCommunicator, command_test_module, KConsumer, KProducer, print_topics, fetch_partitions, \
     consume_message, produce_message, fetch_incidents
 from confluent_kafka.admin import ClusterMetadata, TopicMetadata, PartitionMetadata
 from confluent_kafka import KafkaError, TopicPartition, TIMESTAMP_NOT_AVAILABLE, TIMESTAMP_CREATE_TIME
@@ -25,6 +25,7 @@ def test_failing_simple_test_module(mocker):
 
     def raise_kafka_error():
         raise KafkaError('Some connection error')
+
     mocker.patch.object(KConsumer, 'list_topics', return_value=ClusterMetadata(), side_effect=raise_kafka_error)
     mocker.patch.object(KProducer, 'list_topics', return_value=ClusterMetadata(), side_effect=raise_kafka_error)
     with pytest.raises(DemistoException) as exception_info:
@@ -122,10 +123,10 @@ def test_failing_test_module_with_fetch_and_offset_as_num(mocker, demisto_params
 
 
 @pytest.mark.parametrize('demisto_args, cluster_tree', [
-                        ({'include_offsets': 'false'}, {'some-topic': [1]}),
-                        ({'include_offsets': 'false'}, {'some-topic': [1], 'some-other-topic': [1]}),
-                        ({'include_offsets': 'false'}, {'some-topic': [2], 'some-other-topic': [1, 3]}),
-                        ({'include_offsets': 'false'}, {'some-topic': [1, 2]})])
+    ({'include_offsets': 'false'}, {'some-topic': [1]}),
+    ({'include_offsets': 'false'}, {'some-topic': [1], 'some-other-topic': [1]}),
+    ({'include_offsets': 'false'}, {'some-topic': [2], 'some-other-topic': [1, 3]}),
+    ({'include_offsets': 'false'}, {'some-topic': [1, 2]})])
 def test_print_topics_without_offsets(mocker, demisto_args, cluster_tree):
     mocker.patch.object(KProducer, '__init__', return_value=None)
     cluster_metadata = create_cluster_metadata(cluster_tree)
@@ -137,9 +138,9 @@ def test_print_topics_without_offsets(mocker, demisto_args, cluster_tree):
 
 
 @pytest.mark.parametrize('demisto_args, first_offset, last_offset', [
-                        ({'include_offsets': 'true'}, 0, 1),
-                        ({'include_offsets': 'true'}, 1, 5),
-                        ({'include_offsets': 'true'}, 0, 2)])
+    ({'include_offsets': 'true'}, 0, 1),
+    ({'include_offsets': 'true'}, 1, 5),
+    ({'include_offsets': 'true'}, 0, 2)])
 def test_print_topics_with_offsets(mocker, demisto_args, first_offset, last_offset):
     mocker.patch.object(KProducer, '__init__', return_value=None)
     mocker.patch.object(KConsumer, '__init__', return_value=None)
@@ -160,9 +161,9 @@ def test_print_topics_no_topics(mocker, demisto_args):
 
 
 @pytest.mark.parametrize('demisto_args, cluster_tree, topic', [
-                        ({'topic': 'some-topic'}, {'some-topic': [1]}, 'some-topic'),
-                        ({'topic': 'some-topic'}, {'some-topic': [1], 'some-other-topic': [1]}, 'some-topic'),
-                        ({'topic': 'some-topic'}, {'some-topic': [1, 2]}, 'some-topic')])
+    ({'topic': 'some-topic'}, {'some-topic': [1]}, 'some-topic'),
+    ({'topic': 'some-topic'}, {'some-topic': [1], 'some-other-topic': [1]}, 'some-topic'),
+    ({'topic': 'some-topic'}, {'some-topic': [1, 2]}, 'some-topic')])
 def test_fetch_partitions(mocker, demisto_args, cluster_tree, topic):
     mocker.patch.object(KProducer, '__init__', return_value=None)
     cluster_metadata = create_cluster_metadata(cluster_tree)
@@ -330,130 +331,149 @@ def test_produce_error_message(mocker):
     flush_mock.assert_called_once()
 
 
-@pytest.mark.parametrize('demisto_params, last_run, cluster_tree, topic_partitions, incidents, next_run, polled_msgs, '
-                         'offsets', [
-    ({  # first run
-        'topic': 'some-topic',
-        'partition': '0',
-        'first_fetch': 'earliest',
-        'max_fetch': '1'
-    }, {}, {'some-topic': [0]}, [TopicPartition(topic='some-topic', partition=0, offset=0)],
-     [{'name': 'Kafka some-topic partition:0 offset:0',
-       'details': 'polled_msg',
-       'rawJSON': '{"Topic": "some-topic", "Partition": 0, "Offset": 0, "Message": "polled_msg"}'}],
-     {'last_fetched_offsets': {'0': 0}, 'last_topic': 'some-topic'},
-     [MessageMock(message='polled_msg', partition=0, offset=0, timestamp=(TIMESTAMP_NOT_AVAILABLE, 0))], [(0, 2)]),
-    ({  # second run
-        'topic': 'some-topic',
-        'partition': '0',
-        'first_fetch': 'earliest',
-        'max_fetch': '1'
-    }, {'last_fetched_offsets': {'0': 0}, 'last_topic': 'some-topic'},
-     {'some-topic': [0]}, [TopicPartition(topic='some-topic', partition=0, offset=1)],
-     [{'name': 'Kafka some-topic partition:0 offset:1',
-       'details': 'polled_msg',
-       'rawJSON': '{"Topic": "some-topic", "Partition": 0, "Offset": 1, "Message": "polled_msg"}'}],
-     {'last_fetched_offsets': {'0': 1}, 'last_topic': 'some-topic'},
-     [MessageMock(message='polled_msg', partition=0, offset=1, timestamp=(TIMESTAMP_NOT_AVAILABLE, 0))], [(0, 2)]),
-    ({  # second run with 2/2 messages
-         'topic': 'some-topic',
+@pytest.mark.parametrize(
+    'demisto_params, last_run, cluster_tree, topic_partitions, incidents, next_run, polled_msgs, offsets',
+    [pytest.param(
+        {'topic': 'some-topic',
          'partition': '0',
          'first_fetch': 'earliest',
-         'max_fetch': '2'
-     }, {'last_fetched_offsets': {'0': 0}, 'last_topic': 'some-topic'},
-     {'some-topic': [0]}, [TopicPartition(topic='some-topic', partition=0, offset=1)],
-     [{'name': 'Kafka some-topic partition:0 offset:1',
-       'details': 'polled_msg',
-       'rawJSON': '{"Topic": "some-topic", "Partition": 0, "Offset": 1, "Message": "polled_msg"}'},
-      {'name': 'Kafka some-topic partition:0 offset:2',
-       'details': 'polled_msg',
-       'rawJSON': '{"Topic": "some-topic", "Partition": 0, "Offset": 2, "Message": "polled_msg"}'}],
-     {'last_fetched_offsets': {'0': 2}, 'last_topic': 'some-topic'},
-     [MessageMock(message='polled_msg', partition=0, offset=1, timestamp=(TIMESTAMP_NOT_AVAILABLE, 0)),
-      MessageMock(message='polled_msg', partition=0, offset=2, timestamp=(TIMESTAMP_NOT_AVAILABLE, 0))], [(0, 2)]),
-    ({  # second run with 2/3 messages
-         'topic': 'some-topic',
-         'partition': '0',
-         'first_fetch': 'earliest',
-         'max_fetch': '3'
-     }, {'last_fetched_offsets': {'0': 0}, 'last_topic': 'some-topic'},
-     {'some-topic': [0]}, [TopicPartition(topic='some-topic', partition=0, offset=1)],
-     [{'name': 'Kafka some-topic partition:0 offset:1',
-       'details': 'polled_msg',
-       'rawJSON': '{"Topic": "some-topic", "Partition": 0, "Offset": 1, "Message": "polled_msg"}'},
-      {'name': 'Kafka some-topic partition:0 offset:2',
-       'details': 'polled_msg',
-       'rawJSON': '{"Topic": "some-topic", "Partition": 0, "Offset": 2, "Message": "polled_msg"}'}],
-     {'last_fetched_offsets': {'0': 2}, 'last_topic': 'some-topic'},
-     [MessageMock(message='polled_msg', partition=0, offset=1, timestamp=(TIMESTAMP_NOT_AVAILABLE, 0)),
-      MessageMock(message='polled_msg', partition=0, offset=2, timestamp=(TIMESTAMP_NOT_AVAILABLE, 0)),
-      None], [(0, 2)]),
-    ({  # second run changed topic
-         'topic': 'some-topic',
-         'partition': '0',
-         'first_fetch': 'earliest',
-         'max_fetch': '1'
-     }, {'last_fetched_offsets': {'0': 5}, 'last_topic': 'some-other-topic'},
-     {'some-topic': [0], 'some-other-topic': [0]}, [TopicPartition(topic='some-topic', partition=0, offset=0)],
-     [{'name': 'Kafka some-topic partition:0 offset:0',
-       'details': 'polled_msg',
-       'rawJSON': '{"Topic": "some-topic", "Partition": 0, "Offset": 0, "Message": "polled_msg"}'}],
-     {'last_fetched_offsets': {'0': 0}, 'last_topic': 'some-topic'},
-     [MessageMock(message='polled_msg', partition=0, offset=0, timestamp=(TIMESTAMP_NOT_AVAILABLE, 0))], [(0, 2)]),
-    ({  # second run no message
-        'topic': 'some-topic',
-        'partition': '0',
-        'first_fetch': 'earliest',
-        'max_fetch': '1'
-    }, {'last_fetched_offsets': {'0': 0}, 'last_topic': 'some-topic'},
-     {'some-topic': [0]}, [TopicPartition(topic='some-topic', partition=0, offset=1)],
-     [], {'last_fetched_offsets': {'0': 0}, 'last_topic': 'some-topic'}, [None], [(0, 2)]),
-    ({  # second run 2 partitions, one message each
-        'topic': 'some-topic',
-        'partition': '0,1',
-        'first_fetch': 'earliest',
-        'max_fetch': '2'
-    }, {'last_fetched_offsets': {'0': 0}, 'last_topic': 'some-topic'},
-     {'some-topic': [0, 1]}, [TopicPartition(topic='some-topic', partition=0, offset=1),
-                              TopicPartition(topic='some-topic', partition=1, offset=0)],
-     [{'name': 'Kafka some-topic partition:0 offset:1',
-       'details': 'polled_msg',
-       'rawJSON': '{"Topic": "some-topic", "Partition": 0, "Offset": 1, "Message": "polled_msg"}'},
-      {'name': 'Kafka some-topic partition:1 offset:0',
-       'details': 'polled_msg',
-       'rawJSON': '{"Topic": "some-topic", "Partition": 1, "Offset": 0, "Message": "polled_msg"}'}],
-     {'last_fetched_offsets': {'0': 1, '1': 0}, 'last_topic': 'some-topic'},
-     [MessageMock(message='polled_msg', partition=0, offset=1, timestamp=(TIMESTAMP_NOT_AVAILABLE, 0)),
-      MessageMock(message='polled_msg', partition=1, offset=0, timestamp=(TIMESTAMP_NOT_AVAILABLE, 0))],
-     [(0, 3), (0, 3)]),
-    ({  # first run later offset
-        'topic': 'some-topic',
-        'partition': '0',
-        'first_fetch': '2',
-        'max_fetch': '1'
-    }, {}, {'some-topic': [0]}, [TopicPartition(topic='some-topic', partition=0, offset=3)],
-     [{'name': 'Kafka some-topic partition:0 offset:3',
-       'details': 'polled_msg',
-       'rawJSON': '{"Topic": "some-topic", "Partition": 0, "Offset": 3, "Message": "polled_msg"}'}],
-     {'last_fetched_offsets': {'0': 3}, 'last_topic': 'some-topic'},
-     [MessageMock(message='polled_msg', partition=0, offset=3, timestamp=(TIMESTAMP_NOT_AVAILABLE, 0))],
-     [(0, 5), (0, 5)]),
-    ({  # first run add timestamp
-        'topic': 'some-topic',
-        'partition': '0',
-        'first_fetch': 'earliest',
-        'max_fetch': '1'
-    }, {}, {'some-topic': [0]}, [TopicPartition(topic='some-topic', partition=0, offset=0)],
-     [{'name': 'Kafka some-topic partition:0 offset:0',
-       'occurred': '2021-11-15T10:31:08.000Z',
-       'details': 'polled_msg',
-       'rawJSON': '{"Topic": "some-topic", "Partition": 0, "Offset": 0, "Message": "polled_msg"}'}],
-     {'last_fetched_offsets': {'0': 0}, 'last_topic': 'some-topic'},
-     [MessageMock(message='polled_msg', partition=0, offset=0, timestamp=(TIMESTAMP_CREATE_TIME, 1636972268435))],
-     [(0, 2)])
-])
+         'max_fetch': '1'}, {}, {'some-topic': [0]}, [TopicPartition(topic='some-topic', partition=0, offset=0)],
+        [{'name': 'Kafka some-topic partition:0 offset:0',
+          'details': 'polled_msg',
+          'rawJSON': '{"Topic": "some-topic", "Partition": 0, "Offset": 0, '
+                     '"Message": "polled_msg"}'}],
+        {'last_fetched_offsets': {'0': 0}, 'last_topic': 'some-topic'},
+        [MessageMock(message='polled_msg', partition=0, offset=0,
+                     timestamp=(TIMESTAMP_NOT_AVAILABLE, 0))], [(0, 2)], id="first run"),
+        pytest.param(
+            {'topic': 'some-topic',
+             'partition': '0',
+             'first_fetch': 'earliest',
+             'max_fetch': '1'}, {'last_fetched_offsets': {'0': 0}, 'last_topic': 'some-topic'},
+            {'some-topic': [0]}, [TopicPartition(topic='some-topic', partition=0, offset=1)],
+            [{'name': 'Kafka some-topic partition:0 offset:1',
+              'details': 'polled_msg',
+              'rawJSON': '{"Topic": "some-topic", "Partition": 0, "Offset": 1, '
+                         '"Message": "polled_msg"}'}],
+            {'last_fetched_offsets': {'0': 1}, 'last_topic': 'some-topic'},
+            [MessageMock(message='polled_msg', partition=0, offset=1,
+                         timestamp=(TIMESTAMP_NOT_AVAILABLE, 0))], [(0, 2)], id="second run"),
+        pytest.param(
+            {'topic': 'some-topic',
+             'partition': '0',
+             'first_fetch': 'earliest',
+             'max_fetch': '2'
+             }, {'last_fetched_offsets': {'0': 0}, 'last_topic': 'some-topic'},
+            {'some-topic': [0]}, [TopicPartition(topic='some-topic', partition=0, offset=1)],
+            [{'name': 'Kafka some-topic partition:0 offset:1',
+              'details': 'polled_msg',
+              'rawJSON': '{"Topic": "some-topic", "Partition": 0, "Offset": 1, '
+                         '"Message": "polled_msg"}'},
+             {'name': 'Kafka some-topic partition:0 offset:2',
+              'details': 'polled_msg',
+              'rawJSON': '{"Topic": "some-topic", "Partition": 0, "Offset": 2, '
+                         '"Message": "polled_msg"}'}],
+            {'last_fetched_offsets': {'0': 2}, 'last_topic': 'some-topic'},
+            [MessageMock(message='polled_msg', partition=0, offset=1,
+                         timestamp=(TIMESTAMP_NOT_AVAILABLE, 0)),
+             MessageMock(message='polled_msg', partition=0, offset=2,
+                         timestamp=(TIMESTAMP_NOT_AVAILABLE, 0))], [(0, 2)], id="1 partition 2/2 messages"),
+        pytest.param(
+            {'topic': 'some-topic',
+             'partition': '0',
+             'first_fetch': 'earliest',
+             'max_fetch': '3'},
+            {'last_fetched_offsets': {'0': 0}, 'last_topic': 'some-topic'},
+            {'some-topic': [0]}, [TopicPartition(topic='some-topic', partition=0, offset=1)],
+            [{'name': 'Kafka some-topic partition:0 offset:1',
+              'details': 'polled_msg',
+              'rawJSON': '{"Topic": "some-topic", "Partition": 0, "Offset": 1, '
+                         '"Message": "polled_msg"}'},
+             {'name': 'Kafka some-topic partition:0 offset:2',
+              'details': 'polled_msg',
+              'rawJSON': '{"Topic": "some-topic", "Partition": 0, "Offset": 2, '
+                         '"Message": "polled_msg"}'}],
+            {'last_fetched_offsets': {'0': 2}, 'last_topic': 'some-topic'},
+            [MessageMock(message='polled_msg', partition=0, offset=1,
+                         timestamp=(TIMESTAMP_NOT_AVAILABLE, 0)),
+             MessageMock(message='polled_msg', partition=0, offset=2,
+                         timestamp=(TIMESTAMP_NOT_AVAILABLE, 0)),
+             None], [(0, 2)], id="1 partition 2/3 messages"),
+        pytest.param({  # second run changed topic
+            'topic': 'some-topic',
+            'partition': '0',
+            'first_fetch': 'earliest',
+            'max_fetch': '1'
+        }, {'last_fetched_offsets': {'0': 5}, 'last_topic': 'some-other-topic'},
+            {'some-topic': [0], 'some-other-topic': [0]},
+            [TopicPartition(topic='some-topic', partition=0, offset=0)],
+            [{'name': 'Kafka some-topic partition:0 offset:0',
+              'details': 'polled_msg',
+              'rawJSON': '{"Topic": "some-topic", "Partition": 0, "Offset": 0, '
+                         '"Message": "polled_msg"}'}],
+            {'last_fetched_offsets': {'0': 0}, 'last_topic': 'some-topic'},
+            [MessageMock(message='polled_msg', partition=0, offset=0,
+                         timestamp=(TIMESTAMP_NOT_AVAILABLE, 0))], [(0, 2)], id="Changed topic"),
+        pytest.param({  # second run no message
+            'topic': 'some-topic',
+            'partition': '0',
+            'first_fetch': 'earliest',
+            'max_fetch': '1'
+        }, {'last_fetched_offsets': {'0': 0}, 'last_topic': 'some-topic'},
+            {'some-topic': [0]}, [TopicPartition(topic='some-topic', partition=0, offset=1)],
+            [], {'last_fetched_offsets': {'0': 0}, 'last_topic': 'some-topic'}, [None], [(0, 2)], id="No message"),
+        pytest.param(
+            {'topic': 'some-topic',
+             'partition': '0,1',
+             'first_fetch': 'earliest',
+             'max_fetch': '2'
+             }, {'last_fetched_offsets': {'0': 0}, 'last_topic': 'some-topic'},
+            {'some-topic': [0, 1]}, [TopicPartition(topic='some-topic', partition=0, offset=1),
+                                     TopicPartition(topic='some-topic', partition=1, offset=0)],
+            [{'name': 'Kafka some-topic partition:0 offset:1',
+              'details': 'polled_msg',
+              'rawJSON': '{"Topic": "some-topic", "Partition": 0, "Offset": 1, '
+                         '"Message": "polled_msg"}'},
+             {'name': 'Kafka some-topic partition:1 offset:0',
+              'details': 'polled_msg',
+              'rawJSON': '{"Topic": "some-topic", "Partition": 1, "Offset": 0, '
+                         '"Message": "polled_msg"}'}],
+            {'last_fetched_offsets': {'0': 1, '1': 0}, 'last_topic': 'some-topic'},
+            [MessageMock(message='polled_msg', partition=0, offset=1,
+                         timestamp=(TIMESTAMP_NOT_AVAILABLE, 0)),
+             MessageMock(message='polled_msg', partition=1, offset=0,
+                         timestamp=(TIMESTAMP_NOT_AVAILABLE, 0))],
+            [(0, 3), (0, 3)], id="2 partitions, 1 message each"),
+        pytest.param(
+            {'topic': 'some-topic',
+             'partition': '0',
+             'first_fetch': '2',
+             'max_fetch': '1'}, {}, {'some-topic': [0]}, [TopicPartition(topic='some-topic', partition=0, offset=3)],
+            [{'name': 'Kafka some-topic partition:0 offset:3',
+              'details': 'polled_msg',
+              'rawJSON': '{"Topic": "some-topic", "Partition": 0, "Offset": 3, '
+                         '"Message": "polled_msg"}'}],
+            {'last_fetched_offsets': {'0': 3}, 'last_topic': 'some-topic'},
+            [MessageMock(message='polled_msg', partition=0, offset=3,
+                         timestamp=(TIMESTAMP_NOT_AVAILABLE, 0))],
+            [(0, 5), (0, 5)], id="first run later offset"),
+        pytest.param(
+            {'topic': 'some-topic',
+             'partition': '0',
+             'first_fetch': 'earliest',
+             'max_fetch': '1'
+             }, {}, {'some-topic': [0]}, [TopicPartition(topic='some-topic', partition=0, offset=0)],
+            [{'name': 'Kafka some-topic partition:0 offset:0',
+              'occurred': '2021-11-15T10:31:08.000Z',
+              'details': 'polled_msg',
+              'rawJSON': '{"Topic": "some-topic", "Partition": 0, "Offset": 0, '
+                         '"Message": "polled_msg"}'}],
+            {'last_fetched_offsets': {'0': 0}, 'last_topic': 'some-topic'},
+            [MessageMock(message='polled_msg', partition=0, offset=0,
+                         timestamp=(TIMESTAMP_CREATE_TIME, 1636972268435))],
+            [(0, 2)], id="first run add timestamp")])
 def test_fetch_incidents(mocker, demisto_params, last_run, cluster_tree, topic_partitions,
-                                               incidents, next_run, polled_msgs, offsets):
+                         incidents, next_run, polled_msgs, offsets):
     mocker.patch.object(KConsumer, '__init__', return_value=None)
     cluster_metadata = create_cluster_metadata(cluster_tree)
     mocker.patch.object(KConsumer, 'list_topics', return_value=cluster_metadata)
@@ -475,12 +495,12 @@ def test_fetch_incidents(mocker, demisto_params, last_run, cluster_tree, topic_p
 
 
 @pytest.mark.parametrize('demisto_params, last_run, cluster_tree', [
-    ({  # run with out of bounds offset
-        'topic': 'some-topic',
-        'partition': '0',
-        'first_fetch': 'earliest',
-        'max_fetch': '1'
-    }, {'last_fetched_offsets': {'0': 1}, 'last_topic': 'some-topic'}, {'some-topic': [0]})
+    pytest.param(
+        {'topic': 'some-topic',
+         'partition': '0',
+         'first_fetch': 'earliest',
+         'max_fetch': '1'},
+        {'last_fetched_offsets': {'0': 1}, 'last_topic': 'some-topic'}, {'some-topic': [0]}, id="out of bounds offset")
 ])
 def test_fetch_incidents_no_partitions(mocker, demisto_params, last_run, cluster_tree):
     mocker.patch.object(KConsumer, '__init__', return_value=None)
@@ -501,4 +521,3 @@ def test_fetch_incidents_no_partitions(mocker, demisto_params, last_run, cluster
     close_mock.assert_called_once()
     incidents_mock.assert_called_once_with([])
     set_last_run_mock.assert_called_once_with(last_run)
-
