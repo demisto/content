@@ -11,7 +11,7 @@ from _collections import defaultdict
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-''' CONSTANTS fffffff'''
+''' CONSTANTS new new new'''
 SERVER_URL = 'https://api.maltiverse.com'
 DBOT_SCORE_KEY = 'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)'
 DEFAULT_THRESHOLD = 5

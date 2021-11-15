@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Maltiverse
+  id: Maltiverse_copy
   version: -1
 configuration:
 - defaultvalue: https://api.maltiverse.com
@@ -34,10 +34,19 @@ configuration:
   name: insecure
   required: false
   type: 8
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: a48a5556-19f6-492a-867f-1c6283609e42
+    propagationLabels:
+    - all
+    toServerVersion: ""
 description: Use the Maltiverse integration to analyze suspicious hashes, URLs, domains
   and IP addresses.
-display: Maltiverse
-name: Maltiverse
+display: Maltiverse_copy
+name: Maltiverse_copy
 script:
   commands:
   - arguments:
@@ -46,7 +55,7 @@ script:
       isArray: true
       name: ip
       required: true
-    - defaultValue: '5'
+    - defaultValue: "5"
       description: If the number of positives is higher than the threshold, the IP
         address will be considered malicious. If the threshold is not specified, the
         default IP threshold, as configured in the instance settings, will be used.
@@ -113,7 +122,7 @@ script:
       isArray: true
       name: domain
       required: true
-    - defaultValue: '5'
+    - defaultValue: "5"
       description: If the number of positives is higher than the threshold, the domain
         will be considered malicious. If the threshold is not specified, the default
         domain threshold, as configured in the instance settings, will be used.
@@ -198,7 +207,7 @@ script:
       isArray: true
       name: url
       required: true
-    - defaultValue: '5'
+    - defaultValue: "5"
       description: If the number of positives is higher than the threshold, the URL
         address will be considered malicious. If the threshold is not specified, the
         default URL threshold, as configured in the instance settings, will be used.
@@ -281,7 +290,7 @@ script:
       isArray: true
       name: file
       required: true
-    - defaultValue: '5'
+    - defaultValue: "5"
       description: If the number of positives AV detection is higher than the threshold,
         the file will be considered malicious. If the threshold is not specified,
         the default file threshold, as configured in the instance settings, will be
@@ -386,11 +395,9 @@ script:
     - contextPath: File.Tags
       description: Attribute to label an IoC.
       type: String
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.9.7.24076
   runonce: false
   script: ''
   subtype: python3
   type: python
-fromversion: 5.0.0
-tests:
-- Maltiverse Test
+sourcemoduleid: Maltiverse

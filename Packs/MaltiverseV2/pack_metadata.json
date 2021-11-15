@@ -1,0 +1,17 @@
+{
+    "name": "Maltiverse",
+    "description": "Maltiverse helps you to analyze suspicious hashes, URLs, domains, and IP addresses.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "",
+    "email": "",
+    "created": "2021-11-15T08:24:05Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "barchen1"
+    ]
+}
