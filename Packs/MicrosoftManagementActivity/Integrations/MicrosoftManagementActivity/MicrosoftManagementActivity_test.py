@@ -633,15 +633,14 @@ def set_requests_mock(client, requests_mock, access_token_resp=GET_ACCESS_TOKEN_
     mock_get_blob_data(requests_mock)
 
 
-@pytest.mark.parametrize('args_timeout,param_timeout,expected_timeout', (
-        (0, 0, 15),
-        (None, None, 15),
-        (1, None, 1),
-        (1, 0, 1),
-        (None, 2, 2),
-        (0, 2, 2),
-        (3, 0, 3),
-        (3, 4, 3)))
+@pytest.mark.parametrize('args_timeout,param_timeout,expected_timeout', ((0, 0, 15),
+                                                                         (None, None, 15),
+                                                                         (1, None, 1),
+                                                                         (1, 0, 1),
+                                                                         (None, 2, 2),
+                                                                         (0, 2, 2),
+                                                                         (3, 0, 3),
+                                                                         (3, 4, 3)))
 def test_timeout(args_timeout, param_timeout, expected_timeout):
     """
     Given
@@ -653,7 +652,7 @@ def test_timeout(args_timeout, param_timeout, expected_timeout):
              use arg, then param, then default.
              Validate the Client and its MSClient get the expected value
     """
-    from MicrosoftManagementActivity import calculate_timeout_value, Client
+    from MicrosoftManagementActivity import calculate_timeout_value
     timeout = calculate_timeout_value(params={'timeout': param_timeout}, args={'timeout': args_timeout})
     assert timeout == expected_timeout
     client = create_client(timeout=timeout)
