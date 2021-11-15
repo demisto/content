@@ -1,0 +1,4 @@
+!hyas-get-domain-verdict domain="google.com"
+!hyas-get-fqdn-verdict fqdn="www.google.com"
+!hyas-get-ip-verdict ip="8.8.8.8"
+!hyas-get-nameserver-verdict nameserver="ns1.example.com"

@@ -21,22 +21,29 @@ class Client(BaseClient):
         res = self._http_request(method='GET', url_suffix=uri)
         return res
 
-    def get_user(self, username):
+    def get_user(self, filter_name, filter_value):
         uri = f'/scim/directory/{self.directory_id}/Users'
         query_params = {
-            'filter': f'userName eq "{username}"'
+            'filter': f'{filter_name} eq "{filter_value}"'
         }
+
+        if filter_name == 'id':
+            uri += f'/{filter_value}'
+            query_params = {}
+
         res = self._http_request(
             method='GET',
             url_suffix=uri,
             params=query_params
         )
-        if res and res.get('totalResults') == 1:
-            user_app_data = res.get('Resources')[0]
+        if res:
+            user_app_data = res.get('Resources')[0] if res.get('totalResults') == 1 else res
             user_id = user_app_data.get('id')
             is_active = user_app_data.get('active')
             username = user_app_data.get('userName')
-            return IAMUserAppData(user_id, username, is_active, user_app_data)
+            email = get_first_primary_email_by_scim_schema(user_app_data)
+
+            return IAMUserAppData(user_id, username, is_active, user_app_data, email)
         return None
 
     def create_user(self, user_data):
@@ -52,8 +59,9 @@ class Client(BaseClient):
         user_id = user_app_data.get('id')
         is_active = user_app_data.get('active')
         username = user_app_data.get('userName')
+        email = get_first_primary_email_by_scim_schema(user_app_data)
 
-        return IAMUserAppData(user_id, username, is_active, user_app_data)
+        return IAMUserAppData(user_id, username, is_active, user_app_data, email)
 
     def update_user(self, user_id, user_data):
         if isinstance(user_data.get('emails'), dict):
@@ -129,7 +137,7 @@ class Client(BaseClient):
         user_profile.set_result(action=action,
                                 success=False,
                                 error_code=error_code,
-                                error_message=error_message)
+                                error_message=f'{error_message}\n{traceback.format_exc()}')
 
         demisto.error(traceback.format_exc())
 
@@ -180,7 +188,8 @@ def main():
     create_if_not_exists = demisto.params().get("create_if_not_exists")
 
     iam_command = IAMCommand(is_create_enabled, is_enable_enabled, is_disable_enabled, is_update_enabled,
-                             create_if_not_exists, mapper_in, mapper_out, attr='username')
+                             create_if_not_exists, mapper_in, mapper_out,
+                             get_user_iam_attrs=['id', 'userName', 'emails'])
 
     headers = {
         'Content-Type': 'application/json',
