@@ -147,8 +147,12 @@ script:
       defaultValue: 'false'
       required: false
       secret: false
-    - name: useragent
+    - default: false
+      isArray: false
+      name: useragent
       description: User agent to perform request
+      required: false
+      secret: false
     deprecated: true
     description: Deprecated. Use the url command instead.
     execution: false
