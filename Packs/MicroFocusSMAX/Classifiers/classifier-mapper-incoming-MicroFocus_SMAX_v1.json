@@ -1,0 +1,32 @@
+{
+    "name": "MicroFocus SMAX Mapper",
+    "description": "MicroFocus SMAX Mapper",
+    "feed": false,
+    "id": "MicroFocus SMAX Mapper",
+    "mapping": {
+        "MicroFocus SMAX Incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Description": {
+                    "complex": null,
+                    "simple": "DisplayLabel"
+                },
+                "Event ID": {
+                    "complex": null,
+                    "simple": "Id"
+                },
+                "State": {
+                    "complex": null,
+                    "simple": "Status"
+                },
+                "details": {
+                    "complex": null,
+                    "simple": "Description"
+                }
+            }
+        }
+    },
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
