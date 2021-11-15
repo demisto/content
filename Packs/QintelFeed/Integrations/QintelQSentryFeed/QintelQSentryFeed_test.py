@@ -10,9 +10,7 @@ MOCK_TOKEN = 'my-token'
 def util_load_json(path):
 
     with io.open(path, mode='r', encoding='utf-8') as f:
-        lines = f.readlines()
-        lines = [json.loads(line.rstrip('\n')) for line in lines]
-        return lines
+        return json.load(f)
 
 
 def test_make_timestamp():
@@ -78,7 +76,7 @@ def test_fetch_indicators_anon(mocker):
 
     client = Client(base_url=MOCK_URL, verify=False, token=MOCK_TOKEN)
 
-    mock_response = util_load_json('test_data/anon_feed.jsonl')
+    mock_response = util_load_json('test_data/anon_feed.json')
     mocker.patch.object(Client, 'fetch', return_value=mock_response)
 
     params = {
@@ -124,7 +122,7 @@ def test_fetch_indicators_mal_hosting(mocker):
 
     client = Client(base_url=MOCK_URL, verify=False, token=MOCK_TOKEN)
 
-    mock_response = util_load_json('test_data/mal_hosting.jsonl')
+    mock_response = util_load_json('test_data/mal_hosting.json')
     mocker.patch.object(Client, 'fetch', return_value=mock_response)
 
     params = {
