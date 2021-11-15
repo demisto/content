@@ -6188,7 +6188,7 @@ def prettify_wildfire_rule(rule: Dict) -> Dict:
     }
     if isinstance(rule.get('application'), dict) and 'member' in rule['application']:
         pretty_rule['Application'] = rule['application']['member']
-    if isinstance(rule.get('File-type'), dict) and 'member' in rule['file-type']:
+    if isinstance(rule.get('file-type'), dict) and 'member' in rule['file-type']:
         pretty_rule['File-type'] = rule['file-type']['member']
     if 'analysis' in rule:
         pretty_rule['Analysis'] = rule['analysis']
