@@ -27,7 +27,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: Add vectors' assigned user details to the response.
+      description: Add vector's assigned user details to the response.
       isArray: false
       name: add_user_details
       required: false
