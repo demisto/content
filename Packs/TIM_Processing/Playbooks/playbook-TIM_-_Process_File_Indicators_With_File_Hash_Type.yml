@@ -35,16 +35,16 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: 2947bc0a-b456-4081-8902-6ea77b2881dc
+    taskid: 88f5341a-7811-4c94-82e2-ce77f5f68122
     type: condition
     task:
-      id: 2947bc0a-b456-4081-8902-6ea77b2881dc
+      id: 88f5341a-7811-4c94-82e2-ce77f5f68122
       version: -1
       name: Are there results?
-      description: ''
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "88"
@@ -57,7 +57,17 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: playbookQuery.value
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: File
             iscontext: true
     view: |-
       {
@@ -103,10 +113,10 @@ tasks:
     quietmode: 0
   "82":
     id: "82"
-    taskid: 9464a698-1b95-41c5-830c-05254537ce5d
+    taskid: 7261014d-ceb5-4823-85f6-58718b0e4c10
     type: condition
     task:
-      id: 9464a698-1b95-41c5-830c-05254537ce5d
+      id: 7261014d-ceb5-4823-85f6-58718b0e4c10
       version: -1
       name: Are there Md5 results?
       type: condition
@@ -122,14 +132,29 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: stringHasLength
+      - - operator: isNotEmpty
           left:
             value:
-              simple: playbookQuery.value
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: stringHasLength
+                    left:
+                      value:
+                        simple: playbookQuery.value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "32"
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: File
             iscontext: true
-          right:
-            value:
-              simple: "32"
     view: |-
       {
         "position": {
@@ -144,10 +169,10 @@ tasks:
     quietmode: 0
   "83":
     id: "83"
-    taskid: 3ddd70d8-feb9-443d-847d-2e82ba39ebf4
+    taskid: 1020da43-e693-4ce6-8f28-c940a332ed6d
     type: condition
     task:
-      id: 3ddd70d8-feb9-443d-847d-2e82ba39ebf4
+      id: 1020da43-e693-4ce6-8f28-c940a332ed6d
       version: -1
       name: Are there Sha1 results?
       type: condition
@@ -163,14 +188,29 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: stringHasLength
+      - - operator: isNotEmpty
           left:
             value:
-              simple: playbookQuery.value
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: stringHasLength
+                    left:
+                      value:
+                        simple: playbookQuery.value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "40"
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: File
             iscontext: true
-          right:
-            value:
-              simple: "40"
     view: |-
       {
         "position": {
@@ -185,10 +225,10 @@ tasks:
     quietmode: 0
   "84":
     id: "84"
-    taskid: c21c17c8-7d41-4d2c-8468-d75cb0604e9e
+    taskid: a7aeb781-d581-410c-8a85-bca55d7262b3
     type: condition
     task:
-      id: c21c17c8-7d41-4d2c-8468-d75cb0604e9e
+      id: a7aeb781-d581-410c-8a85-bca55d7262b3
       version: -1
       name: Are there Sha256 results?
       type: condition
@@ -204,14 +244,29 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: stringHasLength
+      - - operator: isNotEmpty
           left:
             value:
-              simple: playbookQuery.value
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: stringHasLength
+                    left:
+                      value:
+                        simple: playbookQuery.value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "64"
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: File
             iscontext: true
-          right:
-            value:
-              simple: "64"
     view: |-
       {
         "position": {
