@@ -1,6 +1,5 @@
 id: playbook-AzureDataExplorer-Test
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: playbook-AzureDataExplorer-Test
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -542,6 +542,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -569,3 +570,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 6.0.0
+description: Test playbook for Azure Data Explorer integration.
