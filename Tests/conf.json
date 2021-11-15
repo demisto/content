@@ -1077,6 +1077,10 @@
             "fromversion": "6.1.0"
         },
         {
+            "playbookID": "Block IP - Generic V3_Test",
+            "fromversion": "6.0.0"
+        },
+        {
             "playbookID": "PAN-OS - Block URL - Custom URL Category Test",
             "integrations": "Panorama",
             "instance_names": "panorama_instance_security_team",
@@ -3188,6 +3192,11 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "Google IP Ranges Feed",
+            "playbookID": "Fetch Indicators Test",
+            "fromversion": "6.0.0"
+        },
+        {
             "integrations": "Azure AD Connect Health Feed",
             "playbookID": "FeedAzureADConnectHealth_Test",
             "fromversion": "5.5.0"
@@ -4781,7 +4790,6 @@
         "VirusTotal (API v3) Detonate Test": "Issue 36004",
         "FailedInstances - Test": "Issue 33218",
         "PAN-OS DAG Configuration Test": "Issue 19205",
-        "Centreon-Test-Playbook": "Issue 37022",
         "Service Desk Plus - Generic Polling Test": "Issue 30798",
         "get_original_email_-_ews-_test": "Issue 27571",
         "Trend Micro Deep Security - Test": "outsourced",
@@ -4889,7 +4897,6 @@
         "Check Point Sandblast": "Issue 15948",
         "Remedy AR": "getting 'Not Found' in test button",
         "Salesforce": "Issue 15901",
-        "RedCanary": "License expired",
         "ANYRUN": "No instance",
         "Snowflake": "Looks like account expired, needs looking into",
         "Cisco Spark": "Issue 18940",

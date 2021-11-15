@@ -1,0 +1,48 @@
+{
+    "dataType": "scripts",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "fromDateLicense": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byFrom": "",
+            "byTo": "",
+            "field": "",
+            "fromValue": null,
+            "toValue": null
+        },
+        "toDate": "0001-01-01T00:00:00Z"
+    },
+    "id": "26bd7fe1-5ef1-45bf-809f-14048f89f917",
+    "isPredefined": true,
+    "name": "Feeds Errors",
+    "params": {
+        "tableColumns": [
+            {
+                "displayed": true,
+                "isDefault": true,
+                "key": "Brand"
+            },
+            {
+                "displayed": true,
+                "isDefault": true,
+                "key": "Instance"
+            },
+            {
+                "displayed": true,
+                "isDefault": true,
+                "key": "Instance Last Modified Time"
+            },
+            {
+                "displayed": true,
+                "isDefault": true,
+                "key": "Error Information"
+            }
+        ]
+    },
+    "query": "FeedIntegrationErrorWidget",
+    "version": -1,
+    "widgetType": "table",
+    "fromVersion": "6.2.0",
+    "description": ""
+}
