@@ -34,25 +34,19 @@ class Client(BaseClient):
     """
 
     def get_request(self, args: dict):
-        # print(f"args get_request = {args}")
         url_suffix = "/v1" if args.get('request_type_suffix') == INCIDENTS_SUFFIX else "/v2"
-        print(f"{url_suffix}/{args.get('request_type_suffix')}/{REQUESTS_SUFFIX}/"
-                       f"{args.get('request_id')}")
         data = self._http_request(
             method='GET',
             url_suffix=f"{url_suffix}/{args.get('request_type_suffix')}/{REQUESTS_SUFFIX}/"
                        f"{args.get('request_id')}"
         )
-        # print(f"data = {data}")
         return data
 
     def get_paged(self, args: dict):
-        print(f"args get_paged = {args}")
         data = self._http_request(
             method='GET',
             url_suffix=args.get("paging")
         )
-        print(f"data = {data}")
         return data
 
     @staticmethod
@@ -65,7 +59,6 @@ class Client(BaseClient):
         and others as a list
         :return json_responders: reformatted respondres dict
         """
-        print(f"responders={responders}")
         if len(responders) % 3 != 0:
             raise DemistoException("responders must be list of: responder_type, value_type, value")
         responders_triple = list(zip(responders[::3], responders[1::3], responders[2::3]))
@@ -76,7 +69,6 @@ class Client(BaseClient):
             json_responders[responder_key].append({value_type: value, "type": responder_type})
         if len(responders_triple) == 1 and one_is_dict:
             json_responders = {responder_key: json_responders[responder_key][0]}
-        print(f"json_responders={json_responders}")
         return json_responders
 
     def create_alert(self, args: dict):
@@ -257,7 +249,6 @@ class Client(BaseClient):
 
     def add_responder_incident(self, args: dict):
         args.update(self.responders_to_json(args.get('responders'), "responder"))
-        print(args.get('responders'))
         return self._http_request(method='POST',
                                   url_suffix=f"/v1/{INCIDENTS_SUFFIX}/"
                                              f"{args.get('incident_id')}/responders",
@@ -297,8 +288,8 @@ def get_polling_result(client: Client, args: dict) -> CommandResults:
     if isinstance(polling_result, CommandResults):
         return polling_result
     command_result = CommandResults(
-        outputs=polling_result,
-        readable_output=tableToMarkdown("OpsGenie", polling_result['data']),
+        outputs=polling_result.get("data"),
+        readable_output=tableToMarkdown("OpsGenie", polling_result.get('data')),
         raw_response=polling_result
     )
     return command_result
@@ -310,10 +301,8 @@ def run_polling_command(args: dict, cmd: str, results_function: Callable,
     ScheduledCommand.raise_error_if_not_supported()
 
     if "request_id" not in args:
-        print("request_id not in args:")
         command_results = action_function(args)
         request_id = command_results.get("requestId")
-        print(f"request_id = {request_id}")
         if not request_id:
             raise ConnectionError(f"Failed to send request - {command_results}")
         args['request_id'] = request_id
@@ -335,7 +324,6 @@ def run_polling_command(args: dict, cmd: str, results_function: Callable,
     command_results = results_function(args)
     status = command_results.get("data").get("success")
     if status is None:
-        print("not success")
         # schedule next poll
         polling_args = {
             'polling': True,
@@ -349,7 +337,8 @@ def run_polling_command(args: dict, cmd: str, results_function: Callable,
         )
 
         # result with scheduled_command only - no update to the war room
-        command_results = CommandResults(scheduled_command=scheduled_command)
+        command_results = CommandResults(scheduled_command=scheduled_command,
+                                         readable_output="Waiting for the polling answer come back")
     return command_results
 
 
@@ -543,7 +532,12 @@ def add_responder_alert(client: Client, args: Dict[str, Any]) -> CommandResults:
 def get_escalations(client: Client, args: Dict[str, Any]) -> CommandResults:
     escalation = args.get("escalation_id", None) or args.get("escalation_name", None)
     result = client.get_escalation(args) if escalation else client.get_escalations()
-    return result
+    return CommandResults(
+        outputs_prefix="OpsGenie.Escalations",
+        outputs=result.get("data"),
+        readable_output=tableToMarkdown("OpsGenie Escalations", result.get("data")),
+        raw_response=result
+    )
 
 
 def escalate_alert(client: Client, args: Dict[str, Any]) -> CommandResults:
