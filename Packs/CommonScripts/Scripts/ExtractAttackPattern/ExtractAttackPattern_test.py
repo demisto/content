@@ -48,6 +48,16 @@ def test_extract_existing_mitre_id(mocker):
 
 
 def test_extract_with_value_error(mocker):
+    """
+    Given
+    - MITRE ID to extract
+    When
+    - we need to get its value (name), but MITRE Integration is disable.
+    Then
+    - run the ExtractAttackPattern script
+    Validate that the results is empty.
+    validate the error massage.
+    """
     mocker.patch.object(demisto, 'info')
     mocker.patch.object(eap, 'get_mitre_results', side_effect=ValueError(
         'verify you have proper integration enabled to support it'))
@@ -69,6 +79,16 @@ def test_extract_with_value_error(mocker):
 
 
 def test_extract_with_unknown_error(mocker):
+    """
+    Given
+    - MITRE ID to extract
+    When
+    - we need to get its value (name), but there is some error.
+    Then
+    - run the ExtractAttackPattern script
+    Validate that the results is empty.
+    validate the error massage.
+    """
     mocker.patch.object(eap, 'get_mitre_results', side_effect=TypeError(
         'Something went wrong'))
     mocker.patch.object(demisto, 'info')
