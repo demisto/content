@@ -18,10 +18,7 @@
  "ownerOnly": false,
  "placeholder": "N\\A",
  "required": false,
- "selectValues": [
-  "",
-  ""
- ],
+ "selectValues": [],
  "sla": 0,
  "system": false,
  "threshold": 72,
