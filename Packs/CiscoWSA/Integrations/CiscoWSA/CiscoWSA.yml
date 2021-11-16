@@ -1,8 +1,8 @@
 commonfields:
-  id: WSA-Testing
+  id: CiscoWSA
   version: -1
-name: WSA-Testing
-display: WSA-Testing
+name: CiscoWSA
+display: CiscoWSA
 category: Utilities
 description: Cisco WSA
 configuration:
