@@ -86,24 +86,26 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: modules.brand
+              complex:
+                root: modules
+                filters:
+                - - operator: inList
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: QRadar,QRadar_v2,QRadar v3
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
             iscontext: true
-      - - operator: isEqualString
-          left:
-            value:
-              simple: modules.brand
-            iscontext: true
-          right:
-            value:
-              simple: QRadar
-      - - operator: isEqualString
-          left:
-            value:
-              simple: modules.state
-            iscontext: true
-          right:
-            value:
-              simple: active
     view: |-
       {
         "position": {
@@ -193,24 +195,26 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: modules.brand
+              complex:
+                root: modules
+                filters:
+                - - operator: inList
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ArcSight ESM v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
             iscontext: true
-      - - operator: isEqualString
-          left:
-            value:
-              simple: modules.brand
-            iscontext: true
-          right:
-            value:
-              simple: ArcSight ESM v2
-      - - operator: isEqualString
-          left:
-            value:
-              simple: modules.state
-            iscontext: true
-          right:
-            value:
-              simple: active
     view: |-
       {
         "position": {
