@@ -479,3 +479,28 @@ def test_invalid_params(params, expected_err_message, mocker):
     mocker.patch.object(demisto, 'command', return_value='long-running-execution')
     with pytest.raises(DemistoException, match=re.escape(expected_err_message)):
         main()
+
+
+def test_get_mapping_fields():
+    """
+    Given:
+    -
+
+    When:
+    - Calling get-mapping-fields command
+
+    Then:
+    - Ensure expected dict representing the mapping fields is returned.
+    """
+    from Syslogv2 import get_mapping_fields
+    assert get_mapping_fields() == {'app_name': 'Optional[str]',
+                                    'facility': 'str',
+                                    'host_name': 'Optional[str]',
+                                    'msg': 'str',
+                                    'msg_id': 'Optional[str]',
+                                    'occurred': 'Optional[str]',
+                                    'process_id': 'Optional[str]',
+                                    'sd': 'dict',
+                                    'severity': 'str',
+                                    'timestamp': 'str',
+                                    'version': 'Optional[int]'}

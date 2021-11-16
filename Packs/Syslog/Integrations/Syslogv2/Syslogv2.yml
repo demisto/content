@@ -13,12 +13,6 @@ configuration:
   name: private_key
   required: false
   type: 14
-- diplaypassword: Private Key Password (required when given encrypted private key)
-  additionalinfo: When given an encrypted private key, the password required to open the encrypted key file must be supplied.
-  name: private_key_password
-  required: false
-  type: 9
-  hiddenusername: true
 - display: Incoming Log Format
   defaultvalue: Auto
   hidden: false
@@ -40,7 +34,10 @@ description: A Syslog server provides the ability to automatically open incident
 display: Syslog v2
 name: Syslog v2
 script:
-  commands: []
+  commands:
+  - name: get-mapping-fields
+    description: Returns the list of fields for an incident type. This command should
+      be used for debugging purposes.
   isfetch: false
   runonce: false
   script: '-'

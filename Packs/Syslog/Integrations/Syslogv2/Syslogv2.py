@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from tempfile import NamedTemporaryFile
-from typing import Callable
+from typing import Callable, get_type_hints
 
 import syslogmp
 from gevent.server import StreamServer
@@ -265,6 +265,18 @@ def prepare_globals_and_create_server(port: int, log_format: str, message_regex:
     return server
 
 
+def get_mapping_fields() -> dict[str, str]:
+    def transfer_type_to_str_type(type_):
+        type_as_str: str = str(type_)
+        # remove typing from the type name
+        type_as_str = type_as_str.replace('typing.', '')
+        # For classes other than typing, eg <class 'str'>
+        type_as_str = type_as_str.replace('<class ', '').replace("'", '').replace('>', '')
+        return type_as_str
+
+    return {k: transfer_type_to_str_type(v) for k, v in get_type_hints(SyslogMessageExtract).items()}
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -307,6 +319,8 @@ def main() -> None:
             server: StreamServer = prepare_globals_and_create_server(port, log_format, message_regex, incident_type,
                                                                      certificate, private_key, private_key_password)
             server.serve_forever()
+        elif command == 'get-mapping-fields':
+            return_results(get_mapping_fields())
         else:
             raise NotImplementedError(f'''Command '{command}' is not implemented.''')
 
