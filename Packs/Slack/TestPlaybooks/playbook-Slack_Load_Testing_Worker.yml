@@ -176,7 +176,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
+    quietmode: 1
     isoversize: false
     isautoswitchedtoquietmode: false
   "6":
