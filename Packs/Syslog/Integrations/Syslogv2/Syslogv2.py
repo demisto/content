@@ -197,7 +197,7 @@ def perform_long_running_loop(socket_data: bytes):
         demisto.createIncidents([incident])
 
 
-def perform_long_running_execution(sock: Any, _: tuple) -> None:
+def perform_long_running_execution(sock: Any, address: tuple) -> None:
     """
     The long running execution loop. Gets input, and performs a while True loop and logs any error that happens.
     Stops when there is no more data to read.
@@ -208,16 +208,20 @@ def perform_long_running_execution(sock: Any, _: tuple) -> None:
     Returns:
         (None): Reads data, calls   that creates incidents from inputted data.
     """
-    demisto.error('Starting long running execution')
+    demisto.debug('Starting long running execution')
     file_obj = sock.makefile(mode='rb')
     while True:
-        demisto.error('Waiting for line')
-        line = file_obj.readline()
-        demisto.error(f'line read: {line}')
-        if not line:
-            demisto.info('Disconnect')
-            break
-        perform_long_running_loop(line)
+        try:
+            line = file_obj.readline()
+            if not line:
+                demisto.info(f'Disconnected from {address}')
+                break
+            perform_long_running_loop(line.strip())
+        except Exception as e:
+            demisto.error(f'Error occurred during long running loop. Error was: {e}')
+            demisto.error(traceback.print_exc())
+        finally:
+            demisto.debug('Finished reading message')
     file_obj.close()
 
 
@@ -247,16 +251,13 @@ def prepare_globals_and_create_server(port: int, log_format: str, message_regex:
         certificate_path = certificate_file.name
         certificate_file.write(bytes(certificate, 'utf-8'))
         certificate_file.close()
-        cert_file = certificate_path
 
         private_key_file = NamedTemporaryFile(delete=False)
         private_key_path = private_key_file.name
         private_key_file.write(bytes(private_key, 'utf-8'))
         private_key_file.close()
-        keyfile = private_key_path
-
-        server = StreamServer(('0.0.0.0', port), perform_long_running_execution, keyfile=keyfile,
-                              certfile=cert_file)
+        server = StreamServer(('0.0.0.0', port), perform_long_running_execution, keyfile=private_key_path,
+                              certfile=certificate_path)
         demisto.debug('Starting HTTPS Server')
     else:
         server = StreamServer(('0.0.0.0', port), perform_long_running_execution)
@@ -272,8 +273,9 @@ def main() -> None:
     command = demisto.command()
     message_regex: Optional[str] = params.get('message_regex')
     incident_type: Optional[str] = params.get('incident_type')
-    certificate: Optional[str] = params.get('certificate', {}).get('password')
-    private_key: Optional[str] = params.get('private_key', {}).get('password')
+    certificate: Optional[str] = params.get('certificate')
+    private_key: Optional[str] = params.get('private_key')
+    private_key_password: Optional[str] = params.get('private_key_password', {}).get('password')
 
     log_format: str = params.get('log_format', '')
     if log_format not in FORMAT_TO_PARSER_FUNCTION:
@@ -290,12 +292,20 @@ def main() -> None:
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         if command == 'test-module':
-            return_results(test_module())
+            try:
+                prepare_globals_and_create_server(port, log_format, message_regex, incident_type, certificate,
+                                                  private_key)
+            except OSError as e:
+                if 'Address already in use' in str(e):
+                    raise DemistoException(f'Given port: {port} is already in use. Please either change port or '
+                                           f'make sure to close the connection in the server using that port.')
+                raise e
+            return_results('ok')
         elif command == 'fetch-incidents':
             fetch_samples()
         elif command == 'long-running-execution':
             server: StreamServer = prepare_globals_and_create_server(port, log_format, message_regex, incident_type,
-                                                                     certificate, private_key)
+                                                                     certificate, private_key, private_key_password)
             server.serve_forever()
         else:
             raise NotImplementedError(f'''Command '{command}' is not implemented.''')

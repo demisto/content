@@ -3,17 +3,21 @@ commonfields:
   id: Syslog v2
   version: -1
 configuration:
-- displaypassword: Certificate (Required for HTTPS)
-  name: certificate
+- name: certificate
+  display: Certificate (Required for HTTPS)
   additionalinfo: Required for HTTPS, if not using server rerouting
-  type: 9
+  type: 12
   required: false
-  hiddenusername: true
-- displaypassword: Private Key (Required for HTTPS)
+- display: Private Key (Required for HTTPS)
+  additionalinfo: Required for HTTPS, if not using server rerouting
   name: private_key
-  additionalinfo: Required for HTTPS, if not using server rerouting
-  type: 9
   required: false
+  type: 14
+- diplaypassword: Private Key Password (required when given encrypted private key)
+  additionalinfo: When given an encrypted private key, the password required to open the encrypted key file must be supplied.
+  name: private_key_password
+  required: false
+  type: 9
   hiddenusername: true
 - display: Incoming Log Format
   defaultvalue: Auto
