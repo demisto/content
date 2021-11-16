@@ -3,10 +3,9 @@ commonfields:
   id: SecurityTrails
   version: -1
 configuration:
-  - name: apikey
-    display: API Key
+  - display: API Key
+    name: apikey
     required: true
-    defaultvalue: null
     type: 4
     additionalinfo: null
   - name: timeout
@@ -14,19 +13,17 @@ configuration:
     required: false
     defaultvalue: 10
     type: 3
-    additionalinfo: null
-  - name: insecure
-    display: Trust any certificate (not secure)
-    required: false
-    defaultvalue: ''
-    type: 8
     additionalinfo: Some commands can take a while to return. Extending the timeout can avoid timeout issues.
-  - name: proxy
-    display: Use system proxy settings
+  - display: Trust any certificate (not secure)
+    name: insecure
     required: false
     defaultvalue: ''
     type: 8
-    additionalinfo: null
+  - display: Use system proxy settings
+    name: proxy
+    required: false
+    defaultvalue: ''
+    type: 8
 description: This integration provides API access to the SecurityTrails platform.
 display: SecurityTrails
 name: SecurityTrails
@@ -65,9 +62,9 @@ script:
           name: hostname
           required: true
       description: Returns the current data about the given hostname. In addition to
-        the current data, you also get the current statistics associated with a
-        particular record. For example, for a records you'll get how many other
-        hostnames have the same IP.
+        the current data, you also get the current statistics associated with a particular
+        record. For example, for a records you'll get how many other hostnames have
+        the same IP.
       name: securitytrails-get-domain-details
       outputs:
         - contextPath: SecurityTrails.Domain.name
@@ -153,8 +150,8 @@ script:
         - description: Hostname
           name: hostname
           required: true
-      description: Returns the current WHOIS data about a given hostname with the
-        stats merged together
+      description: Returns the current WHOIS data about a given hostname with the stats
+        merged together
       name: securitytrails-get-domain-whois
       outputs:
         - contextPath: SecurityTrails.Domain.expiresDate
@@ -293,9 +290,9 @@ script:
             - txt
           required: true
       description: Lists out specific historical information about the given hostname
-        parameter. In addition of fetching the historical data for a particular
-        type, the count statistic is returned as well, which represents the
-        number of that particular resource against current data.
+        parameter. In addition of fetching the historical data for a particular type,
+        the count statistic is returned as well, which represents the number of that
+        particular resource against current data.
       name: securitytrails-get-dns-history
       outputs:
         - contextPath: SecurityTrails.Domain.a_history_records.first_seen
@@ -367,8 +364,8 @@ script:
         - description: Hostname
           name: hostname
           required: true
-        - description: The page of the returned results, starting at 1. A page returns 100
-            results.
+        - description: The page of the returned results, starting at 1. A page returns
+            100 results.
           name: page
       description: Returns historical WHOIS information about the given domain.
       name: securitytrails-get-whois-history
@@ -494,10 +491,10 @@ script:
         - description: Starting IP address (optionally with CIDR subnet mask)
           name: ipaddress
           required: true
-      description: "Returns the neighbors in any given IP level range and essentially
-        allows you to explore closeby IP addresses. It will divide the range
-        into 16 groups. Example: a /28 would be divided into 16 /32 blocks or a
-        /24 would be divided into 16 /28 blocks"
+      description: 'Returns the neighbors in any given IP level range and essentially
+        allows you to explore closeby IP addresses. It will divide the range into 16
+        groups. Example: a /28 would be divided into 16 /32 blocks or a /24 would be
+        divided into 16 /28 blocks'
       name: securitytrails-get-ip-neighbors
       outputs:
         - contextPath: SecurityTrails.IP.ip
@@ -526,23 +523,21 @@ script:
           predefined:
             - "false"
             - "true"
-        - description: The page of the returned results, starting at 1. A page returns 100
-            results.
+        - description: The page of the returned results, starting at 1. A page returns
+            100 results.
           name: page
         - auto: PREDEFINED
           defaultValue: "false"
-          description: Request scrolling. Only supported when query is used and not
-            filter. See the Scrolling API endpoint.
+          description: Request scrolling. Only supported when query is used and not filter.
+            See the Scrolling API endpoint.
           name: scroll
           predefined:
             - "false"
             - "true"
-        - description: The DSL query you want to run
-            (https://docs.securitytrails.com/docs/how-to-use-the-dsl).
+        - description: The DSL query you want to run (https://docs.securitytrails.com/docs/how-to-use-the-dsl).
           name: query
-        - description: JSON dicitonary of filter terms
-            (https://docs.securitytrails.com/reference#domain-search). Can not
-            be used together with query.
+        - description: JSON dicitonary of filter terms (https://docs.securitytrails.com/reference#domain-search).
+            Can not be used together with query.
           name: filter
       description: Filter and search specific records using DSL - a powerful SQL like
         query interface to the data via certain API end points.
@@ -573,12 +568,10 @@ script:
           description: Registrar
           type: string
     - arguments:
-        - description: The DSL query you want to run
-            (https://docs.securitytrails.com/docs/how-to-use-the-dsl).
+        - description: The DSL query you want to run (https://docs.securitytrails.com/docs/how-to-use-the-dsl).
           name: query
-        - description: JSON dicitonary of filter terms
-            (https://docs.securitytrails.com/reference#domain-search). Can not
-            be used together with query.
+        - description: JSON dicitonary of filter terms (https://docs.securitytrails.com/reference#domain-search).
+            Can not be used together with query.
           name: filter
       description: Domain statistics
       name: securitytrails-statistics-domain
@@ -608,8 +601,8 @@ script:
         - description: Hostname
           name: hostname
           required: true
-        - description: The page of the returned results, starting at 1. A page returns 100
-            results.
+        - description: The page of the returned results, starting at 1. A page returns
+            100 results.
           name: page
       description: Find all domains that are related to a hostname you input. Limited
         to 10000 results.
@@ -644,11 +637,10 @@ script:
           type: number
     - arguments:
         - defaultValue: "1"
-          description: The page of the returned results, starting at 1. A page returns 100
-            results.
+          description: The page of the returned results, starting at 1. A page returns
+              100 results.
           name: page
-        - description: The DSL query you want to run
-            (https://docs.securitytrails.com/docs/how-to-use-the-dsl).
+        - description: The DSL query you want to run (https://docs.securitytrails.com/docs/how-to-use-the-dsl).
           name: query
           required: true
       description: Search for IP addresses. A maximum of 10000 results can be retrieved.
@@ -676,13 +668,12 @@ script:
           description: Ports
           type: string
     - arguments:
-        - description: The DSL query you want to run
-            (https://docs.securitytrails.com/docs/how-to-use-the-dsl).
+        - description: The DSL query you want to run (https://docs.securitytrails.com/docs/how-to-use-the-dsl).
           name: query
           required: true
       description: Statistics like Reverse DNS pattern identification (RDNS entries
-        are grouped and displayed as x), ports (number of open ports found) or
-        total results are returned
+        are grouped and displayed as x), ports (number of open ports found) or total
+        results are returned
       name: securitytrails-statistics-ip
       outputs:
         - contextPath: SecurityTrails.IP.Search.IPStats.ports.count
@@ -736,12 +727,12 @@ script:
           name: ipaddress
           required: true
         - defaultValue: "1"
-          description: The page of the returned results, starting at 1. A page returns 100
-            results.
+          description: The page of the returned results, starting at 1. A page returns
+            100 results.
           name: page
       description: Fetch user agents seen during the last 30 days for a specific IPv4
-        address. It shows devices with egressing traffic based on large scale
-        web server logs. The number of results is not limited.
+        address. It shows devices with egressing traffic based on large scale web server
+        logs. The number of results is not limited.
       name: securitytrails-get-useragents
       outputs:
         - contextPath: SecurityTrails.IP.ip
@@ -975,7 +966,7 @@ script:
           type: string
   dockerimage: demisto/python3:3.9.7.24076
   runonce: false
-  script: ""
+  script: ''
   subtype: python3
   type: python
 fromversion: 6.0.0
