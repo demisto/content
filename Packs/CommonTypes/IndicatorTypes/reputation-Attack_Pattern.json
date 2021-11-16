@@ -49,7 +49,7 @@
     },
     "mergeContext": false,
     "regex": "(T\\d{3,4}\\.\\d{3}|T\\d{3,4})",
-    "reputationCommand": "attack-pattern",
+    "reputationCommand": "",
     "reputationScriptName": "",
     "sortValues": null,
     "system": false,
