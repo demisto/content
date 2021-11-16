@@ -137,8 +137,67 @@ script:
     execution: false
     name: picus-get-attack-results
     outputs:
-    - contextPath: Picus.attackresults
+    - contextPath: Picus.attackresults.results.threat_ids
       description: Threat ID List
+      type: String
+    - contextPath: Picus.attackresults.results.begin_time
+      description: begin time of the attack
+      type: Date
+    - contextPath: Picus.attackresults.results.destination_port
+      description: Value "0" indicates it is not applicable such as all vector types
+        except network
+      type: Number
+    - contextPath: Picus.attackresults.results.end_time
+      description: end time of the attack
+      type: Date
+    - contextPath: Picus.attackresults.results.id
+      description: id
+      type: Number
+    - contextPath: Picus.attackresults.results.l1_category_name
+      description: Level 1 Category Name of the attack
+      type: String
+    - contextPath: Picus.attackresults.results.scenario_details.action_id
+      description: Action ID of the threat scenario action
+      type: Number
+    - contextPath: Picus.attackresults.results.scenario_details.action_name
+      description: Action Name of the threat scenario action
+      type: String
+    - contextPath: Picus.attackresults.results.scenario_details.end
+      description: The time attack ended
+      type: Date
+    - contextPath: Picus.attackresults.results.scenario_details.id
+      description: Primary key
+      type: Number
+    - contextPath: Picus.attackresults.results.scenario_details.process_results
+      description: ' Process Results(play and rewind)'
+      type: Unknown
+    - contextPath: Picus.attackresults.results.scenario_details.result
+      description: Final result of the scenario action
+      type: String
+    - contextPath: Picus.attackresults.results.scenario_details.technique_id
+      description: Technique ID of the threat scenario action
+      type: String
+    - contextPath: Picus.attackresults.results.source_port
+      description: Value "0" indicates it is not applicable such as all vector types
+        except network and wats attacks
+      type: Number
+    - contextPath: Picus.attackresults.results.string
+      description: Attack Result
+      type: String
+    - contextPath: Picus.attackresults.results.threat_id
+      description: Threat ID of the attack
+      type: Number
+    - contextPath: Picus.attackresults.results.threat_name
+      description: Threat Name of the attack
+      type: String
+    - contextPath: Picus.attackresults.results.trusted
+      description: Trusted peer name
+      type: String
+    - contextPath: Picus.attackresults.results.untrusted
+      description: Untrusted peer name
+      type: String
+    - contextPath: Picus.attackresults.results.variant
+      description: Variant info
       type: String
   - arguments:
     - default: false
@@ -212,9 +271,24 @@ script:
     execution: false
     name: picus-get-threat-results
     outputs:
-    - contextPath: Picus.threatresults
-      description: Threat Results(such as Secure or Insecure)
+    - contextPath: Picus.threatresults.results.threat_results
+      description: Threat Results(ID and result combination)
       type: String
+    - contextPath: Picus.threatresults.results.l1_category
+      description: Level 1 Category Name of the attack
+      type: String
+    - contextPath: Picus.threatresults.results.last_time
+      description: Last Threat Result Time
+      type: Date
+    - contextPath: Picus.threatresults.results.result
+      description: Threat Result
+      type: String
+    - contextPath: Picus.threatresults.results.status
+      description: Status
+      type: String
+    - contextPath: Picus.threatresults.results.threat_id
+      description: Threat ID of the attack
+      type: Number
   - arguments:
     - default: false
       description: Untrusted peer name.

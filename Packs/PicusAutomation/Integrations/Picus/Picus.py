@@ -114,6 +114,7 @@ def getAttackResults():
     picus_endpoint = "/user-api/v1/attack-results/list"
     picus_req_url, picus_headers = generateEndpointURL(getAccessToken(), picus_endpoint)
     picus_attack_results : List[Any] = []
+    picus_attack_raw_results: Dict[str,Any] = {"results":[]}
     tmp_secure_list: List[Any] = []
     tmp_insecure_list: List[Any] = []
     tmp_results: List[Any] = []
@@ -191,10 +192,13 @@ def getAttackResults():
         threat_ids += str(picus_attack_results[i]["threat_id"]) + ","
     threat_ids = threat_ids[:-1]
 
+    picus_attack_raw_results["results"].append({"threat_ids":threat_ids})
+    picus_attack_raw_results["results"].append(picus_attack_results)
+
     table_name = attack_result + " Attack List"
     table_headers = ['begin_time','end_time','string','threat_id','threat_name']
     md_table = tableToMarkdown(table_name,picus_attack_results,headers=table_headers,removeNull=True,headerTransform=string_to_table_header)
-    results = CommandResults(readable_output=md_table,outputs_prefix="Picus.attackresults",outputs=threat_ids)
+    results = CommandResults(readable_output=md_table,outputs_prefix="Picus.attackresults",outputs=picus_attack_raw_results,outputs_key_field="results.threat_id")
 
     return results
 
@@ -252,6 +256,7 @@ def getThreatResults():
     picus_req_url, picus_headers = generateEndpointURL(getAccessToken(), picus_endpoint)
     picus_threat_results : Dict[str,Any] = {"results":[]}
     picus_threat_raw_results = ""
+    threat_raw_output: Dict[str,Any] = {"results":[]}
 
     threat_ids = demisto.args().get('threat_ids')
     attacker_peer = demisto.args().get('attacker_peer')
@@ -292,10 +297,13 @@ def getThreatResults():
         picus_threat_raw_results = picus_threat_raw_results[:-1]
     picus_threat_results = picus_threat_results["results"]
 
+    threat_raw_output["results"].append({"threat_results":picus_threat_raw_results})
+    threat_raw_output["results"].append(picus_threat_results)
+
     table_name = "Picus Threat Results"
     table_headers = ['threat_id','result','l1_category','last_time','status']
     md_table = tableToMarkdown(table_name, picus_threat_results, headers=table_headers, removeNull=True,headerTransform=string_to_table_header)
-    results = CommandResults(readable_output=md_table,outputs_prefix="Picus.threatresults",outputs=picus_threat_raw_results)
+    results = CommandResults(readable_output=md_table,outputs_prefix="Picus.threatresults",outputs=threat_raw_output,outputs_key_field="results.threat_id")
 
     return results
 
@@ -343,7 +351,7 @@ def getMitigationList():
     table_name = "Picus Mitigation List"
     table_headers = ['threat_id','signature_id','signature_name','vendor']
     md_table = tableToMarkdown(table_name, picus_mitigation_results, headers=table_headers, removeNull=True,headerTransform=string_to_table_header)
-    results = CommandResults(readable_output=md_table,outputs_prefix="Picus.mitigationresults",outputs=picus_mitigation_results)
+    results = CommandResults(readable_output=md_table,outputs_prefix="Picus.mitigationresults",outputs=picus_mitigation_results,outputs_key_field="signature_id")
 
     return results
 
@@ -405,7 +413,7 @@ def getVectorCompare():
     table_name = "Picus Vector Compare Result"
     table_headers = ['status','threat_id','name']
     md_table = tableToMarkdown(table_name, all_vector_results, headers=table_headers, removeNull=True,headerTransform=string_to_table_header)
-    results = CommandResults(readable_output=md_table,outputs=all_vector_results,outputs_prefix="Picus.vectorresults")
+    results = CommandResults(readable_output=md_table,outputs=all_vector_results,outputs_prefix="Picus.vectorresults",outputs_key_field="threat_id")
 
     return results
 
@@ -437,7 +445,7 @@ def getPicusVersion():
     table_name = "Picus Version"
     table_headers = ['version','update_time','last_update_date']
     md_table = tableToMarkdown(table_name,picus_version_info,headers=table_headers,removeNull=True,headerTransform=string_to_table_header)
-    results = CommandResults(readable_output=md_table,outputs=picus_version_info,outputs_prefix="Picus.versioninfo")
+    results = CommandResults(readable_output=md_table,outputs=picus_version_info,outputs_prefix="Picus.versioninfo",outputs_key_field="version")
 
     return results
 

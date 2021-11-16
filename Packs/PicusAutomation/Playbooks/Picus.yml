@@ -147,7 +147,7 @@ tasks:
       attacker_peer:
         simple: ${Picus.param.attacker_peer}
       threat_ids:
-        simple: ${Picus.attackresults}
+        simple: ${Picus.attackresults.results.threat_ids}
       variant:
         simple: ${Picus.param.variant}
       victim_peer:
@@ -221,7 +221,7 @@ tasks:
       - "20"
     scriptarguments:
       threatinfo:
-        simple: ${Picus.threatresults}
+        simple: ${Picus.threatresults.results.threat_results}
     separatecontext: false
     view: |-
       {
