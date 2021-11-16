@@ -1,6 +1,6 @@
 {
     "name": "Google IP Ranges Feed",
-    "description": "Use the Google Cloud Platform Whitelist Feed integration to get indicators from the feed.",
+    "description": "Use the Google IP Ranges Feed integration to get GCP and Google global IP ranges.",
     "support": "xsoar",
     "currentVersion": "2.0.1",
     "author": "Cortex XSOAR",
