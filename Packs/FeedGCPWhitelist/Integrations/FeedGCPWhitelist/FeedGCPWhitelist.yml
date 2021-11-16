@@ -109,4 +109,4 @@ script:
 fromversion: 5.5.0
 deprecated: true
 tests:
-- No tests (auto formatted)
+  - No tests (auto formatted)
