@@ -1,5 +1,5 @@
 {
-    "name": "GCP Whitelist Feed",
+    "name": "Google IP Ranges Feed",
     "description": "Use the Google Cloud Platform Whitelist Feed integration to get indicators from the feed.",
     "support": "xsoar",
     "currentVersion": "2.0.1",
