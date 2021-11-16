@@ -1,3 +1,2 @@
 [file:SecurityTrails.yml]
-ignore=IN145
-ignore=IN129
+ignore=IN145,IN129

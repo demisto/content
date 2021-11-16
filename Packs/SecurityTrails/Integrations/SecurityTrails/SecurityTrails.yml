@@ -7,7 +7,7 @@ configuration:
     name: apikey
     required: true
     type: 4
-  - display: Timout
+  - display: Timeout
     name: timeout
     required: false
     defaultvalue: 10
