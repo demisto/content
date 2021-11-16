@@ -5,7 +5,7 @@ import dill
 
 # remove patch version 0,0
 
-MAJOR_VERSION = 3
+MAJOR_VERSION = 0
 
 URL_PHISHING_MODEL_NAME = "url_phishing_model"
 MSG_EMPTY_NAME_OR_URL = "Empty logo name or URL"

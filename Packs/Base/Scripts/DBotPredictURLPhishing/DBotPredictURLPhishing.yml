@@ -1,7 +1,7 @@
 args:
 - default: false
-  description: Comma-separated list of incident URLs.
-  isArray: false
+  description: Space separated list of URLs.
+  isArray: true
   name: urls
   required: false
   secret: false
@@ -42,13 +42,21 @@ args:
   secret: false
 - default: false
   defaultValue: '3'
+  description: Maximum number of extracted URLs on which to run the model.
   isArray: false
   name: maxNumberOfURL
   required: false
   secret: false
 - default: false
+  description: Body of the email for URLs extraction.
   isArray: false
-  name: emailText
+  name: emailBody
+  required: false
+  secret: false
+- default: false
+  description: HTML of the email for URLs extraction.
+  isArray: false
+  name: emailHTML
   required: false
   secret: false
 comment: Predict phishing URLs using pre-trained model.
@@ -64,9 +72,6 @@ outputs:
 - contextPath: DBotPredictURLPhishing.FinalVerdict
   description: Final verdict of the URL.
   type: String
-- contextPath: DBotPredictURLPhishing.IsWhitelisted
-  description: Wether the URL has been whitelisted bu the model.
-  type: Boolean
 script: '-'
 subtype: python3
 system: false
@@ -74,8 +79,8 @@ tags:
 - ''
 timeout: '0'
 type: python
-dockerimage: devdemisto/mlurlphishing:1.0.0.24148
-runas: DBotWeakRole
+dockerimage: devdemisto/mlurlphishing:1.0.0.24208
+runas: DBotRole
 runonce: false
 tests:
 - No tests (auto formatted)

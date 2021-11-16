@@ -10,6 +10,7 @@ import dill
 import copy
 import numpy as np
 from tldextract import TLDExtract
+from bs4 import BeautifulSoup
 requests.packages.urllib3.disable_warnings()
 
 dill.settings['recurse'] = True
@@ -38,6 +39,7 @@ MSG_UPDATE_LOGO = "Update demisto model from docker model version %s.%s and tran
 MSG_WRONG_CONFIG_MODEL = 'Wrong configuration of the model'
 MSG_NO_ACTION_ON_MODEL = "Use current model"
 MSG_WHITE_LIST = "White List"
+MSG_NEED_TO_UPDATE_RASTERIZE = "Please update Rasterize Pack. Html or image missing"
 EMPTY_STRING = ""
 URL_PHISHING_MODEL_NAME = "url_phishing_model"
 OUT_OF_THE_BOX_MODEL_PATH = '/model/model_docker.pkl'
@@ -48,7 +50,7 @@ DOMAIN_AGE_KEY = 'New domain (less than %s months)' % str(THRESHOLD_NEW_DOMAIN_M
 MALICIOUS_VERDICT = "Malicious"
 BENIGN_VERDICT = "Benign"
 SUSPICIOUS_VERDICT = "Suspicious"
-BENIGN_VERDICT_WHITELIST = "Benign - whitelisted"
+BENIGN_VERDICT_WHITELIST = "Benign - Top domains from Majestic"
 UNKNOWN = 'Unknown'
 
 BENIGN_THRESHOLD = 0.5
@@ -85,7 +87,8 @@ KEY_CONTENT_URL_SCORE = "URLScore"
 KEY_CONTENT_SEO = "BadSEOQuality"
 KEY_CONTENT_AGE = "NewDomain"
 KEY_CONTENT_VERDICT = "FinalVerdict"
-KEY_CONTENT_IS_WHITELISTED = "IsWhitelisted"
+KEY_CONTENT_IS_WHITELISTED = "topMajesticDomain"
+KEY_CONTENT_DBOT_SCORE = 'DBotScore'
 
 KEY_HR_DOMAIN = "Domain"
 KEY_HR_SEO = "Search engine optimisation"
@@ -109,6 +112,7 @@ MAPPING_VERDICT_TO_DISPLAY_VERDICT = {
                      None: None}
 }  # type: Dict
 
+TIMEOUT_REQUESTS = 5
 
 def get_model_data(model_name: str):
     """
@@ -251,7 +255,7 @@ def create_X_pred(output_rasterize: Dict, url: str) -> pd.DataFrame:
 
 
 def prepend_protocol(url: str, protocol: str, www: bool = True) -> str:
-    """
+    """forceModel
     Append a protocol name (usually http or https) and www to a url
     :param url: url
     :param protocol: protocol we want to add (usually http or https)
@@ -273,29 +277,38 @@ def is_valid_url(url: str) -> Tuple[bool, str, str]:
     :return: bool
     """
     try:
-        response = requests.get(url, verify=False)  # nosec  guardrails-disable-line
+        response = requests.get(url, verify=False, timeout=TIMEOUT_REQUESTS)  # nosec  guardrails-disable-line
     except requests.exceptions.RequestException:
         prepend_url = prepend_protocol(url, 'http', True)
         try:
-            response = requests.get(prepend_url, verify=False)  # nosec guardrails-disable-line
+            response = requests.get(prepend_url, verify=False, timeout=TIMEOUT_REQUESTS)  # nosec guardrails-disable-line
         except requests.exceptions.RequestException:
             prepend_url = prepend_protocol(url, 'https', True)
             try:
-                response = requests.get(prepend_url, verify=False)  # nosec guardrails-disable-line
+                response = requests.get(prepend_url, verify=False, timeout=TIMEOUT_REQUESTS)  # nosec guardrails-disable-line
             except requests.exceptions.RequestException:
                 prepend_url = prepend_protocol(url, 'http', False)
                 try:
-                    response = requests.get(prepend_url, verify=False)  # nosec guardrails-disable-line
+                    response = requests.get(prepend_url, verify=False, timeout=TIMEOUT_REQUESTS)  # nosec guardrails-disable-line
                 except requests.exceptions.RequestException:
                     prepend_url = prepend_protocol(url, 'https', False)
                     try:
-                        response = requests.get(prepend_url, verify=False)  # nosec guardrails-disable-line
+                        response = requests.get(prepend_url, verify=False, timeout=TIMEOUT_REQUESTS)  # nosec guardrails-disable-line
                     except requests.exceptions.RequestException:
                         return False, MSG_IMPOSSIBLE_CONNECTION, "Unknown"
     if response.status_code == 200:
         return True, EMPTY_STRING, response.status_code
     else:
         return False, response.reason, response.status_code
+
+
+def verdict_to_int(verdict):
+    if verdict == MALICIOUS_VERDICT:
+        return 3
+    if verdict == BENIGN_VERDICT or verdict == BENIGN_VERDICT_WHITELIST:
+        return 1
+    if verdict == SUSPICIOUS_VERDICT:
+        return 2
 
 
 def return_entry_summary(pred_json: Dict, url: str, whitelist: bool, output_rasterize: Dict, verdict: str):
@@ -332,6 +345,13 @@ def return_entry_summary(pred_json: Dict, url: str, whitelist: bool, output_rast
         KEY_CONTENT_VERDICT: verdict,
         KEY_CONTENT_IS_WHITELISTED: whitelist
     }
+    context_DBot_score = {
+        'Indicator': url,
+        'Type': 'URL',
+        'Vendor': 'DBotPhishingURL',
+        'Score': verdict_to_int(verdict)
+    }
+
     if pred_json and pred_json[DOMAIN_AGE_KEY] is not None:
         explain[KEY_CONTENT_AGE] = str(pred_json[DOMAIN_AGE_KEY])
     explain_hr = {
@@ -348,7 +368,7 @@ def return_entry_summary(pred_json: Dict, url: str, whitelist: bool, output_rast
         "ContentsFormat": formats['json'],
         "HumanReadable": tableToMarkdown("Phishing prediction evidence | %s" % domain, explain_hr),
         "Contents": explain,
-        "EntryContext": {'DBotPredictURLPhishing': explain}
+        "EntryContext": {'DBotPredictURLPhishing': explain, KEY_CONTENT_DBOT_SCORE: context_DBot_score}
     }
     demisto.results(return_entry)
     # Get rasterize image or logo detection if logo was found
@@ -489,6 +509,8 @@ def get_prediction_single_url(model, url, force_model, debug):
     res = demisto.executeCommand('rasterize', {'type': 'json',
                                                'url': url,
                                                })
+    if 'image_b64' not in res[0]['Contents'].keys() or 'html' not in res[0]['Contents'].keys():
+        return_error(MSG_NEED_TO_UPDATE_RASTERIZE)
     if len(res) > 0:
         output_rasterize = res[0]['Contents']
     else:
@@ -504,6 +526,7 @@ def get_prediction_single_url(model, url, force_model, debug):
         demisto.results(pred_json['debug_top_words'])
         demisto.results(pred_json['debug_found_domains_list'])
         demisto.results(pred_json['seo'])
+        demisto.results(pred_json['debug_image'])
 
     pred_json[DOMAIN_AGE_KEY] = is_new_domain
 
@@ -601,13 +624,24 @@ def get_final_urls(urls, max_urls, model):
     return final_url
 
 
+def extract_embedded_urls_from_html(html):
+    embedded_urls = []
+    soup = BeautifulSoup(html)
+    for a in soup.findAll('a'):
+        if a.has_attr('href'):
+            if a['href'] not in a.get_text():
+                embedded_urls.append(a['href'])
+    return embedded_urls
+
+
 def main():
     msg_list = []
     exist, demisto_major_version, demisto_minor_version = oob_model_exists_and_updated()
     reset_model = demisto.args().get('resetModel', 'False') == 'True'
     debug = demisto.args().get('debug', 'False') == 'True'
     force_model = demisto.args().get('forceModel', 'False') == 'True'
-    email_body = demisto.args().get('emailText',"")
+    email_body = demisto.args().get('emailBody',"")
+    email_html = demisto.args().get('emailHTML', "")
     max_urls= int(demisto.args().get('maxNumberOfURL', 5))
     if debug:
         if exist:
@@ -638,9 +672,20 @@ def main():
     if email_body:
         urls_email_body = extract_urls(email_body)
     else:
-        urls_email_body = []
-    urls_only = [x.strip() for x in demisto.args().get('urls', '').split(',') if x]
-    urls = urls_email_body + urls_only
+        if (not email_body and email_html):
+            urls_email_body = extract_urls(BeautifulSoup(email_html).get_text())
+        else:
+            urls_email_body = []
+    if email_html:
+        urls_email_html = extract_embedded_urls_from_html(email_html)
+    else:
+        urls_email_html = []
+    urls_argument = demisto.args().get('urls', '')
+    if isinstance(urls_argument, list):
+        urls_only = urls_argument
+    else:
+        urls_only = [x.strip() for x in demisto.args().get('urls', '').split(' ') if x]
+    urls = urls_email_body + urls_only + urls_email_html
     if not urls:
         msg_list.append(MSG_NO_URL_GIVEN)
         return_error(MSG_NO_URL_GIVEN)
