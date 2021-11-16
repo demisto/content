@@ -2106,7 +2106,7 @@ def stringEscapeMD(st, minimal_escaping=False, escape_multiline=False):
         st = st.replace('\n', '<br>')  # Unix
 
     if minimal_escaping:
-        for c in '|':
+        for c in ('|', '`'):
             st = st.replace(c, '\\' + c)
     else:
         st = "".join(["\\" + str(c) if c in MARKDOWN_CHARS else str(c) for c in st])
@@ -8172,13 +8172,13 @@ def support_multithreading():
     demisto.lock = Lock()  # type: ignore[attr-defined]
 
     def locked_do(cmd):
-        try:
-            if demisto.lock.acquire(timeout=60):  # type: ignore[call-arg,attr-defined]
+        if demisto.lock.acquire(timeout=60):  # type: ignore[call-arg,attr-defined]
+            try:
                 return prev_do(cmd)  # type: ignore[call-arg]
-            else:
-                raise RuntimeError('Failed acquiring lock')
-        finally:
-            demisto.lock.release()  # type: ignore[attr-defined]
+            finally:
+                demisto.lock.release()  # type: ignore[attr-defined]
+        else:
+            raise RuntimeError('Failed acquiring lock')
 
     demisto._Demisto__do = locked_do  # type: ignore[attr-defined]
 
