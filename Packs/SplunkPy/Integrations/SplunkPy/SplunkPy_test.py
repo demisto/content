@@ -194,7 +194,7 @@ def test_raw_to_dict():
     ( 'abc=123', ['abc="123"']),
     ('cbd="123"', ['cbd="123"']),
     ('123123, cbd="123"', ['cbd="123"']),
-    # ('abc=321, 123123, cbd="123"', ['abc="321"', 'cbd="123"']),
+    # Testing with/without quotes and/or spaces:
     ('abc=123,cbd="123"', ['abc="123"', 'cbd="123"']),
     ('abc="123",cbd="123"', ['abc="123"', 'cbd="123"']),
     ('abc=123, cbd="123"', ['abc="123"', 'cbd="123"']),
@@ -202,6 +202,7 @@ def test_raw_to_dict():
     ('cbd="123",abc=123', ['abc="123"', 'cbd="123"']),
     ('xyz=321,cbd="123",abc=123', ['xyz="321"', 'abc="123"', 'cbd="123"']),
     ('xyz="321",cbd="123",abc=123', ['xyz="321"', 'abc="123"', 'cbd="123"']),
+    # Testing nested quotes (the main reason for quote_group):
     ('cbd="a="123""', ['cbd="a="123""']),
     ('cbd="a="123", b=321"', ['cbd="a="123", b="321""']),
     ('cbd="a="123", b="321""', ['cbd="a="123", b="321""']),
