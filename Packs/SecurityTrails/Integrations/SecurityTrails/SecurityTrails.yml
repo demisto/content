@@ -7,9 +7,8 @@ configuration:
     name: apikey
     required: true
     type: 4
-    additionalinfo: null
-  - name: timeout
-    display: Timout
+  - display: Timout
+    name: timeout
     required: false
     defaultvalue: 10
     type: 3
@@ -964,7 +963,7 @@ script:
         - contextPath: Securitytrails.SQL.query
           description: The original query used
           type: string
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.7.24399
   runonce: false
   script: ''
   subtype: python3
