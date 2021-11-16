@@ -186,6 +186,7 @@ def test_raw_to_dict():
 
     assert splunk.rawToDict('drilldown_search="key IN ("test1","test2")') == {'drilldown_search': 'key IN (test1,test2)'}
 
+
 @pytest.mark.parametrize('text, output', [
     ('', ['']),
     ('"",', ['"",']),
@@ -212,6 +213,7 @@ def test_raw_to_dict():
 ])
 def test_quote_group(text, output):
     assert sorted(splunk.quote_group(text)) == sorted(output)
+
 
 data_test_replace_keys = [
     ({}, {}),
