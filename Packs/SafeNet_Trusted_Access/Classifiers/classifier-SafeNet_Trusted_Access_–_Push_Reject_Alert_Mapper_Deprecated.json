@@ -1,5 +1,5 @@
 {
-    "description": "Maps incoming SafeNet Trusted Access alert fields.",
+    "description": "Maps incoming SafeNet Trusted Access push reject alert fields.",
     "feed": false,
     "id": "SafeNet Trusted Access – Push Reject Alert Mapper",
     "mapping": {

@@ -1,5 +1,5 @@
 {
-    "description": "Classifies SafeNet Trusted Access alerts.",
+    "description": "Classifies SafeNet Trusted Access push reject alerts.",
     "feed": false,
     "id": "SafeNet Trusted Access – Push Reject Alert Classifier",
     "keyTypeMap": {
