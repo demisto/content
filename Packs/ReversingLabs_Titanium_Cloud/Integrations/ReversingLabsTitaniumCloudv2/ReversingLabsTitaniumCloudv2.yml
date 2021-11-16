@@ -399,7 +399,7 @@ script:
     - contextPath: ReversingLabs.certificate_analytics
       description: ''
       type: Unknown
-  dockerimage: demisto/reversinglabs-sdk-py3:1.1.0.19488
+  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.23997
   feed: false
   isfetch: false
   longRunning: false

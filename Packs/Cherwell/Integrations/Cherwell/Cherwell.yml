@@ -516,7 +516,106 @@ script:
     - contextPath: Cherwell.BusinessObjectInfo.BusinessObjectName
       description: Business object name.
       type: String
-  dockerimage: demisto/python3:3.9.7.24076
+  - arguments:
+    - default: false
+      description: The name of the business object.
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - default: false
+      description: The ID of the business object.
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    deprecated: false
+    description: Get a business object summary by name or ID.
+    execution: false
+    name: cherwell-get-business-object-summary
+    outputs:
+    - contextPath: Cherwell.BusinessObjectSummary.supporting
+      description: Whether the business object is a supporting business object or not.
+      type: Boolean
+    - contextPath: Cherwell.BusinessObjectSummary.major
+      description: Whether the business object is a major business object or not.
+      type: Boolean
+    - contextPath: Cherwell.BusinessObjectSummary.group
+      description: Whether the business object is a group business object or not.
+      type: Boolean
+    - contextPath: Cherwell.BusinessObjectSummary.name
+      description: The name of the business object.
+      type: String
+    - contextPath: Cherwell.BusinessObjectSummary.stateFieldId
+      description: The ID of the business object state field.
+      type: String
+    - contextPath: Cherwell.BusinessObjectSummary.busObId
+      description: The ID of the business object.
+      type: String
+    - contextPath: Cherwell.BusinessObjectSummary.states
+      description: The valid states of the business object.
+      type: String
+    - contextPath: Cherwell.BusinessObjectSummary.lookup
+      description: Whether the object is a lookup object or not.
+      type: Boolean
+    - contextPath: Cherwell.BusinessObjectSummary.displayName
+      description: The display name of the business object.
+      type: String
+    - contextPath: Cherwell.BusinessObjectSummary.firstRecIdField
+      description: The ID value of the first business object record ID (RecID) field.
+      type: String
+    - contextPath: Cherwell.BusinessObjectSummary.recIdFields
+      description: The IDs of business object record ID (RecID) fields.
+      type: String
+  - arguments:
+    - default: false
+      description: The ID of the business object.
+      isArray: false
+      name: busobjectid
+      required: true
+      secret: false
+    deprecated: false
+    description: Get One-Step Actions by business object ID.
+    execution: false
+    name: cherwell-get-one-step-actions-for-business-object
+    outputs:
+    - contextPath: Cherwell.OneStepActions.BusinessObjectId
+      description: The ID of the business object.
+      type: String
+    - contextPath: Cherwell.OneStepActions.Actions
+      description: The business object actions.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The ID of the business object.
+      isArray: false
+      name: busobjectid
+      required: true
+      secret: false
+    - default: false
+      description: The ID of the business object record.
+      isArray: false
+      name: busobrecid
+      required: true
+      secret: false
+    - default: false
+      description: The key to find the One-Step Action to run. You can get it using the command cherwell-get-one-step-actions-for-business-object.
+      isArray: false
+      name: oneStepAction_StandInKey
+      required: true
+      secret: false
+    - default: false
+      description: Additional information to run the action in JSON format.
+      isArray: false
+      name: prompt_values
+      required: true
+      secret: false
+    deprecated: false
+    description: Run a One-Step Action using a OneStepActionRequest. This request is used to start a One-Step Action run with additional information, such as prompt values.
+    execution: false
+    name: cherwell-run-one-step-action-on-business-object
+    outputs: []
+  dockerimage: demisto/python3:3.9.8.24399
   isfetch: true
   runonce: false
   script: '-'

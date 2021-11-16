@@ -1,2 +1,5 @@
 [file:Cherwell.yml]
 ignore=IN126
+
+[file:README.md]
+ignore=RM106

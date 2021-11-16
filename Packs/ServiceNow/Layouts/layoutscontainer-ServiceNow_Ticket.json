@@ -394,6 +394,15 @@
         "index": 4,
         "sectionItemType": "field",
         "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "servicenowticketid",
+        "height": 22,
+        "id": "270d2b40-34a7-11ec-909f-631d034070e5",
+        "index": 6,
+        "sectionItemType": "field",
+        "startCol": 0
        }
       ],
       "maxH": null,
@@ -413,7 +422,7 @@
    {
     "hidden": false,
     "id": "yyrfzsc55n",
-    "name": "ServieNow Ticket",
+    "name": "ServiceNow Ticket",
     "sections": [
      {
       "displayType": "ROW",

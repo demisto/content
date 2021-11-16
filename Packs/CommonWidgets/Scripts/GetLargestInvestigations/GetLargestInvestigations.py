@@ -88,6 +88,13 @@ def main():
     try:
         investigations: Dict = {}
         args: Dict = demisto.args()
+        if is_demisto_version_ge("6.2.0"):
+            deprecate_msg = "Warning: This script has been deprecated. Please checkout the System Diagnostic page " \
+                            "for an alternative."
+            if not argToBoolean(args.get('ignore_deprecated')):
+                raise DemistoException(deprecate_msg)
+            else:
+                demisto.info(deprecate_msg)
         from_date = args.get('from')
         is_table_result = args.get('table_result') == 'true'
         if not get_time_object(from_date, empty_res_as_now=False):
@@ -102,6 +109,8 @@ def main():
             # change result to MD
             result = tableToMarkdown('Largest Incidents by Storage Size', result.get("data"),
                                      headers=["IncidentID", "Size(MB)", "AmountOfEntries", "Date"])
+        if not result:
+            result = "No incidents found. Note: only incidents larger than 1MB are scanned."
         demisto.results(result)
     except Exception:
         demisto.error(traceback.format_exc())  # print the traceback
