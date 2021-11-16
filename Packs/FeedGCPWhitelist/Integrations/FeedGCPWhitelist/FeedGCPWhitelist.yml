@@ -84,7 +84,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Deprecated. Use Google IP Ranges Feed instead.
+description: Deprecated. Use the Google IP Ranges Feed integration instead.
 display: GCP Whitelist Feed (Deprecated)
 name: GCP Whitelist Feed
 script:
