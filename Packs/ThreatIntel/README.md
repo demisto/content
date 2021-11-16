@@ -9,17 +9,17 @@ This pack lets you:
 
 The pack comes with 5 out-of-the-box report layouts for easier use:
 1. Executive Brief
-2. Campaign
-3. Threat Actor
-4. Malware
-5. Vulnerability
+2. Campaign Report
+3. Threat actor report
+4. Malware Report
+5. Vulnerability Report
 
 You can also add relationships between reports and indicators to add additional data to the report. Markdown is supported in the report body, allowing you to add formatting such as tables, images, and font/background color.
 
-Executive Brief report
+Executive brief report
 ![Layout](https://raw.githubusercontent.com/demisto/content/db59767bf57ba1f2e1306f4a593f2c1b014d4e0c/Packs/ThreatIntel/doc_files/executive_brief.png)
 
-Threat Actor report
+Threat actor report
 ![Layout](https://raw.githubusercontent.com/demisto/content/db59767bf57ba1f2e1306f4a593f2c1b014d4e0c/Packs/ThreatIntel/doc_files/threat_actor.png)
 
 Malware report
