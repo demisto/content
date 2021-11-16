@@ -5038,7 +5038,8 @@
         "GitHub": "Cannot use proxy",
         "LogRhythm": "Cannot use proxy",
         "Create-Mock-Feed-Relationships": "recording is redundant for this integration",
-        "RSA Archer v2": "cannot connect to proxy"
+        "RSA Archer v2": "cannot connect to proxy",
+        "Anomali ThreatStream v3": "recording is not working"
     },
     "parallel_integrations": [
         "AWS - EC2",
