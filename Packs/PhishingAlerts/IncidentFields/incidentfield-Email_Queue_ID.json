@@ -2,7 +2,8 @@
     "associatedToAll": false,
     "associatedTypes": [
         "FireEye EX Alert",
-        "Phishing Alerts"
+        "Phishing Alerts",
+        "Phishing"
     ],
     "caseInsensitive": true,
     "cliName": "emailqueueid",
