@@ -5324,8 +5324,7 @@ Execute a search query on the LogRhythm log database.
 | LogRhythm.Search.TaskId | String | The task ID returned from the database for the current search. This is actually the search GUID. | 
 | LogRhythm.Search.StatusMessage | String | The task status returned from the database for the current search. | 
 | LogRhythm.Search.SearchName | String | The name of the search query in Cortex XSOAR. | 
-| LogRhythm.Search.Results.TaskStatus | String | Task status. | 
-| LogRhythm.Search.Results.TaskID | String | Task ID. | 
+| LogRhythm.Search.TaskStatus | String | Task status. | 
 | LogRhythm.Search.Results.originEntityId | Number | Entity ID. | 
 | LogRhythm.Search.Results.impactedIp | String | Impacted IP address. | 
 | LogRhythm.Search.Results.classificationTypeName | String | Classification name. | 
@@ -5386,8 +5385,8 @@ Get the search query result for the specified task ID. The task ID can be retrie
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| LogRhythm.Search.Results.TaskStatus | String | Task status. | 
-| LogRhythm.Search.Results.TaskID | String | Task ID. | 
+| LogRhythm.Search.TaskStatus | String | Task status. | 
+| LogRhythm.Search.TaskId | String | Task ID. | 
 | LogRhythm.Search.Results.originEntityId | Number | Entity ID. | 
 | LogRhythm.Search.Results.impactedIp | String | Impacted IP address. | 
 | LogRhythm.Search.Results.classificationTypeName | String | Classification name. | 
@@ -5831,7 +5830,7 @@ Get the search query result for the specified task ID. The task ID can be retrie
                         "vendorMessageId": "000002"
                     }
                 ],
-                "TaskID": "88e1a446-b49d-4197-b599-26d4b3d1d1ac",
+                "TaskId": "88e1a446-b49d-4197-b599-26d4b3d1d1ac",
                 "TaskStatus": "Completed: All Results"
             }
         }

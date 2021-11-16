@@ -116,7 +116,7 @@ script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   isfetch: true
   commands:
   - name: lr-alarms-list
@@ -3710,9 +3710,6 @@ script:
       description: 'The name of the search query in Cortex XSOAR.'
     - contextPath: LogRhythm.Search.TaskStatus
       description: 'Task status.'
-      type: String
-    - contextPath: LogRhythm.Search.TaskId
-      description: 'Task ID.'
       type: String
     - contextPath: LogRhythm.Search.Results.originEntityId
       description: 'Entity ID.'
