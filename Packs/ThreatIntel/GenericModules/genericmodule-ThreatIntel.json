@@ -16,6 +16,9 @@
                 {
                     "name": "Threat Intel Reports",
                     "newButtonDefinitionId": "ThreatIntelReport",
+                    "tableView": true,
+                    "tableViewWidgetGroups": ["type", "reportstatus", "trafficlightprotocol", "dbotCreatedBy"],
+                    "tableViewColumns": ["id", "name", "reportstatus", "creator", "trafficlightprotocol", "created", "tags"],
                     "dashboard": {
                         "id": "Threat Intel Dashboard",
                         "version": -1,
