@@ -8,6 +8,7 @@
     "email": "",
     "categories": [],
     "tags": [],
+    "itemPrefix": ["FireEye"],
     "useCases": [],
     "keywords": [],
     "dependencies": {
