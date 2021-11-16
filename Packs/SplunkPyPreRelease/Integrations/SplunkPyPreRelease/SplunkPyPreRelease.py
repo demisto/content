@@ -156,7 +156,7 @@ def remove_old_incident_ids(last_run_fetched_ids, start_time_query, end_time_que
     for incident in last_run_fetched_ids.keys():
         end_time_query_datetime = datetime.strptime(end_time_query, SPLUNK_TIME_FORMAT)
         start_time_query_datetime = datetime.strptime(start_time_query, SPLUNK_TIME_FORMAT)
-        if end_time_query_datetime > last_run_fetched_ids[incident] >= start_time_query_datetime:
+        if end_time_query_datetime > datetime.strptime(last_run_fetched_ids[incident], SPLUNK_TIME_FORMAT) >= start_time_query_datetime:
             # query time range is [start_time_query, end_time_query)
             new_last_run_fetched_ids[incident] = last_run_fetched_ids[incident]
     return new_last_run_fetched_ids
@@ -278,7 +278,7 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
         incident_id = create_incident_custom_id(inc)
 
         if incident_id not in last_run_fetched_ids:
-            incident_ids_to_add[incident_id] = splunk_time_to_datetime(inc["occurred"])  # Save the occurrence time of each event in datetime format
+            incident_ids_to_add[incident_id] = splunk_time_to_datetime(inc["occurred"]).strftime(SPLUNK_TIME_FORMAT)  # Save the occurrence time of each event in datetime format
             incidents.append(inc)
             notables.append(notable_incident)
         else:
