@@ -1339,58 +1339,239 @@ def test_fetch_incidents_incident_next_run_calculation(mocker):
     assert next_run_time == found_incident_time
 
 
-def test_exceeded_limit_with_delay_indexed_events(mocker):
-    """
-    Given:
-    - Look behind 2 hours, fetch every minute, limit is 1
-    - Fetch 12:00-14:00 return 1 events, first returned event was on 13:00
-    - Fetch 12:01-14:01 return 2 events. 1 event from 12:10 index between the last fetch to the current + 1 event (previous event)
-    returned on the previous fetch
-    When:
-    - Fetch returned number of event that exceeded the limit
-    Then:
-    - All the 51 events in two following fetches.
-    """
-    from test_data.splunk_response import response_14, response_14_1
-
-    from SplunkPyPreRelease import splunk_time_to_datetime
-
+def mock_fetch_notables(mocker, demisto_params):
     splunk.ENABLED_ENRICHMENTS = []
     mocker.patch.object(demisto, 'incidents')
     mocker.patch.object(demisto, 'setLastRun')
-    mock_dt = mocker.patch('SplunkPyPreRelease.datetime', wraps=datetime)
-    mock_dt.utcnow.return_value = datetime(2020, 8, 24, 14, 00, 12, 703618)
     service = mocker.patch('splunklib.client.connect', return_value=None)
     mocker.patch('demistomock.params',
-                 return_value={'fetchQuery': "something", 'enabled_enrichments': [],
-                               'occurrence_look_behind': 120})
+                 return_value=demisto_params)
     mocker.patch('demistomock.getLastRun', return_value={'time': '2020-08-24T13:59:00'})
-    mocker.patch('splunklib.results.ResultsReader', return_value=response_14)
+    date_time_mocker = mocker.patch('SplunkPyPreRelease.datetime', wraps=datetime)
 
+    return service, date_time_mocker
+
+
+response_two_events = [{
+    '_bkt': 'notable~668~66D21DF4-F4FD-4886-A986-82E72ADCBFE9',
+    '_cd': '668:17198',
+    '_indextime': '1596545116',
+    '_raw': '1596545116, search_name="Endpoint - Recurring Malware Infection - Rule", count="17", '
+            'day_count="8", dest="ACME-workstation-012", info_max_time="1596545100.000000000", '
+            'info_min_time="1595939700.000000000", info_search_time="1596545113.965466000", '
+            'signature="Trojan.Gen.2"',
+    '_serial': '50',
+    '_si': ['ip-172-31-44-193', 'notable'],
+    '_sourcetype': 'stash',
+    '_time': '2020-08-24T12:10:17.000-07:00',
+    'dest': 'ACME-workstation-012',
+    'dest_asset_id': '028877d3c80cb9d87900eb4f9c9601ea993d9b63',
+    'dest_asset_tag': ['cardholder', 'pci', 'americas'],
+    'dest_bunit': 'americas',
+    'dest_category': ['cardholder', 'pci'],
+    'dest_city': 'Pleasanton',
+    'dest_country': 'USA',
+    'dest_ip': '192.168.3.12',
+    'dest_is_expected': 'TRUE',
+    'dest_lat': '37.694452',
+    'dest_long': '-121.894461',
+    'dest_nt_host': 'ACME-workstation-012',
+    'dest_pci_domain': ['trust', 'cardholder'],
+    'dest_priority': 'medium',
+    'dest_requires_av': 'TRUE',
+    'dest_risk_object_type': 'system',
+    'dest_risk_score': '15680',
+    'dest_should_timesync': 'TRUE',
+    'dest_should_update': 'TRUE',
+    'host': 'ip-172-31-44-193',
+    'host_risk_object_type': 'system',
+    'host_risk_score': '0',
+    'index': 'notable',
+    'linecount': '1',
+    'priorities': 'medium',
+    'priority': 'medium',
+    'risk_score': '15680',
+    'rule_description': 'Endpoint - Recurring Malware Infection - Rule',
+    'rule_name': 'Endpoint - Recurring Malware Infection - Rule',
+    'rule_title': 'Endpoint - Recurring Malware Infection - Rule',
+    'security_domain': 'Endpoint - Recurring Malware Infection - Rule',
+    'severity': 'unknown',
+    'signature': 'Trojan.Gen.2',
+    'source': 'Endpoint - Recurring Malware Infection - Rule',
+    'sourcetype': 'stash',
+    'splunk_server': 'ip-172-31-44-193',
+    'urgency': 'low'
+}, {
+    '_bkt': 'notable~668~66D21DF4-F4FD-4886-A986-82E72ADCBFE9',
+    '_cd': '668:17198',
+    '_indextime': '1596545116',
+    '_raw': '1596545116, search_name="Endpoint - Recurring Malware Infection - Rule", count="17", '
+            'day_count="8", dest="ACME-workstation-012", info_max_time="1596545100.000000000", '
+            'info_min_time="1595939700.000000000", info_search_time="1596545113.965466000", '
+            'signature="Trojan.Gen.2"',
+    '_serial': '50',
+    '_si': ['ip-172-31-44-193', 'notable'],
+    '_sourcetype': 'stash',
+    '_time': '2020-08-24T13:30:17.000-07:00',
+    'dest': 'ACME-workstation-012',
+    'dest_asset_id': '028877d3c80cb9d87900eb4f9c9601ea993d9b63',
+    'dest_asset_tag': ['cardholder', 'pci', 'americas'],
+    'dest_bunit': 'americas',
+    'dest_category': ['cardholder', 'pci'],
+    'dest_city': 'Pleasanton',
+    'dest_country': 'USA',
+    'dest_ip': '192.168.3.12',
+    'dest_is_expected': 'TRUE',
+    'dest_lat': '37.694452',
+    'dest_long': '-121.894461',
+    'dest_nt_host': 'ACME-workstation-012',
+    'dest_pci_domain': ['trust', 'cardholder'],
+    'dest_priority': 'medium',
+    'dest_requires_av': 'TRUE',
+    'dest_risk_object_type': 'system',
+    'dest_risk_score': '15680',
+    'dest_should_timesync': 'TRUE',
+    'dest_should_update': 'TRUE',
+    'host': 'ip-172-31-44-193',
+    'host_risk_object_type': 'system',
+    'host_risk_score': '0',
+    'index': 'notable',
+    'linecount': '1',
+    'priorities': 'medium',
+    'priority': 'medium',
+    'risk_score': '15680',
+    'rule_description': 'Endpoint - Recurring Malware Infection - Rule',
+    'rule_name': 'Endpoint - Recurring Malware Infection - Rule',
+    'rule_title': 'Endpoint - Recurring Malware Infection - Rule',
+    'security_domain': 'Endpoint - Recurring Malware Infection - Rule',
+    'severity': 'unknown',
+    'signature': 'Trojan.Gen.2',
+    'source': 'Endpoint - Recurring Malware Infection - Rule',
+    'sourcetype': 'stash',
+    'splunk_server': 'ip-172-31-44-193',
+    'urgency': 'low'
+}]
+
+
+def test_increase_batch_size(mocker):
+    """
+    Given:
+    - batch_size is 2
+    When:
+    - length of last_run_fetched_ids is reaching the batch_size
+    Then:
+    - batch_size is doubled in order to fetch next time new events.
+    """
+    batch_size = 2
+    service, mock_dt = mock_fetch_notables(mocker, demisto_params={'fetchQuery': "something", 'enabled_enrichments': [],
+                               'occurrence_look_behind': 120, "batch_size": batch_size})
+    mocker.patch('splunklib.results.ResultsReader', return_value=response_two_events)
     splunk.fetch_notables(service)
     next_run = demisto.setLastRun.call_args[0][0]
-    incidents = demisto.incidents.call_args[0][0]
-    incident_found = incidents[0]
-    found_incident_time = splunk_time_to_datetime(incident_found['occurred'])
-    next_run_time = datetime.strptime(next_run["time"], SPLUNK_TIME_FORMAT)
-    assert next_run_time == found_incident_time
+    assert next_run.get('batch_size') == batch_size * 2
+
+
+def test_delayed_index_events(mocker):
+    """
+    Given:
+    - "Next run" dictionary from the last fetch contains 2 event
+    When:
+    - 2 events found when fetching, one of them already seen on the last fetch
+    Then:
+    - Return 1 new incident, and next run dict will contain now the 2 fetched events - one from last fetch and
+    one from current fetch
+    """
+    from SplunkPyPreRelease import splunk_time_to_datetime
+
+    service, mock_dt = mock_fetch_notables(mocker, demisto_params={'fetchQuery': "something", 'enabled_enrichments': [],
+                               'occurrence_look_behind': 120})
+    next_run = {'found_incidents_ids': {'a74cabaebb6fae0db6e52e290574398d': datetime(2020, 8, 24, 13, 30, 17)},
+                'batch_size': 200, 'time': '2020-08-24T13:30:17'}
     mocker.patch('demistomock.getLastRun', return_value=next_run)
-    mocker.patch('splunklib.results.ResultsReader', return_value=response_14_1)
+    mocker.patch('splunklib.results.ResultsReader', return_value=response_two_events)
     mock_dt.utcnow.return_value = datetime(2020, 8, 24, 14, 01, 12, 703618)
 
     splunk.fetch_notables(service)
     next_run = demisto.setLastRun.call_args[0][0]
     incidents = demisto.incidents.call_args[0][0]
-    last_incident_found = incidents[0]
-    found_incident_time = splunk_time_to_datetime(last_incident_found['occurred'])
+    found_incident_time = splunk_time_to_datetime(incidents[0]['occurred'])
     next_run_time = datetime.strptime(next_run["time"], SPLUNK_TIME_FORMAT)
     assert next_run_time == found_incident_time
     assert len(incidents) == 1
+    assert len(next_run.get('found_incidents_ids')) == 2
     assert next_run["batch_size"] == 200
 
 
-def test_increase_batch_size(mocker):
-    from test_data.splunk_response import response_14_1
-    mocker.patch('demistomock.params',
-                 return_value={'fetchQuery': "something", 'enabled_enrichments': [],
-                               'occurrence_look_behind': 120})
+def test_no_incident_returned(mocker):
+    """
+    Given:
+    - 0 incident found
+    When:
+    - the end of the fetch set the time for the next run
+    Then:
+    - next run time will be the time the current fetch started
+    """
+    service, mock_dt = mock_fetch_notables(mocker, demisto_params={'fetchQuery': "something", 'enabled_enrichments': [],
+                                                                   'occurrence_look_behind': 15})
+    next_run = {'found_incidents_ids': {'a74cabaebb6fae0db6e52e290574398d': datetime(2020, 8, 24, 13, 30, 17)},
+                'batch_size': 200, 'time': '2020-08-24T13:45:17'}
+    now = datetime(2020, 8, 24, 14, 00, 12, 703618)
+    mock_dt.utcnow.return_value = now
+    mocker.patch('demistomock.getLastRun', return_value=next_run)
+    mocker.patch('splunklib.results.ResultsReader', return_value={})
+
+    splunk.fetch_notables(service)
+    next_run = demisto.setLastRun.call_args[0][0]
+    assert next_run["time"] == now.strftime(SPLUNK_TIME_FORMAT)
+
+
+def test_incident_exceeded_limit(mocker):
+    """
+    Given:
+    - Splunk query return 2 incidents, where FETCH_LIMIT is 1
+    When:
+    - read all returned event
+    Then:
+    - Number of incidents returned are as the FETCH_LIMIT and next run time will be the time of the last returned event
+    """
+    from SplunkPyPreRelease import splunk_time_to_datetime
+    splunk.FETCH_LIMIT = 1
+    service, mock_dt = mock_fetch_notables(mocker, demisto_params={'fetchQuery': "something", 'enabled_enrichments': [],
+                                                                   'occurrence_look_behind': 15})
+    next_run = {'found_incidents_ids': {'a74cabaebb6fae0db6e52e290574398d': datetime(2020, 8, 24, 13, 30, 17)},
+                'batch_size': 200, 'time': '2020-08-24T13:45:17'}
+    now = datetime(2020, 8, 24, 14, 00, 12, 703618)
+    mock_dt.utcnow.return_value = now
+    mocker.patch('demistomock.getLastRun', return_value=next_run)
+    mocker.patch('splunklib.results.ResultsReader', return_value=response_two_events)
+    splunk.fetch_notables(service)
+    next_run = demisto.setLastRun.call_args[0][0]
+    incidents = demisto.incidents.call_args[0][0]
+    assert len(incidents) == 1
+    found_incident_time = splunk_time_to_datetime(incidents[0]['occurred'])
+    next_run_time = datetime.strptime(next_run["time"], SPLUNK_TIME_FORMAT)
+    assert next_run_time == found_incident_time
+
+
+def test_get_fetch_start_time(mocker):
+    """
+    Given:
+    - last run time set to the last event seen at the previous fetch
+    - occurred_look_behind is 120 minutes
+    When:
+    - occurred_look_behind is greater than the time past since the last event
+    Then:
+    - occurred_look_behind is considered and fetch start time is now minus 120 min
+    """
+    from SplunkPyPreRelease import get_fetch_start_times
+    mock_dt = mocker.patch('SplunkPyPreRelease.datetime', wraps=datetime)
+    utc_now = datetime(2020, 8, 24, 14, 00, 12, 703618)
+    expected_start_time = datetime(2020, 8, 24, 12, 00, 12, 703618)
+    mock_dt.utcnow.return_value = utc_now
+    dem_params = {'fetchQuery': "something", 'enabled_enrichments': [],
+                               'occurrence_look_behind': 120}
+    service = mocker.patch('splunklib.client.connect', return_value=None)
+    last_run_time = '2020-08-24T13:45:17'
+    occurred_look_behind = 120
+    occurred_start_time, now = get_fetch_start_times(dem_params, service, last_run_time, occurred_look_behind)
+    assert occurred_start_time == datetime.strftime(expected_start_time, SPLUNK_TIME_FORMAT)
