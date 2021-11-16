@@ -2164,8 +2164,10 @@ def execute_search_query_command(client: Client, args: Dict[str, Any]) -> Comman
                                                    query_timeout, entity_id)
     task_id = response.get('TaskId')
     ec = {'TaskId': task_id, 'StatusMessage': response.get('StatusMessage')}
-    if search_name:
-        ec['SearchName'] = search_name
+
+    if not search_name:
+        search_name = f'LogRhythm search {datetime.now()}'
+    ec['SearchName'] = search_name
 
     if not is_demisto_version_ge('6.2.0'):  # only 6.2.0 version and above support polling command.
         return CommandResults(
@@ -2186,7 +2188,9 @@ def execute_search_query_command(client: Client, args: Dict[str, Any]) -> Comman
     else:
         hr = f'Task status: {status}'
 
-    ec = [{'TaskId': task_id, 'TaskStatus': status, 'Results': items}]
+    ec['TaskId'] = task_id
+    ec['TaskStatus'] = status
+    ec['Results'] = items
 
     command_results = CommandResults(
         readable_output=hr,
