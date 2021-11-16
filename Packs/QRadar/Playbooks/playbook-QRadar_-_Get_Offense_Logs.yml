@@ -860,8 +860,7 @@ inputs:
       UTF8(payload), starttime, devicetime
   required: false
   description: |-
-    A comma-separated list of extra fields to get from each event.
-   You can use different fields or rename the existing fields.
+    A comma-separated list of extra fields to get from each event. You can use different fields or rename the existing fields.
   playbookInputQuery:
 outputs:
 - contextPath: QRadar
