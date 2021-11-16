@@ -74,7 +74,6 @@ MAX_LIMIT_TIME: int
 PAGINATED_COUNT: int
 ENABLE_DM: bool
 PERMITTED_NOTIFICATION_TYPES: List[str]
-LONG_RUNNING_ENABLED: bool
 
 
 ''' HELPER FUNCTIONS '''
@@ -2057,21 +2056,17 @@ def long_running_main():
     """
     Starts the long running thread.
     """
-    if LONG_RUNNING_ENABLED:
+    try:
+        asyncio.run(start_listening(), debug=True)
+    except Exception as e:
+        demisto.error(f"The Loop has failed to run {str(e)}")
+    finally:
+        loop = asyncio.get_running_loop()
         try:
-            asyncio.run(start_listening(), debug=True)
-        except Exception as e:
-            demisto.error(f"The Loop has failed to run {str(e)}")
-        finally:
-            loop = asyncio.get_running_loop()
-            try:
-                loop.stop()
-                loop.close()
-            except Exception as e_:
-                demisto.error(f'Failed to gracefully close the loop - {e_}')
-    else:
-        while True:
-            time.sleep(600)
+            loop.stop()
+            loop.close()
+        except Exception as e_:
+            demisto.error(f'Failed to gracefully close the loop - {e_}')
 
 
 def init_globals(command_name: str = ''):
@@ -2081,7 +2076,7 @@ def init_globals(command_name: str = ''):
     global BOT_TOKEN, PROXY_URL, PROXIES, DEDICATED_CHANNEL, CLIENT
     global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, INCIDENT_TYPE, VERIFY_CERT, ENABLE_DM
     global BOT_NAME, BOT_ICON_URL, MAX_LIMIT_TIME, PAGINATED_COUNT, SSL_CONTEXT, APP_TOKEN, ASYNC_CLIENT
-    global PERMITTED_NOTIFICATION_TYPES, LONG_RUNNING_ENABLED
+    global PERMITTED_NOTIFICATION_TYPES
 
     VERIFY_CERT = not demisto.params().get('unsecure', False)
     if not VERIFY_CERT:
@@ -2114,7 +2109,6 @@ def init_globals(command_name: str = ''):
     PAGINATED_COUNT = int(demisto.params().get('paginated_count', '200'))
     ENABLE_DM = demisto.params().get('enable_dm', True)
     PERMITTED_NOTIFICATION_TYPES = demisto.params().get('permitted_notifications', [])
-    LONG_RUNNING_ENABLED = demisto.params().get('enable_long_running', True)
 
 
 def print_thread_dump():
