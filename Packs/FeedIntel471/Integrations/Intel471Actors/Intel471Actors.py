@@ -21,7 +21,7 @@ MAPPING = {
     'links_instantMessageTotalCount': 'intel471instantmessagetotalcount',
 }
 DEMISTO_VERSION = demisto.demistoVersion()
-CONTENT_PACK = 'Intel471 Feed/2.0.4'
+CONTENT_PACK = 'Intel471 Feed/2.0.6'
 INTEGRATION = 'Intel471 Actors Feed'
 USER_AGENT = f'XSOAR/{DEMISTO_VERSION["version"]}.{DEMISTO_VERSION["buildNumber"]} - {CONTENT_PACK} - {INTEGRATION}'
 
@@ -112,7 +112,8 @@ def custom_build_iterator(client: Client, feed: Dict, limit: int = 0, **kwargs) 
 def custom_handle_indicator(client: Client, item: Dict, feed_config: Dict, service_name: str,
                             indicator_type: str, indicator_field: str, use_prefix_flat: bool,
                             feedTags: list, auto_detect: bool,
-                            mapping_function: Callable) -> List[dict]:
+                            mapping_function: Callable, create_relationships: bool,  # noqa: F841
+                            relationships_func: Callable) -> List[dict]:  # noqa: F841
     """
     This function adds indicators to indicator lists after specific manipulation.
     :param client: Client (from JsonFeedApiModule
@@ -126,6 +127,8 @@ def custom_handle_indicator(client: Client, item: Dict, feed_config: Dict, servi
     :param auto_detect: bool. Whether to use auto detect. Not in used in customized indicator handler,
     :param indicator_list: list of indicators to add indicator created from item to.
     :param mapping_function: Callable function to match json fields to demisto fields.
+    :param create_relationships: bool. Whether to create relationships.
+    :param relationships_func: Callable function to handle relationships.
     """
     indicator_list = []
     mapping = feed_config.get('mapping')
