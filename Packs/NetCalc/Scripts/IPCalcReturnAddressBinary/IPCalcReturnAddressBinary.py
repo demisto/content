@@ -3,25 +3,22 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-import ipcalc
+import ipaddress
 import traceback
 
 
 ''' COMMAND FUNCTION '''
 
 
-def return_subnet_binary_command(args: Dict[str, Any]) -> CommandResults:
+def return_address_binary_command(args: Dict[str, Any]) -> CommandResults:
 
-    subnet = args.get('subnet', None)
+    ip_address = args.get('ip_address', None)
 
-    if not subnet:
-        raise ValueError('subnet not specified')
-
-    subnet_binary = str(ipcalc.Network(subnet).bin())
+    ip_binary = str(ipaddress.ip_address(ip_address).__format__('b'))
 
     binary_object = {
-        "subnet": subnet,
-        "binary": subnet_binary
+        "address": ip_address,
+        "binary": ip_binary
     }
 
     readable_output = tableToMarkdown(t=binary_object, name='Subnet Binary')
@@ -39,7 +36,7 @@ def return_subnet_binary_command(args: Dict[str, Any]) -> CommandResults:
 
 def main():
     try:
-        return_results(return_subnet_binary_command(demisto.args()))
+        return_results(return_address_binary_command(demisto.args()))
     except Exception as ex:
         demisto.error(traceback.format_exc())
         return_error(f'Failed to execute IPCalcReturnSubnetBinary. Error: {str(ex)}')

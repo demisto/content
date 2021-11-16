@@ -1,4 +1,4 @@
-An Automation Script to return subnet in binary format
+An automation script to return address in binary format
 
 ## Script Data
 ---
@@ -14,7 +14,7 @@ An Automation Script to return subnet in binary format
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| subnet | Subnet to use |
+| ip_address | Address to use |
 
 ## Outputs
 ---
@@ -22,11 +22,11 @@ An Automation Script to return subnet in binary format
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | IPCalc.IP.Binary.binary | Subnet binary | String |
-| IPCalc.IP.Binary.subnet | Subnet address | String |
+| IPCalc.IP.Binary.address | IP address | String |
 
 
 ## Script Example
-```!IPCalcReturnSubnetBinary subnet=192.168.10.10/24```
+```!IPCalcReturnAddressBinary ip_address=192.158.2.2```
 
 ## Context Example
 ```json
@@ -34,8 +34,8 @@ An Automation Script to return subnet in binary format
     "IPCalc": {
         "IP": {
             "Binary": {
-                "binary": "11000000101010000000101000001010",
-                "subnet": "192.168.10.10/24"
+                "address": "192.158.2.2",
+                "binary": "11000000100111100000001000000010"
             }
         }
     }
@@ -45,7 +45,7 @@ An Automation Script to return subnet in binary format
 ## Human Readable Output
 
 >### Subnet Binary
->|binary|subnet|
+>|address|binary|
 >|---|---|
->| 11000000101010000000101000001010 | 192.168.10.10/24 |
+>| 192.158.2.2 | 11000000100111100000001000000010 |
 

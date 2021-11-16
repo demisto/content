@@ -18,11 +18,9 @@ outputs:
 script: '-'
 subtype: python3
 system: false
-tags:
-- ''
 timeout: '0'
 type: python
-dockerimage: aymanam/ipcalc:latest
-fromversion: '6.0.0'
+dockerimage: demisto/python3:3.9.8.24399
 tests:
 - No tests
+fromversion: 6.0.0

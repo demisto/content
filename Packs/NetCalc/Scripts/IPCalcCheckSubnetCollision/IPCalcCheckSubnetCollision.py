@@ -3,7 +3,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-import ipcalc
+import ipaddress
 import traceback
 
 
@@ -12,17 +12,14 @@ import traceback
 
 def return_check_collision_command(args: Dict[str, Any]) -> CommandResults:
 
-    subnet1 = args.get('subnet_one', None)
-    subnet2 = args.get('subnet_two', None)
+    subnet1 = ipaddress.IPv4Network(args.get('subnet_one', None), strict=False)
+    subnet2 = ipaddress.IPv4Network(args.get('subnet_two', None), strict=False)
 
-    if not subnet1 or not subnet2:
-        raise ValueError('Collision subnets are not specified')
-
-    collision_result = str(ipcalc.Network(subnet1).check_collision(subnet2))
+    collision_result = subnet1.overlaps(subnet2)
 
     collision_object = {
-        "subnet1": subnet1,
-        "subnet2": subnet2,
+        "subnet1": format(subnet1),
+        "subnet2": format(subnet2),
         "collision": collision_result
     }
 

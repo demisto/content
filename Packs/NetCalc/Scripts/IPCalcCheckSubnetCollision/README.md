@@ -1,4 +1,4 @@
-An Automation Script to return subnet collision address
+An automation script to return subnet collision result
 
 ## Script Data
 ---
@@ -28,7 +28,7 @@ An Automation Script to return subnet collision address
 
 
 ## Script Example
-```!IPCalcCheckSubnetCollision subnet_one=192.169.20.10/24 subnet_two=192.169.20.11```
+```!IPCalcCheckSubnetCollision subnet_one=192.169.20.10/28 subnet_two=192.169.20.11```
 
 ## Context Example
 ```json
@@ -36,9 +36,9 @@ An Automation Script to return subnet collision address
     "IPCalc": {
         "IP": {
             "Collision": {
-                "collision": "True",
-                "subnet1": "192.169.20.10/24",
-                "subnet2": "192.169.20.11"
+                "collision": true,
+                "subnet1": "192.169.20.0/28",
+                "subnet2": "192.169.20.11/32"
             }
         }
     }
@@ -50,5 +50,5 @@ An Automation Script to return subnet collision address
 >### Collision Check
 >|collision|subnet1|subnet2|
 >|---|---|---|
->| True | 192.169.20.10/24 | 192.169.20.11 |
+>| true | 192.169.20.0/28 | 192.169.20.11/32 |
 

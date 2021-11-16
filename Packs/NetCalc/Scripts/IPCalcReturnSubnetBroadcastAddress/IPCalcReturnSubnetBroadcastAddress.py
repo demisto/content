@@ -3,7 +3,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-import ipcalc
+import ipaddress
 import traceback
 
 
@@ -14,10 +14,7 @@ def return_subnet_broadcast_address_command(args: Dict[str, Any]) -> CommandResu
 
     subnet = args.get('subnet', None)
 
-    if not subnet:
-        raise ValueError('subnet not specified')
-
-    broadcast_address = str(ipcalc.Network(subnet).broadcast())
+    broadcast_address = format(ipaddress.IPv4Network(subnet, strict=False).broadcast_address)
 
     readable_output = tableToMarkdown(headers='Address:', t=broadcast_address, name='Broadcast Address')
 

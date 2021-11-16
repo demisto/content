@@ -1,4 +1,4 @@
-An Automation Script to return subnet IANA information
+An automation script to return address IANA information
 
 ## Script Data
 ---
@@ -14,7 +14,7 @@ An Automation Script to return subnet IANA information
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| subnet | Subnet to use |
+| ip_address | Address to use |
 
 ## Outputs
 ---
@@ -22,11 +22,11 @@ An Automation Script to return subnet IANA information
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | IPCalc.IP.Allocation.allocation | IANA IP allocation type | String |
-| IPCalc.IP.Allocation.subnet | Subnet | String |
+| IPCalc.IP.Allocation.address | Address | String |
 
 
 ## Script Example
-```!IPCalcReturnSubnetIANAAllocation subnet=192.168.10.10/15```
+```!IPCalcReturnAddressIANAAllocation ip_address=1.1.1.1```
 
 ## Context Example
 ```json
@@ -34,8 +34,8 @@ An Automation Script to return subnet IANA information
     "IPCalc": {
         "IP": {
             "Allocation": {
-                "allocation": "PRIVATE",
-                "subnet": "192.168.10.10/15"
+                "address": "1.1.1.1",
+                "allocation": "global"
             }
         }
     }
@@ -45,7 +45,7 @@ An Automation Script to return subnet IANA information
 ## Human Readable Output
 
 >### Iana Allocation
->|allocation|subnet|
+>|address|allocation|
 >|---|---|
->| PRIVATE | 192.168.10.10/15 |
+>| 1.1.1.1 | global |
 

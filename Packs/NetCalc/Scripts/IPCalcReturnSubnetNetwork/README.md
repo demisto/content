@@ -25,14 +25,14 @@ An Automation Script to return subnet network ID
 
 
 ## Script Example
-```!IPCalcReturnSubnetNetwork subnet=192.168.10.10/15```
+```!IPCalcReturnSubnetNetwork subnet=87.248.100.215/28```
 
 ## Context Example
 ```json
 {
     "IPCalc": {
         "IP": {
-            "Network": "192.168.0.0/15"
+            "Network": "87.248.100.208"
         }
     }
 }
@@ -43,5 +43,5 @@ An Automation Script to return subnet network ID
 >### Subnet Network
 >|Network:|
 >|---|
->| 192.168.0.0/15 |
+>| 87.248.100.208 |
 

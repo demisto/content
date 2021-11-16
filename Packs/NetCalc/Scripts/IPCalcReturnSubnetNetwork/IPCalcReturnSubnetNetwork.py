@@ -3,7 +3,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-import ipcalc
+import ipaddress
 import traceback
 
 
@@ -14,10 +14,7 @@ def return_subnet_network_command(args: Dict[str, Any]) -> CommandResults:
 
     subnet = args.get('subnet', None)
 
-    if not subnet:
-        raise ValueError('subnet not specified')
-
-    network = str(ipcalc.Network(subnet).guess_network())
+    network = format(ipaddress.IPv4Network(subnet, strict=False).network_address)
 
     readable_output = tableToMarkdown(headers='Network:', t=network, name='Subnet Network')
 

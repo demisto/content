@@ -11,7 +11,7 @@ args:
   name: subnet_two
   required: true
   secret: false
-comment: An Automation Script to return subnet collision address
+comment: An automation script to return subnet collision result
 commonfields:
   id: IPCalcCheckSubnetCollision
   version: -1
@@ -30,11 +30,9 @@ outputs:
 script: '-'
 subtype: python3
 system: false
-tags:
-- ''
 timeout: '0'
 type: python
-dockerimage: aymanam/ipcalc:latest
-fromversion: '6.0.0'
+dockerimage: demisto/python3:3.9.8.24399
 tests:
 - No tests
+fromversion: 6.0.0

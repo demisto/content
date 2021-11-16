@@ -3,7 +3,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-import ipcalc
+import ipaddress
 import traceback
 
 
@@ -13,11 +13,12 @@ import traceback
 def return_subnet_addresses_command(args: Dict[str, Any]) -> CommandResults:
 
     subnet = args.get('subnet', None)
+    address_objects = ipaddress.IPv4Network(subnet, strict=False).hosts()
 
     addresses = []
 
-    for x in ipcalc.Network(subnet):
-        addresses.append(str(x))
+    for address_object in address_objects:
+        addresses.append(format(address_object))
 
     readable_output = tableToMarkdown(headers='IP Addresses:', t=addresses, name='List Addresses')
 
