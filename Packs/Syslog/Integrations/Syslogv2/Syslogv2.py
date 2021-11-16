@@ -218,8 +218,8 @@ def perform_long_running_execution(sock: Any, address: tuple) -> None:
                 break
             perform_long_running_loop(line.strip())
         except Exception as e:
+            demisto.error(traceback.format_exc())  # print the traceback
             demisto.error(f'Error occurred during long running loop. Error was: {e}')
-            demisto.error(traceback.print_exc())
         finally:
             demisto.debug('Finished reading message')
     file_obj.close()
@@ -265,8 +265,8 @@ def prepare_globals_and_create_server(port: int, log_format: str, message_regex:
     return server
 
 
-def get_mapping_fields() -> dict[str, str]:
-    def transfer_type_to_str_type(type_):
+def get_mapping_fields() -> Dict[str, str]:
+    def transfer_type_to_str_type(type_: Any):
         type_as_str: str = str(type_)
         # remove typing from the type name
         type_as_str = type_as_str.replace('typing.', '')
@@ -287,7 +287,6 @@ def main() -> None:
     incident_type: Optional[str] = params.get('incident_type')
     certificate: Optional[str] = params.get('certificate')
     private_key: Optional[str] = params.get('private_key')
-    private_key_password: Optional[str] = params.get('private_key_password', {}).get('password')
 
     log_format: str = params.get('log_format', '')
     if log_format not in FORMAT_TO_PARSER_FUNCTION:
@@ -317,7 +316,7 @@ def main() -> None:
             fetch_samples()
         elif command == 'long-running-execution':
             server: StreamServer = prepare_globals_and_create_server(port, log_format, message_regex, incident_type,
-                                                                     certificate, private_key, private_key_password)
+                                                                     certificate, private_key)
             server.serve_forever()
         elif command == 'get-mapping-fields':
             return_results(get_mapping_fields())
