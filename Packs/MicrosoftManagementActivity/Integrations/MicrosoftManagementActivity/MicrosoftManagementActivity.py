@@ -96,24 +96,15 @@ class Client(BaseClient):
                                          token_retrieval_url='https://login.windows.net/common/oauth2/token',
                                          redirect_uri=redirect_uri)
 
-    def http_request(self, method, url_suffix='', full_url=None, headers=None, auth=None, json_data=None,
-                     params=None, data=None, files=None, timeout=None, resp_type='json', ok_codes=None,
-                     return_empty_response=False, retries=0, status_list_to_retry=None,
-                     backoff_factor=5, raise_on_redirect=False, raise_on_status=False,
-                     error_handler=None, empty_valid_codes=None, **kwargs):
+    def http_request(self, method, url_suffix='', full_url=None, headers=None, params=None, timeout=None, ok_codes=None,
+                     return_empty_response=False, **kwargs):
         """
         Calls the built in http_request, replacing a None timeout with self.timeout
         """
         if timeout is None:
             timeout = self.timeout
-        return self._http_request(method=method, url_suffix=url_suffix, full_url=full_url,
-                                  params=params, data=data, files=files, resp_type=resp_type, ok_codes=ok_codes,
-                                  headers=headers, auth=auth, json_data=json_data,
-                                  return_empty_response=return_empty_response, retries=retries,
-                                  status_list_to_retry=status_list_to_retry,
-                                  backoff_factor=backoff_factor, raise_on_redirect=raise_on_redirect,
-                                  raise_on_status=raise_on_status, error_handler=error_handler,
-                                  empty_valid_codes=empty_valid_codes,
+        return self._http_request(method=method, url_suffix=url_suffix, full_url=full_url, params=params,
+                                  ok_codes=ok_codes, headers=headers, return_empty_response=return_empty_response,
                                   timeout=timeout, **kwargs)
 
     def get_access_token_data(self):
