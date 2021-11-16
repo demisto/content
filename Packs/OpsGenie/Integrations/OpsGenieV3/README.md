@@ -12,8 +12,8 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Server URL (e.g. https://example.net) |  | True |
-    | Trust any certificate (not secure) |  | False |
+    | Server URL (e.g. https://api.opsgenie.com) |  | True |
+    | Trust any certificate (not secure) |  | True |
     | Use system proxy settings |  | False |
     | API Token | Must be created from the Teams API Integration section. | False |
     | Fetch incidents |  | False |
@@ -132,601 +132,53 @@ List the current alerts from OpsGenie.
 
 
 #### Command Example
-```!opsgenie-get-alerts```
+```!opsgenie-get-alerts limit=1```
+
+#### Context Example
+```json
+{
+    "OpsGenie": {
+        "Alert": [
+            {
+                "acknowledged": false,
+                "alias": "4d88678f-b9c9-46bd-b82e-953dd7eb4d2c-1637073149155",
+                "count": 1,
+                "createdAt": "2021-11-16T14:32:29.155Z",
+                "event_type": "Alerts",
+                "id": "4d88678f-b9c9-46bd-b82e-953dd7eb4d2c-1637073149155",
+                "integration": {
+                    "id": "3cc69931-167f-411c-a331-768997c29d2e",
+                    "name": "API",
+                    "type": "API"
+                },
+                "isSeen": false,
+                "lastOccurredAt": "2021-11-16T14:32:29.155Z",
+                "message": "Example Message",
+                "owner": "",
+                "ownerTeamId": "",
+                "priority": "P3",
+                "responders": [],
+                "seen": false,
+                "snoozed": false,
+                "source": "31.154.166.148",
+                "status": "open",
+                "tags": [],
+                "teams": [],
+                "tinyId": "92",
+                "updatedAt": "2021-11-16T14:32:29.245Z"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
->```
->{
->    "data": [
->        {
->            "acknowledged": false,
->            "alias": "3933647a-f679-49df-9172-7fec810f6dd1-1636985725204",
->            "count": 1,
->            "createdAt": "2021-11-15T14:15:25.204Z",
->            "event_type": "Alerts",
->            "id": "3933647a-f679-49df-9172-7fec810f6dd1-1636985725204",
->            "integration": {
->                "id": "3cc69931-167f-411c-a331-768997c29d2e",
->                "name": "API",
->                "type": "API"
->            },
->            "isSeen": false,
->            "lastOccurredAt": "2021-11-15T14:15:25.204Z",
->            "message": "Example Message",
->            "owner": "",
->            "ownerTeamId": "",
->            "priority": "P3",
->            "responders": [],
->            "seen": false,
->            "snoozed": false,
->            "source": "31.154.166.148",
->            "status": "open",
->            "tags": [],
->            "teams": [],
->            "tinyId": "81",
->            "updatedAt": "2021-11-15T14:15:25.276Z"
->        },
->        {
->            "acknowledged": false,
->            "alias": "873b45f3-de87-4fd3-9a2b-cd927ea81c74-1636985621569",
->            "count": 1,
->            "createdAt": "2021-11-15T14:13:41.569Z",
->            "event_type": "Alerts",
->            "id": "873b45f3-de87-4fd3-9a2b-cd927ea81c74-1636985621569",
->            "integration": {
->                "id": "3cc69931-167f-411c-a331-768997c29d2e",
->                "name": "API",
->                "type": "API"
->            },
->            "isSeen": false,
->            "lastOccurredAt": "2021-11-15T14:13:41.569Z",
->            "message": "Example Message",
->            "owner": "",
->            "ownerTeamId": "",
->            "priority": "P3",
->            "responders": [],
->            "seen": false,
->            "snoozed": false,
->            "source": "31.154.166.148",
->            "status": "open",
->            "tags": [],
->            "teams": [],
->            "tinyId": "80",
->            "updatedAt": "2021-11-15T14:13:41.648Z"
->        },
->        {
->            "acknowledged": false,
->            "alias": "2640008b-8ee9-49f4-8ecd-89f0292a5f94-1636985221883",
->            "count": 1,
->            "createdAt": "2021-11-15T14:07:01.883Z",
->            "event_type": "Alerts",
->            "id": "2640008b-8ee9-49f4-8ecd-89f0292a5f94-1636985221883",
->            "integration": {
->                "id": "3cc69931-167f-411c-a331-768997c29d2e",
->                "name": "API",
->                "type": "API"
->            },
->            "isSeen": false,
->            "lastOccurredAt": "2021-11-15T14:07:01.883Z",
->            "message": "Example Message",
->            "owner": "",
->            "ownerTeamId": "",
->            "priority": "P3",
->            "responders": [],
->            "seen": false,
->            "snoozed": false,
->            "source": "31.154.166.148",
->            "status": "open",
->            "tags": [],
->            "teams": [],
->            "tinyId": "79",
->            "updatedAt": "2021-11-15T14:07:01.977Z"
->        },
->        {
->            "acknowledged": false,
->            "alias": "da591aae-819e-4af8-90db-9f37004b6fc8-1636984673968",
->            "count": 1,
->            "createdAt": "2021-11-15T13:57:53.968Z",
->            "event_type": "Alerts",
->            "id": "da591aae-819e-4af8-90db-9f37004b6fc8-1636984673968",
->            "integration": {
->                "id": "3cc69931-167f-411c-a331-768997c29d2e",
->                "name": "API",
->                "type": "API"
->            },
->            "isSeen": false,
->            "lastOccurredAt": "2021-11-15T13:57:53.968Z",
->            "message": "Example Message",
->            "owner": "",
->            "ownerTeamId": "",
->            "priority": "P3",
->            "responders": [],
->            "seen": false,
->            "snoozed": false,
->            "source": "31.154.166.148",
->            "status": "open",
->            "tags": [],
->            "teams": [],
->            "tinyId": "78",
->            "updatedAt": "2021-11-15T13:57:54.05Z"
->        },
->        {
->            "acknowledged": false,
->            "alias": "69b36e77-2533-44e1-b4f2-79a4bc46d191-1636983103612",
->            "count": 1,
->            "createdAt": "2021-11-15T13:31:43.612Z",
->            "event_type": "Alerts",
->            "id": "69b36e77-2533-44e1-b4f2-79a4bc46d191-1636983103612",
->            "integration": {
->                "id": "3cc69931-167f-411c-a331-768997c29d2e",
->                "name": "API",
->                "type": "API"
->            },
->            "isSeen": false,
->            "lastOccurredAt": "2021-11-15T13:31:43.612Z",
->            "message": "Example Message",
->            "owner": "",
->            "ownerTeamId": "",
->            "priority": "P3",
->            "responders": [],
->            "seen": false,
->            "snoozed": false,
->            "source": "147.236.155.109",
->            "status": "open",
->            "tags": [],
->            "teams": [],
->            "tinyId": "77",
->            "updatedAt": "2021-11-15T13:31:43.771Z"
->        },
->        {
->            "acknowledged": false,
->            "alias": "07c0d8e1-94b7-43eb-803b-af1b21e4989d-1636982442916",
->            "count": 1,
->            "createdAt": "2021-11-15T13:20:42.916Z",
->            "event_type": "Alerts",
->            "id": "07c0d8e1-94b7-43eb-803b-af1b21e4989d-1636982442916",
->            "integration": {
->                "id": "3cc69931-167f-411c-a331-768997c29d2e",
->                "name": "API",
->                "type": "API"
->            },
->            "isSeen": false,
->            "lastOccurredAt": "2021-11-15T13:20:42.916Z",
->            "message": "Example Message",
->            "owner": "",
->            "ownerTeamId": "",
->            "priority": "P3",
->            "responders": [],
->            "seen": false,
->            "snoozed": false,
->            "source": "147.236.155.109",
->            "status": "open",
->            "tags": [],
->            "teams": [],
->            "tinyId": "76",
->            "updatedAt": "2021-11-15T13:20:42.993Z"
->        },
->        {
->            "acknowledged": false,
->            "alias": "c95bb063-c2da-4667-938f-0a0fe4f28b0e-1636982193238",
->            "count": 1,
->            "createdAt": "2021-11-15T13:16:33.238Z",
->            "event_type": "Alerts",
->            "id": "c95bb063-c2da-4667-938f-0a0fe4f28b0e-1636982193238",
->            "integration": {
->                "id": "3cc69931-167f-411c-a331-768997c29d2e",
->                "name": "API",
->                "type": "API"
->            },
->            "isSeen": false,
->            "lastOccurredAt": "2021-11-15T13:16:33.238Z",
->            "message": "Example Message",
->            "owner": "",
->            "ownerTeamId": "",
->            "priority": "P3",
->            "responders": [],
->            "seen": false,
->            "snoozed": false,
->            "source": "147.236.155.109",
->            "status": "open",
->            "tags": [],
->            "teams": [],
->            "tinyId": "75",
->            "updatedAt": "2021-11-15T13:16:33.312Z"
->        },
->        {
->            "acknowledged": false,
->            "alias": "078e53ce-6462-40d9-bee3-2813622c2a49-1636976397688",
->            "count": 1,
->            "createdAt": "2021-11-15T11:39:57.688Z",
->            "event_type": "Alerts",
->            "id": "078e53ce-6462-40d9-bee3-2813622c2a49-1636976397688",
->            "integration": {
->                "id": "3cc69931-167f-411c-a331-768997c29d2e",
->                "name": "API",
->                "type": "API"
->            },
->            "isSeen": false,
->            "lastOccurredAt": "2021-11-15T11:39:57.688Z",
->            "message": "Example Message",
->            "owner": "",
->            "ownerTeamId": "",
->            "priority": "P3",
->            "responders": [],
->            "seen": false,
->            "snoozed": false,
->            "source": "147.236.155.109",
->            "status": "open",
->            "tags": [],
->            "teams": [],
->            "tinyId": "74",
->            "updatedAt": "2021-11-15T11:39:57.813Z"
->        },
->        {
->            "acknowledged": false,
->            "alias": "577424c1-b03c-4d23-9871-da0d395fea17_39197a6e-5dda-4a7f-8bea-5125da7f707a",
->            "count": 1,
->            "createdAt": "2021-11-15T10:55:37.048Z",
->            "event_type": "Alerts",
->            "id": "6a9de381-65d4-4662-9b25-64d87aec23db-1636973737048",
->            "isSeen": false,
->            "lastOccurredAt": "2021-11-15T10:55:37.048Z",
->            "message": "test",
->            "owner": "",
->            "ownerTeamId": "fbbc3f9a-12f4-4794-9938-7e0a85a06f8b",
->            "priority": "P3",
->            "responders": [
->                {
->                    "id": "fbbc3f9a-12f4-4794-9938-7e0a85a06f8b",
->                    "type": "team"
->                }
->            ],
->            "seen": false,
->            "snoozed": false,
->            "source": "",
->            "status": "open",
->            "tags": [],
->            "teams": [
->                {
->                    "id": "fbbc3f9a-12f4-4794-9938-7e0a85a06f8b"
->                }
->            ],
->            "tinyId": "73",
->            "updatedAt": "2021-11-15T11:05:37.661Z"
->        },
->        {
->            "acknowledged": false,
->            "alias": "3d222bca-b7cf-4fd3-9710-6662450b34b9-1636973392396",
->            "count": 1,
->            "createdAt": "2021-11-15T10:49:52.396Z",
->            "event_type": "Alerts",
->            "id": "3d222bca-b7cf-4fd3-9710-6662450b34b9-1636973392396",
->            "integration": {
->                "id": "3cc69931-167f-411c-a331-768997c29d2e",
->                "name": "API",
->                "type": "API"
->            },
->            "isSeen": false,
->            "lastOccurredAt": "2021-11-15T10:49:52.396Z",
->            "message": "Example Message",
->            "owner": "",
->            "ownerTeamId": "",
->            "priority": "P3",
->            "responders": [],
->            "seen": false,
->            "snoozed": false,
->            "source": "147.236.155.109",
->            "status": "open",
->            "tags": [],
->            "teams": [],
->            "tinyId": "72",
->            "updatedAt": "2021-11-15T10:49:52.51Z"
->        },
->        {
->            "acknowledged": false,
->            "alias": "a416035a-4fbd-412b-940d-e6364e6eff23-1636973363795",
->            "count": 1,
->            "createdAt": "2021-11-15T10:49:23.795Z",
->            "event_type": "Alerts",
->            "id": "a416035a-4fbd-412b-940d-e6364e6eff23-1636973363795",
->            "integration": {
->                "id": "3cc69931-167f-411c-a331-768997c29d2e",
->                "name": "API",
->                "type": "API"
->            },
->            "isSeen": false,
->            "lastOccurredAt": "2021-11-15T10:49:23.795Z",
->            "message": "Example Message",
->            "owner": "",
->            "ownerTeamId": "",
->            "priority": "P3",
->            "responders": [],
->            "seen": false,
->            "snoozed": false,
->            "source": "147.236.155.109",
->            "status": "open",
->            "tags": [],
->            "teams": [],
->            "tinyId": "71",
->            "updatedAt": "2021-11-15T10:49:23.912Z"
->        },
->        {
->            "acknowledged": false,
->            "alias": "34db92e6-1c53-4404-aa37-1d3fc5b1140b_935d92fe-819c-43f7-8b0e-d516c7e193d3",
->            "count": 1,
->            "createdAt": "2021-11-15T10:48:54.348Z",
->            "event_type": "Alerts",
->            "id": "617252d7-b2b0-40ab-9195-b330fcf62063-1636973334348",
->            "isSeen": false,
->            "lastOccurredAt": "2021-11-15T10:48:54.348Z",
->            "message": "this is a teat incident",
->            "owner": "Danil Vilenchik",
->            "ownerTeamId": "",
->            "priority": "P2",
->            "responders": [
->                {
->                    "id": "154d6425-c120-4beb-a3e6-a66c8c44f61d",
->                    "type": "user"
->                }
->            ],
->            "seen": false,
->            "snoozed": false,
->            "source": "",
->            "status": "open",
->            "tags": [],
->            "teams": [],
->            "tinyId": "70",
->            "updatedAt": "2021-11-15T10:48:54.436Z"
->        },
->        {
->            "acknowledged": false,
->            "alias": "5bb46a5d-a21f-42f7-81e0-f04b2258c523-1636972621059",
->            "count": 1,
->            "createdAt": "2021-11-15T10:37:01.059Z",
->            "event_type": "Alerts",
->            "id": "5bb46a5d-a21f-42f7-81e0-f04b2258c523-1636972621059",
->            "integration": {
->                "id": "3cc69931-167f-411c-a331-768997c29d2e",
->                "name": "API",
->                "type": "API"
->            },
->            "isSeen": false,
->            "lastOccurredAt": "2021-11-15T10:37:01.059Z",
->            "message": "Example Message",
->            "owner": "",
->            "ownerTeamId": "",
->            "priority": "P3",
->            "responders": [],
->            "seen": false,
->            "snoozed": false,
->            "source": "147.236.155.109",
->            "status": "open",
->            "tags": [],
->            "teams": [],
->            "tinyId": "68",
->            "updatedAt": "2021-11-15T10:37:01.135Z"
->        },
->        {
->            "acknowledged": false,
->            "alias": "d80add44-6009-4fd2-84cb-a7ffb6824cba-1636970016551",
->            "count": 1,
->            "createdAt": "2021-11-15T09:53:36.551Z",
->            "event_type": "Alerts",
->            "id": "d80add44-6009-4fd2-84cb-a7ffb6824cba-1636970016551",
->            "integration": {
->                "id": "3cc69931-167f-411c-a331-768997c29d2e",
->                "name": "API",
->                "type": "API"
->            },
->            "isSeen": true,
->            "lastOccurredAt": "2021-11-15T09:53:36.551Z",
->            "message": "test113",
->            "owner": "",
->            "ownerTeamId": "",
->            "priority": "P3",
->            "report": {
->                "ackTime": 27799,
->                "closeTime": 27799,
->                "closedBy": "Alert API"
->            },
->            "responders": [],
->            "seen": true,
->            "snoozed": false,
->            "source": "147.236.155.109",
->            "status": "closed",
->            "tags": [],
->            "teams": [],
->            "tinyId": "67",
->            "updatedAt": "2021-11-15T09:54:04.35Z"
->        },
->        {
->            "acknowledged": false,
->            "alias": "6bda0ef6-fb62-403a-bf49-96bbedbada5d-1636969982538",
->            "count": 1,
->            "createdAt": "2021-11-15T09:53:02.538Z",
->            "event_type": "Alerts",
->            "id": "6bda0ef6-fb62-403a-bf49-96bbedbada5d-1636969982538",
->            "integration": {
->                "id": "3cc69931-167f-411c-a331-768997c29d2e",
->                "name": "API",
->                "type": "API"
->            },
->            "isSeen": false,
->            "lastOccurredAt": "2021-11-15T09:53:02.538Z",
->            "message": "test113",
->            "owner": "",
->            "ownerTeamId": "",
->            "priority": "P3",
->            "responders": [],
->            "seen": false,
->            "snoozed": false,
->            "source": "147.236.155.109",
->            "status": "open",
->            "tags": [],
->            "teams": [],
->            "tinyId": "66",
->            "updatedAt": "2021-11-15T09:53:02.61Z"
->        },
->        {
->            "acknowledged": false,
->            "alias": "6eb99017-0e6e-4220-8591-9e3d6484257f-1636965757958",
->            "count": 1,
->            "createdAt": "2021-11-15T08:42:37.958Z",
->            "event_type": "Alerts",
->            "id": "6eb99017-0e6e-4220-8591-9e3d6484257f-1636965757958",
->            "integration": {
->                "id": "3cc69931-167f-411c-a331-768997c29d2e",
->                "name": "API",
->                "type": "API"
->            },
->            "isSeen": true,
->            "lastOccurredAt": "2021-11-15T08:42:37.958Z",
->            "message": "test113",
->            "owner": "",
->            "ownerTeamId": "",
->            "priority": "P3",
->            "report": {
->                "ackTime": 172363,
->                "closeTime": 172363,
->                "closedBy": "Alert API"
->            },
->            "responders": [],
->            "seen": true,
->            "snoozed": false,
->            "source": "147.236.155.109",
->            "status": "closed",
->            "tags": [],
->            "teams": [],
->            "tinyId": "65",
->            "updatedAt": "2021-11-15T08:45:30.321Z"
->        },
->        {
->            "acknowledged": false,
->            "alias": "ae3adf0a-84fe-4cc5-8d4e-16ddf4a91de1-1636930853616",
->            "count": 1,
->            "createdAt": "2021-11-14T23:00:53.616Z",
->            "event_type": "Alerts",
->            "id": "ae3adf0a-84fe-4cc5-8d4e-16ddf4a91de1-1636930853616",
->            "integration": {
->                "id": "3cc69931-167f-411c-a331-768997c29d2e",
->                "name": "API",
->                "type": "API"
->            },
->            "isSeen": false,
->            "lastOccurredAt": "2021-11-14T23:00:53.616Z",
->            "message": "test113",
->            "owner": "",
->            "ownerTeamId": "",
->            "priority": "P3",
->            "responders": [],
->            "seen": false,
->            "snoozed": false,
->            "source": "147.236.155.109",
->            "status": "open",
->            "tags": [],
->            "teams": [],
->            "tinyId": "64",
->            "updatedAt": "2021-11-14T23:00:53.707Z"
->        },
->        {
->            "acknowledged": false,
->            "alias": "fad372d0-c6c9-4966-a602-9d9be8d7c520-1636893292783",
->            "count": 1,
->            "createdAt": "2021-11-14T12:34:52.783Z",
->            "event_type": "Alerts",
->            "id": "fad372d0-c6c9-4966-a602-9d9be8d7c520-1636893292783",
->            "integration": {
->                "id": "3cc69931-167f-411c-a331-768997c29d2e",
->                "name": "API",
->                "type": "API"
->            },
->            "isSeen": false,
->            "lastOccurredAt": "2021-11-14T12:34:52.783Z",
->            "message": "test113",
->            "owner": "",
->            "ownerTeamId": "",
->            "priority": "P3",
->            "responders": [],
->            "seen": false,
->            "snoozed": false,
->            "source": "147.236.155.109",
->            "status": "open",
->            "tags": [],
->            "teams": [],
->            "tinyId": "63",
->            "updatedAt": "2021-11-14T12:34:52.861Z"
->        },
->        {
->            "acknowledged": true,
->            "alias": "6ce2a940-2366-4578-908e-2ffd6172cff3-1636632591868",
->            "count": 1,
->            "createdAt": "2021-11-11T12:09:51.868Z",
->            "event_type": "Alerts",
->            "id": "6ce2a940-2366-4578-908e-2ffd6172cff3-1636632591868",
->            "integration": {
->                "id": "3cc69931-167f-411c-a331-768997c29d2e",
->                "name": "API",
->                "type": "API"
->            },
->            "isSeen": true,
->            "lastOccurredAt": "2021-11-11T12:09:51.868Z",
->            "message": "test11",
->            "owner": "Alert API",
->            "ownerTeamId": "",
->            "priority": "P3",
->            "report": {
->                "ackTime": 4316459,
->                "acknowledgedBy": "Alert API"
->            },
->            "responders": [],
->            "seen": true,
->            "snoozed": false,
->            "source": "31.154.166.148",
->            "status": "open",
->            "tags": [],
->            "teams": [],
->            "tinyId": "62",
->            "updatedAt": "2021-11-11T13:21:48.334Z"
->        },
->        {
->            "acknowledged": false,
->            "alias": "3684968b-dd91-42aa-9d76-c6dd4f8f596f-1636560596589",
->            "count": 1,
->            "createdAt": "2021-11-10T16:09:56.589Z",
->            "event_type": "Alerts",
->            "id": "3684968b-dd91-42aa-9d76-c6dd4f8f596f-1636560596589",
->            "integration": {
->                "id": "3cc69931-167f-411c-a331-768997c29d2e",
->                "name": "API",
->                "type": "API"
->            },
->            "isSeen": false,
->            "lastOccurredAt": "2021-11-10T16:09:56.589Z",
->            "message": "testt",
->            "owner": "",
->            "ownerTeamId": "",
->            "priority": "P3",
->            "responders": [],
->            "seen": false,
->            "snoozed": false,
->            "source": "31.154.166.148",
->            "status": "open",
->            "tags": [],
->            "teams": [],
->            "tinyId": "61",
->            "updatedAt": "2021-11-10T16:09:56.662Z"
->        }
->    ],
->    "paging": {
->        "first": "https:<span>//</span>api.opsgenie.com/v2/alerts?limit=20&sort=createdAt&offset=0&order=desc",
->        "last": "https:<span>//</span>api.opsgenie.com/v2/alerts?limit=20&sort=createdAt&offset=60&order=desc",
->        "next": "https:<span>//</span>api.opsgenie.com/v2/alerts?limit=20&sort=createdAt&offset=20&order=desc"
->    },
->    "requestId": "246d320f-3903-4d1a-9ca7-4c6e0537cdac",
->    "took": 0.019
->}
->```
+>### OpsGenie Alert
+>|acknowledged|alias|count|createdAt|event_type|id|integration|isSeen|lastOccurredAt|message|owner|ownerTeamId|priority|responders|seen|snoozed|source|status|tags|teams|tinyId|updatedAt|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| false | 4d88678f-b9c9-46bd-b82e-953dd7eb4d2c-1637073149155 | 1 | 2021-11-16T14:32:29.155Z | Alerts | 4d88678f-b9c9-46bd-b82e-953dd7eb4d2c-1637073149155 | id: 3cc69931-167f-411c-a331-768997c29d2e<br/>name: API<br/>type: API | false | 2021-11-16T14:32:29.155Z | Example Message |  |  | P3 |  | false | false | 31.154.166.148 | open |  |  | 92 | 2021-11-16T14:32:29.245Z |
+
 
 ### opsgenie-delete-alert
 ***
@@ -840,18 +292,14 @@ Close an alert in OpsGenie
 #### Context Example
 ```json
 {
-    "data": {
-        "action": "Add Responder",
-        "alertId": "",
-        "alias": "",
-        "integrationId": "3cc69931-167f-411c-a331-768997c29d2e",
-        "isSuccess": false,
-        "processedAt": "2021-11-15T14:15:33.523Z",
-        "status": "Alert does not exist",
-        "success": false
-    },
-    "requestId": "79c3a519-cb8c-42f6-b2b3-39da4367038d",
-    "took": 0.002
+    "action": "Add Responder",
+    "alertId": "",
+    "alias": "",
+    "integrationId": "3cc69931-167f-411c-a331-768997c29d2e",
+    "isSuccess": false,
+    "processedAt": "2021-11-16T14:32:36.767Z",
+    "status": "Alert does not exist",
+    "success": false
 }
 ```
 
@@ -976,129 +424,137 @@ Get escalations from OpsGenie
 #### Command Example
 ```!opsgenie-get-escalations```
 
+#### Context Example
+```json
+{
+    "OpsGenie": {
+        "Escalations": [
+            {
+                "description": "",
+                "id": "9a441a8d-2410-43f4-9ef2-f7a265e12b74",
+                "name": "Engineering_escalation",
+                "ownerTeam": {
+                    "id": "51d69df8-c40b-439e-9808-e1a78e54f91b",
+                    "name": "Engineering"
+                },
+                "rules": [
+                    {
+                        "condition": "if-not-acked",
+                        "delay": {
+                            "timeAmount": 0,
+                            "timeUnit": "minutes"
+                        },
+                        "notifyType": "default",
+                        "recipient": {
+                            "id": "7835aa84-7440-41d5-90bf-92e0045714d5",
+                            "name": "Engineering_schedule",
+                            "type": "schedule"
+                        }
+                    },
+                    {
+                        "condition": "if-not-acked",
+                        "delay": {
+                            "timeAmount": 5,
+                            "timeUnit": "minutes"
+                        },
+                        "notifyType": "next",
+                        "recipient": {
+                            "id": "7835aa84-7440-41d5-90bf-92e0045714d5",
+                            "name": "Engineering_schedule",
+                            "type": "schedule"
+                        }
+                    },
+                    {
+                        "condition": "if-not-acked",
+                        "delay": {
+                            "timeAmount": 10,
+                            "timeUnit": "minutes"
+                        },
+                        "notifyType": "all",
+                        "recipient": {
+                            "id": "51d69df8-c40b-439e-9808-e1a78e54f91b",
+                            "name": "Engineering",
+                            "type": "team"
+                        }
+                    }
+                ]
+            },
+            {
+                "description": "",
+                "id": "c8a0f950-577c-4da5-894b-1fd463d9f51c",
+                "name": "Integration Team_escalation",
+                "ownerTeam": {
+                    "id": "fbbc3f9a-12f4-4794-9938-7e0a85a06f8b",
+                    "name": "Integration Team"
+                },
+                "rules": [
+                    {
+                        "condition": "if-not-acked",
+                        "delay": {
+                            "timeAmount": 0,
+                            "timeUnit": "minutes"
+                        },
+                        "notifyType": "default",
+                        "recipient": {
+                            "id": "df918339-b999-4878-b69b-3c2c0d508b01",
+                            "name": "Integration Team_schedule",
+                            "type": "schedule"
+                        }
+                    },
+                    {
+                        "condition": "if-not-acked",
+                        "delay": {
+                            "timeAmount": 1,
+                            "timeUnit": "minutes"
+                        },
+                        "notifyType": "default",
+                        "recipient": {
+                            "id": "154d6425-c120-4beb-a3e6-a66c8c44f61d",
+                            "type": "user",
+                            "username": "dvilenchik@paloaltonetworks.com"
+                        }
+                    },
+                    {
+                        "condition": "if-not-acked",
+                        "delay": {
+                            "timeAmount": 5,
+                            "timeUnit": "minutes"
+                        },
+                        "notifyType": "next",
+                        "recipient": {
+                            "id": "df918339-b999-4878-b69b-3c2c0d508b01",
+                            "name": "Integration Team_schedule",
+                            "type": "schedule"
+                        }
+                    },
+                    {
+                        "condition": "if-not-acked",
+                        "delay": {
+                            "timeAmount": 10,
+                            "timeUnit": "minutes"
+                        },
+                        "notifyType": "all",
+                        "recipient": {
+                            "id": "fbbc3f9a-12f4-4794-9938-7e0a85a06f8b",
+                            "name": "Integration Team",
+                            "type": "team"
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}
+```
+
 #### Human Readable Output
 
->```
->{
->    "data": [
->        {
->            "description": "",
->            "id": "9a441a8d-2410-43f4-9ef2-f7a265e12b74",
->            "name": "Engineering_escalation",
->            "ownerTeam": {
->                "id": "51d69df8-c40b-439e-9808-e1a78e54f91b",
->                "name": "Engineering"
->            },
->            "rules": [
->                {
->                    "condition": "if-not-acked",
->                    "delay": {
->                        "timeAmount": 0,
->                        "timeUnit": "minutes"
->                    },
->                    "notifyType": "default",
->                    "recipient": {
->                        "id": "7835aa84-7440-41d5-90bf-92e0045714d5",
->                        "name": "Engineering_schedule",
->                        "type": "schedule"
->                    }
->                },
->                {
->                    "condition": "if-not-acked",
->                    "delay": {
->                        "timeAmount": 5,
->                        "timeUnit": "minutes"
->                    },
->                    "notifyType": "next",
->                    "recipient": {
->                        "id": "7835aa84-7440-41d5-90bf-92e0045714d5",
->                        "name": "Engineering_schedule",
->                        "type": "schedule"
->                    }
->                },
->                {
->                    "condition": "if-not-acked",
->                    "delay": {
->                        "timeAmount": 10,
->                        "timeUnit": "minutes"
->                    },
->                    "notifyType": "all",
->                    "recipient": {
->                        "id": "51d69df8-c40b-439e-9808-e1a78e54f91b",
->                        "name": "Engineering",
->                        "type": "team"
->                    }
->                }
->            ]
->        },
->        {
->            "description": "",
->            "id": "c8a0f950-577c-4da5-894b-1fd463d9f51c",
->            "name": "Integration Team_escalation",
->            "ownerTeam": {
->                "id": "fbbc3f9a-12f4-4794-9938-7e0a85a06f8b",
->                "name": "Integration Team"
->            },
->            "rules": [
->                {
->                    "condition": "if-not-acked",
->                    "delay": {
->                        "timeAmount": 0,
->                        "timeUnit": "minutes"
->                    },
->                    "notifyType": "default",
->                    "recipient": {
->                        "id": "df918339-b999-4878-b69b-3c2c0d508b01",
->                        "name": "Integration Team_schedule",
->                        "type": "schedule"
->                    }
->                },
->                {
->                    "condition": "if-not-acked",
->                    "delay": {
->                        "timeAmount": 1,
->                        "timeUnit": "minutes"
->                    },
->                    "notifyType": "default",
->                    "recipient": {
->                        "id": "154d6425-c120-4beb-a3e6-a66c8c44f61d",
->                        "type": "user",
->                        "username": "dvilenchik@paloaltonetworks.com"
->                    }
->                },
->                {
->                    "condition": "if-not-acked",
->                    "delay": {
->                        "timeAmount": 5,
->                        "timeUnit": "minutes"
->                    },
->                    "notifyType": "next",
->                    "recipient": {
->                        "id": "df918339-b999-4878-b69b-3c2c0d508b01",
->                        "name": "Integration Team_schedule",
->                        "type": "schedule"
->                    }
->                },
->                {
->                    "condition": "if-not-acked",
->                    "delay": {
->                        "timeAmount": 10,
->                        "timeUnit": "minutes"
->                    },
->                    "notifyType": "all",
->                    "recipient": {
->                        "id": "fbbc3f9a-12f4-4794-9938-7e0a85a06f8b",
->                        "name": "Integration Team",
->                        "type": "team"
->                    }
->                }
->            ]
->        }
->    ],
->    "requestId": "2df90da4-b826-4edb-a699-fc2e406e2bc9",
->    "took": 0.005
->}
->```
+>### OpsGenie Escalations
+>|description|id|name|ownerTeam|rules|
+>|---|---|---|---|---|
+>|  | 9a441a8d-2410-43f4-9ef2-f7a265e12b74 | Engineering_escalation | id: 51d69df8-c40b-439e-9808-e1a78e54f91b<br/>name: Engineering | {'condition': 'if-not-acked', 'notifyType': 'default', 'delay': {'timeAmount': 0, 'timeUnit': 'minutes'}, 'recipient': {'type': 'schedule', 'id': '7835aa84-7440-41d5-90bf-92e0045714d5', 'name': 'Engineering_schedule'}},<br/>{'condition': 'if-not-acked', 'notifyType': 'next', 'delay': {'timeAmount': 5, 'timeUnit': 'minutes'}, 'recipient': {'type': 'schedule', 'id': '7835aa84-7440-41d5-90bf-92e0045714d5', 'name': 'Engineering_schedule'}},<br/>{'condition': 'if-not-acked', 'notifyType': 'all', 'delay': {'timeAmount': 10, 'timeUnit': 'minutes'}, 'recipient': {'type': 'team', 'id': '51d69df8-c40b-439e-9808-e1a78e54f91b', 'name': 'Engineering'}} |
+>|  | c8a0f950-577c-4da5-894b-1fd463d9f51c | Integration Team_escalation | id: fbbc3f9a-12f4-4794-9938-7e0a85a06f8b<br/>name: Integration Team | {'condition': 'if-not-acked', 'notifyType': 'default', 'delay': {'timeAmount': 0, 'timeUnit': 'minutes'}, 'recipient': {'type': 'schedule', 'id': 'df918339-b999-4878-b69b-3c2c0d508b01', 'name': 'Integration Team_schedule'}},<br/>{'condition': 'if-not-acked', 'notifyType': 'default', 'delay': {'timeAmount': 1, 'timeUnit': 'minutes'}, 'recipient': {'type': 'user', 'id': '154d6425-c120-4beb-a3e6-a66c8c44f61d', 'username': 'dvilenchik@paloaltonetworks.com'}},<br/>{'condition': 'if-not-acked', 'notifyType': 'next', 'delay': {'timeAmount': 5, 'timeUnit': 'minutes'}, 'recipient': {'type': 'schedule', 'id': 'df918339-b999-4878-b69b-3c2c0d508b01', 'name': 'Integration Team_schedule'}},<br/>{'condition': 'if-not-acked', 'notifyType': 'all', 'delay': {'timeAmount': 10, 'timeUnit': 'minutes'}, 'recipient': {'type': 'team', 'id': 'fbbc3f9a-12f4-4794-9938-7e0a85a06f8b', 'name': 'Integration Team'}} |
+
 
 ### opsgenie-escalate-alert
 ***
@@ -1218,18 +674,14 @@ Remove tag from OpsGenie Alert
 #### Context Example
 ```json
 {
-    "data": {
-        "action": "Acknowledge",
-        "alertId": "",
-        "alias": "",
-        "integrationId": "3cc69931-167f-411c-a331-768997c29d2e",
-        "isSuccess": false,
-        "processedAt": "2021-11-15T14:15:30.29Z",
-        "status": "Alert does not exist",
-        "success": false
-    },
-    "requestId": "7056a2ce-cdd7-41ed-b41b-54a9152c2b71",
-    "took": 0.004
+    "action": "Acknowledge",
+    "alertId": "",
+    "alias": "",
+    "integrationId": "3cc69931-167f-411c-a331-768997c29d2e",
+    "isSuccess": false,
+    "processedAt": "2021-11-16T14:32:33.743Z",
+    "status": "Alert does not exist",
+    "success": false
 }
 ```
 
@@ -1398,6 +850,28 @@ Get schedule overrides
 #### Command Example
 ```!opsgenie-get-schedule-overrides schedule_id=5892636c-6183-4788-99d6-6d93b9095194```
 
+#### Context Example
+```json
+{
+    "action": [
+        "Add Tags",
+        "Remove Tags"
+    ],
+    "alertId": "",
+    "alias": "",
+    "integrationId": "3cc69931-167f-411c-a331-768997c29d2e",
+    "isSuccess": false,
+    "processedAt": [
+        "2021-11-16T14:32:42.765Z",
+        "2021-11-16T14:32:44.111Z"
+    ],
+    "status": [
+        "Alert does not exist"
+    ],
+    "success": false
+}
+```
+
 #### Human Readable Output
 
 >### OpsGenie Schedule
@@ -1456,8 +930,8 @@ Get the on-call users for the provided schedule
                         }
                     ]
                 },
-                "requestId": "2bc5bd31-3011-4c2f-ac9d-c4d1b66474f4",
-                "took": 0.017
+                "requestId": "4672d107-ba5a-49e5-9462-95e5eebba915",
+                "took": 0.024
             }
         }
     }
@@ -1513,18 +987,14 @@ Create an Incident in opsgenie
 #### Context Example
 ```json
 {
-    "data": {
-        "action": "Close",
-        "alertId": "",
-        "alias": "",
-        "integrationId": "3cc69931-167f-411c-a331-768997c29d2e",
-        "isSuccess": false,
-        "processedAt": "2021-11-15T14:15:44.991Z",
-        "status": "Alert does not exist",
-        "success": false
-    },
-    "requestId": "25241db6-7c33-4a7e-abc8-eb34a273a0f1",
-    "took": 0.003
+    "action": "Close",
+    "alertId": "",
+    "alias": "",
+    "integrationId": "3cc69931-167f-411c-a331-768997c29d2e",
+    "isSuccess": false,
+    "processedAt": "2021-11-16T14:32:47.448Z",
+    "status": "Alert does not exist",
+    "success": false
 }
 ```
 
@@ -1653,473 +1123,47 @@ List the current incidents from OpsGenie.
 
 
 #### Command Example
-```!opsgenie-get-incidents```
+```!opsgenie-get-incidents limit=1```
+
+#### Context Example
+```json
+{
+    "OpsGenie": {
+        "Incident": [
+            {
+                "actions": [],
+                "createdAt": "2021-11-16T14:32:58.797Z",
+                "description": "",
+                "event_type": "Incidents",
+                "extraProperties": {},
+                "id": "c4c2be7d-dbe3-494a-8eaf-487970be4d00",
+                "impactStartDate": "2021-11-16T14:32:58.797Z",
+                "impactedServices": [],
+                "links": {
+                    "api": "https://api.opsgenie.com/v1/incidents/c4c2be7d-dbe3-494a-8eaf-487970be4d00",
+                    "web": "https://demisto1.app.opsgenie.com/incident/detail/c4c2be7d-dbe3-494a-8eaf-487970be4d00"
+                },
+                "message": "test",
+                "ownerTeam": "",
+                "priority": "P3",
+                "responders": [],
+                "status": "open",
+                "tags": [],
+                "tinyId": "66",
+                "updatedAt": "2021-11-16T14:32:58.797Z"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
->```
->{
->    "data": [
->        {
->            "actions": [],
->            "createdAt": "2021-11-15T14:15:55.393Z",
->            "description": "",
->            "event_type": "Incidents",
->            "extraProperties": {},
->            "id": "3ecac888-add8-4fcc-93e7-5414016f4daf",
->            "impactStartDate": "2021-11-15T14:15:55.393Z",
->            "impactedServices": [],
->            "links": {
->                "api": "https:<span>//</span>api.opsgenie.com/v1/incidents/3ecac888-add8-4fcc-93e7-5414016f4daf",
->                "web": "https:<span>//</span>demisto1.app.opsgenie.com/incident/detail/3ecac888-add8-4fcc-93e7-5414016f4daf"
->            },
->            "message": "test",
->            "ownerTeam": "",
->            "priority": "P3",
->            "responders": [],
->            "status": "open",
->            "tags": [],
->            "tinyId": "64",
->            "updatedAt": "2021-11-15T14:15:55.393Z"
->        },
->        {
->            "actions": [],
->            "createdAt": "2021-11-15T14:14:12.08Z",
->            "description": "",
->            "event_type": "Incidents",
->            "extraProperties": {},
->            "id": "641950ef-b108-40cb-b415-10714e077327",
->            "impactStartDate": "2021-11-15T14:14:12.08Z",
->            "impactedServices": [],
->            "links": {
->                "api": "https:<span>//</span>api.opsgenie.com/v1/incidents/641950ef-b108-40cb-b415-10714e077327",
->                "web": "https:<span>//</span>demisto1.app.opsgenie.com/incident/detail/641950ef-b108-40cb-b415-10714e077327"
->            },
->            "message": "test",
->            "ownerTeam": "",
->            "priority": "P3",
->            "responders": [],
->            "status": "open",
->            "tags": [],
->            "tinyId": "63",
->            "updatedAt": "2021-11-15T14:14:12.08Z"
->        },
->        {
->            "actions": [],
->            "createdAt": "2021-11-15T14:07:31.52Z",
->            "description": "",
->            "event_type": "Incidents",
->            "extraProperties": {},
->            "id": "5c99c4a0-0e99-45d5-befe-7db9ba120a8f",
->            "impactStartDate": "2021-11-15T14:07:31.52Z",
->            "impactedServices": [],
->            "links": {
->                "api": "https:<span>//</span>api.opsgenie.com/v1/incidents/5c99c4a0-0e99-45d5-befe-7db9ba120a8f",
->                "web": "https:<span>//</span>demisto1.app.opsgenie.com/incident/detail/5c99c4a0-0e99-45d5-befe-7db9ba120a8f"
->            },
->            "message": "test",
->            "ownerTeam": "",
->            "priority": "P3",
->            "responders": [],
->            "status": "open",
->            "tags": [],
->            "tinyId": "62",
->            "updatedAt": "2021-11-15T14:07:31.52Z"
->        },
->        {
->            "actions": [],
->            "createdAt": "2021-11-15T13:58:21.953Z",
->            "description": "",
->            "event_type": "Incidents",
->            "extraProperties": {},
->            "id": "7cd417c9-e5f9-4622-873e-6c6f236375c6",
->            "impactStartDate": "2021-11-15T13:58:21.953Z",
->            "impactedServices": [],
->            "links": {
->                "api": "https:<span>//</span>api.opsgenie.com/v1/incidents/7cd417c9-e5f9-4622-873e-6c6f236375c6",
->                "web": "https:<span>//</span>demisto1.app.opsgenie.com/incident/detail/7cd417c9-e5f9-4622-873e-6c6f236375c6"
->            },
->            "message": "test",
->            "ownerTeam": "",
->            "priority": "P3",
->            "responders": [],
->            "status": "open",
->            "tags": [],
->            "tinyId": "61",
->            "updatedAt": "2021-11-15T13:58:21.953Z"
->        },
->        {
->            "actions": [],
->            "createdAt": "2021-11-15T13:32:14.768Z",
->            "description": "",
->            "event_type": "Incidents",
->            "extraProperties": {},
->            "id": "94b56f03-bfac-4102-a20c-6636dc20c2e0",
->            "impactStartDate": "2021-11-15T13:32:14.768Z",
->            "impactedServices": [],
->            "links": {
->                "api": "https:<span>//</span>api.opsgenie.com/v1/incidents/94b56f03-bfac-4102-a20c-6636dc20c2e0",
->                "web": "https:<span>//</span>demisto1.app.opsgenie.com/incident/detail/94b56f03-bfac-4102-a20c-6636dc20c2e0"
->            },
->            "message": "test",
->            "ownerTeam": "",
->            "priority": "P3",
->            "responders": [],
->            "status": "open",
->            "tags": [],
->            "tinyId": "60",
->            "updatedAt": "2021-11-15T13:32:14.768Z"
->        },
->        {
->            "actions": [],
->            "createdAt": "2021-11-15T13:21:13.489Z",
->            "description": "",
->            "event_type": "Incidents",
->            "extraProperties": {},
->            "id": "7c9be26c-3279-465b-b829-36d8f21f65d4",
->            "impactStartDate": "2021-11-15T13:21:13.489Z",
->            "impactedServices": [],
->            "links": {
->                "api": "https:<span>//</span>api.opsgenie.com/v1/incidents/7c9be26c-3279-465b-b829-36d8f21f65d4",
->                "web": "https:<span>//</span>demisto1.app.opsgenie.com/incident/detail/7c9be26c-3279-465b-b829-36d8f21f65d4"
->            },
->            "message": "test",
->            "ownerTeam": "",
->            "priority": "P3",
->            "responders": [],
->            "status": "open",
->            "tags": [],
->            "tinyId": "59",
->            "updatedAt": "2021-11-15T13:21:13.489Z"
->        },
->        {
->            "actions": [],
->            "createdAt": "2021-11-15T13:17:03.811Z",
->            "description": "",
->            "event_type": "Incidents",
->            "extraProperties": {},
->            "id": "b1ee9538-60c1-4919-b9a9-d6ad54e25a32",
->            "impactStartDate": "2021-11-15T13:17:03.811Z",
->            "impactedServices": [],
->            "links": {
->                "api": "https:<span>//</span>api.opsgenie.com/v1/incidents/b1ee9538-60c1-4919-b9a9-d6ad54e25a32",
->                "web": "https:<span>//</span>demisto1.app.opsgenie.com/incident/detail/b1ee9538-60c1-4919-b9a9-d6ad54e25a32"
->            },
->            "message": "test",
->            "ownerTeam": "",
->            "priority": "P3",
->            "responders": [],
->            "status": "open",
->            "tags": [],
->            "tinyId": "58",
->            "updatedAt": "2021-11-15T13:17:03.811Z"
->        },
->        {
->            "actions": [],
->            "createdAt": "2021-11-15T11:40:27.68Z",
->            "description": "",
->            "event_type": "Incidents",
->            "extraProperties": {},
->            "id": "26d25ba2-5cbb-456e-bd4f-9875c0b6129c",
->            "impactStartDate": "2021-11-15T11:40:27.68Z",
->            "impactedServices": [],
->            "links": {
->                "api": "https:<span>//</span>api.opsgenie.com/v1/incidents/26d25ba2-5cbb-456e-bd4f-9875c0b6129c",
->                "web": "https:<span>//</span>demisto1.app.opsgenie.com/incident/detail/26d25ba2-5cbb-456e-bd4f-9875c0b6129c"
->            },
->            "message": "test",
->            "ownerTeam": "",
->            "priority": "P3",
->            "responders": [],
->            "status": "open",
->            "tags": [],
->            "tinyId": "57",
->            "updatedAt": "2021-11-15T11:40:27.68Z"
->        },
->        {
->            "actions": [],
->            "createdAt": "2021-11-15T10:50:24.124Z",
->            "description": "",
->            "event_type": "Incidents",
->            "extraProperties": {},
->            "id": "2f14f643-ceb3-498b-a265-41a67e2f668c",
->            "impactStartDate": "2021-11-15T10:50:24.124Z",
->            "impactedServices": [],
->            "links": {
->                "api": "https:<span>//</span>api.opsgenie.com/v1/incidents/2f14f643-ceb3-498b-a265-41a67e2f668c",
->                "web": "https:<span>//</span>demisto1.app.opsgenie.com/incident/detail/2f14f643-ceb3-498b-a265-41a67e2f668c"
->            },
->            "message": "test",
->            "ownerTeam": "",
->            "priority": "P3",
->            "responders": [],
->            "status": "open",
->            "tags": [],
->            "tinyId": "56",
->            "updatedAt": "2021-11-15T10:50:24.124Z"
->        },
->        {
->            "actions": [],
->            "createdAt": "2021-11-15T10:44:39.855Z",
->            "description": "",
->            "event_type": "Incidents",
->            "extraProperties": {},
->            "id": "577424c1-b03c-4d23-9871-da0d395fea17",
->            "impactStartDate": "2021-11-15T10:44:39.855Z",
->            "impactedServices": [],
->            "links": {
->                "api": "https:<span>//</span>api.opsgenie.com/v1/incidents/577424c1-b03c-4d23-9871-da0d395fea17",
->                "web": "https:<span>//</span>demisto1.app.opsgenie.com/incident/detail/577424c1-b03c-4d23-9871-da0d395fea17"
->            },
->            "message": "test",
->            "ownerTeam": "",
->            "priority": "P3",
->            "responders": [
->                {
->                    "id": "fbbc3f9a-12f4-4794-9938-7e0a85a06f8b",
->                    "type": "team"
->                }
->            ],
->            "status": "open",
->            "tags": [],
->            "tinyId": "55",
->            "updatedAt": "2021-11-15T10:55:36.883Z"
->        },
->        {
->            "actions": [],
->            "createdAt": "2021-11-15T10:37:34.264Z",
->            "description": "",
->            "event_type": "Incidents",
->            "extraProperties": {},
->            "id": "6932dc81-7be7-484e-bd99-e631b0272e02",
->            "impactStartDate": "2021-11-15T10:37:34.264Z",
->            "impactedServices": [],
->            "links": {
->                "api": "https:<span>//</span>api.opsgenie.com/v1/incidents/6932dc81-7be7-484e-bd99-e631b0272e02",
->                "web": "https:<span>//</span>demisto1.app.opsgenie.com/incident/detail/6932dc81-7be7-484e-bd99-e631b0272e02"
->            },
->            "message": "test",
->            "ownerTeam": "",
->            "priority": "P3",
->            "responders": [],
->            "status": "open",
->            "tags": [],
->            "tinyId": "54",
->            "updatedAt": "2021-11-15T10:37:34.264Z"
->        },
->        {
->            "actions": [],
->            "createdAt": "2021-11-15T10:02:46.289Z",
->            "description": "",
->            "event_type": "Incidents",
->            "extraProperties": {},
->            "id": "b15c7555-d685-4a96-8798-46320618004e",
->            "impactEndDate": "2021-11-15T10:08:58.793Z",
->            "impactStartDate": "2021-11-15T10:02:46.289Z",
->            "impactedServices": [],
->            "links": {
->                "api": "https:<span>//</span>api.opsgenie.com/v1/incidents/b15c7555-d685-4a96-8798-46320618004e",
->                "web": "https:<span>//</span>demisto1.app.opsgenie.com/incident/detail/b15c7555-d685-4a96-8798-46320618004e"
->            },
->            "message": "test",
->            "ownerTeam": "",
->            "priority": "P3",
->            "responders": [],
->            "status": "resolved",
->            "tags": [
->                "3",
->                "4"
->            ],
->            "tinyId": "53",
->            "updatedAt": "2021-11-15T14:14:26.813Z"
->        },
->        {
->            "actions": [],
->            "createdAt": "2021-11-15T09:52:14.456Z",
->            "description": "",
->            "event_type": "Incidents",
->            "extraProperties": {},
->            "id": "6e5e983a-5bd2-4b5c-ba79-a2a3db26060b",
->            "impactStartDate": "2021-11-15T09:52:14.456Z",
->            "impactedServices": [],
->            "links": {
->                "api": "https:<span>//</span>api.opsgenie.com/v1/incidents/6e5e983a-5bd2-4b5c-ba79-a2a3db26060b",
->                "web": "https:<span>//</span>demisto1.app.opsgenie.com/incident/detail/6e5e983a-5bd2-4b5c-ba79-a2a3db26060b"
->            },
->            "message": "test",
->            "ownerTeam": "",
->            "priority": "P3",
->            "responders": [],
->            "status": "open",
->            "tags": [],
->            "tinyId": "51",
->            "updatedAt": "2021-11-15T09:52:14.456Z"
->        },
->        {
->            "actions": [],
->            "createdAt": "2021-11-15T08:44:34.219Z",
->            "description": "",
->            "event_type": "Incidents",
->            "extraProperties": {},
->            "id": "1f3be883-23f4-4728-bb31-e0130633b8b1",
->            "impactStartDate": "2021-11-15T08:44:34.219Z",
->            "impactedServices": [],
->            "links": {
->                "api": "https:<span>//</span>api.opsgenie.com/v1/incidents/1f3be883-23f4-4728-bb31-e0130633b8b1",
->                "web": "https:<span>//</span>demisto1.app.opsgenie.com/incident/detail/1f3be883-23f4-4728-bb31-e0130633b8b1"
->            },
->            "message": "test",
->            "ownerTeam": "",
->            "priority": "P3",
->            "responders": [],
->            "status": "open",
->            "tags": [],
->            "tinyId": "50",
->            "updatedAt": "2021-11-15T08:44:34.219Z"
->        },
->        {
->            "actions": [],
->            "createdAt": "2021-11-14T22:57:12.454Z",
->            "description": "",
->            "event_type": "Incidents",
->            "extraProperties": {},
->            "id": "1980bf75-b890-420f-b693-36d557c2bd1a",
->            "impactStartDate": "2021-11-14T22:57:12.454Z",
->            "impactedServices": [],
->            "links": {
->                "api": "https:<span>//</span>api.opsgenie.com/v1/incidents/1980bf75-b890-420f-b693-36d557c2bd1a",
->                "web": "https:<span>//</span>demisto1.app.opsgenie.com/incident/detail/1980bf75-b890-420f-b693-36d557c2bd1a"
->            },
->            "message": "test",
->            "ownerTeam": "",
->            "priority": "P3",
->            "responders": [],
->            "status": "open",
->            "tags": [],
->            "tinyId": "49",
->            "updatedAt": "2021-11-14T22:57:12.454Z"
->        },
->        {
->            "actions": [],
->            "createdAt": "2021-11-14T22:50:26.497Z",
->            "description": "",
->            "event_type": "Incidents",
->            "extraProperties": {},
->            "id": "12358be4-23b6-40cf-8bba-f95c7c3fe78b",
->            "impactStartDate": "2021-11-14T22:50:26.497Z",
->            "impactedServices": [],
->            "links": {
->                "api": "https:<span>//</span>api.opsgenie.com/v1/incidents/12358be4-23b6-40cf-8bba-f95c7c3fe78b",
->                "web": "https:<span>//</span>demisto1.app.opsgenie.com/incident/detail/12358be4-23b6-40cf-8bba-f95c7c3fe78b"
->            },
->            "message": "test",
->            "ownerTeam": "",
->            "priority": "P3",
->            "responders": [],
->            "status": "open",
->            "tags": [],
->            "tinyId": "48",
->            "updatedAt": "2021-11-14T22:50:26.497Z"
->        },
->        {
->            "actions": [],
->            "createdAt": "2021-11-14T22:48:09.794Z",
->            "description": "",
->            "event_type": "Incidents",
->            "extraProperties": {},
->            "id": "91b9bc7a-226c-45bd-8c9f-41b8e17c21fd",
->            "impactStartDate": "2021-11-14T22:48:09.794Z",
->            "impactedServices": [],
->            "links": {
->                "api": "https:<span>//</span>api.opsgenie.com/v1/incidents/91b9bc7a-226c-45bd-8c9f-41b8e17c21fd",
->                "web": "https:<span>//</span>demisto1.app.opsgenie.com/incident/detail/91b9bc7a-226c-45bd-8c9f-41b8e17c21fd"
->            },
->            "message": "test",
->            "ownerTeam": "",
->            "priority": "P3",
->            "responders": [],
->            "status": "open",
->            "tags": [],
->            "tinyId": "47",
->            "updatedAt": "2021-11-14T22:48:09.794Z"
->        },
->        {
->            "actions": [],
->            "createdAt": "2021-11-14T22:46:14.557Z",
->            "description": "",
->            "event_type": "Incidents",
->            "extraProperties": {},
->            "id": "f834ea92-1251-41e2-a08d-cf34500c60ba",
->            "impactStartDate": "2021-11-14T22:46:14.557Z",
->            "impactedServices": [],
->            "links": {
->                "api": "https:<span>//</span>api.opsgenie.com/v1/incidents/f834ea92-1251-41e2-a08d-cf34500c60ba",
->                "web": "https:<span>//</span>demisto1.app.opsgenie.com/incident/detail/f834ea92-1251-41e2-a08d-cf34500c60ba"
->            },
->            "message": "test",
->            "ownerTeam": "",
->            "priority": "P3",
->            "responders": [],
->            "status": "open",
->            "tags": [],
->            "tinyId": "46",
->            "updatedAt": "2021-11-14T22:46:14.557Z"
->        },
->        {
->            "actions": [],
->            "createdAt": "2021-11-14T22:43:52.388Z",
->            "description": "",
->            "event_type": "Incidents",
->            "extraProperties": {},
->            "id": "4ab01f6e-a7e6-4440-82d2-26057e8947bd",
->            "impactStartDate": "2021-11-14T22:43:52.388Z",
->            "impactedServices": [],
->            "links": {
->                "api": "https:<span>//</span>api.opsgenie.com/v1/incidents/4ab01f6e-a7e6-4440-82d2-26057e8947bd",
->                "web": "https:<span>//</span>demisto1.app.opsgenie.com/incident/detail/4ab01f6e-a7e6-4440-82d2-26057e8947bd"
->            },
->            "message": "An example incident message",
->            "ownerTeam": "",
->            "priority": "P3",
->            "responders": [],
->            "status": "open",
->            "tags": [],
->            "tinyId": "45",
->            "updatedAt": "2021-11-14T22:43:52.388Z"
->        },
->        {
->            "actions": [],
->            "createdAt": "2021-11-14T22:39:52.379Z",
->            "description": "",
->            "event_type": "Incidents",
->            "extraProperties": {},
->            "id": "00b1fcdf-e682-4f6a-965d-ab0cb8a13dd9",
->            "impactStartDate": "2021-11-14T22:39:52.379Z",
->            "impactedServices": [],
->            "links": {
->                "api": "https:<span>//</span>api.opsgenie.com/v1/incidents/00b1fcdf-e682-4f6a-965d-ab0cb8a13dd9",
->                "web": "https:<span>//</span>demisto1.app.opsgenie.com/incident/detail/00b1fcdf-e682-4f6a-965d-ab0cb8a13dd9"
->            },
->            "message": "test",
->            "ownerTeam": "",
->            "priority": "P3",
->            "responders": [],
->            "status": "open",
->            "tags": [],
->            "tinyId": "44",
->            "updatedAt": "2021-11-14T22:39:52.379Z"
->        }
->    ],
->    "paging": {
->        "first": "https:<span>//</span>api.opsgenie.com/v1/incidents?limit=20&sort=insertedAt&offset=0&order=desc",
->        "last": "https:<span>//</span>api.opsgenie.com/v1/incidents?limit=20&sort=insertedAt&offset=60&order=desc",
->        "next": "https:<span>//</span>api.opsgenie.com/v1/incidents?limit=20&sort=insertedAt&offset=20&order=desc"
->    },
->    "requestId": "d3300075-682a-4b05-b3f7-eda5ec43aed0",
->    "took": 0.104,
->    "totalCount": 62
->}
->```
+>### OpsGenie Alert
+>|actions|createdAt|description|event_type|extraProperties|id|impactStartDate|impactedServices|links|message|ownerTeam|priority|responders|status|tags|tinyId|updatedAt|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>|  | 2021-11-16T14:32:58.797Z |  | Incidents |  | c4c2be7d-dbe3-494a-8eaf-487970be4d00 | 2021-11-16T14:32:58.797Z |  | web: https:<span>//</span>demisto1.app.opsgenie.com/incident/detail/c4c2be7d-dbe3-494a-8eaf-487970be4d00<br/>api: https:<span>//</span>api.opsgenie.com/v1/incidents/c4c2be7d-dbe3-494a-8eaf-487970be4d00 | test |  | P3 |  | open |  | 66 | 2021-11-16T14:32:58.797Z |
+
 
 ### opsgenie-close-incident
 ***
@@ -2159,18 +1203,14 @@ Close an incident from OpsGenie
 #### Context Example
 ```json
 {
-    "data": {
-        "action": "Delete",
-        "alertId": "",
-        "alias": "",
-        "integrationId": "3cc69931-167f-411c-a331-768997c29d2e",
-        "isSuccess": false,
-        "processedAt": "2021-11-15T14:15:46.687Z",
-        "status": "Alert does not exist",
-        "success": false
-    },
-    "requestId": "e76aa645-7d5a-4698-a69b-08cb0a2787ca",
-    "took": 0.003
+    "action": "Delete",
+    "alertId": "",
+    "alias": "",
+    "integrationId": "3cc69931-167f-411c-a331-768997c29d2e",
+    "isSuccess": false,
+    "processedAt": "2021-11-16T14:32:49.256Z",
+    "status": "Alert does not exist",
+    "success": false
 }
 ```
 
@@ -2296,17 +1336,13 @@ Add tag into OpsGenie Incident
 #### Context Example
 ```json
 {
-    "data": {
-        "action": "Create",
-        "incidentId": "3ecac888-add8-4fcc-93e7-5414016f4daf",
-        "integrationId": "3cc69931-167f-411c-a331-768997c29d2e",
-        "isSuccess": true,
-        "processedAt": "2021-11-15T14:15:55.491Z",
-        "status": "Incident created successfully",
-        "success": true
-    },
-    "requestId": "a2504b4a-f47f-40b0-b53c-7eb241c3b0f8",
-    "took": 0.03
+    "action": "Create",
+    "incidentId": "c4c2be7d-dbe3-494a-8eaf-487970be4d00",
+    "integrationId": "3cc69931-167f-411c-a331-768997c29d2e",
+    "isSuccess": true,
+    "processedAt": "2021-11-16T14:32:58.983Z",
+    "status": "Incident created successfully",
+    "success": true
 }
 ```
 
@@ -2353,17 +1389,13 @@ Remove tag from OpsGenie Alert
 #### Context Example
 ```json
 {
-    "data": {
-        "action": "Close",
-        "incidentId": "",
-        "integrationId": "3cc69931-167f-411c-a331-768997c29d2e",
-        "isSuccess": false,
-        "processedAt": "2021-11-15T14:15:57.429Z",
-        "status": "",
-        "success": false
-    },
-    "requestId": "314af988-7189-46d2-a767-30bc16100a1c",
-    "took": 0.037
+    "action": "Close",
+    "incidentId": "",
+    "integrationId": "3cc69931-167f-411c-a331-768997c29d2e",
+    "isSuccess": false,
+    "processedAt": "2021-11-16T14:33:00.989Z",
+    "status": "",
+    "success": false
 }
 ```
 
@@ -2404,7 +1436,7 @@ Get teams
 ```json
 {
     "OpsGenie": {
-        "Schedule": [
+        "Team": [
             {
                 "description": "Engineering",
                 "id": "51d69df8-c40b-439e-9808-e1a78e54f91b",
@@ -2425,17 +1457,13 @@ Get teams
             }
         ]
     },
-    "data": {
-        "action": "Delete",
-        "incidentId": "",
-        "integrationId": "3cc69931-167f-411c-a331-768997c29d2e",
-        "isSuccess": false,
-        "processedAt": "2021-11-15T14:15:59.138Z",
-        "status": "",
-        "success": false
-    },
-    "requestId": "c890b46e-0a26-4b8c-978f-fc56873fecfa",
-    "took": 0.005
+    "action": "Delete",
+    "incidentId": "",
+    "integrationId": "3cc69931-167f-411c-a331-768997c29d2e",
+    "isSuccess": false,
+    "processedAt": "2021-11-16T14:33:02.655Z",
+    "status": "",
+    "success": false
 }
 ```
 
