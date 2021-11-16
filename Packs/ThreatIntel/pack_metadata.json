@@ -1,6 +1,6 @@
 {
-    "name": "Threat Intelligence Reports",
-    "description": "Threat Intelligence Reports gives the user the ability to create, review, publish, and export threat intelligence reports.",
+    "name": "Threat Intel Reports",
+    "description": "Threat Intel Reports gives the user the ability to create, review, publish, and export threat intelligence reports.",
     "support": "xsoar",
     "currentVersion": "1.0.12",
     "serverMinVersion": "6.5.0",
