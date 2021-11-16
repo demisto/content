@@ -2063,6 +2063,7 @@ def delete_comment(client: Client, args: dict) -> CommandResults:
 
 
 def main(params: dict, args: dict, command: str):
+    # This is a comment
     results: Union[CommandResults, str, List[CommandResults]]
     handle_proxy()
     client = Client(params)
