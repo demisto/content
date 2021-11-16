@@ -837,6 +837,8 @@ async def slack_loop():
             await asyncio.sleep(float("inf"))
         except Exception as e:
             await handle_listen_error(f"An error occurred {str(e)}")
+        finally:
+            await client.disconnect()
 
 
 async def handle_listen_error(error: str):
