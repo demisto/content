@@ -17,8 +17,7 @@ teams->[team]->Integrations->Add integration->Rest API Over JSON
 
 PARAMS = {
     "url": "https://api.opsgenie.com",
-    # "token": os.getenv("API_TOKEN"),
-    "token": "044a2e50-fd34-4e11-9eff-69f16f2413af"
+    "token": os.getenv("API_TOKEN"),
 }
 ARGS = {
     "message": "This is a test alert!"
