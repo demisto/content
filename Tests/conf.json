@@ -3187,11 +3187,6 @@
             "fromversion": "5.5.0"
         },
         {
-            "integrations": "GCP Whitelist Feed",
-            "playbookID": "GCPWhitelist_Feed_Test",
-            "fromversion": "5.5.0"
-        },
-        {
             "integrations": "Google IP Ranges Feed",
             "playbookID": "Fetch Indicators Test",
             "fromversion": "6.0.0"
@@ -5092,7 +5087,6 @@
         "Prisma Access Egress IP feed",
         "Lastline v2",
         "McAfee DXL",
-        "GCP Whitelist Feed",
         "Cortex Data Lake",
         "Mail Listener v2",
         "EDL",
