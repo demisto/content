@@ -60,7 +60,8 @@ configuration:
   - Audit.AzureActiveDirectory
   - Audit.Exchange
   - Audit.SharePoint
-  - audit.general
+  - Audit.General
+  - DLP.All
   required: false
   type: 16
 - display: Fetch incidents
@@ -107,6 +108,7 @@ script:
       - Audit.Exchange
       - Audit.SharePoint
       - Audit.General
+      - DLP.All
       required: true
       secret: false
     deprecated: false
@@ -124,6 +126,7 @@ script:
       - Audit.Exchange
       - Audit.SharePoint
       - Audit.General
+      - DLP.All
       required: true
       secret: false
     deprecated: false
@@ -149,6 +152,7 @@ script:
       - Audit.Exchange
       - Audit.SharePoint
       - Audit.General
+      - DLP.All
       required: true
       secret: false
     - default: false
