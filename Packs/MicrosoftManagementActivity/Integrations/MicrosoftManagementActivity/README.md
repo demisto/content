@@ -42,9 +42,9 @@ Moreover, enter your client secret as the “Key” parameter and your client ID
 | content_types_to_fetch | Content types to fetch | False |
 | isFetch | Fetch incidents | False |
 | incidentType | Incident type | False |
-| record_types_filter | Record types to fetch \(Comma\-separated list of the record types you wish to fetch. Content records with a record  type that isn&\#x27;t specified will not be fetched. If this field is left empty, all record types will be fetched.\) | False |
-| workloads_filter | Workloads to fetch \(Comma\-separated list of the workloads you wish to fetch. Content records with a workload that isn&\#x27;t specified will not be fetched. If this field is left empty, all workloads will be fetched.\) | False |
-| operations_filter | Operations to \(Comma\-separated list of the operations you wish to fetch. Content records with an operation that isn&\#x27;t specified will not be fetched. If this field is left empty, all operations will be fetched.\) | False |
+| record_types_filter | Record types to fetch \(Comma\-separated list of the record types you wish to fetch. Content records with a record  type that is not specified will not be fetched. If this field is left empty, all record types will be fetched.\) | False |
+| workloads_filter | Workloads to fetch \(Comma\-separated list of the workloads you wish to fetch. Content records with a workload that is not specified will not be fetched. If this field is left empty, all workloads will be fetched.\) | False |
+| operations_filter | Operations to \(Comma\-separated list of the operations you wish to fetch. Content records with an operation that is not specified will not be fetched. If this field is left empty, all operations will be fetched.\) | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -197,9 +197,9 @@ Returns all content of a specific content type.
 | content_type | The content type for which to receive content. Possible values are `Audit.AzureActiveDirectory`, `Audit.Exchange`, `Audit.SharePoint`, `Audit.General`, `DLP.All` | Required | 
 | start_time | The earliest time to get content from. If start_time is specified, end_time must also be specified. The start_time must be before the end_time, can be at most 7 days ago, and has to be within 24 hours from end_time. Required format: YYYY-MM-DDTHH:MM:SS. If not specified, start time will be 24 hours ago. | Optional | 
 | end_time | The latest time to get content from. If end_time is specified, start_time must be also specified. The start_time must be before the end_time and has to be within 24 hours from start_time. Required format: YYYY-MM-DDTHH:MM:SS. If not specified, end_time will be now. | Optional | 
-| record_types_filter | A comma-separated list of the record types to fetch. Content records with a record  type that isn&#x27;t specified will not be fetched. If this field is left empty, all record types will be fetched. | Optional | 
-| workloads_filter | A comma-separated list of the workloads to fetch. Content records with a workload that isn&#x27;t specified will not be fetched. If this field is left empty, all workloads will be fetched. | Optional | 
-| operations_filter | A comma-separated list of the operations to fetch. Content records with an operation that isn&#x27;t specified will not be fetched. If this field is left empty, all operations will be fetched. | Optional |
+| record_types_filter | A comma-separated list of the record types to fetch. Content records with a record  type that is not specified will not be fetched. If this field is left empty, all record types will be fetched. | Optional | 
+| workloads_filter | A comma-separated list of the workloads to fetch. Content records with a workload that is not specified will not be fetched. If this field is left empty, all workloads will be fetched. | Optional | 
+| operations_filter | A comma-separated list of the operations to fetch. Content records with an operation that is not specified will not be fetched. If this field is left empty, all operations will be fetched. | Optional |
 | timeout | The timeout for the content requesting http call. The default is configured at the corresponding integration instance parameter. | Optional 
 
 
