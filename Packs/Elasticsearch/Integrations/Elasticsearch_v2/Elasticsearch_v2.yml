@@ -21,12 +21,12 @@ configuration:
   name: proxy
   required: false
   type: 8
-- defaultvalue: Elastic Search
+- defaultvalue: Elasticsearch
   display: Client type
   name: client_type
   options:
-  - Elastic Search
-  - Open Search
+  - Elasticsearch
+  - OpenSearch
   required: True
   type: 15
 - display: Index from which to fetch incidents (CSV)
