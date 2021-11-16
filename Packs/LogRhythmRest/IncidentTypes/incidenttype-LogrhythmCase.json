@@ -18,5 +18,6 @@
     "default": false,
     "autorun": false,
     "disabled": false,
-    "reputationCalc": 0
+    "reputationCalc": 0,
+    "layout": "LogRhythm Case Incident"
 }

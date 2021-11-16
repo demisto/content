@@ -19,5 +19,6 @@
     "autorun": true,
     "disabled": false,
     "reputationCalc": 0,
-    "playbookId": "Logrhythm Alarm Handling"
+    "playbookId": "Logrhythm Alarm Handling",
+    "layout": "LogRhythm Alarm Incident"
 }
