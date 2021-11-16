@@ -33,7 +33,6 @@ def main():
 
         for incident_id in incident_ids:
             rand_user = random.choice(non_OOO_list)
-            print(f'Assign {rand_user} as incident #{incident_id} owner')
             demisto.results(demisto.executeCommand("setIncident", {"id": str(incident_id), "owner": rand_user}))
 
 
