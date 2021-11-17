@@ -1351,6 +1351,7 @@ def create_search_with_retry(client: Client, fetch_mode: str, offense: Dict, eve
     num_of_failures = 0
     while num_of_failures <= max_retries:
         try:
+            # TODO Write query_expression to the log
             return client.search_create(query_expression=query_expression)
         except Exception:
             print_debug_msg(f'Failed to create search for offense ID: {offense_id}. '
@@ -1392,6 +1393,8 @@ def poll_offense_events_with_retry(client: Client, search_id: str, offense_id: i
             query_status = search_status_response.get('status')
             # failures are relevant only when consecutive
             num_of_failures = 0
+            # TODO Don't try to get events if CANCELLED or ERROR
+            # TODO Write query_status to the log
             if query_status in TERMINATING_SEARCH_STATUSES:
                 print_debug_msg(f'Getting events for offense {offense_id}')
                 search_results_response = client.search_results_get(search_id)
@@ -1585,6 +1588,7 @@ def update_mirrored_events(client: Client,
 
     Returns: (A list of updated offenses with their events)
     """
+    # TODO Remove duplication with long_running_execution_command
     offenses = context_data.get(MIRRORED_OFFENSES_CTX_KEY, [])
     if len(offenses) > offenses_per_fetch:
         offenses = offenses[:offenses_per_fetch]
@@ -1714,6 +1718,7 @@ def long_running_execution_command(client: Client, params: Dict):
         params (Dict): Demisto params.
 
     """
+    # TODO Remove duplication with update_mirrored_events
     validate_long_running_params(params)
     fetch_mode = params.get('fetch_mode', '')
     ip_enrich, asset_enrich = get_offense_enrichment(params.get('enrichment', 'IPs And Assets'))
