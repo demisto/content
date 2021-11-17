@@ -1,18 +1,3 @@
-The LogRhythm pack provides security operations to deliver comprehensive and actionable information into your enterprise IT environment.
-
-**What does this pack do?**
-- Execute queries on logs.
-- Retrieve case summaries, create new cases, or update the properties of a case.
-- Get host information, add new hosts and update host status, and query and update alarms.
-- Fetch cases and alarms as incidents.
-- Retrieve, update, and remove tags.
-- Get list details, add or remove items from lists.
-
-This pack includes the following playbooks:
-- **Logrhythm Alarm Handling** playbook that is triggered when fetching a LogRhythm alarm incident.
-- **LogRhythmRestV2 - Search query** playbook that retrieves query results.
-
-
 LogRhythm security intelligence.
 This integration was integrated and tested with version 7.7 of LogRhythm Rest API
 
@@ -6124,11 +6109,56 @@ The following sections list the changes in this version.
 ### Commands
 #### The following commands were removed in this version:
 * *lr-execute-query*
+* *lr-get-persons*
+* *lr-get-logins*
+* *lr-get-privileges*
+* *lr-get-profiles*
+* *lr-add-login*
+* *lr-add-user*
 * *lr-get-hosts-by-entity* - this command was replaced by *lr-hosts-list*.
-* *lr-get-hosts* - this command was replaced by *lr-hosts-list*.
 * *lr-update-host-status* - this command was replaced by *lr-hosts-status-update*.
-* *lr-get-persons* - this command was replaced by *lr-users-list*.
 * *lr-get-networks* - this command was replaced by *lr-networks-list*.
+* *lr-get-hosts* - this command was replaced by *lr-hosts-list*.
 * *lr-get-alarm-data* - this command was replaced by *lr-alarms-list*.
 * *lr-get-alarm-events* - this command was replaced by *lr-alarm-events-list*.
 * *lr-get-case-evidence* - this command was replaced by *lr-case-evidence-list*.
+* *lr-get-users* - this command was replaced by *lr-users-list*.
+
+
+### Arguments
+#### The following arguments were removed in this version:
+
+In the *lr-execute-search-query* command:
+* *max_massage* - this argument was replaced by *max_message*.
+
+### Outputs
+#### The following outputs were removed in this version:
+
+In the *lr-add-host* command:
+* *Logrhythm.Host.EntityId* - this output was replaced by *LogRhythm.Host.entity.id*.
+* *Logrhythm.Host.EntityName* - this output was replaced by *LogRhythm.Host.entity.name*.
+* *Logrhythm.Host.Status* - this output was replaced by *LogRhythm.Host.recordStatusName*.
+
+In the *lr-get-query-result* command:
+* *Logrhythm.Search.Results.TaskStatus* - this output was replaced by *LogRhythm.Search.TaskStatus*.
+* *Logrhythm.Search.Results.TaskID* - this output was replaced by *LogRhythm.Search.TaskId*.
+* *Logrhythm.Search.Results.Items.originEntityId* - this output was replaced by *LogRhythm.Search.Results.originEntityId*.
+* *Logrhythm.Search.Results.Items.impactedIp* - this output was replaced by *LogRhythm.Search.Results.impactedIp*.
+* *Logrhythm.Search.Results.Items.classificationTypeName* - this output was replaced by *LogRhythm.Search.Results.classificationTypeName*.
+* *Logrhythm.Search.Results.Items.logSourceName* - this output was replaced by *LogRhythm.Search.Results.logSourceName*.
+* *Logrhythm.Search.Results.Items.entityName* - this output was replaced by *LogRhythm.Search.Results.entityName*.
+* *Logrhythm.Search.Results.Items.normalDate* - this output was replaced by *LogRhythm.Search.Results.normalDate*.
+* *Logrhythm.Search.Results.Items.vendorMessageId* - this output was replaced by *LogRhythm.Search.Results.vendorMessageId*.
+* *Logrhythm.Search.Results.Items.priority* - this output was replaced by *LogRhythm.Search.Results.priority*.
+* *Logrhythm.Search.Results.Items.sequenceNumber* - this output was replaced by *LogRhythm.Search.Results.sequenceNumber*.
+* *Logrhythm.Search.Results.Items.originHostId* - this output was replaced by *LogRhythm.Search.Results.originHostId*.
+* *Logrhythm.Search.Results.Items.mpeRuleId* - this output was replaced by *LogRhythm.Search.Results.mpeRuleId*.
+* *Logrhythm.Search.Results.Items.originIp* - this output was replaced by *LogRhythm.Search.Results.originIp*.
+* *Logrhythm.Search.Results.Items.mpeRuleName* - this output was replaced by *LogRhythm.Search.Results.mpeRuleName*.
+* *Logrhythm.Search.Results.Items.logSourceHostId* - this output was replaced by *LogRhythm.Search.Results.logSourceHostId*.
+* *Logrhythm.Search.Results.Items.originHost* - this output was replaced by *LogRhythm.Search.Results.originHost*.
+* *Logrhythm.Search.Results.Items.logDate* - this output was replaced by *LogRhythm.Search.Results.logDate*.
+* *Logrhythm.Search.Results.Items.classificationName* - this output was replaced by *LogRhythm.Search.Results.classificationName*.
+
+In the *lr-execute-search-query* command:
+* *Logrhythm.Search.Task.TaskID* - this output was replaced by *LogRhythm.Search.TaskId*.
