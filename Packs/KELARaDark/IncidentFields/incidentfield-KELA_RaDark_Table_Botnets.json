@@ -128,8 +128,8 @@
             "width": 150
         }
     ],
-    "content": true,
     "defaultRows": [],
+    "content": true,
     "editForm": true,
     "group": 0,
     "hidden": false,

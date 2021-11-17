@@ -4,7 +4,7 @@
         "RaDark"
     ],
     "caseInsensitive": true,
-    "cliName": "kelaradarktableleakedcredentialsfromhackingdiscussions",
+    "cliName": "kelaradarktablevulnerabletechnologies",
     "closeForm": false,
     "columns": [
         {
@@ -20,11 +20,11 @@
             "width": 150
         },
         {
-            "displayName": "Email",
+            "displayName": "Hostname",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "email",
+            "key": "hostname",
             "required": false,
             "script": "",
             "selectValues": null,
@@ -32,11 +32,11 @@
             "width": 150
         },
         {
-            "displayName": "Domain",
+            "displayName": "Technology",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "domain",
+            "key": "technology",
             "required": false,
             "script": "",
             "selectValues": null,
@@ -44,51 +44,15 @@
             "width": 150
         },
         {
-            "displayName": "Password",
+            "displayName": "CVE Details",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "password",
+            "key": "cvedetails",
             "required": false,
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
-        },
-        {
-            "displayName": "Password Type",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "passwordtype",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "shortText",
-            "width": 150
-        },
-        {
-            "displayName": "Source",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "source",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "shortText",
-            "width": 150
-        },
-        {
-            "displayName": "Date",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "date",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "date",
             "width": 150
         }
     ],
@@ -97,10 +61,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_kelaradarktableleakedcredentialsfromhackingdiscussions",
+    "id": "incident_kelaradarktablevulnerabletechnologies",
     "isReadOnly": false,
     "locked": false,
-    "name": "KELA RaDark Table Leaked Credentials From Hacking Discussions",
+    "name": "KELA RaDark Table Vulnerable Technologies",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,

@@ -4,7 +4,7 @@
         "RaDark"
     ],
     "caseInsensitive": true,
-    "cliName": "kelaradarktableagressor",
+    "cliName": "kelaradarktablesensitivehosts",
     "closeForm": false,
     "columns": [
         {
@@ -20,11 +20,11 @@
             "width": 150
         },
         {
-            "displayName": "Bot ID",
+            "displayName": "Hostname",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "botid",
+            "key": "hostname",
             "required": false,
             "script": "",
             "selectValues": null,
@@ -32,23 +32,11 @@
             "width": 150
         },
         {
-            "displayName": "Updated Date",
+            "displayName": "IP",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "updateddate",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "date",
-            "width": 150
-        },
-        {
-            "displayName": "Resource",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "resource",
+            "key": "ip",
             "required": false,
             "script": "",
             "selectValues": null,
@@ -56,11 +44,11 @@
             "width": 150
         },
         {
-            "displayName": "Username",
+            "displayName": "ISP",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "username",
+            "key": "isp",
             "required": false,
             "script": "",
             "selectValues": null,
@@ -68,47 +56,11 @@
             "width": 150
         },
         {
-            "displayName": "Password",
+            "displayName": "Details",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "password",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "shortText",
-            "width": 150
-        },
-        {
-            "displayName": "Country",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "country",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "shortText",
-            "width": 150
-        },
-        {
-            "displayName": "Source IP",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "sourceip",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "shortText",
-            "width": 150
-        },
-        {
-            "displayName": "Infection Type",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "infectiontype",
+            "key": "details",
             "required": false,
             "script": "",
             "selectValues": null,
@@ -121,10 +73,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_kelaradarktableagressor",
+    "id": "incident_kelaradarktablesensitivehosts",
     "isReadOnly": false,
     "locked": false,
-    "name": "KELA RaDark Table Agressor",
+    "name": "KELA RaDark Table Sensitive Hosts",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,

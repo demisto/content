@@ -4,7 +4,7 @@
         "RaDark"
     ],
     "caseInsensitive": true,
-    "cliName": "kelaradarktableagressor",
+    "cliName": "kelaradarktabletwoeasy",
     "closeForm": false,
     "columns": [
         {
@@ -92,11 +92,11 @@
             "width": 150
         },
         {
-            "displayName": "Source IP",
+            "displayName": "Tags",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "sourceip",
+            "key": "tags",
             "required": false,
             "script": "",
             "selectValues": null,
@@ -104,11 +104,11 @@
             "width": 150
         },
         {
-            "displayName": "Infection Type",
+            "displayName": "Price",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "infectiontype",
+            "key": "price",
             "required": false,
             "script": "",
             "selectValues": null,
@@ -121,10 +121,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_kelaradarktableagressor",
+    "id": "incident_kelaradarktabletwoeasy",
     "isReadOnly": false,
     "locked": false,
-    "name": "KELA RaDark Table Agressor",
+    "name": "KELA RaDark Table TwoEasy",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,
@@ -136,5 +136,5 @@
     "unsearchable": false,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.0.0"
+    "fromVersion": "5.5.0"
 }
