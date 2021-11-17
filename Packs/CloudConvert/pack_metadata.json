@@ -12,19 +12,5 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
-    "dependencies": {
-        "CommonScripts": {
-            "mandatory": true,
-            "display_name": "Common Scripts"
-        },
-        "CommonPlaybooks": {
-            "mandatory": true,
-            "display_name": "Common Playbooks"
-        }
-    },
-    "displayedImages": [
-        "CommonScripts",
-        "CommonPlaybooks"
-    ]
+    "keywords": []
 }
