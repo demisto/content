@@ -563,7 +563,7 @@ def test_email_from_newline_lf(mocker):
     results = demisto.results.call_args[0]
     assert len(results) == 1
     assert results[0]['Type'] == entryTypes['note']
-    assert results[0]['EntryContext']['Email']['From'] == 'user@home.example.com'
+    assert results[0]['EntryContext']['Email']['From'] == '1111@test.org'
 
 
 def test_email_from_newline_crlf(mocker):
