@@ -487,7 +487,7 @@ class TestTableToMarkdown:
         """
         # dict value
         data = copy.deepcopy(DATA)
-        data[1]['extra_header'] = {'sample': 'qwerty', 'sample2': 'asdf'}
+        data[1]['extra_header'] = {'sample': 'qwerty', 'sample2': '`asdf'}
         table_dict_record = tableToMarkdown('tableToMarkdown test with dict record', data,
                                             headers=['header_1', 'header_2', 'extra_header'])
         expected_dict_record = (
@@ -495,7 +495,7 @@ class TestTableToMarkdown:
             '|header_1|header_2|extra_header|\n'
             '|---|---|---|\n'
             '| a1 | b1 |  |\n'
-            '| a2 | b2 | sample: qwerty<br>sample2: asdf |\n'
+            '| a2 | b2 | sample: qwerty<br>sample2: \\`asdf |\n'
             '| a3 | b3 |  |\n'
         )
         assert table_dict_record == expected_dict_record
