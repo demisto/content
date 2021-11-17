@@ -534,8 +534,8 @@ def test_email_from_one_line_no_comma_lf(mocker):
     results = demisto.results.call_args[0]
     assert len(results) == 1
     assert results[0]['Type'] == entryTypes['note']
-    assert results[0]['EntryContext']['Email']['From'] == 'user@example.com'
-    assert results[0]['EntryContext']['Email']['HeadersMap']['From'] == '\"First Last\" <user@example.com>'
+    assert results[0]['EntryContext']['Email']['From'] == '1111@test.org'
+    assert results[0]['EntryContext']['Email']['HeadersMap']['From'] == '\"First Last\" <1111@test.org>'
 
 
 def test_email_from_newline_lf(mocker):
@@ -591,7 +591,7 @@ def test_email_from_newline_crlf(mocker):
     results = demisto.results.call_args[0]
     assert len(results) == 1
     assert results[0]['Type'] == entryTypes['note']
-    assert results[0]['EntryContext']['Email']['From'] == 'user@example.com'
+    assert results[0]['EntryContext']['Email']['From'] == '1111@test.org'
 
 
 def test_email_from_one_line_lf(mocker):
@@ -619,7 +619,7 @@ def test_email_from_one_line_lf(mocker):
     results = demisto.results.call_args[0]
     assert len(results) == 1
     assert results[0]['Type'] == entryTypes['note']
-    assert results[0]['EntryContext']['Email']['From'] == 'user@example.com'
+    assert results[0]['EntryContext']['Email']['From'] == '1111@test.org'
 
 
 def test_email_from_one_line_crlf(mocker):
@@ -647,7 +647,7 @@ def test_email_from_one_line_crlf(mocker):
     results = demisto.results.call_args[0]
     assert len(results) == 1
     assert results[0]['Type'] == entryTypes['note']
-    assert results[0]['EntryContext']['Email']['From'] == 'user@example.com'
+    assert results[0]['EntryContext']['Email']['From'] == '1111@test.org'
 
 
 def test_eml_contains_eml_with_status(mocker):
