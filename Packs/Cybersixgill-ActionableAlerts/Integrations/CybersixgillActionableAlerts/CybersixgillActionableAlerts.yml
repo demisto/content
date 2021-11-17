@@ -76,7 +76,7 @@ description: Defines key assets relevant to your brand, industry, and geolocatio
 display: Cybersixgill Actionable Alerts
 name: Cybersixgill_Actionable_Alerts
 script:
-  dockerimage: devdemisto/sixgill:1.0.0.24408
+  dockerimage: demisto/sixgill:1.0.0.24408
   feed: false
   isfetch: true
   longRunning: false
@@ -84,6 +84,7 @@ script:
   runonce: false
   subtype: python3
   type: python
+  script: '-'
 tests:
 - No tests
 fromversion: 5.0.0

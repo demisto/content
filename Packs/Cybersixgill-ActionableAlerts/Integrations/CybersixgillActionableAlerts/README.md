@@ -7,7 +7,7 @@ Retrieving Cybersixgill's Actionable Alerts as incidents
 ## Use Cases
 Fetch Incidents & Events
 
-## Configure Cybersixgill on Demisto
+## Configure Cybersixgill on XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Cybersixgill.
@@ -22,7 +22,7 @@ Fetch Incidents & Events
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Fetch incidents
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ## output
@@ -51,4 +51,3 @@ After you successfully execute a command, a DBot message appears in the War Room
 ## Additional Information
 Contact us: support@cybersixgill.com
 
-## Known Limitations

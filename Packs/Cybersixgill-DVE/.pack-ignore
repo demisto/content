@@ -1,5 +1,2 @@
-[file:CybersixgillDVEFeed.yml]
-ignore=IN145
-
-[file:CybersixgillDVEEnrichment.yml]
+[file:CybersixgillActionableAlerts.yml]
 ignore=IN145
