@@ -1332,8 +1332,8 @@ function Main {
         Proxy currently isn't supported by PWSH New-Pssession, However partly implmentation of proxy feature still function (OAuth2.0 and redirect),
         leaving this parameter for feature development if required.
     #>
-    $no_proxy = $false
     $insecure = (ConvertTo-Boolean $integration_params.insecure)
+    $proxy = (ConvertTo-Boolean $integration_params.proxy)
 
     try {
         # Creating Compliance and search client
@@ -1347,7 +1347,7 @@ function Main {
                 $integration_params.credentials.password,
                 $oauth2_client.access_token,
                 $insecure,
-                $no_proxy
+                $proxy
         )
         # Executing command
         $Demisto.Debug("Command being called is $Command")
