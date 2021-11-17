@@ -453,7 +453,7 @@ script:
     - contextPath: QRadar.Note.CreatedBy
       description: The user who created the note.
       type: String
-    description: Creates a note on an offense.
+    description: Retrieves a list of notes for an offense.
     arguments:
     - name: offense_id
       required: true
@@ -487,7 +487,7 @@ script:
     - contextPath: QRadar.Note.CreatedBy
       description: The user who created the note.
       type: String
-    description: Retrieves a list of notes for an offense.
+    description: Creates a note on an offense.
     arguments:
     - name: offense_id
       required: true
