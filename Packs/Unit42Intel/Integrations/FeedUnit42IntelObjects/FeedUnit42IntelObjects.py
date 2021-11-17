@@ -550,7 +550,7 @@ def fetch_indicators_command(client: Client, params: Dict[str, Any]) -> List[Dic
 ''' MAIN FUNCTION '''
 
 
-def main():
+def main():  # pragma: no cover
     """
     main function, parses params and runs command functions
     """
