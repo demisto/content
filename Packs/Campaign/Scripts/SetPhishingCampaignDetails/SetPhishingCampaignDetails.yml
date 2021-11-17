@@ -1,0 +1,41 @@
+commonfields:
+  id: SetPhishingCampaignDetails
+  version: 2
+vcShouldKeepItemLegacyProdMachine: false
+name: SetPhishingCampaignDetails
+script: ''
+type: python
+tags: []
+comment: |-
+  Copying EmailCampaign context from current incident to other existing incident.
+  This script runs with elevated permissions.
+  Cortex XSOAR recommends using the built-in RBAC functionality to limit access to only those users requiring access to this script.
+enabled: true
+args:
+- name: id
+  default: true
+
+  description: Incident to set context values in (Default is current incident)
+- name: append
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: If false then the context key will be overwritten. If set to true then
+    the script will append to existing context key
+  defaultValue: "false"
+- name: errorUnfinished
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Returns an error if not all of the incidents where modified.
+  defaultValue: "false"
+outputs: []
+scripttarget: 0
+subtype: python3
+pswd: ""
+runonce: false
+dockerimage: demisto/python3:3.9.7.24076
+runas: DBotRole
+
