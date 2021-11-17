@@ -1131,6 +1131,9 @@ script:
     - name: request_type_suffix
       description: request_type_suffix
       required: true
+    - name: output_prefix
+      description: output_prefix
+      required: true
     - default: false
       description: Interval in seconds between each poll.
       isArray: false
@@ -1144,7 +1147,6 @@ script:
     name: opsgenie-get-polling-result
     description: Inside command for polling
     polling: true
-    outputs: []
   - arguments:
     - default: false
       description: The ID of the incident from opsgenie

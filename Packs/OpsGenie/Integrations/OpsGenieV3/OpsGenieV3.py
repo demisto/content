@@ -27,19 +27,40 @@ ALL_TYPE = 'All'
 
 ''' CLIENT CLASS '''
 
+class NotFinished(Exception):
+    pass
 
 class Client(BaseClient):
     """
     OpsGenieV3 Client
     """
 
+    @staticmethod
+    def error_handler(res: requests.Response):
+        err_msg = 'Error in API call [{}] - {}' \
+            .format(res.status_code, res.reason)
+        if res.status_code == 404:
+            raise NotFinished(err_msg)
+        try:
+            # Try to parse json error response
+            error_entry = res.json()
+            err_msg += '\n{}'.format(json.dumps(error_entry))
+            raise DemistoException(err_msg, res=res)
+        except ValueError:
+            err_msg += '\n{}'.format(res.text)
+            raise DemistoException(err_msg, res=res)
+
     def get_request(self, args: dict):
         url_suffix = "/v1" if args.get('request_type_suffix') == INCIDENTS_SUFFIX else "/v2"
-        data = self._http_request(
-            method='GET',
-            url_suffix=f"{url_suffix}/{args.get('request_type_suffix')}/{REQUESTS_SUFFIX}/"
-                       f"{args.get('request_id')}"
-        )
+        try:
+            data = self._http_request(
+                method='GET',
+                url_suffix=f"{url_suffix}/{args.get('request_type_suffix')}/{REQUESTS_SUFFIX}/"
+                           f"{args.get('request_id')}",
+                error_handler=Client.error_handler
+            )
+        except NotFinished as e:
+            return {}
         return data
 
     def get_paged(self, args: dict):
@@ -288,6 +309,7 @@ def get_polling_result(client: Client, args: dict) -> CommandResults:
     if isinstance(polling_result, CommandResults):
         return polling_result
     command_result = CommandResults(
+        outputs_prefix=args.get("output_prefix", "OpsGenie"),
         outputs=polling_result.get("data"),
         readable_output=tableToMarkdown("OpsGenie", polling_result.get('data')),
         raw_response=polling_result
@@ -318,11 +340,14 @@ def run_polling_command(args: dict, cmd: str, results_function: Callable,
         )
 
         # result with scheduled_command only - no update to the war room
-        command_results = CommandResults(scheduled_command=scheduled_command)
+        command_results = CommandResults(scheduled_command=scheduled_command,
+                                         readable_output=f"Waiting for request_id={request_id}",
+                                         outputs_prefix=args.get("output_prefix", "OpsGenie"),
+                                         outputs={"requestId": request_id})
         return command_results
 
     command_results = results_function(args)
-    status = command_results.get("data").get("success")
+    status = command_results.get("data", {}).get("success")
     if status is None:
         # schedule next poll
         polling_args = {
@@ -425,6 +450,7 @@ def create_alert(client: Client, args: Dict[str, Any]) -> CommandResults:
     args['responders'] = argToList(args.get('responders'))
     polling_args = {
         'request_type_suffix': ALERTS_SUFFIX,
+        'output_prefix': 'OpsGenie.Alert',
         **args
     }
     polling_result = run_polling_command(args=polling_args,
@@ -464,6 +490,7 @@ def list_alerts(client: Client, args: Dict[str, Any]) -> CommandResults:
 def delete_alert(client: Client, args: Dict[str, Any]) -> CommandResults:
     polling_args = {
         'request_type_suffix': ALERTS_SUFFIX,
+        'output_prefix': 'OpsGenie.DeletedAlert',
         **args
     }
     polling_result = run_polling_command(args=polling_args,
@@ -476,6 +503,7 @@ def delete_alert(client: Client, args: Dict[str, Any]) -> CommandResults:
 def ack_alert(client: Client, args: Dict[str, Any]) -> CommandResults:
     polling_args = {
         'request_type_suffix': ALERTS_SUFFIX,
+        'output_prefix': 'OpsGenie.AckedAlert',
         **args
     }
     polling_result = run_polling_command(args=polling_args,
@@ -488,6 +516,7 @@ def ack_alert(client: Client, args: Dict[str, Any]) -> CommandResults:
 def close_alert(client: Client, args: Dict[str, Any]) -> CommandResults:
     polling_args = {
         'request_type_suffix': ALERTS_SUFFIX,
+        'output_prefix': 'OpsGenie.ClosedAlert',
         **args
     }
     polling_result = run_polling_command(args=polling_args,
@@ -507,6 +536,7 @@ def assign_alert(client: Client, args: Dict[str, Any]) -> CommandResults:
     polling_args = {
         'request_type_suffix': ALERTS_SUFFIX,
         'owner': owner,
+        'output_prefix': 'OpsGenie.AssignAlert',
         **args
     }
     polling_result = run_polling_command(args=polling_args,
@@ -520,6 +550,7 @@ def add_responder_alert(client: Client, args: Dict[str, Any]) -> CommandResults:
     args['responders'] = argToList(args.get('responders'))
     polling_args = {
         'request_type_suffix': ALERTS_SUFFIX,
+        'output_prefix': 'OpsGenie.AddResponderAlert',
         **args
     }
     polling_result = run_polling_command(args=polling_args,
@@ -550,6 +581,7 @@ def escalate_alert(client: Client, args: Dict[str, Any]) -> CommandResults:
     polling_args = {
         'request_type_suffix': ALERTS_SUFFIX,
         'escalation': escalation,
+        'output_prefix': 'OpsGenie.EscalateAlert',
         **args
     }
     polling_result = run_polling_command(args=polling_args,
@@ -563,6 +595,7 @@ def add_alert_tag(client: Client, args: Dict[str, Any]) -> CommandResults:
     args['tags'] = argToList(args.get('tags'))
     polling_args = {
         'request_type_suffix': ALERTS_SUFFIX,
+        'output_prefix': 'OpsGenie.AddTagAlert',
         **args
     }
     polling_result = run_polling_command(args=polling_args,
@@ -576,6 +609,7 @@ def remove_alert_tag(client: Client, args: Dict[str, Any]) -> CommandResults:
     args['tags'] = argToList(args.get('tags'))
     polling_args = {
         'request_type_suffix': ALERTS_SUFFIX,
+        'output_prefix': 'OpsGenie.RemoveTagAlert',
         **args
     }
     polling_result = run_polling_command(args=polling_args,
@@ -648,6 +682,7 @@ def create_incident(client: Client, args: Dict[str, Any]) -> CommandResults:
     args['responders'] = argToList(args.get('responders'))
     polling_args = {
         'request_type_suffix': INCIDENTS_SUFFIX,
+        'output_prefix': 'OpsGenie.Incident',
         **args
     }
     polling_result = run_polling_command(args=polling_args,
@@ -660,6 +695,7 @@ def create_incident(client: Client, args: Dict[str, Any]) -> CommandResults:
 def delete_incident(client: Client, args: Dict[str, Any]) -> CommandResults:
     polling_args = {
         'request_type_suffix': INCIDENTS_SUFFIX,
+        'output_prefix': 'OpsGenie.DeletedIncident',
         **args
     }
     polling_result = run_polling_command(args=polling_args,
@@ -699,6 +735,7 @@ def list_incidents(client: Client, args: Dict[str, Any]) -> CommandResults:
 def close_incident(client: Client, args: Dict[str, Any]) -> CommandResults:
     polling_args = {
         'request_type_suffix': INCIDENTS_SUFFIX,
+        'output_prefix': 'OpsGenie.ClosedIncident',
         **args
     }
     polling_result = run_polling_command(args=polling_args,
@@ -711,6 +748,7 @@ def close_incident(client: Client, args: Dict[str, Any]) -> CommandResults:
 def resolve_incident(client: Client, args: Dict[str, Any]) -> CommandResults:
     polling_args = {
         'request_type_suffix': INCIDENTS_SUFFIX,
+        'output_prefix': 'OpsGenie.ResolvedIncident',
         **args
     }
     polling_result = run_polling_command(args=polling_args,
@@ -724,6 +762,7 @@ def add_responder_incident(client: Client, args: Dict[str, Any]) -> CommandResul
     args['responders'] = argToList(args.get('responders'))
     polling_args = {
         'request_type_suffix': INCIDENTS_SUFFIX,
+        'output_prefix': 'OpsGenie.AddResponderIncident',
         **args
     }
     polling_result = run_polling_command(args=polling_args,
@@ -737,6 +776,7 @@ def add_tag_incident(client: Client, args: Dict[str, Any]) -> CommandResults:
     args['tags'] = argToList(args.get('tags'))
     polling_args = {
         'request_type_suffix': INCIDENTS_SUFFIX,
+        'output_prefix': 'OpsGenie.AddTagIncident',
         **args
     }
     polling_result = run_polling_command(args=polling_args,
@@ -750,6 +790,7 @@ def remove_tag_incident(client: Client, args: Dict[str, Any]) -> CommandResults:
     args['tags'] = argToList(args.get('tags'))
     polling_args = {
         'request_type_suffix': INCIDENTS_SUFFIX,
+        'output_prefix': 'OpsGenie.RemoveTagIncident',
         **args
     }
     polling_result = run_polling_command(args=polling_args,

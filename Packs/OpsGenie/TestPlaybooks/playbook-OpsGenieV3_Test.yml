@@ -1,0 +1,2458 @@
+id: OpsGenieV3
+name: OpsGenieV3
+version: -1
+fromversion: 4.5.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: '0'
+    type: start
+    task:
+      id: '0'
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 50}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: 1
+    taskid: '1'
+    type: regular
+    task:
+      id: '1'
+      version: -1
+      name: DeleteContext
+      description: ''
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '2':
+    id: 2
+    taskid: '2'
+    type: regular
+    task:
+      id: '2'
+      version: -1
+      name: opsgenie-create-alert
+      description: ''
+      script: OpsGenieV3|||opsgenie-create-alert
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '3':
+    id: '3'
+    taskid: '3'
+    type: condition
+    task:
+      id: '3'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.alertId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.alias
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.integrationId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.Alert.isSuccess
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.processedAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.requestId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.Alert.success
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '4':
+    id: 4
+    taskid: '4'
+    type: regular
+    task:
+      id: '4'
+      version: -1
+      name: opsgenie-get-alerts
+      description: ''
+      script: OpsGenieV3|||opsgenie-get-alerts
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '5':
+    id: '5'
+    taskid: '5'
+    type: condition
+    task:
+      id: '5'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '6'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.Alert.acknowledged
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.alias
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.createdAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.integration.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.integration.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.integration.type
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.Alert.isSeen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.lastOccurredAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.message
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.owner
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.ownerTeamId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.priority
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.responders.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.responders.type
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.Alert.seen
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.Alert.snoozed
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.source
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.teams.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.tinyId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.updatedAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.report.ackTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.report.acknowledgedBy
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.report.closeTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.report.closedBy
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '6':
+    id: 6
+    taskid: '6'
+    type: regular
+    task:
+      id: '6'
+      version: -1
+      name: opsgenie-delete-alert
+      description: ''
+      script: OpsGenieV3|||opsgenie-delete-alert
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '7':
+    id: '7'
+    taskid: '7'
+    type: condition
+    task:
+      id: '7'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '8'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.DeletedAlert.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.DeletedAlert.alertId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.DeletedAlert.alias
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.DeletedAlert.integrationId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.DeletedAlert.isSuccess
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.DeletedAlert.processedAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.DeletedAlert.requestId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.DeletedAlert.status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.DeletedAlert.success
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '8':
+    id: 8
+    taskid: '8'
+    type: regular
+    task:
+      id: '8'
+      version: -1
+      name: opsgenie-ack-alert
+      description: ''
+      script: OpsGenieV3|||opsgenie-ack-alert
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '9':
+    id: '9'
+    taskid: '9'
+    type: condition
+    task:
+      id: '9'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '10'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AckedAlert.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AckedAlert.alertId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AckedAlert.alias
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AckedAlert.integrationId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.AckedAlert.isSuccess
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AckedAlert.processedAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AckedAlert.requestId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AckedAlert.status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.AckedAlert.success
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '10':
+    id: 10
+    taskid: '10'
+    type: regular
+    task:
+      id: '10'
+      version: -1
+      name: opsgenie-close-alert
+      description: ''
+      script: OpsGenieV3|||opsgenie-close-alert
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '11':
+    id: '11'
+    taskid: '11'
+    type: condition
+    task:
+      id: '11'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '12'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.ClosedAlert.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.ClosedAlert.alertId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.ClosedAlert.alias
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.ClosedAlert.integrationId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.ClosedAlert.isSuccess
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.ClosedAlert.processedAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.ClosedAlert.requestId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.ClosedAlert.status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.ClosedAlert.success
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 2200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '12':
+    id: 12
+    taskid: '12'
+    type: regular
+    task:
+      id: '12'
+      version: -1
+      name: opsgenie-assign-alert
+      description: ''
+      script: OpsGenieV3|||opsgenie-assign-alert
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '13'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '13':
+    id: '13'
+    taskid: '13'
+    type: condition
+    task:
+      id: '13'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '14'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AssignAlert.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AssignAlert.alertId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AssignAlert.alias
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AssignAlert.integrationId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.AssignAlert.isSuccess
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AssignAlert.processedAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AssignAlert.requestId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AssignAlert.status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.AssignAlert.success
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 2600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '14':
+    id: 14
+    taskid: '14'
+    type: regular
+    task:
+      id: '14'
+      version: -1
+      name: opsgenie-add-responder-alert
+      description: ''
+      script: OpsGenieV3|||opsgenie-add-responder-alert
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '15':
+    id: '15'
+    taskid: '15'
+    type: condition
+    task:
+      id: '15'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '16'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AddResponderAlert.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AddResponderAlert.alertId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AddResponderAlert.alias
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AddResponderAlert.integrationId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.AddResponderAlert.isSuccess
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AddResponderAlert.processedAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AddResponderAlert.requestId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AddResponderAlert.status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.AddResponderAlert.success
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 3000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '16':
+    id: 16
+    taskid: '16'
+    type: regular
+    task:
+      id: '16'
+      version: -1
+      name: opsgenie-get-escalations
+      description: ''
+      script: OpsGenieV3|||opsgenie-get-escalations
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '17'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 3200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '17':
+    id: '17'
+    taskid: '17'
+    type: condition
+    task:
+      id: '17'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '18'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Escalation.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Escalation.Id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Escalation.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Escalation.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Escalation.ownerTeam
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Escalation.rules
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Escalation.integrationId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.Escalation.isSuccess
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Escalation.processedAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Escalation.requestId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Escalation.status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.Escalation.success
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 3400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '18':
+    id: 18
+    taskid: '18'
+    type: regular
+    task:
+      id: '18'
+      version: -1
+      name: opsgenie-escalate-alert
+      description: ''
+      script: OpsGenieV3|||opsgenie-escalate-alert
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '19'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 3600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '19':
+    id: '19'
+    taskid: '19'
+    type: condition
+    task:
+      id: '19'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '20'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.EscalateAlert.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.EscalateAlert.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.EscalateAlert.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.EscalateAlert.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.EscalateAlert.integrationId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.EscalateAlert.isSuccess
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.EscalateAlert.processedAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.EscalateAlert.requestId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.EscalateAlert.status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.EscalateAlert.success
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 3800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '20':
+    id: 20
+    taskid: '20'
+    type: regular
+    task:
+      id: '20'
+      version: -1
+      name: opsgenie-add-alert-tag
+      description: ''
+      script: OpsGenieV3|||opsgenie-add-alert-tag
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '21'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 4000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '21':
+    id: '21'
+    taskid: '21'
+    type: condition
+    task:
+      id: '21'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '22'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AddTagAlert.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AddTagAlert.alertId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AddTagAlert.alias
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AddTagAlert.integrationId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.AddTagAlert.isSuccess
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AddTagAlert.processedAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AddTagAlert.requestId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AddTagAlert.status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.AddTagAlert.success
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 4200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '22':
+    id: 22
+    taskid: '22'
+    type: regular
+    task:
+      id: '22'
+      version: -1
+      name: opsgenie-remove-alert-tag
+      description: ''
+      script: OpsGenieV3|||opsgenie-remove-alert-tag
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '23'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 4400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '23':
+    id: '23'
+    taskid: '23'
+    type: condition
+    task:
+      id: '23'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '24'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.RemoveTagAlert.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.RemoveTagAlert.alertId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.RemoveTagAlert.alias
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.RemoveTagAlert.integrationId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.RemoveTagAlert.isSuccess
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.RemoveTagAlert.processedAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.RemoveTagAlert.requestId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.RemoveTagAlert.status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.RemoveTagAlert.success
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 4600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '24':
+    id: 24
+    taskid: '24'
+    type: regular
+    task:
+      id: '24'
+      version: -1
+      name: opsgenie-get-alert-attachments
+      description: ''
+      script: OpsGenieV3|||opsgenie-get-alert-attachments
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '25'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 4800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '25':
+    id: '25'
+    taskid: '25'
+    type: condition
+    task:
+      id: '25'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '26'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.Attachment.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.Attachment.alertId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.Attachment.alias
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.Attachment.integrationId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.Alert.Attachment.isSuccess
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.Attachment.processedAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.Attachment.requestId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.Attachment.status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.Alert.Attachment.success
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 5000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '26':
+    id: 26
+    taskid: '26'
+    type: regular
+    task:
+      id: '26'
+      version: -1
+      name: opsgenie-get-schedules
+      description: ''
+      script: OpsGenieV3|||opsgenie-get-schedules
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '27'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 5200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '27':
+    id: '27'
+    taskid: '27'
+    type: condition
+    task:
+      id: '27'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '28'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Schedule.description
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.Schedule.enabled
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Schedule.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Schedule.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Schedule.ownerTeam.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Schedule.ownerTeam.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Schedule.timezone
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 5400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '28':
+    id: 28
+    taskid: '28'
+    type: regular
+    task:
+      id: '28'
+      version: -1
+      name: opsgenie-get-schedule-overrides
+      description: ''
+      script: OpsGenieV3|||opsgenie-get-schedule-overrides
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '29'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 5600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '29':
+    id: '29'
+    taskid: '29'
+    type: condition
+    task:
+      id: '29'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '30'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Schedule.Override.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Schedule.Override.alertId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Schedule.Override.alias
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Schedule.Override.integrationId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.Schedule.Override.isSuccess
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Schedule.Override.processedAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Schedule.Override.requestId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Schedule.Override.status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.Schedule.Override.success
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 5800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '30':
+    id: 30
+    taskid: '30'
+    type: regular
+    task:
+      id: '30'
+      version: -1
+      name: opsgenie-get-on-call
+      description: ''
+      script: OpsGenieV3|||opsgenie-get-on-call
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '31'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 6000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '31':
+    id: '31'
+    taskid: '31'
+    type: condition
+    task:
+      id: '31'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '32'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.Schedule.OnCall._parent.enabled
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Schedule.OnCall._parent.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Schedule.OnCall._parent.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Schedule.OnCall.onCallParticipants.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Schedule.OnCall.onCallParticipants.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Schedule.OnCall.onCallParticipants.type
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 6200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '32':
+    id: 32
+    taskid: '32'
+    type: regular
+    task:
+      id: '32'
+      version: -1
+      name: opsgenie-create-incident
+      description: ''
+      script: OpsGenieV3|||opsgenie-create-incident
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '33'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 6400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '33':
+    id: '33'
+    taskid: '33'
+    type: condition
+    task:
+      id: '33'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '34'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Incident.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Incident.Id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Incident.alias
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Incident.integrationId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.Incident.isSuccess
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Incident.processedAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Incident.requestId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Incident.status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.Incident.success
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 6600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '34':
+    id: 34
+    taskid: '34'
+    type: regular
+    task:
+      id: '34'
+      version: -1
+      name: opsgenie-delete-incident
+      description: ''
+      script: OpsGenieV3|||opsgenie-delete-incident
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '35'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 6800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '35':
+    id: '35'
+    taskid: '35'
+    type: condition
+    task:
+      id: '35'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '36'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.DeletedIncident.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.DeletedIncident.alertId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.DeletedIncident.alias
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.DeletedIncident.integrationId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.DeletedIncident.isSuccess
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.DeletedIncident.processedAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.DeletedIncident.requestId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.DeletedIncident.status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.DeletedIncident.success
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 7000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '36':
+    id: 36
+    taskid: '36'
+    type: regular
+    task:
+      id: '36'
+      version: -1
+      name: opsgenie-get-polling-result
+      description: ''
+      script: OpsGenieV3|||opsgenie-get-polling-result
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '37'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 7200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '37':
+    id: 37
+    taskid: '37'
+    type: regular
+    task:
+      id: '37'
+      version: -1
+      name: opsgenie-get-incidents
+      description: ''
+      script: OpsGenieV3|||opsgenie-get-incidents
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '38'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 7400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '38':
+    id: '38'
+    taskid: '38'
+    type: condition
+    task:
+      id: '38'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '39'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.Incident.acknowledged
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Incident.alias
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Incident.count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Incident.createdAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Incident.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Incident.integration.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Incident.integration.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Incident.integration.type
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.Incident.isSeen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Incident.lastOccurredAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Incident.message
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Incident.owner
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Incident.ownerTeamId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Incident.priority
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Incident.responders.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Incident.responders.type
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.Incident.seen
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.Incident.snoozed
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Incident.source
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Incident.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Incident.teams.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Incident.tinyId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Incident.updatedAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Incident.report.ackTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Incident.report.acknowledgedBy
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Incident.report.closeTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Incident.report.closedBy
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 7600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '39':
+    id: 39
+    taskid: '39'
+    type: regular
+    task:
+      id: '39'
+      version: -1
+      name: opsgenie-close-incident
+      description: ''
+      script: OpsGenieV3|||opsgenie-close-incident
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '40'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 7800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '40':
+    id: '40'
+    taskid: '40'
+    type: condition
+    task:
+      id: '40'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '41'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.ClosedIncident.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.ClosedIncident.alertId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.ClosedIncident.alias
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.ClosedIncident.integrationId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.ClosedIncident.isSuccess
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.ClosedIncident.processedAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.ClosedIncident.requestId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.ClosedIncident.status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.ClosedIncident.success
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 8000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '41':
+    id: 41
+    taskid: '41'
+    type: regular
+    task:
+      id: '41'
+      version: -1
+      name: opsgenie-resolve-incident
+      description: ''
+      script: OpsGenieV3|||opsgenie-resolve-incident
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '42'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 8200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '42':
+    id: '42'
+    taskid: '42'
+    type: condition
+    task:
+      id: '42'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '43'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.ResolvedIncident.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.ResolvedIncident.alertId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.ResolvedIncident.alias
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.ResolvedIncident.integrationId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.ResolvedIncident.isSuccess
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.ResolvedIncident.processedAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.ResolvedIncident.requestId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.ResolvedIncident.status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.ResolvedIncident.success
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 8400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '43':
+    id: 43
+    taskid: '43'
+    type: regular
+    task:
+      id: '43'
+      version: -1
+      name: opsgenie-add-responder-incident
+      description: ''
+      script: OpsGenieV3|||opsgenie-add-responder-incident
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '44'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 8600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '44':
+    id: '44'
+    taskid: '44'
+    type: condition
+    task:
+      id: '44'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '45'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AddResponderIncident.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AddResponderIncident.alertId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AddResponderIncident.alias
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AddResponderIncident.integrationId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.AddResponderIncident.isSuccess
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AddResponderIncident.processedAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AddResponderIncident.requestId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AddResponderIncident.status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.AddResponderIncident.success
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 8800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '45':
+    id: 45
+    taskid: '45'
+    type: regular
+    task:
+      id: '45'
+      version: -1
+      name: opsgenie-add-tag-incident
+      description: ''
+      script: OpsGenieV3|||opsgenie-add-tag-incident
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '46'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 9000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '46':
+    id: '46'
+    taskid: '46'
+    type: condition
+    task:
+      id: '46'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '47'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AddTagIncident.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AddTagIncident.alertId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AddTagIncident.alias
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AddTagIncident.integrationId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.AddTagIncident.isSuccess
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AddTagIncident.processedAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AddTagIncident.requestId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AddTagIncident.status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.AddTagIncident.success
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 9200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '47':
+    id: 47
+    taskid: '47'
+    type: regular
+    task:
+      id: '47'
+      version: -1
+      name: opsgenie-remove-tag-incident
+      description: ''
+      script: OpsGenieV3|||opsgenie-remove-tag-incident
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '48'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 9400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '48':
+    id: '48'
+    taskid: '48'
+    type: condition
+    task:
+      id: '48'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '49'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.RemoveTagIncident.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.RemoveTagIncident.alertId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.RemoveTagIncident.alias
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.RemoveTagIncident.integrationId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.RemoveTagIncident.isSuccess
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.RemoveTagIncident.processedAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.RemoveTagIncident.requestId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.RemoveTagIncident.status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.RemoveTagIncident.success
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 9600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '49':
+    id: 49
+    taskid: '49'
+    type: regular
+    task:
+      id: '49'
+      version: -1
+      name: opsgenie-get-teams
+      description: ''
+      script: OpsGenieV3|||opsgenie-get-teams
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '50'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 9800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '50':
+    id: '50'
+    taskid: '50'
+    type: condition
+    task:
+      id: '50'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '51'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Team.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Team.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Team.links.api
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Team.links.web
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Team.name
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 10000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '51':
+    id: '51'
+    taskid: '51'
+    type: title
+    task:
+      id: '51'
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 10200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width":
+  380, "x": 50, "y": 50}}}'
+inputs: []
+outputs: []
