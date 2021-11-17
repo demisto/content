@@ -3,3 +3,5 @@ ignore=PA116
 
 [file:README.md]
 ignore=RM104
+[file:Hunting]
+ignore=PA129
