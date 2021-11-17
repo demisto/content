@@ -1,11 +1,29 @@
-Threat Intel Report object gives the user a rich text editing experience, and a clean report creation and sharing, that allows the user to manually create TI Reports. The pack comes with 4 OOTB report templates:
+Threat intel reports summarize and share threat intelligence research conducted within your organization by threat analysts and threat hunters. Threat intelligence reports help you to communicate the current threat landscape to internal and external stakeholders, whether in the form of high-level summary reports for C-level executives, or detailed, tactical reports for the SOC and other security stakeholders.
 
-1. Campaign Report
-2. Threat Actor Report
-3. Malware Report
-4. Vulnerability Report
+## What does this pack do?
 
-The user may also add relationships to indicators via Relationships to add additional data to the report. Markdown is supported in the report body allowing to add tables, images, change the color of the font or background and more.
+This pack lets you:
+- Create threat intel reports based on out-of-the-box or customized layouts, while applying rich formatting to the body of the report.
+- Publish a report within Cortex XSOAR to share with other users.
+- Export a report to PDF format.
 
+The pack comes with 5 out-of-the-box report layouts for easier use:
+1. Executive Brief
+2. Campaign Report
+3. Threat actor report
+4. Malware Report
+5. Vulnerability Report
 
-![Layout](https://raw.githubusercontent.com/demisto/content/2fafdfd0d2d1959b8b998c22c84e0693859e640e/Packs/ThreatIntel/doc_files/layout.png)
+You can also add relationships between reports and indicators to add additional data to the report. Markdown is supported in the report body, allowing you to add formatting such as tables, images, and font/background color.
+
+Executive brief report
+![Layout](https://raw.githubusercontent.com/demisto/content/db59767bf57ba1f2e1306f4a593f2c1b014d4e0c/Packs/ThreatIntel/doc_files/executive_brief.png)
+
+Threat actor report
+![Layout](https://raw.githubusercontent.com/demisto/content/db59767bf57ba1f2e1306f4a593f2c1b014d4e0c/Packs/ThreatIntel/doc_files/threat_actor.png)
+
+Malware report
+![Layout](https://raw.githubusercontent.com/demisto/content/db59767bf57ba1f2e1306f4a593f2c1b014d4e0c/Packs/ThreatIntel/doc_files/malware.png)
+
+Vulnerability report
+![Layout](https://raw.githubusercontent.com/demisto/content/db59767bf57ba1f2e1306f4a593f2c1b014d4e0c/Packs/ThreatIntel/doc_files/vulnerability.png)

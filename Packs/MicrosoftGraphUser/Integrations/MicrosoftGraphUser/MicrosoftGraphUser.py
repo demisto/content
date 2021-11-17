@@ -13,6 +13,7 @@ BLOCK_ACCOUNT_JSON = '{"accountEnabled": false}'
 UNBLOCK_ACCOUNT_JSON = '{"accountEnabled": true}'
 NO_OUTPUTS: dict = {}
 APP_NAME = 'ms-graph-user'
+INVALID_USER_CHARS_REGEX = re.compile(r'[%&*+/=?`{|}]')
 
 
 def camel_case_to_readable(text):
@@ -46,6 +47,15 @@ def parse_outputs(users_data):
         user_outputs = {k.replace(' ', ''): v for k, v in user_readable.copy().items()}
 
         return user_readable, user_outputs
+
+
+def get_unsupported_chars_in_user(user: Optional[str]) -> set:
+    """
+    Extracts the invalid user characters found in the provided string.
+    """
+    if not user:
+        return set([])
+    return set(INVALID_USER_CHARS_REGEX.findall(user))
 
 
 class MsGraphClient:
@@ -293,7 +303,15 @@ def get_delta_command(client: MsGraphClient, args: Dict):
 def get_user_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
     properties = args.get('properties', '*')
-    user_data = client.get_user(user, properties)
+    try:
+        user_data = client.get_user(user, properties)
+    except DemistoException as e:
+        if 'Bad request. Please fix the request before retrying' in e.args[0]:
+            invalid_chars = get_unsupported_chars_in_user(user)
+            if len(invalid_chars) > 0:
+                error = f'Request failed because the user contains unsupported characters: {invalid_chars}\n{str(e)}'
+                return error, {}, error
+        raise e
 
     # In case the request returned a 404 error display a proper message to the war room
     if user_data.get('NotFound', ''):
