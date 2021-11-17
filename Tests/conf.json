@@ -3187,9 +3187,9 @@
             "fromversion": "5.5.0"
         },
         {
-            "integrations": "GCP Whitelist Feed",
-            "playbookID": "GCPWhitelist_Feed_Test",
-            "fromversion": "5.5.0"
+            "integrations": "Google IP Ranges Feed",
+            "playbookID": "Fetch Indicators Test",
+            "fromversion": "6.0.0"
         },
         {
             "integrations": "Azure AD Connect Health Feed",
@@ -4813,7 +4813,6 @@
         "Infoblox Test": "Issue 25651",
         "Carbon Black Edr - Test": "Issue 40132",
         "Phishing v2 - Test - Actual Incident": "Issue 41322",
-        "AutoFocus V2 test": "Issue 26464",
         "Kaspersky Security Center - Test": "Issue 36487",
         "carbonBlackEndpointStandardTestPlaybook": "Issue 36936",
         "LogRhythm REST test": "Issue 40654"
@@ -4892,7 +4891,6 @@
         "Check Point Sandblast": "Issue 15948",
         "Remedy AR": "getting 'Not Found' in test button",
         "Salesforce": "Issue 15901",
-        "RedCanary": "License expired",
         "ANYRUN": "No instance",
         "Snowflake": "Looks like account expired, needs looking into",
         "Cisco Spark": "Issue 18940",
@@ -5088,7 +5086,6 @@
         "Prisma Access Egress IP feed",
         "Lastline v2",
         "McAfee DXL",
-        "GCP Whitelist Feed",
         "Cortex Data Lake",
         "Mail Listener v2",
         "EDL",
