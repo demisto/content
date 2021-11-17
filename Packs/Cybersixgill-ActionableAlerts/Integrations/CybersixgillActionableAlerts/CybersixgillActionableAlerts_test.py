@@ -454,11 +454,11 @@ def test_fetch_incidents(mocker):
     mocker.patch.object(demisto, 'last_fetch_time', return_value={'time': '2021-11-07 06:01:05'})
     mocker.patch.object(demisto, 'incidents')
 
-    from sixgill.sixgill_alert_client import SixgillAlertClient
+    from sixgill.sixgill_alert_client import SixgillActionableAlertClient
 
-    mocker.patch.object(SixgillAlertClient, 'get_actionable_alerts_bulk', return_value=get_incidents_list())
-    mocker.patch.object(SixgillAlertClient, 'get_actionable_alert', return_value=get_info_item())
-    mocker.patch.object(SixgillAlertClient, 'get_actionable_alert_content', return_value=get_content_item())
+    mocker.patch.object(SixgillActionableAlertClient, 'get_actionable_alerts_bulk', return_value=get_incidents_list())
+    mocker.patch.object(SixgillActionableAlertClient, 'get_actionable_alert', return_value=get_info_item())
+    mocker.patch.object(SixgillActionableAlertClient, 'get_actionable_alert_content', return_value=get_content_item())
 
     from CybersixgillActionableAlerts import fetch_incidents
     fetch_incidents()
