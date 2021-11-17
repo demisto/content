@@ -50,6 +50,11 @@ configuration:
   name: fetch_limit
   required: false
   type: 0
+- display: Site IDs
+  additionalinfo: Comma-separated list of Site IDs to fetch incidents for. Leave blank to fetch all sites.
+  name: fetch_site_ids
+  type: 0
+  required: false
 description: Use the SentinelOne integration to send requests to your management server and get responses with data pulled from agents or from the management database.
 display: SentinelOne v2
 name: SentinelOne V2
@@ -427,6 +432,12 @@ script:
       description: Risk level threshold to retrieve (1-10). Relevant for API version 2.0 only.
       isArray: false
       name: rank
+      required: false
+      secret: false
+    - default: false
+      description: 'A comma-separated list of Site IDs to search for threats, for example: "225494730938493804,225494730938493915".'
+      isArray: true
+      name: site_ids
       required: false
       secret: false
     deprecated: false

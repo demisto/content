@@ -2240,8 +2240,9 @@ class TestFetch:
         Then:
             The `first_behavior_time` changes and no `offset` is added.
         """
-        mocker.patch.object(demisto, 'getLastRun', return_value={'first_behavior_detection_time':
-                                                                 '2020-09-04T09:16:10Z', 'detection_offset': 2})
+        mocker.patch.object(demisto, 'getLastRun',
+                            return_value={'first_behavior_detection_time': '2020-09-04T09:16:10Z',
+                                          'detection_offset': 2})
         # Override post to have 1 results so FETCH_LIMIT won't be reached
         requests_mock.post(f'{SERVER_URL}/detects/entities/summaries/GET/v1',
                            json={'resources': [{'detection_id': 'ldt:1',
@@ -2440,7 +2441,6 @@ def test_search_iocs_command_exists(requests_mock):
         status_code=200
     )
     results = search_iocs_command()
-    assert '| 2020-10-01T09:09:04Z | Eicar file | md5:testmd5 |' in results["HumanReadable"]
     assert results["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == 'testmd5'
 
 
@@ -2521,7 +2521,6 @@ def test_get_ioc_command_exists(requests_mock):
         status_code=200
     )
     results = get_ioc_command(ioc_type='md5', value='testmd5')
-    assert '| 2020-10-01T09:09:04Z | Eicar file | md5:testmd5 |' in results["HumanReadable"]
     assert results["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == 'testmd5'
 
 
@@ -2590,8 +2589,426 @@ def test_upload_ioc_command_successful(requests_mock):
         status_code=200
     )
     results = upload_ioc_command(ioc_type='md5', value='testmd5')
-    assert '| 2020-10-01T09:09:04Z | Eicar file | md5:testmd5 |' in results["HumanReadable"]
     assert results["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == 'testmd5'
+
+
+def test_search_custom_iocs_command_does_not_exist(requests_mock):
+    """
+    Test cs-falcon-search-custom-iocs when no ioc is found
+
+    Given:
+     - There is no ioc in the system
+    When:
+     - Searching for iocs using cs-falcon-search-custom-iocs command
+    Then:
+     - Return a human readable result with appropriate message
+     - Do not populate the entry context
+    """
+    from CrowdStrikeFalcon import search_custom_iocs_command
+    response = {'resources': []}
+    requests_mock.get(
+        f'{SERVER_URL}/iocs/combined/indicator/v1',
+        json=response,
+        status_code=200
+    )
+    results = search_custom_iocs_command()
+    assert results["HumanReadable"] == 'Could not find any Indicators of Compromise.'
+    assert results["EntryContext"] is None
+
+
+def test_search_custom_iocs_command_exists(requests_mock):
+    """
+    Test cs-falcon-search-custom-iocs when an ioc is found
+
+    Given:
+     - There is a single md5 ioc in the system
+    When:
+     - Searching for iocs using cs-falcon-search-custom-iocs command
+    Then:
+     - Return a human readable result with appropriate message
+     - Do populate the entry context with the right value
+    """
+    from CrowdStrikeFalcon import search_custom_iocs_command
+    ioc_response = {
+        'resources': [{
+            'id': '4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r',
+            'type': 'md5',
+            'value': 'testmd5',
+            'action': 'prevent',
+            'severity': 'high',
+            'description': 'Eicar file',
+            'created_on': '2020-10-01T09:09:04Z',
+            'modified_on': '2020-10-01T09:09:04Z',
+        }]
+    }
+    requests_mock.get(
+        f'{SERVER_URL}/iocs/combined/indicator/v1',
+        json=ioc_response,
+        status_code=200
+    )
+    results = search_custom_iocs_command()
+    assert '| 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | 2020-10-01T09:09:04Z | high | md5 | testmd5 |' \
+        in results["HumanReadable"]
+    assert results["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == 'testmd5'
+
+
+def test_search_custom_iocs_command_error(requests_mock, mocker):
+    """
+    Test cs-falcon-search-custom-iocs when encountering an error
+
+    Given:
+     - Call to API is bound to fail with 404
+    When:
+     - Searching for iocs using cs-falcon-search-custom-iocs command
+    Then:
+     - Display an appropriate error via return_error
+    """
+    from CrowdStrikeFalcon import search_custom_iocs_command
+    requests_mock.get(
+        f'{SERVER_URL}/iocs/combined/indicator/v1',
+        json={},
+        status_code=404
+    )
+    mocker.patch.object(demisto, 'results')
+    mocker.patch(RETURN_ERROR_TARGET)
+    res = search_custom_iocs_command()
+    assert 'Could not find any Indicators of Compromise.' in res['HumanReadable']
+
+
+def test_search_custom_iocs_command_filter(requests_mock):
+    """
+    Test cs-falcon-search-custom-iocs when running with filter
+
+    Given:
+     - Domain IOC with test.com value
+    When:
+     - Searching for the domain IOC using cs-falcon-search-custom-iocs command
+    Then:
+     - Return a human readable result with appropriate message
+     - Do populate the entry context with the right value
+    """
+    from CrowdStrikeFalcon import search_custom_iocs_command
+    ioc_type = 'domain'
+    ioc_value = 'test.com'
+    ioc_response = {
+        'resources': [{
+            'id': '4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r',
+            'type': ioc_type,
+            'value': ioc_value,
+            'action': 'prevent',
+            'severity': 'high',
+            'created_on': '2020-10-01T09:09:04Z',
+            'modified_on': '2020-10-01T09:09:04Z',
+        }]
+    }
+    requests_mock.get(
+        f'{SERVER_URL}/iocs/combined/indicator/v1?filter=type%3A%5B%27{ioc_type}%27%5D%2Bvalue%3A%5B%27{ioc_value}%27%5D&limit=50',  # noqa: E501
+        json=ioc_response,
+        status_code=200
+    )
+    results = search_custom_iocs_command(
+        types=ioc_type,
+        values=ioc_value,
+    )
+    assert f'| 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | 2020-10-01T09:09:04Z | high | {ioc_type} | {ioc_value} |' in results["HumanReadable"]  # noqa: E501
+    assert results["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == ioc_value
+
+
+def test_get_custom_ioc_command_exists(requests_mock):
+    """
+    Test cs-falcon-get-custom-ioc when an ioc is found
+
+    Given:
+     - There is a single md5 ioc in the system
+    When:
+     - Looking for iocs using cs-falcon-get-custom-ioc command
+    Then:
+     - Return a human readable result with appropriate message
+     - Do populate the entry context with the right value
+    """
+    from CrowdStrikeFalcon import get_custom_ioc_command
+    ioc_type = 'md5'
+    ioc_value = 'testmd5'
+    ioc_response = {
+        'resources': [{
+            'id': '4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r',
+            'type': ioc_type,
+            'value': ioc_value,
+            'action': 'prevent',
+            'severity': 'high',
+            'description': 'Eicar file',
+            'created_on': '2020-10-01T09:09:04Z',
+            'modified_on': '2020-10-01T09:09:04Z',
+        }]
+    }
+
+    requests_mock.get(
+        f'{SERVER_URL}/iocs/combined/indicator/v1?filter=type%3A%5B%27{ioc_type}%27%5D%2Bvalue%3A%5B%27{ioc_value}%27%5D&limit=50',  # noqa: E501
+        json=ioc_response,
+        status_code=200,
+    )
+    results = get_custom_ioc_command(ioc_type=ioc_type, value=ioc_value)
+    assert results["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == ioc_value
+
+
+def test_get_custom_ioc_command_does_not_exist(requests_mock):
+    """
+    Test cs-falcon-get-custom-ioc when no ioc is found
+
+    Given:
+     - There is no ioc in the system
+    When:
+     - Searching for iocs using cs-falcon-get-custom-ioc command
+     - The server returns an error
+    Then:
+     - Raise the error back from the server
+    """
+    from CrowdStrikeFalcon import get_custom_ioc_command
+    response = {'resources': [], 'errors': [{'code': 404, 'message': 'md5:testmd5 - Resource Not Found'}]}
+    requests_mock.get(
+        f'{SERVER_URL}/iocs/combined/indicator/v1',
+        json=response,
+        status_code=200
+    )
+    with pytest.raises(DemistoException) as excinfo:
+        get_custom_ioc_command(ioc_type='md5', value='testmd5')
+    assert [{'code': 404, 'message': 'md5:testmd5 - Resource Not Found'}] == excinfo.value.args[0]
+
+
+def test_get_custom_ioc_command_by_id(requests_mock):
+    """
+    Given:
+     - ID of IOC to retrieve
+    When:
+     - Looking for IOC using cs-falcon-get-custom-ioc command
+    Then:
+     - Do populate the entry context with the right ID
+    """
+    from CrowdStrikeFalcon import get_custom_ioc_command
+    ioc_id = '4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r'
+    ioc_response = {
+        'resources': [{
+            'id': ioc_id,
+            'type': 'domain',
+            'value': 'test.com',
+            'action': 'prevent',
+            'severity': 'high',
+            'description': 'Eicar file',
+            'created_on': '2020-10-01T09:09:04Z',
+            'modified_on': '2020-10-01T09:09:04Z',
+        }]
+    }
+
+    requests_mock.get(
+        f'{SERVER_URL}/iocs/entities/indicators/v1?ids={ioc_id}',  # noqa: E501
+        json=ioc_response,
+        status_code=200,
+    )
+    results = get_custom_ioc_command(ioc_id=ioc_id)
+    assert results["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["ID"] == ioc_id
+
+
+def test_upload_custom_ioc_command_successful(requests_mock):
+    """
+    Test cs-falcon-upload-custom-ioc when an upload is successful
+
+    Given:
+     - The user tries to create an IOC
+    When:
+     - The server creates an IOC
+    Then:
+     - Return a human readable result with appropriate message
+     - Do populate the entry context with the right value
+    """
+    from CrowdStrikeFalcon import upload_custom_ioc_command
+    ioc_response = {
+        'resources': [{
+            'id': '4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r',
+            'type': 'md5',
+            'value': 'testmd5',
+            'action': 'prevent',
+            'severity': 'high',
+            'description': 'Eicar file',
+            'created_on': '2020-10-01T09:09:04Z',
+            'modified_on': '2020-10-01T09:09:04Z',
+        }]
+    }
+    requests_mock.post(
+        f'{SERVER_URL}/iocs/entities/indicators/v1',
+        json=ioc_response,
+        status_code=200,
+    )
+    results = upload_custom_ioc_command(
+        ioc_type='md5',
+        value='testmd5',
+        action='prevent',
+        severity='high',
+        platforms='mac,linux',
+    )
+    assert '| 2020-10-01T09:09:04Z | Eicar file | 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r |' \
+        in results["HumanReadable"]
+    assert results["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == 'testmd5'
+
+
+def test_upload_custom_ioc_command_fail(requests_mock):
+    """
+    Test cs-falcon-upload-custom-ioc where it fails to create the ioc
+
+    Given:
+     - The user tries to create an IOC
+    When:
+     - The server fails to create an IOC
+    Then:
+     - Display error message to user
+    """
+    from CrowdStrikeFalcon import upload_custom_ioc_command
+    response = {
+        'resources': [{
+            'row': 1,
+            'value': None,
+            'type': None,
+            'message_type': 'error',
+            'field_name': 'value',
+            'message': 'required string is missing'
+        }],
+        'errors': [{'code': 400, 'message': 'one or more inputs are invalid'}]
+    }
+    requests_mock.post(
+        f'{SERVER_URL}/iocs/entities/indicators/v1',
+        json=response,
+        status_code=200
+    )
+    with pytest.raises(DemistoException) as excinfo:
+        upload_custom_ioc_command(
+            ioc_type='md5',
+            value='testmd5',
+            action='prevent',
+            severity='high',
+            platforms='mac,linux',
+        )
+    assert response['errors'] == excinfo.value.args[0]
+
+
+def test_upload_custom_ioc_command_duplicate(requests_mock, mocker):
+    """
+    Test cs-falcon-upload-custom-ioc where it fails to create the ioc due to duplicate
+
+    Given:
+     - IOC of type domain to upload
+    When:
+     - The API fails to create an IOC to duplication warning
+    Then:
+     - Display error message to user
+    """
+    from CrowdStrikeFalcon import upload_custom_ioc_command
+    ioc_type = 'domain'
+    ioc_value = 'test.com'
+    response = {
+        'errors': [{
+            'code': 400,
+            'message': 'One or more indicators have a warning or invalid input'
+        }],
+        'resources': [{
+            'row': 1,
+            'value':
+            'test2.com',
+            'type': 'domain',
+            'message_type': 'warning',
+            'message': f"Warning: Duplicate type: '{ioc_type}' and value: '{ioc_value}' combination."
+        }]
+    }
+    requests_mock.post(
+        f'{SERVER_URL}/iocs/entities/indicators/v1',
+        json=response,
+        status_code=400,
+        reason='Bad Request',
+    )
+    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
+    with pytest.raises(DemistoException):
+        upload_custom_ioc_command(
+            ioc_type=ioc_type,
+            value=ioc_value,
+            action='prevent',
+            severity='high',
+            platforms='mac,linux',
+        )
+    err_msg = return_error_mock.call_args[0][0]
+    assert response['resources'][0]['message'] in err_msg
+
+
+def test_update_custom_ioc_command(requests_mock):
+    """
+    Test cs-falcon-update-custom-ioc when an upload is successful
+
+    Given:
+     - The user tries to update an IOC
+    When:
+     - The server updates an IOC
+    Then:
+     - Ensure the request is sent as expected
+     - Return a human readable result with appropriate message
+     - Do populate the entry context with the right value
+    """
+    from CrowdStrikeFalcon import update_custom_ioc_command
+    ioc_id = '4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r'
+    ioc_response = {
+        'resources': [{
+            'id': ioc_id,
+            'type': 'md5',
+            'value': 'testmd5',
+            'action': 'prevent',
+            'severity': 'high',
+            'description': 'Eicar file',
+            'created_on': '2020-10-01T09:09:04Z',
+            'modified_on': '2020-10-01T09:09:04Z',
+        }]
+    }
+    updated_severity = 'medium'
+
+    def match_req_body(request):
+        if request.json() == {
+            'indicators': [{'id': ioc_id, 'severity': updated_severity}]
+        }:
+            return True
+    requests_mock.patch(
+        f'{SERVER_URL}/iocs/entities/indicators/v1',
+        json=ioc_response,
+        status_code=200,
+        additional_matcher=match_req_body,
+    )
+
+    results = update_custom_ioc_command(
+        ioc_id=ioc_id,
+        severity=updated_severity,
+    )
+    assert 'Custom IOC was updated successfully' in results["HumanReadable"]
+    assert results["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == 'testmd5'
+
+
+def test_delete_custom_ioc_command(requests_mock):
+    """
+    Test cs-falcon-delete-custom-ioc where it deletes IOC successfully
+
+    Given:
+     - The user tries to delete an IOC
+    When:
+     - Running the command to delete an IOC
+    Then:
+     - Ensure expected output is returned
+    """
+    from CrowdStrikeFalcon import delete_custom_ioc_command
+    ioc_id = '4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r'
+    response = {
+        'resources': [ioc_id],
+        'errors': []
+    }
+    requests_mock.delete(
+        f'{SERVER_URL}/iocs/entities/indicators/v1?ids={ioc_id}',
+        json=response,
+        status_code=200
+    )
+    command_res = delete_custom_ioc_command(ioc_id)
+    assert f'Custom IOC {ioc_id} was successfully deleted.' in command_res['HumanReadable']
 
 
 def test_get_ioc_device_count_command_does_not_exist(requests_mock, mocker):
@@ -2945,3 +3362,39 @@ def test_list_host_group_members(requests_mock):
     expected_results = load_json('test_data/expected_list_hostgroup_members_results.json')
     for expected_results, ectual_results in zip(expected_results, command_results.outputs):
         assert expected_results == ectual_results
+
+
+@pytest.mark.parametrize('endpoint_status, status, is_isolated',
+                         [('Normal', 'Online', ''),
+                          ('normal', 'Online', ''),
+                          ('containment_pending', '', 'Pending isolation'),
+                          ('contained', '', 'Yes'),
+                          ('lift_containment_pending', '', 'Pending unisolation'),
+                          ])
+def test_generate_status_field(endpoint_status, status, is_isolated):
+    """
+    Test valid call for generate status field
+    Given
+     - valid status
+    When
+     - Calling generate_status_field function
+    Then
+     - Return status and is_isolated
+     """
+    from CrowdStrikeFalcon import generate_status_fields
+    assert (status, is_isolated) == generate_status_fields(endpoint_status)
+
+
+def test_generate_status_field_invalid():
+    """
+    Test invalid call for generate status field
+    Given
+     - invalid status
+    When
+     - Calling generate_status_field function
+    Then
+     - Raise an exception
+     """
+    from CrowdStrikeFalcon import generate_status_fields
+    with pytest.raises(DemistoException):
+        generate_status_fields('unknown status')

@@ -605,6 +605,25 @@ def test_validate_search_time():
         assert validate_search_time('219/10/35')
 
 
+def test_show_user_id_interface_config_command():
+    """
+    Given:
+     - missing template and template_stack arguments for the show_user_id_interface_config_command command
+
+    When:
+     - running the show_user_id_interface_config_request function
+
+    Then:
+     - a proper exception is raised
+    """
+    from Panorama import show_user_id_interface_config_command
+    args = {}
+    str_match = 'In order to show the User Interface configuration in your Panorama, ' \
+                'supply either the template or the template_stack arguments.'
+    with pytest.raises(DemistoException, match=str_match):
+        show_user_id_interface_config_command(args)
+
+
 def test_prettify_user_interface_config():
     from Panorama import prettify_user_interface_config
     raw_response = [{'@name': 'internal', 'network': {'layer3': {'member': 'ethernet1/2'},
@@ -616,6 +635,26 @@ def test_prettify_user_interface_config():
     expected = [{'Name': 'ethernet1/2', 'Zone': 'internal', 'EnableUserIdentification': 'yes'},
                 {'Name': 'ethernet1/1', 'Zone': 'External', 'EnableUserIdentification': 'no'}]
     assert response == expected
+
+
+def test_list_configured_user_id_agents_command(mocker):
+    """
+    Given:
+     - missing template and template_stack arguments for the list_configured_user_id_agents_command command
+
+    When:
+     - running the list_configured_user_id_agents_request function
+
+    Then:
+     - a proper exception is raised
+    """
+    from Panorama import list_configured_user_id_agents_command
+    mocker.patch('Panorama.get_pan_os_major_version', return_value=9)
+    args = {}
+    str_match = 'In order to show the the User ID Agents in your Panorama, ' \
+                'supply either the template or the template_stack arguments.'
+    with pytest.raises(DemistoException, match=str_match):
+        list_configured_user_id_agents_command(args)
 
 
 def test_prettify_configured_user_id_agents__multi_result():
