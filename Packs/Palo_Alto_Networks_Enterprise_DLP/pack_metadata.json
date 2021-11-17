@@ -6,7 +6,7 @@
 	"author": "Enterprise DLP",
 	"url": "https://www.paloaltonetworks.com/enterprise-data-loss-prevention",
     "currentVersion": "1.0.1",
-    "categories": [],
+    "categories": ["Network Security"],
     "tags": [],
     "useCases": [],
     "keywords": []

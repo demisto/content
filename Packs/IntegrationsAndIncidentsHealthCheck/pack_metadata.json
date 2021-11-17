@@ -7,7 +7,7 @@
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-09-22T13:16:00Z",
-    "categories": [],
+    "categories": ["Utilities"],
     "tags": [],
     "useCases": [
         "Health Check"
