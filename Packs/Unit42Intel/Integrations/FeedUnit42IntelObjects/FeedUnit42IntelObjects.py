@@ -490,7 +490,7 @@ def fetch_indicators(client: Client,
 def get_indicators_command(client: Client,
                            params: Dict[str, str],
                            args: Dict[str, str]
-                           ) -> CommandResults:
+                           ) -> CommandResults:  # pragma: no cover
     """
     Wrapper for retrieving indicators from the feed to the war-room.
     Args:
