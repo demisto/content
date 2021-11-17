@@ -3260,7 +3260,7 @@ def create_headers_map(msg_dict_headers):
 
 ########################################################################################################################
 ENCODINGS_TYPES = set(['utf-8', 'iso8859-1'])
-REGEX_EMAIL = r"\b[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+\b"
+REGEX_EMAIL = r"\b[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+[\b,]"
 
 
 def extract_address(s):
