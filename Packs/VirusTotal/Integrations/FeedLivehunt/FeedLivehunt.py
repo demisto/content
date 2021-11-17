@@ -58,7 +58,7 @@ class Client(BaseClient):
             'intelligence/hunting_notification_files',
             params=assign_params(
                 filter=filter_,
-                limit=limit,
+                limit=max(limit, 40),
             )
         )
 

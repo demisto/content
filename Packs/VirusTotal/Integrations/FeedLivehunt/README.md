@@ -39,7 +39,7 @@ Gets the indicators from VirusTotal Livehunt.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of indicators to return. The default value is 10. | Optional |
+| limit | The maximum number of indicators to return. The default value is 10 and max 40. | Optional |
 | filter | Exact name of the rule or ruleset you want to filter on. | Optional |
 
 

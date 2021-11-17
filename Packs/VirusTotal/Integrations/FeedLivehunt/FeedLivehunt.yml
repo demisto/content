@@ -14,6 +14,12 @@ configuration:
   required: false
   type: 0
   additionalinfo: Exact name of the rule or ruleset you want to filter on. Leave empty to receive all.
+- display: Limit
+  name: limit
+  defaultvalue: '10'
+  type: 0
+  required: false
+  additionalinfo: Limit of indicators to fetch from livehunt notification. Max 40.
 - display: Fetch indicators
   name: feed
   defaultvalue: 'true'
@@ -97,7 +103,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '10'
-      description: The maximum number of results to return. The default value is 10.
+      description: The maximum number of results to return. The default value is 10. Max 40.
       isArray: false
       name: limit
       required: false
@@ -112,7 +118,7 @@ script:
     description: Gets the indicators from VirusTotal Livehunt.
     execution: false
     name: vt-livehunt-get-indicators
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   feed: true
   isfetch: false
   longRunning: false
