@@ -49,7 +49,7 @@ def get_incident_init_params():
 
 
 def item_to_incident(item_info, sixgill_alerts_client):
-    incident = dict()
+    incident = {}
     incidents = []
     items = []
     # get fields that are shared in case of sub alerts
