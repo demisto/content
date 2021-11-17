@@ -1,6 +1,6 @@
 category: Email Gateway
 commonfields:
-  id: Microsoft Graph Mail Single User
+  id: Microsoft Graph Mail Single User_copy
   version: -1
 configuration:
 - display: ID or Client ID - see Detailed Instructions (?)
@@ -42,7 +42,7 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-- defaultvalue: '50'
+- defaultvalue: "50"
   display: Maximum number of emails to pull per fetch
   name: fetch_limit
   required: false
@@ -63,15 +63,23 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- defaultvalue: '1'
+- defaultvalue: "1"
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   required: false
   type: 19
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: cb52e2cb-3946-4a10-8500-5f226a8e9e9a
+    propagationLabels:
+    - all
+    toServerVersion: ""
 description: Microsoft Graph grants Demisto authorized access to a user's Microsoft
   Outlook mail data in a personal account or organization account.
-display: O365 Outlook Mail Single User (Using Graph API)
-name: Microsoft Graph Mail Single User
+display: Microsoft Graph Mail Single User_copy
+name: Microsoft Graph Mail Single User_copy
 script:
   commands:
   - arguments:
@@ -354,13 +362,10 @@ script:
   - arguments: []
     description: Tests connectivity of the email.
     name: msgraph-mail-test
-  dockerimage: demisto/crypto:1.0.0.24380
+  dockerimage: demisto/crypto:1.0.0.23151
   isfetch: true
   runonce: false
   script: ''
   subtype: python3
   type: python
-fromversion: 5.0.0
-tests:
-- No test - manual test playbook-Microsoft_Graph_Mail_Sender_test is available in
-  NonCircleTests folder
+sourcemoduleid: Microsoft Graph Mail Single User
