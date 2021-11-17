@@ -15,14 +15,14 @@ requests.packages.urllib3.disable_warnings()
 warnings.filterwarnings(action="ignore", message='.*using SSL with verify_certs=False is insecure.')
 
 ELASTIC_SEARCH_CLIENT = demisto.params().get('client_type')
-if ELASTIC_SEARCH_CLIENT == 'Elasticsearch':
-    from elasticsearch import Elasticsearch, RequestsHttpConnection, NotFoundError
-    from elasticsearch_dsl import Search
-    from elasticsearch_dsl.query import QueryString
-else:
+if ELASTIC_SEARCH_CLIENT == 'OpenSearch':
     from opensearchpy import OpenSearch as Elasticsearch, RequestsHttpConnection, NotFoundError
     from opensearch_dsl import Search
     from opensearch_dsl.query import QueryString
+else:
+    from elasticsearch import Elasticsearch, RequestsHttpConnection, NotFoundError
+    from elasticsearch_dsl import Search
+    from elasticsearch_dsl.query import QueryString
 
 API_KEY_PREFIX = '_api_key_id:'
 SERVER = demisto.params().get('url', '').rstrip('/')
