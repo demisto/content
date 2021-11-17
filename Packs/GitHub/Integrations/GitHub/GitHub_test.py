@@ -295,6 +295,9 @@ def test_releases_list_command(requests_mock, mocker):
     ({'url': 'example.com', 'token': 'testtoken'}, 'example.com'),
     ({'token': 'testtoken'}, 'https://api.github.com'),
 ])
+
+
+def test_get_branch
 def test_url_parameter_value(mocker, mock_params, expected_url):
     mocker.patch.object(demisto, 'params', return_value=mock_params)
 
