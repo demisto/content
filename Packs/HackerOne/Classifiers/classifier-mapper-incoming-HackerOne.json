@@ -46,10 +46,6 @@
           "complex": null,
           "simple": "relationships.severity.data.attributes.attack_vector"
         },
-        "HackerOne Report Closed At": {
-          "complex": null,
-          "simple": "attributes.closed_at"
-        },
         "HackerOne Report Disclosed At": {
           "complex": null,
           "simple": "attributes.disclosed_at"
@@ -94,49 +90,21 @@
           "complex": null,
           "simple": "relationships.reporter.data.attributes.website"
         },
-        "HackerOne Report Severity ID": {
-          "complex": null,
-          "simple": "relationships.severity.data.id"
-        },
-        "HackerOne Report Severity Rating": {
+        "HackerOne Report Severity": {
           "complex": null,
           "simple": "relationships.severity.data.attributes.rating"
         },
-        "HackerOne Report Severity Score": {
+        "HackerOne Report Severity ID": {
           "complex": null,
-          "simple": "relationships.severity.data.attributes.score"
-        },
-        "HackerOne Report State": {
-          "complex": null,
-          "simple": "attributes.state"
-        },
-        "HackerOne Report Title": {
-          "complex": null,
-          "simple": "attributes.title"
+          "simple": "relationships.severity.data.id"
         },
         "HackerOne Report Vulnerability Information": {
           "complex": null,
           "simple": "attributes.vulnerability_information"
         },
-        "HackerOne Report Vulnerable Component Availability": {
-          "complex": null,
-          "simple": "relationships.severity.data.attributes.availability"
-        },
-        "HackerOne Report Vulnerable Component Confidentiality": {
-          "complex": null,
-          "simple": "relationships.severity.data.attributes.confidentiality"
-        },
-        "HackerOne Report Vulnerable Component Integrity": {
-          "complex": null,
-          "simple": "relationships.severity.data.attributes.integrity"
-        },
         "HackerOne Report Vulnerable Component Scope": {
           "complex": null,
           "simple": "relationships.severity.data.attributes.scope"
-        },
-        "HackerOne Report Weakness Description": {
-          "complex": null,
-          "simple": "relationships.weakness.data.attributes.description"
         },
         "HackerOne Report Weakness External ID": {
           "complex": null,
@@ -155,11 +123,42 @@
     "dbot_classification_incident_type_all": {
       "dontMapEventToLabels": false,
       "internalMapping": {
+        "CVSS Availability Requirement": {
+          "complex": null,
+          "simple": "relationships.severity.data.attributes.availability"
+        },
+        "CVSS Confidentiality Requirement": {
+          "complex": null,
+          "simple": "relationships.severity.data.attributes.confidentiality"
+        },
+        "CVSS Integrity Requirement": {
+          "complex": null,
+          "simple": "relationships.severity.data.attributes.integrity"
+        },
+        "Close Time": {
+          "complex": null,
+          "simple": "attributes.closed_at"
+        },
+        "Description": {
+          "complex": null,
+          "simple": "relationships.weakness.data.attributes.description"
+        },
+        "Risk Score": {
+          "complex": null,
+          "simple": "relationships.severity.data.attributes.score"
+        },
+        "State": {
+          "complex": null,
+          "simple": "attributes.state"
+        },
+        "Title": {
+          "complex": null,
+          "simple": "attributes.title"
+        },
         "severity": {
           "complex": {
             "accessor": "rating",
-            "filters": [
-            ],
+            "filters": [],
             "root": "relationships.severity.data.attributes",
             "transformers": [
               {
