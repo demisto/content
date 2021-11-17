@@ -466,5 +466,5 @@ def test_fetch_incidents(mocker):
     assert demisto.incidents.call_count == 1
     incidents = demisto.incidents.call_args[0][0]
 
-    assert(len(incidents) == 6)
+    assert(len(incidents) == 1)
     assert (incidents == expected_alert_output)
