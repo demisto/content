@@ -108,19 +108,21 @@ def add_sub_alerts_fields(incident, item_info, sixgill_alerts_client):
             else:
                 # github alert
                 content_item['content'] = '\n\n-----------\n\n'.join(
-                    [f'Repository name: {github_item.get("Repository name", "")}\nCustomer Keywords: {github_item.get("Customer Keywords", "")}\n URL: {github_item.get("URL", "")}'
+                    [f'Repository name: {github_item.get("Repository name", "")}\nCustomer Keywords:'
+                     f' {github_item.get("Customer Keywords", "")}\n URL: {github_item.get("URL", "")}'
                      for github_item in content])
-    incident['details'] = f"{content_item.get('description')}\n\n{content_item.get('title', '')}\n\n{content_item.get('content', '')}"
+    incident['details'] = f"{content_item.get('description')}\n\n{content_item.get('title', '')}\n" \
+                          f"\n{content_item.get('content', '')}"
     triggered_assets = []
     for key, value in item_info.get('additional_info', {}).items():
         if 'matched_' in key:
             triggered_assets.extend(value)
     incident['CustomFields'].update({
-            'cybersixgillstatus': status.replace('_', ' ').title(),
-            'cybersixgillsite': item_info.get('site', None),
-            'cybersixgillactor': content_item.get('creator', None),
-            'cybersixgilltriggeredassets': triggered_assets
-        })
+        'cybersixgillstatus': status.replace('_', ' ').title(),
+        'cybersixgillsite': item_info.get('site', None),
+        'cybersixgillactor': content_item.get('creator', None),
+        'cybersixgilltriggeredassets': triggered_assets
+    })
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -175,7 +177,7 @@ def fetch_incidents():
                 if datetime.strptime(item.get('date'), DATETIME_FORMAT) > last_fetch_time:
                     items_to_add.append(item)
 
-            if len(items_to_add)-offset == len(items):
+            if len(items_to_add) - offset == len(items):
                 offset += len(items)
                 items = sixgill_alerts_client.get_actionable_alerts_bulk(limit=MAX_INCIDENTS, offset=offset,
                                                                          **filter_alerts_kwargs)
