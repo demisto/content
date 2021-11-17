@@ -27,3 +27,7 @@ For more information, refer to the following [article](https://xsoar.pan.dev/doc
 The ***Application Secret*** and the ***Tenant ID*** integration parameters are required for this method.
 
 The integration supports only Application permission type, and does not support Delegated permission type. 
+
+
+---
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph-api)
