@@ -39,7 +39,6 @@ from CommonServerPython import set_to_integration_context_with_retries
 QRadar_v3.FAILURE_SLEEP = 0
 QRadar_v3.SLEEP_FETCH_EVENT_RETIRES = 0
 
-
 client = Client(
     server='https://192.168.0.1',
     verify=False,
@@ -1796,7 +1795,6 @@ def test_cleared_ctx_is_compatible_with_retries():
     QRadar_v3.set_to_integration_context_with_retries({'id': 7})
 
 
-<<<<<<< HEAD
 @pytest.mark.parametrize('test_case_data', [(ctx_test_data['ctx_compatible']['case_one']),
                                             (ctx_test_data['ctx_compatible']['case_two']),
                                             (ctx_test_data['ctx_compatible']['case_three']),
@@ -1940,6 +1938,7 @@ def test_integration_context_during_run(test_case_data, mocker):
         expected_ctx_second_loop[k] = v
     assert get_integration_context() == expected_ctx_second_loop
     set_integration_context({})
+
 
 def test_update_missing_offenses_from_raw_offenses():
     """
