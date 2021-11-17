@@ -510,7 +510,6 @@ script:
   subtype: python3
   dockerimage: demisto/python3:3.9.7.24076
 defaultmapperin: Saas Security - Incoming Mapper
-defaultclassifier: Saas Security
 defaultmapperout: Saas Security - Outgoing Mapper
 fromversion: 6.0.0
 tests:
