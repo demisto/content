@@ -1,3 +1,5 @@
+from dateparser import parse
+
 import demistomock as demisto
 from CommonServerPython import *
 
@@ -20,10 +22,13 @@ def get_feed_integration_errors() -> TableOrListWidget:
             if 'feed' in (brand := instance.get('brand', '')).lower() and \
                 (error := instance.get('lastError', '')) and \
                     (instance_name := instance.get('instance')) in enabled_instances:
+                if modified := instance.get('modified', ''):
+                    modified_dt = parse(modified)
+                    modified = modified_dt.strftime('%Y-%m-%d %H:%M:%S%z')
                 table.add_row({
                     'Brand': brand,
                     'Instance': instance_name,
-                    'Instance Last Modified Time': instance.get('modified'),
+                    'Instance Last Modified Time': modified,
                     'Error Information': error,
                 })
     else:

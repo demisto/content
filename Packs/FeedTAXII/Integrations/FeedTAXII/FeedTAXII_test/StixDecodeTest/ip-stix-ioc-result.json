@@ -1,6 +1,17 @@
 [
-  {
-    "indicator": "10.0.0.0",
-    "type": "IP"
-  }
+    {
+        "indicator": "10.0.0.0/20",
+        "type": "CIDR",
+        "indicator_ref": "example:Observable-1c798262-a4cd-434d-a958-884d6980c459"
+    },
+    {
+        "indicator": "10.0.0.1",
+        "type": "IP",
+        "indicator_ref": "example:Observable-1c798262-a4cd-434d-a958-884d6980c459"
+    },
+    {
+        "indicator": "10.0.0.2",
+        "type": "IP",
+        "indicator_ref": "example:Observable-1c798262-a4cd-434d-a958-884d6980c459"
+    }
 ]

@@ -67,6 +67,7 @@ You can apply additional (optional) filters for the fetch-incident query using t
 
 #### Reset the "last run" timestamp
 To reset fetch incidents, run `qradar-reset-last-run` - this will reset the fetch to its initial state (will try to fetch first available offense).
+**Please Note**: It is recommended to *disable* and then *enable* the QRadar instance for the reset to take effect immediately.
 
 ## Required Permissions
 * Assets - Vulnerability Management *or* Assets

@@ -867,5 +867,4 @@ outputs:
 - contextPath: QRadar.Log.ProtocolName
   description: The log's protocol name
 tests:
-- test playbook - QRadarCorrelations
 - test playbook - QRadarCorrelations For V2
