@@ -35,4 +35,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![Get Email From Email Gateway - Generic](https://raw.githubusercontent.com/demisto/content/5153dd815b5288877b560e3fdcc3d9ab28cda57e/Packs/CommonPlaybooks/doc_files/Get_Email_From_Email_Gateway_-_Generic.png)
+![Get Email From Email Gateway - Generic](https://raw.githubusercontent.com/demisto/content/3c9155b3aa3a3c5e0f4f11bf52b48c9e0bf12ef4/Packs/CommonPlaybooks/doc_files/Get_Email_From_Email_Gateway_-_Generic.png)
