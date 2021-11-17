@@ -1721,16 +1721,16 @@ def test_change_ctx_to_be_compatible(mocker, context_data, retry_compatible):
         Ensure the context_data is transformed to the new format if needed.
     """
     mocker.patch.object(QRadar_v3, 'get_integration_context', return_value=context_data)
-    mocker.patch.object(QRadar_v3, 'set_to_integration_context_with_retries')
+    mocker.patch.object(QRadar_v3, 'set_integration_context')
 
     change_ctx_to_be_compatible_with_retry()
 
     extracted_ctx = {'last_mirror_update': '10', LAST_FETCH_KEY: 5}
 
     if not retry_compatible:
-        QRadar_v3.set_to_integration_context_with_retries.assert_called_once_with(clear_integration_ctx(extracted_ctx))
+        QRadar_v3.set_integration_context.assert_called_once_with(clear_integration_ctx(extracted_ctx))
     else:
-        assert not QRadar_v3.set_to_integration_context_with_retries.called
+        assert not QRadar_v3.set_integration_context.called
 
 
 @pytest.mark.parametrize('context_data', [
@@ -1833,8 +1833,7 @@ def test_cleared_ctx_is_compatible_with_retries():
                           (ctx_test_data['ctx_not_compatible']['mirror_offense_and_events_second_loop_offenses']),
                           (ctx_test_data['ctx_not_compatible']['no_mirroring_no_loop_offenses']),
                           (ctx_test_data['ctx_not_compatible']['mirror_offense_no_loop_offenses']),
-                          (ctx_test_data['ctx_not_compatible']['mirror_offense_and_events_no_loop_offenses']
-                          )
+                          (ctx_test_data['ctx_not_compatible']['mirror_offense_and_events_no_loop_offenses'])
                           ])
 def test_integration_context_during_run(test_case_data, mocker):
     """
