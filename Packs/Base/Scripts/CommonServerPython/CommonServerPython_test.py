@@ -17,7 +17,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
-    url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict
+    url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, TableJsonTransformer
 import CommonServerPython
 
 try:
@@ -85,21 +85,21 @@ def toEntry(table):
 
 
 def test_is_ip_valid():
-        valid_ip_v6 = "FE80:0000:0000:0000:0202:B3FF:FE1E:8329"
-        valid_ip_v6_b = "FE80::0202:B3FF:FE1E:8329"
-        invalid_ip_v6 = "KKKK:0000:0000:0000:0202:B3FF:FE1E:8329"
-        valid_ip_v4 = "10.10.10.10"
-        invalid_ip_v4 = "10.10.10.9999"
-        invalid_not_ip_with_ip_structure = "1.1.1.1.1.1.1.1.1.1.1.1.1.1.1"
-        not_ip = "Demisto"
-        assert not is_ip_valid(valid_ip_v6)
-        assert is_ip_valid(valid_ip_v6, True)
-        assert is_ip_valid(valid_ip_v6_b, True)
-        assert not is_ip_valid(invalid_ip_v6, True)
-        assert not is_ip_valid(not_ip, True)
-        assert is_ip_valid(valid_ip_v4)
-        assert not is_ip_valid(invalid_ip_v4)
-        assert not is_ip_valid(invalid_not_ip_with_ip_structure)
+    valid_ip_v6 = "FE80:0000:0000:0000:0202:B3FF:FE1E:8329"
+    valid_ip_v6_b = "FE80::0202:B3FF:FE1E:8329"
+    invalid_ip_v6 = "KKKK:0000:0000:0000:0202:B3FF:FE1E:8329"
+    valid_ip_v4 = "10.10.10.10"
+    invalid_ip_v4 = "10.10.10.9999"
+    invalid_not_ip_with_ip_structure = "1.1.1.1.1.1.1.1.1.1.1.1.1.1.1"
+    not_ip = "Demisto"
+    assert not is_ip_valid(valid_ip_v6)
+    assert is_ip_valid(valid_ip_v6, True)
+    assert is_ip_valid(valid_ip_v6_b, True)
+    assert not is_ip_valid(invalid_ip_v6, True)
+    assert not is_ip_valid(not_ip, True)
+    assert is_ip_valid(valid_ip_v4)
+    assert not is_ip_valid(invalid_ip_v4)
+    assert not is_ip_valid(invalid_not_ip_with_ip_structure)
 
 
 DATA = [
@@ -243,6 +243,58 @@ COMPLEX_DATA_WITH_URLS = [(
               }
          }
     ])]
+
+NESTED_DATA_EXAMPLE = {"name": "Active Directory Query",
+                       "changelog": {
+                           "1.0.4": {
+                               "path": "",
+                               "releaseNotes": "\n#### Integrations\n##### Active Directory Query v2\nFixed an issue where the ***ad-get-user*** command caused performance issues because the *limit* argument was not defined.\n",
+                               "displayName": "1.0.4 - R124496",
+                               "released": "2020-09-23T17:43:26Z"
+                           },
+                           "1.0.5": {
+                               "path": "",
+                               "releaseNotes": "\n#### Integrations\n##### Active Directory Query v2\n- Fixed several typos.\n- Updated the Docker image to: *demisto/ldap:1.0.0.11282*.\n",
+                               "displayName": "1.0.5 - 132259",
+                               "released": "2020-10-01T17:48:31Z"
+                           },
+                           "1.0.6": {
+                               "path": "",
+                               "releaseNotes": "\n#### Integrations\n##### Active Directory Query v2\n- Fixed an issue where the DN parameter within query in the ***search-computer*** command was incorrect.\n- Updated the Docker image to *demisto/ldap:1.0.0.12410*.\n",
+                               "displayName": "1.0.6 - 151676",
+                               "released": "2020-10-19T14:35:15Z"
+                           },
+                       },
+                       "nested": {
+                           "item1": {
+                               "a": 1,
+                               "b": 2,
+                               "c": 3,
+                               "d": 4
+                           }
+                       }}
+
+MORE_NESTED_DATA_EXAMPLE = {"name": "Active Directory Query",
+                            "changelog": {
+                                "1.0.4": {
+                                    "path": {'a': {'b': {'c': 'we should see this value'}}},
+                                    "releaseNotes": "\n#### Integrations\n##### Active Directory Query v2\nFixed an issue where the ***ad-get-user*** command caused performance issues because the *limit* argument was not defined.\n",
+                                    "displayName": "1.0.4 - R124496",
+                                    "released": "2020-09-23T17:43:26Z"
+                                },
+                                "1.0.5": {
+                                    "path": {'a': {'b': {'c': 'we should see this value'}}},
+                                    "releaseNotes": "\n#### Integrations\n##### Active Directory Query v2\n- Fixed several typos.\n- Updated the Docker image to: *demisto/ldap:1.0.0.11282*.\n",
+                                    "displayName": "1.0.5 - 132259",
+                                    "released": "2020-10-01T17:48:31Z"
+                                },
+                                "1.0.6": {
+                                    "path": {'a': {'b': {'c': 'we should see this value'}}},
+                                    "releaseNotes": "\n#### Integrations\n##### Active Directory Query v2\n- Fixed an issue where the DN parameter within query in the ***search-computer*** command was incorrect.\n- Updated the Docker image to *demisto/ldap:1.0.0.12410*.\n",
+                                    "displayName": "1.0.6 - 151676",
+                                    "released": "2020-10-19T14:35:15Z"
+                                },
+                            }}
 
 
 class TestTableToMarkdown:
@@ -443,7 +495,7 @@ class TestTableToMarkdown:
         data = copy.deepcopy(DATA)
         data[1]['extra_header'] = 'sample'
         table_extra_header = tableToMarkdown('tableToMarkdown test with extra header', data,
-                                            headers=['header_1', 'header_2', 'extra_header'])
+                                             headers=['header_1', 'header_2', 'extra_header'])
         expected_table_extra_header = (
             '### tableToMarkdown test with extra header\n'
             '|header_1|header_2|extra_header|\n'
@@ -467,7 +519,7 @@ class TestTableToMarkdown:
         """
         # no header
         table_no_headers = tableToMarkdown('tableToMarkdown test with no headers', DATA,
-                                        headers=['no', 'header', 'found'], removeNull=True)
+                                           headers=['no', 'header', 'found'], removeNull=True)
         expected_table_no_headers = (
             '### tableToMarkdown test with no headers\n'
             '**No entries.**\n'
@@ -535,7 +587,8 @@ class TestTableToMarkdown:
           - return a valid table.
         """
         # list of string values instead of list of dict objects
-        table_string_array = tableToMarkdown('tableToMarkdown test with string array', ['foo', 'bar', 'katz'], ['header_1'])
+        table_string_array = tableToMarkdown('tableToMarkdown test with string array', ['foo', 'bar', 'katz'],
+                                             ['header_1'])
         expected_string_array_tbl = (
             '### tableToMarkdown test with string array\n'
             '|header_1|\n'
@@ -576,7 +629,7 @@ class TestTableToMarkdown:
     def test_single_key_dict():
         # combination: string header + string values list
         table_single_key_dict = tableToMarkdown('tableToMarkdown test with single key dict',
-                                                        {'single': ['Arthur', 'Blob', 'Cactus']})
+                                                {'single': ['Arthur', 'Blob', 'Cactus']})
         expected_single_key_dict_tbl = (
             '### tableToMarkdown test with single key dict\n'
             '|single|\n'
@@ -586,7 +639,6 @@ class TestTableToMarkdown:
             '| Cactus |\n'
         )
         assert table_single_key_dict == expected_single_key_dict_tbl
-
 
     @staticmethod
     def test_dict_with_special_character():
@@ -632,7 +684,6 @@ class TestTableToMarkdown:
             '| foo |\n'
         )
         assert table_with_character == expected_string_with_special_character
-
 
     @pytest.mark.parametrize('data, expected_table', DATA_WITH_URLS)
     @staticmethod
@@ -700,6 +751,43 @@ class TestTableToMarkdown:
 '''
         assert table == expected_md_table
 
+    @staticmethod
+    def test_with_json_transformers_default():
+        table = tableToMarkdown("tableToMarkdown test", NESTED_DATA_EXAMPLE,
+                                headers=['name', 'changelog', 'nested'],
+                                is_auto_json_transform=True)
+        expected_table = """### tableToMarkdown test
+|name|changelog|nested|
+|---|---|---|
+| Active Directory Query | ***1.0.4***: <br>	**path**: <br>	**releaseNotes**: <br>#### Integrations<br>##### Active Directory Query v2<br>Fixed an issue where the ***ad-get-user*** command caused performance issues because the *limit* argument was not defined.<br><br>	**displayName**: 1.0.4 - R124496<br>	**released**: 2020-09-23T17:43:26Z<br>***1.0.5***: <br>	**path**: <br>	**releaseNotes**: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed several typos.<br>- Updated the Docker image to: *demisto/ldap:1.0.0.11282*.<br><br>	**displayName**: 1.0.5 - 132259<br>	**released**: 2020-10-01T17:48:31Z<br>***1.0.6***: <br>	**path**: <br>	**releaseNotes**: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed an issue where the DN parameter within query in the ***search-computer*** command was incorrect.<br>- Updated the Docker image to *demisto/ldap:1.0.0.12410*.<br><br>	**displayName**: 1.0.6 - 151676<br>	**released**: 2020-10-19T14:35:15Z | ***item1***: <br>	**a**: 1<br>	**b**: 2<br>	**c**: 3<br>	**d**: 4 |
+"""
+        assert table == expected_table
+
+    @staticmethod
+    def test_with_json_transformer_simple():
+        json_transformer = TableJsonTransformer({'changelog':
+                                                {'keys_lst': ['releaseNotes', 'released']}})
+        table = tableToMarkdown("tableToMarkdown test", NESTED_DATA_EXAMPLE, headers=['name', 'changelog'],
+                                json_transform=json_transformer)
+        expected_table = """### tableToMarkdown test
+|name|changelog|
+|---|---|
+| Active Directory Query | ***1.0.4***: <br>	**releaseNotes**: <br>#### Integrations<br>##### Active Directory Query v2<br>Fixed an issue where the ***ad-get-user*** command caused performance issues because the *limit* argument was not defined.<br><br>	**released**: 2020-09-23T17:43:26Z<br>***1.0.5***: <br>	**releaseNotes**: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed several typos.<br>- Updated the Docker image to: *demisto/ldap:1.0.0.11282*.<br><br>	**released**: 2020-10-01T17:48:31Z<br>***1.0.6***: <br>	**releaseNotes**: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed an issue where the DN parameter within query in the ***search-computer*** command was incorrect.<br>- Updated the Docker image to *demisto/ldap:1.0.0.12410*.<br><br>	**released**: 2020-10-19T14:35:15Z |
+"""
+        assert expected_table == table
+
+    @staticmethod
+    def test_with_json_transformer_nested():
+        json_transformer = TableJsonTransformer({'changelog': {'keys_lst': ['releaseNotes', 'c'], 'is_nested': True}})
+        table = tableToMarkdown('tableToMarkdown test', MORE_NESTED_DATA_EXAMPLE, headers=['name', 'changelog'],
+                                json_transform=json_transformer)
+        expected_table = """### tableToMarkdown test
+|name|changelog|
+|---|---|
+| Active Directory Query | ***1.0.4***: <br>	**c**: we should see this value<br>***1.0.5***: <br>	**c**: we should see this value<br>***1.0.6***: <br>	**c**: we should see this value |
+"""
+
+        assert expected_table == table
 
 @pytest.mark.parametrize('data, expected_data', COMPLEX_DATA_WITH_URLS)
 def test_url_to_clickable_markdown(data, expected_data):
@@ -5666,6 +5754,7 @@ class TestCustomIndicator:
             )
             Common.CustomIndicator('test', None, dbot_score, {'param': 'value'}, 'prefix')
 
+
 @pytest.mark.parametrize(
     "demistoUrls,expected_result",
     [({'server': 'https://localhost:8443:/acc_test_tenant'}, 'acc_test_tenant'),
@@ -5686,15 +5775,19 @@ def test_get_tenant_name(mocker, demistoUrls, expected_result):
     result = get_tenant_account_name()
     assert result == expected_result
 
+
 def changelog_to_str(dct):
     ####
     string = dct.get('cascsa').get('ascascas')
     return string
 
+
 def test_tbm():
     with open('test_data/content_data.json') as f:
         content_data = json.load(f)
     content_data = content_data.get('ContentData')
-    headers = argToList('name,author,categories,useCases,certification,contentItemTypes,currentVersion,lastInstallDate,premium,rating,updated,changelog')
-    md = tableToMarkdown("test", content_data, headers=headers, json_transform={'changelog': ['releaseNotes', 'released']})
+    headers = argToList(
+        'name,author,categories,useCases,certification,contentItemTypes,currentVersion,lastInstallDate,premium,rating,updated,changelog')
+    md = tableToMarkdown("test", content_data, headers=headers,
+                         json_transform={'changelog': ['releaseNotes', 'released']})
     print(md)

@@ -6,6 +6,7 @@ Note that adding code to CommonServerUserPython can override functions in Common
 from __future__ import print_function
 
 import base64
+import collections
 import json
 import logging
 import os
@@ -1566,9 +1567,10 @@ def logger(func):
     return func_wrapper
 
 
-def formatCell(data, json_transform, is_pretty=True):
+def formatCell(data, is_pretty=True, json_transform=None):
     """
        Convert a given object to md while decending multiple levels
+
 
        :type data: ``str`` or ``list``
        :param data: The cell content (required)
@@ -1576,13 +1578,19 @@ def formatCell(data, json_transform, is_pretty=True):
        :type is_pretty: ``bool``
        :param is_pretty: Should cell content be prettified (default is True)
 
+       :param json_transform:
+
+
        :return: The formatted cell content as a string
        :rtype: ``str``
     """
+    if json_transform is None:
+        json_transform = JsonTransfomer(flatten=True)
+
     if isinstance(data, STRING_TYPES):
         return data
     elif isinstance(data, dict):
-        json_transform.json_to_str(data, is_pretty)
+        return json_transform.json_to_str(data, is_pretty)
     else:
         return flattenCell(data, is_pretty)
 
@@ -1774,30 +1782,36 @@ def create_clickable_url(url):
     return '[{}]({})'.format(url, url)
 
 
-class NestedJsonTransfomer:
-    def __init__(self, header_key, keys_lst=None, is_nested=False, skipped_chars=None, func=None):
+class JsonTransfomer:
+    def __init__(self, flatten=False, keys_lst=None, is_nested=False, func=None):
         if keys_lst is None:
-            self.keys_set = set()
-        self.header_key = header_key
+            keys_lst = []
         self.keys_set = set(keys_lst)
         self.is_nested = is_nested
-        self.skipped_chars = skipped_chars
         self.func = func
+        self.flatten = flatten
 
     def json_to_str(self, json_input, is_pretty=True):
         if self.func:
             return self.func(json_input)
-        str_lst = ['***{header_key}: ***'.format(header_key=self.header_key)]
-        for key, val in self.item_generator(json_input):
-            if self.skipped_chars and self.skipped_chars.get(key):
-                val = re.sub('[{skipped_chars}]'.format(skipped_chars=self.skipped_chars.get(key)), " ", val).strip()
-            str_lst.append("\t**{key}**: {val}".format(key=key, val=flattenCell(val, is_pretty)))
+        if self.flatten:
+            return '\n'.join(
+                ['{key}: {val}'.format(key=k, val=flattenCell(v, is_pretty)) for k, v in json_input.items()])
+        str_lst = []
+        for k, v in json_input.items():
+            str_lst.append('***{k}***: '.format(k=k))
+            if isinstance(v, dict):
+                items_to_add = ["\t**{key}**: {val}".format(key=k, val=flattenCell(v, is_pretty)) for k, v in
+                                self.item_generator(v)]
+            else:
+                items_to_add = ["\t{val}".format(val=flattenCell(v, is_pretty))]
+            str_lst.extend(items_to_add)
         return '\n'.join(str_lst)
 
     def item_generator(self, json_input):
         if isinstance(json_input, dict):
             for k, v in json_input.items():
-                if k in self.keys_set:
+                if not self.keys_set or k in self.keys_set:
                     yield k, v
                 if self.is_nested:
                     yield from self.item_generator(v)
@@ -1806,19 +1820,22 @@ class NestedJsonTransfomer:
                 yield from self.item_generator(item)
 
 
-# {key1:
-#           keys_lst:
-#           is_nested:
-#           skipped_chars:
-#           func:
-# key2:
+# {header_key1: (all args are optional)
+#           keys_lst: [item1, ...]
+#           is_nested: bool
+#           is_md: bool
+#           func: callable
+# header_key2: ...}
 
-class JsonTransformer:
-    def __init__(self, headers_keys_dct):
+class TableJsonTransformer:
+    def __init__(self, headers):
+        if not isinstance(headers, list) and not isinstance(headers, dict):
+            raise ValueError('Invalid argument for TableJsonTransformer')
+        if isinstance(headers, list):
+            headers = {k: {} for k in headers}
         self.nested_json_transformers = {}
-        for header_key, values in headers_keys_dct.items():
-            inner_json_transform = NestedJsonTransfomer(header_key, values.get('keys_lst'), values.get('is_nested'),
-                                                        values.get('func'))
+        for header_key, values in headers.items():
+            inner_json_transform = JsonTransfomer(**values)
             self.nested_json_transformers[header_key] = inner_json_transform
 
     def get(self, key):
@@ -1826,7 +1843,7 @@ class JsonTransformer:
 
 
 def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None, url_keys=None,
-                    date_fields=None, json_transform=None):
+                    date_fields=None, json_transform=None, is_auto_json_transform=False):
     """
        Converts a demisto table in JSON form to a Markdown table
 
@@ -1855,10 +1872,8 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
        :type date_fields: ``list``
        :param date_fields: A list of date fields to format the value to human-readable output.
 
-        :type json_transform: ``dict``
-        :param json_transform: A dictionary which the key is the header key of the json to transform and the value
-                                is either a list of the inner_keys or a function to convert the inner json to str
-
+        :type json_transform: ``TableJsonTransformer``
+        :param json_transform: An instance of JsonTransformer. If not passed, default one will be initiated
 
        :return: A string representation of the markdown table
        :rtype: ``str``
@@ -1912,8 +1927,7 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
         headers = headers_aux
 
     if not json_transform:
-        headers_dct = {k: {} for k in headers}
-        json_transform = JsonTransformer(headers_dct)
+        json_transform = TableJsonTransformer(headers) if is_auto_json_transform else {}
 
     if t and len(headers) > 0:
         newHeaders = []
@@ -1939,7 +1953,7 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
                     except Exception:
                         pass
 
-            vals = [stringEscapeMD((formatCell(entry_copy.get(h, ''), json_transform.get(h), False) if
+            vals = [stringEscapeMD((formatCell(entry_copy.get(h, ''), False, json_transform.get(h)) if
                                     entry_copy.get(h) is not None else ''), True, True) for h in headers]
 
             # this pipe is optional
