@@ -55,5 +55,6 @@
         "C2",
         "command and control",
         "DDoS"
-    ]
+    ],
+    "itemPrefix": ["Cybersixgill", ""]
 }
