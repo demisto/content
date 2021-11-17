@@ -61,7 +61,8 @@ class Client(BaseClient):
         except (ValueError, TypeError):
             return_error('Please provide an integer value for "Request Timeout"')
 
-        self.risk_rule = risk_rule if risk_rule != "" else None
+        self.risk_rule = argToList(risk_rule) if risk_rule != "" else None
+        self.current_risk_rule = None
         self.fusion_file_path = fusion_file_path if fusion_file_path != "" else None
         self.api_token = self.headers['X-RFToken'] = api_token
         self.services = services
@@ -84,7 +85,7 @@ class Client(BaseClient):
             if self.risk_rule is None:
                 url = self.BASE_URL + indicator_type + '/risklist'
             else:
-                url = self.BASE_URL + indicator_type + '/risklist?list=' + self.risk_rule
+                url = self.BASE_URL + indicator_type + '/risklist?list=' + self.current_risk_rule
 
             params = self.PARAMS
             params['gzip'] = True
@@ -199,11 +200,12 @@ class Client(BaseClient):
             if 'connectApi' not in self.services:
                 return_error("You entered a risk rule but the 'connectApi' service is not chosen. "
                              "Add the 'connectApi' service to the list or remove the risk rule.")
-
-            elif not is_valid_risk_rule(self, self.risk_rule):
-                return_error("The given risk rule does not exist, "
-                             "please make sure you entered it correctly. \n"
-                             "To see all available risk rules run the '!rf-get-risk-rules' command.")
+            else:
+                for risk_rule in self.risk_rule:
+                    if not is_valid_risk_rule(self, risk_rule):
+                        return_error(f"The given risk rule: {risk_rule} does not exist,"
+                                     f"please make sure you entered it correctly. \n"
+                                     f"To see all available risk rules run the '!rf-get-risk-rules' command.")
 
         if self.fusion_file_path is not None:
             if 'fusion' not in self.services:
@@ -246,6 +248,9 @@ def test_module(client: Client, *args) -> Tuple[str, dict, dict]:
     client.run_parameters_validations()
 
     for service in client.services:
+        if client.risk_rule:
+            # if exist, select the first risk rule for test
+            client.current_risk_rule = client.risk_rule[0]
         client.build_iterator(service, client.indicator_type)
         client.get_batches_from_file(limit=1)
     return 'ok', {}, {}
@@ -322,6 +327,21 @@ def format_risk_string(risk_string):
     return f'{splitted_risk_string[0]} of {splitted_risk_string[1]} Risk Rules Triggered'
 
 
+def fetch_and_create_indicators(client):
+    """Fetches indicators from the Recorded Future feeds,
+    and from each fetched indicator creates an indicator in XSOAR.
+
+    Args:
+        client(Client): Recorded Future Feed client.
+
+    Returns: None.
+
+    """
+    indicators_batch = fetch_indicators_command(client, client.indicator_type)
+    for indicators in indicators_batch:
+        demisto.createIndicators(indicators)
+
+
 def fetch_indicators_command(client, indicator_type, limit: Optional[int] = None):
     """Fetches indicators from the Recorded Future feeds.
     Args:
@@ -390,17 +410,40 @@ def get_indicators_command(client, args) -> Tuple[str, dict, dict]:
     indicator_type = args.get('indicator_type', demisto.params().get('indicator_type'))
     limit = int(args.get('limit'))
 
-    indicators_list: List[Dict] = []
-    for indicators in fetch_indicators_command(client, indicator_type, limit):
-        indicators_list.extend(indicators)
+    human_readable: str = ''
+    entry_results: Union[Dict[List], List]
 
-        if limit and len(indicators_list) >= limit:
-            break
+    if client.risk_rule:
+        entry_results = {}
+        for risk_rule in client.risk_rule:
+            client.current_risk_rule = risk_rule
 
-    entry_result = camelize(indicators_list)
-    hr = tableToMarkdown('Indicators from RecordedFuture Feed:', entry_result, headers=['Value', 'Type'], removeNull=True)
+            indicators_list: List[Dict] = []
+            for indicators in fetch_indicators_command(client, indicator_type, limit):
+                indicators_list.extend(indicators)
 
-    return hr, {}, entry_result
+                if limit and len(indicators_list) >= limit:
+                    break
+
+            entry_result = camelize(indicators_list)
+            entry_results[risk_rule.capitalize()] = entry_result
+            hr = tableToMarkdown(f'Indicators from RecordedFuture Feed for {risk_rule} risk rule:', entry_result,
+                                 headers=['Value', 'Type'], removeNull=True)
+            human_readable += f'\n{hr}'
+
+    else:  # there are no risk rules
+        indicators_list: List[Dict] = []
+        for indicators in fetch_indicators_command(client, indicator_type, limit):
+            indicators_list.extend(indicators)
+
+            if limit and len(indicators_list) >= limit:
+                break
+
+        entry_results = camelize(indicators_list)
+        human_readable = tableToMarkdown(f'Indicators from RecordedFuture Feed:', entry_results,
+                                         headers=['Value', 'Type'], removeNull=True)
+
+    return human_readable, {}, entry_results
 
 
 def get_risk_rules_command(client: Client, args) -> Tuple[str, dict, dict]:
@@ -442,9 +485,13 @@ def main():
     }
     try:
         if demisto.command() == 'fetch-indicators':
-            indicators_batch = fetch_indicators_command(client, client.indicator_type)
-            for indicators in indicators_batch:
-                demisto.createIndicators(indicators)
+            if client.risk_rule:
+                for risk_rule in client.risk_rule:
+                    client.current_risk_rule = risk_rule
+                    fetch_and_create_indicators(client)
+            else:  # there are no risk rules
+                fetch_and_create_indicators(client)
+
         else:
             readable_output, outputs, raw_response = commands[command](client, demisto.args())  # type:ignore
             return_outputs(readable_output, outputs, raw_response)
