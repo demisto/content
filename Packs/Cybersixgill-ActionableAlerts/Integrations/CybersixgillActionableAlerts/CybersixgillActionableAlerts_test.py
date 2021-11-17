@@ -246,13 +246,9 @@ expected_alert_output = [{'name': 'Your organization was potentially targeted by
                           'status': 1,
                           'details': 'A ransomware group posted on its leak site, rw_everest, focusing on "Walmart" '
                                      '\n\n\n\n',
-                          'rawJSON': '{"additional_info": {"asset_attributes": ["organization_aliases", '
-                                     '"domain_names"], "domain_names": ["bank.com", "nike.com", "cybersixgill.com", '
-                                     '"meineschufa.de", "bank.com", "test.com", "eitan.com"], "matched_domain_names": '
-                                     '[], "matched_organization_aliases": ["Walmart"], "organization_aliases": ['
-                                     '"walmart", "cybersixgill", "nike"], "organization_name": "Cybersixgill", '
-                                     '"post_attributes": ["site"], "query_attributes": ["organization_aliases", '
-                                     '"domain_names"], "site": "rw_everest", "template_id": '
+                          'rawJSON': '{"additional_info": {"matched_domain_names": '
+                                     '[], "matched_organization_aliases": ["Walmart"], '
+                                     '"organization_name": "Cybersixgill", "site": "rw_everest", "template_id": '
                                      '"5fd0d2acddd06410ac5348d1", "vendor": "Sixgill"}, "alert_id": '
                                      '"616ffed97a1b66036a138f73", "alert_name": "Your organization was potentially '
                                      'targeted by a ransomware group", "alert_type": "QueryBasedManagedAlertRule", '
