@@ -1057,9 +1057,9 @@ def test_remove_old_incident_ids():
     now = datetime.utcnow()
     occurred_start_time = now - timedelta(minutes=60)
     last_run_fetched_ids = {
-        "incident_in_fetch_time_range": (now - timedelta(minutes=30)),
-        "incident_not_in_fetch_time_range": (now - timedelta(minutes=70)),  # incident did not fetched on the current fetch
-        "incident_in_fetch_start_time_range": occurred_start_time
+        "incident_in_fetch_time_range": (now - timedelta(minutes=30)).strftime(SPLUNK_TIME_FORMAT),
+        "incident_not_in_fetch_time_range": (now - timedelta(minutes=70)).strftime(SPLUNK_TIME_FORMAT),  # incident did not fetched on the current fetch
+        "incident_in_fetch_start_time_range": occurred_start_time.strftime(SPLUNK_TIME_FORMAT)
     }
     now_splunk_format = now.strftime(SPLUNK_TIME_FORMAT)
     occurred_start_time_splunk_format = occurred_start_time.strftime(SPLUNK_TIME_FORMAT)
@@ -1485,7 +1485,7 @@ def test_delayed_index_events(mocker):
 
     service, mock_dt = mock_fetch_notables(mocker, demisto_params={'fetchQuery': "something", 'enabled_enrichments': [],
                                'occurrence_look_behind': 120})
-    next_run = {'found_incidents_ids': {'a74cabaebb6fae0db6e52e290574398d': datetime(2020, 8, 24, 13, 30, 17)},
+    next_run = {'found_incidents_ids': {'a74cabaebb6fae0db6e52e290574398d': '2020-08-24T13:30:17'},
                 'batch_size': 200, 'time': '2020-08-24T13:30:17'}
     mocker.patch('demistomock.getLastRun', return_value=next_run)
     mocker.patch('splunklib.results.ResultsReader', return_value=response_two_events)
@@ -1513,7 +1513,7 @@ def test_no_incident_returned(mocker):
     """
     service, mock_dt = mock_fetch_notables(mocker, demisto_params={'fetchQuery': "something", 'enabled_enrichments': [],
                                                                    'occurrence_look_behind': 15})
-    next_run = {'found_incidents_ids': {'a74cabaebb6fae0db6e52e290574398d': datetime(2020, 8, 24, 13, 30, 17)},
+    next_run = {'found_incidents_ids': {'a74cabaebb6fae0db6e52e290574398d': '2020-08-24T13:30:17'},
                 'batch_size': 200, 'time': '2020-08-24T13:45:17'}
     now = datetime(2020, 8, 24, 14, 00, 12, 703618)
     mock_dt.utcnow.return_value = now
@@ -1538,7 +1538,7 @@ def test_incident_exceeded_limit(mocker):
     splunk.FETCH_LIMIT = 1
     service, mock_dt = mock_fetch_notables(mocker, demisto_params={'fetchQuery': "something", 'enabled_enrichments': [],
                                                                    'occurrence_look_behind': 15})
-    next_run = {'found_incidents_ids': {'a74cabaebb6fae0db6e52e290574398d': datetime(2020, 8, 24, 13, 30, 17)},
+    next_run = {'found_incidents_ids': {'a74cabaebb6fae0db6e52e290574398d': '2020-08-24T13:30:17'},
                 'batch_size': 200, 'time': '2020-08-24T13:45:17'}
     now = datetime(2020, 8, 24, 14, 00, 12, 703618)
     mock_dt.utcnow.return_value = now
