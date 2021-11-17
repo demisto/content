@@ -14,6 +14,7 @@ import socket
 import sys
 import time
 import traceback
+import urllib
 from random import randint
 import xml.etree.cElementTree as ET
 from collections import OrderedDict
@@ -1413,6 +1414,11 @@ class IntegrationLogger(object):
                 if js.endswith('"'):
                     js = js[:-1]
                 to_add.append(js)
+                if IS_PY3:
+                    to_add.append(urllib.parse.quote_plus(a))  # type: ignore[attr-defined]
+                else:
+                    to_add.append(urllib.quote_plus(a))
+
         self.replace_strs.extend(to_add)
 
     def set_buffering(self, state):
@@ -2100,7 +2106,7 @@ def stringEscapeMD(st, minimal_escaping=False, escape_multiline=False):
         st = st.replace('\n', '<br>')  # Unix
 
     if minimal_escaping:
-        for c in '|':
+        for c in ('|', '`'):
             st = st.replace(c, '\\' + c)
     else:
         st = "".join(["\\" + str(c) if c in MARKDOWN_CHARS else str(c) for c in st])
@@ -8166,13 +8172,13 @@ def support_multithreading():
     demisto.lock = Lock()  # type: ignore[attr-defined]
 
     def locked_do(cmd):
-        try:
-            if demisto.lock.acquire(timeout=60):  # type: ignore[call-arg,attr-defined]
+        if demisto.lock.acquire(timeout=60):  # type: ignore[call-arg,attr-defined]
+            try:
                 return prev_do(cmd)  # type: ignore[call-arg]
-            else:
-                raise RuntimeError('Failed acquiring lock')
-        finally:
-            demisto.lock.release()  # type: ignore[attr-defined]
+            finally:
+                demisto.lock.release()  # type: ignore[attr-defined]
+        else:
+            raise RuntimeError('Failed acquiring lock')
 
     demisto._Demisto__do = locked_do  # type: ignore[attr-defined]
 
@@ -8192,3 +8198,32 @@ def get_tenant_account_name():
         account_name = "acc_{}".format(tenant_name) if tenant_name != "" else ""
 
     return account_name
+
+
+def indicators_value_to_clickable(indicators):
+    """
+    Function to get the indicator url link for indicators
+
+    :type indicators: ``dict`` + List[dict]
+    :param indicators: An indicator or a list of indicators
+
+    :rtype: ``dict``
+    :return: Key is the indicator, and the value is it's url in the server
+
+    """
+    if not isinstance(indicators, (list, dict)):
+        return {}
+    if not isinstance(indicators, list):
+        indicators = [indicators]
+    res = {}
+    query = ' or '.join(['value:{indicator}'.format(indicator=indicator) for indicator in indicators])
+    indicator_searcher = IndicatorsSearcher(query=query)
+    for ioc_res in indicator_searcher:
+        for inidicator_data in ioc_res.get('iocs', []):
+            indicator = inidicator_data.get('value')
+            indicator_id = inidicator_data.get('id')
+            if not indicator or not indicator_id:
+                raise DemistoException('The response of indicator searcher is invalid')
+            indicator_url = os.path.join('#', 'indicator', indicator_id)
+            res[indicator] = '[{indicator}]({indicator_url})'.format(indicator=indicator, indicator_url=indicator_url)
+    return res
