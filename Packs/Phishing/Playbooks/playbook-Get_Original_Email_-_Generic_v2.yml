@@ -439,8 +439,8 @@ tasks:
       brand: ""
       id: 2b98d9b9-44b1-42e2-8efa-38d45dc2376a
       iscommand: false
-      name: 3bb02e8c-dc28-4762-8ff0-0cd5e6534b0d
-      playbookId: 3bb02e8c-dc28-4762-8ff0-0cd5e6534b0d
+      name: Get Email From Email Gateway - Generic
+      playbookId: Get Email From Email Gateway - Generic
       type: playbook
       version: -1
       description: ''
