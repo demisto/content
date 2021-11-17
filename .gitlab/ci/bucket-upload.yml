@@ -38,6 +38,7 @@ run-validations-upload-flow:
 
 run-unittests-and-lint-upload-flow:
   extends:
+    - .create-id-set
     - .run-unittests-and-lint
     - .bucket-upload-rule
 
