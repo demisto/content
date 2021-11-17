@@ -1,6 +1,6 @@
 {
  "ctx_not_compatible": {
-  "case_one": {
+  "no_mirroring_two_loops_offenses": {
    "init_context": {
     "id": 5,
     "samples": [],
@@ -20,7 +20,7 @@
    "offenses_first_loop": true,
    "offenses_second_loop": true
   },
-  "case_two": {
+  "mirror_offense_two_loops_offenses": {
    "init_context": {
     "id": 5,
     "samples": [
@@ -159,7 +159,7 @@
    "offenses_first_loop": true,
    "offenses_second_loop": true
   },
-  "case_three": {
+  "mirror_offense_and_events_two_loops_offenses": {
    "first_loop_ctx_not_default_values": {
     "last_mirror_update": "\"242123\""
    },
@@ -474,7 +474,7 @@
    "offenses_first_loop": true,
    "offenses_second_loop": true
   },
-  "case_four": {
+  "no_mirroring_first_loop_offenses": {
    "init_context": {
     "id": 5,
     "samples": [],
@@ -494,7 +494,7 @@
    "offenses_first_loop": true,
    "offenses_second_loop": false
   },
-  "case_five": {
+  "mirror_offense_first_loop_offenses": {
    "init_context": {
     "id": 5,
     "samples": [
@@ -633,7 +633,7 @@
    "offenses_first_loop": true,
    "offenses_second_loop": false
   },
-  "case_six": {
+  "mirror_offense_and_events_first_loop_offenses": {
    "first_loop_ctx_not_default_values": {
     "last_mirror_update": "\"242123\""
    },
@@ -948,7 +948,7 @@
    "offenses_first_loop": true,
    "offenses_second_loop": false
   },
-  "case_seven": {
+  "no_mirroring_second_loop_offenses": {
    "init_context": {
     "id": 5,
     "samples": [],
@@ -969,7 +969,7 @@
    "offenses_first_loop": false,
    "offenses_second_loop": true
   },
-  "case_eight": {
+  "mirror_offense_second_loop_offenses": {
    "first_loop_ctx_not_default_values": {
     "id": "5"
    },
@@ -1111,7 +1111,7 @@
    "offenses_first_loop": false,
    "offenses_second_loop": true
   },
-  "case_nine": {
+  "mirror_offense_and_events_second_loop_offenses": {
    "first_loop_ctx_not_default_values": {
     "last_mirror_update": "\"242123\"",
     "id": "5"
@@ -1427,7 +1427,7 @@
    "offenses_first_loop": false,
    "offenses_second_loop": true
   },
-  "case_ten": {
+  "no_mirroring_no_loop_offenses": {
    "init_context": {
     "id": 5,
     "samples": [],
@@ -1449,7 +1449,7 @@
    "offenses_first_loop": false,
    "offenses_second_loop": false
   },
-  "case_eleven": {
+  "mirror_offense_no_loop_offenses": {
    "first_loop_ctx_not_default_values": {
     "id": "5"
    },
@@ -1594,7 +1594,7 @@
    "offenses_first_loop": false,
    "offenses_second_loop": false
   },
-  "case_twelve": {
+  "mirror_offense_and_events_no_loop_offenses": {
    "first_loop_ctx_not_default_values": {
     "last_mirror_update": "\"242123\"",
     "id": "5"
@@ -1913,100 +1913,28 @@
   }
  },
  "ctx_compatible": {
-  "case_one": {
+  "empty_ctx_no_mirroring_two_loops_offenses": {
    "init_context": {},
    "mirror_options": "No Mirroring",
    "mirror_direction": null,
    "offenses_first_loop": true,
    "offenses_second_loop": true
   },
-  "case_two": {
+  "empty_ctx_mirror_offense_two_loops_offenses": {
    "init_context": {},
    "mirror_options": "Mirror Offense",
    "mirror_direction": "In",
    "offenses_first_loop": true,
    "offenses_second_loop": true
   },
-  "case_three": {
+  "empty_ctx_mirror_offense_and_events_two_loops_offenses": {
    "init_context": {},
    "mirror_options": "Mirror Offense and Events",
    "mirror_direction": "In",
    "offenses_first_loop": true,
    "offenses_second_loop": true
   },
-  "case_four": {
-   "init_context": {
-    "id": "5",
-    "samples": "[]",
-    "last_mirror_update": "242123"
-   },
-   "first_loop_ctx_not_default_values": {
-    "last_mirror_update": "\"242123\""
-   },
-   "second_loop_ctx_not_default_values": {
-    "last_mirror_update": "\"242123\""
-   },
-   "mirror_options": "No Mirroring",
-   "mirror_direction": null,
-   "offenses_first_loop": true,
-   "offenses_second_loop": true
-  },
-  "case_five": {
-   "init_context": {
-    "id": "5",
-    "samples": "[]",
-    "last_mirror_update": "242123"
-   },
-   "first_loop_ctx_not_default_values": {
-    "last_mirror_update": "\"242123\""
-   },
-   "second_loop_ctx_not_default_values": {
-    "last_mirror_update": "\"242123\""
-   },
-   "mirror_options": "Mirror Offense",
-   "mirror_direction": null,
-   "offenses_first_loop": true,
-   "offenses_second_loop": true
-  },
-  "case_six": {
-   "init_context": {
-    "id": "5",
-    "samples": "[]",
-    "last_mirror_update": "242123"
-   },
-   "first_loop_ctx_not_default_values": {
-    "last_mirror_update": "\"242123\""
-   },
-   "second_loop_ctx_not_default_values": {
-    "last_mirror_update": "\"242123\""
-   },
-   "mirror_options": "Mirror Offense and Events",
-   "mirror_direction": null,
-   "offenses_first_loop": true,
-   "offenses_second_loop": true
-  },
-  "case_seven": {
-   "init_context": {},
-   "mirror_options": "No Mirroring",
-   "mirror_direction": null,
-   "offenses_first_loop": true,
-   "offenses_second_loop": false
-  },
-  "case_eight": {
-   "init_context": {},
-   "mirror_options": "Mirror Offense",
-   "mirror_direction": "In",
-   "offenses_first_loop": true,
-   "offenses_second_loop": false
-  },
-  "case_nine": {
-   "init_context": {},
-   "mirror_options": "Mirror Offense and Events",
-   "mirror_direction": "In",
-   "offenses_first_loop": true,
-   "offenses_second_loop": false
-  },
-  "case_ten": {
+  "no_mirroring_two_offenses_loop": {
    "init_context": {
     "id": "5",
     "samples": "[]",
@@ -2021,9 +1949,81 @@
    "mirror_options": "No Mirroring",
    "mirror_direction": null,
    "offenses_first_loop": true,
+   "offenses_second_loop": true
+  },
+  "mirror_offense_two_offenses_loop": {
+   "init_context": {
+    "id": "5",
+    "samples": "[]",
+    "last_mirror_update": "242123"
+   },
+   "first_loop_ctx_not_default_values": {
+    "last_mirror_update": "\"242123\""
+   },
+   "second_loop_ctx_not_default_values": {
+    "last_mirror_update": "\"242123\""
+   },
+   "mirror_options": "Mirror Offense",
+   "mirror_direction": null,
+   "offenses_first_loop": true,
+   "offenses_second_loop": true
+  },
+  "mirror_offense_and_events_two_offenses_loop": {
+   "init_context": {
+    "id": "5",
+    "samples": "[]",
+    "last_mirror_update": "242123"
+   },
+   "first_loop_ctx_not_default_values": {
+    "last_mirror_update": "\"242123\""
+   },
+   "second_loop_ctx_not_default_values": {
+    "last_mirror_update": "\"242123\""
+   },
+   "mirror_options": "Mirror Offense and Events",
+   "mirror_direction": null,
+   "offenses_first_loop": true,
+   "offenses_second_loop": true
+  },
+  "empty_ctx_no_mirroring_first_loop_offenses": {
+   "init_context": {},
+   "mirror_options": "No Mirroring",
+   "mirror_direction": null,
+   "offenses_first_loop": true,
    "offenses_second_loop": false
   },
-  "case_eleven": {
+  "empty_ctx_mirror_offense_first_loop_offenses": {
+   "init_context": {},
+   "mirror_options": "Mirror Offense",
+   "mirror_direction": "In",
+   "offenses_first_loop": true,
+   "offenses_second_loop": false
+  },
+  "empty_ctx_mirror_offense_and_events_first_loop_offenses": {
+   "init_context": {},
+   "mirror_options": "Mirror Offense and Events",
+   "mirror_direction": "In",
+   "offenses_first_loop": true,
+   "offenses_second_loop": false
+  },
+  "no_mirroring_first_offenses_loop": {
+   "init_context": {
+    "id": "5",
+    "samples": "[]",
+    "last_mirror_update": "242123"
+   },
+   "first_loop_ctx_not_default_values": {
+    "last_mirror_update": "\"242123\""
+   },
+   "second_loop_ctx_not_default_values": {
+    "last_mirror_update": "\"242123\""
+   },
+   "mirror_options": "No Mirroring",
+   "mirror_direction": null,
+   "offenses_first_loop": true,
+   "offenses_second_loop": false
+  },
+  "mirror_offense_first_offenses_loop": {
    "init_context": {
     "id": "5",
     "samples": "[]",
@@ -2040,7 +2040,7 @@
    "offenses_first_loop": true,
    "offenses_second_loop": false
   },
-  "case_twelve": {
+  "mirror_offense_and_events_first_offenses_loop": {
    "init_context": {
     "id": "5",
     "samples": "[]",
@@ -2057,28 +2057,28 @@
    "offenses_first_loop": true,
    "offenses_second_loop": false
   },
-  "case_thirteen": {
+  "empty_ctx_no_mirroring_second_loop_offenses": {
    "init_context": {},
    "mirror_options": "No Mirroring",
    "mirror_direction": null,
    "offenses_first_loop": false,
    "offenses_second_loop": true
   },
-  "case_fourteen": {
+  "empty_ctx_mirror_offenses_second_loop_offenses": {
    "init_context": {},
    "mirror_options": "Mirror Offense",
    "mirror_direction": "In",
    "offenses_first_loop": false,
    "offenses_second_loop": true
   },
-  "case_fifteen": {
+  "empty_ctx_mirror_offenses_and_events_second_loop_offenses": {
    "init_context": {},
    "mirror_options": "Mirror Offense and Events",
    "mirror_direction": "In",
    "offenses_first_loop": false,
    "offenses_second_loop": true
   },
-  "case_sixteen": {
+  "no_mirroring_second_loop_offenses": {
    "init_context": {
     "id": "5",
     "samples": "[]",
@@ -2096,7 +2096,7 @@
    "offenses_first_loop": false,
    "offenses_second_loop": true
   },
-  "case_seventeen": {
+  "mirror_offenses_second_loop_offenses": {
    "init_context": {
     "id": "5",
     "samples": "[]",
@@ -2114,7 +2114,7 @@
    "offenses_first_loop": false,
    "offenses_second_loop": true
   },
-  "case_eighteen": {
+  "mirror_offenses_and_events_second_loop_offenses": {
    "init_context": {
     "id": "5",
     "samples": "[]",
@@ -2132,28 +2132,28 @@
    "offenses_first_loop": false,
    "offenses_second_loop": true
   },
-  "case_nineteen": {
+  "empty_ctx_no_mirroring_no_loop_offenses": {
    "init_context": {},
    "mirror_options": "No Mirroring",
    "mirror_direction": null,
    "offenses_first_loop": false,
    "offenses_second_loop": false
   },
-  "case_twenty": {
+  "empty_ctx_mirror_offenses_no_loop_offenses": {
    "init_context": {},
    "mirror_options": "Mirror Offense",
    "mirror_direction": "In",
    "offenses_first_loop": false,
    "offenses_second_loop": false
   },
-  "case_twenty_one": {
+  "empty_ctx_mirror_offenses_and_events_no_loop_offenses": {
    "init_context": {},
    "mirror_options": "Mirror Offense and Events",
    "mirror_direction": "In",
    "offenses_first_loop": false,
    "offenses_second_loop": false
   },
-  "case_twenty_two": {
+  "no_mirroring_no_loop_offenses": {
    "init_context": {
     "id": "5",
     "samples": "[]",
@@ -2171,7 +2171,7 @@
    "offenses_first_loop": false,
    "offenses_second_loop": false
   },
-  "case_twenty_three": {
+  "mirror_offense_no_loop_offenses": {
    "init_context": {
     "id": "5",
     "samples": "[]",
@@ -2189,7 +2189,7 @@
    "offenses_first_loop": false,
    "offenses_second_loop": false
   },
-  "case_twenty_four": {
+  "mirror_offense_and_events_no_loop_offenses": {
    "init_context": {
     "id": "5",
     "samples": "[]",

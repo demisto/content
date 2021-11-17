@@ -1236,7 +1236,7 @@ def is_reset_triggered():
     ctx = get_integration_context()
     if ctx and RESET_KEY in ctx:
         print_debug_msg('Reset fetch-incidents.')
-        set_to_integration_context_with_retries({'samples': '[]'})
+        set_integration_context({'samples': '[]'})
         return True
     return False
 
@@ -3424,7 +3424,7 @@ def change_ctx_to_be_compatible_with_retry() -> None:
 
     if not extract_works:
         cleared_ctx = clear_integration_ctx(new_ctx)
-        set_to_integration_context_with_retries(cleared_ctx)
+        set_integration_context(cleared_ctx)
         print_debug_msg(f"Change ctx context data was cleared and changed to {cleared_ctx}")
 
 
