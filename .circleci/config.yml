@@ -475,7 +475,7 @@ references:
       name: Calculate Packs Dependencies
       when: always
       command: |
-        python3 ./Tests/Marketplace/packs_dependencies.py -i ./Tests/id_set.json -o $CIRCLE_ARTIFACTS/packs_dependencies.json
+        demisto-sdk find-dependencies -idp ./Tests/id_set.json -o $CIRCLE_ARTIFACTS/packs_dependencies.json --all-packs-dependencies
 
   copy_tests_to_circle_artifact: &copy_tests_to_circle_artifact
     run:

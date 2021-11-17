@@ -1459,7 +1459,7 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
         if i < max_retries - 1:
             time.sleep(SLEEP_FETCH_EVENT_RETIRES)
 
-    print_debug_msg(f"Reached max retries for offense {offense.get('id')} with failure message {failure_message}")
+    print_debug_msg(f"Reached max retries for offense {offense.get('id')} witPacks/CommonPlaybooks/Playbooks/playbook-Block_Domain_-_Generic.ymlh failure message {failure_message}")
     if failure_message == '' and len(events) < min_events_size:
         failure_message = 'Events were probably not indexed in QRadar at the time of the mirror.'
 
