@@ -2106,7 +2106,7 @@ def stringEscapeMD(st, minimal_escaping=False, escape_multiline=False):
         st = st.replace('\n', '<br>')  # Unix
 
     if minimal_escaping:
-        for c in '|':
+        for c in ('|', '`'):
             st = st.replace(c, '\\' + c)
     else:
         st = "".join(["\\" + str(c) if c in MARKDOWN_CHARS else str(c) for c in st])
