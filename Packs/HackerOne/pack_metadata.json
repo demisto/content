@@ -4,8 +4,8 @@
   "support": "xsoar",
   "currentVersion": "1.0.0",
   "author": "Cortex XSOAR",
-  "url": "",
-  "email": "",
+  "url": "https://docs.hackerone.com/",
+  "email": "support@hackerone.com",
   "created": "2021-08-24T06:32:22Z",
   "categories": [
     "Vulnerability Management"
@@ -21,5 +21,7 @@
     "reports",
     "vulnerability"
   ],
-  "githubUser": []
+  "githubUser": [
+    "martijnrusschen"
+  ]
 }
