@@ -71,12 +71,12 @@ configuration:
 - display: Alarm rule name filter
   name: alarm_rule_name_filter
   defaultvalue: ''
-  type: 4
+  type: 0
   required: false
 - display: Case tags filter
   name: case_tags_filter
   defaultvalue: ''
-  type: 4
+  type: 0
   required: false
 - display: Case status filter
   name: case_status_filter

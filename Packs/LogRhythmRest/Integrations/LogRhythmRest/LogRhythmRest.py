@@ -18,7 +18,7 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
-TOKEN = demisto.params().get('token', '')
+TOKEN = demisto.params().get('credentials', {}).get('password')
 BASE_URL = demisto.params().get('url', '').strip('/')
 INSECURE = not demisto.params().get('insecure')
 CLUSTER_ID = demisto.params().get('cluster-id')
