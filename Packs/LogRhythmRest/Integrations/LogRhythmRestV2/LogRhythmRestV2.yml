@@ -4000,6 +4000,16 @@ script:
       description: 'The endpoint hostname.'
       required: false
       isArray: false
+    outputs:
+    - contextPath: Endpoint.Hostname
+      description: The endpoint's hostname.
+      type: String
+    - contextPath: Endpoint.ID
+      description: The endpoint's ID.
+      type: String
+    - contextPath: Endpoint.IPAddress
+      description: The endpoint's IP address.
+      type: String
   - name: lr-hosts-status-update
     description: 'Updates the status of a host to retire or active.'
     arguments:
