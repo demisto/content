@@ -1021,9 +1021,9 @@ def get_branch_command():
     branch_name = args.get('branch_name')
     response = get_branch(branch_name)
 
-    commit = response.get('commit', {})
-    author = commit.get('author', {})
-    parents = commit.get('parents', [])
+    commit = response.get('commit', {}) or {}
+    author = commit.get('author', {}) or {}
+    parents = commit.get('parents', []) or []
     ec_object = {
         'Name': response.get('name'),
         'CommitSHA': commit.get('sha'),
