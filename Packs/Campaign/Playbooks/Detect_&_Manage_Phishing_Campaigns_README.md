@@ -14,18 +14,19 @@ This playbook does not use any sub-playbooks.
 This playbook does not use any integrations.
 
 ### Scripts
-* FindEmailCampaign
+* SetPhishingCampaignDetails
+* IsIntegrationAvailable
 * IsIncidentPartOfCampaign
 * SetByIncidentId
-* IsIntegrationAvailable
+* FindEmailCampaign
 
 ### Commands
-* demisto-lock-get
-* closeInvestigation
-* demisto-lock-release
-* investigate
-* createNewIncident
 * linkIncidents
+* createNewIncident
+* demisto-lock-release
+* closeInvestigation
+* investigate
+* demisto-lock-get
 * setIncident
 
 ## Playbook Inputs
