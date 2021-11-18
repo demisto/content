@@ -1348,11 +1348,18 @@ def create_search_with_retry(client: Client, fetch_mode: str, offense: Dict, eve
         f'SELECT {event_columns} FROM events WHERE INOFFENSE({offense_id}) {additional_where} limit {events_limit} '
         f'START {offense_start_time}'
     )
+    print_debug_msg(f'Trying to get events for offense ID: {offense_id}, '
+                    f'query_expression: {query_expression}.')
     num_of_failures = 0
     while num_of_failures <= max_retries:
         try:
-            # TODO Write query_expression to the log
-            return client.search_create(query_expression=query_expression)
+            print_debug_msg(f'Creating search for offense ID: {offense_id}, '
+                            f'query_expression: {query_expression}.')
+            ret_value = client.search_create(query_expression=query_expression)
+            print_debug_msg(f'Created search for offense ID: {offense_id}, '
+                            f'query_expression: {query_expression}, '
+                            f'ret_value: {ret_value}.')
+            return ret_value
         except Exception:
             print_debug_msg(f'Failed to create search for offense ID: {offense_id}. '
                             f'Retry number {num_of_failures}/{max_retries}.')
@@ -1362,6 +1369,7 @@ def create_search_with_retry(client: Client, fetch_mode: str, offense: Dict, eve
                 print_debug_msg(f'Max retries for creating search for offense: {offense_id}. Returning empty.')
                 break
             time.sleep(FAILURE_SLEEP)
+    print_debug_msg(f'Returning empty events for offense ID: {offense_id}.')
     return None
 
 
@@ -1389,12 +1397,13 @@ def poll_offense_events_with_retry(client: Client, search_id: str, offense_id: i
     failure_message = ''
     while num_of_failures <= max_retries:
         try:
+            print_debug_msg(f"Getting search status for {search_id}")
             search_status_response = client.search_status_get(search_id)
+            print_debug_msg(f"Got search status for {search_id}")
             query_status = search_status_response.get('status')
             # failures are relevant only when consecutive
             num_of_failures = 0
-            # TODO Don't try to get events if CANCELLED or ERROR
-            # TODO Write query_status to the log
+            print_debug_msg(f'Search query_status: {query_status}')
             if query_status in TERMINATING_SEARCH_STATUSES:
                 print_debug_msg(f'Getting events for offense {offense_id}')
                 search_results_response = client.search_results_get(search_id)
@@ -1454,6 +1463,7 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
 
         offense_id = offense['id']
         events, failure_message = poll_offense_events_with_retry(client, search_response['search_id'], offense_id)
+        print_debug_msg(f"Polled events for offense ID {offense_id}")
         if len(events) >= min_events_size:
             print_debug_msg(f"Fetched {len(events)}/{min_events_size} for offense ID {offense_id}")
             break
@@ -1509,6 +1519,12 @@ def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int
     range_ = f'items=0-{range_max}'
 
     raw_offenses = client.offenses_list(range_, filter_=filter_fetch_query, sort=ASCENDING_ID_ORDER)
+    if raw_offenses:
+        raw_offenses_len = len(raw_offenses)
+        print_debug_msg(f'raw_offenses size: {raw_offenses_len}')
+    else:
+        print_debug_msg(f'empty raw_offenses size')
+
     new_highest_offense_id = raw_offenses[-1].get('id') if raw_offenses else offense_highest_id
     print_debug_msg(f'New highest ID returned from QRadar offenses: {new_highest_offense_id}')
 
@@ -1588,7 +1604,6 @@ def update_mirrored_events(client: Client,
 
     Returns: (A list of updated offenses with their events)
     """
-    # TODO Remove duplication with long_running_execution_command
     offenses = context_data.get(MIRRORED_OFFENSES_CTX_KEY, [])
     if len(offenses) > offenses_per_fetch:
         offenses = offenses[:offenses_per_fetch]
@@ -1718,7 +1733,6 @@ def long_running_execution_command(client: Client, params: Dict):
         params (Dict): Demisto params.
 
     """
-    # TODO Remove duplication with update_mirrored_events
     validate_long_running_params(params)
     fetch_mode = params.get('fetch_mode', '')
     ip_enrich, asset_enrich = get_offense_enrichment(params.get('enrichment', 'IPs And Assets'))
