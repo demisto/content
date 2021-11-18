@@ -41,6 +41,10 @@
 				"Display Name": {
 					"complex": null,
 					"simple": "Name"
+				},
+				"Username": {
+					"complex": null,
+					"simple": "Name"
 				}
 			}
 		}

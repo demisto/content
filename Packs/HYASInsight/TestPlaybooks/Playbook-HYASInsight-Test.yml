@@ -1,20 +1,20 @@
 id: Playbook-HYASInsight-Test
-version: 36
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Playbook-HYASInsight-Test
 fromversion: 6.0.0
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 724698b1-9ea8-4e8d-838e-b2da56045aaf
+    taskid: 276e4804-39ab-4f66-826d-6918f5723f6c
     type: start
     task:
-      id: 724698b1-9ea8-4e8d-838e-b2da56045aaf
+      id: 276e4804-39ab-4f66-826d-6918f5723f6c
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -31,12 +31,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 036384ba-1889-4411-8ff5-d7871a9a3957
+    taskid: 6c6af7ad-aa9c-4a2a-8aff-fc01f5b5c122
     type: regular
     task:
-      id: 036384ba-1889-4411-8ff5-d7871a9a3957
+      id: 6c6af7ad-aa9c-4a2a-8aff-fc01f5b5c122
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -62,12 +64,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: fafa3e8c-860f-4711-8785-ab49a575fab5
+    taskid: f906f849-1646-49ad-8f09-0802271a490a
     type: regular
     task:
-      id: fafa3e8c-860f-4711-8785-ab49a575fab5
+      id: f906f849-1646-49ad-8f09-0802271a490a
       version: -1
       name: hyas-get-passive-dns-records-by-indicator
       script: '|||hyas-get-passive-dns-records-by-indicator'
@@ -97,12 +101,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: bfc530d6-4ebf-4be4-812e-69adc14b5be4
+    taskid: 47c1d7a7-89a6-4d4b-8fc8-42c9023c1645
     type: condition
     task:
-      id: bfc530d6-4ebf-4be4-812e-69adc14b5be4
+      id: 47c1d7a7-89a6-4d4b-8fc8-42c9023c1645
       version: -1
       name: Passive DNS Outputs
       type: condition
@@ -307,12 +313,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 5a72e333-15e1-4eff-8245-80b485cbf5b1
+    taskid: 5a1e3a03-315a-4dbd-8754-9d41194f6b2a
     type: regular
     task:
-      id: 5a72e333-15e1-4eff-8245-80b485cbf5b1
+      id: 5a1e3a03-315a-4dbd-8754-9d41194f6b2a
       version: -1
       name: hyas-get-dynamic-dns-records-by-indicator
       script: '|||hyas-get-dynamic-dns-records-by-indicator'
@@ -342,12 +350,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 6d12ef3e-df88-49d0-8d6b-509876386d7f
+    taskid: 8953556f-be9e-49d8-84d9-a3204b3d5b89
     type: condition
     task:
-      id: 6d12ef3e-df88-49d0-8d6b-509876386d7f
+      id: 8953556f-be9e-49d8-84d9-a3204b3d5b89
       version: -1
       name: Dynamic DNS Outputs
       type: condition
@@ -437,12 +447,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 3454d54f-a8f2-4725-86d5-961340acfda1
+    taskid: eac1ec54-4f2d-4727-85c8-b9f94fc41dac
     type: regular
     task:
-      id: 3454d54f-a8f2-4725-86d5-961340acfda1
+      id: eac1ec54-4f2d-4727-85c8-b9f94fc41dac
       version: -1
       name: hyas-get-whois-records-by-indicator
       script: '|||hyas-get-whois-records-by-indicator'
@@ -472,12 +484,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 02bf9db0-c783-4fc8-80a6-1bac9e6b98c0
+    taskid: 37f7e906-95a7-434e-8202-8f1900c8fdac
     type: condition
     task:
-      id: 02bf9db0-c783-4fc8-80a6-1bac9e6b98c0
+      id: 37f7e906-95a7-434e-8202-8f1900c8fdac
       version: -1
       name: Whois  Outputs
       type: condition
@@ -672,12 +686,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 6091472f-f7af-4d95-83f0-9f976105135c
+    taskid: abd4dc9c-79e3-40e1-8cbe-8a8d60953e8e
     type: regular
     task:
-      id: 6091472f-f7af-4d95-83f0-9f976105135c
+      id: abd4dc9c-79e3-40e1-8cbe-8a8d60953e8e
       version: -1
       name: hyas-get-whois-current-records-by-domain
       script: '|||hyas-get-whois-current-records-by-domain'
@@ -703,12 +719,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: fa85732d-0f05-49f7-8d9b-adae0ab6a02f
+    taskid: f37b3481-026b-4214-8c83-c78eb2efd196
     type: condition
     task:
-      id: fa85732d-0f05-49f7-8d9b-adae0ab6a02f
+      id: f37b3481-026b-4214-8c83-c78eb2efd196
       version: -1
       name: Whois Current Outputs
       type: condition
@@ -893,12 +911,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 56f14f3a-ef51-4549-8106-22d7c4d98bbc
+    taskid: 4786efec-488e-4b9b-873b-23deac2831fa
     type: regular
     task:
-      id: 56f14f3a-ef51-4549-8106-22d7c4d98bbc
+      id: 4786efec-488e-4b9b-873b-23deac2831fa
       version: -1
       name: hyas-get-malware-samples-records-by-indicator
       script: '|||hyas-get-malware-samples-records-by-indicator'
@@ -928,12 +948,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: d4447e79-f120-44b7-8496-2b1fd2cedbfd
+    taskid: 30a8170b-ca7f-49bf-82a0-e517802b3dde
     type: condition
     task:
-      id: d4447e79-f120-44b7-8496-2b1fd2cedbfd
+      id: 30a8170b-ca7f-49bf-82a0-e517802b3dde
       version: -1
       name: Malware Sample Outputs
       type: condition
@@ -1028,12 +1050,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 94543929-8b07-4a43-8fc3-006ddafe5f50
+    taskid: 231f38cc-9e35-474a-8b35-9683a9767745
     type: regular
     task:
-      id: 94543929-8b07-4a43-8fc3-006ddafe5f50
+      id: 231f38cc-9e35-474a-8b35-9683a9767745
       version: -1
       name: hyas-get-associated-ips-by-hash
       script: '|||hyas-get-associated-ips-by-hash'
@@ -1059,12 +1083,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 955db45c-0763-4fa9-8d07-79ab05b06725
+    taskid: 550a4ce8-90c4-45f5-876f-b659e56399df
     type: condition
     task:
-      id: 955db45c-0763-4fa9-8d07-79ab05b06725
+      id: 550a4ce8-90c4-45f5-876f-b659e56399df
       version: -1
       name: Associated IPs Outputs
       type: condition
@@ -1101,12 +1127,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 002ec0e6-2420-499b-871b-c4da3ac0f105
+    taskid: b4b86feb-c243-4ed6-8ae8-88f5a02867a0
     type: regular
     task:
-      id: 002ec0e6-2420-499b-871b-c4da3ac0f105
+      id: b4b86feb-c243-4ed6-8ae8-88f5a02867a0
       version: -1
       name: hyas-get-associated-domains-by-hash
       script: '|||hyas-get-associated-domains-by-hash'
@@ -1132,12 +1160,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: f52c553b-cdf8-418f-8af4-c56f92357779
+    taskid: 274ab786-e901-490c-81ec-5b14a3f59abf
     type: condition
     task:
-      id: f52c553b-cdf8-418f-8af4-c56f92357779
+      id: 274ab786-e901-490c-81ec-5b14a3f59abf
       version: -1
       name: Associated Domains Outputs
       type: condition
@@ -1145,7 +1175,7 @@ tasks:
       brand: ""
     nexttasks:
       "YES":
-      - "16"
+      - "17"
     separatecontext: false
     conditions:
     - label: "YES"
@@ -1174,23 +1204,26 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 80292ff3-b3b3-459d-8c90-97cd9faa327d
+    taskid: 275a6b1d-08c0-4eab-8645-6b254c6093f2
     type: title
     task:
-      id: 80292ff3-b3b3-459d-8c90-97cd9faa327d
+      id: 275a6b1d-08c0-4eab-8645-6b254c6093f2
       version: -1
       name: Test Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3200
+          "y": 3640
         }
       }
     note: false
@@ -1198,12 +1231,194 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 3f673366-cefb-4b81-8a31-d2692bf6a9e1
+    type: regular
+    task:
+      id: 3f673366-cefb-4b81-8a31-d2692bf6a9e1
+      version: -1
+      name: hyas-get-c2attribution-records-by-indicator
+      description: Return C2 Attribution records for the provided indicator value.
+      script: HYAS Insight|||hyas-get-c2attribution-records-by-indicator
+      type: regular
+      iscommand: true
+      brand: HYAS Insight
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      indicator_type:
+        simple: ip
+      indicator_value:
+        simple: 197.210.84.34
+      limit:
+        simple: "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: a119256a-562b-4080-864d-a55815c99aa2
+    type: condition
+    task:
+      id: a119256a-562b-4080-864d-a55815c99aa2
+      version: -1
+      name: C2 Attribution Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.C2_Attribution.actor_ipv4
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.C2_Attribution.actor_ipv4
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.C2_Attribution.c2_domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.C2_Attribution.c2_domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.C2_Attribution.c2_ip
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.C2_Attribution.c2_ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.C2_Attribution.c2_url
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.C2_Attribution.c2_url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.C2_Attribution.datetime
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.C2_Attribution.datetime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.C2_Attribution.email
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.C2_Attribution.email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.C2_Attribution.email_domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.C2_Attribution.email_domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.C2_Attribution.referrer_domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.C2_Attribution.referrer_domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.C2_Attribution.referrer_ipv4
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.C2_Attribution.referrer_ipv4
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.C2_Attribution.referrer_url
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.C2_Attribution.referrer_url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.C2_Attribution.sha256
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.C2_Attribution.sha256
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3215,
+        "height": 3655,
         "width": 380,
         "x": 50,
         "y": 50
@@ -1212,3 +1427,4 @@ view: |-
   }
 inputs: []
 outputs: []
+description: HYASInsight Test Playbook
