@@ -38,6 +38,11 @@ class Client(BaseClient):
 
     @staticmethod
     def error_handler(res: requests.Response):
+        """
+        :param res: the response of the http request
+        :return Exception: for 404-We want to try another polling so get_request had time for
+        getting valid answer. For other errors, we are raising like http_request does.
+        """
         err_msg = 'Error in API call [{}] - {}' \
             .format(res.status_code, res.reason)
         if res.status_code == 404:
@@ -94,7 +99,7 @@ class Client(BaseClient):
         return json_responders
 
     def create_alert(self, args: dict):
-        args.update(self.responders_to_json(args.get('responders'), "responders"))
+        args.update(Client.responders_to_json(args.get('responders'), "responders"))
         return self._http_request(method='POST',
                                   url_suffix=f"/v2/{ALERTS_SUFFIX}",
                                   json_data=args)
@@ -142,7 +147,7 @@ class Client(BaseClient):
     def add_responder_alert(self, args: dict):
         alert_id = args.get('alert-id')
         identifier = args.get('identifierType', 'id')
-        args.update(self.responders_to_json(args.get('responders'), "responder", one_is_dict=True))
+        args.update(Client.responders_to_json(args.get('responders'), "responder", one_is_dict=True))
         return self._http_request(method='POST',
                                   url_suffix=f"/v2/{ALERTS_SUFFIX}/{alert_id}/responders",
                                   params={"identifierType": identifier},
@@ -229,7 +234,7 @@ class Client(BaseClient):
                                   )
 
     def create_incident(self, args: dict):
-        args.update(self.responders_to_json(args.get('responders'), "responders"))
+        args.update(Client.responders_to_json(args.get('responders'), "responders"))
         return self._http_request(method='POST',
                                   url_suffix=f"/v1/{INCIDENTS_SUFFIX}/create",
                                   json_data=args)
@@ -270,7 +275,7 @@ class Client(BaseClient):
                                   json_data=args)
 
     def add_responder_incident(self, args: dict):
-        args.update(self.responders_to_json(args.get('responders'), "responder"))
+        args.update(Client.responders_to_json(args.get('responders'), "responder"))
         return self._http_request(method='POST',
                                   url_suffix=f"/v1/{INCIDENTS_SUFFIX}/"
                                              f"{args.get('incident_id')}/responders",
