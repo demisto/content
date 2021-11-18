@@ -1,10 +1,10 @@
 <!-- HTML_DOC -->
 <p>Use the Kafka integration to manage messages and partitions.</p>
-<p>This integration was integrated and tested with version 2.6 of Kafka.</p>
-<h2>Configure Kafka v2 on Cortex XSOAR</h2>
+<p>This integration was integrated and tested with version 2.7 of Kafka.</p>
+<h2>Configure Kafka v3 on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
-<li>Search for Kafka v2.</li>
+<li>Search for Kafka v3.</li>
 <li>Click <strong>Add instance</strong> to create and configure a new integration instance.<br>
 <ul>
 <li>
