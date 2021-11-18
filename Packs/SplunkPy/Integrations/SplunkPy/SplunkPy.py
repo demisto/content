@@ -1933,7 +1933,7 @@ def test_module(service):
         # validate connection
         service.info()
     except AuthenticationError:
-        return_error('Authentication error, please validate your credentials')
+        return_error('Authentication error, please validate your credentials.')
 
     # validate fetch
     params = demisto.params()
