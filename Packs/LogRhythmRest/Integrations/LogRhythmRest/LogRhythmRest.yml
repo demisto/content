@@ -1,3 +1,4 @@
+---
 category: Analytics & SIEM
 commonfields:
   id: LogRhythmRest
@@ -7,11 +8,10 @@ configuration:
     name: url
     required: true
     type: 0
-  - displaypassword: API Token
-    name: credentials
-    type: 9
+  - display: API Token
+    name: token
     required: true
-    hiddenusername: true
+    type: 4
   - display: Trust any certificate (not secure)
     name: insecure
     required: false
