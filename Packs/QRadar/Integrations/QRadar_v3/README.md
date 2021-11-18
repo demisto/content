@@ -488,7 +488,7 @@ Retrieves a list of offense closing reasons.
 
 ### qradar-offense-notes-list
 ***
-Creates a note on an offense.
+Retrieves a list of notes for an offense.
 
 
 #### Base Command
@@ -551,7 +551,7 @@ Creates a note on an offense.
 
 ### qradar-offense-note-create
 ***
-Retrieves a list of notes for an offense.
+Creates a note on an offense.
 
 
 #### Base Command
