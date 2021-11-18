@@ -1035,15 +1035,15 @@ script:
         name: ref
         required: true
         secret: false
-      default: false
-      defaultValue: 'false'
-      description: 'Whether to create a file entry in the War Room with the file contents.
-        Possible values are: "true" and "false". Default value is "false".'
-      isArray: false
-      name: create_file_from_content
-      predefined:
-      - 'true'
-      - 'false'
+      - default: false
+        defaultValue: false
+        description: 'Whether to create a file entry in the War Room with the file contents.
+          Possible values are: "true" and "false". Default value is "false".'
+        isArray: false
+        name: create_file_from_content
+        predefined:
+      - true
+      - false
       required: false
       secret: false
     description: Get raw file
