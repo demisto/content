@@ -132,7 +132,6 @@
             "integrations": "EwsExtension",
             "playbookID": "O365 - EWS - Extension - Test",
             "fromversion": "6.0.0",
-            "toversion": "6.0.9",
             "timeout": 500
         },
         {
