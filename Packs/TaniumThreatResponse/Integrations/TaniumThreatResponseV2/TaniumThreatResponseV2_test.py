@@ -665,9 +665,7 @@ def test_filter_get_connections(
     )
     response = outputs.get('Tanium.Connection(val.id === obj.id)', {})
     full_response_len = len(response)
-    assert (
-       full_response_len == expected_output_len
-    ), f'Actual length: {full_response_len}, Expected length: {expected_output_len}'
+    assert full_response_len == expected_output_len, f'Actual: {full_response_len}, Expected: {expected_output_len}'
 
 
 def test_create_connection(requests_mock):
