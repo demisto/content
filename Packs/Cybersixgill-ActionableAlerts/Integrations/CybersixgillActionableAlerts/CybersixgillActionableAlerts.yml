@@ -73,7 +73,7 @@ description: Cybersixgill automatically collects intelligence in real-time on al
 display: Cybersixgill Actionable Alerts
 name: Cybersixgill_Actionable_Alerts
 script:
-  dockerimage: demisto/sixgill:1.0.0.23434
+  dockerimage: demisto/sixgill:1.0.0.24417
   feed: false
   isfetch: true
   longRunning: false
