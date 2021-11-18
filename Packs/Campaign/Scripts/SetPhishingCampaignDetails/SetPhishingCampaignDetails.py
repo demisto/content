@@ -9,13 +9,7 @@ def get_campaign_context():
     current_incident_campaing_data = current_incident_context.get(EMAIL_CAMPAIGN_KEY)
     return current_incident_campaing_data
 
-
-def main():
-    incident_id = demisto.args()['id'] if 'id' in demisto.args() else demisto.incidents()[0]['id']
-    append = demisto.args()['append']
-    error_unfinished = argToBoolean(demisto.args().get('errorUnfinished', "false"))
-
-    campaign_data = get_campaign_context()
+def copy_campaign_data_to_incident(incident_id: int, campaign_data: dict, append: bool):
     args = {'key': EMAIL_CAMPAIGN_KEY, 'value': campaign_data, 'append': append}
 
     res = demisto.executeCommand(
@@ -26,6 +20,17 @@ def main():
             'arguments': args,
         }
     )
+    return res
+
+def main():
+    args = demisto.args()
+    incident_id = args['id']
+    append = argToBoolean(args['append'])
+    error_unfinished = argToBoolean(args.get('errorUnfinished', "false"))
+
+    campaign_data = get_campaign_context()
+    res = copy_campaign_data_to_incident(incident_id, campaign_data, append)
+
     if error_unfinished:
         result_string = res[-1].get('Contents', "")
         result_string = result_string.strip('.')

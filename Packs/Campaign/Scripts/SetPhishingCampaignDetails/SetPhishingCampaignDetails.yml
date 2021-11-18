@@ -14,7 +14,7 @@ enabled: true
 args:
 - name: id
   default: true
-
+  required: true
   description: Incident to set context values in (Default is current incident)
 - name: append
   auto: PREDEFINED
