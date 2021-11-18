@@ -8,7 +8,6 @@ delete-mismatched-branches:
     - if: '$DELETE_MISMATCHED_BRANCHES == "true"'
       when: always
   script:
-    - cd Utils
-    - python3 delete_mismatched_branches.py
+    - python3 Utils/delete_mismatched_branches.py
   retry:
     max: 2

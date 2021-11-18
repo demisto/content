@@ -15,9 +15,7 @@
  "fieldCalcScript": "",
  "neverSetAsRequired": false,
  "isReadOnly": false,
- "selectValues": [
-
- ],
+ "selectValues": [],
  "useAsKpi": false,
  "locked": false,
  "system": false,

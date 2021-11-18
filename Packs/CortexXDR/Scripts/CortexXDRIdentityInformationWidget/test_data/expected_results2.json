@@ -1,0 +1,13 @@
+[
+  {
+    "Name": "bob-test",
+    "Type": "USER",
+    "Sub Type": "IAM",
+    "Uuid": "arn:aws:iam95978203:user/bob-test",
+    "Provider": "AWS",
+    "Access Keys": [
+      "AKIAYDR3DU7NTAY2C3ZM",
+      "AKIAYDR3DU7NTPVXBKMK"
+    ]
+  }
+]
