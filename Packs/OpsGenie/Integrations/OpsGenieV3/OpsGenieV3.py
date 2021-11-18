@@ -56,7 +56,7 @@ class Client(BaseClient):
             err_msg += '\n{}'.format(res.text)
             raise DemistoException(err_msg, res=res)
 
-    def get_request(self, args: dict):
+    def get_request(self, args: dict) -> Dict:
         url_suffix = "/v1" if args.get('request_type_suffix') == INCIDENTS_SUFFIX else "/v2"
         try:
             data = self._http_request(
@@ -65,7 +65,7 @@ class Client(BaseClient):
                            f"{args.get('request_id')}",
                 error_handler=Client.error_handler
             )
-        except NotFinished as e:
+        except NotFinished:
             return {}
         return data
 
@@ -78,7 +78,7 @@ class Client(BaseClient):
 
     @staticmethod
     def responders_to_json(responders: List, responder_key: str, one_is_dict: bool = False) \
-            -> Dict[str, List[Dict] or Dict]:
+            -> Dict[str, List[dict] or Dict]:
         """
         :param responders: the responders list which we get from demisto.args()
         :param responder_key: Some of the api calls need "responder" and others "responders" as a
@@ -88,7 +88,7 @@ class Client(BaseClient):
         :return json_responders: reformatted respondres dict
         """
         if not responders:
-            print("NOTICE: Didn't get any responders")
+            demisto.log("NOTICE: Didn't get any responders")
             return {}
         if len(responders) % 3 != 0:
             raise DemistoException("responders must be list of: responder_type, value_type, value")
@@ -334,7 +334,7 @@ def run_polling_command(args: dict, cmd: str, results_function: Callable,
 
     ScheduledCommand.raise_error_if_not_supported()
 
-    if "request_id" not in args:
+    if "request_id" not in args and action_function:
         command_results = action_function(args)
         request_id = command_results.get("requestId")
         if not request_id:
