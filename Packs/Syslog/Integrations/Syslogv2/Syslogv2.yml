@@ -18,10 +18,8 @@ configuration:
   hidden: false
   name: log_format
   options:
-  - Auto
   - RFC5424
   - RFC3164
-  - RFC6587
   required: true
   type: 15
   additionalinfo: The format of the received logs from Syslog server

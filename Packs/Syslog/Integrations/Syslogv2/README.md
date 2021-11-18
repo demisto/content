@@ -1,5 +1,5 @@
 A Syslog server provides the ability to automatically open incidents from Syslog clients. This integration provides the ability to filter which logs are to be converted to incidents (or choose to convert all logs).
-This integration was integrated and tested with version RFC3164 and RFC5424 formats of Syslog v2
+This integration was integrated and tested with RFC3164 and RFC5424 formats of Syslog.
 
 ## Configure Syslog v2 on Cortex XSOAR
 
