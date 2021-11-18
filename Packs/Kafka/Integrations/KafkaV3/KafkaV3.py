@@ -36,7 +36,7 @@ class KafkaCommunicator:
 
     def __init__(self, brokers: str, offset: str = 'earliest', group_id: str = 'xsoar_group',
                  message_max_bytes: int = None, enable_auto_commit: bool = False, ca_cert=None,
-                 client_cert=None, client_cert_key=None, ssl_password=None):
+                 client_cert=None, client_cert_key=None, ssl_password=None, trust_any_cert=False):
         """Set configuration dicts for consumer and producer.
 
         Args:
@@ -63,20 +63,24 @@ class KafkaCommunicator:
                               'group.id': group_id,
                               'enable.auto.commit': enable_auto_commit}
 
+        if trust_any_cert:
+            self.conf_consumer.update({'enable.ssl.certificate.verification': False})  # type: ignore
+            self.conf_producer.update({'enable.ssl.certificate.verification': False})  # type: ignore
+
         if message_max_bytes:
             self.conf_consumer.update({'message.max.bytes': int(message_max_bytes)})
 
         if ca_cert:
             self.ca_path = str(uuid.uuid4())  # Generate file name for key
             with open(self.ca_path, 'w') as file:
-                file.write(ca_cert)
+                file.write(ca_cert)  # lgtm [py/clear-text-storage-sensitive-data]
                 ca_path = os.path.abspath(self.ca_path)
             self.conf_producer.update({'ssl.ca.location': ca_path})
             self.conf_consumer.update({'ssl.ca.location': ca_path})
         if client_cert:
             self.client_cert_path = str(uuid.uuid4())  # Generate file name for key
             with open(self.client_cert_path, 'w') as file:
-                file.write(client_cert)
+                file.write(client_cert)  # lgtm [py/clear-text-storage-sensitive-data]
                 client_path = os.path.abspath(self.client_cert_path)
             self.conf_producer.update({'ssl.certificate.location': client_path,
                                        'security.protocol': 'ssl'})
@@ -85,7 +89,7 @@ class KafkaCommunicator:
         if client_cert_key:
             self.client_key_path = str(uuid.uuid4())  # Generate file name for key
             with open(self.client_key_path, 'w') as file:
-                file.write(client_cert_key)
+                file.write(client_cert_key)  # lgtm [py/clear-text-storage-sensitive-data]
                 client_key_path = os.path.abspath(self.client_key_path)
             self.conf_producer.update({'ssl.key.location': client_key_path})
             self.conf_consumer.update({'ssl.key.location': client_key_path})
@@ -573,6 +577,7 @@ def main():
     demisto.debug(f'Command being called is {demisto_command}')
     brokers = demisto_params.get('brokers')
     offset = handle_empty(demisto_params.get('offset', 'earliest'), 'earliest')
+    trust_any_cert = demisto_params.get('insecure', False)
 
     # Should we use SSL
     use_ssl = demisto_params.get('use_ssl', False)
@@ -584,9 +589,10 @@ def main():
         client_cert_key = demisto_params.get('client_cert_key', None)
         ssl_password = demisto_params.get('additional_password', None)
         kafka = KafkaCommunicator(brokers=brokers, ca_cert=ca_cert, client_cert=client_cert,
-                                  client_cert_key=client_cert_key, ssl_password=ssl_password, offset=offset)
+                                  client_cert_key=client_cert_key, ssl_password=ssl_password, offset=offset,
+                                  trust_any_cert=False)
     else:
-        kafka = KafkaCommunicator(brokers=brokers, offset=offset)
+        kafka = KafkaCommunicator(brokers=brokers, offset=offset, trust_any_cert=trust_any_cert)
 
     try:
         if demisto_command == 'test-module':

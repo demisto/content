@@ -699,7 +699,8 @@ def test_ssl_configuration():
                               client_cert='client_cert',
                               client_cert_key='client_cert_key',
                               ssl_password='ssl_password',
-                              offset='offset')
+                              offset='offset',
+                              trust_any_cert=False)
     expected_consumer_conf = {
         'auto.offset.reset': 'earliest',
         'bootstrap.servers': 'brokers',
