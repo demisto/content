@@ -22,5 +22,6 @@ for ip in ips:
         "reputation": BLACKLISTED,
         "seenNow": "true",
     })
-
+if False:
+    pass
 demisto.results("All Indicators were created successfully")

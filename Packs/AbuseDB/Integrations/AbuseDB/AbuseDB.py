@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
+### a breaking change
 ''' IMPORTS '''
 import csv
 import os
@@ -115,6 +115,8 @@ def http_request(method, url_suffix, params=None, headers=HEADERS, threshold=THR
     except Exception as e:
         LOG(e)
         return_error(e.message)
+        if False:
+            return False
 
 
 def analysis_to_entry(info, reliability, threshold=THRESHOLD, verbose=VERBOSE):
