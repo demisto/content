@@ -1,0 +1,930 @@
+{
+    "data": {
+        "page_number": 1,
+        "results": [
+            {
+                "begin_time": "2021-11-17T11:24:00.654704716Z",
+                "destination_port": 0,
+                "end_time": "2021-11-17T11:24:10.766551311Z",
+                "id": 4526487,
+                "l1_category_name": "Attack Scenario",
+                "scenario_details": [
+                    {
+                        "action_id": 12753,
+                        "action_name": "Execute Encrypted Shellcode by using Exocet Tool",
+                        "end": "2021-11-17T11:24:10.766551692Z",
+                        "id": 1917765,
+                        "process_results": null,
+                        "result": "Completed",
+                        "technique_id": "T1027"
+                    }
+                ],
+                "source_port": 0,
+                "string": "Insecure",
+                "threat_id": 351578,
+                "threat_name": "Binary Dropper Execution by using Exocet Tool",
+                "trusted": "Win10-Det1",
+                "untrusted": "Picus_Attacker_3",
+                "variant": "HTTP"
+            },
+            {
+                "begin_time": "2021-11-17T11:21:45.487599197Z",
+                "destination_port": 0,
+                "end_time": "2021-11-17T11:21:55.101061653Z",
+                "id": 4526484,
+                "l1_category_name": "Attack Scenario",
+                "scenario_details": [
+                    {
+                        "action_id": 12753,
+                        "action_name": "Execute Encrypted Shellcode by using Exocet Tool",
+                        "end": "2021-11-17T11:21:55.101062053Z",
+                        "id": 1917764,
+                        "process_results": null,
+                        "result": "Completed",
+                        "technique_id": "T1027"
+                    }
+                ],
+                "source_port": 0,
+                "string": "Insecure",
+                "threat_id": 351578,
+                "threat_name": "Binary Dropper Execution by using Exocet Tool",
+                "trusted": "Win10-Det1",
+                "untrusted": "Picus_Attacker_3",
+                "variant": "HTTP"
+            },
+            {
+                "begin_time": "2021-11-17T11:13:58.759640096Z",
+                "destination_port": 0,
+                "end_time": "2021-11-17T11:14:08.256829762Z",
+                "id": 4526472,
+                "l1_category_name": "Attack Scenario",
+                "scenario_details": [
+                    {
+                        "action_id": 12753,
+                        "action_name": "Execute Encrypted Shellcode by using Exocet Tool",
+                        "end": "2021-11-17T11:14:08.256829892Z",
+                        "id": 1917761,
+                        "process_results": null,
+                        "result": "Completed",
+                        "technique_id": "T1027"
+                    }
+                ],
+                "source_port": 0,
+                "string": "Insecure",
+                "threat_id": 351578,
+                "threat_name": "Binary Dropper Execution by using Exocet Tool",
+                "trusted": "Win10-Det1",
+                "untrusted": "Picus_Attacker_3",
+                "variant": "HTTP"
+            },
+            {
+                "begin_time": "2021-11-17T10:33:36.723996612Z",
+                "destination_port": 0,
+                "end_time": "2021-11-17T10:34:30.807770054Z",
+                "id": 4526429,
+                "l1_category_name": "Attack Scenario",
+                "scenario_details": [
+                    {
+                        "action_id": 12750,
+                        "action_name": "Hide Beacon Memory by using Heap Encryption",
+                        "end": "2021-11-17T10:34:30.807770435Z",
+                        "id": 1917758,
+                        "process_results": null,
+                        "result": "Completed",
+                        "technique_id": "T1027"
+                    }
+                ],
+                "source_port": 0,
+                "string": "Insecure",
+                "threat_id": 674267,
+                "threat_name": "Beacon Memory Obfuscation by using Heap Encryption",
+                "trusted": "Win10-Det1",
+                "untrusted": "Picus_Attacker_3",
+                "variant": "HTTP"
+            },
+            {
+                "begin_time": "2021-11-17T10:31:42.024838622Z",
+                "destination_port": 0,
+                "end_time": "2021-11-17T10:32:36.44970397Z",
+                "id": 4526426,
+                "l1_category_name": "Attack Scenario",
+                "scenario_details": [
+                    {
+                        "action_id": 12750,
+                        "action_name": "Hide Beacon Memory by using Heap Encryption",
+                        "end": "2021-11-17T10:32:36.44970439Z",
+                        "id": 1917757,
+                        "process_results": null,
+                        "result": "Completed",
+                        "technique_id": "T1027"
+                    }
+                ],
+                "source_port": 0,
+                "string": "Insecure",
+                "threat_id": 674267,
+                "threat_name": "Beacon Memory Obfuscation by using Heap Encryption",
+                "trusted": "Win10-Det1",
+                "untrusted": "Picus_Attacker_3",
+                "variant": "HTTP"
+            },
+            {
+                "begin_time": "2021-11-17T10:21:48.101398695Z",
+                "destination_port": 0,
+                "end_time": "2021-11-17T10:22:22.066324059Z",
+                "id": 4526416,
+                "l1_category_name": "Attack Scenario",
+                "scenario_details": [
+                    {
+                        "action_id": 12733,
+                        "action_name": "Hide Beacon Memory by using SleepyCrypt",
+                        "end": "2021-11-17T10:22:22.066324299Z",
+                        "id": 1917756,
+                        "process_results": null,
+                        "result": "Completed",
+                        "technique_id": "T1027"
+                    }
+                ],
+                "source_port": 0,
+                "string": "Insecure",
+                "threat_id": 850468,
+                "threat_name": "Beacon Memory Obfuscation by using SleepyCrypt",
+                "trusted": "Win10-Det1",
+                "untrusted": "Picus_Attacker_3",
+                "variant": "HTTP"
+            },
+            {
+                "begin_time": "2021-11-17T10:18:03.868058194Z",
+                "destination_port": 0,
+                "end_time": "2021-11-17T10:18:37.517283699Z",
+                "id": 4526411,
+                "l1_category_name": "Attack Scenario",
+                "scenario_details": [
+                    {
+                        "action_id": 12733,
+                        "action_name": "Hide Beacon Memory by using SleepyCrypt",
+                        "end": "2021-11-17T10:18:37.51728405Z",
+                        "id": 1917755,
+                        "process_results": null,
+                        "result": "Completed",
+                        "technique_id": "T1027"
+                    }
+                ],
+                "source_port": 0,
+                "string": "Insecure",
+                "threat_id": 850468,
+                "threat_name": "Beacon Memory Obfuscation by using SleepyCrypt",
+                "trusted": "Win10-Det1",
+                "untrusted": "Picus_Attacker_3",
+                "variant": "HTTP"
+            },
+            {
+                "begin_time": "2021-11-17T08:31:53.547417967Z",
+                "destination_port": 0,
+                "end_time": "2021-11-17T08:32:01.155790857Z",
+                "id": 4526300,
+                "l1_category_name": "Attack Scenario",
+                "scenario_details": [
+                    {
+                        "action_id": 12723,
+                        "action_name": "Dump Lsass Process Memory via SilentProcessExit over .NET Dll",
+                        "end": "2021-11-17T08:32:01.155791238Z",
+                        "id": 1917752,
+                        "process_results": null,
+                        "result": "Completed",
+                        "technique_id": "T1003"
+                    }
+                ],
+                "source_port": 0,
+                "string": "Insecure",
+                "threat_id": 773109,
+                "threat_name": "Credential Dumping via SilentProcessExit Method over .NET Dll",
+                "trusted": "Win10-Det1",
+                "untrusted": "Picus_Attacker_3",
+                "variant": "HTTP"
+            },
+            {
+                "begin_time": "2021-11-17T07:19:23.567034066Z",
+                "destination_port": 0,
+                "end_time": "2021-11-17T07:19:33.59298332Z",
+                "id": 4526222,
+                "l1_category_name": "Attack Scenario",
+                "scenario_details": [
+                    {
+                        "action_id": 12760,
+                        "action_name": "Inject Shellcode by using RustSCRunner Tool",
+                        "end": "2021-11-17T07:19:33.592983811Z",
+                        "id": 1917747,
+                        "process_results": null,
+                        "result": "Completed",
+                        "technique_id": "T1055"
+                    }
+                ],
+                "source_port": 0,
+                "string": "Insecure",
+                "threat_id": 428692,
+                "threat_name": "Process Injection by using RustSCRunner Tool",
+                "trusted": "Win10-Det1",
+                "untrusted": "Picus_Attacker_3",
+                "variant": "HTTP"
+            },
+            {
+                "begin_time": "2021-11-16T13:50:38.602151489Z",
+                "destination_port": 0,
+                "end_time": "2021-11-16T13:50:42.232780826Z",
+                "id": 4525071,
+                "l1_category_name": "Attack Scenario",
+                "scenario_details": [
+                    {
+                        "action_id": 12784,
+                        "action_name": "Enumerate Exclusion Paths of Windows Defender",
+                        "end": "2021-11-16T13:50:42.232781076Z",
+                        "id": 1917742,
+                        "process_results": null,
+                        "result": "Completed",
+                        "technique_id": "T1518"
+                    }
+                ],
+                "source_port": 0,
+                "string": "Insecure",
+                "threat_id": 768048,
+                "threat_name": "Windows Defender Exclusion Path Enumeration",
+                "trusted": "Win10-Det1",
+                "untrusted": "Picus_Attacker_3",
+                "variant": "HTTP"
+            },
+            {
+                "begin_time": "2021-11-16T13:45:31.383490777Z",
+                "destination_port": 0,
+                "end_time": "2021-11-16T13:45:37.364678536Z",
+                "id": 4525065,
+                "l1_category_name": "Attack Scenario",
+                "scenario_details": [
+                    {
+                        "action_id": 12771,
+                        "action_name": "Exfiltrate Data via Rclone Tool",
+                        "end": "2021-11-16T13:45:37.364678907Z",
+                        "id": 1917741,
+                        "process_results": null,
+                        "result": "Completed",
+                        "technique_id": "T1048"
+                    }
+                ],
+                "source_port": 0,
+                "string": "Insecure",
+                "threat_id": 826183,
+                "threat_name": "Exfiltration Over Alternative Protocol via Rclone Tool",
+                "trusted": "Win10-Det1",
+                "untrusted": "Picus_Attacker_3",
+                "variant": "HTTP"
+            },
+            {
+                "begin_time": "2021-11-16T13:45:21.31707734Z",
+                "destination_port": 0,
+                "end_time": "2021-11-16T13:45:31.380963957Z",
+                "id": 4525064,
+                "l1_category_name": "Attack Scenario",
+                "scenario_details": [
+                    {
+                        "action_id": 12744,
+                        "action_name": "Execute Shellcode via CertEnumSystemStoreLocation Callback Function",
+                        "end": "2021-11-16T13:45:31.380964057Z",
+                        "id": 1917740,
+                        "process_results": null,
+                        "result": "Completed",
+                        "technique_id": "T1055"
+                    }
+                ],
+                "source_port": 0,
+                "string": "Insecure",
+                "threat_id": 692856,
+                "threat_name": "Shellcode Execution via CertEnumSystemStoreLocation Callback Function",
+                "trusted": "Win10-Det1",
+                "untrusted": "Picus_Attacker_3",
+                "variant": "HTTP"
+            },
+            {
+                "begin_time": "2021-11-16T13:44:35.531471232Z",
+                "destination_port": 0,
+                "end_time": "2021-11-16T13:45:21.313516061Z",
+                "id": 4525063,
+                "l1_category_name": "Attack Scenario",
+                "scenario_details": [
+                    {
+                        "action_id": 12657,
+                        "action_name": "Disable Windows Defender via Backstab Tool",
+                        "end": "2021-11-16T13:45:21.313516582Z",
+                        "id": 1917739,
+                        "process_results": null,
+                        "result": "Completed",
+                        "technique_id": "T1562"
+                    }
+                ],
+                "source_port": 0,
+                "string": "Insecure",
+                "threat_id": 476996,
+                "threat_name": "Disable Windows Defender via Backstab Tool",
+                "trusted": "Win10-Det1",
+                "untrusted": "Picus_Attacker_3",
+                "variant": "HTTP"
+            },
+            {
+                "begin_time": "2021-11-16T13:44:28.424731996Z",
+                "destination_port": 0,
+                "end_time": "2021-11-16T13:44:35.526096227Z",
+                "id": 4525062,
+                "l1_category_name": "Attack Scenario",
+                "scenario_details": [
+                    {
+                        "action_id": 12762,
+                        "action_name": "Execute Mimikatz via CopyCat Tool",
+                        "end": "2021-11-16T13:44:35.526096458Z",
+                        "id": 1917738,
+                        "process_results": null,
+                        "result": "Completed",
+                        "technique_id": "T1027"
+                    }
+                ],
+                "source_port": 0,
+                "string": "Insecure",
+                "threat_id": 587400,
+                "threat_name": "CopyCat Tool Defense Evasion Scenario",
+                "trusted": "Win10-Det1",
+                "untrusted": "Picus_Attacker_3",
+                "variant": "HTTP"
+            },
+            {
+                "begin_time": "2021-11-16T13:08:04.799993544Z",
+                "destination_port": 0,
+                "end_time": "2021-11-16T13:08:08.907392706Z",
+                "id": 4525024,
+                "l1_category_name": "Attack Scenario",
+                "scenario_details": [
+                    {
+                        "action_id": 12784,
+                        "action_name": "Enumerate Exclusion Paths of Windows Defender",
+                        "end": "2021-11-16T13:08:08.907393137Z",
+                        "id": 1917737,
+                        "process_results": null,
+                        "result": "Completed",
+                        "technique_id": "T1518"
+                    }
+                ],
+                "source_port": 0,
+                "string": "Insecure",
+                "threat_id": 768048,
+                "threat_name": "Windows Defender Exclusion Path Enumeration",
+                "trusted": "Win10-Det1",
+                "untrusted": "Picus_Attacker_3",
+                "variant": "HTTP"
+            },
+            {
+                "begin_time": "2021-11-16T12:58:58.760227468Z",
+                "destination_port": 0,
+                "end_time": "2021-11-16T12:59:03.207315495Z",
+                "id": 4525014,
+                "l1_category_name": "Attack Scenario",
+                "scenario_details": [
+                    {
+                        "action_id": 12784,
+                        "action_name": "Enumerate Exclusion Paths of Windows Defender",
+                        "end": "2021-11-16T12:59:03.207316016Z",
+                        "id": 1917736,
+                        "process_results": null,
+                        "result": "Completed",
+                        "technique_id": "T1518"
+                    }
+                ],
+                "source_port": 0,
+                "string": "Insecure",
+                "threat_id": 768048,
+                "threat_name": "Windows Defender Exclusion Path Enumeration",
+                "trusted": "Win10-Det1",
+                "untrusted": "Picus_Attacker_3",
+                "variant": "HTTP"
+            },
+            {
+                "begin_time": "2021-11-16T12:53:01.641123045Z",
+                "destination_port": 0,
+                "end_time": "2021-11-16T12:53:08.23347166Z",
+                "id": 4525007,
+                "l1_category_name": "Attack Scenario",
+                "scenario_details": [
+                    {
+                        "action_id": 12771,
+                        "action_name": "Exfiltrate Data via Rclone Tool",
+                        "end": "2021-11-16T12:53:08.233472021Z",
+                        "id": 1917735,
+                        "process_results": null,
+                        "result": "Completed",
+                        "technique_id": "T1048"
+                    }
+                ],
+                "source_port": 0,
+                "string": "Insecure",
+                "threat_id": 826183,
+                "threat_name": "Exfiltration Over Alternative Protocol via Rclone Tool",
+                "trusted": "Win10-Det1",
+                "untrusted": "Picus_Attacker_3",
+                "variant": "HTTP"
+            },
+            {
+                "begin_time": "2021-11-16T12:52:51.066240038Z",
+                "destination_port": 0,
+                "end_time": "2021-11-16T12:53:01.637363317Z",
+                "id": 4525006,
+                "l1_category_name": "Attack Scenario",
+                "scenario_details": [
+                    {
+                        "action_id": 12744,
+                        "action_name": "Execute Shellcode via CertEnumSystemStoreLocation Callback Function",
+                        "end": "2021-11-16T12:53:01.637363638Z",
+                        "id": 1917734,
+                        "process_results": null,
+                        "result": "Completed",
+                        "technique_id": "T1055"
+                    }
+                ],
+                "source_port": 0,
+                "string": "Insecure",
+                "threat_id": 692856,
+                "threat_name": "Shellcode Execution via CertEnumSystemStoreLocation Callback Function",
+                "trusted": "Win10-Det1",
+                "untrusted": "Picus_Attacker_3",
+                "variant": "HTTP"
+            },
+            {
+                "begin_time": "2021-11-16T12:52:32.931436108Z",
+                "destination_port": 0,
+                "end_time": "2021-11-16T12:52:51.06298772Z",
+                "id": 4525005,
+                "l1_category_name": "Attack Scenario",
+                "scenario_details": [
+                    {
+                        "action_id": 12657,
+                        "action_name": "Disable Windows Defender via Backstab Tool",
+                        "end": "2021-11-16T12:52:51.062988111Z",
+                        "id": 1917733,
+                        "process_results": null,
+                        "result": "Completed",
+                        "technique_id": "T1562"
+                    }
+                ],
+                "source_port": 0,
+                "string": "Insecure",
+                "threat_id": 476996,
+                "threat_name": "Disable Windows Defender via Backstab Tool",
+                "trusted": "Win10-Det1",
+                "untrusted": "Picus_Attacker_3",
+                "variant": "HTTP"
+            },
+            {
+                "begin_time": "2021-11-16T12:52:26.000024269Z",
+                "destination_port": 0,
+                "end_time": "2021-11-16T12:52:32.928809619Z",
+                "id": 4525004,
+                "l1_category_name": "Attack Scenario",
+                "scenario_details": [
+                    {
+                        "action_id": 12762,
+                        "action_name": "Execute Mimikatz via CopyCat Tool",
+                        "end": "2021-11-16T12:52:32.928809939Z",
+                        "id": 1917732,
+                        "process_results": null,
+                        "result": "Completed",
+                        "technique_id": "T1027"
+                    }
+                ],
+                "source_port": 0,
+                "string": "Insecure",
+                "threat_id": 587400,
+                "threat_name": "CopyCat Tool Defense Evasion Scenario",
+                "trusted": "Win10-Det1",
+                "untrusted": "Picus_Attacker_3",
+                "variant": "HTTP"
+            },
+            {
+                "begin_time": "2021-11-16T12:50:29.768883493Z",
+                "destination_port": 0,
+                "end_time": "2021-11-16T12:50:36.09808263Z",
+                "id": 4525001,
+                "l1_category_name": "Attack Scenario",
+                "scenario_details": [
+                    {
+                        "action_id": 12771,
+                        "action_name": "Exfiltrate Data via Rclone Tool",
+                        "end": "2021-11-16T12:50:36.098083131Z",
+                        "id": 1917731,
+                        "process_results": null,
+                        "result": "Completed",
+                        "technique_id": "T1048"
+                    }
+                ],
+                "source_port": 0,
+                "string": "Insecure",
+                "threat_id": 826183,
+                "threat_name": "Exfiltration Over Alternative Protocol via Rclone Tool",
+                "trusted": "Win10-Det1",
+                "untrusted": "Picus_Attacker_3",
+                "variant": "HTTP"
+            },
+            {
+                "begin_time": "2021-11-16T12:50:17.489737227Z",
+                "destination_port": 0,
+                "end_time": "2021-11-16T12:50:29.766811618Z",
+                "id": 4525000,
+                "l1_category_name": "Attack Scenario",
+                "scenario_details": [
+                    {
+                        "action_id": 12744,
+                        "action_name": "Execute Shellcode via CertEnumSystemStoreLocation Callback Function",
+                        "end": "2021-11-16T12:50:29.766812059Z",
+                        "id": 1917730,
+                        "process_results": null,
+                        "result": "Completed",
+                        "technique_id": "T1055"
+                    }
+                ],
+                "source_port": 0,
+                "string": "Insecure",
+                "threat_id": 692856,
+                "threat_name": "Shellcode Execution via CertEnumSystemStoreLocation Callback Function",
+                "trusted": "Win10-Det1",
+                "untrusted": "Picus_Attacker_3",
+                "variant": "HTTP"
+            },
+            {
+                "begin_time": "2021-11-16T12:49:39.189035668Z",
+                "destination_port": 0,
+                "end_time": "2021-11-16T12:50:17.487423496Z",
+                "id": 4524999,
+                "l1_category_name": "Attack Scenario",
+                "scenario_details": [
+                    {
+                        "action_id": 12657,
+                        "action_name": "Disable Windows Defender via Backstab Tool",
+                        "end": "2021-11-16T12:50:17.487423686Z",
+                        "id": 1917729,
+                        "process_results": null,
+                        "result": "Completed",
+                        "technique_id": "T1562"
+                    }
+                ],
+                "source_port": 0,
+                "string": "Insecure",
+                "threat_id": 476996,
+                "threat_name": "Disable Windows Defender via Backstab Tool",
+                "trusted": "Win10-Det1",
+                "untrusted": "Picus_Attacker_3",
+                "variant": "HTTP"
+            },
+            {
+                "begin_time": "2021-11-16T12:49:32.79184382Z",
+                "destination_port": 0,
+                "end_time": "2021-11-16T12:49:39.185336783Z",
+                "id": 4524998,
+                "l1_category_name": "Attack Scenario",
+                "scenario_details": [
+                    {
+                        "action_id": 12762,
+                        "action_name": "Execute Mimikatz via CopyCat Tool",
+                        "end": "2021-11-16T12:49:39.185337284Z",
+                        "id": 1917728,
+                        "process_results": null,
+                        "result": "Completed",
+                        "technique_id": "T1027"
+                    }
+                ],
+                "source_port": 0,
+                "string": "Insecure",
+                "threat_id": 587400,
+                "threat_name": "CopyCat Tool Defense Evasion Scenario",
+                "trusted": "Win10-Det1",
+                "untrusted": "Picus_Attacker_3",
+                "variant": "HTTP"
+            },
+            {
+                "begin_time": "2021-11-16T12:31:45.55621283Z",
+                "destination_port": 0,
+                "end_time": "2021-11-16T12:31:49.322149803Z",
+                "id": 4524978,
+                "l1_category_name": "Attack Scenario",
+                "scenario_details": [
+                    {
+                        "action_id": 12784,
+                        "action_name": "Enumerate Exclusion Paths of Windows Defender",
+                        "end": "2021-11-16T12:31:49.322150183Z",
+                        "id": 1917727,
+                        "process_results": null,
+                        "result": "Completed",
+                        "technique_id": "T1518"
+                    }
+                ],
+                "source_port": 0,
+                "string": "Insecure",
+                "threat_id": 768048,
+                "threat_name": "Windows Defender Exclusion Path Enumeration",
+                "trusted": "Win10-Det1",
+                "untrusted": "Picus_Attacker_3",
+                "variant": "HTTP"
+            },
+            {
+                "begin_time": "2021-11-16T12:24:51.245371729Z",
+                "destination_port": 0,
+                "end_time": "2021-11-16T12:24:55.310547334Z",
+                "id": 4524970,
+                "l1_category_name": "Attack Scenario",
+                "scenario_details": [
+                    {
+                        "action_id": 12784,
+                        "action_name": "Enumerate Exclusion Paths of Windows Defender",
+                        "end": "2021-11-16T12:24:55.310547424Z",
+                        "id": 1917726,
+                        "process_results": null,
+                        "result": "Completed",
+                        "technique_id": "T1518"
+                    }
+                ],
+                "source_port": 0,
+                "string": "Insecure",
+                "threat_id": 768048,
+                "threat_name": "Windows Defender Exclusion Path Enumeration",
+                "trusted": "Win10-Det1",
+                "untrusted": "Picus_Attacker_3",
+                "variant": "HTTP"
+            },
+            {
+                "begin_time": "2021-11-16T12:12:54.642090061Z",
+                "destination_port": 0,
+                "end_time": "2021-11-16T12:12:58.733111122Z",
+                "id": 4524957,
+                "l1_category_name": "Attack Scenario",
+                "scenario_details": [
+                    {
+                        "action_id": 12784,
+                        "action_name": "Enumerate Exclusion Paths of Windows Defender",
+                        "end": "2021-11-16T12:12:58.733111383Z",
+                        "id": 1917725,
+                        "process_results": [
+                            {
+                                "play_results": [
+                                    {
+                                        "code": 1,
+                                        "console_output": "",
+                                        "exit_code": "0",
+                                        "result": "Operation is successful.",
+                                        "result_message": ""
+                                    }
+                                ],
+                                "rewind_results": [
+                                    {
+                                        "code": 1,
+                                        "console_output": "",
+                                        "exit_code": "0",
+                                        "result": "Operation is successful.",
+                                        "result_message": ""
+                                    }
+                                ]
+                            }
+                        ],
+                        "result": "Completed",
+                        "technique_id": "T1518"
+                    }
+                ],
+                "source_port": 0,
+                "string": "Insecure",
+                "threat_id": 768048,
+                "threat_name": "Windows Defender Exclusion Path Enumeration",
+                "trusted": "Win10-Det1",
+                "untrusted": "Picus_Attacker_3",
+                "variant": "HTTP"
+            },
+            {
+                "begin_time": "2021-11-16T12:05:49.32628524Z",
+                "destination_port": 0,
+                "end_time": "2021-11-16T12:05:53.716178477Z",
+                "id": 4524949,
+                "l1_category_name": "Attack Scenario",
+                "scenario_details": [
+                    {
+                        "action_id": 12784,
+                        "action_name": "Enumerate Exclusion Paths of Windows Defender",
+                        "end": "2021-11-16T12:05:53.716178838Z",
+                        "id": 1917724,
+                        "process_results": null,
+                        "result": "Completed",
+                        "technique_id": "T1518"
+                    }
+                ],
+                "source_port": 0,
+                "string": "Insecure",
+                "threat_id": 768048,
+                "threat_name": "Windows Defender Exclusion Path Enumeration",
+                "trusted": "Win10-Det1",
+                "untrusted": "Picus_Attacker_3",
+                "variant": "HTTP"
+            },
+            {
+                "begin_time": "2021-11-16T11:58:50.870379276Z",
+                "destination_port": 0,
+                "end_time": "2021-11-16T11:58:54.959165967Z",
+                "id": 4524940,
+                "l1_category_name": "Attack Scenario",
+                "scenario_details": [
+                    {
+                        "action_id": 12754,
+                        "action_name": "Extract Syscall Numbers from NTDLL by using SyscallNumberExtractor",
+                        "end": "2021-11-16T11:58:54.959166307Z",
+                        "id": 1917722,
+                        "process_results": null,
+                        "result": "Completed",
+                        "technique_id": "T1562"
+                    }
+                ],
+                "source_port": 0,
+                "string": "Insecure",
+                "threat_id": 376491,
+                "threat_name": "Extracting Syscall Numbers from NTDLL by using SyscallNumberExtractor",
+                "trusted": "Win10-Det1",
+                "untrusted": "Picus_Attacker_3",
+                "variant": "HTTP"
+            },
+            {
+                "begin_time": "2021-11-16T11:40:55.775417681Z",
+                "destination_port": 0,
+                "end_time": "2021-11-16T11:40:59.737106887Z",
+                "id": 4524921,
+                "l1_category_name": "Attack Scenario",
+                "scenario_details": [
+                    {
+                        "action_id": 12784,
+                        "action_name": "Enumerate Exclusion Paths of Windows Defender",
+                        "end": "2021-11-16T11:40:59.737107097Z",
+                        "id": 1917721,
+                        "process_results": [
+                            {
+                                "play_results": [
+                                    {
+                                        "code": 1,
+                                        "console_output": "",
+                                        "exit_code": "0",
+                                        "result": "Operation is successful.",
+                                        "result_message": ""
+                                    }
+                                ],
+                                "rewind_results": [
+                                    {
+                                        "code": 1,
+                                        "console_output": "",
+                                        "exit_code": "0",
+                                        "result": "Operation is successful.",
+                                        "result_message": ""
+                                    }
+                                ]
+                            }
+                        ],
+                        "result": "Completed",
+                        "technique_id": "T1518"
+                    }
+                ],
+                "source_port": 0,
+                "string": "Insecure",
+                "threat_id": 768048,
+                "threat_name": "Windows Defender Exclusion Path Enumeration",
+                "trusted": "Win10-Det1",
+                "untrusted": "Picus_Attacker_3",
+                "variant": "HTTP"
+            },
+            {
+                "begin_time": "2021-11-12T12:22:13.703141206Z",
+                "destination_port": 0,
+                "end_time": "2021-11-12T12:22:18.758584226Z",
+                "id": 4517094,
+                "l1_category_name": "Attack Scenario",
+                "scenario_details": [
+                    {
+                        "action_id": 12762,
+                        "action_name": "Execute Mimikatz via CopyCat Tool",
+                        "end": "2021-11-12T12:22:18.758584446Z",
+                        "id": 1910990,
+                        "process_results": null,
+                        "result": "Completed",
+                        "technique_id": "T1027"
+                    }
+                ],
+                "source_port": 0,
+                "string": "Insecure",
+                "threat_id": 587400,
+                "threat_name": "CopyCat Tool Defense Evasion Scenario",
+                "trusted": "Win10-Det1",
+                "untrusted": "Picus_Attacker_3",
+                "variant": "HTTP"
+            },
+            {
+                "begin_time": "2021-11-12T07:39:53.401179435Z",
+                "destination_port": 0,
+                "end_time": "2021-11-12T07:40:27.098294892Z",
+                "id": 4516688,
+                "l1_category_name": "Attack Scenario",
+                "scenario_details": [
+                    {
+                        "action_id": 12657,
+                        "action_name": "Disable Windows Defender via Backstab Tool",
+                        "end": "2021-11-12T07:40:27.098295102Z",
+                        "id": 1910497,
+                        "process_results": null,
+                        "result": "Completed",
+                        "technique_id": "T1562"
+                    }
+                ],
+                "source_port": 0,
+                "string": "Insecure",
+                "threat_id": 476996,
+                "threat_name": "Disable Windows Defender via Backstab Tool",
+                "trusted": "Win10-Det1",
+                "untrusted": "Picus_Attacker_3",
+                "variant": "HTTP"
+            },
+            {
+                "begin_time": "2021-11-11T14:29:19.75522712Z",
+                "destination_port": 0,
+                "end_time": "2021-11-11T14:29:30.295781718Z",
+                "id": 4515130,
+                "l1_category_name": "Attack Scenario",
+                "scenario_details": [
+                    {
+                        "action_id": 12744,
+                        "action_name": "Execute Shellcode via CertEnumSystemStoreLocation Callback Function",
+                        "end": "2021-11-11T14:29:30.295782409Z",
+                        "id": 1908798,
+                        "process_results": null,
+                        "result": "Completed",
+                        "technique_id": "T1055"
+                    }
+                ],
+                "source_port": 0,
+                "string": "Insecure",
+                "threat_id": 692856,
+                "threat_name": "Shellcode Execution via CertEnumSystemStoreLocation Callback Function",
+                "trusted": "Win10-Det1",
+                "untrusted": "Picus_Attacker_3",
+                "variant": "HTTP"
+            },
+            {
+                "begin_time": "2021-11-11T08:48:19.062530227Z",
+                "destination_port": 0,
+                "end_time": "2021-11-11T08:48:24.085058986Z",
+                "id": 4514639,
+                "l1_category_name": "Attack Scenario",
+                "scenario_details": [
+                    {
+                        "action_id": 12771,
+                        "action_name": "Exfiltrate Data via Rclone Tool",
+                        "end": "2021-11-11T08:48:24.085059116Z",
+                        "id": 1908267,
+                        "process_results": null,
+                        "result": "Completed",
+                        "technique_id": "T1048"
+                    }
+                ],
+                "source_port": 0,
+                "string": "Insecure",
+                "threat_id": 826183,
+                "threat_name": "Exfiltration Over Alternative Protocol via Rclone Tool",
+                "trusted": "Win10-Det1",
+                "untrusted": "Picus_Attacker_3",
+                "variant": "HTTP"
+            }
+        ],
+        "search_parameters": {
+            "IsInternalRequest": false,
+            "attack_result": "insecure",
+            "begin_date": "2021-11-11",
+            "console_output_info": false,
+            "end_date": "2021-11-18",
+            "from_time": "",
+            "page": 1,
+            "size": 50,
+            "threat_parameters": {
+                "begin_date": "",
+                "categories": null,
+                "cve": "",
+                "end_date": "",
+                "kill_chains": null,
+                "md5": "",
+                "method": "",
+                "severity": "",
+                "sha256": "",
+                "threat_id": 0
+            },
+            "vectors": [
+                {
+                    "trusted": "Win10-Det1",
+                    "untrusted": "Picus_Attacker_3"
+                }
+            ]
+        },
+        "size": 50,
+        "total_count": 34
+    },
+    "success": true
+}
