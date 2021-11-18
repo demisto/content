@@ -30,8 +30,8 @@ class KafkaCommunicator:
     """Client class to interact with Kafka."""
     conf_producer = None
     conf_consumer = None
-    CA_PATH = 'ca.cert'
-    CLIENT_CERT_PATH = 'client.cert'
+    ca_path = None
+    client_cert_path = None
     client_key_path = None
 
     def __init__(self, brokers: str, offset: str = 'earliest', group_id: str = 'xsoar_group',
@@ -67,15 +67,17 @@ class KafkaCommunicator:
             self.conf_consumer.update({'message.max.bytes': int(message_max_bytes)})
 
         if ca_cert:
-            with open(self.CA_PATH, 'w') as file:
+            self.ca_path = str(uuid.uuid4())  # Generate file name for key
+            with open(self.ca_path, 'w') as file:
                 file.write(ca_cert)
-                ca_path = os.path.abspath(self.CA_PATH)
+                ca_path = os.path.abspath(self.ca_path)
             self.conf_producer.update({'ssl.ca.location': ca_path})
             self.conf_consumer.update({'ssl.ca.location': ca_path})
         if client_cert:
-            with open(self.CLIENT_CERT_PATH, 'w') as file:
+            self.client_cert_path = str(uuid.uuid4())  # Generate file name for key
+            with open(self.client_cert_path, 'w') as file:
                 file.write(client_cert)
-                client_path = os.path.abspath(self.CLIENT_CERT_PATH)
+                client_path = os.path.abspath(self.client_cert_path)
             self.conf_producer.update({'ssl.certificate.location': client_path,
                                        'security.protocol': 'ssl'})
             self.conf_consumer.update({'ssl.certificate.location': client_path,
