@@ -1,4 +1,3 @@
-
 import traceback
 import dateparser
 from datetime import datetime
@@ -27,8 +26,10 @@ ALL_TYPE = 'All'
 
 ''' CLIENT CLASS '''
 
+
 class NotFinished(Exception):
     pass
+
 
 class Client(BaseClient):
     """

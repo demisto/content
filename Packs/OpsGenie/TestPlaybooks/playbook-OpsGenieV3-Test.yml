@@ -1,0 +1,2050 @@
+id: OpsGenieV3
+version: 74
+vcShouldKeepItemLegacyProdMachine: false
+name: OpsGenieV3
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 354fc9c3-715e-41ef-8458-5183990bb553
+    type: start
+    task:
+      id: 354fc9c3-715e-41ef-8458-5183990bb553
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: cbcf7589-b7fb-44fd-88f5-f5cf70758082
+    type: regular
+    task:
+      id: cbcf7589-b7fb-44fd-88f5-f5cf70758082
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: c81cce2b-4c87-4974-8a6b-17a81cb46b15
+    type: regular
+    task:
+      id: c81cce2b-4c87-4974-8a6b-17a81cb46b15
+      version: -1
+      name: opsgenie-create-alert
+      script: OpsGenieV3|||opsgenie-create-alert
+      type: regular
+      iscommand: true
+      brand: OpsGenieV3
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      interval_in_seconds:
+        simple: "5"
+      message:
+        simple: test_playbook
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: e61f179f-45c6-42b4-855f-ea202cc4af1f
+    type: condition
+    task:
+      id: e61f179f-45c6-42b4-855f-ea202cc4af1f
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.alertId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.alias
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.integrationId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.isSuccess
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.processedAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.requestId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.success
+            iscontext: true
+    - label: Pre polling
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.requestId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: timetoassignment
+      action: start
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 19105bbf-1194-455b-87dc-f69b378db47e
+    type: regular
+    task:
+      id: 19105bbf-1194-455b-87dc-f69b378db47e
+      version: -1
+      name: opsgenie-get-alerts
+      script: OpsGenieV3|||opsgenie-get-alerts
+      type: regular
+      iscommand: true
+      brand: OpsGenieV3
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      alert-id:
+        simple: ${OpsGenie.Alert.alertId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 855699d7-e329-46b7-872f-b83fc04453b9
+    type: condition
+    task:
+      id: 855699d7-e329-46b7-872f-b83fc04453b9
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.Alert.acknowledged
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.alias
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.createdAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.integration.id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.Alert.isSeen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.lastOccurredAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.message
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.Alert.owner
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.Alert.ownerTeamId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.priority
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.Alert.seen
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.Alert.snoozed
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.source
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.tinyId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Alert.updatedAt
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 45588b09-0309-4261-89da-0cb4f0c404d4
+    type: regular
+    task:
+      id: 45588b09-0309-4261-89da-0cb4f0c404d4
+      version: -1
+      name: opsgenie-delete-alert
+      script: OpsGenieV3|||opsgenie-delete-alert
+      type: regular
+      iscommand: true
+      brand: OpsGenieV3
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      alert-id:
+        simple: ${OpsGenie.Alert.alertId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: c548ab9b-b991-4581-8719-4b7483ec9478
+    type: condition
+    task:
+      id: c548ab9b-b991-4581-8719-4b7483ec9478
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.DeletedAlert.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.DeletedAlert.alertId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.DeletedAlert.alias
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.DeletedAlert.integrationId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.DeletedAlert.isSuccess
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.DeletedAlert.processedAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.DeletedAlert.requestId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.DeletedAlert.status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.DeletedAlert.success
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 9f966290-12c7-42da-845c-96b408a8e1d3
+    type: regular
+    task:
+      id: 9f966290-12c7-42da-845c-96b408a8e1d3
+      version: -1
+      name: opsgenie-ack-alert
+      script: OpsGenieV3|||opsgenie-ack-alert
+      type: regular
+      iscommand: true
+      brand: OpsGenieV3
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      alert-id:
+        simple: ${OpsGenie.Alert.alertId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: dda099e4-6622-4c95-8ca2-8729c6cae798
+    type: condition
+    task:
+      id: dda099e4-6622-4c95-8ca2-8729c6cae798
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AckedAlert.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AckedAlert.alertId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AckedAlert.alias
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AckedAlert.integrationId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AckedAlert.isSuccess
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AckedAlert.processedAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AckedAlert.requestId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AckedAlert.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AckedAlert.success
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 6c013462-0572-44fc-8f14-664eb953778d
+    type: regular
+    task:
+      id: 6c013462-0572-44fc-8f14-664eb953778d
+      version: -1
+      name: opsgenie-close-alert
+      script: OpsGenieV3|||opsgenie-close-alert
+      type: regular
+      iscommand: true
+      brand: OpsGenieV3
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      alert-id:
+        simple: ${OpsGenie.Alert.alertId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: ff7bc459-9bbb-4b41-8564-87cc5ced56fe
+    type: condition
+    task:
+      id: ff7bc459-9bbb-4b41-8564-87cc5ced56fe
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.ClosedAlert.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.ClosedAlert.alertId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.ClosedAlert.alias
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.ClosedAlert.integrationId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.ClosedAlert.isSuccess
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.ClosedAlert.processedAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.ClosedAlert.requestId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.ClosedAlert.status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.ClosedAlert.success
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: b6b0a45b-1445-4e4c-8944-3991eea30e33
+    type: regular
+    task:
+      id: b6b0a45b-1445-4e4c-8944-3991eea30e33
+      version: -1
+      name: opsgenie-assign-alert
+      script: OpsGenieV3|||opsgenie-assign-alert
+      type: regular
+      iscommand: true
+      brand: OpsGenieV3
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      alert-id:
+        simple: ${OpsGenie.Alert.alertId}
+      owner_username:
+        simple: there_is_no_user@g.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 7de5749a-779a-4d19-8dc5-a4f62d881629
+    type: condition
+    task:
+      id: 7de5749a-779a-4d19-8dc5-a4f62d881629
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: OpsGenie.AssignAlert.action
+            iscontext: true
+          right:
+            value:
+              simple: Assign
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AssignAlert.integrationId
+            iscontext: true
+      - - operator: isFalse
+          left:
+            value:
+              simple: OpsGenie.AssignAlert.isSuccess
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AssignAlert.processedAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AssignAlert.requestId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AssignAlert.status
+            iscontext: true
+      - - operator: isFalse
+          left:
+            value:
+              simple: OpsGenie.AssignAlert.success
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: d33fbef4-ad14-419c-8f71-3b1a0d1c9453
+    type: regular
+    task:
+      id: d33fbef4-ad14-419c-8f71-3b1a0d1c9453
+      version: -1
+      name: opsgenie-add-responder-alert
+      script: OpsGenieV3|||opsgenie-add-responder-alert
+      type: regular
+      iscommand: true
+      brand: OpsGenieV3
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      alert-id:
+        simple: ${OpsGenie.Alert.alertId}
+      responders:
+        simple: schedule,name,test_schedule
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 43fe227e-3a33-4a72-882d-f8d7d7d58fad
+    type: condition
+    task:
+      id: 43fe227e-3a33-4a72-882d-f8d7d7d58fad
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: OpsGenie.AddResponderAlert.action
+            iscontext: true
+          right:
+            value:
+              simple: Add Responder
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AddResponderAlert.integrationId
+            iscontext: true
+      - - operator: isFalse
+          left:
+            value:
+              simple: OpsGenie.AddResponderAlert.isSuccess
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AddResponderAlert.processedAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AddResponderAlert.status
+            iscontext: true
+      - - operator: isFalse
+          left:
+            value:
+              simple: OpsGenie.AddResponderAlert.success
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: d8e04e4f-18bf-4dec-8ce8-a74a49221221
+    type: regular
+    task:
+      id: d8e04e4f-18bf-4dec-8ce8-a74a49221221
+      version: -1
+      name: opsgenie-escalate-alert
+      script: OpsGenieV3|||opsgenie-escalate-alert
+      type: regular
+      iscommand: true
+      brand: OpsGenieV3
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      alert-id:
+        simple: ${OpsGenie.Alert.alertId}
+      escalation_name:
+        simple: there_is_no_escalation_like_this
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 1a22ffe0-ca8f-4e43-8027-152ad92b3eda
+    type: condition
+    task:
+      id: 1a22ffe0-ca8f-4e43-8027-152ad92b3eda
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: OpsGenie.EscalateAlert.action
+            iscontext: true
+          right:
+            value:
+              simple: Escalate
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.EscalateAlert.integrationId
+            iscontext: true
+      - - operator: isFalse
+          left:
+            value:
+              simple: OpsGenie.EscalateAlert.isSuccess
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.EscalateAlert.processedAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.EscalateAlert.status
+            iscontext: true
+      - - operator: isFalse
+          left:
+            value:
+              simple: OpsGenie.EscalateAlert.success
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 633097dd-9bff-42c2-8f9b-d360200d46ad
+    type: regular
+    task:
+      id: 633097dd-9bff-42c2-8f9b-d360200d46ad
+      version: -1
+      name: opsgenie-add-alert-tag
+      script: OpsGenieV3|||opsgenie-add-alert-tag
+      type: regular
+      iscommand: true
+      brand: OpsGenieV3
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      alert-id:
+        simple: ${OpsGenie.Alert.alertId}
+      tags:
+        simple: 1,2,3
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: eddb2620-b696-44ee-8b08-54dd7c33564c
+    type: condition
+    task:
+      id: eddb2620-b696-44ee-8b08-54dd7c33564c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AddTagAlert.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AddTagAlert.alertId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AddTagAlert.alias
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AddTagAlert.integrationId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.AddTagAlert.isSuccess
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AddTagAlert.processedAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AddTagAlert.requestId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AddTagAlert.status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.AddTagAlert.success
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 26ae5016-885d-4493-8d60-466d20800c2e
+    type: regular
+    task:
+      id: 26ae5016-885d-4493-8d60-466d20800c2e
+      version: -1
+      name: opsgenie-remove-alert-tag
+      script: OpsGenieV3|||opsgenie-remove-alert-tag
+      type: regular
+      iscommand: true
+      brand: OpsGenieV3
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      alert-id:
+        simple: ${OpsGenie.Alert.alertId}
+      tags:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 37eb1bb0-ff59-4834-87b4-fe6c63fe4f7a
+    type: condition
+    task:
+      id: 37eb1bb0-ff59-4834-87b4-fe6c63fe4f7a
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.RemoveTagAlert.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.RemoveTagAlert.alertId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.RemoveTagAlert.alias
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.RemoveTagAlert.integrationId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.RemoveTagAlert.isSuccess
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.RemoveTagAlert.processedAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.RemoveTagAlert.requestId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.RemoveTagAlert.status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.RemoveTagAlert.success
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 10361a8e-4d7a-4948-89e0-6b6bff985b3e
+    type: regular
+    task:
+      id: 10361a8e-4d7a-4948-89e0-6b6bff985b3e
+      version: -1
+      name: opsgenie-create-incident
+      script: OpsGenieV3|||opsgenie-create-incident
+      type: regular
+      iscommand: true
+      brand: OpsGenieV3
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      message:
+        simple: test_playbook
+      responders:
+        simple: team,name,test_team
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: a8e3203a-fdb0-4b8a-8d8f-c563e483f7f2
+    type: condition
+    task:
+      id: a8e3203a-fdb0-4b8a-8d8f-c563e483f7f2
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "43"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Incident.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Incident.incidentId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Incident.integrationId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.Incident.isSuccess
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Incident.processedAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Incident.status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.Incident.success
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 85ee248a-b879-4b47-8468-c7cc0fa319ff
+    type: regular
+    task:
+      id: 85ee248a-b879-4b47-8468-c7cc0fa319ff
+      version: -1
+      name: opsgenie-delete-incident
+      script: OpsGenieV3|||opsgenie-delete-incident
+      type: regular
+      iscommand: true
+      brand: OpsGenieV3
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      incident_id:
+        simple: ${OpsGenie.Incident.incidentId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 1fb9d282-fd6f-483b-8085-d9abfa476463
+    type: condition
+    task:
+      id: 1fb9d282-fd6f-483b-8085-d9abfa476463
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "51"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.DeletedIncident.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.DeletedIncident.integrationId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.DeletedIncident.isSuccess
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.DeletedIncident.processedAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.DeletedIncident.requestId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.DeletedIncident.status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.DeletedIncident.success
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6495
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 642f4996-2bb0-42ab-841b-777e75afeb17
+    type: regular
+    task:
+      id: 642f4996-2bb0-42ab-841b-777e75afeb17
+      version: -1
+      name: opsgenie-get-incidents
+      script: OpsGenieV3|||opsgenie-get-incidents
+      type: regular
+      iscommand: true
+      brand: OpsGenieV3
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      incident_id:
+        simple: ${OpsGenie.Incident.incidentId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: da36b2f6-703d-4a72-88c6-637c27e0982a
+    type: condition
+    task:
+      id: da36b2f6-703d-4a72-88c6-637c27e0982a
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Incident.createdAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Incident.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Incident.message
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.Incident.ownerTeam
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Incident.priority
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Incident.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Incident.tinyId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.Incident.updatedAt
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5445
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 3ec9a40c-d3b5-4a77-8b40-37fb6a977e85
+    type: regular
+    task:
+      id: 3ec9a40c-d3b5-4a77-8b40-37fb6a977e85
+      version: -1
+      name: opsgenie-close-incident
+      script: OpsGenieV3|||opsgenie-close-incident
+      type: regular
+      iscommand: true
+      brand: OpsGenieV3
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      incident_id:
+        simple: ${OpsGenie.Incident.incidentId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 3d5835eb-c6ef-4852-8d0b-e359e917a233
+    type: condition
+    task:
+      id: 3d5835eb-c6ef-4852-8d0b-e359e917a233
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.ClosedIncident.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.ClosedIncident.integrationId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.ClosedIncident.isSuccess
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.ClosedIncident.processedAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.ClosedIncident.requestId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.ClosedIncident.status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.ClosedIncident.success
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 066316b3-66ef-4a35-8e62-b7a741cdb462
+    type: regular
+    task:
+      id: 066316b3-66ef-4a35-8e62-b7a741cdb462
+      version: -1
+      name: opsgenie-resolve-incident
+      script: OpsGenieV3|||opsgenie-resolve-incident
+      type: regular
+      iscommand: true
+      brand: OpsGenieV3
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      incident_id:
+        simple: ${OpsGenie.Incident.incidentId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 29188b1f-991f-4e94-8cd4-f98def7fa3ee
+    type: condition
+    task:
+      id: 29188b1f-991f-4e94-8cd4-f98def7fa3ee
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "39"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.ResolvedIncident.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.ResolvedIncident.integrationId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.ResolvedIncident.isSuccess
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.ResolvedIncident.processedAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.ResolvedIncident.requestId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.ResolvedIncident.status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.ResolvedIncident.success
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: bfd7e8df-9e20-48b1-8538-fbc3908a1bb1
+    type: regular
+    task:
+      id: bfd7e8df-9e20-48b1-8538-fbc3908a1bb1
+      version: -1
+      name: opsgenie-add-responder-incident
+      script: OpsGenieV3|||opsgenie-add-responder-incident
+      type: regular
+      iscommand: true
+      brand: OpsGenieV3
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      incident_id:
+        simple: ${OpsGenie.Incident.incidentId}
+      responders:
+        simple: team,name,NoTeamLikeThis
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 26d43c61-de7d-4d8b-84e7-b4b7e6f72924
+    type: condition
+    task:
+      id: 26d43c61-de7d-4d8b-84e7-b4b7e6f72924
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AddResponderIncident.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AddResponderIncident.integrationId
+            iscontext: true
+      - - operator: isFalse
+          left:
+            value:
+              simple: OpsGenie.AddResponderIncident.isSuccess
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AddResponderIncident.processedAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AddResponderIncident.status
+            iscontext: true
+      - - operator: isFalse
+          left:
+            value:
+              simple: OpsGenie.AddResponderIncident.success
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: b29488ae-f65c-4891-8e3e-39b15798da17
+    type: regular
+    task:
+      id: b29488ae-f65c-4891-8e3e-39b15798da17
+      version: -1
+      name: opsgenie-add-tag-incident
+      script: OpsGenieV3|||opsgenie-add-tag-incident
+      type: regular
+      iscommand: true
+      brand: OpsGenieV3
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      incident_id:
+        simple: ${OpsGenie.Incident.incidentId}
+      tags:
+        simple: 1,2,3
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: ca713a0d-355e-405d-8e21-0205212e44a2
+    type: condition
+    task:
+      id: ca713a0d-355e-405d-8e21-0205212e44a2
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "47"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AddTagIncident.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AddTagIncident.integrationId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.AddTagIncident.isSuccess
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AddTagIncident.processedAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AddTagIncident.requestId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.AddTagIncident.status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.AddTagIncident.success
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: a52dbbb4-80b9-4bf8-8afe-588edd621647
+    type: regular
+    task:
+      id: a52dbbb4-80b9-4bf8-8afe-588edd621647
+      version: -1
+      name: opsgenie-remove-tag-incident
+      script: OpsGenieV3|||opsgenie-remove-tag-incident
+      type: regular
+      iscommand: true
+      brand: OpsGenieV3
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      incident_id:
+        simple: ${OpsGenie.Incident.incidentId}
+      tags:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 3c7b9c6b-2b1b-4014-8010-cb83016f3a7b
+    type: condition
+    task:
+      id: 3c7b9c6b-2b1b-4014-8010-cb83016f3a7b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.RemoveTagIncident.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.RemoveTagIncident.integrationId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.RemoveTagIncident.isSuccess
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.RemoveTagIncident.processedAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.RemoveTagIncident.requestId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpsGenie.RemoveTagIncident.status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: OpsGenie.RemoveTagIncident.success
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5095
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 0705436a-fa11-424d-8876-cd8f6f14d3d0
+    type: title
+    task:
+      id: 0705436a-fa11-424d-8876-cd8f6f14d3d0
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 6685,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
