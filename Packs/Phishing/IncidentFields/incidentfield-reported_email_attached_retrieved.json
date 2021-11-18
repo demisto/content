@@ -1,0 +1,32 @@
+{
+    "id": "incident_reportedemailattachedretrieved",
+    "version": -1,
+    "modified": "2021-11-16T14:25:34.940059412Z",
+    "name": "Reported Email Attached/Retrieved",
+    "ownerOnly": false,
+    "description": "Whether the reported email was attached or retrieved.",
+    "cliName": "reportedemailattachedretrieved",
+    "type": "boolean",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Phishing"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.5.0"
+}
