@@ -74,7 +74,11 @@
                 "FireEye Email Source Domain": {
                     "simple": "src.domain"
                 },
-                "FireEye Malware Information": {
+                "FireEye Infection ID": {
+                    "complex": null,
+                    "simple": "rootInfection"
+                },
+                "FireEye Malware Informationֿ": {
                     "simple": "explanation.malwareDetected.malware"
                 },
                 "MD5": {

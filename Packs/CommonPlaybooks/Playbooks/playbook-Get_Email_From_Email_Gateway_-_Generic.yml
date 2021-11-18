@@ -64,7 +64,7 @@ tasks:
       brand: ""
       id: 14daa7d5-080e-4db6-8bae-c43b3189df09
       iscommand: false
-      name: Handle Multiple Email Files
+      name: Done
       type: title
       version: -1
       description: ''
@@ -108,8 +108,8 @@ tasks:
         Listener v2, EWS O365, Microsoft Graph Mail.
       id: 31d44c85-5583-4826-8618-a09680af641e
       iscommand: false
-      name: 343f68aa-46cc-4f39-8d48-7d366b104f55
-      playbookId: 343f68aa-46cc-4f39-8d48-7d366b104f55
+      name: Get Email From Email Gateway - Agari
+      playbookId: Get Email From Email Gateway - Agari
       type: playbook
       version: -1
     taskid: 31d44c85-5583-4826-8618-a09680af641e
@@ -153,8 +153,8 @@ tasks:
         or Central Management.
       id: e99c1e30-b056-4a54-8123-d0b5df592312
       iscommand: false
-      name: 83d8e33c-32b3-48e1-8889-5580a3cd1682
-      playbookId: 83d8e33c-32b3-48e1-8889-5580a3cd1682
+      name: Get Email From Email Gateway - FireEye
+      playbookId: Get Email From Email Gateway - FireEye
       type: playbook
       version: -1
     taskid: e99c1e30-b056-4a54-8123-d0b5df592312
@@ -193,8 +193,8 @@ tasks:
       description: Retrieve a specified eml/msg file directly from Mimecast.
       id: b0d5dc7f-ab2c-41c7-8a93-09322abf2648
       iscommand: false
-      name: 315a712a-1a3c-4fd7-8e9e-7af1db25cf26
-      playbookId: 315a712a-1a3c-4fd7-8e9e-7af1db25cf26
+      name: Get Email From Email Gateway - Mimecast
+      playbookId: Get Email From Email Gateway - Mimecast
       type: playbook
       version: -1
     taskid: b0d5dc7f-ab2c-41c7-8a93-09322abf2648
@@ -234,8 +234,8 @@ tasks:
         Server.
       id: 2e412fff-3285-45fe-8522-a882c10006e7
       iscommand: false
-      name: 277e5973-9702-467a-86ae-d8ad68373f2b
-      playbookId: 277e5973-9702-467a-86ae-d8ad68373f2b
+      name: Get Email From Email Gateway - Proofpoint Protection Server
+      playbookId: Get Email From Email Gateway - Proofpoint Protection Server
       type: playbook
       version: -1
     taskid: 2e412fff-3285-45fe-8522-a882c10006e7
