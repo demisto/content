@@ -4,6 +4,7 @@ from confluent_kafka import Consumer, TopicPartition, Producer, KafkaException, 
 from typing import Tuple, Union
 
 ''' IMPORTS '''
+import uuid
 import requests
 import traceback
 
@@ -31,7 +32,7 @@ class KafkaCommunicator:
     conf_consumer = None
     CA_PATH = 'ca.cert'
     CLIENT_CERT_PATH = 'client.cert'
-    CLIENT_KEY_PATH = 'client_key.key'
+    client_key_path = None
 
     def __init__(self, brokers: str, offset: str = 'earliest', group_id: str = 'xsoar_group',
                  message_max_bytes: int = None, enable_auto_commit: bool = False, ca_cert=None,
@@ -80,9 +81,10 @@ class KafkaCommunicator:
             self.conf_consumer.update({'ssl.certificate.location': client_path,
                                        'security.protocol': 'ssl'})
         if client_cert_key:
-            with open(self.CLIENT_KEY_PATH, 'w') as file:
+            self.client_key_path = str(uuid.uuid4())  # Generate file name for key
+            with open(self.client_key_path, 'w') as file:
                 file.write(client_cert_key)
-                client_key_path = os.path.abspath(self.CLIENT_KEY_PATH)
+                client_key_path = os.path.abspath(self.client_key_path)
             self.conf_producer.update({'ssl.key.location': client_key_path})
             self.conf_consumer.update({'ssl.key.location': client_key_path})
         if ssl_password:

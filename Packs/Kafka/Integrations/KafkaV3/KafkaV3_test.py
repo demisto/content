@@ -709,7 +709,7 @@ def test_ssl_configuration():
         'session.timeout.ms': 5000,
         'ssl.ca.location': os.path.abspath(kafka.CA_PATH),
         'ssl.certificate.location': os.path.abspath(kafka.CLIENT_CERT_PATH),
-        'ssl.key.location': os.path.abspath(kafka.CLIENT_KEY_PATH),
+        'ssl.key.location': os.path.abspath(kafka.client_key_path),
         'ssl.key.password': 'ssl_password'
     }
     expected_producer_conf = {
@@ -717,7 +717,7 @@ def test_ssl_configuration():
         'security.protocol': 'ssl',
         'ssl.ca.location': os.path.abspath(kafka.CA_PATH),
         'ssl.certificate.location': os.path.abspath(kafka.CLIENT_CERT_PATH),
-        'ssl.key.location': os.path.abspath(kafka.CLIENT_KEY_PATH),
+        'ssl.key.location': os.path.abspath(kafka.client_key_path),
         'ssl.key.password': 'ssl_password'
     }
     assert kafka.conf_consumer == expected_consumer_conf
@@ -726,8 +726,8 @@ def test_ssl_configuration():
         assert f.read() == 'ca_cert'
     with open(kafka.CLIENT_CERT_PATH, 'r') as f:
         assert f.read() == 'client_cert'
-    with open(kafka.CLIENT_KEY_PATH, 'r') as f:
+    with open(kafka.client_key_path, 'r') as f:
         assert f.read() == 'client_cert_key'
     os.remove(kafka.CA_PATH)
     os.remove(kafka.CLIENT_CERT_PATH)
-    os.remove(kafka.CLIENT_KEY_PATH)
+    os.remove(kafka.client_key_path)
