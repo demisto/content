@@ -209,26 +209,30 @@ def main():
     filter_titles = argToList(args.get('filter_titles'))
 
     tables = []
-    soup = BeautifulSoup(html, 'html.parser')
-    index = -1
-    for table in parse_tables(soup):
-        rows = table.make_pretty_table_rows()
-        if not rows:
-            continue
+    try:
+        soup = BeautifulSoup(html, 'html.parser')
+        index = -1
+        for table in parse_tables(soup):
+            rows = table.make_pretty_table_rows()
+            if not rows:
+                continue
 
-        index = index + 1
-        if filter_indexes and\
-           index not in filter_indexes and\
-           str(index) not in filter_indexes:
-            continue
+            index = index + 1
+            if filter_indexes and\
+               index not in filter_indexes and\
+               str(index) not in filter_indexes:
+                continue
 
-        original_title = table.get_title()
-        if filter_titles and original_title not in filter_titles:
-            continue
+            original_title = table.get_title()
+            if filter_titles and original_title not in filter_titles:
+                continue
 
-        tables.append({overwriting_title or original_title: rows})
+            tables.append({overwriting_title or original_title: rows})
 
-    demisto.results(tables)
+    except Exception as err:
+        return_error(err)
+
+    return_results(tables)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
