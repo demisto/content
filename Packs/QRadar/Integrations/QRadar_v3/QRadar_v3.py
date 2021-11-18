@@ -1523,7 +1523,7 @@ def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int
         raw_offenses_len = len(raw_offenses)
         print_debug_msg(f'raw_offenses size: {raw_offenses_len}')
     else:
-        print_debug_msg(f'empty raw_offenses size')
+        print_debug_msg('empty raw_offenses')
 
     new_highest_offense_id = raw_offenses[-1].get('id') if raw_offenses else offense_highest_id
     print_debug_msg(f'New highest ID returned from QRadar offenses: {new_highest_offense_id}')
