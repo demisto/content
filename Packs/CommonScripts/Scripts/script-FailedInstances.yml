@@ -61,7 +61,8 @@ script: >
   var total = (countSuccess + countFailed).toString();
 
 
-  if (failedInstances.length === 0) {
+  if (countFailed === 0) {
+      failedInstances.push({})
       hr = '### All active instances are available! ✅';
   } else {
       hr = 'Total instances: ' + total +'\n';

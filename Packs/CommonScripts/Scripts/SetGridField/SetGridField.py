@@ -168,9 +168,6 @@ def validate_entry_context(context_path: str, entry_context: Any, keys: List[str
         else:
             return
 
-    if entry_context is None:
-        entry_context = []
-
     if not isinstance(entry_context, (list, dict)):
         raise ValueError(
             f'The context object {context_path} should be of type dict or list.\n'

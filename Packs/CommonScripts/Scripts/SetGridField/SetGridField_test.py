@@ -33,7 +33,6 @@ def test_filter_the_dict(before_dict: dict, keys: dict, max_keys: int, after_dic
                              ([{'a': [], 'b': 'val'}], ['b'], False, False),
                              (['a', 'b', 1, False], ['b'], False, False),
                              (['a', 'b', 1, False, []], ['*'], True, False),
-                             (None, None, False, False),
                          ])
 def test_validate_entry_context(capfd, entry_context: dict, keys: list, raise_exception: bool, unpack_nested: bool):
     from SetGridField import validate_entry_context
