@@ -1,7 +1,7 @@
 import pytest
 from collections import OrderedDict
-from FeedRecordedFuture import get_indicator_type, get_indicators_command, Client, fetch_indicators_command
 from csv import DictReader
+from CommonServerPython import argToList
 
 GET_INDICATOR_TYPE_INPUTS = [
     ('ip', OrderedDict([('Name', '192.168.1.1'), ('Risk', '89'), ('RiskString', '5/12'),
@@ -28,6 +28,7 @@ GET_INDICATOR_TYPE_INPUTS = [
 
 @pytest.mark.parametrize('indicator_type, csv_item, answer', GET_INDICATOR_TYPE_INPUTS)
 def test_get_indicator_type(indicator_type, csv_item, answer):
+    from FeedRecordedFuture import get_indicator_type
     returned_indicator_type = get_indicator_type(indicator_type, csv_item)
     assert returned_indicator_type == answer
 
@@ -99,6 +100,7 @@ GET_INDICATOR_INPUTS = [
 
 @pytest.mark.parametrize('indicator_type, build_iterator_answer, value, type', GET_INDICATOR_INPUTS)
 def test_get_indicators_command(mocker, indicator_type, build_iterator_answer, value, type):
+    from FeedRecordedFuture import get_indicators_command, Client
     client = Client(indicator_type=indicator_type, api_token='123', services='fusion')
     args = {
         'indicator_type': indicator_type,
@@ -109,6 +111,51 @@ def test_get_indicators_command(mocker, indicator_type, build_iterator_answer, v
     hr, _, entry_result = get_indicators_command(client, args)
     assert entry_result[0]['Value'] == value
     assert entry_result[0]['Type'] == type
+
+
+GET_INDICATORS_BY_RISK_RULES_INPUTS = [
+    ('url', 'dhsAis', build_iterator_answer_url, 'www.securityadvisor.io', 'URL'),
+    ('url', 'dhsAis,phishingUrl', build_iterator_answer_url, 'www.securityadvisor.io', 'URL'),
+    ('ip', 'dhsAis,phishingUrl,defangedURL', build_iterator_answer_ip, '192.168.1.1', 'IP')
+]
+
+
+@pytest.mark.parametrize('indicator_type, risk_rules, build_iterator_answer, value, type',
+                         GET_INDICATORS_BY_RISK_RULES_INPUTS)
+def test_get_indicators_command_by_risk_rules(mocker, indicator_type, risk_rules, build_iterator_answer, value, type):
+    """
+    Given:
+     - Recorded Future Feed client initialized with a 'ConnectApi' service, and a:
+      1. URL indicator type, and a valid risk rule.
+      2. URL indicator type, and a comma separated list of two valid risk rules.
+      3. IP indicator type, and a comma separated list of three valid risk rules.
+
+     - Mock response of the fetched indicators
+
+    When:
+     - Running the 'get_indicators_command'
+
+    Then:
+     - Verify the raw response and the human readable output of the command are correct, and include fetched indicators
+      of all the defined risk rules.
+    """
+    from FeedRecordedFuture import get_indicators_command, Client
+    client = Client(indicator_type=indicator_type, api_token='123', risk_rule=risk_rules, services='ConnectApi')
+    args = {
+        'indicator_type': indicator_type,
+        'limit': 1
+    }
+    mocker.patch('FeedRecordedFuture.Client.build_iterator')
+    mocker.patch('FeedRecordedFuture.Client.get_batches_from_file', return_value=build_iterator_answer)
+    hr, _, entry_results = get_indicators_command(client, args)
+
+    risk_rules_list = argToList(risk_rules)
+    assert list(entry_results.keys()) == risk_rules_list, "raw response doesn't contain indicators from all risk rules"
+    for rule in risk_rules_list:
+        assert f'Indicators from RecordedFuture Feed for {rule} risk rule' in hr, \
+            f"human readable output doesn't contain indicators from risk rule {rule}"
+        assert entry_results[rule][0]['Value'] == value
+        assert entry_results[rule][0]['Type'] == type
 
 
 CALCULATE_DBOT_SCORE_INPUTS = [
@@ -122,6 +169,7 @@ CALCULATE_DBOT_SCORE_INPUTS = [
 
 @pytest.mark.parametrize('risk_from_feed, threshold, expected_score', CALCULATE_DBOT_SCORE_INPUTS)
 def test_calculate_dbot_score(risk_from_feed, threshold, expected_score):
+    from FeedRecordedFuture import Client
     client = Client(indicator_type='ip', api_token='123', services=['fusion'], threshold=threshold)
     score = client.calculate_indicator_score(risk_from_feed)
     assert score == expected_score
@@ -139,6 +187,7 @@ def test_fetch_indicators_command(mocker):
     Then:
      - Verify the fetch runs successfully.
     """
+    from FeedRecordedFuture import Client, fetch_indicators_command
     indicator_type = 'ip'
     client = Client(indicator_type=indicator_type, api_token='dummytoken', services=['fusion'])
     mocker.patch('FeedRecordedFuture.Client.build_iterator')
@@ -170,6 +219,7 @@ def test_feed_tags(mocker, tags):
     Then:
     - Validate the tags supplied exists in the indicators
     """
+    from FeedRecordedFuture import Client, fetch_indicators_command
     client = Client(indicator_type='ip', api_token='dummytoken', services='fusion', tags=tags)
     mocker.patch('FeedRecordedFuture.Client.build_iterator')
     mocker.patch('FeedRecordedFuture.Client.get_batches_from_file', return_value=[[{'Name': '192.168.1.1'}]])
@@ -190,3 +240,54 @@ class DictReaderGenerator:
             raise StopIteration()
         self.has_returned_dict_reader = True
         return self.dict_reader
+
+
+@pytest.mark.parametrize('indicator_type, risk_rules, service, expected_err_msg',
+                         [('url', 'dhsAis', 'fusion',
+                           "You entered a risk rule but the 'connectApi' service is not chosen."),
+                          ('url', 'dhsAi', 'connectApi', "The given risk rule: dhsAi does not exist"),
+                          ('url', 'dhsAis,phishinUrl', 'connectApi', "The given risk rule: phishinUrl does not exist")
+                          ])
+def test_risk_rule_validations(mocker, indicator_type, risk_rules, service, expected_err_msg):
+    """
+    Given:
+     - Recorded Future Feed client initialized with URL indicator type and:
+      1. 'fusion' service, and a valid risk rule.
+      2. 'connectApi' service, and an invalid risk rule.
+      3. 'connectApi' service, and a comma separated list of a valid risk rule (the first) and an invalid risk rule
+        (the second).
+
+     - Mock response of the return_error function, and the 'FeedRecordedFuture.Client.get_risk_rules' command.
+
+    When:
+     - Running the 'test_module' command.
+
+    Then:
+     - Verify the right error message appears for each case:
+     1. Error message for setting 'connectApi' service
+     2. Error message for invalid risk rule.
+     3. Error message for invalid risk rule on the second risk rule in the risk rules list.
+    """
+    import CommonServerPython
+
+    mocker.patch.object(CommonServerPython, 'return_error', side_effect=mock_return_error)
+    from FeedRecordedFuture import test_module, Client
+    client = Client(indicator_type=indicator_type, api_token='123', risk_rule=risk_rules, services=service)
+    args = {
+        'indicator_type': indicator_type,
+        'limit': 1
+    }
+    mocker.patch('FeedRecordedFuture.Client.get_risk_rules',
+                 return_value={'data': {'results': [{'name': 'dhsAis'}, {'name': 'phishingUrl'}]}})
+    with pytest.raises(Exception) as e:
+        test_module(client, args)
+    assert expected_err_msg in str(e.value)
+
+
+def mock_return_error(err_msg: str):
+    """
+    A mocker for CommonServerPython.return_error function which returns the error message that is passed as an input to
+    the 'real' return_error function during the integration's parameter validation flow.
+    A mocker is needed because the 'real' CommonServerPython.return_error function executes sys.exit(0).
+    """
+    raise Exception(err_msg)

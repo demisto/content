@@ -399,7 +399,7 @@ def fetch_indicators_command(client, indicator_type, limit: Optional[int] = None
             yield indicators
 
 
-def get_indicators_command(client, args) -> Tuple[str, dict, dict]:
+def get_indicators_command(client, args) -> Tuple[str, Dict[Any, Any], Union[Dict[str, List], List]]:
     """Retrieves indicators from the Recorded Future feed to the war-room.
         Args:
             client(Client): Recorded Future Feed client.
@@ -411,7 +411,7 @@ def get_indicators_command(client, args) -> Tuple[str, dict, dict]:
     limit = int(args.get('limit'))
 
     human_readable: str = ''
-    entry_results: Union[Dict[List], List]
+    entry_results: Union[Dict[str, List], List]
 
     if client.risk_rule:
         entry_results = {}
@@ -426,13 +426,13 @@ def get_indicators_command(client, args) -> Tuple[str, dict, dict]:
                     break
 
             entry_result = camelize(indicators_list)
-            entry_results[risk_rule.capitalize()] = entry_result
+            entry_results[risk_rule] = entry_result
             hr = tableToMarkdown(f'Indicators from RecordedFuture Feed for {risk_rule} risk rule:', entry_result,
                                  headers=['Value', 'Type'], removeNull=True)
             human_readable += f'\n{hr}'
 
     else:  # there are no risk rules
-        indicators_list: List[Dict] = []
+        indicators_list = []
         for indicators in fetch_indicators_command(client, indicator_type, limit):
             indicators_list.extend(indicators)
 
@@ -440,7 +440,7 @@ def get_indicators_command(client, args) -> Tuple[str, dict, dict]:
                 break
 
         entry_results = camelize(indicators_list)
-        human_readable = tableToMarkdown(f'Indicators from RecordedFuture Feed:', entry_results,
+        human_readable = tableToMarkdown('Indicators from RecordedFuture Feed:', entry_results,
                                          headers=['Value', 'Type'], removeNull=True)
 
     return human_readable, {}, entry_results
