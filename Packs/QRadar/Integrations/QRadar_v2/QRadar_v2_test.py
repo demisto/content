@@ -32,7 +32,6 @@ with open("TestData/raw_responses.json", "r") as f:
     RAW_RESPONSES = json.load(f)
 
 QRadar_v2.FAILURE_SLEEP = 0
-QRadar_v2.DEFAULT_EVENTS_TIMEOUT = 0
 
 command_tests = [
     ("qradar-searches", search_command, {"query_expression": "SELECT sourceip AS 'MY Source IPs' FROM events"},),
@@ -98,7 +97,7 @@ class TestQRadarv2:
         mocker.patch.object(QRadar_v2, "fetch_raw_offenses", return_value=[RAW_RESPONSES["fetch-incidents"]])
         mocker.patch.object(demisto, "createIncidents")
         mocker.patch.object(demisto, "debug")
-        sic_mock = mocker.patch.object(QRadar_v2, "set_to_integration_context_with_retries")
+        sic_mock = mocker.patch.object(QRadar_v2, "set_integration_context")
 
         fetch_incidents_long_running_no_events(client, '', user_query="", ip_enrich=False, asset_enrich=False)
 
@@ -132,7 +131,7 @@ class TestQRadarv2:
         QRadar_v2.enrich_offense_with_events = mock_enrich_offense_with_events
         mocker.patch.object(demisto, "createIncidents")
         mocker.patch.object(demisto, "debug")
-        sic_mock = mocker.patch.object(QRadar_v2, "set_to_integration_context_with_retries")
+        sic_mock = mocker.patch.object(QRadar_v2, "set_integration_context")
 
         fetch_incidents_long_running_events(client, "", "", False, False, fetch_mode, "", "")
 
@@ -160,8 +159,10 @@ class TestQRadarv2:
             time.sleep(0.001)
             return offense
 
+        QRadar_v2.DEFAULT_EVENTS_TIMEOUT = 0
         offense_with_no_events = RAW_RESPONSES["fetch-incidents"]
-        del offense_with_no_events['events']
+        if 'events' in offense_with_no_events:
+            del offense_with_no_events['events']
         client = QRadarClient("", {}, {"identifier": "*", "password": "*"})
         fetch_mode = FetchMode.all_events
         mocker.patch.object(QRadar_v2, "get_integration_context", return_value={})
@@ -170,7 +171,7 @@ class TestQRadarv2:
         QRadar_v2.enrich_offense_with_events = mock_enrich_offense_with_events
         mocker.patch.object(demisto, "createIncidents")
         mocker.patch.object(demisto, "debug")
-        sic_mock = mocker.patch.object(QRadar_v2, "set_to_integration_context_with_retries")
+        sic_mock = mocker.patch.object(QRadar_v2, "set_integration_context")
 
         fetch_incidents_long_running_events(client, "", "", False, False, fetch_mode, "", "")
 
@@ -179,6 +180,7 @@ class TestQRadarv2:
         assert len(sic_mock.call_args[0][0]['samples']) == 1
         incident_raw_json = json.loads(sic_mock.call_args[0][0]['samples'][0]['rawJSON'])
         assert 'events' not in incident_raw_json
+        QRadar_v2.DEFAULT_EVENTS_TIMEOUT = 30
 
     def test_enrich_offense_with_events__correlations(self, mocker):
         """

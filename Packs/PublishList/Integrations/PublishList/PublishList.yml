@@ -1,0 +1,63 @@
+category: Utilities
+commonfields:
+  id: Publish List
+  version: -1
+configuration:
+- defaultvalue: "true"
+  display: Long running instance
+  hidden: true
+  name: longRunning
+  required: false
+  type: 8
+- additionalinfo: Runs the web server on this port from within Cortex XSOAR. Requires
+    a unique port for each long-running integration instance. Do not use the same
+    port for multiple instances.
+  display: Listen Port
+  name: longRunningPort
+  required: true
+  type: 0
+- display: Username
+  name: credentials
+  required: false
+  type: 9
+- additionalinfo: Required for HTTPS, if not using server rerouting
+  display: Certificate (Required for HTTPS)
+  name: certificate
+  required: false
+  type: 12
+- additionalinfo: Required for HTTPS, if not using server rerouting
+  display: Private Key (Required for HTTPS)
+  name: key
+  required: false
+  type: 14
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- additionalinfo: 'Comma separated list of list names to publish. Example: mylist1,mylist2,mylist3'
+  display: Lists to Publish
+  name: listsToPublish
+  required: true
+  type: 12
+- additionalinfo: 'For standard lists that are comma delimited, this puts each list
+    item on a new line. '
+  defaultvalue: "false"
+  display: List Items on Individual Lines
+  name: commaToLineBreak
+  required: false
+  type: 8
+description: The Publish List integration is used to publish XSOAR lists for external
+  consumption.
+display: Publish List
+name: Publish List
+script:
+  dockerimage: demisto/fastapi:1.0.0.24037
+  longRunning: true
+  longRunningPort: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No test

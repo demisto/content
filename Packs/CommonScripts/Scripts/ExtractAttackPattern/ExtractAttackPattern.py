@@ -7,12 +7,15 @@ import requests
 requests.packages.urllib3.disable_warnings()
 
 
+def get_mitre_results(items):
+    return execute_command('mitre-get-indicator-name', {'attack_ids': items})
+
+
 def is_valid_attack_pattern(items) -> list:
 
     try:
-        results = demisto.executeCommand('mitre-get-indicator-name', {'attack_ids': items})
-        list_contents = results[2]['Contents']
-        values = [content.get('value') for content in list_contents]
+        results = get_mitre_results(items)
+        values = [content.get('value') for content in results]
         return values if values else []
 
     except ValueError as e:
