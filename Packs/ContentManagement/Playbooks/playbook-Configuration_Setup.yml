@@ -16,7 +16,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "23"
@@ -24,7 +23,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 602.5,
+          "x": 685,
           "y": 50
         }
       }
@@ -69,7 +68,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 387.5,
+          "x": 1012.5,
           "y": 545
         }
       }
@@ -91,12 +90,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 510,
+          "x": 592.5,
           "y": 2555
         }
       }
@@ -130,7 +128,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1370,
+          "x": 1452.5,
           "y": 1535
         }
       }
@@ -164,7 +162,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
+          "x": 592.5,
           "y": 1535
         }
       }
@@ -198,7 +196,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 1535
         }
       }
@@ -232,7 +230,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 397.5,
+          "x": 705,
           "y": 2205
         }
       }
@@ -266,7 +264,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1370,
+          "x": 1452.5,
           "y": 1185
         }
       }
@@ -288,7 +286,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "29"
@@ -296,7 +293,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1370,
+          "x": 1452.5,
           "y": 865
         }
       }
@@ -332,7 +329,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1370,
+          "x": 1452.5,
           "y": 1360
         }
       }
@@ -354,7 +351,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "14"
@@ -362,7 +358,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
+          "x": 592.5,
           "y": 1200
         }
       }
@@ -400,7 +396,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
+          "x": 592.5,
           "y": 1360
         }
       }
@@ -422,7 +418,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "33"
@@ -430,7 +425,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 70,
+          "x": 50,
           "y": 1025
         }
       }
@@ -452,7 +447,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "34"
@@ -460,7 +454,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
+          "x": 592.5,
           "y": 1710
         }
       }
@@ -494,7 +488,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 397.5,
+          "x": 705,
           "y": 2030
         }
       }
@@ -530,7 +524,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 1360
         }
       }
@@ -568,7 +562,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 817.5,
+          "x": 265,
           "y": 370
         }
       }
@@ -581,10 +575,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: a18b95d8-d767-411b-8239-4f686185c229
+    taskid: 7e57a07a-efc1-4285-8154-3df69e775e3d
     type: condition
     task:
-      id: a18b95d8-d767-411b-8239-4f686185c229
+      id: 7e57a07a-efc1-4285-8154-3df69e775e3d
       version: -1
       name: What is the Source of the Configuration File?
       description: Determines from where to get the configuration file.
@@ -596,6 +590,8 @@ tasks:
       - "2"
       GitHub:
       - "22"
+      Gitlab:
+      - "35"
     separatecontext: false
     conditions:
     - label: Attachment
@@ -618,10 +614,20 @@ tasks:
           right:
             value:
               simple: GitHub
+    - label: Gitlab
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.configurationfilesource
+            iscontext: true
+          right:
+            value:
+              simple: Gitlab
     view: |-
       {
         "position": {
-          "x": 602.5,
+          "x": 685,
           "y": 195
         }
       }
@@ -666,7 +672,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 817.5,
+          "x": 470,
           "y": 545
         }
       }
@@ -688,7 +694,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "15"
@@ -698,7 +703,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 602.5,
+          "x": 685,
           "y": 720
         }
       }
@@ -765,7 +770,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1370,
+          "x": 1452.5,
           "y": 1010
         }
       }
@@ -803,7 +808,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1800,
+          "x": 1882.5,
           "y": 1185
         }
       }
@@ -844,7 +849,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 940,
+          "x": 1022.5,
           "y": 1535
         }
       }
@@ -875,7 +880,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
+          "x": 592.5,
           "y": 2380
         }
       }
@@ -915,7 +920,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 70,
+          "x": 50,
           "y": 1185
         }
       }
@@ -955,8 +960,48 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
+          "x": 592.5,
           "y": 1855
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 5bdef339-b6d6-4115-840f-d897b76d1ca9
+    type: regular
+    task:
+      id: 5bdef339-b6d6-4115-840f-d897b76d1ca9
+      version: -1
+      name: Get Configuration File From Gitlab
+      description: Get raw file
+      script: GitLab|||gitlab-raw-file-get
+      type: regular
+      iscommand: true
+      brand: GitLab
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      create_file_from_content:
+        simple: "true"
+      file_path:
+        simple: ${incident.configfilepath}
+      project_id:
+        simple: "3606"
+      ref:
+        simple: ${incident.branchname}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 370
         }
       }
     note: false
