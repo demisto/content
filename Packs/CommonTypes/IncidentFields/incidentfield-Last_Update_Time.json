@@ -6,7 +6,8 @@
         "Guardicore Incident",
         "Azure Active Directory Identity and Access",
         "Saas Security Incident",
-        "Tanium TR Incident"
+        "Tanium TR Incident",
+        "Logrhythm Case"
     ],
     "breachScript": "",
     "caseInsensitive": true,
