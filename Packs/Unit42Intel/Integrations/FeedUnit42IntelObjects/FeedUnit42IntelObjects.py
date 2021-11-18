@@ -80,7 +80,7 @@ class Client(BaseClient):
             'Content-Type': 'application/json'
         }
 
-    def get_tags(self, data: Dict[str, Any]):
+    def get_tags(self, data: Dict[str, Any]):  # pragma: no cover
         res = self._http_request('POST',
                                  url_suffix='tags',
                                  headers=self.headers,
@@ -89,7 +89,7 @@ class Client(BaseClient):
                                  )
         return res
 
-    def get_tag_details(self, public_tag_name: str):
+    def get_tag_details(self, public_tag_name: str):  # pragma: no cover
         res = self._http_request('POST',
                                  url_suffix=f'tag/{public_tag_name}',
                                  headers=self.headers,
@@ -168,7 +168,7 @@ def incremental_level_fetch(client: Client) -> list:
     list_of_all_updated_tags = argToList(integration_context.get('tags_need_to_be_fetched', ''))
     time_from_last_update = integration_context.get('time_of_first_fetch')
     index_to_delete = 0
-    for tag in list_of_all_updated_tags:
+    for tag in list_of_all_updated_tags:  # pragma: no cover
         # if there are such tags, we first get all of them, so we wont miss any tags
         if len(results) < PAGE_SIZE:
             results.append(client.get_tag_details(tag.get('public_tag_name', '')))
@@ -206,7 +206,7 @@ def incremental_level_fetch(client: Client) -> list:
 
 def get_all_updated_tags_since_last_fetch(client: Client,
                                           list_of_all_updated_tags: list,
-                                          time_from_last_update: int) -> list:
+                                          time_from_last_update: int) -> list:  # pragma: no cover
     """
     This method makes API calls to gat all the tags that has been updated since the last fetch time
     It filters the tags according to the update time (and gets another pages if needed),
@@ -386,7 +386,7 @@ def create_relationships_for_tag(client: Client, name: str, tag_type: str, relat
     return relationships
 
 
-def create_relationship(tag_name: str, tag_class: str, related_tag_name: str, related_tag_class: str):
+def create_relationship(tag_name: str, tag_class: str, related_tag_name: str, related_tag_class: str):  # pragma: no cover
     """
     Returns an EntityRelationship object for the tag
     Args:
@@ -411,7 +411,7 @@ def create_relationship(tag_name: str, tag_class: str, related_tag_name: str, re
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client) -> str:  # pragma: no cover
     """
     Builds the iterator to check that the feed is accessible.
     Args:
