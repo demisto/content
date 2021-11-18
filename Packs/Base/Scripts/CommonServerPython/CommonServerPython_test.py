@@ -17,7 +17,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
-    url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, TableJsonTransformer
+    url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer
 import CommonServerPython
 
 try:
@@ -753,6 +753,14 @@ class TestTableToMarkdown:
 
     @staticmethod
     def test_with_json_transformers_default():
+        """
+        Given:
+          - Nested json table.
+        When:
+          - Calling tableToMarkdown with `is_auto_transform_json` set to True.
+        Then:
+          - Parse the json table to the default format which supports nesting.
+        """
         table = tableToMarkdown("tableToMarkdown test", NESTED_DATA_EXAMPLE,
                                 headers=['name', 'changelog', 'nested'],
                                 is_auto_json_transform=True)
@@ -765,10 +773,19 @@ class TestTableToMarkdown:
 
     @staticmethod
     def test_with_json_transformer_simple():
-        json_transformer = TableJsonTransformer({'changelog':
-                                                {'keys_lst': ['releaseNotes', 'released']}})
+        """
+        Given:
+          - Nested json table.
+        When:
+          - Calling tableToMarkdown with JsonTransformer with only `keys_lst` given.
+        Then:
+          - The header key which is transformed will parsed with the relevant keys.
+        """
+
+        changelog_transformer = JsonTransformer(keys_lst=['releaseNotes', 'released'])
+        table_json_transformer = {'changelog': changelog_transformer}
         table = tableToMarkdown("tableToMarkdown test", NESTED_DATA_EXAMPLE, headers=['name', 'changelog'],
-                                json_transform=json_transformer)
+                                json_transform=table_json_transformer)
         expected_table = """### tableToMarkdown test
 |name|changelog|
 |---|---|
@@ -778,16 +795,44 @@ class TestTableToMarkdown:
 
     @staticmethod
     def test_with_json_transformer_nested():
-        json_transformer = TableJsonTransformer({'changelog': {'keys_lst': ['releaseNotes', 'c'], 'is_nested': True}})
+        """
+        Given:
+          - Double nested json table.
+        When:
+          - Calling tableToMarkdown with JsonTransformer with only `keys_lst` given and `is_nested` set to True.
+        Then:
+          - The header key which is transformed will parsed with the relevant keys.
+        """
+        changelog_transformer = JsonTransformer(keys_lst=['releaseNotes', 'c'], is_nested=True)
+
+        table_json_transformer = {'changelog': changelog_transformer}
         table = tableToMarkdown('tableToMarkdown test', MORE_NESTED_DATA_EXAMPLE, headers=['name', 'changelog'],
-                                json_transform=json_transformer)
+                                json_transform=table_json_transformer)
         expected_table = """### tableToMarkdown test
 |name|changelog|
 |---|---|
-| Active Directory Query | ***1.0.4***: <br>	**c**: we should see this value<br>***1.0.5***: <br>	**c**: we should see this value<br>***1.0.6***: <br>	**c**: we should see this value |
+| Active Directory Query | ***1.0.4***: <br>	**c**: we should see this value<br>	**releaseNotes**: <br>#### Integrations<br>##### Active Directory Query v2<br>Fixed an issue where the ***ad-get-user*** command caused performance issues because the *limit* argument was not defined.<br><br>***1.0.5***: <br>	**c**: we should see this value<br>	**releaseNotes**: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed several typos.<br>- Updated the Docker image to: *demisto/ldap:1.0.0.11282*.<br><br>***1.0.6***: <br>	**c**: we should see this value<br>	**releaseNotes**: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed an issue where the DN parameter within query in the ***search-computer*** command was incorrect.<br>- Updated the Docker image to *demisto/ldap:1.0.0.12410*.<br> |
 """
 
         assert expected_table == table
+
+    @staticmethod
+    def test_with_json_transformer_func():
+
+        def changelog_to_str(json_input):
+            return ', '.join(json_input.keys())
+
+        changelog_transformer = JsonTransformer(func=changelog_to_str)
+        table_json_transformer = {'changelog': changelog_transformer}
+        table = tableToMarkdown("tableToMarkdown test", NESTED_DATA_EXAMPLE, headers=['name', 'changelog'],
+                                json_transform=table_json_transformer)
+        expected_table = """### tableToMarkdown test
+|name|changelog|
+|---|---|
+| Active Directory Query | 1.0.4, 1.0.5, 1.0.6 |
+"""
+        assert expected_table == table
+
 
 @pytest.mark.parametrize('data, expected_data', COMPLEX_DATA_WITH_URLS)
 def test_url_to_clickable_markdown(data, expected_data):
@@ -5780,14 +5825,3 @@ def changelog_to_str(dct):
     ####
     string = dct.get('cascsa').get('ascascas')
     return string
-
-
-def test_tbm():
-    with open('test_data/content_data.json') as f:
-        content_data = json.load(f)
-    content_data = content_data.get('ContentData')
-    headers = argToList(
-        'name,author,categories,useCases,certification,contentItemTypes,currentVersion,lastInstallDate,premium,rating,updated,changelog')
-    md = tableToMarkdown("test", content_data, headers=headers,
-                         json_transform={'changelog': ['releaseNotes', 'released']})
-    print(md)

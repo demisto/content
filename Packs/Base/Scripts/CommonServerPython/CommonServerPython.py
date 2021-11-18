@@ -1572,7 +1572,7 @@ def formatCell(data, is_pretty=True, json_transform=None):
        Convert a given object to md while decending multiple levels
 
 
-       :type data: ``str`` or ``list``
+       :type data: ``str`` or ``list`` or ``dict``
        :param data: The cell content (required)
 
        :type is_pretty: ``bool``
@@ -1585,14 +1585,9 @@ def formatCell(data, is_pretty=True, json_transform=None):
        :rtype: ``str``
     """
     if json_transform is None:
-        json_transform = JsonTransfomer(flatten=True)
+        json_transform = JsonTransformer(flatten=True)
 
-    if isinstance(data, STRING_TYPES):
-        return data
-    elif isinstance(data, dict):
-        return json_transform.json_to_str(data, is_pretty)
-    else:
-        return flattenCell(data, is_pretty)
+    return json_transform.json_to_str(data, is_pretty)
 
 
 def flattenCell(data, is_pretty=True):
@@ -1782,8 +1777,23 @@ def create_clickable_url(url):
     return '[{}]({})'.format(url, url)
 
 
-class JsonTransfomer:
+class JsonTransformer:
     def __init__(self, flatten=False, keys_lst=None, is_nested=False, func=None):
+        """
+        Constructor for JsonTransformer
+
+        :type flatten: ``bool``
+        :param flatten:  Should we flatten the json using `flattenCell` (the default behavior)
+
+        :type keys_lst: ``List[str]``
+        :param keys_lst: a list of relevant keys list from the json
+
+        :type is_nested: ``bool``
+        :param is_nested: Whether to search in nested keys or not
+
+        :type func: ``Callable``
+        :param func: A function to parse the json
+        """
         if keys_lst is None:
             keys_lst = []
         self.keys_set = set(keys_lst)
@@ -1794,6 +1804,10 @@ class JsonTransfomer:
     def json_to_str(self, json_input, is_pretty=True):
         if self.func:
             return self.func(json_input)
+        if isinstance(json_input, STRING_TYPES):
+            return json_input
+        if isinstance(json_input, list):
+            return flattenCell(json_input, is_pretty)
         if self.flatten:
             return '\n'.join(
                 ['{key}: {val}'.format(key=k, val=flattenCell(v, is_pretty)) for k, v in json_input.items()])
@@ -1818,28 +1832,6 @@ class JsonTransfomer:
         if isinstance(json_input, list):
             for item in json_input:
                 yield from self.item_generator(item)
-
-
-# {header_key1: (all args are optional)
-#           keys_lst: [item1, ...]
-#           is_nested: bool
-#           is_md: bool
-#           func: callable
-# header_key2: ...}
-
-class TableJsonTransformer:
-    def __init__(self, headers):
-        if not isinstance(headers, list) and not isinstance(headers, dict):
-            raise ValueError('Invalid argument for TableJsonTransformer')
-        if isinstance(headers, list):
-            headers = {k: {} for k in headers}
-        self.nested_json_transformers = {}
-        for header_key, values in headers.items():
-            inner_json_transform = JsonTransfomer(**values)
-            self.nested_json_transformers[header_key] = inner_json_transform
-
-    def get(self, key):
-        return self.nested_json_transformers.get(key)
 
 
 def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None, url_keys=None,
@@ -1927,7 +1919,8 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
         headers = headers_aux
 
     if not json_transform:
-        json_transform = TableJsonTransformer(headers) if is_auto_json_transform else {}
+        json_transform = {header: JsonTransformer(flatten=False if is_auto_json_transform else True) for header in
+                          headers}
 
     if t and len(headers) > 0:
         newHeaders = []
