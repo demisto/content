@@ -17,6 +17,7 @@ PAGE_SIZE: int = 200
 APP: Flask = Flask('demisto-export_iocs')
 CTX_VALUES_KEY: str = 'dmst_export_iocs_values'
 CTX_MIMETYPE_KEY: str = 'dmst_export_iocs_mimetype'
+SEARCH_LOOP_LIMIT: int = 10
 
 FORMAT_CSV: str = 'csv'
 FORMAT_TEXT: str = 'text'
@@ -189,7 +190,8 @@ def refresh_outbound_context(request_args: RequestArguments, on_demand: bool = F
         size=PAGE_SIZE,
         limit=limit
     )
-    while not indicator_searcher.is_search_done():
+    loop_counter = 0
+    while not indicator_searcher.is_search_done() and loop_counter < SEARCH_LOOP_LIMIT:
         new_iocs = find_indicators_with_limit(indicator_searcher)
         if not new_iocs:
             break
@@ -200,7 +202,8 @@ def refresh_outbound_context(request_args: RequestArguments, on_demand: bool = F
         if request_args.out_format in [FORMAT_CSV, FORMAT_XSOAR_CSV]:
             actual_indicator_amount = actual_indicator_amount - 1
         # advance search window with gap size
-        indicator_searcher.limit = limit - actual_indicator_amount
+        indicator_searcher.limit += limit - actual_indicator_amount
+        loop_counter += 1
 
     if request_args.out_format == FORMAT_JSON:
         out_dict[CTX_MIMETYPE_KEY] = MIMETYPE_JSON

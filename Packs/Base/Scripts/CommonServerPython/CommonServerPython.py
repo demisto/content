@@ -7986,6 +7986,7 @@ class IndicatorsSearcher:
         self._to_date = to_date
         self._value = value
         self._limit = limit
+        self._total_iocs_fetched = 0
 
     def __iter__(self):
         return self
@@ -8004,10 +8005,9 @@ class IndicatorsSearcher:
                                                 value=self._value)
         fetched_len = len(res.get('iocs') or [])
         if fetched_len == 0:
-            self.limit = 0
+            self._total_iocs_fetched = self.limit
             raise StopIteration
-        elif self.limit:
-            self.limit -= fetched_len
+        self._total_iocs_fetched += fetched_len
         return res
 
     @property
@@ -8033,9 +8033,12 @@ class IndicatorsSearcher:
         2. for search_after if self.total was populated by a previous search, but no self._search_after_param
         3. for page if self.total was populated by a previous search, but page is too large
         """
-        reached_limit = isinstance(self.limit, int) and self.limit <= 0
+        reached_limit = self.limit is not None and self.limit <= self._total_iocs_fetched
         if reached_limit:
-            demisto.debug("IndicatorsSearcher has reached its limit")
+            demisto.debug("IndicatorsSearcher has reached its limit: {}".format(self.limit))
+            # update limit to match _total_iocs_fetched value
+            if self._total_iocs_fetched > self.limit:
+                self.limit = self._total_iocs_fetched
             return True
         else:
             if self.total is None:

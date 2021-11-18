@@ -5049,7 +5049,7 @@ class TestIndicatorsSearcher:
             results.append(res)
         assert len(results) == 3
         # fetch 1 more (limit set to 2, but only 1 available)
-        search_indicators.limit = 2
+        search_indicators.limit += 2
         results = []
         for res in search_indicators:
             results.append(res)
