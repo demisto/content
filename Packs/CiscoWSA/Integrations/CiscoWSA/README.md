@@ -1,10 +1,10 @@
 Cisco WSA
 This integration was integrated and tested with version vSeries-100 of Cisco-WSA
 
-## Configure WSA-Testing on Cortex XSOAR
+## Configure CiscoWSA on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for WSA-Testing.
+2. Search for CiscoWSA.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Required** |
