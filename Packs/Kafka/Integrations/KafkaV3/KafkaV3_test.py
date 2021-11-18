@@ -1,12 +1,12 @@
 from CommonServerPython import DemistoException, demisto
 
-from Kafka_v3 import KafkaCommunicator, command_test_module, KConsumer, KProducer, print_topics, fetch_partitions, \
+from KafkaV3 import KafkaCommunicator, command_test_module, KConsumer, KProducer, print_topics, fetch_partitions, \
     consume_message, produce_message, fetch_incidents
 from confluent_kafka.admin import ClusterMetadata, TopicMetadata, PartitionMetadata
 from confluent_kafka import KafkaError, TopicPartition, TIMESTAMP_NOT_AVAILABLE, TIMESTAMP_CREATE_TIME
 
 import pytest
-import Kafka_v3
+import KafkaV3
 import os
 
 KAFKA = KafkaCommunicator(brokers=['some_broker_ip'])
@@ -21,8 +21,8 @@ def test_passing_simple_test_module(mocker):
     Then:
         - Assert 'ok' if ClusterMetadata object is returned from Kafka
     """
-    mocker.patch.object(Kafka_v3, 'KConsumer')
-    mocker.patch.object(Kafka_v3, 'KProducer')
+    mocker.patch.object(KafkaV3, 'KConsumer')
+    mocker.patch.object(KafkaV3, 'KProducer')
     mocker.patch.object(KConsumer, 'list_topics', return_value=ClusterMetadata())
     mocker.patch.object(KProducer, 'list_topics', return_value=ClusterMetadata())
     assert command_test_module(KAFKA, {'isFetch': False}) == 'ok'
@@ -424,7 +424,7 @@ def test_produce_message(mocker, partition_number):
         KafkaCommunicator.delivery_report(None, message)
 
     flush_mock = mocker.patch.object(KProducer, 'flush', side_effect=run_delivery_report)
-    return_results_mock = mocker.patch.object(Kafka_v3, 'return_results')
+    return_results_mock = mocker.patch.object(KafkaV3, 'return_results')
 
     produce_message(KAFKA, demisto_args)
 
