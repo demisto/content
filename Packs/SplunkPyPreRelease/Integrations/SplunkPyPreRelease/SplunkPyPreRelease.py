@@ -140,7 +140,7 @@ def extensive_log(message):
         demisto.debug(message)
 
 
-def remove_old_incident_ids(last_run_fetched_ids, start_time_query, end_time_query):
+def remove_old_incident_ids(last_run_fetched_ids, start_time_query):
     """
     Remove incident if their occurrence time is not in query time range
     Args:
@@ -154,9 +154,8 @@ def remove_old_incident_ids(last_run_fetched_ids, start_time_query, end_time_que
     """
     new_last_run_fetched_ids = {}
     for incident in last_run_fetched_ids.keys():
-        end_time_query_datetime = datetime.strptime(end_time_query, SPLUNK_TIME_FORMAT)
         start_time_query_datetime = datetime.strptime(start_time_query, SPLUNK_TIME_FORMAT)
-        if end_time_query_datetime > datetime.strptime(last_run_fetched_ids[incident], SPLUNK_TIME_FORMAT) >= start_time_query_datetime:
+        if datetime.strptime(last_run_fetched_ids[incident], SPLUNK_TIME_FORMAT) >= start_time_query_datetime:
             # query time range is [start_time_query, end_time_query)
             new_last_run_fetched_ids[incident] = last_run_fetched_ids[incident]
     return new_last_run_fetched_ids
@@ -254,7 +253,8 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
     occured_start_time, now = get_fetch_start_times(dem_params, service, last_run_time, occurred_look_behind)
     extensive_log('[SplunkPyPreRelease] SplunkPyPreRelease last run time: {}, now: {}'.format(last_run_time, now))
 
-    batch_size = last_run_data.get('batch_size') or dem_params.get('batch_size', 200)
+    default_batch_size = int(dem_params.get('batch_size', 200))
+    batch_size = last_run_data.get('batch_size') or default_batch_size
     extensive_log('[SplunkPyPreRelease] SplunkPyPreRelease batch size is : {}'.format(batch_size))
 
     kwargs_oneshot = build_fetch_kwargs(dem_params, batch_size, occured_start_time, now)
@@ -269,7 +269,7 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
     notables = []
     incident_ids_to_add = {}
     for item in reader:
-        if len(incidents) > FETCH_LIMIT:
+        if len(incidents) >= FETCH_LIMIT:
             break
         extensive_log('[SplunkPyPreRelease] Incident data before parsing to notable: {}'.format(item))
         notable_incident = Notable(data=item)
@@ -289,7 +289,7 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
         last_run_fetched_ids[incident_id] = incident_ids_to_add[incident_id]  # Adding the new incidents with the occurence time.
     extensive_log(
         '[SplunkPyPreRelease] Size of last_run_fetched_ids after adding new IDs: {}'.format(len(last_run_fetched_ids)))
-    last_run_fetched_ids = remove_old_incident_ids(last_run_fetched_ids, occured_start_time, now)
+    last_run_fetched_ids = remove_old_incident_ids(last_run_fetched_ids, occured_start_time)
     extensive_log('[SplunkPyPreRelease] Size of last_run_fetched_ids after '
                   'removing old IDs: {}'.format(len(last_run_fetched_ids)))
     extensive_log('[SplunkPyPreRelease] SplunkPyPreRelease - incidents fetched on last run = {}'.format(last_run_fetched_ids))
@@ -314,13 +314,12 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
         new_last_run = {
             'time': next_run,
             'found_incidents_ids': last_run_fetched_ids,
-            'batch_size': dem_params.get('batch_size')
         }
     else:
         if len(last_run_fetched_ids) + FETCH_LIMIT >= batch_size:
             # If we almost saw all the events return from the query, we should increase the batch size to reach
             # the new events.
-            batch_size += batch_size
+            batch_size += default_batch_size
         latest_incident_fetched_time = get_latest_incident_time(incidents)
         next_run = get_next_start_time(latest_incident_fetched_time, now, were_new_incidents_found=True)
         extensive_log('[SplunkPyPreRelease] SplunkPyPreRelease - '

@@ -1575,3 +1575,342 @@ def test_get_fetch_start_time(mocker):
     occurred_look_behind = 120
     occurred_start_time, now = get_fetch_start_times(dem_params, service, last_run_time, occurred_look_behind)
     assert occurred_start_time == datetime.strftime(expected_start_time, SPLUNK_TIME_FORMAT)
+
+
+response_six_events_with_delay = [{
+    '_bkt': 'notable~668~66D21DF4-F4FD-4886-A986-82E72ADCBFE9',
+    '_cd': '668:17198',
+    '_indextime': '1596545116',
+    '_raw': '1596545116, search_name="Endpoint - Recurring Malware Infection - Rule", count="17", '
+            'day_count="8", dest="ACME-workstation-012", info_max_time="1596545100.000000000", '
+            'info_min_time="1595939700.000000000", info_search_time="1596545113.965466000", '
+            'signature="Trojan.Gen.2"',
+    '_serial': '50',
+    '_si': ['ip-172-31-44-193', 'notable'],
+    '_sourcetype': 'stash',
+    '_time': '2020-08-24T12:10:12.000-07:00',
+    'dest': 'ACME-workstation-012',
+    'dest_asset_id': '028877d3c80cb9d87900eb4f9c9601ea993d9b63',
+    'dest_asset_tag': ['cardholder', 'pci', 'americas'],
+    'dest_bunit': 'americas',
+    'dest_category': ['cardholder', 'pci'],
+    'dest_city': 'Pleasanton',
+    'dest_country': 'USA',
+    'dest_ip': '192.168.3.12',
+    'dest_is_expected': 'TRUE',
+    'dest_lat': '37.694452',
+    'dest_long': '-121.894461',
+    'dest_nt_host': 'ACME-workstation-012',
+    'dest_pci_domain': ['trust', 'cardholder'],
+    'dest_priority': 'medium',
+    'dest_requires_av': 'TRUE',
+    'dest_risk_object_type': 'system',
+    'dest_risk_score': '15680',
+    'dest_should_timesync': 'TRUE',
+    'dest_should_update': 'TRUE',
+    'host': 'ip-172-31-44-193',
+    'host_risk_object_type': 'system',
+    'host_risk_score': '0',
+    'index': 'notable',
+    'linecount': '1',
+    'priorities': 'medium',
+    'priority': 'medium',
+    'risk_score': '15680',
+    'rule_description': 'Endpoint - Recurring Malware Infection - Rule',
+    'rule_name': 'Endpoint - Recurring Malware Infection - Rule',
+    'rule_title': 'Endpoint - Recurring Malware Infection - Rule',
+    'security_domain': 'Endpoint - Recurring Malware Infection - Rule',
+    'severity': 'unknown',
+    'signature': 'Trojan.Gen.2',
+    'source': 'Endpoint - Recurring Malware Infection - Rule',
+    'sourcetype': 'stash',
+    'splunk_server': 'ip-172-31-44-193',
+    'urgency': 'low'
+},
+    {
+    '_bkt': 'notable~668~66D21DF4-F4FD-4886-A986-82E72ADCBFE9',
+    '_cd': '668:17198',
+    '_indextime': '1596545116',
+    '_raw': '1596545116, search_name="Endpoint - Recurring Malware Infection - Rule1", count="17", '
+            'day_count="8", dest="ACME-workstation-012", info_max_time="1596545100.000000000", '
+            'info_min_time="1595939700.000000000", info_search_time="1596545113.965466000", '
+            'signature="Trojan.Gen.2"',
+    '_serial': '50',
+    '_si': ['ip-172-31-44-193', 'notable'],
+    '_sourcetype': 'stash',
+    '_time': '2020-08-24T12:10:16.000-07:00',
+    'dest': 'ACME-workstation-012',
+    'dest_asset_id': '028877d3c80cb9d87900eb4f9c9601ea993d9b63',
+    'dest_asset_tag': ['cardholder', 'pci', 'americas'],
+    'dest_bunit': 'americas',
+    'dest_category': ['cardholder', 'pci'],
+    'dest_city': 'Pleasanton',
+    'dest_country': 'USA',
+    'dest_ip': '192.168.3.12',
+    'dest_is_expected': 'TRUE',
+    'dest_lat': '37.694452',
+    'dest_long': '-121.894461',
+    'dest_nt_host': 'ACME-workstation-012',
+    'dest_pci_domain': ['trust', 'cardholder'],
+    'dest_priority': 'medium',
+    'dest_requires_av': 'TRUE',
+    'dest_risk_object_type': 'system',
+    'dest_risk_score': '15680',
+    'dest_should_timesync': 'TRUE',
+    'dest_should_update': 'TRUE',
+    'host': 'ip-172-31-44-193',
+    'host_risk_object_type': 'system',
+    'host_risk_score': '0',
+    'index': 'notable',
+    'linecount': '1',
+    'priorities': 'medium',
+    'priority': 'medium',
+    'risk_score': '15680',
+    'rule_description': 'Endpoint - Recurring Malware Infection - Rule',
+    'rule_name': 'Endpoint - Recurring Malware Infection - Rule',
+    'rule_title': 'Endpoint - Recurring Malware Infection - Rule',
+    'security_domain': 'Endpoint - Recurring Malware Infection - Rule',
+    'severity': 'unknown',
+    'signature': 'Trojan.Gen.2',
+    'source': 'Endpoint - Recurring Malware Infection - Rule',
+    'sourcetype': 'stash',
+    'splunk_server': 'ip-172-31-44-193',
+    'urgency': 'low'
+},
+    {
+    '_bkt': 'notable~668~66D21DF4-F4FD-4886-A986-82E72ADCBFE9',
+    '_cd': '668:17198',
+    '_indextime': '1596545116',
+    '_raw': '1596545116, search_name="Endpoint - Recurring Malware Infection - Rule2", count="17", '
+            'day_count="8", dest="ACME-workstation-012", info_max_time="1596545100.000000000", '
+            'info_min_time="1595939700.000000000", info_search_time="1596545113.965466000", '
+            'signature="Trojan.Gen.2"',
+    '_serial': '50',
+    '_si': ['ip-172-31-44-193', 'notable'],
+    '_sourcetype': 'stash',
+    '_time': '2020-08-24T12:10:18.000-07:00',
+    'dest': 'ACME-workstation-012',
+    'dest_asset_id': '028877d3c80cb9d87900eb4f9c9601ea993d9b63',
+    'dest_asset_tag': ['cardholder', 'pci', 'americas'],
+    'dest_bunit': 'americas',
+    'dest_category': ['cardholder', 'pci'],
+    'dest_city': 'Pleasanton',
+    'dest_country': 'USA',
+    'dest_ip': '192.168.3.12',
+    'dest_is_expected': 'TRUE',
+    'dest_lat': '37.694452',
+    'dest_long': '-121.894461',
+    'dest_nt_host': 'ACME-workstation-012',
+    'dest_pci_domain': ['trust', 'cardholder'],
+    'dest_priority': 'medium',
+    'dest_requires_av': 'TRUE',
+    'dest_risk_object_type': 'system',
+    'dest_risk_score': '15680',
+    'dest_should_timesync': 'TRUE',
+    'dest_should_update': 'TRUE',
+    'host': 'ip-172-31-44-193',
+    'host_risk_object_type': 'system',
+    'host_risk_score': '0',
+    'index': 'notable',
+    'linecount': '1',
+    'priorities': 'medium',
+    'priority': 'medium',
+    'risk_score': '15680',
+    'rule_description': 'Endpoint - Recurring Malware Infection - Rule',
+    'rule_name': 'Endpoint - Recurring Malware Infection - Rule',
+    'rule_title': 'Endpoint - Recurring Malware Infection - Rule',
+    'security_domain': 'Endpoint - Recurring Malware Infection - Rule',
+    'severity': 'unknown',
+    'signature': 'Trojan.Gen.2',
+    'source': 'Endpoint - Recurring Malware Infection - Rule',
+    'sourcetype': 'stash',
+    'splunk_server': 'ip-172-31-44-193',
+    'urgency': 'low'
+},
+    {
+    '_bkt': 'notable~668~66D21DF4-F4FD-4886-A986-82E72ADCBFE9',
+    '_cd': '668:17198',
+    '_indextime': '1596545116',
+    '_raw': '1596545116, search_name="Endpoint - Recurring Malware Infection - Rule3", count="17", '
+            'day_count="8", dest="ACME-workstation-012", info_max_time="1596545100.000000000", '
+            'info_min_time="1595939700.000000000", info_search_time="1596545113.965466000", '
+            'signature="Trojan.Gen.2"',
+    '_serial': '50',
+    '_si': ['ip-172-31-44-193', 'notable'],
+    '_sourcetype': 'stash',
+    '_time': '2020-08-24T12:10:19.000-07:00',
+    'dest': 'ACME-workstation-012',
+    'dest_asset_id': '028877d3c80cb9d87900eb4f9c9601ea993d9b63',
+    'dest_asset_tag': ['cardholder', 'pci', 'americas'],
+    'dest_bunit': 'americas',
+    'dest_category': ['cardholder', 'pci'],
+    'dest_city': 'Pleasanton',
+    'dest_country': 'USA',
+    'dest_ip': '192.168.3.12',
+    'dest_is_expected': 'TRUE',
+    'dest_lat': '37.694452',
+    'dest_long': '-121.894461',
+    'dest_nt_host': 'ACME-workstation-012',
+    'dest_pci_domain': ['trust', 'cardholder'],
+    'dest_priority': 'medium',
+    'dest_requires_av': 'TRUE',
+    'dest_risk_object_type': 'system',
+    'dest_risk_score': '15680',
+    'dest_should_timesync': 'TRUE',
+    'dest_should_update': 'TRUE',
+    'host': 'ip-172-31-44-193',
+    'host_risk_object_type': 'system',
+    'host_risk_score': '0',
+    'index': 'notable',
+    'linecount': '1',
+    'priorities': 'medium',
+    'priority': 'medium',
+    'risk_score': '15680',
+    'rule_description': 'Endpoint - Recurring Malware Infection - Rule',
+    'rule_name': 'Endpoint - Recurring Malware Infection - Rule',
+    'rule_title': 'Endpoint - Recurring Malware Infection - Rule',
+    'security_domain': 'Endpoint - Recurring Malware Infection - Rule',
+    'severity': 'unknown',
+    'signature': 'Trojan.Gen.2',
+    'source': 'Endpoint - Recurring Malware Infection - Rule',
+    'sourcetype': 'stash',
+    'splunk_server': 'ip-172-31-44-193',
+    'urgency': 'low'
+},
+    {
+    '_bkt': 'notable~668~66D21DF4-F4FD-4886-A986-82E72ADCBFE9',
+    '_cd': '668:17198',
+    '_indextime': '1596545116',
+    '_raw': '1596545116, search_name="Endpoint - Recurring Malware Infection - Rule4", count="17", '
+            'day_count="8", dest="ACME-workstation-012", info_max_time="1596545100.000000000", '
+            'info_min_time="1595939700.000000000", info_search_time="1596545113.965466000", '
+            'signature="Trojan.Gen.2"',
+    '_serial': '50',
+    '_si': ['ip-172-31-44-193', 'notable'],
+    '_sourcetype': 'stash',
+    '_time': '2020-08-24T12:10:20.000-07:00',
+    'dest': 'ACME-workstation-012',
+    'dest_asset_id': '028877d3c80cb9d87900eb4f9c9601ea993d9b63',
+    'dest_asset_tag': ['cardholder', 'pci', 'americas'],
+    'dest_bunit': 'americas',
+    'dest_category': ['cardholder', 'pci'],
+    'dest_city': 'Pleasanton',
+    'dest_country': 'USA',
+    'dest_ip': '192.168.3.12',
+    'dest_is_expected': 'TRUE',
+    'dest_lat': '37.694452',
+    'dest_long': '-121.894461',
+    'dest_nt_host': 'ACME-workstation-012',
+    'dest_pci_domain': ['trust', 'cardholder'],
+    'dest_priority': 'medium',
+    'dest_requires_av': 'TRUE',
+    'dest_risk_object_type': 'system',
+    'dest_risk_score': '15680',
+    'dest_should_timesync': 'TRUE',
+    'dest_should_update': 'TRUE',
+    'host': 'ip-172-31-44-193',
+    'host_risk_object_type': 'system',
+    'host_risk_score': '0',
+    'index': 'notable',
+    'linecount': '1',
+    'priorities': 'medium',
+    'priority': 'medium',
+    'risk_score': '15680',
+    'rule_description': 'Endpoint - Recurring Malware Infection - Rule',
+    'rule_name': 'Endpoint - Recurring Malware Infection - Rule',
+    'rule_title': 'Endpoint - Recurring Malware Infection - Rule',
+    'security_domain': 'Endpoint - Recurring Malware Infection - Rule',
+    'severity': 'unknown',
+    'signature': 'Trojan.Gen.2',
+    'source': 'Endpoint - Recurring Malware Infection - Rule',
+    'sourcetype': 'stash',
+    'splunk_server': 'ip-172-31-44-193',
+    'urgency': 'low'
+},
+    {
+    '_bkt': 'notable~668~66D21DF4-F4FD-4886-A986-82E72ADCBFE9',
+    '_cd': '668:17198',
+    '_indextime': '1596545116',
+    '_raw': '1596545116, search_name="Endpoint - Recurring Malware Infection - Rule", count="17", '
+            'day_count="8", dest="ACME-workstation-012", info_max_time="1596545100.000000000", '
+            'info_min_time="1595939700.000000000", info_search_time="1596545113.965466000", '
+            'signature="Trojan.Gen.2"',
+    '_serial': '50',
+    '_si': ['ip-172-31-44-193', 'notable'],
+    '_sourcetype': 'stash',
+    '_time': '2020-08-24T13:30:17.000-07:00',
+    'dest': 'ACME-workstation-012',
+    'dest_asset_id': '028877d3c80cb9d87900eb4f9c9601ea993d9b63',
+    'dest_asset_tag': ['cardholder', 'pci', 'americas'],
+    'dest_bunit': 'americas',
+    'dest_category': ['cardholder', 'pci'],
+    'dest_city': 'Pleasanton',
+    'dest_country': 'USA',
+    'dest_ip': '192.168.3.12',
+    'dest_is_expected': 'TRUE',
+    'dest_lat': '37.694452',
+    'dest_long': '-121.894461',
+    'dest_nt_host': 'ACME-workstation-012',
+    'dest_pci_domain': ['trust', 'cardholder'],
+    'dest_priority': 'medium',
+    'dest_requires_av': 'TRUE',
+    'dest_risk_object_type': 'system',
+    'dest_risk_score': '15680',
+    'dest_should_timesync': 'TRUE',
+    'dest_should_update': 'TRUE',
+    'host': 'ip-172-31-44-193',
+    'host_risk_object_type': 'system',
+    'host_risk_score': '0',
+    'index': 'notable',
+    'linecount': '1',
+    'priorities': 'medium',
+    'priority': 'medium',
+    'risk_score': '15680',
+    'rule_description': 'Endpoint - Recurring Malware Infection - Rule',
+    'rule_name': 'Endpoint - Recurring Malware Infection - Rule',
+    'rule_title': 'Endpoint - Recurring Malware Infection - Rule',
+    'security_domain': 'Endpoint - Recurring Malware Infection - Rule',
+    'severity': 'unknown',
+    'signature': 'Trojan.Gen.2',
+    'source': 'Endpoint - Recurring Malware Infection - Rule',
+    'sourcetype': 'stash',
+    'splunk_server': 'ip-172-31-44-193',
+    'urgency': 'low'
+}]
+
+
+def test_delayed_events_exceeded_limit(mocker):
+    """
+    Given:
+    - 5 events occurred on 12:15 and indexed on 14:05
+    - 1 event occurred on 13:30 and indexed on 13:45
+    - fetch on 14:00 returns 1 event from 13:30 and next fetch on 14:10 returned 6 events - 5 from 12:15 and 1 on 13:30
+    - fetch limit is 1
+    - fetch every 10 minutes
+    When:
+    - fetch notables that was index on delay because of the look behind window
+    Then:
+    - Return all the events in 5 following fetches
+    """
+    splunk.FETCH_LIMIT = 1
+    service, mock_dt = mock_fetch_notables(mocker, demisto_params={'fetchQuery': "something", 'enabled_enrichments': [],
+                                                                   'occurrence_look_behind': 120})
+    next_run = {'found_incidents_ids': {'a74cabaebb6fae0db6e52e290574398d': '2020-08-24T13:30:17'},
+                'batch_size': 200, 'time': '2020-08-24T13:45:17'}
+    minutes = 00
+    now = datetime(2020, 8, 24, 14, minutes, 12, 703618)
+    mock_dt.utcnow.return_value = now
+    mocker.patch('demistomock.getLastRun', return_value=next_run)
+    mocker.patch('splunklib.results.ResultsReader', return_value=response_six_events_with_delay)
+    found_incidents_ids = next_run['found_incidents_ids']
+    while len(found_incidents_ids) < len(response_six_events_with_delay):
+        splunk.fetch_notables(service)
+        next_run = demisto.setLastRun.call_args[0][0]
+        incidents = demisto.incidents.call_args[0][0]
+        assert len(incidents) == 1
+        found_incidents_ids = next_run["found_incidents_ids"]
+        mocker.patch('demistomock.getLastRun', return_value=next_run)
+        minutes += 10
+        now = datetime(2020, 8, 24, 14, minutes, 12, 703618)
+        mock_dt.utcnow.return_value = now
+    assert len(found_incidents_ids) == len(response_six_events_with_delay)
