@@ -1042,10 +1042,10 @@ script:
         isArray: false
         name: create_file_from_content
         predefined:
-      - true
-      - false
-      required: false
-      secret: false
+        - true
+        - false
+        required: false
+        secret: false
     description: Get raw file
     name: gitlab-raw-file-get
     outputs:
