@@ -12,6 +12,7 @@ tasks:
     type: start
     task:
       id: 56a47cd0-a894-45ca-86e0-3789bb3971f9
+      description: Start Task
       version: -1
       name: ""
       iscommand: false
@@ -86,6 +87,7 @@ tasks:
     task:
       id: f565187c-1885-43fa-8e28-8074da0d36e7
       version: -1
+      description: DONE
       name: DONE
       type: title
       iscommand: false
@@ -282,6 +284,7 @@ tasks:
     task:
       id: fe44aea6-1d68-4c78-8540-a5efdef8e35c
       version: -1
+      description: Install Custom Packs
       name: Install Custom Packs
       type: title
       iscommand: false
@@ -348,6 +351,7 @@ tasks:
       id: 2135c722-279a-41f1-86b8-3a91d3351cc3
       version: -1
       name: Install Marketplace Packs
+      description: Install Marketplace Packs
       type: title
       iscommand: false
       brand: ""
@@ -415,6 +419,7 @@ tasks:
       id: 0850e0e3-60e0-4a41-8339-040874f1f3ed
       version: -1
       name: Configure Lists
+      descrpition: Configure the lists
       type: title
       iscommand: false
       brand: ""
@@ -444,6 +449,7 @@ tasks:
       id: 63d6392e-96a5-4aeb-8a03-ec7e9cdd1e1e
       version: -1
       name: Configure Jobs
+      description: Configure the jobs
       type: title
       iscommand: false
       brand: ""
@@ -691,6 +697,7 @@ tasks:
       id: a166e331-540f-47d2-89e9-ce4fe4f00f19
       version: -1
       name: Configurations
+      descrition: Configurations
       type: title
       iscommand: false
       brand: ""

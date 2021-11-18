@@ -640,6 +640,7 @@ def gitlab_get_raw_file_command(client: Client, args: Dict[str, Any]) -> Union[C
             - 'project_id' (Required): Project ID to get the file from.
             - 'file_path' (Required): The file path.
             - 'ref' (Required): The branch to retrieve the file from.
+            - `create_file_from_content` (Optional): bool, create file from the content data or not
 
     Returns:
         (CommandResults).
