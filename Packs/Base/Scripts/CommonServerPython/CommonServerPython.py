@@ -8002,7 +8002,6 @@ class IndicatorsSearcher:
                                                 value=self._value)
         fetched_len = len(res.get('iocs') or [])
         if fetched_len == 0:
-            self._total_iocs_fetched = self.limit
             raise StopIteration
         self._total_iocs_fetched += fetched_len
         return res
