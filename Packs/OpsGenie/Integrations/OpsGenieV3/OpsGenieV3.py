@@ -77,7 +77,8 @@ class Client(BaseClient):
         return data
 
     @staticmethod
-    def responders_to_json(responders: list, responder_key: str, one_is_dict: bool = False) -> dict:
+    def responders_to_json(responders: List, responder_key: str, one_is_dict: bool = False) \
+            -> Dict[str, List[Dict] or Dict]:
         """
         :param responders: the responders list which we get from demisto.args()
         :param responder_key: Some of the api calls need "responder" and others "responders" as a
@@ -86,6 +87,9 @@ class Client(BaseClient):
         and others as a list
         :return json_responders: reformatted respondres dict
         """
+        if not responders:
+            print("NOTICE: Didn't get any responders")
+            return {}
         if len(responders) % 3 != 0:
             raise DemistoException("responders must be list of: responder_type, value_type, value")
         responders_triple = list(zip(responders[::3], responders[1::3], responders[2::3]))
@@ -99,7 +103,7 @@ class Client(BaseClient):
         return json_responders
 
     def create_alert(self, args: dict):
-        args.update(Client.responders_to_json(args.get('responders'), "responders"))
+        args.update(Client.responders_to_json(args.get('responders', []), "responders"))
         return self._http_request(method='POST',
                                   url_suffix=f"/v2/{ALERTS_SUFFIX}",
                                   json_data=args)
@@ -147,7 +151,9 @@ class Client(BaseClient):
     def add_responder_alert(self, args: dict):
         alert_id = args.get('alert-id')
         identifier = args.get('identifierType', 'id')
-        args.update(Client.responders_to_json(args.get('responders'), "responder", one_is_dict=True))
+        args.update(Client.responders_to_json(responders=args.get('responders', []),
+                                              responder_key="responder",
+                                              one_is_dict=True))
         return self._http_request(method='POST',
                                   url_suffix=f"/v2/{ALERTS_SUFFIX}/{alert_id}/responders",
                                   params={"identifierType": identifier},
@@ -234,7 +240,7 @@ class Client(BaseClient):
                                   )
 
     def create_incident(self, args: dict):
-        args.update(Client.responders_to_json(args.get('responders'), "responders"))
+        args.update(Client.responders_to_json(args.get('responders', []), "responders"))
         return self._http_request(method='POST',
                                   url_suffix=f"/v1/{INCIDENTS_SUFFIX}/create",
                                   json_data=args)
@@ -275,7 +281,7 @@ class Client(BaseClient):
                                   json_data=args)
 
     def add_responder_incident(self, args: dict):
-        args.update(Client.responders_to_json(args.get('responders'), "responder"))
+        args.update(Client.responders_to_json(args.get('responders', []), "responder"))
         return self._http_request(method='POST',
                                   url_suffix=f"/v1/{INCIDENTS_SUFFIX}/"
                                              f"{args.get('incident_id')}/responders",
