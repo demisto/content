@@ -7935,7 +7935,7 @@ class TableOrListWidget(BaseWidget):
 class IndicatorsSearcher:
     """Used in order to search indicators by the paging or serachAfter param
     :type page: ``int``
-    :param page: the number of page from which we start search indicators from. (will be updated via iter)
+    :param page: the number of page from which we start search indicators from.
 
     :type filter_fields: ``Optional[str]``
     :param filter_fields: comma separated fields to filter (e.g. "value,type")
@@ -7946,9 +7946,6 @@ class IndicatorsSearcher:
     :type query: ``Optional[str]``
     :param query: indicator search query
 
-    :type size: ``int``
-    :param size: limit the number of returned results.
-
     :type to_date: ``Optional[str]``
     :param to_date: the end date to search until to.
 
@@ -7956,7 +7953,7 @@ class IndicatorsSearcher:
     :param value: the indicator value to search.
 
     :type limit: ``Optional[int]``
-    :param limit: the current upper limit of the search (will be updated per iteration)
+    :param limit: the current upper limit of the search (can be updated after init)
 
     :return: No data returned
     :rtype: ``None``
