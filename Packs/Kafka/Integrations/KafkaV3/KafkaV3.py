@@ -64,8 +64,10 @@ class KafkaCommunicator:
                               'enable.auto.commit': enable_auto_commit}
 
         if trust_any_cert:
-            self.conf_consumer.update({'enable.ssl.certificate.verification': False})  # type: ignore
-            self.conf_producer.update({'enable.ssl.certificate.verification': False})  # type: ignore
+            self.conf_consumer.update({'ssl.endpoint.identification.algorithm': 'none',
+                                       'enable.ssl.certificate.verification': False})  # type: ignore
+            self.conf_producer.update({'ssl.endpoint.identification.algorithm': 'none',
+                                       'enable.ssl.certificate.verification': False})  # type: ignore
 
         if message_max_bytes:
             self.conf_consumer.update({'message.max.bytes': int(message_max_bytes)})
