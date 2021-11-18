@@ -1,4 +1,6 @@
-from FeedLivehunt import Client, fetch_indicators_command
+import demistomock as demisto
+from FeedLivehunt import Client, fetch_indicators_command, get_indicators_command, main
+from unittest.mock import call
 
 MOCK_VT_RESPONSE = {
     "data": [
@@ -164,3 +166,86 @@ def test_fetch_indicators_command(mocker):
     assert fields['displayname'] == '6a650da84adf6e3356227cc8890a9ee7.virus'
     assert fields['name'] == '6a650da84adf6e3356227cc8890a9ee7.virus'
     assert fields['size'] == 3723264
+
+
+def test_get_indicators_command(mocker):
+    client = Client('https://fake')
+    mocker.patch.object(
+        client,
+        'list_notifications_files',
+        return_value=MOCK_VT_RESPONSE
+    )
+
+    params = {
+        'tlp_color': None,
+        'feedTags': [],
+    }
+
+    args = {
+        'limit': 1,
+        'filter': None,
+    }
+
+    result = get_indicators_command(client, params, args)
+
+    assert len(result.raw_response) == 1
+
+
+def test_main_manual_command(mocker):
+    params = {
+        'tlp_color': None,
+        'feedTags': [],
+        'credentials': {'password': 'xxx'},
+    }
+
+    args = {
+        'limit': 7,
+        'filter': 'Wannacry',
+    }
+
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'command', return_value='vt-livehunt-get-indicators')
+    mocker.patch.object(demisto, 'args', return_value=args)
+    list_notifications_files_mock = mocker.patch.object(Client,
+                                                        'list_notifications_files',
+                                                        return_value=MOCK_VT_RESPONSE)
+
+    main()
+
+    assert list_notifications_files_mock.call_args == call(7, 'Wannacry')
+
+
+def test_main_default_command(mocker):
+    params = {
+        'tlp_color': None,
+        'feedTags': [],
+        'credentials': {'password': 'xxx'},
+        'limit': 7,
+        'filter': 'Wannacry',
+    }
+
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'command', return_value='fetch-indicators')
+    list_notifications_files_mock = mocker.patch.object(Client,
+                                                        'list_notifications_files',
+                                                        return_value=MOCK_VT_RESPONSE)
+
+    main()
+
+    assert list_notifications_files_mock.call_args == call(7, 'Wannacry')
+
+
+def test_main_test_command(mocker):
+    params = {
+        'credentials': {'password': 'xxx'}
+    }
+
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    list_notifications_files_mock = mocker.patch.object(Client,
+                                                        'list_notifications_files',
+                                                        return_value=MOCK_VT_RESPONSE)
+
+    main()
+
+    assert list_notifications_files_mock.call_count == 1
