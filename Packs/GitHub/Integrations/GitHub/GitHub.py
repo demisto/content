@@ -1247,8 +1247,8 @@ def list_all_projects_command():
         else:
             projects_obj.append(get_project_details(project=proj, header=header))
 
-    human_readable_projects = [{'Name': proj['Name'], 'ID': proj['ID'], 'Number': proj['Number'], 'Columns':
-        [column for column in proj['Columns']]} for proj in projects_obj]
+    human_readable_projects = [{'Name': proj['Name'], 'ID': proj['ID'], 'Number': proj['Number'],
+                                'Columns': [column for column in proj['Columns']]} for proj in projects_obj]
 
     if projects_obj:
         human_readable = tableToMarkdown('Projects:', t=human_readable_projects, headers=PROJECT_HEADERS,
