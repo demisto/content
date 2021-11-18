@@ -292,6 +292,14 @@ def test_releases_list_command(requests_mock, mocker):
 
 
 def test_get_branch(requests_mock, mocker):
+    """
+    Given:
+        A branch name that does not have an author or parents
+    When:
+        Running the get_branch_command function.
+    Then:
+        Assert that the flow succeeded and that the output is as expected
+    """
     mocker.patch.object(demisto, 'args', return_value={'branch_name': 'my-branch'})
     GitHub.TOKEN, GitHub.USE_SSL = '', ''
     GitHub.HEADERS = dict()
