@@ -631,7 +631,7 @@ def gitlab_group_projects_list_command(client: Client, args: Dict[str, Any]) -> 
     )
 
 
-def gitlab_get_raw_file_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def gitlab_get_raw_file_command(client: Client, args: Dict[str, Any]) -> Union[CommandResults, Dict]:
     """
     Returns the content of a given file.
     Args:
@@ -647,9 +647,14 @@ def gitlab_get_raw_file_command(client: Client, args: Dict[str, Any]) -> Command
     project_id = args.get('project_id', '')
     ref = args.get('ref', '')
     file_path = args.get('file_path', '')
+    create_file_from_content = argToBoolean(args.get('create_file_from_content', False))
     response = client.get_raw_file_request(project_id, file_path, ref)
     outputs = {'path': file_path, 'content': response, 'ref': ref}
     human_readable = tableToMarkdown(f'Raw file {file_path} on branch {ref}', outputs)
+    if create_file_from_content:
+        file_name = file_path.split('/')[-1]
+        return fileResult(filename=file_name, data=response, file_type=EntryType.ENTRY_INFO_FILE)
+
     return CommandResults(
         outputs_prefix='GitLab.File',
         outputs_key_field=['path', 'ref'],

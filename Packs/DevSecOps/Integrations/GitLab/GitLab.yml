@@ -1035,6 +1035,12 @@ script:
         name: ref
         required: true
         secret: false
+      - default: false
+        description: If create file from content
+        isArray: false
+        name: create_file_from_content
+        required: false
+        secret: false
     description: Get raw file
     name: gitlab-raw-file-get
     outputs:
