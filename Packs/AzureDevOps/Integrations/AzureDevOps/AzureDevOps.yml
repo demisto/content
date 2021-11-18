@@ -1,4 +1,4 @@
-category: IT Services
+category: Utilities
 commonfields:
   id: AzureDevOps
   version: -1
@@ -128,7 +128,7 @@ script:
     - default: false
       defaultValue: '30'
       description: Indicates how long to wait between commands execution (in seconds)
-        when 'polling' argument is true. Default is 10 seconds,  minimum is 10 seconds.
+        when 'polling' argument is true. Minimum value is 10 seconds.
       isArray: false
       name: interval
       required: false
@@ -136,7 +136,6 @@ script:
     - default: false
       defaultValue: '60'
       description: Indicates the time in seconds until the polling sequence timeouts.
-        Default is 60 seconds.
       isArray: false
       name: timeout
       required: false
@@ -181,7 +180,7 @@ script:
     - contextPath: AzureDevOps.Project.Pipeline.Run.url
       description: The URL of the run.
       type: String
-    - contextPath: AzureDevOps.Project.Pipeline.Run.id
+    - contextPath: AzureDevOps.Project.Pipeline.Run.run_id
       description: The ID of the run.
       type: Number
     - contextPath: AzureDevOps.Project.Pipeline.Run.name
@@ -250,7 +249,7 @@ script:
       type: Date
   - arguments:
     - default: false
-      description: The ID of the user to remove from the organization.
+      description: The ID of the user to remove from the organization. A user ID can be obtained by running the 'azure-devops-user-list' command.
       isArray: false
       name: user_id
       required: true
@@ -267,7 +266,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The repository ID of the pull request's target branch.
+      description: The repository ID of the pull request's target branch. A repository ID can be obtained by running the 'azure-devops-repository-list'.
       isArray: false
       name: repository_id
       required: true
@@ -297,8 +296,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Comma-separated list of the pull request reviewers IDs.
-      isArray: false
+      description: Comma-separated list of the pull request reviewers IDs. A reviewer ID can be obtained by running the 'azure-devops-user-list' command.
+      isArray: true
       name: reviewers_ids
       required: true
       secret: false
@@ -403,7 +402,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The repository ID of the pull request's target branch.
+      description: The repository ID of the pull request's target branch. A repository ID can be obtained by running the 'azure-devops-repository-list' command.
       isArray: false
       name: repository_id
       required: true
@@ -541,15 +540,14 @@ script:
       secret: false
     - default: false
       defaultValue: '1'
-      description: The page number of the results to retrieve. Default is 1, minimum
-        is 1.
+      description: The page number of the results to retrieve. Minimum value is 1.
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
       defaultValue: '50'
-      description: The number of results to retrieve. Default is 50, minimum is 1.
+      description: The number of results to retrieve. Minimum  value is 1.
       isArray: false
       name: limit
       required: false
@@ -642,15 +640,14 @@ script:
   - arguments:
     - default: false
       defaultValue: '1'
-      description: The page number of the results to retrieve. Default is 1, minimum
-        is 1.
+      description: The page number of the results to retrieve. Minimum value is 1.
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
       defaultValue: '50'
-      description: The number of results to retrieve. Default is 50, minimum is 1.
+      description: The number of results to retrieve. Minimum value is 1.
       isArray: false
       name: limit
       required: false
@@ -688,15 +685,14 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The number of results to retrieve. Default is 50, minimum is 1.
+      description: The number of results to retrieve. Minimum value is 1.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       defaultValue: '1'
-      description: The page number of the results to retrieve. Default is 1, minimum
-        is 1.
+      description: The page number of the results to retrieve. Minimum value is 1.
       isArray: false
       name: page
       required: false
@@ -730,8 +726,24 @@ script:
       name: query
       required: true
       secret: false
+    - default: false
+      defaultValue: '1'
+      description: The page number of the results to retrieve. Minimum value is 1.
+      isArray: false
+      name: page
+      predefined:
+      - ''
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The number of results to retrieve. Minimum value is 1.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
     deprecated: false
-    description: Query users  in the organization.
+    description: Query users that were added to organization projects.
     execution: false
     name: azure-devops-user-list
     outputs:
@@ -752,7 +764,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The repository ID of the pull request's target branch.
+      description: The repository ID of the pull request's target branch. A repository ID can be obtained by running the 'azure-devops-repository-list'.
       isArray: false
       name: repository_id
       required: true
@@ -876,7 +888,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Retrieve pipeline run information.
+    description: Retrieve a pipeline run information.
     execution: false
     name: azure-devops-pipeline-run-get
     outputs:
@@ -904,7 +916,7 @@ script:
     - contextPath: AzureDevOps.Project.Pipeline.Run.url
       description: The URL of the run.
       type: String
-    - contextPath: AzureDevOps.Project.Pipeline.Run.id
+    - contextPath: AzureDevOps.Project.Pipeline.Run.run_id
       description: The ID of the run.
       type: Number
     - contextPath: AzureDevOps.Project.Pipeline.Run.name
@@ -923,15 +935,14 @@ script:
       secret: false
     - default: false
       defaultValue: '1'
-      description: The page number of the results to retrieve. Default is 1, minimum
-        is 1.
+      description: The page number of the results to retrieve. Minimum value is 1.
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
       defaultValue: '50'
-      description: The number of results to retrieve. Default is 50, minimum is 1.
+      description: The number of results to retrieve. Minimum value is 1.
       isArray: false
       name: limit
       required: false
@@ -972,7 +983,7 @@ script:
     - contextPath: AzureDevOps.Project.Pipeline.Run.url
       description: The URL of the run.
       type: String
-    - contextPath: AzureDevOps.Project.Pipeline.Run.id
+    - contextPath: AzureDevOps.Project.Pipeline.Run.run_id
       description: The ID of the run.
       type: Number
     - contextPath: AzureDevOps.Project.Pipeline.Run.name
@@ -991,15 +1002,14 @@ script:
       secret: false
     - default: false
       defaultValue: '1'
-      description: The page number of the results to retrieve. Default is 1, minimum
-        is 1.
+      description: The page number of the results to retrieve. Minimum value is 1.
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
       defaultValue: '50'
-      description: The number of results to retrieve. Default is 50, minimum is 1.
+      description: The number of results to retrieve. Minimum value is 1.
       isArray: false
       name: limit
       required: false
@@ -1039,15 +1049,14 @@ script:
       secret: false
     - default: false
       defaultValue: '1'
-      description: The page number of the results to retrieve. Default is 1, minimum
-        is 1.
+      description: The page number of the results to retrieve. Minimum value is 1.
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
       defaultValue: '50'
-      description: The number of results to retrieve. Default is 50, minimum is 1.
+      description: The number of results to retrieve. Minimum value is 1.
       isArray: false
       name: limit
       required: false

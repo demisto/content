@@ -6,9 +6,13 @@ import copy
 from requests import Response
 from typing import Callable
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 INCIDENT_TYPE_NAME = "Azure DevOps"
-OUTGOING_MIRRORED_FIELDS = ['status', 'title', 'description', 'project', 'repository_id', 'pull_request_id']
+OUTGOING_MIRRORED_FIELDS = {'status': 'The status of the pull request.',
+                            'title': 'The title of the pull request.',
+                            'description': 'The description of the pull request.',
+                            'project': 'The name of the project.',
+                            'repository_id': 'The repository ID of the pull request target branch.',
+                            'pull_request_id': 'the ID of the pull request'}
 
 
 class Client:
@@ -294,7 +298,6 @@ class Client:
         url_suffix = '_apis/IdentityPicker/Identities'
 
         data = {"query": query, "identityTypes": ["user", "group"], "operationScopes": ["ims", "source"],
-                "options": {"MinResults": 5, "MaxResults": 40},
                 "properties": ["DisplayName", "IsMru", "ScopeName", "SamAccountName", "Active", "SubjectDescriptor",
                                "Department", "JobTitle", "Mail", "MailNickname", "PhysicalDeliveryOfficeName",
                                "SignInAddress", "Surname", "Guest", "TelephoneNumber", "Manager", "Description"]}
@@ -418,14 +421,12 @@ def generate_pipeline_run_output(response: dict, project: str) -> dict:
         dict: XSOAR command outputs.
 
     """
-    str_time = response.get('createdDate')
-    str_time = str_time[:-2] + 'Z'
-    creation_date = FormatIso8601(datetime.strptime(str_time, DATE_FORMAT))
+    creation_date = FormatIso8601(arg_to_datetime(response.get('createdDate')))
 
     run_data = {"state": response.get('state'),
                 "createdDate": creation_date,
                 "url": response.get('url'),
-                "id": response.get('id'),
+                "run_id": response.get('id'),
                 "name": response.get('name'),
                 "result": response.get('result', 'unknown')
                 }
@@ -452,9 +453,7 @@ def filter_pipeline_run_table(run: dict) -> dict:
         dict: Filtered pipeline-run information.
 
     """
-    str_time = run.get('createdDate')
-    str_time = str_time[:-2] + 'Z'
-    creation_date = FormatIso8601(datetime.strptime(str_time, DATE_FORMAT))
+    creation_date = FormatIso8601(arg_to_datetime(run.get('createdDate')))
 
     return {
         "pipeline_id": dict_safe_get(run, ['pipeline', 'id']),
@@ -465,25 +464,25 @@ def filter_pipeline_run_table(run: dict) -> dict:
     }
 
 
-def generate_pipeline_run_readable_information(response: dict, is_multiple_response: bool = False,
+def generate_pipeline_run_readable_information(response: Union[dict, list],
                                                message: str = "Pipeline Run Information:") -> str:
     """
     Create XSOAR readable output for retrieving pipe-line information.
     Args:
-        response (dict): API response from Azure.
-        is_multiple_response (bool): Indicates if the response object contains multiple pull requests.
+        response (dict/list): API response from Azure.
         message (str): XSOAR readable outputs table message.
 
     Returns:
         str: XSOAR readable outputs.
 
     """
-    if not is_multiple_response:
-        readable_table = filter_pipeline_run_table(response)
-    else:
-        readable_table = []
-        for run in response:
-            readable_table.append(filter_pipeline_run_table(run))
+
+    if not isinstance(response, list):
+        response = [response]
+
+    readable_table = []
+    for run in response:
+        readable_table.append(filter_pipeline_run_table(run))
 
     readable_output = tableToMarkdown(
         message,
@@ -547,7 +546,7 @@ def user_add_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     if not dict_safe_get(response, ['operationResult', 'isSuccess']):
         error = dict_safe_get(response, ['operationResult', 'errors'])
         if not isinstance(error, list) or not error:
-            raise ValueError('Error occurred')
+            raise ValueError('Error occurred. API response is not in the appropriate format.')
 
         error_message = error[0].get('value')
         raise ValueError(error_message)
@@ -592,7 +591,7 @@ def user_remove_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     client.user_remove_request(user_id)
 
-    readable_output = 'The User successfully removed from the organization.'
+    readable_output = f'User {user_id} was successfully removed from the organization.'
     command_results = CommandResults(
         readable_output=readable_output
     )
@@ -622,9 +621,7 @@ def generate_pull_request_output(response: dict) -> dict:
     pr_id = response.get('pullRequestId')
     status = response.get('status')
 
-    str_time = response.get('creationDate')
-    str_time = str_time[:-2] + 'Z'
-    creation_date = FormatIso8601(datetime.strptime(str_time, DATE_FORMAT))
+    creation_date = FormatIso8601(arg_to_datetime(response.get('creationDate')))
     title = response.get('title')
     description = response.get('description')
     source = response.get('sourceRefName')
@@ -683,9 +680,7 @@ def filter_pull_request_table(pull_request: dict) -> dict:
 
     """
 
-    str_time = pull_request.get('creationDate')
-    str_time = str_time[:-2] + 'Z'
-    creation_date = FormatIso8601(datetime.strptime(str_time, DATE_FORMAT))
+    creation_date = FormatIso8601(arg_to_datetime(pull_request.get('creationDate')))
 
     return {
         "repository_id": dict_safe_get(pull_request, ['repository', 'id']),
@@ -701,13 +696,12 @@ def filter_pull_request_table(pull_request: dict) -> dict:
     }
 
 
-def generate_pull_request_readable_information(response: dict, is_multiple_response: bool = False,
+def generate_pull_request_readable_information(response: Union[dict, list],
                                                message: str = "Pull Request Information:") -> str:
     """
     Create XSOAR readable output for retrieving pull-request information.
     Args:
-        response (dict): API response from Azure.
-        is_multiple_response (bool): Indicates if the response object contains multiple pull requests.
+        response (dict/list): API response from Azure.
         message (str): XSOAR readable outputs table message.
 
     Returns:
@@ -715,12 +709,12 @@ def generate_pull_request_readable_information(response: dict, is_multiple_respo
 
     """
 
-    if not is_multiple_response:
-        readable_table = filter_pull_request_table(response)
-    else:
-        readable_table = []
-        for pr in response:
-            readable_table.append(filter_pull_request_table(pr))
+    if not isinstance(response, list):
+        response = [response]
+
+    readable_table = []
+    for pr in response:
+        readable_table.append(filter_pull_request_table(pr))
 
     readable_output = tableToMarkdown(
         message,
@@ -862,8 +856,8 @@ def pull_requests_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     """
     project = args['project']
     repository = args['repository']
-    page = int(arg_to_number(args.get('page') or '1'))
-    limit = int(arg_to_number(args.get('limit') or '50'))
+    page = arg_to_number(args.get('page') or '1')
+    limit = arg_to_number(args.get('limit') or '50')
 
     if page < 1 or limit < 1:
         raise Exception('Page and limit arguments must be greater than 1.')
@@ -881,13 +875,12 @@ def pull_requests_list_command(client: Client, args: Dict[str, Any]) -> CommandR
         pr_data = data["Repository"].pop("PullRequest")
 
         if not dict_safe_get(outputs, ["Repository", "id"]):
-            outputs = {"name": data["name"], "Repository": data["Repository"]}
+            outputs = {"name": data.get("name"), "Repository": data.get("Repository")}
             outputs["Repository"]["PullRequest"] = []
 
         outputs["Repository"]["PullRequest"].append(pr_data)
 
-    readable_output = generate_pull_request_readable_information(response.get('value'), is_multiple_response=True,
-                                                                 message=readable_message)
+    readable_output = generate_pull_request_readable_information(response.get('value'), message=readable_message)
 
     command_results = CommandResults(
         readable_output=readable_output,
@@ -911,8 +904,8 @@ def project_list_command(client: Client, args: Dict[str, Any]) -> CommandResults
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    page = int(arg_to_number(args.get('page') or '1'))
-    limit = int(arg_to_number(args.get('limit') or '50'))
+    page = arg_to_number(args.get('page') or '1')
+    limit = arg_to_number(args.get('limit') or '50')
 
     if page < 1 or limit < 1:
         raise Exception('Page and limit arguments must be greater than 1.')
@@ -926,9 +919,7 @@ def project_list_command(client: Client, args: Dict[str, Any]) -> CommandResults
 
     for project in response.get('value', []):
         data = {key: project.get(key) for key in output_headers}
-        str_time = data.get('lastUpdateTime')
-        if str_time.endswith('Z'):
-            data['lastUpdateTime'] = FormatIso8601(datetime.strptime(str_time, DATE_FORMAT))
+        data['lastUpdateTime'] = FormatIso8601(arg_to_datetime(data.get('lastUpdateTime')))
 
         outputs.append(data)
 
@@ -963,8 +954,8 @@ def repository_list_command(client: Client, args: Dict[str, Any]) -> CommandResu
     """
     project = args['project']
 
-    page = int(arg_to_number(args.get('page') or '1'))
-    limit = int(arg_to_number(args.get('limit') or '50'))
+    page = arg_to_number(args.get('page') or '1')
+    limit = arg_to_number(args.get('limit') or '50')
 
     if page < 1 or limit < 1:
         raise Exception('Page and limit arguments must be greater than 1.')
@@ -1020,6 +1011,16 @@ def users_query_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     """
     query = args['query']
+    page = arg_to_number(args.get('page') or '1')
+    limit = arg_to_number(args.get('limit') or '50')
+
+    if page < 1 or limit < 1:
+        raise Exception('Page and limit arguments must be greater than 1.')
+
+    start = (page - 1) * limit
+    end = start + limit
+
+    readable_message = f'Users List:\n Current page size: {limit}\n Showing page {page} out others that may exist.'
 
     response = client.users_query_request(query)
 
@@ -1027,14 +1028,15 @@ def users_query_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     results = response.get('results')
     if results and len(results) > 0:
         identities = results[0].get('identities')
-
-        for identity in identities:
-            if identity.get("localDirectory") == "vsd":
-                outputs.append({"entityType": identity.get("entityType"), "id": identity.get("localId"),
-                                "email": identity.get("signInAddress")})
+        if len(identities) >= start:
+            min_index = min(len(identities), end)
+            for identity in identities[start:min_index]:
+                if identity.get("localDirectory") == "vsd":
+                    outputs.append({"entityType": identity.get("entityType"), "id": identity.get("localId"),
+                                    "email": identity.get("signInAddress")})
 
     readable_output = tableToMarkdown(
-        "Users list:",
+        readable_message,
         outputs,
         headers=['email', 'entityType', 'id'],
         headerTransform=pascalToSpace
@@ -1096,8 +1098,8 @@ def pipeline_run_list_command(client: Client, args: Dict[str, Any]) -> CommandRe
     project = args['project']
     pipeline_id = args['pipeline_id']
 
-    page = int(arg_to_number(args.get('page') or '1'))
-    limit = int(arg_to_number(args.get('limit') or '50'))
+    page = arg_to_number(args.get('page') or '1')
+    limit = arg_to_number(args.get('limit') or '50')
 
     if page < 1 or limit < 1:
         raise Exception('Page and limit arguments must be greater than 1.')
@@ -1117,7 +1119,6 @@ def pipeline_run_list_command(client: Client, args: Dict[str, Any]) -> CommandRe
             outputs["Pipeline"].append(data.get("Pipeline"))
 
         readable_output = generate_pipeline_run_readable_information(response.get('value')[start:min_index],
-                                                                     is_multiple_response=True,
                                                                      message=readable_message)
 
     command_results = CommandResults(
@@ -1163,8 +1164,8 @@ def pipeline_list_command(client: Client, args: Dict[str, Any]) -> CommandResult
 
     project = args['project']
 
-    page = int(arg_to_number(args.get('page') or '1'))
-    limit = int(arg_to_number(args.get('limit') or '50'))
+    page = arg_to_number(args.get('page') or '1')
+    limit = arg_to_number(args.get('limit') or '50')
     readable_message = f'Pipelines List:\n Current page size: {limit}\n Showing page {page} out others that may exist.'
 
     if page < 1 or limit < 1:
@@ -1198,7 +1199,7 @@ def pipeline_list_command(client: Client, args: Dict[str, Any]) -> CommandResult
 
     readable_output = tableToMarkdown(
         readable_message,
-        outputs["Pipeline"],
+        outputs.get("Pipeline"),
         headers=['id', 'name', 'revision', 'folder'],
         headerTransform=string_to_table_header
     )
@@ -1226,8 +1227,8 @@ def branch_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     project = args['project']
     repository = args['repository']
 
-    page = int(arg_to_number(args.get('page') or '1'))
-    limit = int(arg_to_number(args.get('limit') or '50'))
+    page = arg_to_number(args.get('page') or '1')
+    limit = arg_to_number(args.get('limit') or '50')
     readable_message = f'Branches List:\n Current page size: {limit}\n Showing page {page} out others that may exist.'
 
     if page < 1 or limit < 1:
@@ -1259,7 +1260,7 @@ def branch_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     readable_output = tableToMarkdown(
         readable_message,
-        outputs["Repository"]["Branch"],
+        dict_safe_get(outputs, ["Repository", "Branch"]),
         headers=['name', 'creator'],
         headerTransform=string_to_table_header
     )
@@ -1311,28 +1312,26 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
     remote_args = UpdateRemoteSystemArgs(args)
 
     if remote_args.delta:
-        demisto.info(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update Azure DevOps '
-                     f'incident {remote_args.remote_incident_id}')
+        demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update Azure DevOps '
+                      f'incident {remote_args.remote_incident_id}')
     else:
-        demisto.info('There is no delta fields in Azure DevOps\n')
+        demisto.debug('There is no delta fields in Azure DevOps\n')
     try:
         if remote_args.incident_changed:
             update_args = get_update_args(remote_args.delta, remote_args.data)
-
-            demisto.info(f'Sending incident with remote ID [{remote_args.remote_incident_id}] to Azure DevOps\n')
+            demisto.debug(f'Sending incident with remote ID [{remote_args.remote_incident_id}] to Azure DevOps\n')
             pull_request_update_command(client, update_args)
 
         else:
-            demisto.info(f'Skipping updating remote incident fields [{remote_args.remote_incident_id}] '
-                         f'as it is not new nor changed')
-
-        return remote_args.remote_incident_id
+            demisto.debug(f'Skipping updating remote incident fields [{remote_args.remote_incident_id}] '
+                          f'as it is not new nor changed')
 
     except Exception as e:
         demisto.info(f"Error in Azure DevOps outgoing mirror for incident {remote_args.remote_incident_id} \n"
                      f"Error message: {str(e)}")
 
-    return remote_args.remote_incident_id
+    finally:
+        return remote_args.remote_incident_id
 
 
 def get_mapping_fields_command() -> GetMappingFieldsResponse:
@@ -1344,8 +1343,8 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
 
     demisto.debug(f'Collecting incident mapping for incident type - "{INCIDENT_TYPE_NAME}"')
 
-    for field in OUTGOING_MIRRORED_FIELDS:
-        incident_type_scheme.add_field(field)
+    for argument, description in OUTGOING_MIRRORED_FIELDS.items():
+        incident_type_scheme.add_field(name=argument, description=description)
 
     mapping_response = GetMappingFieldsResponse()
 
@@ -1369,8 +1368,8 @@ def complete_auth(client) -> str:
 def test_connection(client) -> str:
     try:
         client.ms_client.get_access_token()
-    except Exception:
-        return 'Authorization Error'
+    except Exception as err:
+        return f'Authorization Error: \n{err}'
     return 'Success!'
 
 
@@ -1526,7 +1525,10 @@ def is_new_pr(project: str, repository: str, client: Client, last_id: int) -> bo
 
     """
     response = client.pull_requests_list_request(project, repository, skip=0, limit=1)
-    if response.get("count") == 0 or response.get('value')[0].get('pullRequestId') <= last_id:
+    num_prs = response.get("count", 0)
+    last_pr_id = response.get('value')[0].get('pullRequestId', 0) if len(response.get('value')) > 0 else None
+    if num_prs == 0 or last_pr_id <= last_id:
+        demisto.debug(f'Number of PRs is: {num_prs}. Last fetched PR id: {last_pr_id}')
         return False
 
     return True
@@ -1602,14 +1604,14 @@ def run_pipeline_with_polling_command(client: Client, args: Dict[str, Any]) -> C
 
     """
     ScheduledCommand.raise_error_if_not_supported()
-    interval = int(args.get('interval', 30))
-    timeout = int(args.get('timeout', 60))
+    interval = arg_to_number(args.get('interval', 30))
+    timeout = arg_to_number(args.get('timeout', 60))
 
     if 'run_id' not in args:
         # create new pipeline-run.
         command_results = pipeline_run_command(client, args)
         outputs = command_results.outputs
-        run_id = dict_safe_get(outputs, ['Pipeline', 'Run', 'id'])
+        run_id = dict_safe_get(outputs, ['Pipeline', 'Run', 'run_id'])
 
         if dict_safe_get(outputs, ['Pipeline', 'Run', 'state']) != 'completed':
             polling_args = {
@@ -1674,40 +1676,67 @@ def main() -> None:
             verify=verify_certificate,
             proxy=proxy)
 
-        commands = {
-            'azure-devops-auth-start': start_auth,
-            'azure-devops-auth-complete': complete_auth,
-            'azure-devops-auth-test': test_connection,
-            'azure-devops-user-add': user_add_command,
-            'azure-devops-user-remove': user_remove_command,
-            'azure-devops-pull-request-create': pull_request_create_command,
-            'azure-devops-pull-request-get': pull_request_get_command,
-            'azure-devops-pull-request-update': pull_request_update_command,
-            'azure-devops-pull-request-list': pull_requests_list_command,
-            'azure-devops-project-list': project_list_command,
-            'azure-devops-repository-list': repository_list_command,
-            'azure-devops-user-list': users_query_command,
-            'azure-devops-pipeline-run-get': pipeline_run_get_command,
-            'azure-devops-pipeline-run-list': pipeline_run_list_command,
-            'azure-devops-pipeline-list': pipeline_list_command,
-            'azure-devops-branch-list': branch_list_command
-        }
+        if command == 'azure-devops-auth-start':
+            return_results(start_auth(client))
 
-        if command == 'test-module':
+        elif command == 'azure-devops-auth-complete':
+            return_results(complete_auth(client))
+
+        elif command == 'azure-devops-auth-test':
+            return_results(test_connection(client))
+
+        elif command == 'azure-devops-user-add':
+            return_results(user_add_command(client, args))
+
+        elif command == 'azure-devops-user-remove':
+            return_results(user_remove_command(client, args))
+
+        elif command == 'azure-devops-pull-request-create':
+            return_results(pull_request_create_command(client, args))
+
+        elif command == 'azure-devops-pull-request-get':
+            return_results(pull_request_get_command(client, args))
+
+        elif command == 'azure-devops-pull-request-update':
+            return_results(pull_request_update_command(client, args))
+
+        elif command == 'azure-devops-pull-request-list':
+            return_results(pull_requests_list_command(client, args))
+
+        elif command == 'azure-devops-project-list':
+            return_results(project_list_command(client, args))
+
+        elif command == 'azure-devops-repository-list':
+            return_results(repository_list_command(client, args))
+
+        elif command == 'azure-devops-user-list':
+            return_results(users_query_command(client, args))
+
+        elif command == 'azure-devops-pipeline-run-get':
+            return_results(pipeline_run_get_command(client, args))
+
+        elif command == 'azure-devops-pipeline-run-list':
+            return_results(pipeline_run_list_command(client, args))
+
+        elif command == 'azure-devops-pipeline-list':
+            return_results(pipeline_list_command(client, args))
+
+        elif command == 'azure-devops-branch-list':
+            return_results(branch_list_command(client, args))
+
+        elif command == 'test-module':
             return_results(
                 'The test module is not functional, '
                 'run the azure-devops-auth-start command instead.')
+
         elif command == 'fetch-incidents':
             integration_instance = demisto.integrationInstance()
             fetch_incidents(client, params.get('project'), params.get('repository'), integration_instance,
-                            int(params.get('max_fetch', 50)), params.get('first_pull_request_id'))
+                            arg_to_number(params.get('max_fetch', 50)), params.get('first_pull_request_id'))
+
         elif command == 'azure-devops-auth-reset':
             return_results(reset_auth())
-        elif command in commands:
-            if args:
-                return_results(commands[command](client, args))
-            else:
-                return_results(commands[command](client))
+
         elif command == 'azure-devops-pipeline-run':
             if args.get('polling') == 'True':
                 pipeline_result = run_pipeline_with_polling_command(client, args)
@@ -1715,10 +1744,13 @@ def main() -> None:
                     return_results(pipeline_result)
             else:
                 return_results(pipeline_run_command(client, args))
+
         elif command == 'get-mapping-fields':
             return_results(get_mapping_fields_command())
+
         elif command == 'update-remote-system':
             return_results(update_remote_system_command(client, args))
+
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
 

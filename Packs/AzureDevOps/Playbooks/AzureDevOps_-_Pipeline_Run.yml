@@ -1,9 +1,9 @@
-id: AzureDevOps - Pipeline Run
+id: Azure_DevOps - Pipeline Run
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
-name: AzureDevOps - Pipeline Run
-description: This playbook runs a pipeline on AzureDevOps Environment
+name: Azure_DevOps - Pipeline Run
+description: This playbook runs a pipeline on Azure DevOps Environment
 starttaskid: "0"
 tasks:
   "0":
@@ -40,7 +40,7 @@ tasks:
     task:
       id: c8c1d796-08f6-428d-8c85-71634d0db775
       version: -1
-      name: AzureDevOps Pipeline run
+      name: Azure DevOps Pipeline run
       description: Run a pipeline.
       script: '|||azure-devops-pipeline-run'
       type: regular
@@ -74,12 +74,12 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: ead107ae-7494-4860-8400-9832ef0bde43
+    taskid: e1643cd7-f017-4bec-8c1c-f3c0349df774
     type: regular
     task:
-      id: ead107ae-7494-4860-8400-9832ef0bde43
+      id: e1643cd7-f017-4bec-8c1c-f3c0349df774
       version: -1
-      name: AzureDevOps Pipeline Run Get
+      name: Azure DevOps Pipeline Run Get
       description: Retrieve pipeline run information.
       script: '|||azure-devops-pipeline-run-get'
       type: regular
@@ -98,7 +98,7 @@ tasks:
       run_id:
         complex:
           root: AzureDevOps.Project.Pipeline.Run
-          accessor: id
+          accessor: run_id
     separatecontext: false
     view: |-
       {
@@ -114,10 +114,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 27a751a6-0f0e-4e26-87dc-526abafbc9b8
+    taskid: 91e5d777-31ad-499b-86ac-e54fdfe65036
     type: playbook
     task:
-      id: 27a751a6-0f0e-4e26-87dc-526abafbc9b8
+      id: 91e5d777-31ad-499b-86ac-e54fdfe65036
       version: -1
       name: GenericPolling
       description: |-
@@ -143,7 +143,7 @@ tasks:
       Ids:
         complex:
           root: AzureDevOps.Project.Pipeline.Run
-          accessor: id
+          accessor: run_id
       Interval:
         complex:
           root: inputs.interval
@@ -155,7 +155,7 @@ tasks:
         complex:
           root: inputs.Timeout
       dt:
-        simple: AzureDevOps.Project.Pipeline.Run(val.state!=='completed' ).id
+        simple: AzureDevOps.Project.Pipeline.Run(val.state!=='completed' ).run_id
     separatecontext: true
     loop:
       iscommand: false
@@ -176,12 +176,12 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 5a5cc6a5-33b7-4874-87f0-fd2b71a53ba1
+    taskid: a6f4c5de-a79e-4fea-8c35-635111ac460b
     type: regular
     task:
-      id: 5a5cc6a5-33b7-4874-87f0-fd2b71a53ba1
+      id: a6f4c5de-a79e-4fea-8c35-635111ac460b
       version: -1
-      name: AzureDevOps pipeline run get
+      name: Azure DevOps pipeline run get
       description: Retrieve pipeline run information.
       script: '|||azure-devops-pipeline-run-get'
       type: regular
@@ -200,7 +200,7 @@ tasks:
       run_id:
         complex:
           root: AzureDevOps.Project.Pipeline.Run
-          accessor: id
+          accessor: run_id
     separatecontext: false
     view: |-
       {
