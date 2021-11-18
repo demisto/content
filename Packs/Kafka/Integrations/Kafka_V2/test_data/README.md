@@ -85,7 +85,7 @@ Generate truststore for kafka server:
 
 Generate keystore for the kafka broker:
   * Enter the password when asked (e.g. 'abcdefgh') & re-enter it
-  * When asked for the first and last name enter the KAFKA_ADVERTISED_HOST_NAME (e.g. 10.196.101.214)
+  * When asked for the first and last name enter the KAFKA_ADVERTISED_HOST_NAME (e.g. 10.133.713.371)
  
 ```keytool -keystore kafka01.keystore.jks -alias localhost -validity 365 -genkey -keyalg RSA```
 
@@ -130,7 +130,7 @@ services:
       - "9092:9092"
       - "9093:9093"
     environment:
-      KAFKA_ADVERTISED_HOST_NAME: 10.196.101.214
+      KAFKA_ADVERTISED_HOST_NAME: 10.133.713.371 # sec
       KAFKA_CREATE_TOPICS: "test:1:1"
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_LISTENERS: PLAINTEXT://:9092,SSL://:9093

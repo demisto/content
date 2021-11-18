@@ -1,6 +1,7 @@
 id: KafkaV3 Test
 version: -1
 vcShouldKeepItemLegacyProdMachine: false
+fromversion: 5.0.0
 name: KafkaV3 Test
 starttaskid: "0"
 tasks:
