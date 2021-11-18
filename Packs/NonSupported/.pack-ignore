@@ -101,7 +101,7 @@ ignore=RP104
 ignore=BA101
 
 [file:NonSupported]
-ignore=PA116
+ignore=PA116,PA129
 
 [file:integration-SecureWorks_V350.yml]
 ignore=IN126
@@ -132,6 +132,3 @@ ignore=BA108,BA109
 
 [file:script-CommonUserServer.yml]
 ignore=BA108,BA109
-
-[file:NonSupported]
-ignore=PA129
