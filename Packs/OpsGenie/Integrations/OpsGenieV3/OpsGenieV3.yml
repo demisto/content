@@ -1052,11 +1052,8 @@ script:
     - contextPath: OpsGenie.Incident.action
       description: Action of this Request
       type: String
-    - contextPath: OpsGenie.Incident.Id
-      description: Id of created Alert
-      type: String
-    - contextPath: OpsGenie.Incident.alias
-      description: Alais of created Alert
+    - contextPath: OpsGenie.Incident.incidentId
+      description: Id of created incident
       type: String
     - contextPath: OpsGenie.Incident.integrationId
       description: Integration of created Alert
@@ -1099,11 +1096,8 @@ script:
     - contextPath: OpsGenie.DeletedIncident.action
       description: Action of this Request
       type: String
-    - contextPath: OpsGenie.DeletedIncident.alertId
+    - contextPath: OpsGenie.DeletedIncident.incidnetId
       description: Id of deleted incident
-      type: String
-    - contextPath: OpsGenie.DeletedIncident.alias
-      description: Alais of deleted incident
       type: String
     - contextPath: OpsGenie.DeletedIncident.integrationId
       description: Integration of deleted incident
@@ -1147,6 +1141,7 @@ script:
     name: opsgenie-get-polling-result
     description: Inside command for polling
     polling: true
+
   - arguments:
     - default: false
       description: The ID of the incident from opsgenie
@@ -1211,19 +1206,13 @@ script:
     name: opsgenie-get-incidents
     polling: true
     outputs:
-    - contextPath: OpsGenie.Incident.acknowledged
-      description: State of Acknoweledgement
-      type: Boolean
-    - contextPath: OpsGenie.Incident.alias
-      description: Alert Alias
-      type: String
     - contextPath: OpsGenie.Incident.count
       description: Count of Alert occurences
       type: Number
     - contextPath: OpsGenie.Incident.createdAt
       description: Time alert created
       type: Date
-    - contextPath: OpsGenie.Incident.id
+    - contextPath: OpsGenie.Incident.incidentId
       description: ID of alert
       type: String
     - contextPath: OpsGenie.Incident.integration.id
@@ -1235,19 +1224,10 @@ script:
     - contextPath: OpsGenie.Incident.integration.type
       description: Type of integration
       type: String
-    - contextPath: OpsGenie.Incident.isSeen
-      description: Whether alert has been seen
-      type: Boolean
-    - contextPath: OpsGenie.Incident.lastOccurredAt
-      description: Time alert last occured
-      type: Date
     - contextPath: OpsGenie.Incident.message
       description: Alert Message
       type: String
-    - contextPath: OpsGenie.Incident.owner
-      description: Owner of Alert
-      type: String
-    - contextPath: OpsGenie.Incident.ownerTeamId
+    - contextPath: OpsGenie.Incident.ownerTeam
       description: Team ID of Owner
       type: String
     - contextPath: OpsGenie.Incident.priority
@@ -1259,20 +1239,8 @@ script:
     - contextPath: OpsGenie.Incident.responders.type
       description: Type of Responders
       type: String
-    - contextPath: OpsGenie.Incident.seen
-      description: Seen status of alert
-      type: Boolean
-    - contextPath: OpsGenie.Incident.snoozed
-      description: Whether alert has been snoozed
-      type: Boolean
-    - contextPath: OpsGenie.Incident.source
-      description: Source of Alert
-      type: String
     - contextPath: OpsGenie.Incident.status
       description: Status of Alert
-      type: String
-    - contextPath: OpsGenie.Incident.teams.id
-      description: Id of teams associated with Alert
       type: String
     - contextPath: OpsGenie.Incident.tinyId
       description: Shorter ID for alert
@@ -1280,18 +1248,6 @@ script:
     - contextPath: OpsGenie.Incident.updatedAt
       description: Last Updated time for Alert
       type: Date
-    - contextPath: OpsGenie.Incident.report.ackTime
-      description: Acknoweledgement Time of Alert
-      type: Number
-    - contextPath: OpsGenie.Incident.report.acknowledgedBy
-      description: User that Acknolwedged the alert
-      type: String
-    - contextPath: OpsGenie.Incident.report.closeTime
-      description: Time Alarm closed
-      type: Number
-    - contextPath: OpsGenie.Incident.report.closedBy
-      description: Who Closed the alarm
-      type: String
 
   - arguments:
     - default: false
@@ -1322,11 +1278,8 @@ script:
     - contextPath: OpsGenie.ClosedIncident.action
       description: Action of this Request
       type: String
-    - contextPath: OpsGenie.ClosedIncident.alertId
+    - contextPath: OpsGenie.ClosedIncident.incidentId
       description: Id of closed incident
-      type: String
-    - contextPath: OpsGenie.ClosedIncident.alias
-      description: Alais of closed incident
       type: String
     - contextPath: OpsGenie.ClosedIncident.integrationId
       description: Integration of closed incident
@@ -1376,11 +1329,8 @@ script:
     - contextPath: OpsGenie.ResolvedIncident.action
       description: Action of this Request
       type: String
-    - contextPath: OpsGenie.ResolvedIncident.alertId
+    - contextPath: OpsGenie.ResolvedIncident.incidentId
       description: Id of closed incident
-      type: String
-    - contextPath: OpsGenie.ResolvedIncident.alias
-      description: Alais of closed incident
       type: String
     - contextPath: OpsGenie.ResolvedIncident.integrationId
       description: Integration of closed incident
@@ -1437,11 +1387,8 @@ script:
     - contextPath: OpsGenie.AddResponderIncident.action
       description: Action of this Request
       type: String
-    - contextPath: OpsGenie.AddResponderIncident.alertId
+    - contextPath: OpsGenie.AddResponderIncident.incidentId
       description: ID of created Incident
-      type: String
-    - contextPath: OpsGenie.AddResponderIncident.alias
-      description: Alais of created Incident
       type: String
     - contextPath: OpsGenie.AddResponderIncident.integrationId
       description: Integration of created Incident
@@ -1497,11 +1444,8 @@ script:
     - contextPath: OpsGenie.AddTagIncident.action
       description: Action of this Request
       type: String
-    - contextPath: OpsGenie.AddTagIncident.alertId
+    - contextPath: OpsGenie.AddTagIncident.incidentId
       description: ID of added Incident
-      type: String
-    - contextPath: OpsGenie.AddTagIncident.alias
-      description: Alais of added Incident
       type: String
     - contextPath: OpsGenie.AddTagIncident.integrationId
       description: Integration of added Incident
@@ -1557,12 +1501,9 @@ script:
     - contextPath: OpsGenie.RemoveTagIncident.action
       description: Action of this Request
       type: String
-    - contextPath: OpsGenie.RemoveTagIncident.alertId
+    - contextPath: OpsGenie.RemoveTagIncident.incidentId
       description: ID of removed tag Incident
-      type: String
-    - contextPath: OpsGenie.RemoveTagIncident.alias
-      description: Alais of removed tag Incident
-      type: String
+      type: Stringx
     - contextPath: OpsGenie.RemoveTagIncident.integrationId
       description: Integration of removed tag Incident
       type: String
