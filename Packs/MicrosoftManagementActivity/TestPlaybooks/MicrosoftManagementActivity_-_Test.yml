@@ -1,7 +1,7 @@
 id: MicrosoftManagementActivity - Test
+name: MicrosoftManagementActivity - Test
 version: -1
 vcShouldKeepItemLegacyProdMachine: false
-name: MicrosoftManagementActivity - Test
 starttaskid: "0"
 tasks:
   "0":
