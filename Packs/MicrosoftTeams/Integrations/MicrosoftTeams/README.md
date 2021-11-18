@@ -545,4 +545,4 @@ You can send the message `help` in order to see the supported commands:
 
 ## Download Demisto Bot
 
-[Demisto Bot zip](https://github.com/demisto/content/raw/c00fdeee43717f3478d1471dfc547f8ca7dc09d0/Packs/MicrosoftTeams/Integrations/MicrosoftTeams/doc_files/DemistoBot.zip)
+[Demisto Bot zip](https://github.com/demisto/content/raw/2d9804da7ff94bc1243fe083f280e44602bd1738/Packs/MicrosoftTeams/Integrations/MicrosoftTeams/doc_files/DemistoBot.zip)
