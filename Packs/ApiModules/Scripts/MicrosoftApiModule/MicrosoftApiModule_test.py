@@ -298,7 +298,7 @@ def test_oproxy_use_resource(mocker):
     assert resource == mocked_post.call_args_list[0][1]['json']['resource']
 
 
-@pytest.mark.parametrize('endpoint', ['gcc-high', 'dod', 'de', 'cn'])
+@pytest.mark.parametrize('endpoint', ['com', 'gcc-high', 'dod', 'de', 'cn'])
 def test_national_endpoints(mocker, endpoint):
     """
     Given:
