@@ -614,5 +614,5 @@ outputs:
   description: Message  of the log query.
   type: string
 tests:
-- No tests (auto formatted)
+- Panorama Query Logs - Test
 fromversion: 5.0.0
