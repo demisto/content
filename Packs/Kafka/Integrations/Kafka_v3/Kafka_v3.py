@@ -36,7 +36,19 @@ class KafkaCommunicator:
     def __init__(self, brokers: str, offset: str = 'earliest', group_id: str = 'xsoar_group',
                  message_max_bytes: int = None, enable_auto_commit: bool = False, ca_cert=None,
                  client_cert=None, client_cert_key=None, ssl_password=None):
-        """Set configuration dicts for consumer and producer."""
+        """Set configuration dicts for consumer and producer.
+
+        Args:
+            brokers: The broker ips:ports to connect to.
+            offset: The offset to start consuming from.
+            group_id: The consumer group id.
+            message_max_bytes: The maximum bytes a message can have.
+            enable_auto_commit: Wether to auto commit offsets after consuming messages.
+            ca_cert: The contents of the CA certificate.
+            client_cert: The contents of the client certificate.
+            client_cert_key: The contents of the client certificate's key
+            ssl_password: The password with which the client certificate is protected by.
+        """
         self.conf_producer = {'bootstrap.servers': brokers}
 
         if offset not in SUPPORTED_GENERAL_OFFSETS:
@@ -79,6 +91,15 @@ class KafkaCommunicator:
 
     def update_conf_for_fetch(self, offset: str = 'earliest', message_max_bytes: int = None,
                               enable_auto_commit: bool = False):
+        """Update consumer configurations for fetching messages
+
+        Args:
+            offset: The general offset to start fetching from
+            message_max_bytes: The maximum message bytes to fetch
+            enable_auto_commit: Auto commit the offset when consuming messages.
+
+        Raise DemistoException if consumer was not initialized before.
+        """
         if self.conf_consumer:
             if message_max_bytes:
                 self.conf_consumer.update({'message.max.bytes': int(message_max_bytes)})
@@ -89,11 +110,10 @@ class KafkaCommunicator:
             raise DemistoException('Kafka consumer was not yet initialized.')
 
     def test_connection(self) -> str:
+        """Test getting topics with the consumer and producer configurations."""
         try:
-            # AdminClient(self.conf_producer)  # doesn't work!
             KConsumer(self.conf_consumer)
             KProducer(self.conf_producer)
-            # self.get_topics(AdminClient(self.conf_producer))
             self.get_topics(consumer=True)
             self.get_topics(consumer=False)  # Checks the KProducer
 
@@ -104,6 +124,7 @@ class KafkaCommunicator:
 
     @staticmethod
     def delivery_report(err: KafkaException, msg: Message) -> None:
+        """Callback function for producer. It is called when producer.flush() is called."""
         if err is not None:
             demisto.debug(f'Kafka v3 - Message {msg} delivery failed: {err}')
             raise DemistoException(f'Message delivery failed: {err}')
@@ -112,6 +133,13 @@ class KafkaCommunicator:
                            f'topic \'{msg.topic()}\', partition {msg.partition()}')
 
     def get_topics(self, consumer: bool = False) -> dict:
+        """Get Kafka topics
+
+        Args:
+            consumer: Whether to get topics using the consumer configuration (True) or producer configuration (False).
+
+        Return topics metadata object as described in confluent-kafka API
+        """
         if consumer:
             client = KConsumer(self.conf_consumer)
         else:
@@ -120,11 +148,24 @@ class KafkaCommunicator:
         return cluster_metadata.topics
 
     def get_partition_offsets(self, topic: str, partition: int) -> Tuple[int, int]:
+        """Get earliest and latest offsets for the specified partition in the specified topic.
+
+        Return (earliest offset, latest offset)
+        """
         kafka_consumer = KConsumer(self.conf_consumer)
         partition = TopicPartition(topic=topic, partition=partition)
         return kafka_consumer.get_watermark_offsets(partition=partition, timeout=3.0)
 
     def produce(self, topic: str, value: str, partition: Union[int, None]) -> None:
+        """Produce in to kafka
+
+        Args:
+            topic: The topic to produce to
+            value: The message/value to write
+            partition: The partition to produce to.
+
+        The delivery_report is called after production.
+        """
         kafka_producer = KProducer(self.conf_producer)
         if partition is not None:
             kafka_producer.produce(topic=topic, value=value, partition=partition,
@@ -135,6 +176,15 @@ class KafkaCommunicator:
         kafka_producer.flush()
 
     def consume(self, topic: str, partition: int = -1, offset: str = '0') -> Message:
+        """Consume a message from kafka
+
+        Args:
+            topic: The topic to consume from
+            partition: The partition to consume from
+            offset: The offset to start consuming from
+
+        Return the consumed kafka message in the confluent_kafka API's format.
+        """
         kafka_consumer = KConsumer(self.conf_consumer)
         kafka_consumer.assign(self.get_topic_partitions(topic, partition, offset, True))
         polled_msg = kafka_consumer.poll(1.0)
@@ -143,6 +193,15 @@ class KafkaCommunicator:
         return polled_msg
 
     def get_offset_for_partition(self, topic: str, partition: int, offset: Union[int, str]) -> int:
+        """Get the numerical offset from a partition of a topic
+
+        Args:
+            topic: The relavant topic
+            partition: The relevant partition
+            offset: Which offset to retrieve 'earliest'/ 'latest'
+
+        Return the numerical value of the specified offset.
+        """
         earliest_offset, oldest_offset = self.get_partition_offsets(topic=topic, partition=partition)
         offset = str(offset)
         if offset.lower() == 'earliest':
@@ -158,6 +217,16 @@ class KafkaCommunicator:
 
     def get_topic_partitions(self, topic: str, partition: Union[int, list],
                              offset: Union[str, int], consumer: bool = False) -> list:
+        """Get relevant TopicPartiton structures to specify for the consumer.
+
+        Args:
+            topic: The topic
+            partition: The partition
+            offset: The offset could be either int or 'earliest' / 'latest'
+            consumer: True to use consumer configuration when connecting to kafka False for producer configuration.
+
+        Return a list of TopicPartition objects, ready for consumer assign command.
+        """
         topic_partitions = []
         if partition != -1 and type(partition) is not list:
             offset = self.get_offset_for_partition(topic, int(partition), offset)  # type: ignore
@@ -190,13 +259,13 @@ class KafkaCommunicator:
 
 
 def create_incident(message: Message, topic: str) -> dict:
-    """
-    Creates incident
-    :param message: Kafka message to create incident from
-    :type message: :class:`pykafka.common.Message`
-    :param topic: Message's topic
-    :type topic: str
-    :return incident:
+    """Create incident from kafka's message.
+
+    Args:
+        message: Kafka message to create incident from
+        topic: Message's topic
+
+    Return incident
     """
     message_value = message.value()
     raw = {
@@ -223,7 +292,14 @@ def create_incident(message: Message, topic: str) -> dict:
 
 
 def command_test_module(kafka: KafkaCommunicator, demisto_params: dict) -> str:
-    """Test getting available topics using AdminClient
+    """Test getting available topics using consumer and producer configurations.
+    Validate the fetch parameters.
+
+    Args:
+        kafka: initialized KafkaCommunicator object to preform actions with.
+        demisto_params: The demisto parameters.
+
+    Return 'ok' if everything went well, 'Failed' otherwise
     """
     valid_fetch = True
     connection_test = kafka.test_connection()
@@ -241,8 +317,13 @@ def command_test_module(kafka: KafkaCommunicator, demisto_params: dict) -> str:
 
 
 def print_topics(kafka: KafkaCommunicator, demisto_args: dict) -> Union[CommandResults, str]:
-    """
-    Prints available topics in Broker
+    """Print available topics in Broker
+
+    Args:
+        kafka: initialized KafkaCommunicator object to preform actions with.
+        demisto_args: The demisto command arguments.
+
+    Return CommandResults withe the detailed topics, 'No topics found.' if no topics were found.
     """
     include_offsets = demisto_args.get('include_offsets', 'true') == 'true'
     kafka_topics = kafka.get_topics().values()
@@ -280,8 +361,13 @@ def print_topics(kafka: KafkaCommunicator, demisto_args: dict) -> Union[CommandR
 
 
 def produce_message(kafka: KafkaCommunicator, demisto_args: dict) -> None:
-    """
-    Producing message to kafka topic
+    """Producing message to kafka topic
+
+    Args:
+        kafka: initialized KafkaCommunicator object to preform actions with.
+        demisto_args: The demisto command arguments.
+
+    kafka.delivery_report is called when producing is done and it returns the relevant results.
     """
     topic = demisto_args.get('topic')
     value = demisto_args.get('value')
@@ -301,8 +387,13 @@ def produce_message(kafka: KafkaCommunicator, demisto_args: dict) -> None:
 
 
 def consume_message(kafka: KafkaCommunicator, demisto_args: dict) -> Union[CommandResults, str]:
-    """
-    Consuming one message from topic
+    """Consume one message from topic
+
+    Args:
+        kafka: initialized KafkaCommunicator object to preform actions with.
+        demisto_args: The demisto command arguments.
+
+    Return CommandResults with the relevant message from kafka.
     """
     topic = str(demisto_args.get('topic'))
     partition = int(demisto_args.get('partition', -1))
@@ -336,8 +427,13 @@ def consume_message(kafka: KafkaCommunicator, demisto_args: dict) -> Union[Comma
 
 
 def fetch_partitions(kafka: KafkaCommunicator, demisto_args: dict) -> CommandResults:
-    """
-    Fetching available partitions in given topic
+    """Get available partitions in a given topic
+
+    Args:
+        kafka: initialized KafkaCommunicator object to preform actions with.
+        demisto_args: The demisto command arguments.
+
+    Return CommandResults with the relevant partitions.
     """
     topic = demisto_args.get('topic')
     kafka_topics = kafka.get_topics()
@@ -360,6 +456,7 @@ def fetch_partitions(kafka: KafkaCommunicator, demisto_args: dict) -> CommandRes
 
 
 def handle_empty(value: Any, default_value: Any) -> Any:
+    """If value is empty return default_value."""
     if not value:
         return default_value
     return value
@@ -367,6 +464,17 @@ def handle_empty(value: Any, default_value: Any) -> Any:
 
 def check_params(kafka: KafkaCommunicator, topic: str, partitions: list = None,
                  offset: str = None, consumer: bool = False) -> bool:
+    """Check that partitions exist in topic and that offset matches the available ones.
+
+    Args:
+        kafka: Initialized KafkaCommunicator object to preform actions with.
+        topic: The topic
+        partitions: list of partitions
+        offset: The offset
+        consumer: consumer: Whether to get topics using the consumer's configuration (True) or producer's (False).
+
+    Return True if everything is valid, raise relevant exception otherwise.
+    """
     check_offset = False
     topics = kafka.get_topics(consumer=consumer)
     if topic not in topics.keys():
@@ -397,8 +505,11 @@ def check_params(kafka: KafkaCommunicator, topic: str, partitions: list = None,
 
 
 def fetch_incidents(kafka: KafkaCommunicator, demisto_params: dict) -> None:
-    """
-    Fetches incidents
+    """Fetch incidents as kafka messages from a specific topic.
+
+    Args:
+        kafka: initialized KafkaCommunicator object to preform actions with.
+        demisto_params: The demisto parameters.
     """
     topic = demisto_params.get('topic', '')
     partitions = handle_empty(argToList(demisto_params.get('partition', '')), -1)
