@@ -1584,7 +1584,6 @@ def build_search_kwargs(args):
 
     kwargs_normalsearch = {
         "earliest_time": time_str,
-        "exec_mode": "blocking"  # A blocking search runs synchronously, and returns a job when it's finished.
     }  # type: Dict[str,Any]
     if demisto.get(args, 'earliest_time'):
         kwargs_normalsearch['earliest_time'] = args['earliest_time']
@@ -1592,6 +1591,8 @@ def build_search_kwargs(args):
         kwargs_normalsearch['latest_time'] = args['latest_time']
     if demisto.get(args, 'app'):
         kwargs_normalsearch['app'] = args['app']
+    if not demisto.get(args, 'polling'):
+        kwargs_normalsearch['exec_mode'] = "blocking"  # A blocking search runs synchronously, and returns a job when it's finished. So it will be added just if it's not a polling command.
     return kwargs_normalsearch
 
 
@@ -1603,13 +1604,15 @@ def build_search_query(args):
     return query
 
 
-def create_entry_context(args, parsed_search_results, dbot_scores):
+def create_entry_context(args, parsed_search_results, dbot_scores, status_res):
     ec = {}
 
     if args.get('update_context', "true") == "true":
         ec['Splunk.Result'] = parsed_search_results
         if len(dbot_scores) > 0:
             ec['DBotScore'] = dbot_scores
+        if status_res:
+            ec['Splunk.JobStatus(val.SID && val.SID === obj.SID)'] = status_res.outputs
     return ec
 
 
@@ -1688,7 +1691,39 @@ def splunk_search_command(service):
 
     query = build_search_query(args)
     search_kwargs = build_search_kwargs(args)
-    search_job = service.jobs.create(query, **search_kwargs)  # type: ignore
+    job_sid = args.get("sid", None)
+    search_job = None
+
+    if not job_sid or not argToBoolean(args.get("polling", False)):
+        # create a new job to search the query.
+        search_job = service.jobs.create(query, **search_kwargs)  # type: ignore
+        job_sid = search_job["sid"]
+        args['sid'] = job_sid
+    
+    status_cmd_result = splunk_job_status(service, args)
+    status = status_cmd_result.outputs['Status']
+    if status.lower() != 'done':
+        # Job is still running, schedule the next run of the command.
+        interval_in_secs = int(args.get('interval_in_seconds', 60))
+        polling_args = {
+            "sid": job_sid,
+            "polling": True,
+            "interval_in_seconds": interval_in_secs,
+        }
+        polling_args.update(args)
+        scheduled_command = ScheduledCommand(
+            command="splunk-search",
+            next_run_in_seconds=interval_in_secs,
+            args=polling_args,
+            timeout_in_seconds=600
+        )
+        status_cmd_result.scheduled_command = scheduled_command
+        status_cmd_result.readable_output = 'Job is still running, it may take a little while...'
+        return status_cmd_result
+    else:
+        # Get the job by his SID.
+        search_job = service.job(job_sid)
+
     num_of_results_from_query = search_job["resultCount"]
 
     results_limit = float(demisto.args().get("event_limit", 100))
@@ -1711,16 +1746,14 @@ def splunk_search_command(service):
 
         results_offset += batch_size
 
-    entry_context = create_entry_context(args, total_parsed_results, dbot_scores)
+    entry_context = create_entry_context(args, total_parsed_results, dbot_scores, status_cmd_result)
     human_readable = build_search_human_readable(args, total_parsed_results)
 
-    demisto.results({
-        "Type": 1,
-        "Contents": total_parsed_results,
-        "ContentsFormat": "json",
-        "EntryContext": entry_context,
-        "HumanReadable": human_readable
-    })
+    return CommandResults(
+        outputs=entry_context,
+        raw_response=total_parsed_results,
+        readable_output=human_readable
+    )
 
 
 def splunk_job_create_command(service):
@@ -1893,8 +1926,8 @@ def splunk_edit_notable_event_command(base_url, token, auth_token, args):
         demisto.results('Splunk ES Notable events: ' + response_info.get('message'))
 
 
-def splunk_job_status(service):
-    sid = demisto.args().get('sid')
+def splunk_job_status(service, args):
+    sid = args.get('sid')
     try:
         job = service.job(sid)
     except HTTPError as error:
@@ -1908,15 +1941,13 @@ def splunk_job_status(service):
             'SID': sid,
             'Status': status
         }
-        context = {'Splunk.JobStatus(val.SID && val.SID === obj.SID)': entry_context}
         human_readable = tableToMarkdown('Splunk Job Status', entry_context)
-        demisto.results({
-            "Type": entryTypes['note'],
-            "Contents": entry_context,
-            "ContentsFormat": formats["json"],
-            "EntryContext": context,
-            "HumanReadable": human_readable
-        })
+        return CommandResults(
+            outputs=entry_context,
+            readable_output=human_readable,
+            outputs_prefix="Splunk.JobStatus",
+            outputs_key_field="SID"
+        )
 
 
 def splunk_parse_raw_command():
@@ -2214,7 +2245,7 @@ def main():
     elif command == 'splunk-reset-enriching-fetch-mechanism':
         reset_enriching_fetch_mechanism()
     elif command == 'splunk-search':
-        splunk_search_command(service)
+        return_results(splunk_search_command(service))
     elif command == 'splunk-job-create':
         splunk_job_create_command(service)
     elif command == 'splunk-results':
@@ -2230,7 +2261,7 @@ def main():
     elif command == 'splunk-submit-event-hec':
         splunk_submit_event_hec_command()
     elif command == 'splunk-job-status':
-        splunk_job_status(service)
+        return_results(splunk_job_status(service, demisto.args()))
     elif command.startswith('splunk-kv-') and service is not None:
         args = demisto.args()
         app = args.get('app_name', 'search')
