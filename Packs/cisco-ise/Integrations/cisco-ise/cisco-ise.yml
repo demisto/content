@@ -295,7 +295,7 @@ script:
       description: The policy name that was applied to the endpoint.
       type: String
   - deprecated: false
-    description: Returns all blacklisted endpoints.
+    description: Returns all block listed endpoints.
     execution: false
     name: cisco-ise-get-blacklist-endpoints
     outputs:

@@ -358,7 +358,7 @@ Returns additional data for the specified incident, for example, related alerts,
 | PaloAltoNetworksXDR.Incident.alerts.action_remote_port | Number | Remote port. |
 | PaloAltoNetworksXDR.Incident.alerts.action_external_hostname | String | External hostname. |
 | PaloAltoNetworksXDR.Incident.alerts.fw_app_id | Unknown | Firewall app id. |
-| PaloAltoNetworksXDR.Incident.alerts.is_whitelisted | String | Is the alert whitelisted. Valid values are: "Yes" "No" |
+| PaloAltoNetworksXDR.Incident.alerts.is_whitelisted | String | Is the alert on allow list. Valid values are: "Yes" "No" |
 | PaloAltoNetworksXDR.Incident.alerts.starred | Boolean | Alert starred. |
 | PaloAltoNetworksXDR.Incident.network_artifacts.type | String | Network artifact type. |
 | PaloAltoNetworksXDR.Incident.network_artifacts.network_remote_port | number | The remote port related to the artifact. |
@@ -2774,8 +2774,7 @@ Gets the full definition of a specific script in the scripts library.
 
 ### 36. xdr-blacklist-files
 ***
-Blacklists requested files which have not already been blacklisted or whitelisted.
-
+Adds requested files to block list if they are not already on block list or allow list.
 
 #### Base Command
 
@@ -2784,7 +2783,7 @@ Blacklists requested files which have not already been blacklisted or whiteliste
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hash_list | String that represents a list of hashed files you want to blacklist. Must be a valid SHA256 hash. | Required |
+| hash_list | String that represents a list of hashed files you want to add to block list. Must be a valid SHA256 hash. | Required |
 | comment | String that represents additional information regarding the action. | Optional |
 | incident_id | Allows to link the response action to the incident that triggered it. | Optional |
 
@@ -2798,7 +2797,7 @@ There is no context output for this command.
 
 ### 37. xdr-whitelist-files
 ***
-Whitelists requested files which have not already been blacklisted or whitelisted.
+Adds requested files to allow list if they are not already on block list or allow list.
 
 #### Base Command
 
@@ -2807,7 +2806,7 @@ Whitelists requested files which have not already been blacklisted or whiteliste
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hash_list | String that represents a list of hashed files you want to whitelist. Must be a valid SHA256 hash. | Required |
+| hash_list | String that represents a list of hashed files you want to add to allow  list. Must be a valid SHA256 hash. | Required |
 | comment | String that represents additional information regarding the action. | Optional |
 | incident_id | Allows to link the response action to the incident that triggered it. | Optional |
 

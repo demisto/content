@@ -31,8 +31,8 @@ This playbook does not use any commands.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| IPBlacklistMiner | The name of the IP blacklist miner in Minemeld. |  | Optional |
-| URLBlacklistMiner | The name of the URL blacklist miner in Minemeld. |  | Optional |
+| IPBlacklistMiner | The name of the IP block list miner in Minemeld. |  | Optional |
+| URLBlacklistMiner | The name of the URL block list miner in Minemeld. |  | Optional |
 | IP | Array of malicious IPs to block. | DBotScore.Indicator | Optional |
 | URL | Array of malicious URLs to block. | DBotScore.Indicator | Optional |
 | Username | Array of malicious usernames to block. | DBotScore.Indicator | Optional |

@@ -41,7 +41,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | Username | The email address of the account that was used to access the DstIP. | Optional |
 | NotifyEmail | The email addresses to notify about the incident. | Optional |
 | RemediationSLA | The remediation SLA for the "Containment, Eradication, and Recovery" stage (in minutes). | Optional |
-| IPBlacklistMiner | The name of the IP address blacklist miner in MineMeld. | Optional |
+| IPBlacklistMiner | The name of the IP address block list miner in MineMeld. | Optional |
 
 ## Playbook Outputs
 ---

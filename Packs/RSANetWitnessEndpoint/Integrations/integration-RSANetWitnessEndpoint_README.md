@@ -1271,9 +1271,9 @@
 </tbody>
 </table>
 <h3> </h3>
-<h3>6. Blacklist IP addresses</h3>
+<h3>6. Block list IP addresses</h3>
 <hr>
-<p>Add a list of IP addresses to blacklist.</p>
+<p>Add a list of IP addresses to block list.</p>
 <h5>Base Command</h5>
 <pre><code>netwitness-blacklist-ips</code></pre>
 <h5>Input</h5>
@@ -1311,7 +1311,7 @@
 }</pre>
 </div>
 <h5>Human Readable Output</h5>
-<h3>IPs Successfully Blacklisted</h3>
+<h3>IPs Successfully Block listed</h3>
 <table>
 <thead>
 <tr>
@@ -1325,9 +1325,9 @@
 </tbody>
 </table>
 <h3> </h3>
-<h3>7. Blacklist domains</h3>
+<h3>7. Block list domains</h3>
 <hr>
-<p>Add a list of domains to blacklist.</p>
+<p>Add a list of domain block list.</p>
 <h5>Base Command</h5>
 <pre><code>netwitness-blacklist-domains</code></pre>
 <h5>Input</h5>
@@ -1365,7 +1365,7 @@
 }</pre>
 </div>
 <h5>Human Readable Output</h5>
-<h3>Domains Successfully Blacklisted</h3>
+<h3>Domains Successfully Block listed</h3>
 <table>
 <thead>
 <tr>

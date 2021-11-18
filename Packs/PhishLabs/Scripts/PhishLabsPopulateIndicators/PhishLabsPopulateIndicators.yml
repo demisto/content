@@ -15,7 +15,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'false'
-  description: If true, the indicators that were updated to be false positive will be whitelisted in Demisto. No new indicators will be created.
+  description: If true, the indicators that were updated to be false positive will be added to allow list in Demisto. No new indicators will be created.
   isArray: false
   name: delete_false_positive
   predefined:

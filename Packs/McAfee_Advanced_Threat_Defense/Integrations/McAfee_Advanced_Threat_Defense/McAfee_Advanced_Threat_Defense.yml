@@ -317,7 +317,7 @@ script:
       description: If the Analyzer's profile has access to the internet
       type: boolean
     - contextPath: ATD.ListAnalyzerProfiles.LocalBlackList
-      description: If the Analyzer's profile has access to the local black list
+      description: If the Analyzer's profile has access to the local block list
       type: boolean
   - arguments:
     - auto: PREDEFINED

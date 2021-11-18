@@ -1,6 +1,6 @@
-Receives an MD5 hash and adds it to the blacklist in Carbon Black Enterprise Response. Files with that MD5 hash are blocked from execution on the managed endpoints.
+Receives an MD5 hash and adds it to the block list in Carbon Black Enterprise Response. Files with that MD5 hash are blocked from execution on the managed endpoints.
 
-If the integration is disabled at the time of running, or if the hash is already on the blacklist, no action is taken on the MD5.
+If the integration is disabled at the time of running, or if the hash is already on the block list, no action is taken on the MD5.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.

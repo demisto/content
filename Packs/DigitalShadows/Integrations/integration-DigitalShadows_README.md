@@ -1657,7 +1657,7 @@ Find ports
                     "Scope": "ORGANIZATION",
                     "Severity": "MEDIUM",
                     "SubType": "EXPOSED_PORT",
-                    "Title": "Blacklisted open ports found on IP",
+                    "Title": "Block listed open ports found on IP",
                     "Type": "INFRASTRUCTURE"
                 },
                 "IpAddress": "1.2.3.4",

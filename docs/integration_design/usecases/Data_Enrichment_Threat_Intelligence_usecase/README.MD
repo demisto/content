@@ -8,7 +8,7 @@ Enriching information about different IOC types:
 - [search for former scan results about an object (This way you can get information about a sample without uploading it yourself).](#analysis-example)
 - enrich information and scoring for the object.
 - Add/Search for indicators in the system.
-- Whitelist/ Blacklist indicators.
+- Add indicators to allow list or block list. 
 - Calculate DBot Score for indicators.
 
 **Data Enrichment & Threat Intelligence Integration Example** – Virustotal

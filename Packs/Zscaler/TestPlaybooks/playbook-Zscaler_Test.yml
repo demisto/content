@@ -233,7 +233,7 @@ tasks:
     task:
       id: c462a7a7-c197-4867-83bc-89fa247e126e
       version: -1
-      name: Verify Blacklist URL ouput
+      name: Verify Block list URL ouput
       type: condition
       iscommand: false
       brand: ""
@@ -277,7 +277,7 @@ tasks:
     task:
       id: c500fa4e-88b3-4663-898a-24df3f6a1493
       version: -1
-      name: Get blacklist
+      name: Get block list
       script: '|||zscaler-get-blacklist'
       type: regular
       iscommand: true
@@ -302,7 +302,7 @@ tasks:
     task:
       id: 94a3cf6e-5b56-4dbb-895a-366409c77022
       version: -1
-      name: Try to blacklist url which starts with https://
+      name: Try to block list url which starts with https://
       script: '|||zscaler-blacklist-url'
       type: regular
       iscommand: true

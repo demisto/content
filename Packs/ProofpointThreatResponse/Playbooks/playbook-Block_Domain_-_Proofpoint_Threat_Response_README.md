@@ -22,7 +22,7 @@ This playbook does not use any scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | Domain | The Domain to block. |  | Optional |
-| DomainBlackListID | The ID of the blacklist to block the domain in. |  | Optional |
+| DomainBlackListID | The ID of the block list to block the domain in. |  | Optional |
 
 ## Playbook Outputs
 ---

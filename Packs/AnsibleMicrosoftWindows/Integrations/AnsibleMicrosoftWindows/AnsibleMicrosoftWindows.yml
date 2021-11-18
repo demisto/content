@@ -5323,7 +5323,7 @@ script:
         which updates are to be searched or installed. If an available update does
         not match one of the entries, then it is skipped and not installed. Each entry
         can either be the KB article or Update title as a regex according to the PowerShell
-        regex rules. The whitelist is only validated on updates that were found based
+        regex rules. The allow list is only validated on updates that were found based
         on `category_names`. It will not force the module to install an update if
         it was not in the category specified.'
       isArray: true

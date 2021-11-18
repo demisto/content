@@ -990,7 +990,7 @@
 <tr>
 <td style="width: 311px;">HybridAnalysis.URL.Whitelist.Value</td>
 <td style="width: 61px;">boolean</td>
-<td style="width: 336px;">Whether the indicator is on the whitelist.</td>
+<td style="width: 336px;">Whether the indicator is on the allow list.</td>
 </tr>
 <tr>
 <td style="width: 311px;">File.SHA256</td>

@@ -7,7 +7,7 @@
 <hr>
 <ol>
 <li>Fetch incidents</li>
-<li>Block domains (Blacklist)</li>
+<li>Block domains (Block list)</li>
 <li>Update alerts</li>
 </ol>
 <h2>Configure Cisco Secure Cloud Analytics (Stealthwatch Cloud) on Cortex XSOAR</h2>
@@ -415,7 +415,7 @@
 </code></pre>
 <h3 id="h_1721575142041544340053332">4. Block a domain or IP</h3>
 <hr>
-<p>Adds a domain or IP to the blacklist.</p>
+<p>Adds a domain or IP to the block list.</p>
 <h5>Base Command</h5>
 <pre><code>sw-block-domain-or-ip</code></pre>
 <h5>Input</h5>
@@ -430,12 +430,12 @@
 <tbody>
 <tr>
 <td style="width: 218px;">domain</td>
-<td style="width: 363px;">Domain to add to the blacklist</td>
+<td style="width: 363px;">Domain to add to the block list</td>
 <td style="width: 127px;">Optional</td>
 </tr>
 <tr>
 <td style="width: 218px;">ip</td>
-<td style="width: 363px;">IP to add to the blacklist</td>
+<td style="width: 363px;">IP to add to the block list</td>
 <td style="width: 127px;">Optional</td>
 </tr>
 </tbody>
@@ -488,7 +488,7 @@
 <pre><code>!sw-block-domain-or-ip domain=test.com</code></pre>
 <h3 id="h_9208148722681544340078867">5. Unblock a domain</h3>
 <hr>
-<p>Removes a domain from the blacklist.</p>
+<p>Removes a domain from the block list.</p>
 <h5>Base Command</h5>
 <pre><code>sw-unblock-domain</code></pre>
 <h5>Input</h5>
@@ -503,7 +503,7 @@
 <tbody>
 <tr>
 <td style="width: 131px;">id</td>
-<td style="width: 506px;">ID of the domain to remove from the blacklist. You can find the <em>id</em> by running the <em>sw-list-blocked-domains</em> command.</td>
+<td style="width: 506px;">ID of the domain to remove from the block list. You can find the <em>id</em> by running the <em>sw-list-blocked-domains</em> command.</td>
 <td style="width: 71px;">True</td>
 </tr>
 </tbody>

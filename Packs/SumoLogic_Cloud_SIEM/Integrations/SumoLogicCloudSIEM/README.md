@@ -265,7 +265,7 @@ Get entity details for a specific entity ID
 | SumoLogicSec.Entity.FirstSeen | Date | When the Entity was first seen | 
 | SumoLogicSec.Entity.Hostname | String | Entity hostname | 
 | SumoLogicSec.Entity.Id | String | Entity ID | 
-| SumoLogicSec.Entity.IsWhitelisted | Boolean | Whether or not the Entity is whitelisted | 
+| SumoLogicSec.Entity.IsWhitelisted | Boolean | Whether or not the Entity is on allow list | 
 | SumoLogicSec.Entity.LastSeen | Date | When the Entity was last seen | 
 | SumoLogicSec.Entity.Name | String | The Entity name | 
 | SumoLogicSec.Entity.OperatingSystem | String | Entity Operating System \(observed or from inventory\) | 
@@ -430,7 +430,7 @@ Search entities using the available filters
 | SumoLogicSec.EntityList.FirstSeen | Date | When the Entity was first seen | 
 | SumoLogicSec.EntityList.Id | String | Entity ID | 
 | SumoLogicSec.EntityList.IpHostname | String | Hostname associated with IP Entity | 
-| SumoLogicSec.EntityList.IsWhitelisted | Boolean | Whether or not the Entity is whitelisted | 
+| SumoLogicSec.EntityList.IsWhitelisted | Boolean | Whether or not the Entity is on allow list | 
 | SumoLogicSec.EntityList.LastSeen | Date | When the Entity was last seen | 
 | SumoLogicSec.EntityList.Name | String | The Entity name | 
 | SumoLogicSec.EntityList.OperatingSystem | String | Entity Operating System \(observed or from inventory\) | 

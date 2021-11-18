@@ -4,7 +4,7 @@
 <h2>Use Cases</h2>
 <ul>
 <li>Search for indicators</li>
-<li>Add and remove indicators to the whitelist</li>
+<li>Add and remove indicators to the allow list</li>
 <li>Filter reports using indicators</li>
 <li>Submit, update, delete, search, and get reports</li>
 </ul>
@@ -50,8 +50,8 @@
 <li><a href="#h_9223074962651528291535977">Generate a report: trustar-get-reports</a></li>
 <li><a href="#h_6987239092961528291550310">Return correlated reports: trustar-correlated-reports</a></li>
 <li><a href="#h_1950779103291528291565200">Search reports: trustar-search-reports</a></li>
-<li><a href="#h_185400428431528626499848">Add indicators to whitelist: trustar-add-to-whitelist</a></li>
-<li><a href="#h_2965863533601528291579105">Remove indicators from whitelist: trustar-remove-from-whitelist</a></li>
+<li><a href="#h_185400428431528626499848">Add indicators to allow list: trustar-add-to-whitelist</a></li>
+<li><a href="#h_2965863533601528291579105">Remove indicators from allow list: trustar-remove-from-whitelist</a></li>
 <li><a href="#h_564840413901528291593360">Get all enclaves: trustar-get-enclaves</a></li>
 <li><a href="#h_7683610241291545286755881">Check the reputation of a file: file</a></li>
 <li><a href="#h_6886909672131545286762811">Check the reputation of an IP address: ip</a></li>
@@ -809,9 +809,9 @@
    }
 ]
 </pre>
-<h3 id="h_185400428431528626499848">11. Add indicators to whitelist</h3>
+<h3 id="h_185400428431528626499848">11. Add indicators to allow list</h3>
 <hr>
-<p>Adds indicators to your whitelist.</p>
+<p>Adds indicators to your allow list.</p>
 <h5>Inputs</h5>
 <table style="height: 177px; width: 750px;">
 <thead>
@@ -824,7 +824,7 @@
 <tr>
 <td style="width: 120px;">indicators</td>
 <td style="width: 488px;">
-<p>CSV of indicators to whitelist (example: evil.com,101.43.52.224)</p>
+<p>CSV of indicators to add to allow list (example: evil.com,101.43.52.224)</p>
 </td>
 </tr>
 </tbody>
@@ -833,11 +833,11 @@
 <h5>Context Output</h5>
 <p>There is no context output for this command.</p>
 <h5>Raw output:</h5>
-<pre>Added to the whitelist successfully
+<pre>Added to the allow list successfully
 </pre>
-<h3 id="h_2965863533601528291579105">12. Remove indicators from whitelist</h3>
+<h3 id="h_2965863533601528291579105">12. Remove indicators from allow list</h3>
 <hr>
-<p>Remove indicator from your whitelist.</p>
+<p>Remove indicator from your allow list.</p>
 <h5>Inputs</h5>
 <table style="height: 177px; width: 750px;">
 <thead>
@@ -865,7 +865,7 @@
 <h5>Context Output</h5>
 <p>There is no context output for this command.</p>
 <h5>Raw Output</h5>
-<pre>Removed from the whitelist successfully
+<pre>Removed from the allow list successfully
 </pre>
 <h3 id="h_564840413901528291593360">13. Get all enclaves</h3>
 <hr>
@@ -973,7 +973,7 @@
 <tr>
 <td style="width: 202px;">TruSTAR.File.Whitelisted</td>
 <td style="width: 77px;">boolean</td>
-<td style="width: 461px;">Is the indicator whitelisted</td>
+<td style="width: 461px;">Is the indicator on allow list</td>
 </tr>
 <tr>
 <td style="width: 202px;">TruSTAR.File.Priority</td>
@@ -1091,7 +1091,7 @@
 <tr>
 <td style="width: 176px;">TruSTAR.IP.Whitelisted</td>
 <td style="width: 71px;">boolean</td>
-<td style="width: 493px;">Is the indicator whitelisted</td>
+<td style="width: 493px;">Is the indicator on allow list</td>
 </tr>
 <tr>
 <td style="width: 176px;">TruSTAR.IP.Priority</td>
@@ -1210,7 +1210,7 @@
 <tr>
 <td style="width: 183px;">TruSTAR.URL.Whitelisted</td>
 <td style="width: 62px;">boolean</td>
-<td style="width: 495px;">Is the indicator whitelisted</td>
+<td style="width: 495px;">Is the indicator on allow list</td>
 </tr>
 <tr>
 <td style="width: 183px;">TruSTAR.URL.Priority</td>
@@ -1329,7 +1329,7 @@
 <tr>
 <td style="width: 202px;">TruSTAR.Domain.Whitelisted</td>
 <td style="width: 61px;">boolean</td>
-<td style="width: 377px;">Is the indicator whitelisted</td>
+<td style="width: 377px;">Is the indicator on allow list</td>
 </tr>
 <tr>
 <td style="width: 202px;">TruSTAR.Domain.Priority</td>

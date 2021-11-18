@@ -237,7 +237,7 @@ script:
     - name: comment
       description: Optional, add comment to hash field
       defaultValue: ''
-    description: add file hash to blacklist
+    description: add file hash to block list
   - name: deepinstinct-add-hash-to-whitelist
     arguments:
     - name: policy_id
@@ -249,7 +249,7 @@ script:
     - name: comment
       description: Optional, add comment to hash field
       defaultValue: ''
-    description: add file hash to whitelist
+    description: add file hash to allow list
   - name: deepinstinct-remove-hash-from-blacklist
     arguments:
     - name: policy_id
@@ -258,7 +258,7 @@ script:
     - name: file_hash
       required: true
       description: file hash
-    description: remove file hash from blacklist
+    description: remove file hash from block list
   - name: deepinstinct-remove-hash-from-whitelist
     arguments:
     - name: policy_id
@@ -267,7 +267,7 @@ script:
     - name: file_hash
       required: true
       description: file hash
-    description: remove file hash from whitelist
+    description: remove file hash from allow list
   - name: deepinstinct-add-devices-to-group
     arguments:
     - name: group_id

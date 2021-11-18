@@ -161,7 +161,7 @@ tasks:
       id: 20498bc5-61df-47b1-8f11-4b9dd2eb44e5
       version: -1
       name: traps-hashes-blacklist-status
-      description: Get blacklist status of guven hashes.
+      description: Get block list status of given hashes.
       script: Traps|||traps-hashes-blacklist-status
       type: regular
       iscommand: true
@@ -192,7 +192,7 @@ tasks:
       id: c3a1ddb3-5ee7-44d6-8da8-f959643b44d6
       version: -1
       name: traps-hash-blacklist
-      description: Blacklist specified hash.
+      description: Block list specified hash.
       script: Traps|||traps-hash-blacklist
       type: regular
       iscommand: true
@@ -223,7 +223,7 @@ tasks:
       id: 5a206db7-092a-4e38-8d5e-65fc65a450ed
       version: -1
       name: traps-hash-blacklist-remove
-      description: Remove a given hash from blacklist
+      description: Remove a given hash from block list
       script: Traps|||traps-hash-blacklist-remove
       type: regular
       iscommand: true
@@ -254,7 +254,7 @@ tasks:
       description: ""
       id: cb1e029e-91c4-4c52-884e-8c45656f6b48
       version: -1
-      name: Is blacklisted?
+      name: Is block listed?
       type: condition
       iscommand: false
       brand: ""
@@ -353,7 +353,7 @@ tasks:
       description: ""
       id: b4e6db43-ccc9-4825-88a6-c34e80372d3d
       version: -1
-      name: Is not blacklisted?
+      name: Is not block listed?
       type: condition
       iscommand: false
       brand: ""

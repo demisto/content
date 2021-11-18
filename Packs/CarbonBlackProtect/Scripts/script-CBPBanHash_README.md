@@ -1,4 +1,4 @@
-Bans/blacklists a hash in CBEP/Bit9.
+Bans/block lists a hash in CBEP/Bit9.
 ## Script Data
 ---
 
