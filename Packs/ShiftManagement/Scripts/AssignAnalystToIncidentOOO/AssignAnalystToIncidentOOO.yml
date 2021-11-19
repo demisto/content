@@ -34,11 +34,15 @@ args:
   - 'false'
   required: false
   secret: false
-comment: |-
-  Assigns analysts who are not out of the office to the shift handover incident. Use the ManageOOOusers automation to add or remove analysts from the out-of-office list.
+comment: "Assigns analysts who are not out of the office to the shift handover incident.\
+  \ Use the ManageOOOusers automation to add or remove analysts from the out-of-office\
+  \ list.\nThis automation runs using the default Limited User role, unless you explicitly\
+  \ change the permissions.\nFor more information, see the section about permissions\
+  \ here: \nhttps://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html"
 commonfields:
   id: AssignAnalystToIncidentOOO
   version: -1
+dockerimage: demisto/python3:3.9.8.24399
 enabled: true
 name: AssignAnalystToIncidentOOO
 script: '-'
@@ -49,7 +53,6 @@ tags:
 - ooo
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.9.7.24076
 runonce: false
 tests:
 - No tests (auto formatted)
