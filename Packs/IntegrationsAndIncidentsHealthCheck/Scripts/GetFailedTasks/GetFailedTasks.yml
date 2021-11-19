@@ -20,7 +20,10 @@ args:
   name: rest_api_instance
   required: false
   secret: false
-comment: Gets failed tasks details for incidents based on a query. Limited to 1000 incidents.
+comment: "Gets failed tasks details for incidents based on a query. Limited to 1000\
+  \ incidents.\nThis automation runs using the default Limited User role, unless you\
+  \ explicitly change the permissions.\nFor more information, see the section about\
+  \ permissions here: \nhttps://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html"
 commonfields:
   id: GetFailedTasks
   version: -1
@@ -31,7 +34,7 @@ subtype: python3
 system: false
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.9.8.24399
 runonce: false
 tests:
 - No tests
