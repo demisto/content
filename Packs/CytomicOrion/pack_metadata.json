@@ -1,0 +1,17 @@
+{
+    "name": "Cytomic Orion",
+    "description": "This is an integration that interacts to Cytomic Orion and performs the following:\n- IOCs Search and upload\n- Query the database\n- Retreive computer information",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Telef\u00f3nica",
+    "url": "",
+    "email": "",
+    "created": "2021-11-19T11:25:58Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "franciscojaviergonzaleznavarro11p"
+    ]
+}

@@ -1,0 +1,340 @@
+category: Endpoint
+commonfields:
+  id: Cytomic Orion
+  version: -1
+configuration:
+- defaultvalue: https://api.cytomic.ai
+  display: Server URL(e.g. https://api.cytomic.ai)
+  name: base_url
+  required: true
+  type: 0
+- display: credentials
+  name: credentials
+  required: true
+  type: 9
+- display: Client ID
+  name: client_id
+  required: true
+  type: 0
+- display: Client Secret
+  name: client_secret
+  required: true
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: https://auth.pandasecurity.com/oauth/token
+  display: Token URL
+  name: token_url
+  required: true
+  type: 0
+- defaultvalue: "60"
+  display: HTTP requests timeout
+  name: timeout
+  required: false
+  type: 0
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 764def20-4a8a-4d26-8686-6abfbcb8c2db
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: |-
+  Cytomic Orion es una herramienta que facilita el descubrimiento de ataques que utilizan tácticas de
+  ocultación avanzadas, y que las medidas de protección instaladas en el equipo de usuario o servidor
+  no son capaces de detectar.
+  La arquitectura general de Cytomic Orion y la funcionalidad ofrecida en cada uno de sus módulos
+  han sido diseñadas para encajar con el reparto de roles en SOCs de medianas y grandes empresas, o
+  pertenecientes a un MSSP / MDR.
+display: Cytomic Orion
+name: Cytomic Orion
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      description: Indica el tipo de los IOCs a importar
+      name: ioc_type
+      predefined:
+      - Hash
+      - Url
+      - IP
+      - Domain
+      required: true
+    - description: List of JSON with the IOCs' description
+      isArray: true
+      name: ioc_data
+      required: true
+    - description: Time to live of the data
+      name: ttl_days
+    - description: If true do a retrospective search. Else do a streaming search
+      name: retrospective
+    description: Carga uno o más IOCs de un mismo tipo en la plataforma, los cuales
+      podrán configurarse para realizar dos tipos de búsquedas.
+    name: orion-import-ioc
+  - arguments:
+    - auto: PREDEFINED
+      description: Indica el tipo de los IOCs a borrar
+      name: ioc_type
+      predefined:
+      - Hash
+      - Url
+      - IP
+      - Domain
+      required: true
+    - description: List of JSON with the IOCs' description
+      isArray: true
+      name: ioc_data
+      required: true
+    description: Elimina los IOCs previamente importados en la plataforma, interrumpiendo
+      a su vez las búsquedas en streaming y retrospectivas en curso
+    name: orion-delete-ioc
+  - arguments:
+    - auto: PREDEFINED
+      description: Indica el tipo de los IOCs a listar
+      name: ioc_type
+      predefined:
+      - Hash
+      - Url
+      - IP
+      - Domain
+      required: true
+    - description: FIlter from dates greater than this value
+      name: from
+      required: true
+    - description: FIlter to dates lesser than this value
+      name: to
+      required: true
+    - auto: PREDEFINED
+      name: include_deleted
+      predefined:
+      - "True"
+      - "False"
+      required: true
+    description: Muestra la lista de IOCs cargados en la plataforma según su fecha
+      de publicación
+    name: orion-list-ioc-by-date
+  - arguments:
+    - description: Timestamp Unix en milisegundos con la fecha inferior del intervalo
+        de indicios a recuperar
+      name: from
+      required: true
+    - description: Timestamp Unix en milisegundos con la fecha superior del intervalo
+        de indicios a recuperar
+      name: to
+      required: true
+    - auto: PREDEFINED
+      description: Filtra la recuperación de indicios en función de si han sido asignados
+        a una investigación
+      name: statuses
+      predefined:
+      - Pending
+      - InProgress
+      - Finished
+    - description: Filtra la recuperación de indicios por el identificador único de
+        equip
+      name: muid
+    - description: Filtra la recuperación de indicios por el identificador único de
+        cliente
+      name: client_id
+    - description: Filtra la recuperación de indicios por el nombre de su huntingrule
+        asociada
+      name: hunting_rule
+    - description: Filtra la recuperación de indicios por el identificador de la investigación
+      name: case_id
+    - description: Filtra la recuperación de indicios por el nombre del equipo
+      name: machine_name
+    - description: Timestamp Unix en milisegundos con la fecha inferior del intervalo
+        de indicios a recuperar
+      name: from_query
+    - description: Timestamp Unix en milisegundos con la fecha superior del intervalo
+        de indicios a recuperar
+      name: to_query
+    - auto: PREDEFINED
+      description: Filtra la recuperación de indicios según su pertenencia o no a
+        una regla de eliminación
+      name: show_excluded
+      predefined:
+      - "True"
+      - "False"
+    - auto: PREDEFINED
+      description: Recupera o no los detalles del indicio
+      name: show_details
+      predefined:
+      - "True"
+      - "False"
+    description: Obtiene una lista de JSONs con los indicios generados en Cytomic
+      Orion entre las fechas indicadas. Opcionalmente se permite filtrar por el tipo
+      de indicio a buscar.
+    name: orion-get-alerts-generated
+  - arguments:
+    - auto: PREDEFINED
+      description: Indica el tipo de los IOCs a buscar
+      name: ioc_type
+      predefined:
+      - FileHashIoc
+      - UrlIoc
+      - IPIoc
+      - DomainIoc
+      required: true
+    - description: Lista de JSONs con la descripción de los IOCs
+      isArray: true
+      name: ioc_data
+      required: true
+    description: Busca patrones en los eventos generados hasta la fecha por los equipos
+      de los clientes del SOC, y devuelve una lista de JSONs con los IOCs encontrados.
+    name: orion-ioc-retrospective-searcher
+  - arguments:
+    - description: File hash
+      name: md5
+      required: true
+    description: Obtiene la clasificación de un fichero asignada por Cytomic a partir
+      de su MD5
+    name: orion-get-md5-info
+  - arguments:
+    - isArray: true
+      name: data
+      required: true
+    description: Obtiene la clasificación de una lista de ficheros asignada por Cytomic
+      a partir de su MD5 y otra información.
+    name: orion-get-batch-sample
+  - arguments:
+    - description: File hash
+      name: md5
+      required: true
+    description: Obtiene una lista de MUIDs de los equipos del cliente que han visto
+      un determinado md5.
+    name: orion-get-computers
+  - arguments:
+    - description: Machine unique identifier
+      name: muid
+      required: true
+    description: Obtiene información de un equipo que pertenece la infraestructura
+      IT del cliente
+    name: orion-get-computer-info
+  - arguments:
+    - description: Client identifier
+      name: client_id
+      required: true
+    - description: Name of the machine. Can include substrings.
+      name: machine_name
+      required: true
+    description: Obtiene el MUID de un equipo que pertenece a la infraestructura IT
+      del cliente a partir de su nombre.
+    name: orion-get-computer-muid
+  - arguments:
+    - description: Machine unique identifier
+      name: muid
+      required: true
+    description: Obtiene la información completa de un equipo que pertenece a la infraestructura
+      IT del cliente.
+    name: orion-get-computer-detail
+  - arguments:
+    - description: List of MUIDs (list of strings)
+      isArray: true
+      name: muid_list
+      required: true
+    description: Aísla una lista de equipos de la red para evitar la propagación de
+      las amenazas y /o la comunicación y extracción de información confidencial.
+    name: orion-isolate-muids
+  - arguments:
+    - description: List of MUIDs (list of strings)
+      isArray: true
+      name: muid_list
+      required: true
+    description: Saca del estado del aislamiento los equipos de la red una vez resuelta
+      la posibilidad de propagación de las amenazas y / o la comunicación y extracción
+      de información confidencial.
+    name: orion-deisolate-muids
+  - arguments:
+    - description: List of MUIDs (list of strings)
+      isArray: true
+      name: muid_list
+      required: true
+    description: Inicia la secuencia de reinicio de una lista de equipos para completar
+      una actualización de software o para corregir un mal funcionamiento del equipo.
+    name: orion-reboot-muids
+  - arguments:
+    - description: JSON with the SQL query to execute
+      name: sql
+      required: true
+    description: Ofrece a través de la API de Cytomic Orion un interface de acceso
+      al océano de datos, equivalente al módulo de consultas avanzadas SQL.
+    name: orion-query-data
+  - arguments:
+    - auto: PREDEFINED
+      description: Indica el tipo de los IOCs a listar
+      name: ioc_type
+      predefined:
+      - Hash
+      - Url
+      - IP
+      - Domain
+      required: true
+    - description: List of JSON with the IOCs' description
+      isArray: true
+      name: ioc_data
+      required: true
+    description: Muestra la lista de IOCs cargada en la plataforma según sus atributos
+      y cuándo fueron importados.
+    name: orion-list-ioc-by-attributes
+  - arguments:
+    - description: Sentencia SQL compatible con OSQuery
+      name: query
+      required: true
+    - description: Máximo tiempo de espera en minutos para recibir los resultados.
+        0 para 24 horas
+      name: ttl
+      required: true
+    - description: Lista de los identificadores de equipos donde se ejecutará la sentencia
+      name: muids
+      required: true
+    description: Ejecuta una sentencia SQL compatible con OSQuery en los equipos indicados
+      que pertenecen a la infraestructura IT de uno o varios clientes
+    name: orion-osquery-machine
+  - arguments:
+    - description: sentencia SQL compatible con OSQuery
+      name: query
+      required: true
+    - description: Máximo tiempo de espera en minutos para recibir los resultados.
+        0 para 24 horas
+      name: ttl
+      required: true
+    - description: Lista de los identificadores de los clientes donde se ejecutará
+        la sentencia
+      name: pandaIDs
+      required: true
+    description: Ejecuta una sentencia SQL compatible con OSQuery en todos los equipos
+      que pertenecen a la infraestructura IT de los clientes indicados
+    name: orion-osquery-client
+  - arguments:
+    - description: Lista de JSONs, cada uno de ellos con el identificador de la operación
+        cuyos datos se quieren recuperar
+      name: osquery_data
+      required: true
+    description: Obtiene la url que apunta al fichero con los datos de los equipos
+      solicitados
+    name: orion-osquery-state
+  - arguments:
+    - description: Lista de JSONs, cada uno de ellos con el identificador de la operación
+        cuyo estado se quieren recuperar
+      name: osquery_data
+      required: true
+    description: Obtiene una lista de JSONs que indican el estado de las operaciones
+      en curso o finalizadas
+    name: orion-osquery-info
+  dockerimage: demisto/python3:3.8.6.12176
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+sourcemoduleid: Cortex XDR - IR
