@@ -75,7 +75,7 @@ class RequestArguments:
                  mwg_type: str = 'string', strip_port: bool = False, drop_invalids: bool = False,
                  category_default: str = 'bc_category', category_attribute: str = '',
                  collapse_ips: str = DONT_COLLAPSE, csv_text: bool = False, sort_field: str = '',
-                 sort_order: str = ''):
+                 sort_order: str = '', keys_to_extract: str = '', custom_keys_to_extract: str = ''):
 
         self.query = query
         self.out_format = out_format
@@ -90,6 +90,8 @@ class RequestArguments:
         self.csv_text = csv_text
         self.sort_field = sort_field
         self.sort_order = sort_order
+        self.keys_to_extract = keys_to_extract
+        self.custom_keys_to_extract = custom_keys_to_extract
 
         if category_attribute is not None:
             category_attribute_list = category_attribute.split(',')
@@ -243,7 +245,8 @@ def refresh_outbound_context(request_args: RequestArguments, on_demand: bool = F
     return out_dict[CTX_VALUES_KEY] if CTX_VALUES_KEY in out_dict else []
 
 
-def find_indicators_with_limit(indicator_searcher: IndicatorsSearcher) -> list:
+def find_indicators_with_limit(indicator_searcher: IndicatorsSearcher, keys_to_extract: list,
+                               custom_keys_to_extract: list) -> list:
     """
     Finds indicators using demisto.searchIndicators
     """
@@ -251,7 +254,21 @@ def find_indicators_with_limit(indicator_searcher: IndicatorsSearcher) -> list:
     for ioc_res in indicator_searcher:
         fetched_iocs = ioc_res.get('iocs') or []
         iocs.extend(fetched_iocs)
-    return iocs
+
+    processed_icos =[]
+    ioc_subset = {}
+    ioc_custom_subset = {}
+
+    if keys_to_extract or custom_keys_to_extract:
+        for ioc in iocs:
+            if keys_to_extract:
+                ioc_subset = {key: ioc.get(key) for key in keys_to_extract.split(",")}
+            if custom_keys_to_extract:
+                ioc_custom_subset = {key: ioc['CustomFields'].get(key) for key in custom_keys_to_extract.split(",")}
+            processed_icos.append({**ioc_subset, **ioc_custom_subset})
+        return processed_icos[offset_in_page:limit + offset_in_page]
+
+    return iocs[offset_in_page:limit + offset_in_page]
 
 
 def ip_groups_to_cidrs(ip_range_groups: list):
@@ -619,6 +636,7 @@ def validate_basic_authentication(headers: dict, username: str, password: str) -
 ''' ROUTE FUNCTIONS '''
 
 
+
 def get_request_args(params):
     limit = try_parse_integer(request.args.get('n', params.get('list_size', 10000)), CTX_LIMIT_ERR_MSG)
     offset = try_parse_integer(request.args.get('s', 0), CTX_OFFSET_ERR_MSG)
@@ -633,6 +651,8 @@ def get_request_args(params):
     csv_text = request.args.get('tx', params.get('csv_text', False))
     sort_field = request.args.get('sf', params.get('sort_field'))
     sort_order = request.args.get('so', params.get('sort_order'))
+    keys_to_extract = request.args.get('keys_to_extract', params.get('keys_to_extract'))
+    custom_keys_to_extract = request.args.get('custom_keys_to_extract', params.get('custom_keys_to_extract'))
 
     # handle flags
     if strip_port is not None and strip_port == '':
@@ -689,9 +709,9 @@ def get_request_args(params):
     if out_format == FORMAT_MWG:
         if mwg_type not in MWG_TYPE_OPTIONS:
             raise DemistoException(CTX_MWG_TYPE_ERR_MSG)
-
     return RequestArguments(query, out_format, limit, offset, mwg_type, strip_port, drop_invalids, category_default,
-                            category_attribute, collapse_ips, csv_text, sort_field, sort_order)
+                            category_attribute, collapse_ips, csv_text, sort_field, sort_order, keys_to_extract,
+                            custom_keys_to_extract)
 
 
 @APP.route('/', methods=['GET'])
@@ -808,10 +828,15 @@ def update_outbound_command(args, params):
     print_indicators = args.get('print_indicators')
 
     query = args.get('query')
+    keys_to_extract = args.get('keys_to_extract')
+    custom_keys_to_extract = args.get('custom_keys_to_extract')
     # in case no query is entered take the query in the integration params
     if not query:
         query = params.get('indicators_query')
-
+    if not keys_to_extract:
+        keys_to_extract = params.get('keys_to_extract')
+    if not custom_keys_to_extract:
+        custom_keys_to_extract = params.get('custom_keys_to_extract')
     out_format = args.get('format')
     offset = try_parse_integer(args.get('offset', 0), CTX_OFFSET_ERR_MSG)
     mwg_type = args.get('mwg_type')
@@ -825,7 +850,8 @@ def update_outbound_command(args, params):
     sort_order = args.get('sort_order')
 
     request_args = RequestArguments(query, out_format, limit, offset, mwg_type, strip_port, drop_invalids,
-                                    category_default, category_attribute, collapse_ips, csv_text, sort_field, sort_order)
+                                    category_default, category_attribute, collapse_ips, csv_text, sort_field,
+                                    sort_order, keys_to_extract, custom_keys_to_extract)
 
     indicators = refresh_outbound_context(request_args, on_demand=on_demand)
     if indicators:
