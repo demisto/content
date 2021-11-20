@@ -270,12 +270,15 @@ class TestHelperFunctions:
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
             limit = 30
+            keys_to_extract = ""
+            custom_keys_to_extract = ""
+
             indicator_searcher_res = [{'iocs': iocs_json[:limit]}, {'iocs': []}]
             indicator_searcher = ei.IndicatorsSearcher(
                 limit=limit
             )
             mocker.patch.object(indicator_searcher, 'search_indicators_by_version', side_effect=indicator_searcher_res)
-            ei_vals = ei.find_indicators_with_limit(indicator_searcher)
+            ei_vals = ei.find_indicators_with_limit(indicator_searcher, keys_to_extract, custom_keys_to_extract)
             assert len(ei_vals) == limit
 
     def test_create_values_for_returned_dict_1(self):
