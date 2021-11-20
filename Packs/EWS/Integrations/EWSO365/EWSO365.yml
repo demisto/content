@@ -39,7 +39,7 @@ configuration:
   - Impersonation
   - Delegate
   required: false
-  type: 16
+  type: 15
 - defaultvalue: 'false'
   display: Public Folder
   name: is_public_folder
@@ -1169,7 +1169,7 @@ script:
     description: Sends an email.
     execution: false
     name: send-mail
-  dockerimage: demisto/py3ews:1.0.0.23229
+  dockerimage: demisto/py3ews:1.0.0.23674
   feed: false
   isfetch: true
   longRunning: false
