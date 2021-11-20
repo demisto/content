@@ -1524,21 +1524,37 @@ def test_graph_url(endpoint, expected_graph_url):
     assert GRAPH_ENDPOINTS.get(endpoint) == expected_graph_url
 
 
-@pytest.mark.parametrize('endpoint, expected_login_url',
+@pytest.mark.parametrize('endpoint, login_url',
                          [('Default - Worldwide (.com)', 'https://login.microsoftonline.com'),
                           ('GCC-High (US)', 'https://login.microsoftonline.us'),
                           ('Department of Defence - DoD (US)', 'https://login.microsoftonline.us'),
                           ('Germany (.de)', 'https://login.microsoftonline.de'),
                           ('China (.cn)', 'https://login.chinacloudapi.cn')])
-def test_login_url(endpoint, expected_login_url):
+def test_login_url(mocker, requests_mock, endpoint, login_url):
     """
     Given:
         - The different possible endpoints
     When:
         - Replacing the given endpoint with the corresponding login URL
+        - Calling the get_graph_access_token
     Then:
         - Verify that the endpoint is translated to the correct URL
-    """
-    from MicrosoftTeams import LOGIN_ENDPOINTS
+        - Verify that URL sent to requests is set according to the different login endpoints
 
-    assert LOGIN_ENDPOINTS.get(endpoint) == expected_login_url
+    """
+    from importlib import reload
+    import MicrosoftTeams
+
+    mocker.patch.object(demisto, 'params', return_value={'endpoint': endpoint})
+    reload(MicrosoftTeams)  # reload is used to reset the global variables of the integration
+
+    assert MicrosoftTeams.LOGIN_ENDPOINTS.get(endpoint) == login_url
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value={'tenant_id': tenant_id})
+    mocker.patch.object(demisto, 'setIntegrationContext')
+    requests_mock.post(
+        f'{login_url}/{tenant_id}/oauth2/v2.0/token',
+        json={'access_token': endpoint},
+        status_code=200
+    )
+    access_token = MicrosoftTeams.get_graph_access_token()
+    assert access_token == endpoint
