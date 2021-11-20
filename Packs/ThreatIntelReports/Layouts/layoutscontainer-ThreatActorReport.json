@@ -307,6 +307,7 @@
 			},
 			{
 				"hidden": true,
+				"report": true,
 				"id": "2xfwqcl6pj",
 				"name": "Threat Actor Report - Export",
 				"sections": [
