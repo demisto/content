@@ -43,6 +43,12 @@ def mock_client():
 MOCK_OBJECTS = {"objects": [{"srcip": "8.8.8.8", "itype": "mal_ip", "confidence": 50},
                             {"srcip": "1.1.1.1", "itype": "apt_ip"}]}
 
+INDICATOR = [{
+    "resource_uri": "/api/v2/intelligence/123456789/",
+    "status": "active",
+    "uuid": "12345678-dead-beef-a6cc-eeece19516f6",
+    "value": "www.demisto.com",
+}]
 
 class TestReputationCommands:
     """
@@ -768,3 +774,62 @@ def test_emoji_handling_in_file_name():
         demojized_file_name = file_name_to_valid_string(file_name)
         assert demojized_file_name == emoji.demojize(file_name)
         assert not emoji.emoji_count(file_name_to_valid_string(demojized_file_name))
+
+
+class TestGetIndicators:
+    @staticmethod
+    def test_sanity(mocker):
+        """
+        Given
+            a limit above the number of available indicators
+        When
+            calling the get_indicator command
+        Then
+            verify that the maximum available amount is returned.
+        """
+        mocker.patch.object(Client, 'http_request', side_effect=[
+            {'objects': INDICATOR * 50},
+            {'objects': []},
+        ])
+        results = mocker.patch.object(demisto, 'results')
+        client = Client(
+            base_url='',
+            use_ssl=False,
+            default_threshold='high',
+            reliability='B - Usually reliable',
+        )
+
+        get_indicators(client, limit='7000')
+
+        assert len(results.call_args_list[0][0][0].get('EntryContext', {}).get('ThreatStream.Indicators', [])) == 50
+
+    @staticmethod
+    def test_pagination(mocker):
+        """
+        Given
+            a limit above the page size
+        When
+            calling the get_indicator command
+        Then
+            verify that the requested amount is returned.
+        """
+        mocker.patch.object(Client, 'http_request', side_effect=[
+            {'objects': INDICATOR * 1000},
+            {'objects': INDICATOR * 1000},
+            {'objects': INDICATOR * 1000},
+            {'objects': INDICATOR * 1000},
+            {'objects': INDICATOR * 1000},
+            {'objects': INDICATOR * 1000},
+            {'objects': INDICATOR * 1000},
+        ])
+        results = mocker.patch.object(demisto, 'results')
+        client = Client(
+            base_url='',
+            use_ssl=False,
+            default_threshold='high',
+            reliability='B - Usually reliable',
+        )
+
+        get_indicators(client, limit='7000')
+
+        assert len(results.call_args_list[0][0][0].get('EntryContext', {}).get('ThreatStream.Indicators', [])) == 7000
