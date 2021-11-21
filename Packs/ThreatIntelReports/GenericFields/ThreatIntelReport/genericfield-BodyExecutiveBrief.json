@@ -1,12 +1,12 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Executive Report"
+        "Executive Brief"
     ],
     "caseInsensitive": true,
-    "cliName": "bodyexecutivereport",
-    "id": "generic_ThreatIntelReport_bodyexecutivereport",
-    "name": "Body Executive Report",
+    "cliName": "bodyexecutivebrief",
+    "id": "generic_ThreatIntelReport_bodyexecutivebrief",
+    "name": "Body Executive Brief",
     "closeForm": false,
     "content": true,
     "editForm": true,
