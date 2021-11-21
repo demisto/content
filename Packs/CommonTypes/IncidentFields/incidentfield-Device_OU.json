@@ -1,22 +1,19 @@
 {
     "associatedToAll": false,
-    "associatedTypes": [
-        "CrowdStrike Falcon Detection",
-        "CrowdStrike Falcon Incident"
-    ],
+    "associatedTypes": [ ],
     "caseInsensitive": true,
-    "cliName": "falconagentversion",
+    "cliName": "deviceou",
     "closeForm": false,
     "content": true,
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_falconagentversion",
+    "id": "incident_deviceou",
     "isReadOnly": false,
     "locked": false,
-    "name": "Falcon Agent Version",
+    "name": "Device OU",
     "neverSetAsRequired": false,
-    "openEnded": false,
+    "openEnded": true,
     "ownerOnly": false,
     "propagationLabels": [
         "all"
@@ -25,7 +22,7 @@
     "sla": 0,
     "system": false,
     "threshold": 72,
-    "type": "shortText",
+    "type": "multiSelect",
     "unmapped": false,
     "unsearchable": true,
     "useAsKpi": false,

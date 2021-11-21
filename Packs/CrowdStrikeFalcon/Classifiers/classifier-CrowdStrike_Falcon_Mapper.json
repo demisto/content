@@ -1,7 +1,7 @@
 {
     "description": "CrowdStrike Falcon Mapper for incidents and detections",
     "feed": false,
-    "id": "CrowdStrike Falcon Mapper",
+    "id": "CrowdStrike Falcon-Mapper",
     "mapping": {
         "CrowdStrike Falcon Detection": {
             "dontMapEventToLabels": true,
@@ -51,9 +51,9 @@
                 "Device Name": {
                     "simple": "device.hostname"
                 },
-                "Falcon Agent Version": {
-                    "simple": "device.agent_version"
-                },
+                "Agent Version": {
+					"simple": "device.agent_version"
+				},
                 "File MD5": {
                     "simple": "behaviors.md5"
                 },
@@ -152,9 +152,9 @@
                 "Device OU": {
                     "simple": "hosts.ou"
                 },
-                "Falcon Agent Version": {
-                    "simple": "hosts.agent_version"
-                },
+                "Agent Version": {
+					"simple": "hosts.agent_version"
+				},
                 "Falcon Host Site Name": {
                     "simple": "hosts.site_name"
                 },

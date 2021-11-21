@@ -14,7 +14,7 @@
     "id": "incident_falconhostsitename",
     "isReadOnly": false,
     "locked": false,
-    "name": "Falcon Host Site Name",
+    "name": "CrowdStrike Falcon Host Site Name",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,
