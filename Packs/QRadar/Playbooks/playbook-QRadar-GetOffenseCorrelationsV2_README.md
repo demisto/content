@@ -1,4 +1,4 @@
-Run on a QRadar offense to get more information:
+Deprecated. Use the "QRadar - Get Offense Logs" playbook instead.Run on a QRadar offense to get more information:
 
 * Get all correlations relevant to the offense
 * Get all logs relevant to the correlations (not done by default - set "GetCorrelationLogs" to "True")
