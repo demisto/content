@@ -2,7 +2,7 @@ import emoji
 
 import demistomock as demisto
 from tempfile import mkdtemp
-from AnomaliThreatStreamv3 import main, \
+from AnomaliThreatStreamv3 import main, get_indicators, \
     REPUTATION_COMMANDS, Client, DEFAULT_INDICATOR_MAPPING, \
     FILE_INDICATOR_MAPPING, INDICATOR_EXTENDED_MAPPING, get_model_description, import_ioc_with_approval, \
     import_ioc_without_approval, create_model, update_model, submit_report, add_tag_to_model, file_name_to_valid_string
@@ -794,9 +794,12 @@ class TestGetIndicators:
         results = mocker.patch.object(demisto, 'results')
         client = Client(
             base_url='',
-            use_ssl=False,
-            default_threshold='high',
+            user_name='',
+            api_key='',
+            verify=False,
+            proxy=False,
             reliability='B - Usually reliable',
+            should_create_relationships=False,
         )
 
         get_indicators(client, limit='7000')
@@ -825,9 +828,12 @@ class TestGetIndicators:
         results = mocker.patch.object(demisto, 'results')
         client = Client(
             base_url='',
-            use_ssl=False,
-            default_threshold='high',
+            user_name='',
+            api_key='',
+            verify=False,
+            proxy=False,
             reliability='B - Usually reliable',
+            should_create_relationships=False,
         )
 
         get_indicators(client, limit='7000')
