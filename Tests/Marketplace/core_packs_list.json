@@ -26,6 +26,7 @@
   "DefaultPlaybook",
   "AccessInvestigation",
   "ThreatIntelligenceManagement",
+  "ThreatIntelReports",
   "ipinfo",
   "FeedMitreAttackv2",
   "FeedUnit42v2",
