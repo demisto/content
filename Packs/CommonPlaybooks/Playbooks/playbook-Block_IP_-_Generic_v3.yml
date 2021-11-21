@@ -3345,6 +3345,8 @@ tasks:
       '#none#':
       - "99"
     scriptarguments:
+      type:
+        simple: IP
       value:
         complex:
           root: inputs.IP
