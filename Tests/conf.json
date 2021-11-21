@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "LogRhythmRest V2",
+            "playbookID": "LogRhythmRestV2-test"
+        },
+        {
             "playbookID": "Base64Decode - Test"
         },
         {
@@ -15,6 +19,12 @@
                 "WildFire-v2"
             ],
             "playbookID": "Detonate File - WildFire - Test"
+        },
+        {
+            "integrations": [
+                "Microsoft Management Activity API (O365 Azure Events)"
+            ],
+            "playbookID": "MicrosoftManagementActivity - Test"
         },
         {
             "integrations": "Microsoft Teams Management",
@@ -128,7 +138,6 @@
             "integrations": "EwsExtension",
             "playbookID": "O365 - EWS - Extension - Test",
             "fromversion": "6.0.0",
-            "toversion": "6.0.9",
             "timeout": 500
         },
         {
@@ -4729,6 +4738,10 @@
             "integrations": "MalwareBazaar",
             "playbookID": "MalwareBazaar_Test",
             "fromversion": "6.0.0"
+        },
+        {
+            "playbookID": "test_AssignToNextShiftOOO",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
@@ -4824,8 +4837,7 @@
         "Carbon Black Edr - Test": "Issue 40132",
         "Phishing v2 - Test - Actual Incident": "Issue 41322",
         "Kaspersky Security Center - Test": "Issue 36487",
-        "carbonBlackEndpointStandardTestPlaybook": "Issue 36936",
-        "LogRhythm REST test": "Issue 40654"
+        "carbonBlackEndpointStandardTestPlaybook": "Issue 36936"
     },
     "skipped_integrations": {
 
@@ -5047,7 +5059,8 @@
         "GitHub": "Cannot use proxy",
         "LogRhythm": "Cannot use proxy",
         "Create-Mock-Feed-Relationships": "recording is redundant for this integration",
-        "RSA Archer v2": "cannot connect to proxy"
+        "RSA Archer v2": "cannot connect to proxy",
+        "LogRhythmRest V2": "Submits a file - tests that send files shouldn't be mocked."
     },
     "parallel_integrations": [
         "AWS - EC2",

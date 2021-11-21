@@ -63,8 +63,129 @@
                     "simple": ""
                 },
                 "severity": {
-                    "complex": null,
-                    "simple": "SEVERITY"
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "SEVERITY",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Critical"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "High"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "2"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Medium"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "3"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Low"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "4"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Informational"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "5"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    },
+                    "simple": ""
                 }
             }
         }
