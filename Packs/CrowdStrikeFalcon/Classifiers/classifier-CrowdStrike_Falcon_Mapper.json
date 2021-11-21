@@ -155,7 +155,7 @@
                 "Agent Version": {
 					"simple": "hosts.agent_version"
 				},
-                "Falcon Host Site Name": {
+                "CrowdStrike Falcon Host Site Name": {
                     "simple": "hosts.site_name"
                 },
                 "Hostnames": {

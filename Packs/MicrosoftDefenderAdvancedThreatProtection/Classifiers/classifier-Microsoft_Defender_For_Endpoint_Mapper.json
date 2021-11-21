@@ -15,10 +15,10 @@
                 "Last Update Time": {
                     "simple": "lastUpdateTime"
                 },
-                "Microsoft Defender Inc ID": {
+                "Microsoft Defender for Endpoint - Inc ID": {
                     "simple": "incidentId"
                 },
-                "Microsoft Defender Investigation ID": {
+                "Microsoft Defender for Endpoint - Investigation ID": {
                     "simple": "investigationId"
                 },
                 "Start Time": {
@@ -62,11 +62,8 @@
                 "Hostnames": {
                     "simple": "computerDnsName"
                 },
-                "Microsoft Defender Detection Mechanism": {
+                "Microsoft Defender for Endpoint - Detection Mechanism": {
                     "simple": "detectionSource"
-                },
-                "Microsoft Defender Incident ID": {
-                    "simple": "incidentId"
                 },
                 "Microsoft Defender Investigation ID": {
                     "simple": "investigationId"
