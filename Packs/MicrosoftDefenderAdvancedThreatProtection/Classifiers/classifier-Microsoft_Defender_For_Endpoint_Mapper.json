@@ -65,7 +65,7 @@
                 "Microsoft Defender for Endpoint - Detection Mechanism": {
                     "simple": "detectionSource"
                 },
-                "Microsoft Defender Investigation ID": {
+                "Microsoft Defender for Endpoint - Investigation ID": {
                     "simple": "investigationId"
                 },
                 "State": {
