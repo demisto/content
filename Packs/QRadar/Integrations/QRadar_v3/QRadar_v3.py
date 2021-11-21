@@ -1609,7 +1609,6 @@ def update_mirrored_events(client: Client,
 
     Returns: (A list of updated offenses with their events)
     """
-    # TODO Remove duplication with long_running_execution_command
     offenses = context_data.get(MIRRORED_OFFENSES_CTX_KEY, [])
     if len(offenses) > offenses_per_fetch:
         offenses = offenses[:offenses_per_fetch]
@@ -1790,7 +1789,6 @@ def long_running_execution_command(client: Client, params: Dict):
         params (Dict): Demisto params.
 
     """
-    # TODO Remove duplication with update_mirrored_events
     validate_long_running_params(params)
     fetch_mode = params.get('fetch_mode', '')
     ip_enrich, asset_enrich = get_offense_enrichment(params.get('enrichment', 'IPs And Assets'))
