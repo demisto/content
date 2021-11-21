@@ -50,6 +50,7 @@ INDICATOR = [{
     "value": "www.demisto.com",
 }]
 
+
 class TestReputationCommands:
     """
     Group the Reputation commands test

@@ -993,6 +993,7 @@ def get_indicators(client: Client, **kwargs):
     if limit > 1000:
         while len(iocs_context) < limit:
             offset += len(iocs_list)
+            limit -= len(iocs_list)
             kwargs['limit'] = limit
             kwargs['offset'] = offset
             params = build_params(**kwargs)

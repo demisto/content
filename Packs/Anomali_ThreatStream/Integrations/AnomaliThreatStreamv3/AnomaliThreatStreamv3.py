@@ -1151,6 +1151,7 @@ def get_indicators(client: Client, **kwargs):
     if limit > 1000:
         while len(iocs_context) < limit:
             offset += len(iocs_list)
+            limit -= len(iocs_list)
             kwargs['limit'] = limit
             kwargs['offset'] = offset
             iocs_list = client.http_request("GET", "v2/intelligence/", params=kwargs).get('objects', None)
