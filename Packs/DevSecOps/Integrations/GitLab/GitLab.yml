@@ -1030,10 +1030,10 @@ script:
       required: true
       secret: false
     - default: false
-      description: The branch to retrieve the file from.
+      description: The branch to retrieve the file from, default is master
       isArray: false
       name: ref
-      required: true
+      required: false
       secret: false
     - default: false
       defaultValue: false
