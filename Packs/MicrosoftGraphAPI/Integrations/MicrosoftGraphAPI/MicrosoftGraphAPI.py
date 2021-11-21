@@ -83,6 +83,7 @@ def test_command(client: MsGraphClient) -> CommandResults:  # pragma: no cover
 
 def generic_command(client: MsGraphClient, args: Dict[str, Any]) -> CommandResults:
     request_body = args.get('request_body')
+    results: dict
     if request_body and isinstance(request_body, str):
         try:
             request_body = json.loads(request_body)
@@ -106,10 +107,18 @@ def generic_command(client: MsGraphClient, args: Dict[str, Any]) -> CommandResul
         results = {'raw_response': response}
 
         if argToBoolean(args.get('populate_context', 'true')):
-            results['outputs'] = response.get('value')
+            results['outputs'] = get_response_outputs(response)
             results['outputs_prefix'] = 'MicrosoftGraph'
 
     return CommandResults(**results)  # type: ignore[arg-type]
+
+
+def get_response_outputs(response: dict) -> Union[dict, list]:
+    if 'value' in response:
+        return response['value']
+    res = dict(response)
+    res.pop('@odata.context', None)
+    return res
 
 
 def main() -> None:  # pragma: no cover
