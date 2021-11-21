@@ -4733,6 +4733,10 @@
             "integrations": "MalwareBazaar",
             "playbookID": "MalwareBazaar_Test",
             "fromversion": "6.0.0"
+        },
+        {
+            "playbookID": "test_AssignToNextShiftOOO",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
