@@ -71,12 +71,12 @@ configuration:
 - display: Alarm rule name filter
   name: alarm_rule_name_filter
   defaultvalue: ''
-  type: 4
+  type: 0
   required: false
 - display: Case tags filter
   name: case_tags_filter
   defaultvalue: ''
-  type: 4
+  type: 0
   required: false
 - display: Case status filter
   name: case_status_filter
@@ -4000,6 +4000,16 @@ script:
       description: 'The endpoint hostname.'
       required: false
       isArray: false
+    outputs:
+    - contextPath: Endpoint.Hostname
+      description: The endpoint's hostname.
+      type: String
+    - contextPath: Endpoint.ID
+      description: The endpoint's ID.
+      type: String
+    - contextPath: Endpoint.IPAddress
+      description: The endpoint's IP address.
+      type: String
   - name: lr-hosts-status-update
     description: 'Updates the status of a host to retire or active.'
     arguments:
