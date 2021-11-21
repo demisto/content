@@ -204,7 +204,8 @@
 				"type": "custom"
 			},
 			{
-				"hidden": false,
+				"hidden": true,
+				"report": true,
 				"id": "zxrvhfsmls",
 				"name": "Executive Brief Report - Export",
 				"sections": [
