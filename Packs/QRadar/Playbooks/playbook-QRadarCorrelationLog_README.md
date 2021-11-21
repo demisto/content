@@ -1,4 +1,6 @@
-Deprecated. Use the "QRadar - Get Offense Logs" playbook instead. This playbook retrieves the correlation logs of multiple QIDs.
+Deprecated. Use the "QRadar - Get Offense Logs" playbook instead.
+
+This playbook retrieves the correlation logs of multiple QIDs.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
