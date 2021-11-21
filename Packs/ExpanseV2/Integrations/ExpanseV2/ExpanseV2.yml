@@ -6379,6 +6379,8 @@ script:
   script: '-'
   subtype: python3
   type: python
+  isremotesyncin: true
+  isremotesyncout: true
 tests:
 - ExpanseV2 Test
 defaultmapperin: ExpanseV2-mapper
