@@ -4664,7 +4664,7 @@
             "timeout": 300
         },
         {
-            "integrations": ["Unit 42 Intel Objects Feed", "Demisto REST API"],
+            "integrations": ["Unit42IntelObjectsFeed", "Demisto REST API"],
             "playbookID": "Unit42 Intel Objects Feed - Test",
             "timeout": 300
         },
