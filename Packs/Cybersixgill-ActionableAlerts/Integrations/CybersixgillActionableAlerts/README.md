@@ -1,8 +1,7 @@
 Cybersixgill automatically collects intelligence in real-time on all items that appear in the underground sources which we monitor. By using various rules and machine learning models, Cybersixgill automatically correlates these intelligence items with pre defined
 organization assets, and automatically alerts users in real time of any relevant intelligence items. 
 
-The integration will focus on
-Retrieving Cybersixgill's Actionable Alerts as incidents
+The integration will focus on retrieving Cybersixgill's Actionable Alerts as incidents
 
 ## Use Cases
 Fetch Incidents & Events
