@@ -15,7 +15,7 @@ args:
 - name: id
   default: true
   required: true
-  description: Incident to set context values in (Default is current incident)
+  description: Incident to set context values in.
 - name: append
   auto: PREDEFINED
   predefined:
@@ -23,13 +23,6 @@ args:
   - "false"
   description: If false then the context key will be overwritten. If set to true then
     the script will append to existing context key
-  defaultValue: "false"
-- name: errorUnfinished
-  auto: PREDEFINED
-  predefined:
-  - "true"
-  - "false"
-  description: Returns an error if not all of the incidents where modified.
   defaultValue: "false"
 outputs: []
 scripttarget: 0

@@ -24,27 +24,13 @@ def copy_campaign_data_to_incident(incident_id: int, campaign_data: dict, append
         return_error(res)
     return res
 
-
-def check_if_failed(res):
-    result_string = res[-1].get('Contents', "")
-    result_string = result_string.strip('.')
-    numbers = [int(s) for s in result_string.split() if s.isdigit()]
-    if len(set(numbers)) > 1:  # check if all the numbers are the same. Supposed to be 2 numbers.
-        # if the numbers are the same, Set succeed on all of the incidents.
-        return_error("Not all incidents were set.\n" + result_string)
-
-
 def main():
     args = demisto.args()
     incident_id = args['id']
     append = argToBoolean(args['append'])
-    error_unfinished = argToBoolean(args.get('errorUnfinished', "false"))
 
     campaign_data = get_campaign_context()
     res = copy_campaign_data_to_incident(incident_id, campaign_data, append)
-
-    if error_unfinished:
-        check_if_failed(res)
 
     demisto.results(res)
 
