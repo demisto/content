@@ -101,6 +101,11 @@ configuration:
   name: enable_dm
   required: false
   type: 8
+- defaultvalue: 'None'
+  display: The frequency with which to update the channel IDs.
+  name: channel_fetch_interval
+  required: false
+  type: 0
 description: Send messages and notifications to your Slack team.
 display: Slack v3
 name: SlackV3
@@ -508,6 +513,10 @@ script:
     - contextPath: Slack.Thread.Text
       description: The text the message was updated with.
       type: String
+  - deprecated: false
+    description: Fetches the Channel IDs for the workspace.
+    execution: false
+    name: slack-fetch-channels
   dockerimage: demisto/slackv3:1.0.0.23423
   feed: false
   isfetch: false
