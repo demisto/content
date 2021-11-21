@@ -13,7 +13,7 @@
     "id": "incident_microsoftdefenderdetectionmechanism",
     "isReadOnly": false,
     "locked": false,
-    "name": "Microsoft Defender for Endpoint-  Detection Mechanism",
+    "name": "Microsoft Defender for Endpoint - Detection Mechanism",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,
