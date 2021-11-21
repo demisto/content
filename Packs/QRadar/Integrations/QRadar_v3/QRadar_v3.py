@@ -1404,6 +1404,7 @@ def poll_offense_events_with_retry(client: Client, search_id: str, offense_id: i
             # failures are relevant only when consecutive
             num_of_failures = 0
             print_debug_msg(f'Search query_status: {query_status}')
+            # TODO Don't try to get events if CANCELLED or ERROR
             if query_status in TERMINATING_SEARCH_STATUSES:
                 print_debug_msg(f'Getting events for offense {offense_id}')
                 search_results_response = client.search_results_get(search_id)
@@ -1604,6 +1605,7 @@ def update_mirrored_events(client: Client,
 
     Returns: (A list of updated offenses with their events)
     """
+    # TODO Remove duplication with long_running_execution_command
     offenses = context_data.get(MIRRORED_OFFENSES_CTX_KEY, [])
     if len(offenses) > offenses_per_fetch:
         offenses = offenses[:offenses_per_fetch]
@@ -1733,6 +1735,7 @@ def long_running_execution_command(client: Client, params: Dict):
         params (Dict): Demisto params.
 
     """
+    # TODO Remove duplication with update_mirrored_events
     validate_long_running_params(params)
     fetch_mode = params.get('fetch_mode', '')
     ip_enrich, asset_enrich = get_offense_enrichment(params.get('enrichment', 'IPs And Assets'))
