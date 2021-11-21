@@ -1,10 +1,10 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Unit42 Intel Objects Feed
+  id: Unit 42 Intel Objects Feed
   version: -1
 defaultEnabled: true
 configuration:
-- display: Unit42 Intel Endpoint URL
+- display: Unit 42 Intel Endpoint URL
   name: url
   defaultvalue: https://autofocus.paloaltonetworks.com/api/v1.0/
   type: 0
@@ -111,10 +111,10 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the Unit42 Intel Objects Feed integration to fetch indicators from Unit42 
+description: Use the Unit 42 Intel Objects Feed integration to fetch indicators from Unit 42 
   Intel Objects.
-display: Unit42 Intel Objects Feed
-name: Unit42 Intel Objects Feed
+display: Unit 42 Intel Objects Feed
+name: Unit 42 Intel Objects Feed
 script:
   commands:
   - arguments:

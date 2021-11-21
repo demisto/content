@@ -1,13 +1,13 @@
-## Configure Unit42 Intel Objects Feed on Cortex XSOAR
+## Configure Unit 42 Intel Objects Feed on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Unit42 Intel Objects Feed.
+2. Search for Unit 42 Intel Objects Feed.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | API Key | Account's private token. | False |
-    | Unit42 Intel Endpoint URL | The Unit42 Intel endpoint URL. | False |
+    | Unit 42 Intel Endpoint URL | The Unit 42 Intel endpoint URL. | False |
     | Fetch indicators |  | False |
     | Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
     | Source Reliability | Reliability of the source providing the intelligence data. | True |

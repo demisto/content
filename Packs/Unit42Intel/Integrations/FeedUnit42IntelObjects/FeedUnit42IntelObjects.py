@@ -370,7 +370,7 @@ def create_relationships_for_tag(client: Client, name: str, tag_type: str, relat
                 related_tag_details = client.get_tag_details(related_tag_public_name)
             except DemistoException:
                 demisto.debug(
-                    f'Unit42 Intel Objects Feed: Could not create relationship for {name} with {related_tag_public_name}.')
+                    f'Unit 42 Intel Objects Feed: Could not create relationship for {name} with {related_tag_public_name}.')
                 continue
             tag = related_tag_details.get('tag', {})
             related_tag_name = tag.get('tag_name', '')
@@ -503,7 +503,7 @@ def get_indicators_command(client: Client,
 
     limit = arg_to_number(args.get('limit', '10')) or 10
     if limit > PAGE_SIZE:
-        demisto.debug(f'Unit42 Intel Objects Feed: limit must be under {PAGE_SIZE}. Setting limit to {PAGE_SIZE}.')
+        demisto.debug(f'Unit 42 Intel Objects Feed: limit must be under {PAGE_SIZE}. Setting limit to {PAGE_SIZE}.')
         limit = PAGE_SIZE
     tlp_color = params.get('tlp_color')
     feed_tags = argToList(params.get('feedTags', ''))
