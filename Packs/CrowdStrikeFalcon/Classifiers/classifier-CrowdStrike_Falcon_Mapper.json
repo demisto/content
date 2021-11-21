@@ -37,7 +37,7 @@
                     "simple": "behaviors.description"
                 },
                 "Detected User": {
-                    "simple": "behaviors.[0].user_name"
+                    "simple": "behaviors.user_name"
                 },
                 "Device External IP": {
                     "simple": "device.external_ip"
@@ -57,6 +57,14 @@
                 "File MD5": {
                     "simple": "behaviors.md5"
                 },
+                "MD5": {
+					"complex": null,
+					"simple": "behaviors.md5"
+				},
+                "SHA256": {
+					"complex": null,
+					"simple": "behaviors.sha256"
+				},
                 "File Name": {
                     "simple": "behaviors.filename"
                 },
