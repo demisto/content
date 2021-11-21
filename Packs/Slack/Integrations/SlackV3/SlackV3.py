@@ -1276,7 +1276,8 @@ async def fetch_channels_async():
                 total_try_time = 0
                 while True:
                     try:
-                        res = await ASYNC_CLIENT.conversations_list(types='private_channel,public_channel', exclude_archived=True, cursor=cursor)
+                        res = await ASYNC_CLIENT.conversations_list(types='private_channel,public_channel',
+                                                                    exclude_archived=True, cursor=cursor)
                     except SlackApiError as api_error:
                         demisto.debug(f'Got rate limit error (sync). Body is: {str(res)}\n{api_error}')
                         response = api_error.response
