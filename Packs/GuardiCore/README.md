@@ -11,8 +11,7 @@ Our software-based platform helps you become more secure to enable your organiza
 - Improve operational efficiency and agility by eliminating downtime during server or application migrations. 
 - Enforce Zero Trust security protocols with ease and simplify your organization's path to compliance. 
 
-Add helpful, relevant links below 
-- Guardicore Website > https://www.guardicore.com/
-- Guardicore Centra Demo Request > https://www.guardicore.com/lp/demo-request/
-- Link to a page/blog/video you have on this integration?
-- Short video on Mastering Segmentation > https://www.youtube.com/watch?v=unUmrOFEKIU
+- [Guardicore Website](https://www.guardicore.com/)
+- [Guardicore Centra Demo Request](https://www.guardicore.com/lp/demo-request/)
+- [Short video on Mastering Segmentation](https://www.youtube.com/watch?v=unUmrOFEKIU)
+
