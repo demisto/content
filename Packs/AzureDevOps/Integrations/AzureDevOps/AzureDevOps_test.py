@@ -143,7 +143,7 @@ def test_azure_devops_user_remove_command(requests_mock):
 
     assert result.outputs is None
     assert result.outputs_prefix is None
-    assert result.readable_output == 'The User successfully removed from the organization.'
+    assert result.readable_output == f'User {user_id} was successfully removed from the organization.'
 
 
 def test_azure_devops_pull_request_create_command(requests_mock):
@@ -372,7 +372,7 @@ def test_azure_devops_repository_list_command(requests_mock):
     project = 'xsoar'
     url = f'{BASE_URL}/{project}/_apis/git/repositories'
 
-    mock_response = json.loads(load_mock_response('list_project.json'))
+    mock_response = json.loads(load_mock_response('list_repositories.json'))
     requests_mock.get(url, json=mock_response)
 
     client = Client(
@@ -447,7 +447,7 @@ def test_azure_devops_pipeline_run_get_command(requests_mock):
     run_id = '2'
     url = f'{BASE_URL}/{project}/_apis/pipelines/{pipeline_id}/runs/{run_id}'
 
-    mock_response = json.loads(load_mock_response('get_pipeline.json'))
+    mock_response = json.loads(load_mock_response('get_pipeline_run.json'))
     requests_mock.get(url, json=mock_response)
 
     client = Client(

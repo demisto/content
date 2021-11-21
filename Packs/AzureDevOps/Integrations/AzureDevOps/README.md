@@ -1,24 +1,26 @@
 # Azure DevOps
 Manage Git repositories in Azure DevOps Services. Integration capabilities include retrieving, creating, and updating pull requests. Run pipelines and retrieve git information.
-Note: This is a beta Integration, which lets you implement and test pre-release software. Since the integration is beta, it might contain bugs. Updates to the integration during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the integration to help us identify issues, fix them, and continually improve.
 This integration was integrated and tested with version 6.1 of AzureDevOps
 
-## Configure AzureDevOps on Cortex XSOAR
+## Configure AzureDevOps (Beta) on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for AzureDevOps.
+2. Search for AzureDevOps (Beta).
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Client ID | App Registration Client ID | True |
     | Organization | Organizaion name | True |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
     | Maximum incidents for one fetch. | Default is 50. Maximum is 200. | False |
     | Pull-request project name | The name of the project which the pull requests belongs to. This argument is mandatory for Fetch functionality. | False |
     | Pull-request repository name | The name of the repository pull request's target branch. This argument is mandatory for Fetch functionality. | False |
-    | First pull-request ID | Indicated the first pull-request ID to fetch. If this argument will not be provided, the first pull-request to fetch will be the oldest pull-request ID. | False |
+    | Incident type |  | False |
+    | Fetch incidents |  | False |
+    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+    | Outgoing mirroring |  | False |
+    | Use system proxy settings |  | False |
+    | Trust any certificate (not secure) |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -119,6 +121,29 @@ There is no context output for this command.
 
 >Authorization was reset successfully. Run **!azure-devops-auth-start** to start the authentication process.
 
+### get-mapping-fields
+***
+Get mapping fields from remote incident. Please note that this method will not update the current incident, it's here for debugging purposes.
+
+
+#### Base Command
+
+`get-mapping-fields`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+
 ### azure-devops-pipeline-run
 ***
 Run a pipeline. A DevOps pipeline is a set of automated processes and tools that allows both developers and operations professionals to work cohesively to build and deploy code to a production environment.
@@ -135,8 +160,8 @@ Run a pipeline. A DevOps pipeline is a set of automated processes and tools that
 | pipeline_id | The ID of the pipeline. | Required | 
 | branch_name | The name of the repository branch which runs the pipeline. | Required | 
 | polling | Use XSOAR built-in polling to retrieve the result when it's ready. Possible values are: True, False. Default is False. | Optional | 
-| interval | Indicates how long to wait between commands execution (in seconds) when 'polling' argument is true. Default is 10 seconds,  minimum is 10 seconds. Default is 30. | Optional | 
-| timeout | Indicates the time in seconds until the polling sequence timeouts. Default is 60 seconds. Default is 60. | Optional | 
+| interval | Indicates how long to wait between commands execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. Default is 30. | Optional | 
+| timeout | Indicates the time in seconds until the polling sequence timeouts. Default is 60. | Optional | 
 | run_id | The ID of the pipeline run to retrieve when polling argument is 'True'. Intended for use by the Polling process and does not need to be provided by the user. | Optional | 
 
 
@@ -152,7 +177,7 @@ Run a pipeline. A DevOps pipeline is a set of automated processes and tools that
 | AzureDevOps.Project.Pipeline.Run.state | String | The run state. | 
 | AzureDevOps.Project.Pipeline.Run.createdDate | Date | Run-pipeline creation date. | 
 | AzureDevOps.Project.Pipeline.Run.url | String | The URL of the run. | 
-| AzureDevOps.Project.Pipeline.Run.id | Number | The ID of the run. | 
+| AzureDevOps.Project.Pipeline.Run.run_id | Number | The ID of the run. | 
 | AzureDevOps.Project.Pipeline.Run.name | String | The name of the run. | 
 | AzureDevOps.Project.Pipeline.Run.name | String | The result of the pipeline running. If the run is in progress, the default value is 'unknown'. | 
 
@@ -167,10 +192,10 @@ Run a pipeline. A DevOps pipeline is a set of automated processes and tools that
         "Project": {
             "Pipeline": {
                 "Run": {
-                    "createdDate": "2021-11-03T09:25:20",
-                    "id": 113,
-                    "name": "20211103.1",
+                    "createdDate": "2021-11-21T14:54:00",
+                    "name": "20211121.9",
                     "result": "unknown",
+                    "run_id": 1142,
                     "state": "inProgress",
                     "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/pipelines/1/runs/113"
                 },
@@ -190,7 +215,7 @@ Run a pipeline. A DevOps pipeline is a set of automated processes and tools that
 >### Pipeline Run Information:
 >|Pipeline Id|Run State|Creation Date|Run Id|Result|
 >|---|---|---|---|---|
->| 1 | inProgress | 2021-11-03T09:25:20 | 113 | unknown |
+>| 1 | inProgress | 2021-11-21T14:54:00 | 1142 | unknown |
 
 
 ### azure-devops-user-add
@@ -256,7 +281,7 @@ Remove the user from all project memberships.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | The ID of the user to remove from the organization. | Required | 
+| user_id | The ID of the user to remove from the organization. A user ID can be obtained by running the 'azure-devops-user-list' command. | Required | 
 
 
 #### Context Output
@@ -268,7 +293,7 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->The User successfully removed from the organization.
+>User XXXX was successfully removed from the organization.
 
 ### azure-devops-pull-request-create
 ***
@@ -282,13 +307,13 @@ Create a new pull request.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project | The name of the project. | Required | 
-| repository_id | The repository ID of the pull request's target branch. | Required | 
+| project | The name or ID of the project. | Required | 
+| repository_id | The repository ID of the pull request's target branch. A repository ID can be obtained by running the 'azure-devops-repository-list'. | Required | 
 | source_branch | The name of the source branch of the pull request. | Required | 
 | target_branch | The name of the target branch of the pull request. | Required | 
 | title | The title of the pull request. | Required | 
 | description | The description of the pull request. | Required | 
-| reviewers_ids | Comma-separated list of the pull request reviewers IDs. | Required | 
+| reviewers_ids | Comma-separated list of the pull request reviewers IDs. A reviewer ID can be obtained by running the 'azure-devops-user-list' command. | Required | 
 
 
 #### Context Output
@@ -400,8 +425,8 @@ Update a pull request. At least one of the arguments: title, description, or sta
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project | The name of the project. | Required | 
-| repository_id | The repository ID of the pull request's target branch. | Required | 
+| project | The name or ID of the project. | Required | 
+| repository_id | The repository ID of the pull request's target branch. A repository ID can be obtained by running the 'azure-devops-repository-list' command. | Required | 
 | pull_request_id | The ID of the pull request to update. | Required | 
 | title | The updated pull-request title. | Optional | 
 | description | The updated pull-request description. | Optional | 
@@ -516,10 +541,10 @@ Retrieve pull requests in repository.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project | The name of the project which the pull requests belongs to. | Required | 
+| project | The name or ID of the project which the pull requests belongs to. | Required | 
 | repository | The name of the repository pull request's target branch. | Required | 
-| page | The page number of the results to retrieve. Default is 1, minimum is 1. Default is 1. | Optional | 
-| limit | The number of results to retrieve. Default is 50, minimum is 1. Default is 50. | Optional | 
+| page | The page number of the results to retrieve. Minimum value is 1. Default is 1. | Optional | 
+| limit | The number of results to retrieve. Minimum  value is 1. Default is 50. | Optional | 
 
 
 #### Context Output
@@ -570,7 +595,7 @@ Retrieve pull requests in repository.
                             "id": "XXXX",
                             "uniqueName": "user2@xsoar.com"
                         },
-                        "Id": 48,
+                        "Id": 51,
                         "LastMergeSourceCommit": {
                             "commitId": "e44039f67d30924c24615bb334350dd72e41cf44",
                             "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/commits/e44039f67d30924c24615bb334350dd72e41cf44"
@@ -590,11 +615,11 @@ Retrieve pull requests in repository.
                                 "vote": 0
                             }
                         ],
-                        "creationDate": "2021-11-03T09:24:48",
+                        "creationDate": "2021-11-21T10:29:49",
                         "description": "Demo pr",
                         "isDraft": false,
                         "mergeStatus": "succeeded",
-                        "sourceRefName": "refs/heads/qm1",
+                        "sourceRefName": "refs/heads/qm4",
                         "status": "active",
                         "targetRefName": "refs/heads/main",
                         "title": "Test xsoar"
@@ -605,7 +630,7 @@ Retrieve pull requests in repository.
                             "id": "XXXX",
                             "uniqueName": "user2@xsoar.com"
                         },
-                        "Id": 31,
+                        "Id": 49,
                         "LastMergeSourceCommit": {
                             "commitId": "b9dc78e5897c9640e3be3a8a70c8ec688ab5204b",
                             "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/commits/b9dc78e5897c9640e3be3a8a70c8ec688ab5204b"
@@ -625,14 +650,14 @@ Retrieve pull requests in repository.
                                 "vote": 0
                             }
                         ],
-                        "creationDate": "2021-10-26T08:45:27",
-                        "description": "Demo pr - mirroring description 2",
+                        "creationDate": "2021-11-11T15:33:01",
+                        "description": "test title",
                         "isDraft": false,
-                        "mergeStatus": "succeeded",
-                        "sourceRefName": "refs/heads/xsoar-test",
+                        "mergeStatus": "conflicts",
+                        "sourceRefName": "refs/heads/qm1",
                         "status": "active",
                         "targetRefName": "refs/heads/main",
-                        "title": "test mirroring - Test demo"
+                        "title": "test1234"
                     }
                 ],
                 "id": "XXXX",
@@ -653,8 +678,8 @@ Retrieve pull requests in repository.
 > Showing page 1 out others that may exist.
 >|Title|Description|Created By|Pull Request Id|Repository Name|Repository Id|Project Name|Project Id|Creation Date|
 >|---|---|---|---|---|---|---|---|---|
->| Test xsoar | Demo pr | XSOAR User | 48 | xsoar | XXXX | xsoar | xsoar-project | 2021-11-03T09:24:48 |
->| test mirroring - Test demo | Demo pr - mirroring description 2 | XSOAR User | 31 | xsoar | XXXX | xsoar | xsoar-project | 2021-10-26T08:45:27 |
+>| test-yehuda-update-1342 | bbb | Yehuda Pashay | 51 | xsoar | bbd1bda1-b58e-41de-930a-59c92d852dcd | xsoar | c137b60a-54a4-4a65-bb75-e1972c77da30 | 2021-11-21T10:29:49 |
+>| test1234 | test title | Yehuda Pashay | 49 | xsoar | bbd1bda1-b58e-41de-930a-59c92d852dcd | xsoar | c137b60a-54a4-4a65-bb75-e1972c77da30 | 2021-11-11T15:33:01 |
 
 
 ### azure-devops-project-list
@@ -669,8 +694,8 @@ Retrieve all projects in the organization that the authenticated user has access
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | The page number of the results to retrieve. Default is 1, minimum is 1. Default is 1. | Optional | 
-| limit | The number of results to retrieve. Default is 50, minimum is 1. Default is 50. | Optional | 
+| page | The page number of the results to retrieve. Minimum value is 1. Default is 1. | Optional | 
+| limit | The number of results to retrieve. Minimum value is 1. Default is 50. | Optional | 
 
 
 #### Context Output
@@ -694,7 +719,7 @@ Retrieve all projects in the organization that the authenticated user has access
     "AzureDevOps": {
         "Project": [
             {
-                "id": "041923ed-7784-4f3a-83fe-4c3e2f381864",
+                "id": "xsoar-project-1",
                 "lastUpdateTime": "2021-10-27T08:38:28",
                 "name": "test",
                 "revision": 39,
@@ -702,10 +727,18 @@ Retrieve all projects in the organization that the authenticated user has access
                 "visibility": "private"
             },
             {
-                "id": "xsoar-project",
+                "id": "xsoar-project-2",
                 "lastUpdateTime": "2021-10-13T15:46:18",
                 "name": "xsoar",
                 "revision": 11,
+                "state": "wellFormed",
+                "visibility": "private"
+            },
+            {
+                "id": "xsoar-project-3",
+                "lastUpdateTime": "2021-11-18T14:30:28",
+                "name": "test-1",
+                "revision": 47,
                 "state": "wellFormed",
                 "visibility": "private"
             }
@@ -721,8 +754,9 @@ Retrieve all projects in the organization that the authenticated user has access
 > Showing page 1 out others that may exist.
 >|Name|Id|State|Revision|Visibility|Last Update Time|
 >|---|---|---|---|---|---|
->| test | 041923ed-7784-4f3a-83fe-4c3e2f381864 | wellFormed | 39 | private | 2021-10-27T08:38:28 |
->| xsoar | xsoar-project | wellFormed | 11 | private | 2021-10-13T15:46:18 |
+>| test | xsoar-project-1| wellFormed | 39 | private | 2021-10-27T08:38:28 |
+>| xsoar | xsoar-project-2 | wellFormed | 11 | private | 2021-10-13T15:46:18 |
+>| test-1 | xsoar-project-3 | wellFormed | 47 | private | 2021-11-18T14:30:28 |
 
 
 ### azure-devops-repository-list
@@ -737,9 +771,9 @@ Retrieve git repositories in the organization project.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project | The name of the project to which the repositories belong to. | Required | 
-| limit | The number of results to retrieve. Default is 50, minimum is 1. Default is 50. | Optional | 
-| page | The page number of the results to retrieve. Default is 1, minimum is 1. Default is 1. | Optional | 
+| project | The name or ID of the project to which the repositories belong to. | Required | 
+| limit | The number of results to retrieve. Minimum value is 1. Default is 50. | Optional | 
+| page | The page number of the results to retrieve. Minimum value is 1. Default is 1. | Optional | 
 
 
 #### Context Output
@@ -782,12 +816,12 @@ Retrieve git repositories in the organization project.
 > Showing page 1 out others that may exist.
 >|Id|Name|Size ( Bytes )|
 >|---|---|---|
->| XXXX | yehuda123 | 1183 |
+>| XXXX | test2803 | 0 |
 
 
 ### azure-devops-user-list
 ***
-Query users  in the organization.
+Query users that were added to organization projects.
 
 
 #### Base Command
@@ -798,6 +832,8 @@ Query users  in the organization.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | Users or organization query prefix. For example, If we want to retrieve information about the user 'Tom' we can enter the value of this argument as 'Tom' . | Required | 
+| page | The page number of the results to retrieve. Minimum value is 1. Possible values are: . Default is 1. | Optional | 
+| limit | The number of results to retrieve. Minimum value is 1. Default is 50. | Optional | 
 
 
 #### Context Output
@@ -834,7 +870,9 @@ Query users  in the organization.
 
 #### Human Readable Output
 
->### Users list:
+>### Users List:
+> Current page size: 50
+> Showing page 1 out others that may exist.
 >|Email|Entity Type|Id|
 >|---|---|---|
 >| user1@xsoar.com | User | XXXX |
@@ -853,8 +891,8 @@ Retrieve pull-request.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project | The name of the project. | Required | 
-| repository_id | The repository ID of the pull request's target branch. | Required | 
+| project | The name or ID of the project. | Required | 
+| repository_id | The repository ID of the pull request's target branch. A repository ID can be obtained by running the 'azure-devops-repository-list'. | Required | 
 | pull_request_id | The ID of the pull request to retrieve. | Required | 
 
 
@@ -893,7 +931,7 @@ Retrieve pull-request.
 
 
 #### Command Example
-```!azure-devops-pull-request-get project="xsoar" repository_id="XXXX" pull_request_id="48"```
+```!azure-devops-pull-request-get project="xsoar" repository_id="bbd1bda1-b58e-41de-930a-59c92d852dcd" pull_request_id="48"```
 
 #### Context Example
 ```json
@@ -957,7 +995,7 @@ Retrieve pull-request.
 
 ### azure-devops-pipeline-run-get
 ***
-Retrieve pipeline run information.
+Retrieve a pipeline run information.
 
 
 #### Base Command
@@ -970,6 +1008,9 @@ Retrieve pipeline run information.
 | project | The name of the project. | Required | 
 | pipeline_id | The ID of the pipeline to retrieve. | Required | 
 | run_id | The ID of the pipeline run to retrieve. | Required | 
+| scheduled | Indicates if the command was scheduled. Possible values are: True, False. Default is False. | Optional | 
+| interval | Indicates how long to wait between commands execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. Default is 30. | Optional | 
+| timeout | Indicates the time in seconds until the polling sequence timeouts. Default is 60. | Optional | 
 
 
 #### Context Output
@@ -984,7 +1025,7 @@ Retrieve pipeline run information.
 | AzureDevOps.Project.Pipeline.Run.state | String | The run state. | 
 | AzureDevOps.Project.Pipeline.Run.createdDate | Date | Run-pipeline creation date. | 
 | AzureDevOps.Project.Pipeline.Run.url | String | The URL of the run. | 
-| AzureDevOps.Project.Pipeline.Run.id | Number | The ID of the run. | 
+| AzureDevOps.Project.Pipeline.Run.run_id | Number | The ID of the run. | 
 | AzureDevOps.Project.Pipeline.Run.name | String | The name of the run. | 
 | AzureDevOps.Project.Pipeline.Run.name | String | The result of the pipeline running. If the run is in progress, the default value is 'unknown'. | 
 
@@ -1000,9 +1041,9 @@ Retrieve pipeline run information.
             "Pipeline": {
                 "Run": {
                     "createdDate": "2021-10-25T06:34:31",
-                    "id": 13,
                     "name": "20211025.1",
                     "result": "failed",
+                    "run_id": 13,
                     "state": "completed",
                     "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/pipelines/1/runs/13"
                 },
@@ -1038,8 +1079,8 @@ Retrieve pipeline runs list. The command retrieves up to the top 10000 runs for 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | project | The name of the organizaion project. | Required | 
-| page | The page number of the results to retrieve. Default is 1, minimum is 1. Default is 1. | Optional | 
-| limit | The number of results to retrieve. Default is 50, minimum is 1. Default is 50. | Optional | 
+| page | The page number of the results to retrieve. Minimum value is 1. Default is 1. | Optional | 
+| limit | The number of results to retrieve. Minimum value is 1. Default is 50. | Optional | 
 | pipeline_id | The ID of the pipeline which the runs belongs to. | Required | 
 
 
@@ -1055,7 +1096,7 @@ Retrieve pipeline runs list. The command retrieves up to the top 10000 runs for 
 | AzureDevOps.Project.Pipeline.Run.state | String | The run state. | 
 | AzureDevOps.Project.Pipeline.Run.createdDate | Date | Run-pipeline creation date. | 
 | AzureDevOps.Project.Pipeline.Run.url | String | The URL of the run. | 
-| AzureDevOps.Project.Pipeline.Run.id | Number | The ID of the run. | 
+| AzureDevOps.Project.Pipeline.Run.run_id | Number | The ID of the run. | 
 | AzureDevOps.Project.Pipeline.Run.name | String | The name of the run. | 
 | AzureDevOps.Project.Pipeline.Run.name | String | The result of the pipeline running. If the run is in progress, the default value is 'unknown'. | 
 
@@ -1097,7 +1138,7 @@ Retrieve pipeline runs list. The command retrieves up to the top 10000 runs for 
 > Showing page 1 out others that may exist.
 >|Pipeline Id|Run State|Creation Date|Run Id|Result|
 >|---|---|---|---|---|
->| 1 | completed | 2021-11-03T09:25:20 | 113 | failed |
+>| 1 | inProgress | 2021-11-21T14:54:00 | 1142 | unknown |
 
 
 ### azure-devops-pipeline-list
@@ -1113,8 +1154,8 @@ Retrieve project pipelines list.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | project | The name of the organizaion project. | Required | 
-| page | The page number of the results to retrieve. Default is 1, minimum is 1. Default is 1. | Optional | 
-| limit | The number of results to retrieve. Default is 50, minimum is 1. Default is 50. | Optional | 
+| page | The page number of the results to retrieve. Minimum value is 1. Default is 1. | Optional | 
+| limit | The number of results to retrieve. Minimum value is 1. Default is 50. | Optional | 
 
 
 #### Context Output
@@ -1174,8 +1215,8 @@ Retrieve repository branches list.
 | --- | --- | --- |
 | project | The name of the organizaion project. | Required | 
 | repository | The name of the project repository. | Required | 
-| page | The page number of the results to retrieve. Default is 1, minimum is 1. Default is 1. | Optional | 
-| limit | The number of results to retrieve. Default is 50, minimum is 1. Default is 50. | Optional | 
+| page | The page number of the results to retrieve. Minimum value is 1. Default is 1. | Optional | 
+| limit | The number of results to retrieve. Minimum value is 1. Default is 50. | Optional | 
 
 
 #### Context Output

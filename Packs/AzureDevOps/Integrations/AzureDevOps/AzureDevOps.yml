@@ -34,14 +34,6 @@ configuration:
   name: repository
   required: false
   type: 0
-- additionalinfo: Indicated the first pull-request ID to fetch. If this argument will
-    not be provided, the first pull-request to fetch will be the oldest pull-request
-    ID.
-  display: First pull-request ID
-  hidden: false
-  name: first_pull_request_id
-  required: false
-  type: 0
 - display: Incident type
   name: incidentType
   required: false
@@ -56,6 +48,10 @@ configuration:
   name: first_fetch
   required: false
   type: 0
+- display: Outgoing mirroring
+  name: is_mirroring
+  required: false
+  type: 8
 - display: Use system proxy settings
   name: proxy
   required: false
@@ -260,7 +256,7 @@ script:
     name: azure-devops-user-remove
   - arguments:
     - default: false
-      description: The name of the project.
+      description: The name or ID of the project.
       isArray: false
       name: project
       required: true
@@ -396,7 +392,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The name of the project.
+      description: The name or ID of the project.
       isArray: false
       name: project
       required: true
@@ -527,7 +523,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The name of the project which the pull requests belongs to.
+      description: The name or ID of the project which the pull requests belongs to.
       isArray: false
       name: project
       required: true
@@ -678,7 +674,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The name of the project to which the repositories belong to.
+      description: The name or ID of the project to which the repositories belong to.
       isArray: false
       name: project
       required: true
@@ -758,7 +754,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The name of the project.
+      description: The name or ID of the project.
       isArray: false
       name: project
       required: true
@@ -887,9 +883,36 @@ script:
       name: run_id
       required: true
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'False'
+      description: Indicates if the command was scheduled.
+      isArray: false
+      name: scheduled
+      predefined:
+        - 'True'
+        - 'False'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '30'
+      description: Indicates how long to wait between commands execution (in seconds)
+        when 'polling' argument is true. Minimum value is 10 seconds.
+      isArray: false
+      name: interval
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '60'
+      description: Indicates the time in seconds until the polling sequence timeouts.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
     deprecated: false
     description: Retrieve a pipeline run information.
     execution: false
+    polling: true
     name: azure-devops-pipeline-run-get
     outputs:
     - contextPath: AzureDevOps.Project.name
@@ -1078,7 +1101,7 @@ script:
     - contextPath: AzureDevOps.Project.Repository.Branch.creator
       description: Thr creator of the branch.
       type: String
-  dockerimage: demisto/crypto:1.0.0.24037
+  dockerimage: demisto/crypto:1.0.0.24380
   isremotesyncin: true
   isremotesyncout: true
   ismappable: true
@@ -1093,4 +1116,4 @@ script:
 fromversion: 6.0.0
 beta: true
 tests:
-- No tests (auto formatted)
+- playbook-AzureDevOps-Test

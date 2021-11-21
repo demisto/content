@@ -22,7 +22,10 @@
     "content": true,
     "group": 0,
     "hidden": false,
-    "associatedToAll": true,
+    "associatedTypes": [
+        "Azure DevOps"
+    ],
+    "associatedToAll": false,
     "unmapped": false,
     "unsearchable": false,
     "caseInsensitive": true,

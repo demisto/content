@@ -508,19 +508,46 @@ def pipeline_run_command(client: Client, args: Dict[str, Any]) -> CommandResults
     project = args['project']
     pipeline_id = args['pipeline_id']
     branch_name = args['branch_name']
+    should_poll = argToBoolean(args.get('polling', False))
 
+    # create new pipeline-run.
     response = client.pipeline_run_request(project, pipeline_id, branch_name)
+    state = response.get('state')
 
-    outputs = generate_pipeline_run_output(response, project)
-    readable_output = generate_pipeline_run_readable_information(response)
+    # Running polling flow
+    if should_poll and state != 'completed':
+        interval = arg_to_number(args.get('interval', 30))
+        timeout = arg_to_number(args.get('timeout', 60))
+        run_id = response.get('id')
+        polling_args = {
+            'run_id': run_id,
+            'interval': interval,
+            'scheduled': True,
+            'timeout': timeout,
+            **args
+        }
+        # Schedule poll for the piplenine status
+        scheduled_command = ScheduledCommand(
+            command='azure-devops-pipeline-run-get',
+            next_run_in_seconds=interval,
+            timeout_in_seconds=timeout,
+            args=polling_args)
 
-    command_results = CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='AzureDevOps.Project',
-        outputs_key_field='name',
-        outputs=outputs,
-        raw_response=response
-    )
+        # Result with scheduled_command only - no update to the war room
+        command_results = CommandResults(scheduled_command=scheduled_command)
+
+    # Polling flow is done or user did not trigger the polling flow (should_poll = False)
+    else:
+
+        outputs = generate_pipeline_run_output(response, project)
+        readable_output = generate_pipeline_run_readable_information(response)
+        command_results = CommandResults(
+            readable_output=readable_output,
+            outputs_prefix='AzureDevOps.Project',
+            outputs_key_field='name',
+            outputs=outputs,
+            raw_response=response
+        )
 
     return command_results
 
@@ -599,74 +626,82 @@ def user_remove_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     return command_results
 
 
-def generate_pull_request_output(response: dict) -> dict:
+def generate_pull_request_output(raw_response: Union[dict, list]) -> dict:
     """
     Create XSOAR context output for retrieving pull-request information.
     Args:
-        response (dict): API response from Azure.
+        raw_response (dict/list): API response from Azure.
 
     Returns:
         dict: XSOAR command outputs.
 
     """
-    project = {"name": dict_safe_get(response, ['repository', 'project', 'name'])}
 
-    repository_id = dict_safe_get(response, ['repository', 'id'])
-    name = dict_safe_get(response, ['repository', 'name'])
-    url = dict_safe_get(response, ['repository', 'url'])
-    size = dict_safe_get(response, ['repository', 'size'])
+    if not isinstance(raw_response, list):
+        raw_response = [raw_response]
 
-    repository_data = {"id": repository_id, "name": name, "url": url, "size": size}
+    if not raw_response:
+        return []
 
-    pr_id = response.get('pullRequestId')
-    status = response.get('status')
+    project = {"name": dict_safe_get(raw_response[0], ['repository', 'project', 'name'])}
 
-    creation_date = FormatIso8601(arg_to_datetime(response.get('creationDate')))
-    title = response.get('title')
-    description = response.get('description')
-    source = response.get('sourceRefName')
-    target = response.get('targetRefName')
-    merge_status = response.get('mergeStatus')
-    is_draft = response.get('isDraft')
+    repository_id = dict_safe_get(raw_response[0], ['repository', 'id'])
+    name = dict_safe_get(raw_response[0], ['repository', 'name'])
+    url = dict_safe_get(raw_response[0], ['repository', 'url'])
+    size = dict_safe_get(raw_response[0], ['repository', 'size'])
 
-    pr_data = {"Id": pr_id, "status": status, "creationDate": creation_date, "title": title,
-               "description": description, "sourceRefName": source, "targetRefName": target,
-               "mergeStatus": merge_status, "isDraft": is_draft}
+    repository_data = {"id": repository_id, "name": name, "url": url, "size": size, "PullRequest": []}
 
-    creator_display = dict_safe_get(response, ['createdBy', 'displayName'])
-    creator_id = dict_safe_get(response, ['createdBy', 'id'])
-    creator_unique_name = dict_safe_get(response, ['createdBy', 'uniqueName'])
+    for response in raw_response:
+        pr_id = response.get('pullRequestId')
+        status = response.get('status')
 
-    created_by = {"displayName": creator_display, "id": creator_id, "uniqueName": creator_unique_name}
-    pr_data["CreatedBy"] = created_by
+        creation_date = FormatIso8601(arg_to_datetime(response.get('creationDate')))
+        title = response.get('title')
+        description = response.get('description')
+        source = response.get('sourceRefName')
+        target = response.get('targetRefName')
+        merge_status = response.get('mergeStatus')
+        is_draft = response.get('isDraft')
 
-    source_commit_id = dict_safe_get(response, ['lastMergeSourceCommit', 'commitId'])
-    source_commit_url = dict_safe_get(response, ['lastMergeSourceCommit', 'url'])
-    source_data = {"commitId": source_commit_id, "url": source_commit_url}
-    pr_data["LastMergeSourceCommit"] = source_data
+        pr_data = {"Id": pr_id, "status": status, "creationDate": creation_date, "title": title,
+                   "description": description, "sourceRefName": source, "targetRefName": target,
+                   "mergeStatus": merge_status, "isDraft": is_draft}
 
-    target_commit_id = dict_safe_get(response, ['lastMergeTargetCommit', 'commitId'])
-    target_commit_url = dict_safe_get(response, ['lastMergeTargetCommit', 'url'])
-    target_data = {"commitId": target_commit_id, "url": target_commit_url}
-    pr_data["LastMergeTargetCommit"] = target_data
+        creator_display = dict_safe_get(response, ['createdBy', 'displayName'])
+        creator_id = dict_safe_get(response, ['createdBy', 'id'])
+        creator_unique_name = dict_safe_get(response, ['createdBy', 'uniqueName'])
 
-    reviewers = []
+        created_by = {"displayName": creator_display, "id": creator_id, "uniqueName": creator_unique_name}
+        pr_data["CreatedBy"] = created_by
 
-    for reviewer in response.get("reviewers", []):
-        data = {"reviewerUrl": reviewer.get('reviewerUrl'), "vote": reviewer.get('vote'),
-                "hasDeclined": reviewer.get('hasDeclined'), "isFlagged": reviewer.get('isFlagged'),
-                "displayName": reviewer.get('displayName'), "id": reviewer.get('id'),
-                "uniqueName": reviewer.get('uniqueName')}
+        source_commit_id = dict_safe_get(response, ['lastMergeSourceCommit', 'commitId'])
+        source_commit_url = dict_safe_get(response, ['lastMergeSourceCommit', 'url'])
+        source_data = {"commitId": source_commit_id, "url": source_commit_url}
+        pr_data["LastMergeSourceCommit"] = source_data
 
-        reviewers.append(data)
+        target_commit_id = dict_safe_get(response, ['lastMergeTargetCommit', 'commitId'])
+        target_commit_url = dict_safe_get(response, ['lastMergeTargetCommit', 'url'])
+        target_data = {"commitId": target_commit_id, "url": target_commit_url}
+        pr_data["LastMergeTargetCommit"] = target_data
 
-    pr_data["Reviewers"] = reviewers
-    repository_data["PullRequest"] = pr_data
+        reviewers = []
+
+        for reviewer in response.get("reviewers", []):
+            data = {"reviewerUrl": reviewer.get('reviewerUrl'), "vote": reviewer.get('vote'),
+                    "hasDeclined": reviewer.get('hasDeclined'), "isFlagged": reviewer.get('isFlagged'),
+                    "displayName": reviewer.get('displayName'), "id": reviewer.get('id'),
+                    "uniqueName": reviewer.get('uniqueName')}
+
+            reviewers.append(data)
+
+        pr_data["Reviewers"] = reviewers
+
+        repository_data["PullRequest"].append(pr_data)
+
     project["Repository"] = repository_data
 
-    outputs = project
-
-    return outputs
+    return project
 
 
 def filter_pull_request_table(pull_request: dict) -> dict:
@@ -868,17 +903,7 @@ def pull_requests_list_command(client: Client, args: Dict[str, Any]) -> CommandR
 
     readable_message = f'Pull Request List:\n Current page size: {limit}\n Showing page {page} out others that may exist.'
 
-    outputs = {"name": project, "Repository": {"name": repository}}
-    for pr in response.get('value'):
-        data = generate_pull_request_output(pr)
-
-        pr_data = data["Repository"].pop("PullRequest")
-
-        if not dict_safe_get(outputs, ["Repository", "id"]):
-            outputs = {"name": data.get("name"), "Repository": data.get("Repository")}
-            outputs["Repository"]["PullRequest"] = []
-
-        outputs["Repository"]["PullRequest"].append(pr_data)
+    outputs = generate_pull_request_output(response.get('value'))
 
     readable_output = generate_pull_request_readable_information(response.get('value'), message=readable_message)
 
@@ -969,13 +994,16 @@ def repository_list_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
     repository_data = []
 
+    outputs = {}
+
     if response.get('count') and response.get('count') >= start:
         min_index = min(response.get('count'), end)
         for repo in response.get('value')[start:min_index]:
             data = {"id": repo.get('id'), "name": repo.get("name"), "url": repo.get("url"), "size": repo.get("size")}
             repository_data.append(data)
 
-    outputs = {"name": project, "Repository": repository_data}
+        outputs = {"name": dict_safe_get(response.get('value')[start], ['project', 'name']),
+                   "Repository": repository_data}
 
     readable_data = copy.deepcopy(repository_data)
     for repo in readable_data:
@@ -1064,22 +1092,38 @@ def pipeline_run_get_command(client: Client, args: Dict[str, Any]) -> CommandRes
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
+
     project = args['project']
     pipeline_id = args['pipeline_id']
     run_id = args['run_id']
-
+    scheduled = argToBoolean(args.get('scheduled', False))
     response = client.get_pipeline_run_request(project, pipeline_id, run_id)
 
-    outputs = generate_pipeline_run_output(response, project)
-    readable_output = generate_pipeline_run_readable_information(response)
+    # This is part of a scheduled command run
+    state = response.get("state")
 
-    command_results = CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='AzureDevOps.Project',
-        outputs_key_field='name',
-        outputs=outputs,
-        raw_response=response
-    )
+    if scheduled and state != 'completed':
+        # schedule next poll
+        scheduled_command = ScheduledCommand(
+            command='azure-devops-pipeline-run-get',
+            next_run_in_seconds=arg_to_number(args.get('interval', 30)),
+            timeout_in_seconds=arg_to_number(args.get('timeout', 60)),
+            args=args,
+        )
+
+        # result with scheduled_command only - no update to the war room
+        command_results = CommandResults(scheduled_command=scheduled_command)
+
+    else:
+        outputs = generate_pipeline_run_output(response, project)
+        readable_output = generate_pipeline_run_readable_information(response)
+        command_results = CommandResults(
+            readable_output=readable_output,
+            outputs_prefix='AzureDevOps.Project',
+            outputs_key_field='name',
+            outputs=outputs,
+            raw_response=response
+        )
 
     return command_results
 
@@ -1401,13 +1445,14 @@ def parse_incident(pull_request: dict, integration_instance: str) -> dict:
     return incident
 
 
-def count_active_pull_requests(project: str, repository: str, client: Client) -> int:
+def count_active_pull_requests(project: str, repository: str, client: Client, first_fetch: datetime = None) -> int:
     """
     Count the number of active pull-requests in the repository.
     Args:
         project (str): The name of the project which the pull requests belongs to.
         repository (str): The repository name of the pull request's target branch.
         client (Client): Azure DevOps API client.
+        first_fetch (datetime): Indicated the oldest pull-request time.
 
     Returns:
         int: Pull-requests number.
@@ -1418,10 +1463,24 @@ def count_active_pull_requests(project: str, repository: str, client: Client) ->
     max_iterations = 100
 
     while max_iterations > 0:
+        max_iterations -= 1
         response = client.pull_requests_list_request(project, repository, skip=count, limit=limit)
         if response.get("count") == 0:
             break
-        count += response.get("count")
+        if first_fetch:
+            last_pr_date = arg_to_datetime(
+                response.get("value")[response.get("count") - 1].get('creationDate').replace('Z', ''))
+            if last_pr_date < first_fetch:  # If the oldest pr in the result is older than 'first_fetch' argument.
+                for pr in response.get("value"):
+                    if arg_to_datetime(pr.get('creationDate').replace('Z', '')) > first_fetch:
+                        count += 1
+                    else:  # Stop counting
+                        max_iterations = -1
+                        break
+            else:
+                count += response.get("count")
+        else:
+            count += response.get("count")
 
     return count
 
@@ -1535,7 +1594,7 @@ def is_new_pr(project: str, repository: str, client: Client, last_id: int) -> bo
 
 
 def fetch_incidents(client, project: str, repository: str, integration_instance: str, max_fetch: int = 50,
-                    first_pull_request_id: str = None) -> None:
+                    first_fetch: str = None) -> None:
     """
     Fetch new active pull-requests from repository.
     Args:
@@ -1544,22 +1603,17 @@ def fetch_incidents(client, project: str, repository: str, integration_instance:
         repository (str): The repository name of the pull request's target branch.
         integration_instance (str): The name of the integration instance.
         max_fetch (int): Maximum incidents for one fetch.
-        first_pull_request_id (str): Indicated the first pull-request ID to fetch.
+        first_fetch (str): Indicated the date from which to start fetching pull-requests.
 
     """
     last_run = demisto.getLastRun()
 
     last_id = last_run.get("last_id", None)
-    if not last_id and first_pull_request_id:
-        last_id = int(first_pull_request_id) - 1
-        if last_id <= 1:
-            last_id = None
-
-    if last_id and not is_new_pr(project, repository, client, last_id):  # There is no new pr
-        demisto.incidents([])
-        return
 
     if last_id:
+        if not is_new_pr(project, repository, client, last_id):  # There is no new pr
+            demisto.incidents([])
+            return
 
         last_id_index = get_last_fetch_incident_index(project, repository, client, last_id)
 
@@ -1568,7 +1622,9 @@ def fetch_incidents(client, project: str, repository: str, integration_instance:
 
     else:  # In the first iteration of fetch-incident ,
         # we have to find the oldest active pull-request index.
-        last_id_index = count_active_pull_requests(project, repository, client)
+        if first_fetch:
+            first_fetch = arg_to_datetime(first_fetch)
+        last_id_index = count_active_pull_requests(project, repository, client, first_fetch)
 
     skip = last_id_index - max_fetch
     if skip <= 0:
@@ -1592,71 +1648,6 @@ def fetch_incidents(client, project: str, repository: str, integration_instance:
         demisto.incidents(incidents)
 
 
-def run_pipeline_with_polling_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """
-    Run a pipeline as polling command.
-    Args:
-        client (Client): Azure DevOps API client.
-        args (dict): Command arguments from XSOAR.
-
-    Returns:
-        CommandResults: outputs, readable outputs and raw response for XSOAR.
-
-    """
-    ScheduledCommand.raise_error_if_not_supported()
-    interval = arg_to_number(args.get('interval', 30))
-    timeout = arg_to_number(args.get('timeout', 60))
-
-    if 'run_id' not in args:
-        # create new pipeline-run.
-        command_results = pipeline_run_command(client, args)
-        outputs = command_results.outputs
-        run_id = dict_safe_get(outputs, ['Pipeline', 'Run', 'run_id'])
-
-        if dict_safe_get(outputs, ['Pipeline', 'Run', 'state']) != 'completed':
-            polling_args = {
-                'run_id': run_id,
-                'interval_in_seconds': interval,
-                'polling': True,
-                **args
-            }
-
-            scheduled_command = ScheduledCommand(
-                command='azure-devops-pipeline-run',
-                next_run_in_seconds=interval,
-                args=polling_args,
-                timeout_in_seconds=timeout)
-            command_results.scheduled_command = scheduled_command
-            return command_results
-        else:
-            # continue to look for run results
-            args['run_id'] = run_id
-
-    # get run state
-    command_results = pipeline_run_get_command(client, args)
-    outputs = command_results.outputs
-    state = dict_safe_get(outputs, ['Pipeline', 'Run', 'state'])
-    if state != 'completed':
-        # schedule next poll
-        polling_args = {
-            'run_id': args.get('run_id'),
-            'interval_in_seconds': interval,
-            'polling': True,
-            **args
-        }
-
-        scheduled_command = ScheduledCommand(
-            command='azure-devops-pipeline-run',
-            next_run_in_seconds=interval,
-            args=polling_args,
-            timeout_in_seconds=timeout)
-
-        # result with scheduled_command only - no update to the war room
-        command_results = CommandResults(scheduled_command=scheduled_command)
-
-    return command_results
-
-
 def main() -> None:
     params: Dict[str, Any] = demisto.params()
     args: Dict[str, Any] = demisto.args()
@@ -1664,6 +1655,7 @@ def main() -> None:
     organization = params['organization']
     verify_certificate: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)
+    is_mirroring = params.get('is_mirroring', False)
 
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
@@ -1732,24 +1724,22 @@ def main() -> None:
         elif command == 'fetch-incidents':
             integration_instance = demisto.integrationInstance()
             fetch_incidents(client, params.get('project'), params.get('repository'), integration_instance,
-                            arg_to_number(params.get('max_fetch', 50)), params.get('first_pull_request_id'))
+                            arg_to_number(params.get('max_fetch', 50)), params.get('first_fetch'))
 
         elif command == 'azure-devops-auth-reset':
             return_results(reset_auth())
 
         elif command == 'azure-devops-pipeline-run':
-            if args.get('polling') == 'True':
-                pipeline_result = run_pipeline_with_polling_command(client, args)
-                if pipeline_result is not None:
-                    return_results(pipeline_result)
-            else:
-                return_results(pipeline_run_command(client, args))
+            pipeline_result = pipeline_run_command(client, args)
+            if pipeline_result is not None:
+                return_results(pipeline_result)
 
         elif command == 'get-mapping-fields':
             return_results(get_mapping_fields_command())
 
         elif command == 'update-remote-system':
-            return_results(update_remote_system_command(client, args))
+            if is_mirroring:
+                return_results(update_remote_system_command(client, args))
 
         else:
             raise NotImplementedError(f'{command} command is not implemented.')

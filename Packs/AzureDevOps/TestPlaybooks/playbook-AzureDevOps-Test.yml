@@ -1,2 +1,1816 @@
 id: playbook-AzureDevOps-Test
 version: -1
+name: playbook-AzureDevOps-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ef67df3a-837e-449c-872d-57e2bf06440a
+    type: start
+    task:
+      id: ef67df3a-837e-449c-872d-57e2bf06440a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 7fec787c-d081-41f6-80ff-c5ab7f12ddc8
+    type: regular
+    task:
+      id: 7fec787c-d081-41f6-80ff-c5ab7f12ddc8
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 5f4ec343-609a-4d33-86be-8d59b679316e
+    type: regular
+    task:
+      id: 5f4ec343-609a-4d33-86be-8d59b679316e
+      version: -1
+      name: azure-devops-pipeline-run
+      script: '|||azure-devops-pipeline-run'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      branch_name:
+        simple: main
+      interval: {}
+      pipeline_id:
+        simple: ${AzureDevOps.Project.Pipeline.id}
+      polling: {}
+      project:
+        simple: ${AzureDevOps.Project.name}
+      run_id: {}
+      timeout: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 4930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 870820bd-70d9-48b5-8bf8-7179ac3db6d1
+    type: condition
+    task:
+      id: 870820bd-70d9-48b5-8bf8-7179ac3db6d1
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Pipeline.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Pipeline.revision
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Pipeline.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Pipeline.folder
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Pipeline.Run.state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Pipeline.Run.createdDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Pipeline.Run.url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Pipeline.Run.run_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Pipeline.Run.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Pipeline.Run.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 5130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: f691d5ec-4fd0-47c3-8053-c9f30e491b16
+    type: regular
+    task:
+      id: f691d5ec-4fd0-47c3-8053-c9f30e491b16
+      version: -1
+      name: azure-devops-user-add
+      script: '|||azure-devops-user-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      account_license_type:
+        simple: express
+      group_type:
+        simple: projectContributor
+      project_id:
+        simple: xsoar-project-id
+      user_email:
+        simple: test@xsoar.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1855
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: a960767b-c12f-432b-8bd9-64e854084e44
+    type: condition
+    task:
+      id: a960767b-c12f-432b-8bd9-64e854084e44
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "39"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.User.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.User.accountLicenseType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.User.lastAccessedDate
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 2035
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 53e757ee-9083-49d7-85b7-9cb801e55e00
+    type: regular
+    task:
+      id: 53e757ee-9083-49d7-85b7-9cb801e55e00
+      version: -1
+      name: azure-devops-user-remove
+      script: '|||azure-devops-user-remove'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      user_id:
+        simple: xsoar-user-id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: b39d92f0-7395-4a31-8e3d-d91bfb85f483
+    type: regular
+    task:
+      id: b39d92f0-7395-4a31-8e3d-d91bfb85f483
+      version: -1
+      name: azure-devops-pull-request-create
+      script: '|||azure-devops-pull-request-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      description:
+        simple: test title
+      project:
+        simple: xsoar-project-name
+      repository_id:
+        simple: xsoar-repository-id
+      reviewers_ids:
+        simple: xsoar-reviewer-id
+      source_branch:
+        simple: xsoar-test
+      target_branch:
+        simple: main
+      title:
+        simple: test playbook title
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 2830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: e333d2d4-18bb-41b0-8484-7ece66a1d7b3
+    type: regular
+    task:
+      id: e333d2d4-18bb-41b0-8484-7ece66a1d7b3
+      version: -1
+      name: azure-devops-pull-request-update
+      script: '|||azure-devops-pull-request-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      description: {}
+      project:
+        simple: xsoar
+      pull_request_id:
+        simple: ${AzureDevOps.Project.Repository.PullRequest.Id}
+      repository_id:
+        simple: xsoar-repository-id
+      status:
+        simple: abandoned
+      title:
+        simple: new title
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 3230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: b854a73e-b31e-4dba-8bb7-d5a19b2301ff
+    type: regular
+    task:
+      id: b854a73e-b31e-4dba-8bb7-d5a19b2301ff
+      version: -1
+      name: azure-devops-pull-request-list
+      script: '|||azure-devops-pull-request-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      limit:
+        simple: "1"
+      page:
+        simple: "1"
+      project:
+        simple: ${AzureDevOps.Project.name}
+      repository:
+        simple: ${AzureDevOps.Project.Repository.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 3630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: e80abf3f-212e-4aa8-8fbe-a68df4660659
+    type: regular
+    task:
+      id: e80abf3f-212e-4aa8-8fbe-a68df4660659
+      version: -1
+      name: azure-devops-project-list
+      script: '|||azure-devops-project-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      limit:
+        simple: "1"
+      page:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 715
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 06473d9c-7df0-430d-808b-8c8df74a0d2a
+    type: condition
+    task:
+      id: 06473d9c-7df0-430d-808b-8c8df74a0d2a
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.revision
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.visibility
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.lastUpdateTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: f498652f-2a4b-4109-8b72-2985773f84d1
+    type: regular
+    task:
+      id: f498652f-2a4b-4109-8b72-2985773f84d1
+      version: -1
+      name: azure-devops-repository-list
+      script: '|||azure-devops-repository-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      limit:
+        simple: "1"
+      page:
+        simple: "1"
+      project:
+        simple: ${AzureDevOps.Project.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 942203f6-7479-4323-8721-5c4dc3b547ea
+    type: condition
+    task:
+      id: 942203f6-7479-4323-8721-5c4dc3b547ea
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.size
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: cec7f385-c6b0-4735-87dc-db717eaaa8bb
+    type: regular
+    task:
+      id: cec7f385-c6b0-4735-87dc-db717eaaa8bb
+      version: -1
+      name: azure-devops-user-list
+      script: '|||azure-devops-user-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      query:
+        simple: test@xsoar
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1485
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 900ff8f3-56da-4f8d-84cc-73386b08d3c4
+    type: condition
+    task:
+      id: 900ff8f3-56da-4f8d-84cc-73386b08d3c4
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.User.entityType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.User.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.User.email
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1665
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: adf1788b-ce55-46a4-8670-b7b0fd6c573b
+    type: regular
+    task:
+      id: adf1788b-ce55-46a4-8670-b7b0fd6c573b
+      version: -1
+      name: azure-devops-pull-request-get
+      script: '|||azure-devops-pull-request-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      project:
+        simple: ${AzureDevOps.Project.name}
+      pull_request_id:
+        simple: ${AzureDevOps.Project.Repository.PullRequest.Id}
+      repository_id:
+        simple: ${AzureDevOps.Project.Repository.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 4040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: fbe8a848-73cd-4fe7-8837-1ab4ced002ad
+    type: regular
+    task:
+      id: fbe8a848-73cd-4fe7-8837-1ab4ced002ad
+      version: -1
+      name: azure-devops-pipeline-run-get
+      script: '|||azure-devops-pipeline-run-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      interval: {}
+      pipeline_id:
+        simple: ${AzureDevOps.Project.Pipeline.id}
+      project:
+        simple: ${AzureDevOps.Project.name}
+      run_id:
+        simple: ${AzureDevOps.Project.Pipeline.Run.run_id}
+      scheduled: {}
+      timeout: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: b10f57c3-f7aa-4b12-8350-758a309cc617
+    type: condition
+    task:
+      id: b10f57c3-f7aa-4b12-8350-758a309cc617
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Pipeline.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Pipeline.revision
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Pipeline.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Pipeline.folder
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Pipeline.Run.state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Pipeline.Run.createdDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Pipeline.Run.url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Pipeline.Run.run_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Pipeline.Run.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Pipeline.Run.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: abc86e76-c8de-4777-8357-cc3a6b3622b0
+    type: regular
+    task:
+      id: abc86e76-c8de-4777-8357-cc3a6b3622b0
+      version: -1
+      name: azure-devops-pipeline-run-list
+      script: '|||azure-devops-pipeline-run-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      limit: {}
+      page: {}
+      pipeline_id:
+        simple: "1"
+      project:
+        simple: xsoar
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 4dcd20f0-4417-4c41-8d17-54b7ad4e7baf
+    type: condition
+    task:
+      id: 4dcd20f0-4417-4c41-8d17-54b7ad4e7baf
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Pipeline.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Pipeline.revision
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Pipeline.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Pipeline.folder
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Pipeline.Run.state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Pipeline.Run.createdDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Pipeline.Run.url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Pipeline.Run.run_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Pipeline.Run.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Pipeline.Run.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: bc960f39-b194-4d0d-89f6-af033475e6d4
+    type: regular
+    task:
+      id: bc960f39-b194-4d0d-89f6-af033475e6d4
+      version: -1
+      name: azure-devops-pipeline-list
+      script: '|||azure-devops-pipeline-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      limit:
+        simple: "1"
+      page:
+        simple: "1"
+      project:
+        simple: ${AzureDevOps.Project.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 4520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 8f3c13d9-3644-4cea-8ecc-5920367509eb
+    type: condition
+    task:
+      id: 8f3c13d9-3644-4cea-8ecc-5920367509eb
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Pipeline.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Pipeline.revision
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Pipeline.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Pipeline.folder
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 4720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: ee8f8dad-b6ca-4f54-88cf-24b91d8bf9ac
+    type: regular
+    task:
+      id: ee8f8dad-b6ca-4f54-88cf-24b91d8bf9ac
+      version: -1
+      name: azure-devops-branch-list
+      script: '|||azure-devops-branch-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      limit:
+        simple: "1"
+      page:
+        simple: "1"
+      project:
+        simple: xsoar
+      repository:
+        simple: xsoar
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: 338f0e99-0eab-4f2d-8e29-4be6b69c4c2b
+    type: condition
+    task:
+      id: 338f0e99-0eab-4f2d-8e29-4be6b69c4c2b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.Branch.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.Branch.creator
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: 3197a946-80b6-4201-892a-7c9affcaecce
+    type: title
+    task:
+      id: 3197a946-80b6-4201-892a-7c9affcaecce
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 6970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: 0ef79cba-08d0-42e5-8163-dc50691707b7
+    type: condition
+    task:
+      id: 0ef79cba-08d0-42e5-8163-dc50691707b7
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.size
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.Id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.CreatedBy.displayName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.CreatedBy.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.CreatedBy.uniqueName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.creationDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.sourceRefName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.targetRefName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.mergeStatus
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.LastMergeSourceCommit.commitId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.LastMergeSourceCommit.url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.LastMergeTargetCommit.commitId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.LastMergeTargetCommit.url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.Reviewers.reviewerUrl
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.Reviewers.vote
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.Reviewers.displayName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.Reviewers.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.Reviewers.uniqueName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 3020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: 4e2521a2-1f54-43cb-89ec-18ec97a90ff5
+    type: condition
+    task:
+      id: 4e2521a2-1f54-43cb-89ec-18ec97a90ff5
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.size
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.Id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.CreatedBy.displayName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.CreatedBy.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.CreatedBy.uniqueName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.creationDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.sourceRefName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.targetRefName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.LastMergeSourceCommit.commitId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.LastMergeSourceCommit.url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.LastMergeTargetCommit.commitId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.LastMergeTargetCommit.url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.Reviewers.reviewerUrl
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.Reviewers.vote
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.Reviewers.displayName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.Reviewers.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.Reviewers.uniqueName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 3430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: f7b369b6-2efe-4934-805f-8af4e5b419cf
+    type: condition
+    task:
+      id: f7b369b6-2efe-4934-805f-8af4e5b419cf
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.Id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.CreatedBy.displayName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.CreatedBy.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.CreatedBy.uniqueName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.creationDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.sourceRefName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.targetRefName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.mergeStatus
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.LastMergeSourceCommit.commitId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.LastMergeSourceCommit.url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.LastMergeTargetCommit.commitId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.LastMergeTargetCommit.url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.Reviewers.reviewerUrl
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.Reviewers.vote
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.Reviewers.displayName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.Reviewers.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.Reviewers.uniqueName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 3840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: f6bb9e89-bfd6-4ddf-80f8-fcff2d7a0f1a
+    type: condition
+    task:
+      id: f6bb9e89-bfd6-4ddf-80f8-fcff2d7a0f1a
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.size
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.Id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.CreatedBy.displayName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.CreatedBy.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.CreatedBy.uniqueName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.creationDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.sourceRefName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.targetRefName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.mergeStatus
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.LastMergeSourceCommit.commitId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.LastMergeSourceCommit.url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.LastMergeTargetCommit.commitId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.LastMergeTargetCommit.url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.Reviewers.reviewerUrl
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.Reviewers.vote
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.Reviewers.displayName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.Reviewers.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.Repository.PullRequest.Reviewers.uniqueName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 4305
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: 1025151f-5dd6-4f34-802c-a5d785cc03ed
+    type: regular
+    task:
+      id: 1025151f-5dd6-4f34-802c-a5d785cc03ed
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 2380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 6645,
+        "width": 390,
+        "x": 50,
+        "y": 390
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.0.0
+description: ''
