@@ -1562,6 +1562,7 @@ def get_current_splunk_time(splunk_service):
             return item["clock"]
     raise ValueError('Error: Could not fetch Splunk time')
 
+
 def quote_group(text):
     """ A function that splits groups of key value pairs.
         Taking into consideration key values pairs with nested quotes.

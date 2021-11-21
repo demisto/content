@@ -189,6 +189,7 @@ def test_raw_to_dict():
     assert splunk.rawToDict(RAW_JSON) == RAW_JSON_AND_STANDARD_OUTPUT
     assert splunk.rawToDict(RAW_STANDARD) == RAW_JSON_AND_STANDARD_OUTPUT
 
+
 @pytest.mark.parametrize('text, output', [
     ('', ['']),
     ('"",', ['"",']),

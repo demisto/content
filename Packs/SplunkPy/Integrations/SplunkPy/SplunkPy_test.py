@@ -249,6 +249,8 @@ data_test_replace_keys = [
     ('', ''),
     (None, None)
 ]
+
+
 @pytest.mark.parametrize('dict_in, dict_out', data_test_replace_keys)
 def test_replace_keys(dict_in, dict_out):
     out = splunk.replace_keys(deepcopy(dict_in))
