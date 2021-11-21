@@ -19,6 +19,12 @@ args:
   description: The markdown title.
 - name: headers
   description: A comma-separated list of table header values. Default will include all available table headers.
+- name: is_auto_json_transform
+  description: Try to auto json transform.
+- name: json_transform_properties
+  description: "A json to transform the value to strings.
+              The syntax is:
+              `{\"header_key\": {\"keys_lst\": [<item1>, ...], \"is_nested\": true/false}}` "
 scripttarget: 0
 subtype: python3
 runonce: false
