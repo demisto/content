@@ -27,6 +27,7 @@ Slack V3 utilizes ["Socket Mode"](https://api.slack.com/apis/connections/socket)
     | `proxy_url` | Proxy URL to use in Slack API calls. | False |
     | `filtered_tags` | Comma-separated list of tags by which to filter the messages sent from XSOAR. Only supported in Cortex XSOAR V6.1 and above. | False |
     | `permitted_notifications` | Types of Notifications to send in the dedicated channel. | False |
+    | `channel_fetch_interval` | The frequency with which to update the channel IDs. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -519,6 +520,35 @@ There is no context output for this command.
 #### Human Readable Output
 
 >The message was successfully pinned.
+
+
+### slack-fetch-channels
+***
+Fetches the channel IDs for all channels in the workspace. 
+In the event a command takes an excessive amount of time, 
+or results in a timeout, it is advised to execute this command. 
+If after executing this command subsequent commands do not timeout, 
+please configure the **Channel fetch interval** with an 
+appropriate time interval for your organization.
+
+
+#### Base Command
+
+`slack-fetch-channels`
+#### Input
+There are no inputs for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```
+!slack-fetch-channels
+```
+
+#### Human Readable Output
+>Successfully updated channels to the Integration Context
 
 ### Known Limitations
 SlackV3 mirrors incidents by listening to messages being sent in channels the bot has been added to.

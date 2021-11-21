@@ -61,9 +61,10 @@ configuration:
   required: false
   type: 8
 - defaultvalue: 'true'
-  additionalinfo: "If your organization does not require incident mirroring, or data collection, it is possible to
-  disable the `longRunning` parameter. For those organizations who do wish to use these features, the parameter should
-  be set to `True` to enable the long-running container."
+  additionalinfo: "If your organization does not require incident mirroring, or data\
+    \ collection, it is possible to disable the `longRunning` parameter. For those\
+    \ organizations who do wish to use these features, the parameter should be set\
+    \ to `True` to enable the long-running container."
   display: Long running instance. Required for investigation mirroring and direct
     messages.
   hidden: false
@@ -102,7 +103,8 @@ configuration:
   required: false
   type: 8
 - defaultvalue: 'None'
-  display: The frequency with which to update the channel IDs.
+  additionalinfo:
+  display: Channel fetch interval
   name: channel_fetch_interval
   required: false
   type: 0
@@ -454,8 +456,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The ID of the thread of which to pin - can be retrieved from
-        a previous send-notification command.
+      description: The ID of the thread of which to pin - can be retrieved from a
+        previous send-notification command.
       isArray: false
       name: threadID
       required: true
@@ -473,8 +475,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The ID of the thread of which to edit - can be retrieved from
-        a previous send-notification command.
+      description: The ID of the thread of which to edit - can be retrieved from a
+        previous send-notification command.
       isArray: false
       name: threadID
       required: true
@@ -496,8 +498,8 @@ script:
       name: ignore_add_url
       required: false
       secret: false
-      description: Whether to include a URL to the relevant component in XSOAR.
-        Can be "true" or "false". Default value is "false".
+      description: Whether to include a URL to the relevant component in XSOAR. Can
+        be "true" or "false". Default value is "false".
     deprecated: false
     description: Edit an existing Slack message.
     execution: false
