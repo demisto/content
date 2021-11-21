@@ -58,7 +58,6 @@ MAXIMUM_MIRROR_LIMIT = 100
 DEFAULT_EVENTS_LIMIT = 20
 MAXIMUM_OFFENSES_PER_FETCH = 50
 DEFAULT_OFFENSES_PER_FETCH = 20
-TERMINATING_SEARCH_STATUSES = {'CANCELED', 'ERROR', 'COMPLETED'}
 DEFAULT_MIRRORING_DIRECTION = 'No Mirroring'
 MIRROR_OFFENSE_AND_EVENTS = 'Mirror Offense and Events'
 MIRROR_DIRECTION: Dict[str, Optional[str]] = {
@@ -1376,7 +1375,7 @@ def create_search_with_retry(client: Client, fetch_mode: str, offense: Dict, eve
 def poll_offense_events_with_retry(client: Client, search_id: str, offense_id: int,
                                    max_retries: int = EVENTS_FAILURE_LIMIT) -> Tuple[List[Dict], str]:
     """
-    Polls QRadar service for search ID given until status returned is within 'TERMINATING_SEARCH_STATUSES'.
+    Polls QRadar service for search ID given until status returned is within '{'CANCELED', 'ERROR', 'COMPLETED'}'.
     Afterwards, performs a call to retrieve the events returned by the search.
     Has retry mechanism, because QRadar service tends to return random errors when
     it is loaded.
@@ -1404,8 +1403,13 @@ def poll_offense_events_with_retry(client: Client, search_id: str, offense_id: i
             # failures are relevant only when consecutive
             num_of_failures = 0
             print_debug_msg(f'Search query_status: {query_status}')
-            # TODO Don't try to get events if CANCELLED or ERROR
-            if query_status in TERMINATING_SEARCH_STATUSES:
+            # Possible values for query_status: {'CANCELED', 'ERROR', 'COMPLETED'}
+            # Don't try to get events if CANCELLED or ERROR
+            if query_status in {'CANCELED', 'ERROR'}:
+                if failure_message == '':
+                    failure_message = f'query_status is {query_status}'
+                return [], failure_message
+            elif query_status == 'COMPLETED':
                 print_debug_msg(f'Getting events for offense {offense_id}')
                 search_results_response = client.search_results_get(search_id)
                 print_debug_msg(f'Http response: {search_results_response.get("http_response", "Not specified - ok")}')
