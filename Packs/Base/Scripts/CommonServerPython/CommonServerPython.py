@@ -1873,6 +1873,9 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
         :type json_transform: ``TableJsonTransformer``
         :param json_transform: An instance of JsonTransformer. If not passed, default one will be initiated
 
+        :type is_auto_json_transform: ``bool``
+        :param is_auto_json_transform: Boolean to try to auto transform complex json
+
        :return: A string representation of the markdown table
        :rtype: ``str``
     """
