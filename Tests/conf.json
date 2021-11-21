@@ -21,6 +21,12 @@
             "playbookID": "Detonate File - WildFire - Test"
         },
         {
+            "integrations": [
+                "Microsoft Management Activity API (O365 Azure Events)"
+            ],
+            "playbookID": "MicrosoftManagementActivity - Test"
+        },
+        {
             "integrations": "Microsoft Teams Management",
             "playbookID": "Microsoft Teams Management - Test",
             "is_mockable": false,
