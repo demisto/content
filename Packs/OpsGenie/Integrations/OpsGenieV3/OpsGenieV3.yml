@@ -8,14 +8,6 @@ configuration:
   name: url
   required: true
   type: 0
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
 - additionalinfo: Must be created from the Teams API Integration section.
   display: API Token
   hidden: false
@@ -33,6 +25,7 @@ configuration:
   type: 0
 - defaultvalue: '20'
   name: max_fetch
+  display: Max Fetch
   required: false
   type: 0
 - additionalinfo: Fetch only events with selected event types
@@ -47,13 +40,18 @@ configuration:
   type: 16
 - display: Status
   name: status
+  additionalinfo: Fetch only events with selected status. If query is used, this paramter will be overrided.
+  defaultvalue: All
   required: false
   options:
+  - All
   - Open
   - Closed
   type: 15
 - display: Priority
+  additionalinfo: Fetch only events with selected priority. If query is used, this paramter will be overrided.
   name: priority
+  defaultvalue: All
   required: false
   options:
   - All
@@ -64,10 +62,12 @@ configuration:
   - P5
   type: 15
 - display: Tags
+  additionalinfo: Fetch only events with selected tags. If query is used, this paramter will be overrided.
   name: tags
   required: false
   type: 0
 - display: Query
+  additionalinfo: Query parameters will be used as URL encoded values for “query” key. i.e. 'https://api.opsgenie.com/v2/alerts?query=status%3Aopenor%20acknowledged%3Atrue&limit=10&sort=createdAt'
   name: query
   required: false
   type: 0
@@ -75,6 +75,14 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 description: Integration with Atlassian OpsGenie
 display: OpsGenie v3
 name: OpsGenieV3
@@ -115,8 +123,12 @@ script:
       required: false
       secret: false
     - default: false
-      description: Teams/users that the alert is routed to via notifications. List
-        of:responser_type, value_type, value.
+      description: "Teams/users that the alert is routed to via notifications.\n
+        You need to insert it as List of triples - responder_type, value_type, value.\n
+        The responder_type can be: team, user, escalation or schedule.\n
+        The value_type can be: id or name.\n
+        The value you can find from the output of the commands '!opsgenie-get-teams', '!opsgenie-get-schedules' or '!opsgenie-get-escalations'.\n
+        For example: schedule,name,test_schedule,user,id,123,team,name,test_team."
       isArray: true
       name: responders
       required: false
@@ -195,7 +207,10 @@ script:
       required: false
       secret: false
     - default: false
-      description: OpsGenie field to sort by
+      description: "Name of the field that result set will be sorted by.\n
+        The options are: createdAt, updatedAt, tinyId, alias, message, status, acknowledged, isSeen
+        snoozed, snoozedUntil, count, lastOccurredAt, source, owner, integration.name,
+        integration.type, report.ackTime, report.closeTime, report.acknowledgedBy, report.closedBy"
       isArray: false
       name: sort
       required: false
@@ -217,7 +232,7 @@ script:
       defaultValue: '0'
     - auto: PREDEFINED
       default: false
-      description: The ID of the alert from opsgenie
+      description: The status of the alert from opsgenie
       isArray: false
       name: status
       required: false
@@ -227,7 +242,7 @@ script:
       - Closed
     - auto: PREDEFINED
       default: false
-      description: Incident Priority. Defaulted to P3 if not provided
+      description: The priority of the alert from opsgenie
       isArray: true
       name: priority
       predefined:
@@ -240,7 +255,7 @@ script:
       secret: false
       defaultValue: P3
     - default: false
-      description: Comma separated list of tags to add.
+      description: Comma separated list of tags.
       isArray: true
       name: tags
       required: false
@@ -552,8 +567,14 @@ script:
       - tiny
       - alias
     - default: false
-      description: Team or user that the alert will be routed to. List of triples
-        (responser_type, value_type, value)
+      description: "Team/user that the alert is routed to via notifications.\n
+        For now, it can be inserted only one responder a time.\n
+        You need to insert it as List of triple - responder_type, value_type, value.\n
+        The responder_type can be: team or user.\n
+        The value_type can be: id or name.\n
+        The value you can find from the output of the command '!opsgenie-get-teams'.\n
+        For example: user,id,123
+        Another example: team,name,test_team."
       isArray: true
       name: responders
       required: true
@@ -1018,11 +1039,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: Teams/users that the incident is routed to via notifications. List
-        of responser_type,value_type,value.
+      description: "Teams/users that the incident is routed to via notifications.\n
+        You need to insert it as List of triples - responder_type, value_type, value.\n
+        The responder_type can be: team or user.\n
+        The value_type can be: id or name.\n
+        The value you can find from the output of the command '!opsgenie-get-teams'.\n
+        For example: user,id,123,team,name,test_team."
       isArray: true
       name: responders
-      required: true
+      required: false
       secret: false
     - default: false
       description: Comma separated list of tags to add.
@@ -1139,6 +1164,30 @@ script:
     execution: false
     hidden: true
     name: opsgenie-get-polling-result
+    description: Inside command for polling
+    polling: true
+
+  - arguments:
+      - name: request_id
+        description: Id of request
+        required: true
+      - name: request_type_suffix
+        description: request_type_suffix
+        required: true
+      - name: output_prefix
+        description: output_prefix
+        required: true
+      - default: false
+        description: Interval in seconds between each poll.
+        isArray: false
+        name: interval_in_seconds
+        required: false
+        secret: false
+        defaultValue: '5'
+    deprecated: false
+    execution: false
+    hidden: true
+    name: opsgenie-get-polling-paging-result
     description: Inside command for polling
     polling: true
 
@@ -1366,8 +1415,12 @@ script:
       secret: false
       defaultValue: '5'
     - default: false
-      description: Team or user that the incident will be routed to. List of triples
-        (responser_type, value_type, value)
+      description: "Teams/users that the incident is routed to via notifications.\n
+        You need to insert it as List of triples - responder_type, value_type, value.\n
+        The responder_type can be: team or user.\n
+        The value_type can be: id or name.\n
+        The value you can find from the output of the command '!opsgenie-get-teams'.\n
+        For example: user,id,123,team,name,test_team."
       isArray: true
       name: responders
       required: true
