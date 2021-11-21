@@ -1,7 +1,7 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Rapid Response"
+        "Rapid Breach Response"
     ],
     "caseInsensitive": true,
     "cliName": "remediationtaskcount",

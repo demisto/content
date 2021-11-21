@@ -4060,5 +4060,5 @@ outputs:
   description: External host names detected based on the fields in your search.
   type: string
 tests:
-- No tests (auto formatted)
+- Splunk Indicator Hunting Test
 fromversion: 5.0.0
