@@ -1,0 +1,115 @@
+description: This is a test playbook for SafeNet Trusted Access - Terminate User SSO
+  Sessions.
+id: STA Test Playbook - Terminate User SSO Sessions
+inputs: []
+name: STA Test Playbook - Terminate User SSO Sessions
+outputs: []
+sourceplaybookid: Test Playbook STA
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4f9919bf-df4d-4f73-8323-0ce3f4518036
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 4f9919bf-df4d-4f73-8323-0ce3f4518036
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 80f5acac-bc0d-408f-8133-a4dcf80fdd59
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 80f5acac-bc0d-408f-8133-a4dcf80fdd59
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      InstanceName:
+        simple: SafeNet Trusted Access_instance_1
+      UserName:
+        simple: demouser
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This playbook terminates user SSO sessions so that upon the next
+        login attempt following the unlocking of the account, authentication is required.
+      id: a2b39809-a04c-4e89-8ae6-2695fb58e982
+      iscommand: false
+      name: SafeNet Trusted Access - Terminate User SSO Sessions
+      playbookId: SafeNet Trusted Access - Terminate User SSO Sessions
+      type: playbook
+      version: -1
+    taskid: a2b39809-a04c-4e89-8ae6-2695fb58e982
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 190
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 385,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+fromversion: 6.0.0
