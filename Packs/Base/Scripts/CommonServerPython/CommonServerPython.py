@@ -1584,8 +1584,8 @@ def formatCell(data, is_pretty=True, json_transform=None):
        :type is_pretty: ``bool``
        :param is_pretty: Should cell content be prettified (default is True)
 
-       :param json_transform:
-
+       :type json_transform: ``JsonTransformer``
+       :param json_transform: The Json transform object to transform the data
 
        :return: The formatted cell content as a string
        :rtype: ``str``
@@ -1953,7 +1953,7 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
                     except Exception:
                         pass
 
-            vals = [stringEscapeMD((formatCell(entry_copy.get(h, ''), False) if entry_copy.get(h) is not None else ''),
+            vals = [stringEscapeMD((formatCell(entry_copy.get(h, ''), False, json_transform.get(h)) if entry_copy.get(h) is not None else ''),
                                    True, True) for h in headers]
 
             # this pipe is optional
