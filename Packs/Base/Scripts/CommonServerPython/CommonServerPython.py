@@ -6,7 +6,6 @@ Note that adding code to CommonServerUserPython can override functions in Common
 from __future__ import print_function
 
 import base64
-import collections
 import json
 import logging
 import os
