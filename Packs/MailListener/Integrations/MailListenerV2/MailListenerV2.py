@@ -4,7 +4,7 @@ from typing import Any, Dict, Tuple, List, Optional
 
 from dateparser import parse
 from mailparser import parse_from_bytes
-from imap_tools import OR
+from imap_tools import OR, Header
 from imapclient import IMAPClient
 
 import demistomock as demisto
@@ -251,10 +251,11 @@ def fetch_mails(client: IMAPClient,
     if message_id:
         messages_uids = [message_id]
     else:
-        messages_query = generate_search_query(time_to_fetch_from,
-                                               permitted_from_addresses,
-                                               permitted_from_domains,
-                                               uid_to_fetch_from)
+        # messages_query = generate_search_query(time_to_fetch_from,
+        #                                        permitted_from_addresses,
+        #                                        permitted_from_domains,
+        #                                        uid_to_fetch_from)
+        messages_query = ['OR', 'HEADER', 'FROM', permitted_from_addresses, 'HEADER', 'FROM', permitted_from_domains, 'SINCE', time_to_fetch_from, 'UID', '1:*']
         demisto.debug(f'Searching for email messages with criteria: {messages_query}')
         messages_uids = client.search(messages_query)[:limit]
     mails_fetched = []
