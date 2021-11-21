@@ -85,21 +85,21 @@ def toEntry(table):
 
 
 def test_is_ip_valid():
-    valid_ip_v6 = "FE80:0000:0000:0000:0202:B3FF:FE1E:8329"
-    valid_ip_v6_b = "FE80::0202:B3FF:FE1E:8329"
-    invalid_ip_v6 = "KKKK:0000:0000:0000:0202:B3FF:FE1E:8329"
-    valid_ip_v4 = "10.10.10.10"
-    invalid_ip_v4 = "10.10.10.9999"
-    invalid_not_ip_with_ip_structure = "1.1.1.1.1.1.1.1.1.1.1.1.1.1.1"
-    not_ip = "Demisto"
-    assert not is_ip_valid(valid_ip_v6)
-    assert is_ip_valid(valid_ip_v6, True)
-    assert is_ip_valid(valid_ip_v6_b, True)
-    assert not is_ip_valid(invalid_ip_v6, True)
-    assert not is_ip_valid(not_ip, True)
-    assert is_ip_valid(valid_ip_v4)
-    assert not is_ip_valid(invalid_ip_v4)
-    assert not is_ip_valid(invalid_not_ip_with_ip_structure)
+        valid_ip_v6 = "FE80:0000:0000:0000:0202:B3FF:FE1E:8329"
+        valid_ip_v6_b = "FE80::0202:B3FF:FE1E:8329"
+        invalid_ip_v6 = "KKKK:0000:0000:0000:0202:B3FF:FE1E:8329"
+        valid_ip_v4 = "10.10.10.10"
+        invalid_ip_v4 = "10.10.10.9999"
+        invalid_not_ip_with_ip_structure = "1.1.1.1.1.1.1.1.1.1.1.1.1.1.1"
+        not_ip = "Demisto"
+        assert not is_ip_valid(valid_ip_v6)
+        assert is_ip_valid(valid_ip_v6, True)
+        assert is_ip_valid(valid_ip_v6_b, True)
+        assert not is_ip_valid(invalid_ip_v6, True)
+        assert not is_ip_valid(not_ip, True)
+        assert is_ip_valid(valid_ip_v4)
+        assert not is_ip_valid(invalid_ip_v4)
+        assert not is_ip_valid(invalid_not_ip_with_ip_structure)
 
 
 DATA = [
@@ -539,7 +539,7 @@ class TestTableToMarkdown:
         """
         # dict value
         data = copy.deepcopy(DATA)
-        data[1]['extra_header'] = {'sample': 'qwerty', 'sample2': 'asdf'}
+        data[1]['extra_header'] = {'sample': 'qwerty', 'sample2': '`asdf'}
         table_dict_record = tableToMarkdown('tableToMarkdown test with dict record', data,
                                             headers=['header_1', 'header_2', 'extra_header'])
         expected_dict_record = (
@@ -547,7 +547,7 @@ class TestTableToMarkdown:
             '|header_1|header_2|extra_header|\n'
             '|---|---|---|\n'
             '| a1 | b1 |  |\n'
-            '| a2 | b2 | sample: qwerty<br>sample2: asdf |\n'
+            '| a2 | b2 | sample: qwerty<br>sample2: \\`asdf |\n'
             '| a3 | b3 |  |\n'
         )
         assert table_dict_record == expected_dict_record
@@ -1176,10 +1176,12 @@ def test_logger_replace_strs(mocker):
         'apikey': 'my_apikey',
     })
     ilog = IntegrationLogger()
-    ilog.add_replace_strs('special_str', '')  # also check that empty string is not added by mistake
+    ilog.add_replace_strs('special_str', 'ZAQ!@#$%&*', '')  # also check that empty string is not added by mistake
     ilog('my_apikey is special_str and b64: ' + b64_encode('my_apikey'))
+    ilog('special chars like ZAQ!@#$%&* should be replaced even when url-encoded like ZAQ%21%40%23%24%25%26%2A')
     assert ('' not in ilog.replace_strs)
     assert ilog.messages[0] == '<XX_REPLACED> is <XX_REPLACED> and b64: <XX_REPLACED>'
+    assert ilog.messages[1] == 'special chars like <XX_REPLACED> should be replaced even when url-encoded like <XX_REPLACED>'
 
 
 TEST_SSH_KEY_ESC = '-----BEGIN OPENSSH PRIVATE KEY-----\\nb3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAACFw' \
@@ -5821,7 +5823,26 @@ def test_get_tenant_name(mocker, demistoUrls, expected_result):
     assert result == expected_result
 
 
-def changelog_to_str(dct):
-    ####
-    string = dct.get('cascsa').get('ascascas')
-    return string
+IOCS = {'iocs': [{'id': '2323', 'value': 'google.com'},
+                 {'id': '5942', 'value': '1.1.1.1'}]}
+
+
+def test_indicators_value_to_clickable(mocker):
+    from CommonServerPython import indicators_value_to_clickable
+    from CommonServerPython import IndicatorsSearcher
+    mocker.patch.object(IndicatorsSearcher, '__next__', side_effect=[IOCS, StopIteration])
+    result = indicators_value_to_clickable(['1.1.1.1', 'google.com'])
+    assert result.get('1.1.1.1') == '[1.1.1.1](#/indicator/5942)'
+    assert result.get('google.com') == '[google.com](#/indicator/2323)'
+
+
+def test_indicators_value_to_clickable_invalid(mocker):
+    from CommonServerPython import indicators_value_to_clickable
+    from CommonServerPython import IndicatorsSearcher
+    mocker.patch.object(IndicatorsSearcher, '__next__', side_effect=[StopIteration])
+    result = indicators_value_to_clickable(['8.8.8.8', 'abc.com'])
+    assert not result
+    result = indicators_value_to_clickable(None)
+    assert not result
+
+

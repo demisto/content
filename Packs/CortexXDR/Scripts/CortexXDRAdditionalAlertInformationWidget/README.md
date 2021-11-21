@@ -1,4 +1,4 @@
-This script give additional original alert information from the context
+This script retrieves additional original alert information from the context.
 
 ## Script Data
 ---

@@ -1,4 +1,4 @@
-comment: 'Widget to show cortex XDR identity information'
+comment: 'This widget displays Cortex XDR identity information.'
 commonfields:
   id: CortexXDRIdentityInformationWidget
   version: -1

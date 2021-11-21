@@ -1,4 +1,4 @@
-comment: 'This script give additional original alert information from the context'
+comment: 'This script retrieves additional original alert information from the context.'
 commonfields:
   id: CortexXDRAdditionalAlertInformationWidget
   version: -1

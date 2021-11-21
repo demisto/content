@@ -1,4 +1,5 @@
-This script returns an HTML result of the cloud providers in the incident. The result is centered, colored with a large font
+This script returns an HTML result of the cloud providers in the incident. The result will be displayed 
+in the following font colors: AWS - red, GCP - green, Azure - blue.
 
 ## Script Data
 ---

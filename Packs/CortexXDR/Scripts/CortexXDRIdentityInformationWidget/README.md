@@ -1,4 +1,4 @@
-Widget to show cortex XDR identity information
+This widget displays Cortex XDR identity information.
 
 ## Script Data
 ---

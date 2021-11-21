@@ -1,6 +1,5 @@
 from CommonServerPython import *
 
-from typing import Dict, Any
 import traceback
 
 COLORS = {'AWS': 'ff0000',
