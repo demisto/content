@@ -1592,7 +1592,9 @@ def build_search_kwargs(args):
     if demisto.get(args, 'app'):
         kwargs_normalsearch['app'] = args['app']
     if not demisto.get(args, 'polling'):
-        kwargs_normalsearch['exec_mode'] = "blocking"  # A blocking search runs synchronously, and returns a job when it's finished. So it will be added just if it's not a polling command.
+        # A blocking search runs synchronously, and returns a job when it's finished.
+        # It will be added just if it's not a polling command.
+        kwargs_normalsearch['exec_mode'] = "blocking"
     return kwargs_normalsearch
 
 
@@ -1699,7 +1701,7 @@ def splunk_search_command(service):
         search_job = service.jobs.create(query, **search_kwargs)  # type: ignore
         job_sid = search_job["sid"]
         args['sid'] = job_sid
-    
+
     status_cmd_result = splunk_job_status(service, args)
     status = status_cmd_result.outputs['Status']
     if status.lower() != 'done':

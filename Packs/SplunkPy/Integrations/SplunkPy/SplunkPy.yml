@@ -296,7 +296,7 @@ script:
         in which each item is a Splunk event.
       type: Unknown
     - contextPath: Splunk.Status
-      description: The search status. Can be "in progress" or "complete".
+      description: The search status.
       type: String
   - arguments:
     - default: false
