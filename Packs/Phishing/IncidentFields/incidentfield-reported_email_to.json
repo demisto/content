@@ -1,11 +1,11 @@
 {
-    "id": "incident_originatedemailfrom",
+    "id": "incident_reportedemailto",
     "version": -1,
-    "modified": "2021-11-16T13:46:18.742905482Z",
-    "name": "Originated Email From",
+    "modified": "2021-11-16T13:46:59.626757128Z",
+    "name": "Reported Email To",
     "ownerOnly": false,
-    "description": " The email address of the sender that was reported as a phishing email that was forwarded or attached.",
-    "cliName": "originatedemailfrom",
+    "description": "The email address of the recipient in a reported (forwarded or attached) phishing email.",
+    "cliName": "reportedemailto",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
@@ -28,5 +28,5 @@
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "5.5.0"
+    "fromVersion": "6.0.0"
 }

@@ -1,12 +1,12 @@
 {
-    "id": "incident_originatedemailattachedretrieved",
+    "id": "incident_reportedemailsubject",
     "version": -1,
-    "modified": "2021-11-16T14:25:34.940059412Z",
-    "name": "Originated Email Attached/Retrieved",
+    "modified": "2021-11-16T13:47:50.690069013Z",
+    "name": "Reported Email Subject",
     "ownerOnly": false,
-    "description": "Whether the original email was attached or retrieved.",
-    "cliName": "originatedemailattachedretrieved",
-    "type": "boolean",
+    "description": "The subject of a reported (forwarded or attached) phishing email.",
+    "cliName": "reportedemailsubject",
+    "type": "shortText",
     "closeForm": false,
     "editForm": true,
     "required": false,
@@ -28,5 +28,5 @@
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "5.5.0"
+    "fromVersion": "6.0.0"
 }
