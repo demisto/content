@@ -1442,8 +1442,7 @@ def quote_group(text):
             quote_counter += 1
 
         # A quote group ends when `",` is encountered.
-        is_end_keypair = rindex > 1 and \
-                         text[rindex - 1] + text[rindex] == '",'
+        is_end_keypair = rindex > 1 and text[rindex - 1] + text[rindex] == '",'
 
         # If the quote_counter isn't even we shouldn't close the group,
         # for example: a="b="1",c="3""                * *
@@ -1504,7 +1503,7 @@ def rawToDict(raw):
             for g in groups:
                 key_value = g.replace('"', '').strip()
                 if key_value == '':
-                  continue
+                    continue
 
                 if '=' in key_value:
                     key_and_val = key_value.split('=', 1)

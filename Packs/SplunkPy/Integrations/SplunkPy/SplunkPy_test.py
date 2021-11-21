@@ -190,33 +190,40 @@ def test_raw_to_dict():
 @pytest.mark.parametrize('text, output', [
     ('', ['']),
     ('"",', ['"",']),
-    ('woopwoop', ['woopwoop']),  # a value shouldn't do anything special
-    ('abc=123', ['abc="123"']),  # a normal key value without quotes
-    ('abc=123,', ['abc="123"']),  # add a comma at the end
-    ('cbd="123"', ['cbd="123"']),  # a normal key value with quotes
-    ('"abc="123""', ['abc="123"']),  # check all wrapped with quotes removed
-    ('111, cbd="123"', ['cbd="123"']),  # we need to remove 111 at the start.
+    #   a value shouldn't do anything special
+    ('woopwoop', ['woopwoop']),
+    #  a normal key value without quotes
+    ('abc=123', ['abc="123"']),
+    #  add a comma at the end
+    ('abc=123,', ['abc="123"']),
+    #  a normal key value with quotes
+    ('cbd="123"', ['cbd="123"']),
+    #  check all wrapped with quotes removed
+    ('"abc="123""', ['abc="123"']),
+    #   we need to remove 111 at the start.
+    ('111, cbd="123"', ['cbd="123"']),
     # Testing with/without quotes and/or spaces:
-    ('abc=123,cbd=123',     ['abc="123"', 'cbd="123"']),
-    ('abc=123,cbd="123"',   ['abc="123"', 'cbd="123"']),
-    ('abc="123",cbd=123',   ['abc="123"', 'cbd="123"']),
+    ('abc=123,cbd=123', ['abc="123"', 'cbd="123"']),
+    ('abc=123,cbd="123"', ['abc="123"', 'cbd="123"']),
+    ('abc="123",cbd=123', ['abc="123"', 'cbd="123"']),
     ('abc="123",cbd="123"', ['abc="123"', 'cbd="123"']),
-    ('abc=123, cbd=123',    ['abc="123"', 'cbd="123"']),
-    ('abc=123, cbd="123"',  ['abc="123"', 'cbd="123"']),
-    ('cbd="123", abc=123',  ['abc="123"', 'cbd="123"']),
-    ('cbd="123",abc=123',   ['abc="123"', 'cbd="123"']),
+    ('abc=123, cbd=123', ['abc="123"', 'cbd="123"']),
+    ('abc=123, cbd="123"', ['abc="123"', 'cbd="123"']),
+    ('cbd="123", abc=123', ['abc="123"', 'cbd="123"']),
+    ('cbd="123",abc=123', ['abc="123"', 'cbd="123"']),
     # Continue testing quotes with more values:
-    ('xyz=321,cbd=123,abc=123',   ['xyz="321"', 'abc="123"', 'cbd="123"']),
-    ('xyz=321,cbd="123",abc=123',   ['xyz="321"', 'abc="123"', 'cbd="123"']),
+    ('xyz=321,cbd=123,abc=123', ['xyz="321"', 'abc="123"', 'cbd="123"']),
+    ('xyz=321,cbd="123",abc=123', ['xyz="321"', 'abc="123"', 'cbd="123"']),
     ('xyz="321",cbd="123",abc=123', ['xyz="321"', 'abc="123"', 'cbd="123"']),
     ('xyz="321",cbd="123",abc="123"', ['xyz="321"', 'abc="123"', 'cbd="123"']),
     # Testing nested quotes (the main reason for quote_group):
-    ('111, cbd="a="123""', ['cbd="a="123""']), # Try to remove the start 111.
+    #   Try to remove the start 111.
+    ('111, cbd="a="123""', ['cbd="a="123""']),
     ('cbd="a="123""', ['cbd="a="123""']),
-    ('cbd="a="123", b=321"',    ['cbd="a="123", b="321""']),
-    ('cbd="a=123, b=321"',    ['cbd="a="123", b="321""']),
-    ('cbd="a=123, b="321""',    ['cbd="a="123", b="321""']),
-    ('cbd="a="123", b="321""',  ['cbd="a="123", b="321""']),
+    ('cbd="a="123", b=321"', ['cbd="a="123", b="321""']),
+    ('cbd="a=123, b=321"', ['cbd="a="123", b="321""']),
+    ('cbd="a=123, b="321""', ['cbd="a="123", b="321""']),
+    ('cbd="a="123", b="321""', ['cbd="a="123", b="321""']),
     ('cbd="a=123, b=321"', ['cbd="a="123", b="321""']),
     ('xyz=123, cbd="a="123", b=321"', ['xyz="123"', 'cbd="a="123", b="321""']),
     ('xyz="123", cbd="a="123", b="321""', ['xyz="123"', 'cbd="a="123", b="321""']),
