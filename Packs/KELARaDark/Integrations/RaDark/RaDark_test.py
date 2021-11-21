@@ -178,6 +178,15 @@ def test_parse_credit_cards_markdown_table():
     assert results == return_value
 
 
+def test_parse_hacking_discussions_markdown_table():
+    mock_data = load_mock_response('helper_functions_info.json').get('PARSE_HACKING_DISCUSSIONS_MARKDOWN_TABLE', {})
+    args = mock_data.get("ARGS", {})
+    return_value = mock_data.get("RETURN_VALUE", [])
+    results = integration.parse_hacking_discussions_markdown_table(args.get('ITEMS', {}), args.get('AGGR', {}))
+
+    assert results == return_value
+
+
 def test_extract_available_data_from_item():
     mock_data = load_mock_response('helper_functions_info.json').get('EXTRACT_AVAILABLE_DATA_FROM_ITEM', {})
     args = mock_data.get("ARGS", {})

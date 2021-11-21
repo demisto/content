@@ -133,6 +133,28 @@
       }
     ]
   },
+  "PARSE_HACKING_DISCUSSIONS_MARKDOWN_TABLE": {
+    "ARGS": {
+      "ITEMS": [
+        {
+          "id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "text": "text1\ntext2\ntext3\ntext4\ntext5\ntext6\ntest7\ntext8\ntext9\ntext10\ntext11\ntext12\ntext13\ntext14"
+        }
+      ],
+      "AGGR": {
+        "media": [],
+        "tags": ["test"]
+      }
+    },
+    "RETURN_VALUE": [
+      {
+        "type": "text",
+        "tags": "test",
+        "link": "-",
+        "context": "text2\ntext3\ntext4\ntext5\ntext6\ntest7\ntext8\ntext9\ntext10\ntext11\ntext12"
+      }
+    ]
+  },
   "EXTRACT_AVAILABLE_DATA_FROM_ITEM": {
     "ARGS": {
       "ITEM": {
