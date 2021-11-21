@@ -791,7 +791,6 @@ class TestGetIndicators:
             {'objects': INDICATOR * 50},
             {'objects': []},
         ])
-        results = mocker.patch.object(demisto, 'results')
         client = Client(
             base_url='',
             user_name='',
@@ -802,9 +801,9 @@ class TestGetIndicators:
             should_create_relationships=False,
         )
 
-        get_indicators(client, limit='7000')
+        results = get_indicators(client, limit='7000')
 
-        assert len(results.call_args_list[0][0][0].get('EntryContext', {}).get('ThreatStream.Indicators', [])) == 50
+        assert len(results.outputs) == 50
 
     @staticmethod
     def test_pagination(mocker):
@@ -825,7 +824,6 @@ class TestGetIndicators:
             {'objects': INDICATOR * 1000},
             {'objects': INDICATOR * 1000},
         ])
-        results = mocker.patch.object(demisto, 'results')
         client = Client(
             base_url='',
             user_name='',
@@ -836,6 +834,6 @@ class TestGetIndicators:
             should_create_relationships=False,
         )
 
-        get_indicators(client, limit='7000')
+        results = get_indicators(client, limit='7000')
 
-        assert len(results.call_args_list[0][0][0].get('EntryContext', {}).get('ThreatStream.Indicators', [])) == 7000
+        assert len(results.outputs) == 7000
