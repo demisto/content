@@ -145,7 +145,7 @@ tasks:
       searchfield:
         simple: value
       sourcebrand:
-        simple: Unit42 Intel Objects Feed
+        simple: Unit42IntelObjectsFeed
     separatecontext: true
     loop:
       iscommand: false

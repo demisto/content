@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Unit 42 Intel Objects Feed
+  id: Unit42IntelObjectsFeed
   version: -1
 defaultEnabled: true
 configuration:
@@ -114,7 +114,7 @@ configuration:
 description: Use the Unit 42 Intel Objects Feed integration to fetch indicators from Unit 42 
   Intel Objects.
 display: Unit 42 Intel Objects Feed
-name: Unit 42 Intel Objects Feed
+name: Unit42IntelObjectsFeed
 script:
   commands:
   - arguments:
