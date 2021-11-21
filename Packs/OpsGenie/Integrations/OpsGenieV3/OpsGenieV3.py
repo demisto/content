@@ -88,7 +88,6 @@ class Client(BaseClient):
         :return json_responders: reformatted respondres dict
         """
         if not responders:
-            demisto.log("NOTICE: Didn't get any responders")
             return {}
         if len(responders) % 3 != 0:
             raise DemistoException("responders must be list of: responder_type, value_type, value")
@@ -114,13 +113,27 @@ class Client(BaseClient):
                                   )
 
     def list_alerts(self, args: dict):
+        if args.get("query"):
+            query = args.get("query")
+        else:
+            query = ""
+            if args.get("status", ALL_TYPE) != ALL_TYPE:
+                status = args.get("status").lower()
+                query = f'status={status}'
+            if args.get("priority", ALL_TYPE) != ALL_TYPE:
+                if query:
+                    query += f' AND '
+                query += f'priority={args.get("priority")}'
+            if args.get("tags", []):
+                if query:
+                    query += f' AND '
+                query += f'tag={args.get("tags")}'
+
         params = {
             "sort": args.get("sort"),
             "limit": args.get("limit"),
-            "status": args.get("status"),
             "offset": args.get("offset"),
-            "priority": args.get("priority"),
-            "query": args.get("query")
+            "query": query
         }
         return self._http_request(method='GET',
                                   url_suffix=f"/v2/{ALERTS_SUFFIX}",
@@ -256,12 +269,26 @@ class Client(BaseClient):
                                   )
 
     def list_incidents(self, args: dict):
+        if args.get("query"):
+            query = args.get("query")
+        else:
+            query = ""
+            if args.get("status", ALL_TYPE) != ALL_TYPE:
+                status = args.get("status").lower()
+                query = f'status={status}'
+            if args.get("priority", ALL_TYPE) != ALL_TYPE:
+                if query:
+                    query += f' AND '
+                query += f'priority={args.get("priority")}'
+            if args.get("tags", []):
+                if query:
+                    query += f' AND '
+                query += f'tag={args.get("tags")}'
+
         params = {
             "limit": args.get("limit"),
-            "status": args.get("status"),
             "offset": args.get("offset"),
-            "priority": args.get("priority"),
-            "query": args.get("query"),
+            "query": query
         }
         return self._http_request(method='GET',
                                   url_suffix=f"/v1/{INCIDENTS_SUFFIX}",
@@ -329,6 +356,21 @@ def get_polling_result(client: Client, args: dict) -> CommandResults:
     return command_result
 
 
+def get_polling_paging_result(client: Client, args: dict) -> CommandResults:
+    polling_result = run_polling_command(args=args,
+                                         cmd='opsgenie-get-polling-paging-result',
+                                         results_function=client.get_paged)
+    if isinstance(polling_result, CommandResults):
+        return polling_result
+    command_result = CommandResults(
+        outputs_prefix=args.get("output_prefix", "OpsGenie"),
+        outputs=polling_result.get("data"),
+        readable_output=tableToMarkdown("OpsGenie", polling_result.get('data')),
+        raw_response=polling_result
+    )
+    return command_result
+
+
 def run_polling_command(args: dict, cmd: str, results_function: Callable,
                         action_function: Optional[Callable] = None):
 
@@ -375,14 +417,18 @@ def run_polling_command(args: dict, cmd: str, results_function: Callable,
 
         # result with scheduled_command only - no update to the war room
         command_results = CommandResults(scheduled_command=scheduled_command,
-                                         readable_output="Waiting for the polling answer come back")
+                                         readable_output="Waiting for the polling answer come back",
+                                         outputs_prefix=args.get("output_prefix", "OpsGenie"),
+                                         outputs={"requestId": request_id}
+                                         )
     return command_results
 
 
-def run_polling_paging_command(args: dict, cmd: str, action_function: Callable,
-                               results_function: Callable):
+def run_polling_paging_command(args: dict, cmd: str, results_function: Callable,
+                               action_function: Optional[Callable] = None):
 
     ScheduledCommand.raise_error_if_not_supported()
+
     interval_in_secs = int(args.get('interval_in_seconds', 5))
     result = args.get('result', [])
     limit = int(args.get('limit', 20))
@@ -441,10 +487,14 @@ def run_polling_paging_command(args: dict, cmd: str, action_function: Callable,
             command=cmd,
             next_run_in_seconds=int(args.get('interval_in_seconds', 5)),
             args=polling_args,
-            timeout_in_seconds=int(args.get('timeout_in_seconds', 60)),
+            timeout_in_seconds=int(args.get('timeout_in_seconds', 60))
         )
         # result with scheduled_command only - no update to the war room
-        command_results = CommandResults(scheduled_command=scheduled_command)
+        command_results = CommandResults(scheduled_command=scheduled_command,
+                                         outputs_prefix=args.get("output_prefix", "OpsGenie"),
+                                         outputs={"requestId": args.get("request_id")},
+                                         readable_output="Waiting for the polling answer come back",
+                                         )
     return command_results
 
 
@@ -489,10 +539,15 @@ def list_alerts(client: Client, args: Dict[str, Any]) -> CommandResults:
     args['tags'] = argToList(args.get('tags'))
     polling_args = {
         'url_suffix': f"/v2/{ALERTS_SUFFIX}",
+        'output_prefix': 'OpsGenie.Alert',
         **args
     }
-    polling_result = run_polling_paging_command(polling_args, 'opsgenie-get-alerts',
-                                                client.list_alerts, client.get_paged)
+    polling_result = run_polling_paging_command(args=polling_args,
+                                                cmd='opsgenie-get-polling-paging-result',
+                                                action_function=client.list_alerts,
+                                                results_function=client.get_paged)
+    if isinstance(polling_result, CommandResults):
+        return polling_result
     if len(polling_result['data']) > 0:
         for result in polling_result['data']:
             result['event_type'] = ALERT_TYPE
@@ -725,7 +780,7 @@ def get_incidents(client: Client, args: Dict[str, Any]) -> CommandResults:
     return CommandResults(
         outputs_prefix="OpsGenie.Incident",
         outputs=result.get("data"),
-        readable_output=tableToMarkdown("OpsGenie Alert", result.get("data")),
+        readable_output=tableToMarkdown("OpsGenie Incident", result.get("data")),
         raw_response=result
     )
 
@@ -734,10 +789,15 @@ def list_incidents(client: Client, args: Dict[str, Any]) -> CommandResults:
     args['tags'] = argToList(args.get('tags'))
     polling_args = {
         'url_suffix': f"/v1/{INCIDENTS_SUFFIX}",
+        'output_prefix': 'OpsGenie.Incident',
         **args
     }
-    polling_result = run_polling_paging_command(polling_args, 'opsgenie-get-incidents',
-                                                client.list_incidents, client.get_paged)
+    polling_result = run_polling_paging_command(args=polling_args,
+                                                cmd='opsgenie-get-polling-paging-result',
+                                                action_function=client.list_incidents,
+                                                results_function=client.get_paged)
+    if isinstance(polling_result, CommandResults):
+        return polling_result
     if len(polling_result['data']) > 0:
         for result in polling_result['data']:
             result['event_type'] = INCIDENT_TYPE
@@ -817,7 +877,7 @@ def get_teams(client: Client, args: Dict[str, Any]) -> CommandResults:
     return CommandResults(
         outputs_prefix="OpsGenie.Team",
         outputs=result.get("data"),
-        readable_output=tableToMarkdown("OpsGenie Schedule", result.get("data")),
+        readable_output=tableToMarkdown("OpsGenie Team", result.get("data")),
         raw_response=result
     )
 
@@ -926,7 +986,8 @@ def main() -> None:
             'opsgenie-add-tag-incident': add_tag_incident,
             'opsgenie-remove-tag-incident': remove_tag_incident,
             'opsgenie-get-teams': get_teams,
-            'opsgenie-get-polling-result': get_polling_result
+            'opsgenie-get-polling-result': get_polling_result,
+            'opsgenie-get-polling-paging-result': get_polling_paging_result,
         }
         command = demisto.command()
         if command == 'test-module':
