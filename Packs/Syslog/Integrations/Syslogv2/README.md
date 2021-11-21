@@ -14,4 +14,4 @@ This integration was integrated and tested with RFC3164 and RFC5424 formats of S
     | Incoming Log Format | The format of the received logs from Syslog server | True |
     | Message Regex Filter For Incidents Creation. | Will create an incident in Cortex XSOAR for every received log message that matches this regex. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
+4. Click **Test** to validate the connection.
