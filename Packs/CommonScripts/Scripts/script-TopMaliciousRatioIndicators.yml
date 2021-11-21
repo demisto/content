@@ -37,6 +37,8 @@ script: >-
 
   indicators = res[0]['Contents']
 
+  indicators = [i for i in indicators if len(i.get('investigationIDs') or []) >= MIN_NUMBER_OF_INVS]
+
   if not indicators:
       demisto.results({
             'Type': entryTypes['note'],
@@ -46,8 +48,6 @@ script: >-
             'HumanReadable': tableToMarkdown('Top Malicious Ratio Indicators', {})
       })
       sys.exit(0)
-
-  indicators = [i for i in indicators if len(i.get('investigationIDs') or []) >= MIN_NUMBER_OF_INVS]
 
   indicators_map = {}
 
