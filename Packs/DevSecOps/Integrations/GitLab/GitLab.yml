@@ -1042,8 +1042,8 @@ script:
         isArray: false
         name: create_file_from_content
         predefined:
-        - true
-        - false
+        - 'true'
+        - 'false'
         required: false
         secret: false
     description: Get raw file

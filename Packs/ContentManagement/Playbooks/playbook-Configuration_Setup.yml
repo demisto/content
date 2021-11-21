@@ -419,7 +419,7 @@ tasks:
       id: 0850e0e3-60e0-4a41-8339-040874f1f3ed
       version: -1
       name: Configure Lists
-      descrpition: Configure the lists
+      description: Configure the lists
       type: title
       iscommand: false
       brand: ""
@@ -697,7 +697,7 @@ tasks:
       id: a166e331-540f-47d2-89e9-ce4fe4f00f19
       version: -1
       name: Configurations
-      descrition: Configurations
+      description: Configurations
       type: title
       iscommand: false
       brand: ""
