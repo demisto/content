@@ -1,0 +1,75 @@
+[
+  {
+    "id": 33012,
+    "key": "TRIAL",
+    "name": "Trial",
+    "type": "global",
+    "status": "current",
+    "history": {
+      "createdBy": {
+        "type": "known",
+        "accountId": "5ff2e30b4d2179006ea18449",
+        "accountType": "atlassian",
+        "publicName": "John Doe",
+        "profilePicture": {
+          "path": "/wiki/aa-avatar/5ff2e30b4d2179006ea18449",
+          "width": 48,
+          "height": 48,
+          "isDefault": false
+        },
+        "displayName": "John Doe",
+        "isExternalCollaborator": false,
+        "_links": {
+          "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/user?accountId=5ff2e30b4d2179006ea18449"
+        }
+      },
+      "createdDate": "2021-08-02T09:53:55.510Z"
+    },
+    "_expandable": {
+      "settings": "/rest/api/space/TRIAL/settings",
+      "lookAndFeel": "/rest/api/settings/lookandfeel?spaceKey=TRIAL",
+      "theme": "/rest/api/space/TRIAL/theme"
+    },
+    "_links": {
+      "webui": "/spaces/TRIAL",
+      "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/space/TRIAL"
+    }
+  },
+  {
+    "id": 2064386,
+    "key": "XSOAR",
+    "name": "XSOAR_Project",
+    "type": "global",
+    "status": "current",
+    "history": {
+      "createdBy": {
+        "type": "known",
+        "accountId": "5ff2e30b4d2179006ea18449",
+        "accountType": "atlassian",
+        "publicName": "John Doe",
+        "profilePicture": {
+          "path": "/wiki/aa-avatar/5ff2e30b4d2179006ea18449",
+          "width": 48,
+          "height": 48,
+          "isDefault": false
+        },
+        "displayName": "John Doe",
+        "isExternalCollaborator": false,
+        "_links": {
+          "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/user?accountId=5ff2e30b4d2179006ea18449"
+        }
+      },
+      "createdDate": "2021-08-06T06:18:11.470Z"
+    },
+    "_expandable": {
+      "settings": "/rest/api/space/XSOAR/settings",
+      "lookAndFeel": "/rest/api/settings/lookandfeel?spaceKey=XSOAR",
+      "theme": "/rest/api/space/XSOAR/theme",
+      "homepage": "/rest/api/content/2064538"
+    },
+    "_links": {
+      "webui": "/spaces/XSOAR",
+      "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/space/XSOAR"
+    }
+  }
+]
