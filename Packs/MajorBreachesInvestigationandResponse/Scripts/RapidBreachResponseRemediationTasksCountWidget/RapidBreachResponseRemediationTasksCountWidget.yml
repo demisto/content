@@ -14,6 +14,6 @@ tags:
 comment: Rapid Breach Response dynamic section, will show the updated number of remediation
   tasks.
 type: python
-fromversion: 5.5.0
+fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
