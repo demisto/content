@@ -2,10 +2,10 @@ Use the Microsoft Teams integration to send messages and notifications to your t
 This integration was integrated and tested with version 1.0 of Microsoft Teams.
 
 ## Integration Architecture
-Data is passed between Microsoft Teams and Cortex XSOAR through the bot that you will configure in Microsoft Teams. A webhook (which you will configure) receives the data from Teams and passes it to the messaging endpoint. The web server on which the integration runs in Cortex XSOAR listens to the messaging endpoint and processes the data from Teams. You can use an engine for communication between Teams and the Cortex XSOAR server. In order to mirror messages from Teams to Cortex XSOAR, the bot must be mentioned, using the @ symbol, in the message.
-- *Note* - In order to avoid mentioning the bot, follow the authentication flow again, notice the following steps:
-   * [Using the App Studio](#using-the-app-studio) - see step 14.
-   * [Using the Developer Portal](#using-the-developer-portal-1) - see step 5.
+Data is passed between Microsoft Teams and Cortex XSOAR through the bot that you will configure in Microsoft Teams. A webhook (that you will configure) receives the data from Teams and passes it to the messaging endpoint. The web server on which the integration runs in Cortex XSOAR listens to the messaging endpoint and processes the data from Teams. You can use an engine for communication between Teams and the Cortex XSOAR server. In order to mirror messages from Teams to Cortex XSOAR, the bot must be mentioned, using the @ symbol, in the message.
+- *Note* - In order to avoid mentioning the bot, if this was previously configured without adding the Bot ID, repeat the authentication flow and pay particular attention to the following steps:
+   * Step 14 in [Using the App Studio](#using-the-app-studio).
+   * Step 5 in [Using the Developer Portal](#using-the-developer-portal-1).
 
 The web server for the integration runs within a long-running Docker container. Cortex XSOAR maps the Docker port to which the server listens, to the host port (to which Teams posts messages). For more information, see [our documentation](https://xsoar.pan.dev/docs/integrations/long-running#invoking-http-integrations-via-cortex-xsoar-servers-route-handling) and [Docker documentation](https://docs.docker.com/config/containers/container-networking/).
 ### Protocol Diagram
@@ -33,7 +33,7 @@ The web server for the integration runs within a long-running Docker container. 
 ### 1. Using Cortex XSOAR rerouting
 In this configuration, we will use Cortex XSOAR functionality, which reroutes HTTPS requests that hit the default port (443) to the web server that the integration spins up.
 
-The messaging endpoint needs to be: `<CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>`, e.g. `https://my.demisto.live/instance/execute/teams`
+The messaging endpoint needs to be: `<CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>`, e.g., `https://my.demisto.live/instance/execute/teams`
 
 The integration instance name, `teams` in this example, needs to be configured in the [Configure Microsoft Teams on Cortex XSOAR](#configure-microsoft-teams-on-cortex-xsoar) step.
 
@@ -117,7 +117,7 @@ Before you can create an instance of the Microsoft Teams integration in Cortex X
 8. Click the app widget, and in the **Identification** section, click the **Generate** button to generate a unique App ID.  The following parameters are automatically populated in the ZIP file, use this information for reference.
   - **Short name**: Demisto Bot
   - **App ID**: the App ID for configuring in Cortex XSOAR.
-  - **Package name**: desmisto.bot (this is a unique identifier for the app in the Store)
+  - **Package name**: demisto.bot (this is a unique identifier for the app in the Store)
   - **Version**: 1.0.0 (this is a unique identifier for the app in the Store)
   - **Short description**: Mechanism for mirroring between Cortex XSOAR and Microsoft Teams.
   - **Long description**: Demisto Bot is the mechanism that enables messaging team members and channels, executing Cortex XSOAR commands directly from Teams, and mirroring investigation data between Cortex XSOAR and Microsoft Teams
@@ -501,9 +501,9 @@ You can run Cortex XSOAR commands, according to the user permissions, from Micro
 
 Note: Like every message in a mirrored channel, in order for it to be passed to the bot, the bot must be mentioned.
 
-In order to avoid mentioning the bot, follow the authentication flow again, notice the following steps:
-   * [Using the App Studio](#using-the-app-studio) - see step 14.
-   * [Using the Developer Portal](#using-the-developer-portal-1) - see step 5.
+In order to avoid mentioning the bot, if this was previously configured without adding the Bot ID, repeat the authentication flow and pay particular attention to the following steps:
+   * Step 14 in [Using the App Studio](#using-the-app-studio).
+   * Step 5 in [Using the Developer Portal](#using-the-developer-portal-1).
 
 For example, in order to check the reputation of the IP address 8.8.8.8, run the following: `@Demisto Bot !ip ip=8.8.8.8`
 
