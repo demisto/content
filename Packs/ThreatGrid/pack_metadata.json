@@ -11,7 +11,7 @@
         "Forensics & Malware Analysis",
         "Threat Intelligence Management"
     ],
-    "tags": [],
+    "tags": ["Relationship"],
     "useCases": [],
     "keywords": [
         "ThreatGrid"
