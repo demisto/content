@@ -13,7 +13,7 @@
     "id": "incident_microsoftdefenderincid",
     "isReadOnly": false,
     "locked": false,
-    "name": "Microsoft Defender Inc ID",
+    "name": "Microsoft Defender for Endpoint - Inc ID",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,

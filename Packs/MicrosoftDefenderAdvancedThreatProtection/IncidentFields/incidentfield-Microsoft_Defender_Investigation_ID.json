@@ -13,7 +13,7 @@
     "id": "incident_microsoftdefenderinvestigationid",
     "isReadOnly": false,
     "locked": false,
-    "name": "Microsoft Defender Investigation ID",
+    "name": "Microsoft Defender for Endpoint - Investigation ID",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,
