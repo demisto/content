@@ -4,7 +4,7 @@ from typing import Any, Dict, Tuple, List, Optional
 
 from dateparser import parse
 from mailparser import parse_from_bytes
-from imap_tools import OR, Header
+from imap_tools import OR
 from imapclient import IMAPClient
 
 import demistomock as demisto
