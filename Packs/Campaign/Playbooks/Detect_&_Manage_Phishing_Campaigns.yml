@@ -40,12 +40,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: a16daec9-0e37-4022-8573-3143418198b4
+    taskid: dea6d568-f6a7-4fbc-89a1-181da70c9773
     type: regular
     task:
-      id: a16daec9-0e37-4022-8573-3143418198b4
+      id: dea6d568-f6a7-4fbc-89a1-181da70c9773
       version: -1
-      name: Detect email campaign
+      name: Search for similar incidents
       description: Find a campaign of emails based on textual similarity.
       scriptName: FindEmailCampaign
       type: regular
@@ -122,12 +122,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: ac7ac64a-7dca-40dc-802a-66a8d1f95a48
+    taskid: 1a9803be-d5d9-487d-8849-f838bcb8ef15
     type: condition
     task:
-      id: ac7ac64a-7dca-40dc-802a-66a8d1f95a48
+      id: 1a9803be-d5d9-487d-8849-f838bcb8ef15
       version: -1
-      name: Is the email part of a campaign?
+      name: Were similar incidents found?
       description: Checks whether the email was found to be part of a bigger phishing
         campaign.
       type: condition
@@ -163,12 +163,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: f2997ad6-c6fc-4826-868f-5cc2d5b37c03
+    taskid: 1640dfa4-a4b1-4199-894e-560c6486f2ce
     type: regular
     task:
-      id: f2997ad6-c6fc-4826-868f-5cc2d5b37c03
+      id: 1640dfa4-a4b1-4199-894e-560c6486f2ce
       version: -1
-      name: Search for an existing campaign incident
+      name: Search for an existing campaign incident in XSOAR
       description: Get the incident campaign's ID for the campaign that is linked
         to at least one of the given incidents.
       scriptName: IsIncidentPartOfCampaign
@@ -241,15 +241,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 4e145e4f-3fa2-4eb4-84fd-d5198ba7f7b4
+    taskid: 2b44fbc9-6829-4fc3-841d-8ce4081403f4
     type: regular
     task:
-      id: 4e145e4f-3fa2-4eb4-84fd-d5198ba7f7b4
+      id: 2b44fbc9-6829-4fc3-841d-8ce4081403f4
       version: -1
-      name: Update the new campaign incident with the campaign data
-      description: Works the same as the 'Set' command. Updates the phishing campaign
-        incident with the latest information about the incidents involved in it.
-      scriptName: SetByIncidentId
+      name: Update the campaign with new incident data
+      description: Copying EmailCampaign context from current incident to other existing
+        incident.
+      scriptName: SetPhishingCampaignDetails
       type: regular
       iscommand: false
       brand: ""
@@ -257,20 +257,13 @@ tasks:
       '#none#':
       - "19"
     scriptarguments:
-      errorUnfinished:
-        simple: "true"
       id:
         complex:
           root: CreatedIncidentID
-      key:
-        simple: EmailCampaign
       retry-count:
         simple: "3"
       retry-interval:
         simple: "60"
-      value:
-        complex:
-          root: EmailCampaign
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -289,10 +282,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: b223f80a-bc4e-4403-81bf-a15a87a0c20b
+    taskid: c3405aa2-e455-41fc-80fb-c393a4f4a149
     type: condition
     task:
-      id: b223f80a-bc4e-4403-81bf-a15a87a0c20b
+      id: c3405aa2-e455-41fc-80fb-c393a4f4a149
       version: -1
       name: Is there an existing campaign incident?
       description: Checks whether any of the similar phishing incidents are currently
@@ -361,12 +354,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 152e4820-56bd-404d-8cd5-b516ff1b77e6
+    taskid: 8fbcf935-576a-4a7b-8fe9-34da96f6207c
     type: regular
     task:
-      id: 152e4820-56bd-404d-8cd5-b516ff1b77e6
+      id: 8fbcf935-576a-4a7b-8fe9-34da96f6207c
       version: -1
-      name: Update the existing campaign incident with the campaign data
+      name: Update the campaign with new incident data
       description: Copying EmailCampaign context from current incident to other existing
         incident.
       scriptName: SetPhishingCampaignDetails
@@ -611,12 +604,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 9282592e-1f29-4fa3-8450-18d64195feee
+    taskid: 77e030e4-b3ab-4a48-81d7-2f9344916111
     type: regular
     task:
-      id: 9282592e-1f29-4fa3-8450-18d64195feee
+      id: 77e030e4-b3ab-4a48-81d7-2f9344916111
       version: -1
-      name: Update the existing campaign with incident data
+      name: Update additional campaign layout sections
       description: Updates the EmailCampaignSummary, EmailCampaignMutualIndicators
         and EmailCampaignCanvas fields in the Phishing Campaign incident.
       script: Builtin|||setIncident
@@ -671,12 +664,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: fea412bb-02a3-410d-8f6b-e197d2898ae1
+    taskid: cb766233-14f3-499d-8f81-ad484901bd6c
     type: regular
     task:
-      id: fea412bb-02a3-410d-8f6b-e197d2898ae1
+      id: cb766233-14f3-499d-8f81-ad484901bd6c
       version: -1
-      name: Update the existing campaign with incident data
+      name: Update additional campaign layout sections
       description: Updates the EmailCampaignSummary, EmailCampaignMutualIndicators
         and EmailCampaignCanvas fields in the Phishing Campaign incident.
       script: Builtin|||setIncident
@@ -1231,5 +1224,5 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- No tests (auto formatted)
+- Phishing Investigation - Generic v2 - Campaign Test
 fromversion: 6.0.0
