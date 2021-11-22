@@ -1,6 +1,6 @@
 Works for QRadar integration version 3, v1 and v2 are deprecated.
 
-Note: For QRadar v2 and v3 you can use the integration to fetch the offense event logs according to the limit defined in the instance settings. Using this playbook you can define an additional search to query a larger number of logs.
+Note: You can use the integration to fetch the offense event logs according to the limit defined in the instance settings. Using this playbook you can define an additional search to query a larger number of logs.
 
 Default playbook inputs use QRadar incident fields such as idoffense and starttime. These fields can be replaced, but need to point to relevant offense ID and starttime fields.  (Available from Cortex XSOAR 6.0.0). 
 
