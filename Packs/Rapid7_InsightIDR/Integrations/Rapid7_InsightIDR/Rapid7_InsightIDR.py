@@ -730,17 +730,17 @@ def fetch_incidents(client: Client,
     investigations = client.list_investigations(remove_empty_elements(params))
     for investigation in investigations.get('data', []):
         investigation_created_time = investigation.get('created_time')
-
-        incident = {
-            'name': investigation.get('title'),
-            'occurred': investigation_created_time,
-            'rawJSON': json.dumps(investigation)
-        }
-        incidents.append(incident)
         try:
             created_time = datetime.strptime(investigation_created_time, DATE_FORMAT)
         except:
             created_time = datetime.strptime(investigation_created_time, DATE_FORMAT_BACKUP)
+        
+        incident = {
+            'name': investigation.get('title'),
+            'occurred': created_time.strftime(DATE_FORMAT),
+            'rawJSON': json.dumps(investigation)
+        }
+        incidents.append(incident)
         if created_time > next_run:
             next_run = created_time
 
