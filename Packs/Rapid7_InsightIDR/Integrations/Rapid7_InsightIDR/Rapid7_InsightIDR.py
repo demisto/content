@@ -12,6 +12,7 @@ from requests import Response
 urllib3.disable_warnings()
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+DATE_FORMAT_BACKUP = '%Y-%m-%dT%H:%M:%SZ'
 
 INVESTIGATIONS_FIELDS = ['title', 'id', 'status', 'created_time', 'source', 'assignee', 'alerts']
 THREATS_FIELDS = ['name', 'note', 'indicator_count', 'published']
@@ -736,8 +737,10 @@ def fetch_incidents(client: Client,
             'rawJSON': json.dumps(investigation)
         }
         incidents.append(incident)
-
-        created_time = datetime.strptime(investigation_created_time, DATE_FORMAT)
+        try:
+            created_time = datetime.strptime(investigation_created_time, DATE_FORMAT)
+        except:
+            created_time = datetime.strptime(investigation_created_time, DATE_FORMAT_BACKUP)
         if created_time > next_run:
             next_run = created_time
 
