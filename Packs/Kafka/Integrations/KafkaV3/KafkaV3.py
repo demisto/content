@@ -1,10 +1,10 @@
 import demistomock as demisto
 from CommonServerPython import *
 from confluent_kafka import Consumer, TopicPartition, Producer, KafkaException, TIMESTAMP_NOT_AVAILABLE, Message
-from typing import Tuple, Union
+from typing import Tuple, Union, Dict
 
 ''' IMPORTS '''
-import uuid
+import tempfile
 import requests
 import traceback
 
@@ -28,15 +28,17 @@ class KProducer(Producer):
 
 class KafkaCommunicator:
     """Client class to interact with Kafka."""
-    conf_producer = None
-    conf_consumer = None
-    ca_path = None
-    client_cert_path = None
-    client_key_path = None
+    conf_producer: Optional[Dict[str, Any]] = None
+    conf_consumer: Optional[Dict[str, Any]] = None
+    ca_path: Optional[str] = None
+    client_cert_path: Optional[str] = None
+    client_key_path: Optional[str] = None
 
     def __init__(self, brokers: str, offset: str = 'earliest', group_id: str = 'xsoar_group',
-                 message_max_bytes: int = None, enable_auto_commit: bool = False, ca_cert=None,
-                 client_cert=None, client_cert_key=None, ssl_password=None, trust_any_cert=False):
+                 message_max_bytes: Optional[int] = None, enable_auto_commit: bool = False,
+                 ca_cert: Optional[str] = None,
+                 client_cert: Optional[str] = None, client_cert_key: Optional[str] = None,
+                 ssl_password: Optional[str] = None, trust_any_cert: bool = False):
         """Set configuration dicts for consumer and producer.
 
         Args:
@@ -53,58 +55,52 @@ class KafkaCommunicator:
         self.conf_producer = {'bootstrap.servers': brokers}
 
         if offset not in SUPPORTED_GENERAL_OFFSETS:
-            demisto.debug(f'General offset {offset} not found in supported offsets. '
-                          f'Setting general offset to \'earliest\'')
-            offset = 'earliest'
+            raise DemistoException(f'General offset {offset} not found in supported offsets: '
+                                   f'{SUPPORTED_GENERAL_OFFSETS}')
 
         self.conf_consumer = {'bootstrap.servers': brokers,
-                              'session.timeout.ms': 5000,
+                              'session.timeout.ms': 10000,
                               'auto.offset.reset': offset,
                               'group.id': group_id,
                               'enable.auto.commit': enable_auto_commit}
 
         if trust_any_cert:
             self.conf_consumer.update({'ssl.endpoint.identification.algorithm': 'none',
-                                       'enable.ssl.certificate.verification': False})  # type: ignore
+                                       'enable.ssl.certificate.verification': False})
             self.conf_producer.update({'ssl.endpoint.identification.algorithm': 'none',
-                                       'enable.ssl.certificate.verification': False})  # type: ignore
+                                       'enable.ssl.certificate.verification': False})
 
         if message_max_bytes:
             self.conf_consumer.update({'message.max.bytes': int(message_max_bytes)})
 
         if ca_cert:
-            self.ca_path = str(uuid.uuid4())  # Generate file name for key
-            with open(self.ca_path, 'w') as file:
-                file.write(ca_cert)  # lgtm [py/clear-text-storage-sensitive-data]
-                ca_path = os.path.abspath(self.ca_path)
-            self.conf_producer.update({'ssl.ca.location': ca_path})
-            self.conf_consumer.update({'ssl.ca.location': ca_path})
+            with tempfile.NamedTemporaryFile(mode="w", delete=False) as ca_descriptor:
+                self.ca_path = ca_descriptor.name
+                ca_descriptor.write(ca_cert)
+            self.conf_producer.update({'ssl.ca.location': self.ca_path})
+            self.conf_consumer.update({'ssl.ca.location': self.ca_path})
         if client_cert:
-            self.client_cert_path = str(uuid.uuid4())  # Generate file name for key
-            with open(self.client_cert_path, 'w') as file:
-                file.write(client_cert)  # lgtm [py/clear-text-storage-sensitive-data]
-                client_path = os.path.abspath(self.client_cert_path)
-            self.conf_producer.update({'ssl.certificate.location': client_path,
+            with tempfile.NamedTemporaryFile(mode="w", delete=False) as client_cert_descriptor:
+                self.client_cert_path = client_cert_descriptor.name
+                client_cert_descriptor.write(client_cert)
+            self.conf_producer.update({'ssl.certificate.location': self.client_cert_path,
                                        'security.protocol': 'ssl'})
-            self.conf_consumer.update({'ssl.certificate.location': client_path,
+            self.conf_consumer.update({'ssl.certificate.location': self.client_cert_path,
                                        'security.protocol': 'ssl'})
         if client_cert_key:
-            self.client_key_path = str(uuid.uuid4())  # Generate file name for key
-            with open(self.client_key_path, 'w') as file:
-                file.write(client_cert_key)  # lgtm [py/clear-text-storage-sensitive-data]
-                client_key_path = os.path.abspath(self.client_key_path)
-            self.conf_producer.update({'ssl.key.location': client_key_path})
-            self.conf_consumer.update({'ssl.key.location': client_key_path})
+            with tempfile.NamedTemporaryFile(mode="w", delete=False) as client_key_descriptor:
+                self.client_key_path = client_key_descriptor.name
+                client_key_descriptor.write(client_cert_key)
+            self.conf_producer.update({'ssl.key.location': self.client_key_path})
+            self.conf_consumer.update({'ssl.key.location': self.client_key_path})
         if ssl_password:
             self.conf_producer.update({'ssl.key.password': ssl_password})
             self.conf_consumer.update({'ssl.key.password': ssl_password})
 
-    def update_conf_for_fetch(self, offset: str = 'earliest', message_max_bytes: int = None,
-                              enable_auto_commit: bool = False):
+    def update_conf_for_fetch(self, message_max_bytes: Optional[int] = None, enable_auto_commit: bool = False):
         """Update consumer configurations for fetching messages
 
         Args:
-            offset: The general offset to start fetching from
             message_max_bytes: The maximum message bytes to fetch
             enable_auto_commit: Auto commit the offset when consuming messages.
 
@@ -114,8 +110,7 @@ class KafkaCommunicator:
             if message_max_bytes:
                 self.conf_consumer.update({'message.max.bytes': int(message_max_bytes)})
 
-            self.conf_consumer.update({'auto.offset.reset': offset,
-                                       'enable.auto.commit': enable_auto_commit})
+            self.conf_consumer.update({'enable.auto.commit': enable_auto_commit})
         else:
             raise DemistoException('Kafka consumer was not yet initialized.')
 
@@ -166,7 +161,7 @@ class KafkaCommunicator:
         partition = TopicPartition(topic=topic, partition=partition)
         return kafka_consumer.get_watermark_offsets(partition=partition, timeout=3.0)
 
-    def produce(self, topic: str, value: str, partition: Union[int, None]) -> None:
+    def produce(self, topic: str, value: str, partition: Optional[int]) -> None:
         """Produce in to kafka
 
         Args:
@@ -309,21 +304,15 @@ def command_test_module(kafka: KafkaCommunicator, demisto_params: dict) -> str:
         kafka: initialized KafkaCommunicator object to preform actions with.
         demisto_params: The demisto parameters.
 
-    Return 'ok' if everything went well, 'Failed' otherwise
+    Return 'ok' if everything went well, raise relevant exception otherwise
     """
-    valid_fetch = True
-    connection_test = kafka.test_connection()
+    kafka.test_connection()
     if demisto_params.get('isFetch', False):
-        valid_fetch = check_params(kafka=kafka,
-                                   topic=demisto_params.get('topic', None),
-                                   partitions=handle_empty(argToList(demisto_params.get('partition', None)), None),
-                                   offset=handle_empty(demisto_params.get('offset', 'earliest'), 'earliest'))
-    if connection_test != 'ok':
-        return connection_test
-    elif not valid_fetch:
-        return 'Failed'
-    else:
-        return 'ok'
+        check_params(kafka=kafka,
+                     topic=demisto_params.get('topic', None),
+                     partitions=handle_empty(argToList(demisto_params.get('partition', None)), None),
+                     offset=handle_empty(demisto_params.get('offset', 'earliest'), 'earliest'))
+    return 'ok'
 
 
 def print_topics(kafka: KafkaCommunicator, demisto_args: dict) -> Union[CommandResults, str]:
@@ -335,7 +324,7 @@ def print_topics(kafka: KafkaCommunicator, demisto_args: dict) -> Union[CommandR
 
     Return CommandResults withe the detailed topics, 'No topics found.' if no topics were found.
     """
-    include_offsets = demisto_args.get('include_offsets', 'true') == 'true'
+    include_offsets = argToBoolean(demisto_args.get('include_offsets', 'true'))
     kafka_topics = kafka.get_topics().values()
     if kafka_topics:
         topics = []
@@ -348,6 +337,8 @@ def print_topics(kafka: KafkaCommunicator, demisto_args: dict) -> Union[CommandR
                         partition_output['EarliestOffset'], partition_output['OldestOffset'] = kafka.get_partition_offsets(
                             topic=topic.topic, partition=partition.id)
                     except KafkaException as e:
+                        # Sometimes listing topics can return uninitialized partitions.
+                        # If that's the case, ignore them and continue.
                         if 'Unknown partition' not in str(e):
                             raise e
                 partitions.append(partition_output)
@@ -381,18 +372,18 @@ def produce_message(kafka: KafkaCommunicator, demisto_args: dict) -> None:
     """
     topic = demisto_args.get('topic')
     value = demisto_args.get('value')
-    partition = demisto_args.get('partition')
+    partition_arg = demisto_args.get('partition')
 
-    partition = str(partition)
-    if partition.isdigit():
-        partition = int(partition)  # type: ignore
+    partition_str = str(partition_arg)
+    if partition_str.isdigit():
+        partition: Optional[int] = int(partition_str)
     else:
-        partition = None  # type: ignore
+        partition = None
 
     kafka.produce(
         value=str(value),
         topic=str(topic),
-        partition=partition  # type: ignore
+        partition=partition
     )
 
 
@@ -410,13 +401,9 @@ def consume_message(kafka: KafkaCommunicator, demisto_args: dict) -> Union[Comma
     offset = demisto_args.get('offset', '0')
 
     message = kafka.consume(topic=topic, partition=partition, offset=offset)
-    demisto.debug(f"got message {message} from kafka")
     if not message:
         return 'No message was consumed.'
     else:
-        message_value = message.value()
-        dict_for_debug = [{'Offset': message.offset(), 'Message': message_value.decode('utf-8')}]
-        demisto.debug(f"The dict for debug: {dict_for_debug}")
         message_value = message.value()
         readable_output = tableToMarkdown(f'Message consumed from topic {topic}',
                                           [{'Offset': message.offset(), 'Message': message_value.decode("utf-8")}])
@@ -472,8 +459,8 @@ def handle_empty(value: Any, default_value: Any) -> Any:
     return value
 
 
-def check_params(kafka: KafkaCommunicator, topic: str, partitions: list = None,
-                 offset: str = None, consumer: bool = False) -> bool:
+def check_params(kafka: KafkaCommunicator, topic: str, partitions: Optional[list] = None,
+                 offset: Optional[str] = None, consumer: bool = False) -> bool:
     """Check that partitions exist in topic and that offset matches the available ones.
 
     Args:
@@ -522,16 +509,19 @@ def fetch_incidents(kafka: KafkaCommunicator, demisto_params: dict) -> None:
         demisto_params: The demisto parameters.
     """
     topic = demisto_params.get('topic', '')
-    partitions = handle_empty(argToList(demisto_params.get('partition', '')), -1)
+    partitions = handle_empty(argToList(demisto_params.get('partition', '')), [])
     offset = handle_empty(demisto_params.get('first_fetch', 'earliest'), 'earliest')
     message_max_bytes = int(handle_empty(demisto_params.get("max_bytes_per_message", 1048576), 1048576))
     max_messages = int(handle_empty(demisto_params.get('max_fetch', 50), 50))
     last_fetched_offsets = demisto.getLastRun().get('last_fetched_offsets', {})
     last_topic = demisto.getLastRun().get('last_topic', '')
-    demisto.debug(f"Starting fetch incidents with last_fetched_offsets: {last_fetched_offsets}")
+    demisto.debug(f"Starting fetch incidents with:\n last_topic: {last_topic}, "
+                  f"last_fetched_offsets: {last_fetched_offsets}"
+                  f"topic: {topic}, partitions: {partitions}, offset: {offset}, message_max_bytes: {message_max_bytes},"
+                  f" max_messages: {max_messages}\n")
     incidents = []
 
-    kafka.update_conf_for_fetch(offset=offset, enable_auto_commit=True, message_max_bytes=message_max_bytes)
+    kafka.update_conf_for_fetch(enable_auto_commit=True, message_max_bytes=message_max_bytes)
 
     kafka_consumer = KConsumer(kafka.conf_consumer)
     check_params(kafka, topic, partitions, offset, True)
@@ -543,10 +533,10 @@ def fetch_incidents(kafka: KafkaCommunicator, demisto_params: dict) -> None:
     for partition in partitions:
         specific_offset = handle_empty(last_fetched_offsets.get(partition), offset)
         demisto.debug(f'Getting last offset for partition {partition}, specific offset is {specific_offset}\n')
-        if type(specific_offset) is int:
+        if isinstance(specific_offset, int):
             specific_offset += 1
             earliest_offset, latest_offset = kafka.get_partition_offsets(topic=topic, partition=int(partition))
-            if specific_offset >= latest_offset:
+            if specific_offset >= latest_offset or specific_offset < earliest_offset:
                 continue
         topic_partitions += kafka.get_topic_partitions(topic=topic, partition=int(partition),
                                                        offset=specific_offset)
@@ -554,7 +544,7 @@ def fetch_incidents(kafka: KafkaCommunicator, demisto_params: dict) -> None:
     if topic_partitions:
         kafka_consumer.assign(topic_partitions)
 
-    for message_num in range(max_messages):
+    for _ in range(max_messages):
         polled_msg = kafka_consumer.poll(1.0)
         if polled_msg:
             incidents.append(create_incident(message=polled_msg, topic=topic))
@@ -590,11 +580,13 @@ def main():
         client_cert = demisto_params.get('client_cert', None)
         client_cert_key = demisto_params.get('client_cert_key', None)
         ssl_password = demisto_params.get('additional_password', None)
-        kafka = KafkaCommunicator(brokers=brokers, ca_cert=ca_cert, client_cert=client_cert,
-                                  client_cert_key=client_cert_key, ssl_password=ssl_password, offset=offset,
-                                  trust_any_cert=False)
+        kafka_kwargs = {'brokers': brokers, 'ca_cert': ca_cert, 'client_cert': client_cert,
+                        'client_cert_key': client_cert_key, 'ssl_password': ssl_password, 'offset': offset,
+                        'trust_any_cert': False}
     else:
-        kafka = KafkaCommunicator(brokers=brokers, offset=offset, trust_any_cert=trust_any_cert)
+        kafka_kwargs = {'brokers': brokers, 'offset': offset, 'trust_any_cert': trust_any_cert}
+
+    kafka = KafkaCommunicator(**kafka_kwargs)
 
     try:
         if demisto_command == 'test-module':
@@ -629,5 +621,5 @@ def main():
             os.remove(os.path.abspath('client_key.key'))
 
 
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

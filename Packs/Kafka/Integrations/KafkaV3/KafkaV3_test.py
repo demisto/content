@@ -699,7 +699,7 @@ def test_ssl_configuration():
                               client_cert='client_cert',
                               client_cert_key='client_cert_key',
                               ssl_password='ssl_password',
-                              offset='offset',
+                              offset='earliest',
                               trust_any_cert=False)
     expected_consumer_conf = {
         'auto.offset.reset': 'earliest',
@@ -707,7 +707,7 @@ def test_ssl_configuration():
         'enable.auto.commit': False,
         'group.id': 'xsoar_group',
         'security.protocol': 'ssl',
-        'session.timeout.ms': 5000,
+        'session.timeout.ms': 10000,
         'ssl.ca.location': os.path.abspath(kafka.ca_path),
         'ssl.certificate.location': os.path.abspath(kafka.client_cert_path),
         'ssl.key.location': os.path.abspath(kafka.client_key_path),
