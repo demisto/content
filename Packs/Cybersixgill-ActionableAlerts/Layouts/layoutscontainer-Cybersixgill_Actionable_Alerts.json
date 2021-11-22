@@ -332,15 +332,6 @@
                                 "startCol": 0
                             },
                             {
-                                "endCol": 2,
-                                "fieldId": "cybersixgillalertid",
-                                "height": 53,
-                                "id": "3abd4f40-4617-11ec-a3e6-073e7f7f29fa",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
                                 "dropEffect": "move",
                                 "endCol": 1,
                                 "fieldId": "cybersixgilltriggeredassets",
@@ -353,63 +344,9 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "xdrseverity",
-                                "height": 53,
-                                "id": "6d8c0030-ac7a-11e9-a30b-53d47e1ea7d7",
-                                "index": 3,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "xdrmanualseverity",
-                                "height": 53,
-                                "id": "c40c7ac0-ac89-11e9-a30b-53d47e1ea7d7",
-                                "index": 3,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
                                 "fieldId": "cyberthreatlevel",
                                 "height": 53,
                                 "id": "a58f34a0-41a0-11ea-ab50-c5b3863b3e71",
-                                "index": 3,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "xdrhighseverityalerts",
-                                "height": 53,
-                                "id": "407735a0-ac7b-11e9-a30b-53d47e1ea7d7",
-                                "index": 3,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "xdrmediumseverityalerts",
-                                "height": 53,
-                                "id": "42b2a6b0-ac7b-11e9-a30b-53d47e1ea7d7",
-                                "index": 3,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "xdrlowseverityalerts",
-                                "height": 53,
-                                "id": "440ae3b0-ac7b-11e9-a30b-53d47e1ea7d7",
-                                "index": 3,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "xdrassignedusername",
-                                "height": 53,
-                                "id": "34c76d60-ac8a-11e9-a30b-53d47e1ea7d7",
                                 "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
