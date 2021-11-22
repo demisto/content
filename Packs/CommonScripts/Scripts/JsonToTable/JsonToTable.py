@@ -14,7 +14,7 @@ def main():
         json_transform_properties = safe_load_json(json_transform_properties)
         for header_key, values in json_transform_properties.items():
             json_transformers[header_key] = JsonTransformer(**values)
-    markdown = tableToMarkdown(title, value, headers=headers, json_transform=json_transformers,
+    markdown = tableToMarkdown(title, value, headers=headers, json_transform_mapping=json_transformers,
                                is_auto_json_transform=is_auto_json_transform)
     return_results(markdown)
 

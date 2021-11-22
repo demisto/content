@@ -24,7 +24,7 @@ args:
 - name: json_transform_properties
   description: "A json to transform the value to strings.
               The syntax is:
-              `{\"header_key\": {\"keys_lst\": [<item1>, ...], \"is_nested\": true/false}}` "
+              `{\"header_key\": {\"keys\": [<item1>, ...], \"is_nested\": true/false}}` "
 scripttarget: 0
 subtype: python3
 runonce: false

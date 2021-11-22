@@ -84,21 +84,21 @@ def toEntry(table):
 
 
 def test_is_ip_valid():
-        valid_ip_v6 = "FE80:0000:0000:0000:0202:B3FF:FE1E:8329"
-        valid_ip_v6_b = "FE80::0202:B3FF:FE1E:8329"
-        invalid_ip_v6 = "KKKK:0000:0000:0000:0202:B3FF:FE1E:8329"
-        valid_ip_v4 = "10.10.10.10"
-        invalid_ip_v4 = "10.10.10.9999"
-        invalid_not_ip_with_ip_structure = "1.1.1.1.1.1.1.1.1.1.1.1.1.1.1"
-        not_ip = "Demisto"
-        assert not is_ip_valid(valid_ip_v6)
-        assert is_ip_valid(valid_ip_v6, True)
-        assert is_ip_valid(valid_ip_v6_b, True)
-        assert not is_ip_valid(invalid_ip_v6, True)
-        assert not is_ip_valid(not_ip, True)
-        assert is_ip_valid(valid_ip_v4)
-        assert not is_ip_valid(invalid_ip_v4)
-        assert not is_ip_valid(invalid_not_ip_with_ip_structure)
+    valid_ip_v6 = "FE80:0000:0000:0000:0202:B3FF:FE1E:8329"
+    valid_ip_v6_b = "FE80::0202:B3FF:FE1E:8329"
+    invalid_ip_v6 = "KKKK:0000:0000:0000:0202:B3FF:FE1E:8329"
+    valid_ip_v4 = "10.10.10.10"
+    invalid_ip_v4 = "10.10.10.9999"
+    invalid_not_ip_with_ip_structure = "1.1.1.1.1.1.1.1.1.1.1.1.1.1.1"
+    not_ip = "Demisto"
+    assert not is_ip_valid(valid_ip_v6)
+    assert is_ip_valid(valid_ip_v6, True)
+    assert is_ip_valid(valid_ip_v6_b, True)
+    assert not is_ip_valid(invalid_ip_v6, True)
+    assert not is_ip_valid(not_ip, True)
+    assert is_ip_valid(valid_ip_v4)
+    assert not is_ip_valid(invalid_ip_v4)
+    assert not is_ip_valid(invalid_not_ip_with_ip_structure)
 
 
 DATA = [
@@ -273,7 +273,7 @@ NESTED_DATA_EXAMPLE = {"name": "Active Directory Query",
                            }
                        }}
 
-MORE_NESTED_DATA_EXAMPLE = {"name": "Active Directory Query",
+COMPLEX_NESTED_DATA_EXAMPLE = {"name": "Active Directory Query",
                             "changelog": {
                                 "1.0.4": {
                                     "path": {'a': {'b': {'c': 'we should see this value'}}},
@@ -784,7 +784,7 @@ class TestTableToMarkdown:
         changelog_transformer = JsonTransformer(keys_lst=['releaseNotes', 'released'])
         table_json_transformer = {'changelog': changelog_transformer}
         table = tableToMarkdown("tableToMarkdown test", NESTED_DATA_EXAMPLE, headers=['name', 'changelog'],
-                                json_transform=table_json_transformer)
+                                json_transform_mapping=table_json_transformer)
         expected_table = """### tableToMarkdown test
 |name|changelog|
 |---|---|
@@ -805,8 +805,8 @@ class TestTableToMarkdown:
         changelog_transformer = JsonTransformer(keys_lst=['releaseNotes', 'c'], is_nested=True)
 
         table_json_transformer = {'changelog': changelog_transformer}
-        table = tableToMarkdown('tableToMarkdown test', MORE_NESTED_DATA_EXAMPLE, headers=['name', 'changelog'],
-                                json_transform=table_json_transformer)
+        table = tableToMarkdown('tableToMarkdown test', COMPLEX_NESTED_DATA_EXAMPLE, headers=['name', 'changelog'],
+                                json_transform_mapping=table_json_transformer)
         expected_table = """### tableToMarkdown test
 |name|changelog|
 |---|---|
@@ -824,7 +824,7 @@ class TestTableToMarkdown:
         changelog_transformer = JsonTransformer(func=changelog_to_str)
         table_json_transformer = {'changelog': changelog_transformer}
         table = tableToMarkdown("tableToMarkdown test", NESTED_DATA_EXAMPLE, headers=['name', 'changelog'],
-                                json_transform=table_json_transformer)
+                                json_transform_mapping=table_json_transformer)
         expected_table = """### tableToMarkdown test
 |name|changelog|
 |---|---|

@@ -1783,15 +1783,15 @@ def create_clickable_url(url):
 
 
 class JsonTransformer:
-    def __init__(self, flatten=False, keys=None, is_nested=False, func=None):
+    def __init__(self, flatten=True, keys=None, is_nested=False, func=None):
         """
         Constructor for JsonTransformer
 
         :type flatten: ``bool``
         :param flatten:  Should we flatten the json using `flattenCell` (the default behavior)
 
-        :type keys_lst: ``List[str]``
-        :param keys_lst: a list of relevant keys list from the json
+        :type keys: ``List[str]``
+        :param keys: a list of relevant keys list from the json. Notice we save it as a set in the class
 
         :type is_nested: ``bool``
         :param is_nested: Whether to search in nested keys or not
@@ -1799,9 +1799,9 @@ class JsonTransformer:
         :type func: ``Callable``
         :param func: A function to parse the json
         """
-        if keys_lst is None:
-            keys_lst = []
-        self.keys = set(keys_lst)
+        if keys is None:
+            keys = []
+        self.keys = set(keys)
         self.is_nested = is_nested
         self.func = func
         self.flatten = flatten
@@ -1821,7 +1821,7 @@ class JsonTransformer:
         for k, v in json_input.items():
             str_lst.append('***{k}***: '.format(k=k))
             if isinstance(v, dict):
-                items_to_add = ["\t**{key}**: {val}".format(key=k, val=flattenCell(v, is_pretty)) for k, v in
+                items_to_add = ["\t**{key}**: {val}".format(key=key, val=flattenCell(val, is_pretty)) for key, val in
                                 self.item_generator(v)]
             else:
                 items_to_add = ["\t{val}".format(val=flattenCell(v, is_pretty))]
@@ -1831,7 +1831,7 @@ class JsonTransformer:
     def item_generator(self, json_input):
         if isinstance(json_input, dict):
             for k, v in json_input.items():
-                if not self.keys_set or k in self.keys_set:
+                if not self.keys or k in self.keys:
                     yield k, v
                 if self.is_nested:
                     yield from self.item_generator(v)
@@ -1841,7 +1841,7 @@ class JsonTransformer:
 
 
 def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None, url_keys=None,
-                    date_fields=None, json_transform=None, is_auto_json_transform=False):
+                    date_fields=None, json_transform_mapping=None, is_auto_json_transform=False):
     """
        Converts a demisto table in JSON form to a Markdown table
 
@@ -1870,8 +1870,8 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
        :type date_fields: ``list``
        :param date_fields: A list of date fields to format the value to human-readable output.
 
-        :type json_transform: ``TableJsonTransformer``
-        :param json_transform: An instance of JsonTransformer. If not passed, default one will be initiated
+        :type json_transform_mapping: ``Dict[str, JsonTransformer]``
+        :param json_transform_mapping: A mapping between a header key to correspoding JsonTransformer
 
         :type is_auto_json_transform: ``bool``
         :param is_auto_json_transform: Boolean to try to auto transform complex json
@@ -1926,9 +1926,9 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
                 headers_aux.remove(header)
         headers = headers_aux
 
-    if not json_transform:
-        json_transform = {header: JsonTransformer(flatten=not is_auto_json_transform) for header in
-                          headers}
+    if not json_transform_mapping:
+        json_transform_mapping = {header: JsonTransformer(flatten=not is_auto_json_transform) for header in
+                                  headers}
 
     if t and len(headers) > 0:
         newHeaders = []
@@ -1953,7 +1953,7 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
                     except Exception:
                         pass
 
-            vals = [stringEscapeMD((formatCell(entry_copy.get(h, ''), False, json_transform.get(h)) if entry_copy.get(h) is not None else ''),
+            vals = [stringEscapeMD((formatCell(entry_copy.get(h, ''), False, json_transform_mapping.get(h)) if entry_copy.get(h) is not None else ''),
                                    True, True) for h in headers]
 
             # this pipe is optional
