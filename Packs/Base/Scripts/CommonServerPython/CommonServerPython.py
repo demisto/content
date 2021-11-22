@@ -1926,7 +1926,7 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
         headers = headers_aux
 
     if not json_transform:
-        json_transform = {header: JsonTransformer(flatten=False if is_auto_json_transform else True) for header in
+        json_transform = {header: JsonTransformer(flatten=not is_auto_json_transform) for header in
                           headers}
 
     if t and len(headers) > 0:
