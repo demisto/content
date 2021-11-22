@@ -13,18 +13,18 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Server URL (e.g. https://api.opsgenie.com) |  | True |
-    | Trust any certificate (not secure) |  | True |
-    | Use system proxy settings |  | False |
     | API Token | Must be created from the Teams API Integration section. | False |
     | Fetch incidents |  | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-    | None |  | False |
+    | Max Fetch |  | False |
     | Event types | Fetch only events with selected event types | True |
-    | Status |  | False |
-    | Priority |  | False |
-    | Tags |  | False |
-    | Query |  | False |
+    | Status | Fetch only events with selected status. If query is used, this paramter will be overrided. | False |
+    | Priority | Fetch only events with selected priority. If query is used, this paramter will be overrided. | False |
+    | Tags | Fetch only events with selected tags. If query is used, this paramter will be overrided. | False |
+    | Query | Query parameters will be used as URL encoded values for “query” key. i.e. 'https://api.opsgenie.com/v2/alerts?query=status%3Aopenor%20acknowledged%3Atrue&amp;amp;limit=10&amp;amp;sort=createdAt' | False |
     | Incident type |  | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -47,7 +47,7 @@ Create an Alert in opsgenie
 | message | Alert message. | Required | 
 | alias | Client-defined identifier of the alert. | Optional | 
 | description | Description field of the alert that is generally used to provide a detailed information about the alert. | Optional | 
-| responders | Teams/users that the alert is routed to via notifications. List of:responser_type, value_type, value. | Optional | 
+| responders | Teams/users that the alert is routed to via notifications.<br/> You need to insert it as List of triples - responder_type, value_type, value.<br/> The responder_type can be: team, user, escalation or schedule.<br/> The value_type can be: id or name.<br/> The value you can find from the output of the commands '!opsgenie-get-teams', '!opsgenie-get-schedules' or '!opsgenie-get-escalations'.<br/> For example: schedule,name,test_schedule,user,id,123,team,name,test_team. | Optional | 
 | tags | Comma separated list of tags to add. | Optional | 
 | priority | Incident Priority. Defaulted to P3 if not provided. Possible values are: P1, P2, P3, P4, P5. Default is P3. | Optional | 
 | source | Display name of the request source. Defaulted to IP of the request sender. | Optional | 
@@ -72,9 +72,20 @@ Create an Alert in opsgenie
 #### Command Example
 ```!opsgenie-create-alert message="Example Message"```
 
+#### Context Example
+```json
+{
+    "OpsGenie": {
+        "Alert": {
+            "requestId": "0dd92ee3-f6a1-4414-b4cf-098a644e2a1e"
+        }
+    }
+}
+```
+
 #### Human Readable Output
 
->null
+>Waiting for request_id=0dd92ee3-f6a1-4414-b4cf-098a644e2a1e
 
 ### opsgenie-get-alerts
 ***
@@ -89,12 +100,12 @@ List the current alerts from OpsGenie.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert-id | The ID of the alert from opsgenie. | Optional | 
-| sort | OpsGenie field to sort by. | Optional | 
+| sort | Name of the field that result set will be sorted by.<br/> The options are: createdAt, updatedAt, tinyId, alias, message, status, acknowledged, isSeen snoozed, snoozedUntil, count, lastOccurredAt, source, owner, integration.name, integration.type, report.ackTime, report.closeTime, report.acknowledgedBy, report.closedBy. | Optional | 
 | limit | Maximum results to return. Default is 20. | Optional | 
 | offset | Start index of the result set (to apply pagination). Minimum value (and also default value) is 0. Default is 0. | Optional | 
-| status | The ID of the alert from opsgenie. Possible values are: Open, Closed. | Optional | 
-| priority | Incident Priority. Defaulted to P3 if not provided. Possible values are: P1, P2, P3, P4, P5. Default is P3. | Optional | 
-| tags | Comma separated list of tags to add. | Optional | 
+| status | The status of the alert from opsgenie. Possible values are: Open, Closed. | Optional | 
+| priority | The priority of the alert from opsgenie. Possible values are: P1, P2, P3, P4, P5. Default is P3. | Optional | 
+| tags | Comma separated list of tags. | Optional | 
 | query | URL Encoded query params. | Optional | 
 
 
@@ -141,31 +152,36 @@ List the current alerts from OpsGenie.
         "Alert": [
             {
                 "acknowledged": false,
-                "alias": "4d88678f-b9c9-46bd-b82e-953dd7eb4d2c-1637073149155",
+                "alias": "f3dab429-9981-4d72-825a-5820e9973881-1637522513451",
                 "count": 1,
-                "createdAt": "2021-11-16T14:32:29.155Z",
+                "createdAt": "2021-11-21T19:21:53.451Z",
                 "event_type": "Alerts",
-                "id": "4d88678f-b9c9-46bd-b82e-953dd7eb4d2c-1637073149155",
+                "id": "f3dab429-9981-4d72-825a-5820e9973881-1637522513451",
                 "integration": {
                     "id": "3cc69931-167f-411c-a331-768997c29d2e",
                     "name": "API",
                     "type": "API"
                 },
                 "isSeen": false,
-                "lastOccurredAt": "2021-11-16T14:32:29.155Z",
-                "message": "Example Message",
+                "lastOccurredAt": "2021-11-21T19:21:53.451Z",
+                "message": "123",
                 "owner": "",
                 "ownerTeamId": "",
                 "priority": "P3",
-                "responders": [],
+                "responders": [
+                    {
+                        "id": "9a441a8d-2410-43f4-9ef2-f7a265e12b74",
+                        "type": "escalation"
+                    }
+                ],
                 "seen": false,
                 "snoozed": false,
                 "source": "31.154.166.148",
                 "status": "open",
                 "tags": [],
                 "teams": [],
-                "tinyId": "92",
-                "updatedAt": "2021-11-16T14:32:29.245Z"
+                "tinyId": "157",
+                "updatedAt": "2021-11-21T19:26:53.705Z"
             }
         ]
     }
@@ -177,7 +193,7 @@ List the current alerts from OpsGenie.
 >### OpsGenie Alert
 >|acknowledged|alias|count|createdAt|event_type|id|integration|isSeen|lastOccurredAt|message|owner|ownerTeamId|priority|responders|seen|snoozed|source|status|tags|teams|tinyId|updatedAt|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| false | 4d88678f-b9c9-46bd-b82e-953dd7eb4d2c-1637073149155 | 1 | 2021-11-16T14:32:29.155Z | Alerts | 4d88678f-b9c9-46bd-b82e-953dd7eb4d2c-1637073149155 | id: 3cc69931-167f-411c-a331-768997c29d2e<br/>name: API<br/>type: API | false | 2021-11-16T14:32:29.155Z | Example Message |  |  | P3 |  | false | false | 31.154.166.148 | open |  |  | 92 | 2021-11-16T14:32:29.245Z |
+>| false | f3dab429-9981-4d72-825a-5820e9973881-1637522513451 | 1 | 2021-11-21T19:21:53.451Z | Alerts | f3dab429-9981-4d72-825a-5820e9973881-1637522513451 | id: 3cc69931-167f-411c-a331-768997c29d2e<br/>name: API<br/>type: API | false | 2021-11-21T19:21:53.451Z | 123 |  |  | P3 | {'type': 'escalation', 'id': '9a441a8d-2410-43f4-9ef2-f7a265e12b74'} | false | false | 31.154.166.148 | open |  |  | 157 | 2021-11-21T19:26:53.705Z |
 
 
 ### opsgenie-delete-alert
@@ -213,9 +229,20 @@ Delete an Alert from OpsGenie
 #### Command Example
 ```!opsgenie-delete-alert alert-id=69df59c2-41c6-4866-8c03-65c1ecf5417d-1636973048286```
 
+#### Context Example
+```json
+{
+    "OpsGenie": {
+        "DeletedAlert": {
+            "requestId": "debec9e6-b5da-42f2-b83a-18a42486e3c3"
+        }
+    }
+}
+```
+
 #### Human Readable Output
 
->null
+>Waiting for request_id=debec9e6-b5da-42f2-b83a-18a42486e3c3
 
 ### opsgenie-ack-alert
 ***
@@ -251,9 +278,20 @@ Acknowledge an alert in OpsGenie
 #### Command Example
 ```!opsgenie-ack-alert alert-id=69df59c2-41c6-4866-8c03-65c1ecf5417d-1636973048286```
 
+#### Context Example
+```json
+{
+    "OpsGenie": {
+        "AckedAlert": {
+            "requestId": "58a5591c-94c2-45db-91db-674f434c3920"
+        }
+    }
+}
+```
+
 #### Human Readable Output
 
->null
+>Waiting for request_id=58a5591c-94c2-45db-91db-674f434c3920
 
 ### opsgenie-close-alert
 ***
@@ -292,20 +330,17 @@ Close an alert in OpsGenie
 #### Context Example
 ```json
 {
-    "action": "Add Responder",
-    "alertId": "",
-    "alias": "",
-    "integrationId": "3cc69931-167f-411c-a331-768997c29d2e",
-    "isSuccess": false,
-    "processedAt": "2021-11-16T14:32:36.767Z",
-    "status": "Alert does not exist",
-    "success": false
+    "OpsGenie": {
+        "ClosedAlert": {
+            "requestId": "f9b695e8-38f8-445a-a367-fe34ddc39642"
+        }
+    }
 }
 ```
 
 #### Human Readable Output
 
->null
+>Waiting for request_id=f9b695e8-38f8-445a-a367-fe34ddc39642
 
 ### opsgenie-assign-alert
 ***
@@ -343,9 +378,20 @@ Assign an OpsGenie Alert
 #### Command Example
 ```!opsgenie-assign-alert alert-id=69df59c2-41c6-4866-8c03-65c1ecf5417d-1636973048286 owner_username=b@g.com```
 
+#### Context Example
+```json
+{
+    "OpsGenie": {
+        "AssignAlert": {
+            "requestId": "8053a6a6-da2d-4488-b92c-eacd4640da15"
+        }
+    }
+}
+```
+
 #### Human Readable Output
 
->null
+>Waiting for request_id=8053a6a6-da2d-4488-b92c-eacd4640da15
 
 ### opsgenie-add-responder-alert
 ***
@@ -361,7 +407,7 @@ Add responder to an OpsGenie Alert
 | --- | --- | --- |
 | alert-id | Id of opsgenie alert. | Required | 
 | identifierType | Type of the identifier. Possible values are: id, tiny, alias. | Optional | 
-| responders | Team or user that the alert will be routed to. List of triples (responser_type, value_type, value). | Required | 
+| responders | Team/user that the alert is routed to via notifications.<br/> For now, it can be inserted only one responder a time.<br/> You need to insert it as List of triple - responder_type, value_type, value.<br/> The responder_type can be: team or user.<br/> The value_type can be: id or name.<br/> The value you can find from the output of the command '!opsgenie-get-teams'.<br/> For example: user,id,123 Another example: team,name,test_team. | Required | 
 | note | Additional alert note to add. | Optional | 
 
 
@@ -383,9 +429,20 @@ Add responder to an OpsGenie Alert
 #### Command Example
 ```!opsgenie-add-responder-alert alert-id=69df59c2-41c6-4866-8c03-65c1ecf5417d-1636973048286 responders=schedule,name,test_schedule```
 
+#### Context Example
+```json
+{
+    "OpsGenie": {
+        "AddResponderAlert": {
+            "requestId": "7fc0d0b5-532c-418d-b691-4bf9ca2d9411"
+        }
+    }
+}
+```
+
 #### Human Readable Output
 
->null
+>Waiting for request_id=7fc0d0b5-532c-418d-b691-4bf9ca2d9411
 
 ### opsgenie-get-escalations
 ***
@@ -593,9 +650,20 @@ Escalate an OpsGenie Alert
 #### Command Example
 ```!opsgenie-escalate-alert alert-id=69df59c2-41c6-4866-8c03-65c1ecf5417d-1636973048286 escalation_id=9a441a8d-2410-43f4-9ef2-f7a265e12b74```
 
+#### Context Example
+```json
+{
+    "OpsGenie": {
+        "EscalateAlert": {
+            "requestId": "fc77c05d-8616-48f6-a0ac-ac91bfe12e14"
+        }
+    }
+}
+```
+
 #### Human Readable Output
 
->null
+>Waiting for request_id=fc77c05d-8616-48f6-a0ac-ac91bfe12e14
 
 ### opsgenie-add-alert-tag
 ***
@@ -632,9 +700,20 @@ Add tag into OpsGenie Alert
 #### Command Example
 ```!opsgenie-add-alert-tag alert-id=69df59c2-41c6-4866-8c03-65c1ecf5417d-1636973048286 tags=1,2,3```
 
+#### Context Example
+```json
+{
+    "OpsGenie": {
+        "AddTagAlert": {
+            "requestId": "0a96f900-578d-4ae1-b73a-979838622ae4"
+        }
+    }
+}
+```
+
 #### Human Readable Output
 
->null
+>Waiting for request_id=0a96f900-578d-4ae1-b73a-979838622ae4
 
 ### opsgenie-remove-alert-tag
 ***
@@ -674,20 +753,27 @@ Remove tag from OpsGenie Alert
 #### Context Example
 ```json
 {
-    "action": "Acknowledge",
-    "alertId": "",
-    "alias": "",
-    "integrationId": "3cc69931-167f-411c-a331-768997c29d2e",
-    "isSuccess": false,
-    "processedAt": "2021-11-16T14:32:33.743Z",
-    "status": "Alert does not exist",
-    "success": false
+    "OpsGenie": {
+        "AckedAlert": {
+            "action": "Acknowledge",
+            "alertId": "",
+            "alias": "",
+            "integrationId": "3cc69931-167f-411c-a331-768997c29d2e",
+            "isSuccess": false,
+            "processedAt": "2021-11-21T19:31:37.653Z",
+            "status": "Alert does not exist",
+            "success": false
+        },
+        "RemoveTagAlert": {
+            "requestId": "38b09db6-cfab-486d-83ad-4da8e8182d81"
+        }
+    }
 }
 ```
 
 #### Human Readable Output
 
->null
+>Waiting for request_id=38b09db6-cfab-486d-83ad-4da8e8182d81
 
 ### opsgenie-get-alert-attachments
 ***
@@ -853,22 +939,18 @@ Get schedule overrides
 #### Context Example
 ```json
 {
-    "action": [
-        "Add Tags",
-        "Remove Tags"
-    ],
-    "alertId": "",
-    "alias": "",
-    "integrationId": "3cc69931-167f-411c-a331-768997c29d2e",
-    "isSuccess": false,
-    "processedAt": [
-        "2021-11-16T14:32:42.765Z",
-        "2021-11-16T14:32:44.111Z"
-    ],
-    "status": [
-        "Alert does not exist"
-    ],
-    "success": false
+    "OpsGenie": {
+        "AddTagAlert": {
+            "action": "Add Tags",
+            "alertId": "",
+            "alias": "",
+            "integrationId": "3cc69931-167f-411c-a331-768997c29d2e",
+            "isSuccess": false,
+            "processedAt": "2021-11-21T19:31:46.991Z",
+            "status": "Alert does not exist",
+            "success": false
+        }
+    }
 }
 ```
 
@@ -930,8 +1012,8 @@ Get the on-call users for the provided schedule
                         }
                     ]
                 },
-                "requestId": "4672d107-ba5a-49e5-9462-95e5eebba915",
-                "took": 0.024
+                "requestId": "e04f123b-f9cd-4d29-951e-ca6943987e67",
+                "took": 0.016
             }
         }
     }
@@ -961,7 +1043,7 @@ Create an Incident in opsgenie
 | interval_in_seconds | Interval in seconds between each poll. Default is 5. | Optional | 
 | message | Incident message. | Required | 
 | description | Description field of the incident that is generally used to provide a detailed information about it. | Optional | 
-| responders | Teams/users that the incident is routed to via notifications. List of responser_type,value_type,value. | Required | 
+| responders | Teams/users that the incident is routed to via notifications.<br/> You need to insert it as List of triples - responder_type, value_type, value.<br/> The responder_type can be: team or user.<br/> The value_type can be: id or name.<br/> The value you can find from the output of the command '!opsgenie-get-teams'.<br/> For example: user,id,123,team,name,test_team. | Optional | 
 | tags | Comma separated list of tags to add. | Optional | 
 | priority | Incident Priority. Defaulted to P3 if not provided. Possible values are: P1, P2, P3, P4, P5. Default is P3. | Optional | 
 
@@ -971,8 +1053,7 @@ Create an Incident in opsgenie
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | OpsGenie.Incident.action | String | Action of this Request | 
-| OpsGenie.Incident.Id | String | Id of created Alert | 
-| OpsGenie.Incident.alias | String | Alais of created Alert | 
+| OpsGenie.Incident.incidentId | String | Id of created incident | 
 | OpsGenie.Incident.integrationId | String | Integration of created Alert | 
 | OpsGenie.Incident.isSuccess | Boolean | If the request was successful | 
 | OpsGenie.Incident.processedAt | Date | When the request was processed | 
@@ -987,20 +1068,17 @@ Create an Incident in opsgenie
 #### Context Example
 ```json
 {
-    "action": "Close",
-    "alertId": "",
-    "alias": "",
-    "integrationId": "3cc69931-167f-411c-a331-768997c29d2e",
-    "isSuccess": false,
-    "processedAt": "2021-11-16T14:32:47.448Z",
-    "status": "Alert does not exist",
-    "success": false
+    "OpsGenie": {
+        "Incident": {
+            "requestId": "66340811-6de2-4594-8532-74b3fe7d89d4"
+        }
+    }
 }
 ```
 
 #### Human Readable Output
 
->null
+>Waiting for request_id=66340811-6de2-4594-8532-74b3fe7d89d4
 
 ### opsgenie-delete-incident
 ***
@@ -1023,8 +1101,7 @@ Delete an incident from OpsGenie
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | OpsGenie.DeletedIncident.action | String | Action of this Request | 
-| OpsGenie.DeletedIncident.alertId | String | Id of deleted incident | 
-| OpsGenie.DeletedIncident.alias | String | Alais of deleted incident | 
+| OpsGenie.DeletedIncident.incidnetId | String | Id of deleted incident | 
 | OpsGenie.DeletedIncident.integrationId | String | Integration of deleted incident | 
 | OpsGenie.DeletedIncident.isSuccess | Boolean | If the request was successful | 
 | OpsGenie.DeletedIncident.processedAt | Date | When the request was processed | 
@@ -1036,9 +1113,20 @@ Delete an incident from OpsGenie
 #### Command Example
 ```!opsgenie-delete-incident incident_id=c59086e0-bf2c-44e2-bdfb-ed7747cc126b```
 
+#### Context Example
+```json
+{
+    "OpsGenie": {
+        "DeletedIncident": {
+            "requestId": "a01676ee-93e1-4615-b986-b0091b70cdc2"
+        }
+    }
+}
+```
+
 #### Human Readable Output
 
->null
+>Waiting for request_id=a01676ee-93e1-4615-b986-b0091b70cdc2
 
 ### opsgenie-get-polling-result
 ***
@@ -1054,6 +1142,36 @@ Inside command for polling
 | --- | --- | --- |
 | request_id | Id of request. | Required | 
 | request_type_suffix | request_type_suffix. | Required | 
+| output_prefix | output_prefix. | Required | 
+| interval_in_seconds | Interval in seconds between each poll. Default is 5. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+
+### opsgenie-get-polling-paging-result
+***
+Inside command for polling
+
+
+#### Base Command
+
+`opsgenie-get-polling-paging-result`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| request_id | Id of request. | Required | 
+| request_type_suffix | request_type_suffix. | Required | 
+| output_prefix | output_prefix. | Required | 
 | interval_in_seconds | Interval in seconds between each poll. Default is 5. | Optional | 
 
 
@@ -1093,33 +1211,20 @@ List the current incidents from OpsGenie.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OpsGenie.Incident.acknowledged | Boolean | State of Acknoweledgement | 
-| OpsGenie.Incident.alias | String | Alert Alias | 
 | OpsGenie.Incident.count | Number | Count of Alert occurences | 
 | OpsGenie.Incident.createdAt | Date | Time alert created | 
-| OpsGenie.Incident.id | String | ID of alert | 
+| OpsGenie.Incident.incidentId | String | ID of alert | 
 | OpsGenie.Incident.integration.id | String | ID of integration | 
 | OpsGenie.Incident.integration.name | String | Integration name | 
 | OpsGenie.Incident.integration.type | String | Type of integration | 
-| OpsGenie.Incident.isSeen | Boolean | Whether alert has been seen | 
-| OpsGenie.Incident.lastOccurredAt | Date | Time alert last occured | 
 | OpsGenie.Incident.message | String | Alert Message | 
-| OpsGenie.Incident.owner | String | Owner of Alert | 
-| OpsGenie.Incident.ownerTeamId | String | Team ID of Owner | 
+| OpsGenie.Incident.ownerTeam | String | Team ID of Owner | 
 | OpsGenie.Incident.priority | String | Alert Priority | 
 | OpsGenie.Incident.responders.id | String | ID of responders | 
 | OpsGenie.Incident.responders.type | String | Type of Responders | 
-| OpsGenie.Incident.seen | Boolean | Seen status of alert | 
-| OpsGenie.Incident.snoozed | Boolean | Whether alert has been snoozed | 
-| OpsGenie.Incident.source | String | Source of Alert | 
 | OpsGenie.Incident.status | String | Status of Alert | 
-| OpsGenie.Incident.teams.id | String | Id of teams associated with Alert | 
 | OpsGenie.Incident.tinyId | String | Shorter ID for alert | 
 | OpsGenie.Incident.updatedAt | Date | Last Updated time for Alert | 
-| OpsGenie.Incident.report.ackTime | Number | Acknoweledgement Time of Alert | 
-| OpsGenie.Incident.report.acknowledgedBy | String | User that Acknolwedged the alert | 
-| OpsGenie.Incident.report.closeTime | Number | Time Alarm closed | 
-| OpsGenie.Incident.report.closedBy | String | Who Closed the alarm | 
 
 
 #### Command Example
@@ -1132,16 +1237,16 @@ List the current incidents from OpsGenie.
         "Incident": [
             {
                 "actions": [],
-                "createdAt": "2021-11-16T14:32:58.797Z",
+                "createdAt": "2021-11-21T19:32:02.148Z",
                 "description": "",
                 "event_type": "Incidents",
                 "extraProperties": {},
-                "id": "c4c2be7d-dbe3-494a-8eaf-487970be4d00",
-                "impactStartDate": "2021-11-16T14:32:58.797Z",
+                "id": "2a1c07ea-b9bd-4922-afcc-edf406b46904",
+                "impactStartDate": "2021-11-21T19:32:02.148Z",
                 "impactedServices": [],
                 "links": {
-                    "api": "https://api.opsgenie.com/v1/incidents/c4c2be7d-dbe3-494a-8eaf-487970be4d00",
-                    "web": "https://demisto1.app.opsgenie.com/incident/detail/c4c2be7d-dbe3-494a-8eaf-487970be4d00"
+                    "api": "https://api.opsgenie.com/v1/incidents/2a1c07ea-b9bd-4922-afcc-edf406b46904",
+                    "web": "https://demisto1.app.opsgenie.com/incident/detail/2a1c07ea-b9bd-4922-afcc-edf406b46904"
                 },
                 "message": "test",
                 "ownerTeam": "",
@@ -1149,8 +1254,8 @@ List the current incidents from OpsGenie.
                 "responders": [],
                 "status": "open",
                 "tags": [],
-                "tinyId": "66",
-                "updatedAt": "2021-11-16T14:32:58.797Z"
+                "tinyId": "86",
+                "updatedAt": "2021-11-21T19:32:02.148Z"
             }
         ]
     }
@@ -1159,10 +1264,10 @@ List the current incidents from OpsGenie.
 
 #### Human Readable Output
 
->### OpsGenie Alert
+>### OpsGenie Incident
 >|actions|createdAt|description|event_type|extraProperties|id|impactStartDate|impactedServices|links|message|ownerTeam|priority|responders|status|tags|tinyId|updatedAt|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->|  | 2021-11-16T14:32:58.797Z |  | Incidents |  | c4c2be7d-dbe3-494a-8eaf-487970be4d00 | 2021-11-16T14:32:58.797Z |  | web: https:<span>//</span>demisto1.app.opsgenie.com/incident/detail/c4c2be7d-dbe3-494a-8eaf-487970be4d00<br/>api: https:<span>//</span>api.opsgenie.com/v1/incidents/c4c2be7d-dbe3-494a-8eaf-487970be4d00 | test |  | P3 |  | open |  | 66 | 2021-11-16T14:32:58.797Z |
+>|  | 2021-11-21T19:32:02.148Z |  | Incidents |  | 2a1c07ea-b9bd-4922-afcc-edf406b46904 | 2021-11-21T19:32:02.148Z |  | web: https:<span>//</span>demisto1.app.opsgenie.com/incident/detail/2a1c07ea-b9bd-4922-afcc-edf406b46904<br/>api: https:<span>//</span>api.opsgenie.com/v1/incidents/2a1c07ea-b9bd-4922-afcc-edf406b46904 | test |  | P3 |  | open |  | 86 | 2021-11-21T19:32:02.148Z |
 
 
 ### opsgenie-close-incident
@@ -1187,8 +1292,7 @@ Close an incident from OpsGenie
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | OpsGenie.ClosedIncident.action | String | Action of this Request | 
-| OpsGenie.ClosedIncident.alertId | String | Id of closed incident | 
-| OpsGenie.ClosedIncident.alias | String | Alais of closed incident | 
+| OpsGenie.ClosedIncident.incidentId | String | Id of closed incident | 
 | OpsGenie.ClosedIncident.integrationId | String | Integration of closed incident | 
 | OpsGenie.ClosedIncident.isSuccess | Boolean | If the request was successful | 
 | OpsGenie.ClosedIncident.processedAt | Date | When the request was processed | 
@@ -1203,20 +1307,17 @@ Close an incident from OpsGenie
 #### Context Example
 ```json
 {
-    "action": "Delete",
-    "alertId": "",
-    "alias": "",
-    "integrationId": "3cc69931-167f-411c-a331-768997c29d2e",
-    "isSuccess": false,
-    "processedAt": "2021-11-16T14:32:49.256Z",
-    "status": "Alert does not exist",
-    "success": false
+    "OpsGenie": {
+        "ClosedIncident": {
+            "requestId": "81abe974-7265-4a46-90cd-ebf560b4fa63"
+        }
+    }
 }
 ```
 
 #### Human Readable Output
 
->null
+>Waiting for request_id=81abe974-7265-4a46-90cd-ebf560b4fa63
 
 ### opsgenie-resolve-incident
 ***
@@ -1240,8 +1341,7 @@ Resolve an incident from OpsGenie
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | OpsGenie.ResolvedIncident.action | String | Action of this Request | 
-| OpsGenie.ResolvedIncident.alertId | String | Id of closed incident | 
-| OpsGenie.ResolvedIncident.alias | String | Alais of closed incident | 
+| OpsGenie.ResolvedIncident.incidentId | String | Id of closed incident | 
 | OpsGenie.ResolvedIncident.integrationId | String | Integration of closed incident | 
 | OpsGenie.ResolvedIncident.isSuccess | Boolean | If the request was successful | 
 | OpsGenie.ResolvedIncident.processedAt | Date | When the request was processed | 
@@ -1253,9 +1353,20 @@ Resolve an incident from OpsGenie
 #### Command Example
 ```!opsgenie-resolve-incident incident_id=b15c7555-d685-4a96-8798-46320618004e```
 
+#### Context Example
+```json
+{
+    "OpsGenie": {
+        "ResolvedIncident": {
+            "requestId": "3c4da8b6-79f4-42ab-b478-24f9fc9febd7"
+        }
+    }
+}
+```
+
 #### Human Readable Output
 
->null
+>Waiting for request_id=3c4da8b6-79f4-42ab-b478-24f9fc9febd7
 
 ### opsgenie-add-responder-incident
 ***
@@ -1271,7 +1382,7 @@ Add responder to an OpsGenie Incident
 | --- | --- | --- |
 | incident_id | The ID of the incident from opsgenie. | Required | 
 | interval_in_seconds | Interval in seconds between each poll. Default is 5. | Optional | 
-| responders | Team or user that the incident will be routed to. List of triples (responser_type, value_type, value). | Required | 
+| responders | Teams/users that the incident is routed to via notifications.<br/> You need to insert it as List of triples - responder_type, value_type, value.<br/> The responder_type can be: team or user.<br/> The value_type can be: id or name.<br/> The value you can find from the output of the command '!opsgenie-get-teams'.<br/> For example: user,id,123,team,name,test_team. | Required | 
 | note | Additional alert note to add. | Optional | 
 
 
@@ -1280,8 +1391,7 @@ Add responder to an OpsGenie Incident
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | OpsGenie.AddResponderIncident.action | String | Action of this Request | 
-| OpsGenie.AddResponderIncident.alertId | String | ID of created Incident | 
-| OpsGenie.AddResponderIncident.alias | String | Alais of created Incident | 
+| OpsGenie.AddResponderIncident.incidentId | String | ID of created Incident | 
 | OpsGenie.AddResponderIncident.integrationId | String | Integration of created Incident | 
 | OpsGenie.AddResponderIncident.isSuccess | Boolean | If the request was successful | 
 | OpsGenie.AddResponderIncident.processedAt | Date | When the request was processed | 
@@ -1293,9 +1403,20 @@ Add responder to an OpsGenie Incident
 #### Command Example
 ```!opsgenie-add-responder-incident incident_id=577424c1-b03c-4d23-9871-da0d395fea17 responders="team,name,Integration Team"```
 
+#### Context Example
+```json
+{
+    "OpsGenie": {
+        "AddResponderIncident": {
+            "requestId": "71020660-17b3-4ce0-9cf2-825496a3141c"
+        }
+    }
+}
+```
+
 #### Human Readable Output
 
->null
+>Waiting for request_id=71020660-17b3-4ce0-9cf2-825496a3141c
 
 ### opsgenie-add-tag-incident
 ***
@@ -1320,8 +1441,7 @@ Add tag into OpsGenie Incident
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | OpsGenie.AddTagIncident.action | String | Action of this Request | 
-| OpsGenie.AddTagIncident.alertId | String | ID of added Incident | 
-| OpsGenie.AddTagIncident.alias | String | Alais of added Incident | 
+| OpsGenie.AddTagIncident.incidentId | String | ID of added Incident | 
 | OpsGenie.AddTagIncident.integrationId | String | Integration of added Incident | 
 | OpsGenie.AddTagIncident.isSuccess | Boolean | If the request was successful | 
 | OpsGenie.AddTagIncident.processedAt | Date | When the request was processed | 
@@ -1336,19 +1456,17 @@ Add tag into OpsGenie Incident
 #### Context Example
 ```json
 {
-    "action": "Create",
-    "incidentId": "c4c2be7d-dbe3-494a-8eaf-487970be4d00",
-    "integrationId": "3cc69931-167f-411c-a331-768997c29d2e",
-    "isSuccess": true,
-    "processedAt": "2021-11-16T14:32:58.983Z",
-    "status": "Incident created successfully",
-    "success": true
+    "OpsGenie": {
+        "AddTagIncident": {
+            "requestId": "f19257ff-2156-4649-b074-ca44dfa7cc31"
+        }
+    }
 }
 ```
 
 #### Human Readable Output
 
->null
+>Waiting for request_id=f19257ff-2156-4649-b074-ca44dfa7cc31
 
 ### opsgenie-remove-tag-incident
 ***
@@ -1373,8 +1491,7 @@ Remove tag from OpsGenie Alert
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | OpsGenie.RemoveTagIncident.action | String | Action of this Request | 
-| OpsGenie.RemoveTagIncident.alertId | String | ID of removed tag Incident | 
-| OpsGenie.RemoveTagIncident.alias | String | Alais of removed tag Incident | 
+| OpsGenie.RemoveTagIncident.incidentId | Stringx | ID of removed tag Incident | 
 | OpsGenie.RemoveTagIncident.integrationId | String | Integration of removed tag Incident | 
 | OpsGenie.RemoveTagIncident.isSuccess | Boolean | If the request was successful | 
 | OpsGenie.RemoveTagIncident.processedAt | Date | When the request was processed | 
@@ -1389,19 +1506,26 @@ Remove tag from OpsGenie Alert
 #### Context Example
 ```json
 {
-    "action": "Close",
-    "incidentId": "",
-    "integrationId": "3cc69931-167f-411c-a331-768997c29d2e",
-    "isSuccess": false,
-    "processedAt": "2021-11-16T14:33:00.989Z",
-    "status": "",
-    "success": false
+    "OpsGenie": {
+        "DeletedIncident": {
+            "action": "Delete",
+            "incidentId": "",
+            "integrationId": "3cc69931-167f-411c-a331-768997c29d2e",
+            "isSuccess": false,
+            "processedAt": "2021-11-21T19:32:05.17Z",
+            "status": "",
+            "success": false
+        },
+        "RemoveTagIncident": {
+            "requestId": "691aa626-c2e2-4404-ba88-b9e888861c5e"
+        }
+    }
 }
 ```
 
 #### Human Readable Output
 
->null
+>Waiting for request_id=691aa626-c2e2-4404-ba88-b9e888861c5e
 
 ### opsgenie-get-teams
 ***
@@ -1456,20 +1580,13 @@ Get teams
                 "name": "Integration Team"
             }
         ]
-    },
-    "action": "Delete",
-    "incidentId": "",
-    "integrationId": "3cc69931-167f-411c-a331-768997c29d2e",
-    "isSuccess": false,
-    "processedAt": "2021-11-16T14:33:02.655Z",
-    "status": "",
-    "success": false
+    }
 }
 ```
 
 #### Human Readable Output
 
->### OpsGenie Schedule
+>### OpsGenie Team
 >|description|id|links|name|
 >|---|---|---|---|
 >| Engineering | 51d69df8-c40b-439e-9808-e1a78e54f91b | web: https:<span>//</span>demisto1.app.opsgenie.com/teams/dashboard/51d69df8-c40b-439e-9808-e1a78e54f91b/main<br/>api: https:<span>//</span>api.opsgenie.com/v2/teams/51d69df8-c40b-439e-9808-e1a78e54f91b | Engineering |
