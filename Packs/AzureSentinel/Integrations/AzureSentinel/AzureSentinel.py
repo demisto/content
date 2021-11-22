@@ -303,9 +303,7 @@ def watchlist_item_data_to_xsoar_format(item_data):
     return formatted_data
 
 
-def get_update_incident_request_data(
-        client: AzureSentinelClient, args: Dict[str, str]
-):
+def get_update_incident_request_data(client: AzureSentinelClient, args: Dict[str, str]):
     """
     Prepare etag and other mandatory incident properties for update_incident command.
 
@@ -960,7 +958,7 @@ def list_incident_relations_command(client, args):
     )
 
 
-def update_next_link_in_context(result: dict, outputs: dict):
+def update_next_link_in_context(result: dict, outputs: dict, new_format=False):
     """
     Update the output context with the next link if exist
     """
@@ -971,7 +969,11 @@ def update_next_link_in_context(result: dict, outputs: dict):
             'Description': NEXTLINK_DESCRIPTION,
             'URL': next_link,
         }
-        outputs[f'AzureSentinel.NextLink(val.Description == "{NEXTLINK_DESCRIPTION}")'] = next_link_item  # type: ignore
+
+        if new_format:
+            outputs['AzureSentinel.NextLink'] = next_link_item
+        else:
+            outputs[f'AzureSentinel.NextLink(val.Description == "{NEXTLINK_DESCRIPTION}")'] = next_link_item
 
 
 def fetch_incidents(client, last_run, first_fetch_time, min_severity):
@@ -1086,15 +1088,23 @@ def threat_indicators_data_to_xsoar_format(ind_data):
     properties = ind_data.get('properties', {})
     parsed_pattern = properties.get('parsedPattern')
     formatted_data = {
-        'ID': ind_data.get('id'),
+        'ID': ind_data.get('name'),
         'DisplayName': properties.get('displayName'),
         'Values': parsed_pattern[0].get('patternTypeValues')[0].get('value'),
         'Types': parsed_pattern[0].get('patternTypeKey'),
         'Source': properties.get('source'),
         'Confidence': properties.get('confidence'),
         # 'Alerts': properties.get(),
-        'Tags': properties.get('threatIntelligenceTags', ''),
+        'Tags': ""
     }
+
+    tags = properties.get('threatIntelligenceTags', [])
+    if tags:
+        for tag in tags:
+            formatted_data['Tags'] += tag
+            formatted_data['Tags'] += ','
+
+    formatted_data['Tags'].strip(",")
     return formatted_data
 
 
@@ -1112,15 +1122,16 @@ def get_args_to_filter_ind_by(args):
     }
 
     indicator_types = argToList(args.get('indicator_types'))
-    for ind_type in indicator_types:
-        if ind_type == 'ipv4':
-            filtering_args['patternTypes'].append('ipv4-address')
-        elif ind_type == 'ipv6':
-            filtering_args['patternTypes'].append('ipv6-address')
-        elif ind_type == 'domain':
-            filtering_args['patternTypes'].append('domain-name')
-        else:
-            filtering_args['patternTypes'].append(ind_type)
+    if indicator_types:
+        for ind_type in indicator_types:
+            if ind_type == 'ipv4':
+                filtering_args['patternTypes'].append('ipv4-address')
+            elif ind_type == 'ipv6':
+                filtering_args['patternTypes'].append('ipv6-address')
+            elif ind_type == 'domain':
+                filtering_args['patternTypes'].append('domain-name')
+            else:
+                filtering_args['patternTypes'].append(ind_type)
 
     remove_nulls_from_dictionary(filtering_args)
 
@@ -1214,20 +1225,25 @@ def list_threat_indicators_command(client, args):
 
     Returns: a list of threat indicators
     """
-    name = args.get('name')
-    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))  # the default limit is 50
-    params = {
-        '$top': limit,
-        '$skipToken': args.get('next_link', '')
-    }
-
-    remove_nulls_from_dictionary(params)
-
     url_suffix = 'threatIntelligence/main/indicators'
-    if name:
-        url_suffix += f'/{name}'
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))  # the default limit is 50
 
-    result = client.http_request('GET', url_suffix, params=params)
+    next_link = args.get('next_link', '')
+    if next_link:
+        next_link = next_link.replace(
+            '%20', ' '
+        )  # OData syntax can't handle '%' character
+        result = client.http_request('GET', full_url=next_link)
+    else:
+        params = {
+            '$top': limit,
+        }
+
+        name = args.get('name')
+        if name:
+            url_suffix += f'/{name}'
+
+        result = client.http_request('GET', url_suffix, params=params)
     num_of_threat_indicators = 0
     threat_indicators = []
 
@@ -1236,7 +1252,7 @@ def list_threat_indicators_command(client, args):
         num_of_threat_indicators = len(threat_indicators)
 
     outputs = {'AzureSentinel.ThreatIndicator': threat_indicators}
-    update_next_link_in_context(result, outputs)
+    update_next_link_in_context(result, outputs, True)
 
     readable_output = tableToMarkdown(
         f'Threat Indicators ({num_of_threat_indicators} results)',
@@ -1276,7 +1292,7 @@ def query_threat_indicators_command(client, args):
         num_of_threat_indicators = len(threat_indicators)
 
     outputs = {'AzureSentinel.ThreatIndicator': threat_indicators}
-    update_next_link_in_context(result, outputs)
+    update_next_link_in_context(result, outputs, True)
 
     readable_output = tableToMarkdown(
         f'Threat Indicators ({num_of_threat_indicators} results)',
@@ -1327,7 +1343,6 @@ def update_threat_indicator_command(client, args):
     updated_data = update_data_of_indicator(args, original_data)
 
     data = {
-        # "type": "Microsoft.SecurityInsights/threatIntelligence",
         "kind": "indicator",
         "properties": updated_data
     }
@@ -1335,7 +1350,7 @@ def update_threat_indicator_command(client, args):
     new_url_suffix = f'threatIntelligence/main/indicators/{name}'
 
     result = client.http_request('PUT', new_url_suffix, data=data)
-    threat_indicators = []
+    threat_indicators = [threat_indicators_data_to_xsoar_format(result)]
 
     readable_output = tableToMarkdown(f'Threat Indicator {name} was updated)',
                                       threat_indicators,
@@ -1403,14 +1418,10 @@ def replace_tags_threat_indicator_command(client, args):
 
     threat_indicators = [threat_indicators_data_to_xsoar_format(result)]
 
-    outputs = {
-        'AzureSentinel.ThreatIndicator': threat_indicators
-    }
-
     return CommandResults(
         readable_output=f'Tags were replaced to {name} Threat Indicator.',
         outputs_prefix='AzureSentinel.ThreatIndicator',
-        outputs=outputs,
+        outputs=threat_indicators,
         outputs_key_field='ID',
         raw_response=result
     )
