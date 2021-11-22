@@ -45,3 +45,6 @@ The integration will re-attempt authentication if the command was called under t
 3. After that every 60 minutes.
 
 If you wish to try authenticating again, run the 'cdl-reset-authentication-timeout' command and retry.
+
+---
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/cortex-data-lake)

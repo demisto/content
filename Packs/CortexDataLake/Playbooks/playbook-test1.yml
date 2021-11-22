@@ -1,0 +1,86 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: eec0b2b0-158a-4111-8718-3afb96fa7b41
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: 97177501-ad8e-474b-8edc-76346d04ed2a
+inputs: []
+name: test1
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 455582f1-c007-4b6d-8c7f-dc2e854b65ac
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 455582f1-c007-4b6d-8c7f-dc2e854b65ac
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      domain:
+        simple: google.com
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Retrieves domain information from URLhaus.
+      id: c5abe49a-cc8c-44e4-8907-c25f7c471714
+      iscommand: true
+      name: test domain
+      script: '|||domain'
+      type: regular
+      version: -1
+    taskid: c5abe49a-cc8c-44e4-8907-c25f7c471714
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 240
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 285,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
