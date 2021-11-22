@@ -510,4 +510,3 @@ def test_send_mail_command(mocker, client, args):
     assert contents.get('body').get('content') == args.get('body') or args.get("htmlBody")
     assert contents.get('subject') == args.get('subject')
     assert contents.get('toRecipients') == args.get('to')
-
