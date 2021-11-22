@@ -19,6 +19,7 @@ class Client(BaseClient):
                                                                              'Content-Type': 'application/json',
                                                                              'X-Auth-Token': self.token})
 
+
     def test_module_request(self):
         url_suffix = f'/appservices/v6/orgs/{self.cb_org_key}/alerts/_search'
         body = {
