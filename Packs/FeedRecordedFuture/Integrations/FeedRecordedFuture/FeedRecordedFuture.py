@@ -82,7 +82,7 @@ class Client(BaseClient):
             requests.PreparedRequest: The prepared request which will be sent to the server
         """
         if service == 'connectApi':
-            if self.risk_rule is None:
+            if not self.risk_rule:
                 url = self.BASE_URL + indicator_type + '/risklist'
             else:
                 url = self.BASE_URL + indicator_type + '/risklist?list=' + self.current_risk_rule
