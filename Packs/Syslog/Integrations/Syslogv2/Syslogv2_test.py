@@ -422,14 +422,14 @@ def test_get_mapping_fields():
     - Ensure expected dict representing the mapping fields is returned.
     """
     from Syslogv2 import get_mapping_fields
-    assert get_mapping_fields() == {'app_name': 'Optional[str]',
-                                    'facility': 'str',
-                                    'host_name': 'Optional[str]',
-                                    'msg': 'str',
-                                    'msg_id': 'Optional[str]',
-                                    'occurred': 'Optional[str]',
-                                    'process_id': 'Optional[str]',
-                                    'sd': 'dict',
-                                    'severity': 'str',
-                                    'timestamp': 'str',
-                                    'version': 'Optional[int]'}
+    assert get_mapping_fields() == {'app_name': 'Application Name',
+                                    'facility': 'Facility',
+                                    'host_name': 'Host Name',
+                                    'msg': 'Message',
+                                    'msg_id': 'Message ID',
+                                    'occurred': 'Occurred Time',
+                                    'process_id': 'Process ID',
+                                    'sd': 'Structured Data',
+                                    'severity': 'Severity',
+                                    'timestamp': 'Timestamp',
+                                    'version': 'Syslog Version'}
