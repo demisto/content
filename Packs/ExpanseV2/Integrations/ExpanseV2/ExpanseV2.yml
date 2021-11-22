@@ -8,7 +8,7 @@ configuration:
   name: url
   required: true
   type: 0
-- additionalinfo: The Expanse API Key to use to connect.
+- additionalinfo: Xpanse API Key to use to connect.
   display: API Key
   name: apikey
   required: true
@@ -39,7 +39,7 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-- display: Fetch Expanse issues with Priority
+- display: Fetch Xpanse issues with Priority
   name: priority
   options:
   - Low
@@ -49,14 +49,14 @@ configuration:
   required: false
   type: 16
 - defaultvalue: Active
-  display: Fetch Expanse issues with Activity Status
+  display: Fetch Xpanse issues with Activity Status
   name: activity_status
   options:
   - Active
   - Inactive
   required: false
   type: 16
-- display: Fetch Expanse issues with Progress Status
+- display: Fetch Xpanse issues with Progress Status
   name: progress_status
   options:
   - New
@@ -78,7 +78,7 @@ configuration:
   name: issue_type
   required: false
   type: 0
-- display: Fetch Expanse issues with Cloud Management Status
+- display: Fetch Xpanse issues with Cloud Management Status
   name: cloud_management_status
   options:
   - NotApplicable
@@ -104,7 +104,7 @@ configuration:
   required: false
   type: 8
 - additionalinfo: Assign these XSOAR tags (comma separated list) to the incoming comments
-    mirrored from the Expanse Issue (must be different from the sync_tags to prevent
+    mirrored from the Xpanse Issue (must be different from the sync_tags to prevent
     loops).
   defaultvalue: FromExpanse
   display: Tag(s) for mirrored comments
@@ -112,29 +112,29 @@ configuration:
   required: false
   type: 0
 - additionalinfo: Mirror XSOAR entries with these XSOAR tags (comma separate list)
-    to the corresponding Expanse Issue as comments (must be different from the incoming_tags
+    to the corresponding Xpanse Issue as comments (must be different from the incoming_tags
     to prevent loops).
   display: Mirror out Entries with tag(s)
   name: sync_tags
   required: false
   type: 0
-description: The Expanse v2 integration for Cortex XSOAR leverages the Expander API
-  to create incidents from Expanse issues. It also leverages Expanse's unparalleled
+description: The Xpanse integration for Cortex XSOAR leverages the Expander API
+  to create incidents from Xpanse issues. It also leverages Xpanse's unparalleled
   view of the Internet to enrich IPs, domains and certificates using information from
-  assets discovered by Expanse Expander and risky flows detected by Expanse Behavior.
+  assets discovered by Xpanse Expander and risky flows detected by Xpanse Behavior.
 display: Cortex Xpanse
 name: ExpanseV2
 script:
   commands:
   - arguments:
     - default: false
-      description: ID of the Expanse service to retrieve.
+      description: ID of the Xpanse service to retrieve.
       isArray: false
       name: service_id
       required: true
       secret: false
     deprecated: false
-    description: Retrieve Expanse service by service ID.
+    description: Retrieve Xpanse service by service ID.
     execution: false
     name: expanse-get-service
     outputs:
@@ -142,13 +142,13 @@ script:
       description: Activity status of service, whether the service is active or inactive
       type: String
     - contextPath: Expanse.Service.annotations.tags.id
-      description: The Internal Expanse tag id of the customer added tag
+      description: The Internal Xpanse tag id of the customer added tag
       type: String
     - contextPath: Expanse.Service.annotations.tags.name
       description: The tag name of the customer added tag
       type: String
     - contextPath: Expanse.Service.assets.assetKey
-      description: Key used to access the asset in the respective Expanse asset API
+      description: Key used to access the asset in the respective Xpanse asset API
       type: String
     - contextPath: Expanse.Service.assets.assetType
       description: The type of asset the issue primarily relates to
@@ -157,7 +157,7 @@ script:
       description: A friendly name for the asset
       type: String
     - contextPath: Expanse.Service.assets.id
-      description: Internal Expanse ID the asset
+      description: Internal Xpanse ID the asset
       type: String
     - contextPath: Expanse.Service.assets.referenceReason.id
       description: ID for asset reference type
@@ -166,7 +166,7 @@ script:
       description: Description for asset reference reason
       type: String
     - contextPath: Expanse.Service.businessUnits.id
-      description: The internal Expanse ID for the business unit the affected asset
+      description: The internal Xpanse ID for the business unit the affected asset
         belongs to
       type: String
     - contextPath: Expanse.Service.businessUnits.name
@@ -185,7 +185,7 @@ script:
       description: The formatted issuer org in the certificate
       type: String
     - contextPath: Expanse.Service.certificates.certificate.id
-      description: The Internal Expanse certificate ID
+      description: The Internal Xpanse certificate ID
       type: String
     - contextPath: Expanse.Service.certificates.certificate.issuer
       description: The issuer in the certificate
@@ -428,7 +428,7 @@ script:
       description: First observation of the service
       type: Date
     - contextPath: Expanse.Service.id
-      description: The internal Expanse ID of the service
+      description: The internal Xpanse ID of the service
       type: String
     - contextPath: Expanse.Service.ips.assetId
       description: The Internal Asset ID of the ip related to the service
@@ -604,7 +604,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retrieve all Expanse services matching the supplied parameters.
+    description: Retrieve all Xpanse services matching the supplied parameters.
     execution: false
     name: expanse-get-services
     outputs:
@@ -612,13 +612,13 @@ script:
       description: Activity status of service, whether the service is active or inactive
       type: String
     - contextPath: Expanse.Service.annotations.tags.id
-      description: The Internal Expanse tag id of the customer added tag
+      description: The Internal Xpanse tag id of the customer added tag
       type: String
     - contextPath: Expanse.Service.annotations.tags.name
       description: The tag name of the customer added tag
       type: String
     - contextPath: Expanse.Service.assets.assetKey
-      description: Key used to access the asset in the respective Expanse asset API
+      description: Key used to access the asset in the respective Xpanse asset API
       type: String
     - contextPath: Expanse.Service.assets.assetType
       description: The type of asset the issue primarily relates to
@@ -627,7 +627,7 @@ script:
       description: A friendly name for the asset
       type: String
     - contextPath: Expanse.Service.assets.id
-      description: Internal Expanse ID the asset
+      description: Internal Xpanse ID the asset
       type: String
     - contextPath: Expanse.Service.assets.referenceReason.id
       description: ID for asset reference type
@@ -636,7 +636,7 @@ script:
       description: Description for asset reference reason
       type: String
     - contextPath: Expanse.Service.businessUnits.id
-      description: The internal Expanse ID for the business unit the affected asset
+      description: The internal Xpanse ID for the business unit the affected asset
         belongs to
       type: String
     - contextPath: Expanse.Service.businessUnits.name
@@ -655,7 +655,7 @@ script:
       description: The formatted issuer org in the certificate
       type: String
     - contextPath: Expanse.Service.certificates.certificate.id
-      description: The Internal Expanse certificate ID
+      description: The Internal Xpanse certificate ID
       type: String
     - contextPath: Expanse.Service.certificates.certificate.issuer
       description: The issuer in the certificate
@@ -898,7 +898,7 @@ script:
       description: First observation of the service
       type: Date
     - contextPath: Expanse.Service.id
-      description: The internal Expanse ID of the service
+      description: The internal Xpanse ID of the service
       type: String
     - contextPath: Expanse.Service.ips.assetId
       description: The Internal Asset ID of the ip related to the service
@@ -1130,13 +1130,13 @@ script:
       description: Activity status of issue, whether the issue is active or inactive
       type: String
     - contextPath: Expanse.Issue.annotations.tags.id
-      description: The Internal Expanse tag id of the customer added tag
+      description: The Internal Xpanse tag id of the customer added tag
       type: String
     - contextPath: Expanse.Issue.annotations.tags.name
       description: The tag name of the customer added tag
       type: String
     - contextPath: Expanse.Issue.assets.assetKey
-      description: Key used to access the asset in the respective Expanse asset API
+      description: Key used to access the asset in the respective Xpanse asset API
       type: String
     - contextPath: Expanse.Issue.assets.assetType
       description: The type of asset the issue primarily relates to
@@ -1145,13 +1145,13 @@ script:
       description: A friendly name for the asset
       type: String
     - contextPath: Expanse.Issue.assets.id
-      description: Internal Expanse ID the asset
+      description: Internal Xpanse ID the asset
       type: String
     - contextPath: Expanse.Issue.assigneeUsername
       description: The username of the user that has been assigned to the issue
       type: String
     - contextPath: Expanse.Issue.businessUnits.id
-      description: The internal Expanse ID for the business unit the affected asset
+      description: The internal Xpanse ID for the business unit the affected asset
         belongs to
       type: String
     - contextPath: Expanse.Issue.businessUnits.name
@@ -1164,7 +1164,7 @@ script:
       description: The formatted issuer org in the certificate
       type: String
     - contextPath: Expanse.Issue.certificate.id
-      description: The Internal Expanse certificate ID
+      description: The Internal Xpanse certificate ID
       type: String
     - contextPath: Expanse.Issue.certificate.issuer
       description: The issuer in the certificate
@@ -1278,16 +1278,16 @@ script:
       description: A brief summary of the issue
       type: String
     - contextPath: Expanse.Issue.helpText
-      description: Why Expanse this type of issue should be avoided
+      description: Why Xpanse this type of issue should be avoided
       type: String
     - contextPath: Expanse.Issue.id
-      description: The internal Expanse ID of the issue
+      description: The internal Xpanse ID of the issue
       type: String
     - contextPath: Expanse.Issue.initialEvidence.certificate.formattedIssuerOrg
       description: The formatted issuer org in the certificate in the initial observation
       type: String
     - contextPath: Expanse.Issue.initialEvidence.certificate.id
-      description: The Internal Expanse certificate ID in the initial observation
+      description: The Internal Xpanse certificate ID in the initial observation
       type: String
     - contextPath: Expanse.Issue.initialEvidence.certificate.issuer
       description: The issuer in the certificate in the initial observation
@@ -1467,7 +1467,7 @@ script:
         observation
       type: String
     - contextPath: Expanse.Issue.latestEvidence.certificate.id
-      description: The Internal Expanse certificate ID in the most recent observation
+      description: The Internal Xpanse certificate ID in the most recent observation
       type: String
     - contextPath: Expanse.Issue.latestEvidence.certificate.issuer
       description: The issuer in the certificate in the most recent observation
@@ -1683,7 +1683,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retrieve updates for an Expanse issue.
+    description: Retrieve updates for an Xpanse issue.
     execution: false
     name: expanse-get-issue-updates
     outputs:
@@ -1752,7 +1752,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Expanse issue ID to update.
+      description: Xpanse issue ID to update.
       isArray: false
       name: issue_id
       required: true
@@ -1777,7 +1777,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Update a property of an Expanse issue.
+    description: Update a property of an Xpanse issue.
     execution: false
     name: expanse-update-issue
     outputs:
@@ -1805,13 +1805,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: ID of the Expanse issue to retrieve.
+      description: ID of the Xpanse issue to retrieve.
       isArray: false
       name: issue_id
       required: true
       secret: false
     deprecated: false
-    description: Retrieve Expanse issue by issue ID.
+    description: Retrieve Xpanse issue by issue ID.
     execution: false
     name: expanse-get-issue
     outputs:
@@ -1819,13 +1819,13 @@ script:
       description: Activity status of issue, whether the issue is active or inactive
       type: String
     - contextPath: Expanse.Issue.annotations.tags.id
-      description: The Internal Expanse tag id of the customer added tag
+      description: The Internal Xpanse tag id of the customer added tag
       type: String
     - contextPath: Expanse.Issue.annotations.tags.name
       description: The tag name of the customer added tag
       type: String
     - contextPath: Expanse.Issue.assets.assetKey
-      description: Key used to access the asset in the respective Expanse asset API
+      description: Key used to access the asset in the respective Xpanse asset API
       type: String
     - contextPath: Expanse.Issue.assets.assetType
       description: The type of asset the issue primarily relates to
@@ -1834,13 +1834,13 @@ script:
       description: A friendly name for the asset
       type: String
     - contextPath: Expanse.Issue.assets.id
-      description: Internal Expanse ID the asset
+      description: Internal Xpanse ID the asset
       type: String
     - contextPath: Expanse.Issue.assigneeUsername
       description: The username of the user that has been assigned to the issue
       type: String
     - contextPath: Expanse.Issue.businessUnits.id
-      description: The internal Expanse ID for the business unit the affected asset
+      description: The internal Xpanse ID for the business unit the affected asset
         belongs to
       type: String
     - contextPath: Expanse.Issue.businessUnits.name
@@ -1853,7 +1853,7 @@ script:
       description: The formatted issuer org in the certificate
       type: String
     - contextPath: Expanse.Issue.certificate.id
-      description: The Internal Expanse certificate ID
+      description: The Internal Xpanse certificate ID
       type: String
     - contextPath: Expanse.Issue.certificate.issuer
       description: The issuer in the certificate
@@ -1967,16 +1967,16 @@ script:
       description: A brief summary of the issue
       type: String
     - contextPath: Expanse.Issue.helpText
-      description: Why Expanse this type of issue should be avoided
+      description: Why Xpanse this type of issue should be avoided
       type: String
     - contextPath: Expanse.Issue.id
-      description: The internal Expanse ID of the issue
+      description: The internal Xpanse ID of the issue
       type: String
     - contextPath: Expanse.Issue.initialEvidence.certificate.formattedIssuerOrg
       description: The formatted issuer org in the certificate in the initial observation
       type: String
     - contextPath: Expanse.Issue.initialEvidence.certificate.id
-      description: The Internal Expanse certificate ID in the initial observation
+      description: The Internal Xpanse certificate ID in the initial observation
       type: String
     - contextPath: Expanse.Issue.initialEvidence.certificate.issuer
       description: The issuer in the certificate in the initial observation
@@ -2156,7 +2156,7 @@ script:
         observation
       type: String
     - contextPath: Expanse.Issue.latestEvidence.certificate.id
-      description: The Internal Expanse certificate ID in the most recent observation
+      description: The Internal Xpanse certificate ID in the most recent observation
       type: String
     - contextPath: Expanse.Issue.latestEvidence.certificate.issuer
       description: The issuer in the certificate in the most recent observation
@@ -2352,7 +2352,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: List available business units from Expanse.
+    description: List available business units from Xpanse.
     execution: false
     name: expanse-list-businessunits
     outputs:
@@ -2370,7 +2370,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: List available providers from Expanse.
+    description: List available providers from Xpanse.
     execution: false
     name: expanse-list-providers
     outputs:
@@ -2388,7 +2388,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: List available Point of Contacts from Expanse.
+    description: List available Point of Contacts from Xpanse.
     execution: false
     name: expanse-list-pocs
     outputs:
@@ -2449,7 +2449,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Create a new Point of Contact in Expanse.
+    description: Create a new Point of Contact in Xpanse.
     execution: false
     name: expanse-create-poc
     outputs:
@@ -2480,7 +2480,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Type of Expanse asset to assign the poc to.
+      description: Type of Xpanse asset to assign the poc to.
       isArray: false
       name: asset_type
       predefined:
@@ -2513,13 +2513,13 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Assign Point of Contacts to an Expanse asset.
+    description: Assign Point of Contacts to an Xpanse asset.
     execution: false
     name: expanse-assign-pocs-to-asset
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Type of Expanse asset to unassign the pocs from.
+      description: Type of Xpanse asset to unassign the pocs from.
       isArray: false
       name: asset_type
       predefined:
@@ -2552,7 +2552,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Unassign Point of Contacts from an Expanse Asset.
+    description: Unassign Point of Contacts from an Xpanse Asset.
     execution: false
     name: expanse-unassign-pocs-from-asset
   - arguments:
@@ -2579,7 +2579,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Assign Point of Contacts to an Expanse IP range.
+    description: Assign Point of Contacts to an Xpanse IP range.
     execution: false
     name: expanse-assign-pocs-to-iprange
   - arguments:
@@ -2606,7 +2606,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Unassign Point of Contacts from an Expanse IP range.
+    description: Unassign Point of Contacts from an Xpanse IP range.
     execution: false
     name: expanse-unassign-pocs-from-iprange
   - arguments:
@@ -2633,7 +2633,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Assign pocs to an Expanse certificate.
+    description: Assign pocs to an Xpanse certificate.
     execution: false
     name: expanse-assign-pocs-to-certificate
   - arguments:
@@ -2660,7 +2660,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Unassign pocs from an Expanse certificate.
+    description: Unassign pocs from an Xpanse certificate.
     execution: false
     name: expanse-unassign-pocs-from-certificate
   - arguments:
@@ -2687,7 +2687,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Assign pocs to an Expanse domain.
+    description: Assign pocs to an Xpanse domain.
     execution: false
     name: expanse-assign-pocs-to-domain
   - arguments:
@@ -2714,7 +2714,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Unassign pocs from an Expanse domain.
+    description: Unassign pocs from an Xpanse domain.
     execution: false
     name: expanse-unassign-pocs-from-domain
   - arguments:
@@ -2725,7 +2725,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: List available tags from Expanse.
+    description: List available tags from Xpanse.
     execution: false
     name: expanse-list-tags
     outputs:
@@ -2739,7 +2739,7 @@ script:
       description: If the tag should be hidden as a tag option in the Expander UI
       type: Boolean
     - contextPath: Expanse.Tag.id
-      description: The Expanse ID for the tag
+      description: The Xpanse ID for the tag
       type: String
     - contextPath: Expanse.Tag.modified
       description: The date in which metadata about the tag was last modified
@@ -2753,7 +2753,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Type of Expanse asset to assign the tag to.
+      description: Type of Xpanse asset to assign the tag to.
       isArray: false
       name: asset_type
       predefined:
@@ -2784,13 +2784,13 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Assign tags to an Expanse asset.
+    description: Assign tags to an Xpanse asset.
     execution: false
     name: expanse-assign-tags-to-asset
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Type of Expanse asset to unassign the tags from.
+      description: Type of Xpanse asset to unassign the tags from.
       isArray: false
       name: asset_type
       predefined:
@@ -2821,7 +2821,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Unassign tags from an Expanse Asset.
+    description: Unassign tags from an Xpanse Asset.
     execution: false
     name: expanse-unassign-tags-from-asset
   - arguments:
@@ -2846,7 +2846,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Assign tags to an Expanse IP range.
+    description: Assign tags to an Xpanse IP range.
     execution: false
     name: expanse-assign-tags-to-iprange
   - arguments:
@@ -2871,7 +2871,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Unassign tags from an Expanse IP range.
+    description: Unassign tags from an Xpanse IP range.
     execution: false
     name: expanse-unassign-tags-from-iprange
   - arguments:
@@ -2896,7 +2896,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Assign tags to an Expanse certificate.
+    description: Assign tags to an Xpanse certificate.
     execution: false
     name: expanse-assign-tags-to-certificate
   - arguments:
@@ -2921,7 +2921,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Unassign tags from an Expanse certificate.
+    description: Unassign tags from an Xpanse certificate.
     execution: false
     name: expanse-unassign-tags-from-certificate
   - arguments:
@@ -2946,7 +2946,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Assign tags to an Expanse domain.
+    description: Assign tags to an Xpanse domain.
     execution: false
     name: expanse-assign-tags-to-domain
   - arguments:
@@ -2971,7 +2971,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Unassign tags from an Expanse domain.
+    description: Unassign tags from an Xpanse domain.
     execution: false
     name: expanse-unassign-tags-from-domain
   - arguments:
@@ -2988,7 +2988,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Create a new tag in Expanse.
+    description: Create a new tag in Xpanse.
     execution: false
     name: expanse-create-tag
     outputs:
@@ -3002,7 +3002,7 @@ script:
       description: If the tag should be hidden as a tag option in the Expander UI
       type: Boolean
     - contextPath: Expanse.Tag.id
-      description: The Expanse ID for the tag
+      description: The Xpanse ID for the tag
       type: String
     - contextPath: Expanse.Tag.modified
       description: The date in which metadata about the tag was last modified
@@ -3015,7 +3015,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Asset ID of the Expanse IP range to retrieve. If provided, other
+      description: Asset ID of the Xpanse IP range to retrieve. If provided, other
         search parameters are ignored.
       isArray: false
       name: id
@@ -3081,7 +3081,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retrieve Expanse IP ranges by asset id or search parameters.
+    description: Retrieve Xpanse IP ranges by asset id or search parameters.
     execution: false
     name: expanse-get-iprange
     outputs:
@@ -3107,7 +3107,7 @@ script:
       description: The date that the IP range was added to the Expander instance
       type: Date
     - contextPath: Expanse.IPRange.id
-      description: Internal Expanse ID for the IP Range
+      description: Internal Xpanse ID for the IP Range
       type: String
     - contextPath: Expanse.IPRange.ipVersion
       description: The IP version of the IP range
@@ -3140,7 +3140,7 @@ script:
       description: The number of IP addresses in the IP range
       type: Number
     - contextPath: Expanse.IPRange.rangeType
-      description: If the IP range is Expanse-generated parent range or a customer-generated
+      description: If the IP range is Xpanse-generated parent range or a customer-generated
         custom range
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.country
@@ -3268,7 +3268,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Last date the domain was observed by Expanse (Format is YYYY-MM-DD).
+      description: Last date the domain was observed by Xpanse (Format is YYYY-MM-DD).
       isArray: false
       name: last_observed_date
       required: false
@@ -3298,7 +3298,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: Retrieve only domains with or without an active service discovered
-        by Expanse.
+        by Xpanse.
       isArray: false
       name: has_active_service
       predefined:
@@ -3309,7 +3309,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: Retrieve only domains with or without cloud resources discovered
-        by Expanse.
+        by Xpanse.
       isArray: false
       name: has_related_cloud_resources
       predefined:
@@ -3361,7 +3361,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retrieve Expanse domains by domain name or search parameters.
+    description: Retrieve Xpanse domains by domain name or search parameters.
     execution: false
     name: expanse-get-domain
     outputs:
@@ -3462,7 +3462,7 @@ script:
         it
       type: Boolean
     - contextPath: Expanse.Domain.id
-      description: Internal Expanse ID for Domain
+      description: Internal Xpanse ID for Domain
       type: String
     - contextPath: Expanse.Domain.domain
       description: The domain value
@@ -3978,7 +3978,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns all the Expanse domains which have been seen with the specified
+    description: Returns all the Xpanse domains which have been seen with the specified
       certificate or IP address.
     execution: false
     name: expanse-get-associated-domains
@@ -3990,7 +3990,7 @@ script:
       description: IP Address the domain resolved to.
       type: String
     - contextPath: Expanse.AssociatedDomain.certificate
-      description: Expanse ID of the certificate associated to this domain.
+      description: Xpanse ID of the certificate associated to this domain.
       type: String
     - contextPath: Domain.Name
       description: 'The domain name, for example: "google.com".'
@@ -4016,7 +4016,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Last date the domain was observed by Expanse (Format is YYYY-MM-DD),
+      description: Last date the domain was observed by Xpanse (Format is YYYY-MM-DD),
         to be used with domain argument.
       isArray: false
       name: last_observed_date
@@ -4048,7 +4048,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: Retrieve only certificates with or without an active service discovered
-        by Expanse.
+        by Xpanse.
       isArray: false
       name: has_active_service
       predefined:
@@ -4059,7 +4059,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: Retrieve only certificates with or without cloud resources discovered
-        by Expanse.
+        by Xpanse.
       isArray: false
       name: has_related_cloud_resources
       predefined:
@@ -4111,7 +4111,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retrieve Expanse certificates by MD5 hash or search parameters.
+    description: Retrieve Xpanse certificates by MD5 hash or search parameters.
     execution: false
     name: expanse-get-certificate
     outputs:
@@ -4310,13 +4310,13 @@ script:
         with it
       type: Boolean
     - contextPath: Expanse.Certificate.id
-      description: Internal Expanse ID for Certificate
+      description: Internal Xpanse ID for Certificate
       type: String
     - contextPath: Expanse.Certificate.lastObserved
       description: The date that the certificate was most recently observed
       type: Date
     - contextPath: Expanse.Certificate.properties
-      description: Expanse tagged properties of the certificate
+      description: Xpanse tagged properties of the certificate
       type: String
     - contextPath: Expanse.Certificate.providers.id
       description: The Provider information for the certificate
@@ -4556,7 +4556,7 @@ script:
     - default: true
       description: |
         MD5, SHA-1, SHA-256 or SHA-512 hash of the certificate to enrich.
-        If MD5 is given, the command will check directly with Expanse API otherwise
+        If MD5 is given, the command will check directly with Xpanse API otherwise
         the script looks first for an indicator with the given hash to retrieve the
         corresponding MD5 hash.
       isArray: true
@@ -4566,7 +4566,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: |
-        If set to true, the command updates the Expanse custom fields of the indicator.
+        If set to true, the command updates the Xpanse custom fields of the indicator.
         Only if an indicator already exists.
       isArray: false
       name: set_expanse_fields
@@ -4576,7 +4576,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Provides data enrichment for an X509 Certificate from Expanse.
+    description: Provides data enrichment for an X509 Certificate from Xpanse.
     execution: false
     name: certificate
     outputs:
@@ -4775,13 +4775,13 @@ script:
         with it
       type: Boolean
     - contextPath: Expanse.Certificate.id
-      description: Internal Expanse ID for Certificate
+      description: Internal Xpanse ID for Certificate
       type: String
     - contextPath: Expanse.Certificate.lastObserved
       description: The date that the certificate was most recently observed
       type: Date
     - contextPath: Expanse.Certificate.properties
-      description: Expanse tagged properties of the certificate
+      description: Xpanse tagged properties of the certificate
       type: String
     - contextPath: Expanse.Certificate.providers.id
       description: The Provider information for the certificate
@@ -5025,7 +5025,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Last date the cloud resource was observed by Expanse (Format is
+      description: Last date the cloud resource was observed by Xpanse (Format is
         YYYY-MM-DD).
       isArray: false
       name: last_observed_date
@@ -5100,7 +5100,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retrieve cloud resources from Expanse.
+    description: Retrieve cloud resources from Xpanse.
     execution: false
     name: expanse-get-cloud-resources
     outputs:
@@ -5204,7 +5204,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Retrieve a specified cloud resource from Expanse.
+    description: Retrieve a specified cloud resource from Xpanse.
     execution: false
     name: expanse-get-cloud-resource
     outputs:
@@ -5339,7 +5339,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retrieve risky flows detected by Expanse Behavior.
+    description: Retrieve risky flows detected by Xpanse Behavior.
     execution: false
     name: expanse-get-risky-flows
     outputs:
@@ -5353,7 +5353,7 @@ script:
       description: The business unit name of the asset involved in the risky flow
       type: String
     - contextPath: Expanse.RiskyFlow.created
-      description: The timestamp when the risky flow was found and created by Expanse
+      description: The timestamp when the risky flow was found and created by Xpanse
       type: Date
     - contextPath: Expanse.RiskyFlow.externalAddress
       description: The external IPv4 address involved in the risky flow
@@ -5426,7 +5426,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: List risk rules from Expanse Behavior.
+    description: List risk rules from Xpanse Behavior.
     execution: false
     name: expanse-list-risk-rules
     outputs:
@@ -5560,7 +5560,7 @@ script:
         it
       type: Boolean
     - contextPath: Expanse.Domain.id
-      description: Internal Expanse ID for Domain
+      description: Internal Xpanse ID for Domain
       type: String
     - contextPath: Expanse.Domain.domain
       description: The domain value
@@ -6063,13 +6063,13 @@ script:
       description: The IPv4 address of the asset
       type: String
     - contextPath: Expanse.IP.assetKey
-      description: Key used to access the asset in the respective Expanse asset API
+      description: Key used to access the asset in the respective Xpanse asset API
       type: String
     - contextPath: Expanse.IP.assetType
       description: The type of asset
       type: String
     - contextPath: Expanse.IP.businessUnits.id
-      description: The internal Expanse ID for the business unit the asset belongs
+      description: The internal Xpanse ID for the business unit the asset belongs
         to
       type: String
     - contextPath: Expanse.IP.businessUnits.name
@@ -6094,7 +6094,7 @@ script:
       description: The name of the provider the asset was detected on
       type: String
     - contextPath: Expanse.IP.tenant.id
-      description: The internal Expanse ID of the tenant that the asset belongs to
+      description: The internal Xpanse ID of the tenant that the asset belongs to
       type: String
     - contextPath: Expanse.IP.tenant.name
       description: The name of the tenant that the asset belongs to
@@ -6166,7 +6166,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Provides data enrichment for CIDR blocks using Expanse IP Range.
+    description: Provides data enrichment for CIDR blocks using Xpanse IP Range.
     execution: false
     name: cidr
     outputs:
@@ -6192,7 +6192,7 @@ script:
       description: The date that the IP range was added to the Expander instance
       type: Date
     - contextPath: Expanse.IPRange.id
-      description: Internal Expanse ID for the IP Range
+      description: Internal Xpanse ID for the IP Range
       type: String
     - contextPath: Expanse.IPRange.ipVersion
       description: The IP version of the IP range
@@ -6225,7 +6225,7 @@ script:
       description: The number of IP addresses in the IP range
       type: Number
     - contextPath: Expanse.IPRange.rangeType
-      description: If the IP range is Expanse-generated parent range or a customer-generated
+      description: If the IP range is Xpanse-generated parent range or a customer-generated
         custom range
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.country
