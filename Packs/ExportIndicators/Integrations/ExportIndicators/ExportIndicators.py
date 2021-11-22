@@ -198,11 +198,11 @@ def refresh_outbound_context(request_args: RequestArguments, on_demand: bool = F
         iocs += new_iocs
         iocs = sort_iocs(request_args, iocs)
         # reformat the output
-        out_dict, actual_indicator_amount = create_values_for_returned_dict(iocs, request_args)
+        out_dict, actual_indicator_amount = create_values_for_returned_dict(iocs[request_args.offset:], request_args)
         if request_args.out_format in [FORMAT_CSV, FORMAT_XSOAR_CSV]:
             actual_indicator_amount = actual_indicator_amount - 1
         # advance search window with gap size
-        indicator_searcher.limit += limit - actual_indicator_amount
+        indicator_searcher.limit += request_args.limit - actual_indicator_amount
         loop_counter += 1
 
     if request_args.out_format == FORMAT_JSON:
