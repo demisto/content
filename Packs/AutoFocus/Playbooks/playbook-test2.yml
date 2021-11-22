@@ -1,0 +1,86 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: a1a02b0b-f617-4c28-8826-e15689bb1c6c
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: 1b41a4dd-9a23-4181-8d1c-bb7ae692eec9
+inputs: []
+name: test2
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1a787b43-36d5-4f6b-8ced-2bac5d29d200
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 1a787b43-36d5-4f6b-8ced-2bac5d29d200
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ip:
+        simple: 8.8.8.8
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks the reputation of an IP address.
+      id: af51fe64-fe37-4359-82a8-7f8d0ca0e2d7
+      iscommand: true
+      name: test ip
+      script: '|||ip'
+      type: regular
+      version: -1
+    taskid: af51fe64-fe37-4359-82a8-7f8d0ca0e2d7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 170
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 215,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
