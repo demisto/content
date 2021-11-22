@@ -1,3 +1,4 @@
+import random
 from CommonServerPython import *
 
 
@@ -28,9 +29,11 @@ def main():
     if not non_OOO_list:
         return_error(message="No on call users to assign")
     else:
-        incident_ids = demisto.args().get('incidentIds')
-        demisto.results(demisto.executeCommand("executeCommandAt", {"command": "AssignAnalystToIncidentOOO", "arguments": {
-                        "oncall": "true", "listname": list_name}, "incidents": incident_ids}))
+        incident_ids = argToList(demisto.args().get('incidentIds'))
+
+        for incident_id in incident_ids:
+            rand_user = random.choice(non_OOO_list)
+            demisto.results(demisto.executeCommand("setIncident", {"id": str(incident_id), "owner": rand_user}))
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):
