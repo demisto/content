@@ -2902,6 +2902,13 @@
             "fromversion": "6.0.0"
         },
         {
+            "integrations": "QRadar_v2",
+            "playbookID": "test playbook - QRadarCorrelations For V2",
+            "timeout": 2600,
+            "fromversion": "6.0.0",
+            "is_mockable": false
+        },
+        {
             "integrations": "QRadar v3",
             "playbookID": "QRadar - Get Offense Logs Test",
             "timeout": 600,
