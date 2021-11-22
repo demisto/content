@@ -192,9 +192,10 @@ def get_email_recipients(email_to, email_from, service_mail):
     email_to_set = {email_from}
     email_to = argToList(email_to)
     email_to_set = email_to_set.union(set(email_to))
-    service_mail_recipient = next(recipient for recipient in email_to_set if service_mail in recipient)
-    if service_mail_recipient:
-        email_to_set.remove(service_mail_recipient)
+    if service_mail:
+        service_mail_recipient = next(recipient for recipient in email_to_set if service_mail in recipient)
+        if service_mail_recipient:
+            email_to_set.remove(service_mail_recipient)
 
     email_recipients = ','.join(email_to_set)
     return email_recipients
