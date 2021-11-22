@@ -2,7 +2,11 @@
     "name": "Common Types",
     "description": "This Content Pack will get you up and running in no-time and provide you with the most commonly used incident & indicator fields and types.",
     "support": "xsoar",
+<<<<<<< HEAD
     "currentVersion": "3.1.24",
+=======
+    "currentVersion": "3.1.25",
+>>>>>>> f08ea3003772245fa2d0f666cd7248d4247abeeb
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
