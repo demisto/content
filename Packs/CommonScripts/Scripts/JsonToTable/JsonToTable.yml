@@ -18,17 +18,17 @@ args:
 - name: title
   description: The markdown title.
 - name: headers
-  description: A comma-separated list of table header values. Default will include all available table headers.
+  description: A comma-separated list of table header values. Default will include
+    all available table headers.
 - name: is_auto_json_transform
   description: Try to auto json transform.
 - name: json_transform_properties
-  description: "A json to transform the value to strings.
-              The syntax is:
-              `{\"header_key\": {\"keys\": [<item1>, ...], \"is_nested\": true/false}}` "
+  description: "A json to transform the value to strings. The syntax is: `{\"header_key\"\
+    : {\"keys\": [<item1>, ...], \"is_nested\": true/false}}` "
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.9.8.24399
 runas: DBotWeakRole
 tests:
-  - No test.
+- No test.
