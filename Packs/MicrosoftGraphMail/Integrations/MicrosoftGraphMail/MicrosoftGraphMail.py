@@ -123,6 +123,9 @@ class MsGraphClient:
         odata = f'{odata}&$top={page_size}' if odata else f'$top={page_size}'
 
         if search:
+            # Data is being handled as a JSON so in cases the search phrase contains double quote ",
+            # we should escape it.
+            search = search.replace('"', '\\"')
             odata = f'{odata}&$search="{quote(search)}"'
         suffix = with_folder if folder_id else no_folder
         if odata:
@@ -1575,7 +1578,6 @@ def main():
     tenant_id: str = params.get('tenant_id', '')
     auth_and_token_url: str = params.get('auth_id', '')
     enc_key: str = params.get('enc_key', '')
-    # base_url: str = urljoin(params.get('url', ''), '/v1.0')
     server = params.get('url', '')
     base_url: str = urljoin(server, '/v1.0')
     endpoint = GRAPH_BASE_ENDPOINTS.get(server, 'com')
