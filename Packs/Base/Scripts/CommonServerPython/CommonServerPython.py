@@ -1801,7 +1801,7 @@ class JsonTransformer:
         """
         if keys_lst is None:
             keys_lst = []
-        self.keys_set = set(keys_lst)
+        self.keys = set(keys_lst)
         self.is_nested = is_nested
         self.func = func
         self.flatten = flatten
