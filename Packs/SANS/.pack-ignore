@@ -3,9 +3,5 @@ ignore=BA101
 
 [file:playbook-Brute_Force_Investigation_-_Generic_-_SANS_README.md]
 ignore=RM106
-
-[file:playbook-Brute_Force_Investigation_-_Generic_-_SANS.yml]
-ignore=PB110
-
 [file:incidentfield-SANS_contained_and_eradicated.json]
 ignore=IF100
