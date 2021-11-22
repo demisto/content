@@ -1235,8 +1235,7 @@ def http_request(method, url_suffix, data=None, headers=HEADERS):
             'Error in API call to {}, status code: {}, reason: {}'.format(BASE_URL + '/' + url_suffix, res.status_code,
                                                                           res.json()['message']))
     if res.status_code == 204:
-        return_outputs(readable_output="No data found")
-        sys.exit(0)
+        return {}
     return res.json()
 
 
