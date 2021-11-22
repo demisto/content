@@ -1,6 +1,9 @@
 from copy import deepcopy
 import pytest
+from splunklib.binding import AuthenticationError
+
 import SplunkPy as splunk
+import splunklib.client as client
 import demistomock as demisto
 from CommonServerPython import *
 from datetime import timedelta, datetime
@@ -1070,3 +1073,93 @@ def test_build_search_human_readable(mocker):
     splunk.build_search_human_readable(args, results)
     headers = func_patch.call_args[0][1]
     assert headers == expected_headers
+
+
+@pytest.mark.parametrize(
+    argnames='credentials',
+    argvalues=[{'username': 'test', 'password': 'test'}, {'splunkToken': 'token', 'password': 'test'}]
+)
+def test_module_test(mocker, credentials):
+    """
+    Given:
+        - Credentials for connecting Splunk
+
+    When:
+        - Run test-module command
+
+    Then:
+        - Validate the info method was called
+    """
+
+    # prepare
+    mocker.patch.object(client.Service, 'info')
+    mocker.patch.object(client.Service, 'login')
+    service = client.Service(**credentials)
+    # run
+
+    splunk.test_module(service)
+
+    # validate
+    assert service.info.call_count == 1
+
+
+@pytest.mark.parametrize(
+    argnames='credentials',
+    argvalues=[{'username': 'test', 'password': 'test'}, {'splunkToken': 'token', 'password': 'test'}]
+)
+def test_module__exception_raised(mocker, credentials):
+    """
+    Given:
+        - AuthenticationError was occurred
+
+    When:
+        - Run test-module command
+
+    Then:
+        - Validate the expected message was returned
+    """
+
+    # prepare
+    def exception_raiser():
+        raise AuthenticationError()
+
+    mocker.patch.object(AuthenticationError, '__init__', return_value=None)
+    mocker.patch.object(client.Service, 'info', side_effect=exception_raiser)
+    mocker.patch.object(client.Service, 'login')
+
+    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
+    service = client.Service(**credentials)
+    # run
+
+    splunk.test_module(service)
+
+    # validate
+    assert return_error_mock.call_args[0][0] == 'Authentication error, please validate your credentials.'
+
+
+def test_module_hec_url(mocker):
+    """
+    Given:
+        - hec_url was is in params
+
+    When:
+        - Run test-module command
+
+    Then:
+        - Validate taht the request.get was called with the expected args
+    """
+
+    # prepare
+
+    mocker.patch.object(demisto, 'params', return_value={'hec_url': 'test_hec_url'})
+    mocker.patch.object(client.Service, 'info')
+    mocker.patch.object(client.Service, 'login')
+    mocker.patch.object(requests, 'get')
+
+    service = client.Service(username='test', password='test')
+    # run
+
+    splunk.test_module(service)
+
+    # validate
+    assert requests.get.call_args[0][0] == 'test_hec_url/services/collector/health'
