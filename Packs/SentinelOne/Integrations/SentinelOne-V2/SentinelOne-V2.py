@@ -981,7 +981,7 @@ def list_agents_command(client: Client, args: dict) -> CommandResults:
         active_threats=args.get('min_active_threats'),
         computer_name=args.get('computer_name'),
         scan_status=args.get('scan_status'),
-        os_type=args.get('os_type'),
+        osTypes=args.get('os_type'),
         created_at=args.get('created_at'),
         limit=int(args.get('limit', 10)),
     )
