@@ -1,0 +1,45 @@
+[{
+    "tag": {
+        "tag_name": "mocktag",
+        "public_tag_name": "Mock.mocktag",
+        "tag_definition_scope": "mock",
+        "lasthit": "2021-03-31 17:50:24",
+        "description": "some description",
+        "refs": "[{\"source\":\"some source\",\"title\":\"some title\",\"url\":\"http://www.example.com\",\"created\":\"2016-08-10T14:27:05\"}]",
+        "tag_class": "malware_family",
+        "source": "Some Source",
+        "created_at": "2016-01-01 00:00:00",
+        "updated_at": "2021-03-15 19:27:21"
+    },
+    "aliases": ["alias"],
+    "related_tags": [],
+    "tag_groups": [
+        {
+            "tag_group_name": "PotentiallyUnwantedProgram",
+            "description": "PUPs, or Potentially Unwanted Programs, are programs that may include adware, advertising, toolbars, and pop-ups that are unrelated to the software you downloaded. PUPs often come bundled with other software that you installed."
+        }
+    ]
+},
+    {
+    "tag": {
+        "tag_name": "mocktag1",
+        "public_tag_name": "Mock.mocktag1",
+        "tag_definition_scope": "mock",
+        "lasthit": "2021-03-31 17:50:24",
+        "description": "some description",
+        "refs": "[{\"source\":\"some source1\",\"title\":\"some title1\",\"url\":\"http://www.example1.com\",\"created\":\"2016-08-10T14:27:05\"},{\"source\":\"somesource\",\"title\":\"some title\",\"url\":\"https://www.example.com\",\"created\":\"2016-08-10T14:27:17\"}]",
+        "tag_class": "actor",
+        "source": "Some Source1",
+        "created_at": "2016-01-01 00:00:00",
+        "updated_at": "2021-03-15 19:27:21"
+    },
+    "aliases": ["alias1"],
+    "related_tags": [],
+    "tag_groups": [
+        {
+            "tag_group_name": "PotentiallyUnwantedProgram",
+            "description": "PUPs, or Potentially Unwanted Programs, are programs that may include adware, advertising, toolbars, and pop-ups that are unrelated to the software you downloaded. PUPs often come bundled with other software that you installed."
+        }
+    ]
+}
+]

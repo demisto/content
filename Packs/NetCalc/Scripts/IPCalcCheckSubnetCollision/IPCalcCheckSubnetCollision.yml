@@ -1,0 +1,38 @@
+args:
+- default: false
+  description: First subnet
+  isArray: false
+  name: subnet_one
+  required: true
+  secret: false
+- default: false
+  description: Second subnet
+  isArray: false
+  name: subnet_two
+  required: true
+  secret: false
+comment: An automation script to return subnet collision result
+commonfields:
+  id: IPCalcCheckSubnetCollision
+  version: -1
+enabled: false
+name: IPCalcCheckSubnetCollision
+outputs:
+- contextPath: IPCalc.IP.Collision.subnet1
+  description: Collission first subnet
+  type: String
+- contextPath: IPCalc.IP.Collision.subnet2
+  description: Collission second subnet
+  type: String
+- contextPath: IPCalc.IP.Collision.collision
+  description: Collission result
+  type: String
+script: '-'
+subtype: python3
+system: false
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.9.8.24399
+tests:
+- No tests
+fromversion: 6.0.0
