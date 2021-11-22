@@ -12,7 +12,6 @@
     "neverSetAsRequired": false,
     "isReadOnly": false,
     "selectValues": [
-        "",
         "Attachments",
         "Google Cloud Storage",
         "HTTP request"
