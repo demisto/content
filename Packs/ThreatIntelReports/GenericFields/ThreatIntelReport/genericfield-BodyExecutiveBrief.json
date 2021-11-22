@@ -23,7 +23,7 @@
     "system": false,
     "threshold": 72,
     "type": "markdown",
-    "template": "## Summary",
+    "template": "### Summary",
     "unmapped": false,
     "unsearchable": false,
     "useAsKpi": false,
