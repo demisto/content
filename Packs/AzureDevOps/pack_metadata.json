@@ -1,5 +1,5 @@
 {
-  "name": "AzureDevOps",
+  "name": "Azure DevOps",
   "description": "Create and manage Git repositories in Azure DevOps Services.",
   "support": "xsoar",
   "currentVersion": "1.0.0",

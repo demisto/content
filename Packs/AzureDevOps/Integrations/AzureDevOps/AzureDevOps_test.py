@@ -1,3 +1,5 @@
+import pytest
+
 from CommonServerPython import *
 
 ORGANIZATION = "XSOAR"
@@ -274,6 +276,12 @@ def test_azure_devops_pull_request_update_command(requests_mock):
     assert result.outputs.get('name') == 'xsoar'
     assert result.outputs.get('Repository').get('name') == 'xsoar'
 
+    with pytest.raises(Exception):
+        pull_request_update_command(client, {'project': project,
+                                             'repository_id': repository_id,
+                                             'pull_request_id': pull_request_id
+                                             })
+
 
 def test_azure_devops_pull_request_list_command(requests_mock):
     """
@@ -314,6 +322,11 @@ def test_azure_devops_pull_request_list_command(requests_mock):
     assert result.outputs_prefix == 'AzureDevOps.Project'
     assert result.outputs.get('name') == 'xsoar'
     assert result.outputs.get('Repository').get('name') == 'xsoar'
+    with pytest.raises(Exception):
+        pull_requests_list_command(client, {'project': project,
+                                            'repository': repository,
+                                            'limit': '-1'
+                                            })
 
 
 def test_azure_devops_project_list_command(requests_mock):
@@ -350,6 +363,8 @@ def test_azure_devops_project_list_command(requests_mock):
     assert result.outputs_prefix == 'AzureDevOps.Project'
     assert result.outputs[0].get('name') == 'xsoar'
     assert result.outputs[0].get('visibility') == 'private'
+    with pytest.raises(Exception):
+        project_list_command(client, {'limit': '-1'})
 
 
 def test_azure_devops_repository_list_command(requests_mock):
@@ -387,6 +402,8 @@ def test_azure_devops_repository_list_command(requests_mock):
     assert result.outputs_prefix == 'AzureDevOps.Project'
     assert result.outputs.get('name') == 'xsoar'
     assert result.outputs.get('Repository')[0].get('name') == 'xsoar'
+    with pytest.raises(Exception):
+        repository_list_command(client, {"project": project, 'limit': '-1'})
 
 
 def test_azure_devops_users_query_command(requests_mock):
@@ -423,6 +440,8 @@ def test_azure_devops_users_query_command(requests_mock):
     assert len(result.outputs) == 1
     assert result.outputs_prefix == 'AzureDevOps.User'
     assert result.outputs[0].get('email') == 'xsoar@xsoar.com'
+    with pytest.raises(Exception):
+        users_query_command(client, {"query": query, 'limit': '-1'})
 
 
 def test_azure_devops_pipeline_run_get_command(requests_mock):
@@ -503,6 +522,10 @@ def test_azure_devops_pipeline_run_list_command(requests_mock):
     assert result.outputs_prefix == 'AzureDevOps.Project'
     assert result.outputs.get('Pipeline')[0].get('name') == 'xsoar'
     assert result.outputs.get('Pipeline')[0].get('Run').get('state') == 'completed'
+    with pytest.raises(Exception):
+        pipeline_run_list_command(client, {"project": project,
+                                           'pipeline_id': pipeline_id,
+                                           'limit': '-1'})
 
 
 def test_azure_devops_pipeline_list_command(requests_mock):
@@ -540,6 +563,9 @@ def test_azure_devops_pipeline_list_command(requests_mock):
     assert len(result.outputs) == 2
     assert result.outputs_prefix == 'AzureDevOps.Project'
     assert result.outputs.get('Pipeline')[0].get('name') == 'xsoar (1)'
+    with pytest.raises(Exception):
+        pipeline_run_list_command(client, {"project": project,
+                                           'limit': '-1'})
 
 
 def test_azure_devops_branch_list_command(requests_mock):
@@ -579,6 +605,10 @@ def test_azure_devops_branch_list_command(requests_mock):
     assert result.outputs_prefix == 'AzureDevOps.Project'
     assert result.outputs.get('Repository').get('name') == repository
     assert result.outputs.get('Repository').get('Branch')[0].get('name') == 'main'
+    with pytest.raises(Exception):
+        branch_list_command(client, {"project": project,
+                                     "repository": repository,
+                                     'limit': '-1'})
 
 
 def test_get_last_fetch_incident_index(requests_mock):
@@ -681,3 +711,24 @@ def test_is_new_pr(requests_mock):
     assert is_new_pr(project, repository, client, 22)
     assert not is_new_pr(project, repository, client, 24)
     assert not is_new_pr(project, repository, client, 25)
+
+
+def test_get_mapping_fields_command():
+    """
+    Given:
+     - User has provided valid credentials.
+    When
+        - running get_mapping_fields_command
+    Then
+        - the result fits the expected mapping.
+    """
+    from AzureDevOps import get_mapping_fields_command
+    expected_mapping = {'Azure DevOps': {'status': 'The status of the pull request.',
+                                         'title': 'The title of the pull request.',
+                                         'description': 'The description of the pull request.',
+                                         'project': 'The name of the project.',
+                                         'repository_id': 'The repository ID of the pull request target branch.',
+                                         'pull_request_id': 'the ID of the pull request'}}
+    res = get_mapping_fields_command()
+
+    assert expected_mapping == res.extract_mapping()
