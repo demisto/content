@@ -2138,27 +2138,29 @@ def fetch_channels():
         if not cursor:
             demisto.info("Finished updating channel list")
             break
-        total_try_time = 0
-        while True:
-            try:
-                res = CLIENT.conversations_list(types='private_channel,public_channel', exclude_archived=True, cursor=cursor)
-            except SlackApiError as api_error:
-                demisto.debug(f'Got rate limit error (sync). Body is: {str(res)}\n{api_error}')
-                response = api_error.response
-                headers = response.headers  # type: ignore
-                if 'Retry-After' in headers:
-                    retry_after = int(headers['Retry-After'])
-                    total_try_time += retry_after
-                    if total_try_time < MAX_LIMIT_TIME:
-                        time.sleep(retry_after)
-                        continue
-                else:
-                    if total_try_time < MAX_LIMIT_TIME:
-                        time.sleep(5)
-                        continue
+        else:
+            total_try_time = 0
+            while True:
+                try:
+                    res = CLIENT.conversations_list(types='private_channel,public_channel', exclude_archived=True,
+                                                    cursor=cursor)
+                except SlackApiError as api_error:
+                    demisto.debug(f'Got rate limit error (sync). Body is: {str(res)}\n{api_error}')
+                    response = api_error.response
+                    headers = response.headers  # type: ignore
+                    if 'Retry-After' in headers:
+                        retry_after = int(headers['Retry-After'])
+                        total_try_time += retry_after
+                        if total_try_time < MAX_LIMIT_TIME:
+                            time.sleep(retry_after)
+                            continue
                     else:
-                        raise
-            break
+                        if total_try_time < MAX_LIMIT_TIME:
+                            time.sleep(5)
+                            continue
+                        else:
+                            raise
+                break
 
     # Save conversations to cache
     conversations = integration_context.get('conversations')

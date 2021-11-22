@@ -3920,3 +3920,83 @@ def test_pin_message_invalid_thread_id(mocker):
 
     # Assert
     assert err_msg == expected_body
+
+
+def test_fetch_channels(mocker):
+    """
+     Given:
+        A fetch channel command where the first result has no pagination
+
+    When:
+        Updating the channel IDs to context
+
+    Then:
+        Expect a successful response and appended context
+    """
+    import SlackV3
+
+    channel_response = {'channels': js.loads(CONVERSATIONS), 'response_metadata': {
+    }}
+    # Set
+    SLACK_RESPONSE = SlackResponse(client=None, http_verb='', api_url='', req_args={}, data=channel_response, headers={},
+                                   status_code=0)
+
+    expected_body = ("Successfully updated channels to the Integration Context")
+
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(slack_sdk.WebClient, 'conversations_list', side_effect=SLACK_RESPONSE)
+    mocker.patch.object(demisto, 'results')
+
+    # Arrange
+    SlackV3.fetch_channels()
+
+    # Assert
+    assert demisto.results.mock_calls[0][1][0] == expected_body
+
+
+def test_fetch_channels_rate_limited(mocker):
+    """
+     Given:
+        A fetch channel command where the first result indicates pagination and the next two calls throw a rate limit
+        error.
+    When:
+        Updating the channel IDs to context
+
+    Then:
+        Expect a successful response and appended context after successfully handling the rate limit and waiting the
+        indicated amount of time
+    """
+    from SlackV3 import fetch_channels, init_globals
+    from slack_sdk.errors import SlackApiError
+    from slack_sdk.web.slack_response import SlackResponse
+    import time
+
+    # Set
+    init_globals()
+    err_response: SlackResponse = SlackResponse(api_url='', client=None, http_verb='GET', req_args={},
+                                                data={'ok': False}, status_code=429, headers={'Retry-After': 40})
+    first_call = {'channels': js.loads(CONVERSATIONS), 'response_metadata': {'next_cursor': 'dGVhbTpDQ0M3UENUTks='}}
+    second_call = SlackApiError('Rate limit reached!', err_response)
+    third_call = {'channels': js.loads(CONVERSATIONS), 'response_metadata': {'next_cursor': ''}}
+
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch.object(slack_sdk.WebClient, 'conversations_list', side_effect=[first_call, second_call, second_call, third_call])
+    mocker.patch.object(time, 'sleep')
+
+
+    # Arrange
+    fetch_channels()
+    args = slack_sdk.WebClient.conversations_list.call_args_list
+    first_args = args[0][1]
+    second_args = args[1][1]
+    third_args = args[2][1]
+    fourth_args = args[2][1]
+    # Assert
+    assert len(args) == 4
+    assert first_args['cursor'] is None
+    assert second_args['cursor'] == 'dGVhbTpDQ0M3UENUTks='
+    assert third_args['cursor'] == 'dGVhbTpDQ0M3UENUTks='
+    assert fourth_args['cursor'] == 'dGVhbTpDQ0M3UENUTks='
+
+    # assert slack_sdk.WebClient.conversations_list.call_count == 2
