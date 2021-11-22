@@ -152,7 +152,7 @@ def fetch_incidents():
         last_fetch_time = datetime.now() - timedelta(days=days_back)
         demisto.info(f'First run, fetching alerts from {last_fetch_time}')
 
-    max_incidents_to_return = int(demisto.params().get('max_incidents', DEFAULT_INCIDENTS))
+    max_incidents_to_return = int(demisto.params().get('max_fetch', DEFAULT_INCIDENTS))
     if max_incidents_to_return > MAX_INCIDENTS:
         demisto.info(f'Max incidents({max_incidents_to_return}) is larger than the maximum, setting to {MAX_INCIDENTS}')
         max_incidents_to_return = MAX_INCIDENTS
