@@ -2902,7 +2902,7 @@
             "fromversion": "6.0.0"
         },
         {
-            "integrations": "QRadar_v3",
+            "integrations": "QRadar v3",
             "playbookID": "QRadar - Get Offense Logs Test",
             "timeout": 600,
             "fromversion": "6.0.0"
