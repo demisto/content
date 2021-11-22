@@ -2,7 +2,7 @@ The Cortex Xpanse pack for Cortex XSOAR provides full coverage of the Expanse Ex
 
 Through a powerful set of playbooks, analysts can correlate the discovered information with data provided from internal security systems (Palo Alto Networks Cortex Data Lake, Prisma Cloud, and Panorama, Active Directory, Splunk SIEM, etc.) to help pinpoint the right owners of assets and automate remediation.
 
-> <b>Note<\b>: This Pack, as well as its previously named **Expanse v2** Integration, were renamed to **Cortex Xpanse**. All other content items are still named the same.
+> **Note**: This Pack, as well as its previously named **Expanse v2** Integration, were renamed to **Cortex Xpanse**. All other content items are still named the same.
 
 ##### What does this pack do?
 - Provides the **Cortex Xpanse** integration (for Expanse Expander and Behavior), which allows XSOAR to collect Expanse Issues and bi-directionally mirror them. Several commands are available to search, tag, and update issues and assets in Expanse. The integration also supports the services API.
