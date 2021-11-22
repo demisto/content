@@ -1816,6 +1816,7 @@ class JsonTransformer:
         if self.flatten:
             return '\n'.join(
                 ['{key}: {val}'.format(key=k, val=flattenCell(v, is_pretty)) for k, v in json_input.items()])
+
         str_lst = []
         for k, v in json_input.items():
             str_lst.append('***{k}***: '.format(k=k))
