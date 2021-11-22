@@ -736,7 +736,7 @@ def fetch_incidents(client: Client,
             created_time = datetime.strptime(investigation_created_time, DATE_FORMAT_BACKUP)
         incident = {
             'name': investigation.get('title'),
-            'occurred': created_time.strftime(DATE_FORMAT)[:-4]+"Z",
+            'occurred': created_time.strftime(DATE_FORMAT)[:-4] + "Z",
             'rawJSON': json.dumps(investigation)
         }
         incidents.append(incident)
