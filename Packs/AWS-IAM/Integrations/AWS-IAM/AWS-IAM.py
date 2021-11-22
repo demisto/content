@@ -1061,9 +1061,11 @@ def list_user_policies(args, aws_client):
         'PolicyName': policy,
     } for policy in data]
 
-    ec = {'AWS.IAM.UserPolicies(val.PolicyName && val.UserName && val.PolicyName === obj.PolicyName && '
-          'val.UserName === obj.UserName)': policy_data,
-          'AWS.IAM.Users(val.UserName === \'{}\').InlinePoliciesMarker'.format(user_name): marker}
+    ec = {}
+    if policy_data:
+        ec = {'AWS.IAM.UserPolicies(val.PolicyName && val.UserName && val.PolicyName === obj.PolicyName && '
+              'val.UserName === obj.UserName)': policy_data,
+              'AWS.IAM.Users(val.UserName === \'{}\').InlinePoliciesMarker'.format(user_name): marker}
 
     human_readable = tableToMarkdown('AWS IAM Policies for user {}'.format(user_name),
                                      headers=["PolicyNames"],
@@ -1104,9 +1106,11 @@ def list_attached_user_policies(args, aws_client):
         'PolicyName': policy.get('PolicyName')
     } for policy in data]
 
-    ec = {'AWS.IAM.AttachedUserPolicies(val.PolicyArn && val.UserName && val.PolicyArn === obj.PolicyArn && '
-          'val.UserName === obj.UserName)': policy_data,
-          'AWS.IAM.Users(val.UserName === \'{}\').AttachedPoliciesMarker'.format(user_name): marker}
+    ec = {}
+    if policy_data:
+        ec = {'AWS.IAM.AttachedUserPolicies(val.PolicyArn && val.UserName && val.PolicyArn === obj.PolicyArn && '
+              'val.UserName === obj.UserName)': policy_data,
+              'AWS.IAM.Users(val.UserName === \'{}\').AttachedPoliciesMarker'.format(user_name): marker}
 
     human_readable = tableToMarkdown('AWS IAM Attached Policies for user {}'.format(user_name),
                                      headers=['PolicyName', 'PolicyArn'],
@@ -1148,9 +1152,11 @@ def list_attached_group_policies(args, aws_client):
         'PolicyName': policy.get('PolicyName')
     } for policy in data]
 
-    ec = {'AWS.IAM.AttachedGroupPolicies(val.PolicyArn && val.GroupName && val.PolicyArn === obj.PolicyArn && '
-          'val.GroupName === obj.GroupName)': policy_data,
-          'AWS.IAM.Groups(val.GroupName === \'{}\').AttachedPoliciesMarker'.format(group_name): marker}
+    ec = {}
+    if policy_data:
+        ec = {'AWS.IAM.AttachedGroupPolicies(val.PolicyArn && val.GroupName && val.PolicyArn === obj.PolicyArn && '
+              'val.GroupName === obj.GroupName)': policy_data,
+              'AWS.IAM.Groups(val.GroupName === \'{}\').AttachedPoliciesMarker'.format(group_name): marker}
 
     human_readable = tableToMarkdown('AWS IAM Attached Policies for group {}'.format(group_name),
                                      headers=['PolicyName', 'PolicyArn'],
