@@ -732,12 +732,11 @@ def fetch_incidents(client: Client,
         investigation_created_time = investigation.get('created_time')
         try:
             created_time = datetime.strptime(investigation_created_time, DATE_FORMAT)
-        except:
+        except ValueError:
             created_time = datetime.strptime(investigation_created_time, DATE_FORMAT_BACKUP)
-        
         incident = {
             'name': investigation.get('title'),
-            'occurred': created_time.strftime(DATE_FORMAT),
+            'occurred': created_time.strftime(DATE_FORMAT)[:-4]+"Z",
             'rawJSON': json.dumps(investigation)
         }
         incidents.append(incident)
