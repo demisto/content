@@ -1,0 +1,321 @@
+{
+    "id": "threatIntel",
+    "version": -1,
+    "name": "Threat Intel",
+    "fromVersion": "6.5.0",
+    "definitionIds": [
+        "ThreatIntelReport"
+    ],
+    "views": [
+        {
+            "icon": "icon-widget-infinity-24-s",
+            "name": "Threat Intel",
+            "id": "Threat Intel",
+            "title": "Threat Intel View",
+            "tabs": [
+                {
+                    "name": "Threat Intel Reports",
+                    "newButtonDefinitionId": "ThreatIntelReport",
+                    "tableView": true,
+                    "tableViewWidgetGroups": ["type", "reportstatus", "trafficlightprotocol", "dbotCreatedBy"],
+                    "tableViewColumns": ["id", "name", "reportstatus", "creator", "trafficlightprotocol", "created", "tags"],
+                    "dashboard": {
+                        "id": "Threat Intel Dashboard",
+                        "version": -1,
+                        "fromDate": "0001-01-01T00:00:00Z",
+                        "toDate": "0001-01-01T00:00:00Z",
+                        "period": {
+                            "by": "",
+                            "byTo": "",
+                            "byFrom": "days",
+                            "toValue": null,
+                            "fromValue": 7,
+                            "field": ""
+                        },
+                        "fromDateLicense": "0001-01-01T00:00:00Z",
+                        "name": "Threat Intel Dashboard",
+                        "layout": [
+                            {
+                                "id": "2f7354b0-065f-11ec-ba99-5f74d3ffb017",
+                                "forceRange": false,
+                                "x": 0,
+                                "y": 0,
+                                "i": "2f7354b0-065f-11ec-ba99-5f74d3ffb017",
+                                "w": 6,
+                                "h": 2,
+                                "widget": {
+                                    "id": "221c23c9-beff-4ccb-8ccc-dc920876c6fa",
+                                    "version": 1,
+                                    "modified": "2021-08-26T14:17:16.626236871+03:00",
+                                    "sortValues": null,
+                                    "packID": "",
+                                    "itemVersion": "",
+                                    "fromServerVersion": "",
+                                    "toServerVersion": "",
+                                    "propagationLabels": [
+                                        "all"
+                                    ],
+                                    "vcShouldIgnore": false,
+                                    "vcShouldKeepItemLegacyProdMachine": false,
+                                    "commitMessage": "",
+                                    "shouldCommit": false,
+                                    "name": "Reports Published",
+                                    "prevName": "Reports Published",
+                                    "dataType": "generics",
+                                    "definitionId": "ThreatIntelReport",
+                                    "widgetType": "column",
+                                    "query": "",
+                                    "sort": [],
+                                    "isPredefined": false,
+                                    "dateRange": {
+                                        "fromDate": "0001-01-01T00:00:00Z",
+                                        "toDate": "0001-01-01T00:00:00Z",
+                                        "period": {
+                                            "by": "",
+                                            "byTo": "",
+                                            "byFrom": "days",
+                                            "toValue": null,
+                                            "fromValue": 7,
+                                            "field": ""
+                                        },
+                                        "fromDateLicense": "0001-01-01T00:00:00Z"
+                                    },
+                                    "params": {
+                                        "groupBy": [
+                                            "published(m)",
+                                            "type"
+                                        ],
+                                        "showOthers": false,
+                                        "timeFrame": "months",
+                                        "valuesFormat": "abbreviated"
+                                    },
+                                    "size": 0,
+                                    "category": ""
+                                },
+                                "reflectDimensions": true
+                            },
+                            {
+                                "id": "9cb8f6b0-065f-11ec-ba99-5f74d3ffb017",
+                                "forceRange": false,
+                                "x": 6,
+                                "y": 0,
+                                "i": "9cb8f6b0-065f-11ec-ba99-5f74d3ffb017",
+                                "w": 3,
+                                "h": 2,
+                                "widget": {
+                                    "id": "773ad9fb-064c-41e3-855e-fff8f97164e4",
+                                    "version": 1,
+                                    "modified": "2021-08-26T14:20:16.953712785+03:00",
+                                    "sortValues": null,
+                                    "packID": "",
+                                    "itemVersion": "",
+                                    "fromServerVersion": "",
+                                    "toServerVersion": "",
+                                    "propagationLabels": [
+                                        "all"
+                                    ],
+                                    "vcShouldIgnore": false,
+                                    "vcShouldKeepItemLegacyProdMachine": false,
+                                    "commitMessage": "",
+                                    "shouldCommit": false,
+                                    "name": "Unpublished Reports by type",
+                                    "prevName": "Reports by type",
+                                    "dataType": "generics",
+                                    "definitionId": "ThreatIntelReport",
+                                    "widgetType": "pie",
+                                    "query": "reportstatus:(Review or Draft)",
+                                    "sort": [],
+                                    "isPredefined": false,
+                                    "dateRange": {
+                                        "fromDate": "0001-01-01T00:00:00Z",
+                                        "toDate": "0001-01-01T00:00:00Z",
+                                        "period": {
+                                            "by": "",
+                                            "byTo": "",
+                                            "byFrom": "days",
+                                            "toValue": null,
+                                            "fromValue": 0,
+                                            "field": ""
+                                        },
+                                        "fromDateLicense": "0001-01-01T00:00:00Z"
+                                    },
+                                    "params": {
+                                        "groupBy": [
+                                            "type"
+                                        ],
+                                        "valuesFormat": "abbreviated"
+                                    },
+                                    "size": 0,
+                                    "category": ""
+                                },
+                                "reflectDimensions": true
+                            },
+                            {
+                                "id": "c370c490-065f-11ec-ba99-5f74d3ffb017",
+                                "forceRange": false,
+                                "x": 9,
+                                "y": 0,
+                                "i": "c370c490-065f-11ec-ba99-5f74d3ffb017",
+                                "w": 3,
+                                "h": 2,
+                                "widget": {
+                                    "id": "5f6fa3bd-ddde-404a-875e-46d137b5b0b1",
+                                    "version": 1,
+                                    "modified": "2021-08-26T14:21:25.122186055+03:00",
+                                    "sortValues": null,
+                                    "packID": "",
+                                    "itemVersion": "",
+                                    "fromServerVersion": "",
+                                    "toServerVersion": "",
+                                    "propagationLabels": [
+                                        "all"
+                                    ],
+                                    "vcShouldIgnore": false,
+                                    "vcShouldKeepItemLegacyProdMachine": false,
+                                    "commitMessage": "",
+                                    "shouldCommit": false,
+                                    "name": "Report by Status",
+                                    "prevName": "Report by Status",
+                                    "dataType": "generics",
+                                    "definitionId": "ThreatIntelReport",
+                                    "widgetType": "pie",
+                                    "query": "",
+                                    "sort": [],
+                                    "isPredefined": false,
+                                    "dateRange": {
+                                        "fromDate": "0001-01-01T00:00:00Z",
+                                        "toDate": "0001-01-01T00:00:00Z",
+                                        "period": {
+                                            "by": "",
+                                            "byTo": "",
+                                            "byFrom": "days",
+                                            "toValue": null,
+                                            "fromValue": 30,
+                                            "field": ""
+                                        },
+                                        "fromDateLicense": "0001-01-01T00:00:00Z"
+                                    },
+                                    "params": {
+                                        "groupBy": [
+                                            "reportstatus"
+                                        ],
+                                        "valuesFormat": "abbreviated"
+                                    },
+                                    "size": 0,
+                                    "category": ""
+                                },
+                                "reflectDimensions": true
+                            },
+                            {
+                                "id": "5490f900-14a1-11ec-8115-a339b813ec6b",
+                                "forceRange": false,
+                                "x": 0,
+                                "y": 2,
+                                "i": "5490f900-14a1-11ec-8115-a339b813ec6b",
+                                "w": 12,
+                                "h": 7,
+                                "widget": {
+                                    "id": "4ba41bed-cd8a-4562-8daf-5bee6ce5cff6",
+                                    "version": 1,
+                                    "modified": "2021-09-13T17:46:04.690602+03:00",
+                                    "sortValues": null,
+                                    "packID": "",
+                                    "itemVersion": "",
+                                    "fromServerVersion": "",
+                                    "toServerVersion": "",
+                                    "propagationLabels": [
+                                        "all"
+                                    ],
+                                    "vcShouldIgnore": false,
+                                    "vcShouldKeepItemLegacyProdMachine": false,
+                                    "commitMessage": "",
+                                    "shouldCommit": false,
+                                    "name": "Threat Intel Reports",
+                                    "prevName": "Threat Intel Reports",
+                                    "dataType": "generics",
+                                    "definitionId": "ThreatIntelReport",
+                                    "widgetType": "table",
+                                    "query": "",
+                                    "sort": null,
+                                    "isPredefined": false,
+                                    "dateRange": {
+                                        "fromDate": "0001-01-01T00:00:00Z",
+                                        "toDate": "0001-01-01T00:00:00Z",
+                                        "period": {
+                                            "by": "",
+                                            "byTo": "",
+                                            "byFrom": "days",
+                                            "toValue": null,
+                                            "fromValue": 7,
+                                            "field": ""
+                                        },
+                                        "fromDateLicense": "0001-01-01T00:00:00Z"
+                                    },
+                                    "params": {
+                                        "tableColumns": [
+                                            {
+                                                "displayed": true,
+                                                "isDefault": true,
+                                                "key": "id",
+                                                "position": 0,
+                                                "width": 110
+                                            },
+                                            {
+                                                "displayed": true,
+                                                "isDefault": true,
+                                                "key": "name",
+                                                "position": 1,
+                                                "width": 120
+                                            },
+                                            {
+                                                "displayed": true,
+                                                "isDefault": true,
+                                                "key": "Report Status",
+                                                "position": 2,
+                                                "width": 120
+                                            },
+                                            {
+                                                "displayed": true,
+                                                "isDefault": true,
+                                                "key": "Creator",
+                                                "position": 3,
+                                                "width": 300
+                                            },
+                                            {
+                                                "displayed": true,
+                                                "isDefault": true,
+                                                "key": "Traffic Light Protocol",
+                                                "position": 4,
+                                                "width": 300
+                                            },
+                                            {
+                                                "displayed": true,
+                                                "isDefault": true,
+                                                "key": "created",
+                                                "width": 275,
+                                                "position": 5
+                                            },
+                                            {
+                                                "displayed": true,
+                                                "isDefault": true,
+                                                "key": "Tags",
+                                                "width": 275,
+                                                "position": 6
+                                            }
+                                        ]
+                                    },
+                                    "size": 0,
+                                    "category": ""
+                                },
+                                "reflectDimensions": true
+                            }
+                        ],
+                        "fromVersion": "6.5.0",
+                        "description": "",
+                        "isPredefined": true
+                    }
+                }
+            ]
+        }
+    ]
+}
