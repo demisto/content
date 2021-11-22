@@ -5,7 +5,8 @@ import requests_mock
 
 from CommonServerPython import *
 from MicrosoftGraphMail import MsGraphClient, build_mail_object, assert_pages, build_folders_path, \
-    add_second_to_str_date, list_mails_command, item_result_creator, create_attachment, reply_email_command
+    add_second_to_str_date, list_mails_command, item_result_creator, create_attachment, reply_email_command, \
+    send_email_command
 from MicrosoftApiModule import MicrosoftClient
 import demistomock as demisto
 
@@ -444,3 +445,69 @@ def test_reply_mail_command(client, mocker):
     assert reply_message.outputs['subject'] == 'Re: ' + args['subject']
     assert reply_message.outputs['toRecipients'] == args['to']
     assert reply_message.outputs['bodyPreview'] == args['body']
+
+
+SEND_MAIL_COMMAND_ARGS = [
+    (
+        oproxy_client(),
+        {
+            'to': ['ex@example.com'],
+            'htmlBody': "<b>This text is bold</b>",
+            'subject': "test subject",
+            'from': "ex1@example.com"
+        },
+    ),
+    (
+        self_deployed_client(),
+        {
+            'to': ['ex@example.com'],
+            'htmlBody': "<b>This text is bold</b>",
+            'subject': "test subject",
+            'from': "ex1@example.com"
+        },
+    ),
+    (
+        oproxy_client(),
+        {
+            'to': ['ex@example.com'],
+            'body': "test body",
+            'subject': "test subject",
+            'from': "ex1@example.com"
+        }
+    ),
+    (
+        self_deployed_client(),
+        {
+            'to': ['ex@example.com'],
+            'body': "test body",
+            'subject': "test subject",
+            'from': "ex1@example.com"
+        }
+    )
+]
+
+
+@pytest.mark.parametrize('client, args', SEND_MAIL_COMMAND_ARGS)
+def test_send_mail_command(mocker, client, args):
+    """
+        Given:
+            - send-mail command's arguments
+
+        When:
+            - sending a mail
+
+        Then:
+            - validates that demisto result was called with the correct values.
+
+    """
+    mocker.patch.object(MicrosoftClient, 'http_request')
+    mocker.patch.object(demisto, 'results')
+
+    send_email_command(client, args)
+
+    assert demisto.results.called
+    contents = demisto.results.call_args[0][0]['Contents']['MicrosoftGraph.Email']
+    assert contents.get('body').get('content') == args.get('body') or args.get("htmlBody")
+    assert contents.get('subject') == args.get('subject')
+    assert contents.get('toRecipients') == args.get('to')
+
