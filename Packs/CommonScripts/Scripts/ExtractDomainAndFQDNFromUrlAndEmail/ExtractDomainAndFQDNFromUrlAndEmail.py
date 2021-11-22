@@ -5,7 +5,6 @@ from validate_email import validate_email
 from urllib.parse import urlparse, parse_qs, unquote
 import re
 
-
 PROOFPOINT_PREFIXES = ['https://urldefense.proofpoint.com/v1/url?u=', 'https://urldefense.proofpoint.com/v2/url?u=',
                        "https://urldefense.com/v3/__"]
 ATP_LINK_REG = r'(https:\/\/\w*|\w*)\.safelinks\.protection\.outlook\.com\/.*\?url='
@@ -41,15 +40,7 @@ def proofpoint_get_original_url(safe_url):
 
 
 def unescape_url(escaped_url):
-    # Normalize: 1) [.] --> . 2) hxxp --> http 3) &amp --> & 4) http:\\ --> http://
-    url = escaped_url.lower().replace('[.]', '.').replace('hxxp', 'http').replace('&amp;', '&')\
-        .replace('http:\\\\', 'http://')
-    # Normalize the URL with http prefix
-    if url.find('http:') == 0 and url.find('http://') == -1:
-        url = url.replace('http:', 'http://')
-    if url.find('http') != 0 and url.find('ftp') != 0:
-        return 'http://' + url
-    return url
+    return escaped_url.lower().replace('[.]', '.').replace('&amp;', '&')
 
 
 def get_fqdn(the_input):
@@ -67,39 +58,20 @@ def get_fqdn(the_input):
 
 
 def extract_fqdn_or_domain(the_input, is_fqdn=None, is_domain=None):
-    is_url = None
-    domain_from_mail = None
-    is_email = validate_email(the_input)
-    if is_email:
-        # Take the entire part after the @ of the email
-        domain_from_mail = the_input.split('@')[1]
+    # Check if it is a Microsoft ATP Safe Link
+    if re.match(ATP_LINK_REG, the_input):
+        the_input = atp_get_original_url(the_input)
+    # Check if it is a Proofpoint URL
+    elif the_input.find(PROOFPOINT_PREFIXES[0]) == 0 or the_input.find(PROOFPOINT_PREFIXES[1]) == 0 or \
+            the_input.find(PROOFPOINT_PREFIXES[2]) == 0:
+        the_input = proofpoint_get_original_url(the_input)
+    # Not ATP Link or Proofpoint URL so just unescape
     else:
-        # Test if URL, else proceed as domain
-
-        # Check if it is a Microsoft ATP Safe Link
-        if re.match(ATP_LINK_REG, the_input):
-            the_input = atp_get_original_url(the_input)
-        # Check if it is a Proofpoint URL
-        elif the_input.find(PROOFPOINT_PREFIXES[0]) == 0 or the_input.find(PROOFPOINT_PREFIXES[1]) == 0 or \
-                the_input.find(PROOFPOINT_PREFIXES[2]) == 0:
-            the_input = proofpoint_get_original_url(the_input)
-        # Not ATP Link or Proofpoint URL so just unescape
-        else:
-            the_input = unescape_url(the_input)
-        if is_fqdn:
-            is_url = indicator = get_fqdn(the_input)
-        if is_domain:
-            is_url = indicator = get_fld(the_input, fail_silently=True)
-
-    # Extract domain itself from a potential subdomain
-    if domain_from_mail or not is_url:
-        full_domain = 'https://'
-        full_domain += domain_from_mail if domain_from_mail else the_input
-        # get_tld fails to parse subdomain since it is not URL, over-ride error by injecting protocol.
-        if is_fqdn:
-            indicator = get_fqdn(full_domain)
-        if is_domain:
-            indicator = get_fld(full_domain, fail_silently=True)
+        the_input = unescape_url(the_input)
+    if is_fqdn:
+        indicator = get_fqdn(the_input)
+    if is_domain:
+        indicator = get_fld(the_input, fail_silently=True, fix_protocol=True)
 
     # convert None to empty string if needed
     if (indicator and get_tld(indicator, fail_silently=True, fix_protocol=True) == 'zip') or not indicator:
@@ -132,5 +104,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ == "__builtin__" or __name__ == "builtins" or True:
     main()
