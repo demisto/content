@@ -61,7 +61,7 @@ class Client(BaseClient):
         except (ValueError, TypeError):
             return_error('Please provide an integer value for "Request Timeout"')
 
-        self.risk_rule = argToList(risk_rule) if risk_rule else None
+        self.risk_rule = argToList(risk_rule)
         self.current_risk_rule = None
         self.fusion_file_path = fusion_file_path if fusion_file_path != "" else None
         self.api_token = self.headers['X-RFToken'] = api_token
@@ -196,7 +196,7 @@ class Client(BaseClient):
         Returns:
             None in success, Error otherwise
         """
-        if self.risk_rule is not None:
+        if self.risk_rule:
             if 'connectApi' not in self.services:
                 return_error("You entered a risk rule but the 'connectApi' service is not chosen. "
                              "Add the 'connectApi' service to the list or remove the risk rule.")
