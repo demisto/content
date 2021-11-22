@@ -1,5 +1,6 @@
 import pytest
 import demistomock as demisto
+import CommonServerPython
 
 CONTEXT_WITH_CAMPAIGN = {
     "EmailCampaign": {
@@ -33,9 +34,10 @@ def test_get_campaign_context(mocker, context_mock, expected_results):
 
 
 CONTEXT_COPY_CASES = [
-    (CONTEXT_WITH_CAMPAIGN.get("EmailCampaign"), {'incidents': 1, 'command': 'Set', 'arguments':
-        {'key': 'EmailCampaign', 'value': {'field_example': 'field_example', 'field_example_2': 'field_example'},
-         'append': False}}),
+    (CONTEXT_WITH_CAMPAIGN.get("EmailCampaign"),
+     {'incidents': 1, 'command': 'Set', 'arguments':
+         {'key': 'EmailCampaign', 'value': {'field_example': 'field_example', 'field_example_2': 'field_example'},
+          'append': False}}),
 ]
 
 
@@ -72,3 +74,21 @@ def test_copy_campaign_data_to_incident_fails(mocker, context_mock):
     copy_campaign_data_to_incident(1, context_mock, False)
     debugging_mock.assert_called_once_with(f'Error - {EMAIL_CAMPAIGN_KEY} was not found. Ignoring incident id: 1')
     execute_mock.assert_not_called()
+
+
+def test_args(mocker):
+    """
+        Given:  possible arguments from client
+        When:   running the automation
+        Then:   Validate we get result.
+    """
+    import SetPhishingCampaignDetails
+    mocker.patch.object(SetPhishingCampaignDetails, 'get_campaign_context')
+    mocker.patch.object(SetPhishingCampaignDetails, 'copy_campaign_data_to_incident',
+                        return_value={'example': 'example'})
+    mocker.patch.object(demisto, 'args', return_value={'id': '1', 'append': 'false'})
+    res_mocker = mocker.patch.object(demisto, 'results')
+
+    SetPhishingCampaignDetails.main()
+    res_mocker.assert_called()
+

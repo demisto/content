@@ -36,7 +36,9 @@ def copy_campaign_data_to_incident(incident_id: int, campaign_data: dict, append
 def main():
     try:
         args = demisto.args()
-        incident_id = args['id']
+        incident_id = args.get('id')
+        if not incident_id:
+            raise Exception("Please provide incident id.")
         append = argToBoolean(args['append'])
 
         campaign_data = get_campaign_context()
@@ -47,6 +49,7 @@ def main():
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to set campaign details.\nError:\n{str(e)}')
+
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
