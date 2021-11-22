@@ -1783,7 +1783,7 @@ def create_clickable_url(url):
 
 
 class JsonTransformer:
-    def __init__(self, flatten=False, keys_lst=None, is_nested=False, func=None):
+    def __init__(self, flatten=False, keys=None, is_nested=False, func=None):
         """
         Constructor for JsonTransformer
 
