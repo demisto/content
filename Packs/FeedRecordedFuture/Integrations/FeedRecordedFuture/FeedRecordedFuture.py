@@ -61,7 +61,7 @@ class Client(BaseClient):
         except (ValueError, TypeError):
             return_error('Please provide an integer value for "Request Timeout"')
 
-        self.risk_rule = argToList(risk_rule) if risk_rule != "" else None
+        self.risk_rule = argToList(risk_rule) if risk_rule else None
         self.current_risk_rule = None
         self.fusion_file_path = fusion_file_path if fusion_file_path != "" else None
         self.api_token = self.headers['X-RFToken'] = api_token
