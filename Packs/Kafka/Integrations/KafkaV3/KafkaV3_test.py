@@ -41,7 +41,7 @@ def test_failing_simple_test_module(mocker):
     mocker.patch.object(KProducer, '__init__', return_value=None)
 
     def raise_kafka_error():
-        raise KafkaError('Some connection error')
+        raise Exception('Some connection error')
 
     mocker.patch.object(KConsumer, 'list_topics', return_value=ClusterMetadata(), side_effect=raise_kafka_error)
     mocker.patch.object(KProducer, 'list_topics', return_value=ClusterMetadata(), side_effect=raise_kafka_error)
@@ -337,6 +337,12 @@ def test_consume_message(mocker, demisto_args, topic_partitions):
     assert result.outputs['Name'] == 'some-topic'
 
     assign_mock.assert_called_once_with(topic_partitions)
+    called_topic_partitions = assign_mock.call_args.args[0]
+    for partition_num in range(len(topic_partitions)):
+        assert called_topic_partitions[partition_num].topic == topic_partitions[partition_num].topic
+        assert called_topic_partitions[partition_num].partition == topic_partitions[partition_num].partition
+        assert called_topic_partitions[partition_num].offset == topic_partitions[partition_num].offset
+
     poll_mock.assert_called_once()
     close_mock.assert_called_once()
 
@@ -376,6 +382,12 @@ def test_consume_message_without_partition(mocker, demisto_args, topic_partition
     assert result.outputs['Name'] == 'some-topic'
 
     assign_mock.assert_called_once_with(topic_partitions)
+    called_topic_partitions = assign_mock.call_args.args[0]
+    for partition_num in range(len(topic_partitions)):
+        assert called_topic_partitions[partition_num].topic == topic_partitions[partition_num].topic
+        assert called_topic_partitions[partition_num].partition == topic_partitions[partition_num].partition
+        assert called_topic_partitions[partition_num].offset == topic_partitions[partition_num].offset
+
     poll_mock.assert_called_once()
     close_mock.assert_called_once()
 
@@ -401,6 +413,11 @@ def test_nothing_in_consume_message(mocker):
     assert result == 'No message was consumed.'
 
     assign_mock.assert_called_once_with(topic_partitions)
+    called_topic_partitions = assign_mock.call_args.args[0]
+    for partition_num in range(len(topic_partitions)):
+        assert called_topic_partitions[partition_num].topic == topic_partitions[partition_num].topic
+        assert called_topic_partitions[partition_num].partition == topic_partitions[partition_num].partition
+        assert called_topic_partitions[partition_num].offset == topic_partitions[partition_num].offset
     poll_mock.assert_called_once()
     close_mock.assert_called_once()
 
@@ -416,7 +433,7 @@ def test_produce_message(mocker, partition_number):
         - Assert the relevant results are returned when everything works.
     """
     mocker.patch.object(KProducer, '__init__', return_value=None)
-    demisto_args = {'topic': 'some-topic', 'partition': partition_number, 'value': 'some-value'}
+    demisto_args = {'topic': 'some-topic', 'partitioning_key': partition_number, 'value': 'some-value'}
     produce_mock = mocker.patch.object(KProducer, 'produce')
 
     def run_delivery_report():
@@ -445,7 +462,7 @@ def test_produce_error_message(mocker):
         - Assert the relevant exception is raised.
     """
     mocker.patch.object(KProducer, '__init__', return_value=None)
-    demisto_args = {'topic': 'some-topic', 'partition': 1, 'value': 'some-value'}
+    demisto_args = {'topic': 'some-topic', 'partitioning_key': 1, 'value': 'some-value'}
     produce_mock = mocker.patch.object(KProducer, 'produce')
     kafka_error = KafkaError(1)
 
@@ -492,7 +509,7 @@ def test_produce_error_message(mocker):
                          '"Message": "polled_msg"}'}],
             {'last_fetched_offsets': {'0': 1}, 'last_topic': 'some-topic'},
             [MessageMock(message='polled_msg', partition=0, offset=1,
-                         timestamp=(TIMESTAMP_NOT_AVAILABLE, 0))], [(0, 2)], id="second run"),
+                         timestamp=(TIMESTAMP_NOT_AVAILABLE, 0))], [(0, 2), (0, 2)], id="second run"),
         pytest.param(
             {'topic': 'some-topic',
              'partition': '0',
@@ -512,7 +529,7 @@ def test_produce_error_message(mocker):
             [MessageMock(message='polled_msg', partition=0, offset=1,
                          timestamp=(TIMESTAMP_NOT_AVAILABLE, 0)),
              MessageMock(message='polled_msg', partition=0, offset=2,
-                         timestamp=(TIMESTAMP_NOT_AVAILABLE, 0))], [(0, 2)], id="1 partition 2/2 messages"),
+                         timestamp=(TIMESTAMP_NOT_AVAILABLE, 0))], [(0, 2), (0, 2)], id="1 partition 2/2 messages"),
         pytest.param(
             {'topic': 'some-topic',
              'partition': '0',
@@ -533,7 +550,7 @@ def test_produce_error_message(mocker):
                          timestamp=(TIMESTAMP_NOT_AVAILABLE, 0)),
              MessageMock(message='polled_msg', partition=0, offset=2,
                          timestamp=(TIMESTAMP_NOT_AVAILABLE, 0)),
-             None], [(0, 2)], id="1 partition 2/3 messages"),
+             None], [(0, 2), (0, 2)], id="1 partition 2/3 messages"),
         pytest.param({  # second run changed topic
             'topic': 'some-topic',
             'partition': '0',
@@ -556,7 +573,8 @@ def test_produce_error_message(mocker):
             'max_fetch': '1'
         }, {'last_fetched_offsets': {'0': 0}, 'last_topic': 'some-topic'},
             {'some-topic': [0]}, [TopicPartition(topic='some-topic', partition=0, offset=1)],
-            [], {'last_fetched_offsets': {'0': 0}, 'last_topic': 'some-topic'}, [None], [(0, 2)], id="No message"),
+            [], {'last_fetched_offsets': {'0': 0}, 'last_topic': 'some-topic'}, [None], [(0, 2), (0, 2)],
+            id="No message"),
         pytest.param(
             {'topic': 'some-topic',
              'partition': '0,1',
@@ -578,7 +596,7 @@ def test_produce_error_message(mocker):
                          timestamp=(TIMESTAMP_NOT_AVAILABLE, 0)),
              MessageMock(message='polled_msg', partition=1, offset=0,
                          timestamp=(TIMESTAMP_NOT_AVAILABLE, 0))],
-            [(0, 3), (0, 3)], id="2 partitions, 1 message each"),
+            [(0, 3), (0, 3), (0, 3)], id="2 partitions, 1 message each"),
         pytest.param(
             {'topic': 'some-topic',
              'partition': '0',
@@ -591,7 +609,7 @@ def test_produce_error_message(mocker):
             {'last_fetched_offsets': {'0': 3}, 'last_topic': 'some-topic'},
             [MessageMock(message='polled_msg', partition=0, offset=3,
                          timestamp=(TIMESTAMP_NOT_AVAILABLE, 0))],
-            [(0, 5), (0, 5)], id="first run later offset"),
+            [(0, 5), (0, 5), (0, 5)], id="first run later offset"),
         pytest.param(
             {'topic': 'some-topic',
              'partition': '0',
@@ -606,7 +624,19 @@ def test_produce_error_message(mocker):
             {'last_fetched_offsets': {'0': 0}, 'last_topic': 'some-topic'},
             [MessageMock(message='polled_msg', partition=0, offset=0,
                          timestamp=(TIMESTAMP_CREATE_TIME, 1636972268435))],
-            [(0, 2)], id="first run add timestamp")])
+            [(0, 2)], id="first run add timestamp"),
+        pytest.param(
+            {'topic': 'some-topic',
+             'partition': '0',
+             'first_fetch': '0',
+             'max_fetch': '1'}, {}, {'some-topic': [0]}, [TopicPartition(topic='some-topic', partition=0, offset=1)],
+            [{'name': 'Kafka some-topic partition:0 offset:1',
+              'details': 'polled_msg',
+              'rawJSON': '{"Topic": "some-topic", "Partition": 0, "Offset": 1, '
+                         '"Message": "polled_msg"}'}],
+            {'last_fetched_offsets': {'0': 1}, 'last_topic': 'some-topic'},
+            [MessageMock(message='polled_msg', partition=0, offset=1,
+                         timestamp=(TIMESTAMP_NOT_AVAILABLE, 0))], [(0, 2), (0, 2), (0, 2)], id="first run, offset is 0")])
 def test_fetch_incidents(mocker, demisto_params, last_run, cluster_tree, topic_partitions,
                          incidents, next_run, polled_msgs, offsets):
     """
@@ -637,6 +667,12 @@ def test_fetch_incidents(mocker, demisto_params, last_run, cluster_tree, topic_p
     fetch_incidents(KAFKA, demisto_params)
 
     assign_mock.assert_called_once_with(topic_partitions)
+    called_topic_partitions = assign_mock.call_args.args[0]
+    for partition_num in range(len(topic_partitions)):
+        assert called_topic_partitions[partition_num].topic == topic_partitions[partition_num].topic
+        assert called_topic_partitions[partition_num].partition == topic_partitions[partition_num].partition
+        assert called_topic_partitions[partition_num].offset == topic_partitions[partition_num].offset
+
     assert len(polled_msgs) == poll_mock.call_count
     close_mock.assert_called_once()
     incidents_mock.assert_called_once_with(incidents)

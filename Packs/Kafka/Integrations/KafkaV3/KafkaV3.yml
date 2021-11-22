@@ -141,7 +141,7 @@ script:
     - default: false
       description: Partition (number)
       isArray: false
-      name: partition
+      name: partitioning_key
       required: false
       secret: false
     deprecated: false

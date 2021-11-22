@@ -1,12 +1,14 @@
 import demistomock as demisto
 from CommonServerPython import *
 from confluent_kafka import Consumer, TopicPartition, Producer, KafkaException, TIMESTAMP_NOT_AVAILABLE, Message
-from typing import Tuple, Union, Dict
+from typing import Tuple, Union, Dict, Callable
+from io import StringIO
 
 ''' IMPORTS '''
 import tempfile
 import requests
 import traceback
+import logging
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -34,8 +36,12 @@ class KafkaCommunicator:
     client_cert_path: Optional[str] = None
     client_key_path: Optional[str] = None
 
+    SESSION_TIMEOUT: int = 10000
+    REQUESTS_TIMEOUT: float = 10.0
+    POLL_TIMEOUT: float = 1.0
+
     def __init__(self, brokers: str, offset: str = 'earliest', group_id: str = 'xsoar_group',
-                 message_max_bytes: Optional[int] = None, enable_auto_commit: bool = False,
+                 message_max_bytes: Optional[int] = None,
                  ca_cert: Optional[str] = None,
                  client_cert: Optional[str] = None, client_cert_key: Optional[str] = None,
                  ssl_password: Optional[str] = None, trust_any_cert: bool = False):
@@ -46,7 +52,6 @@ class KafkaCommunicator:
             offset: The offset to start consuming from.
             group_id: The consumer group id.
             message_max_bytes: The maximum bytes a message can have.
-            enable_auto_commit: Wether to auto commit offsets after consuming messages.
             ca_cert: The contents of the CA certificate.
             client_cert: The contents of the client certificate.
             client_cert_key: The contents of the client certificate's key
@@ -59,10 +64,10 @@ class KafkaCommunicator:
                                    f'{SUPPORTED_GENERAL_OFFSETS}')
 
         self.conf_consumer = {'bootstrap.servers': brokers,
-                              'session.timeout.ms': 10000,
+                              'session.timeout.ms': self.SESSION_TIMEOUT,
                               'auto.offset.reset': offset,
                               'group.id': group_id,
-                              'enable.auto.commit': enable_auto_commit}
+                              'enable.auto.commit': False}
 
         if trust_any_cert:
             self.conf_consumer.update({'ssl.endpoint.identification.algorithm': 'none',
@@ -97,12 +102,11 @@ class KafkaCommunicator:
             self.conf_producer.update({'ssl.key.password': ssl_password})
             self.conf_consumer.update({'ssl.key.password': ssl_password})
 
-    def update_conf_for_fetch(self, message_max_bytes: Optional[int] = None, enable_auto_commit: bool = False):
+    def update_conf_for_fetch(self, message_max_bytes: Optional[int] = None):
         """Update consumer configurations for fetching messages
 
         Args:
             message_max_bytes: The maximum message bytes to fetch
-            enable_auto_commit: Auto commit the offset when consuming messages.
 
         Raise DemistoException if consumer was not initialized before.
         """
@@ -110,7 +114,6 @@ class KafkaCommunicator:
             if message_max_bytes:
                 self.conf_consumer.update({'message.max.bytes': int(message_max_bytes)})
 
-            self.conf_consumer.update({'enable.auto.commit': enable_auto_commit})
         else:
             raise DemistoException('Kafka consumer was not yet initialized.')
 
@@ -149,7 +152,7 @@ class KafkaCommunicator:
             client = KConsumer(self.conf_consumer)
         else:
             client = KProducer(self.conf_producer)
-        cluster_metadata = client.list_topics(timeout=3.0)
+        cluster_metadata = client.list_topics()  # client.list_topics(timeout=self.REQUESTS_TIMEOUT)
         return cluster_metadata.topics
 
     def get_partition_offsets(self, topic: str, partition: int) -> Tuple[int, int]:
@@ -159,7 +162,7 @@ class KafkaCommunicator:
         """
         kafka_consumer = KConsumer(self.conf_consumer)
         partition = TopicPartition(topic=topic, partition=partition)
-        return kafka_consumer.get_watermark_offsets(partition=partition, timeout=3.0)
+        return kafka_consumer.get_watermark_offsets(partition=partition, timeout=self.REQUESTS_TIMEOUT)
 
     def produce(self, topic: str, value: str, partition: Optional[int]) -> None:
         """Produce in to kafka
@@ -192,7 +195,7 @@ class KafkaCommunicator:
         """
         kafka_consumer = KConsumer(self.conf_consumer)
         kafka_consumer.assign(self.get_topic_partitions(topic, partition, offset, True))
-        polled_msg = kafka_consumer.poll(1.0)
+        polled_msg = kafka_consumer.poll(self.POLL_TIMEOUT)
         demisto.debug(f"polled {polled_msg}")
         kafka_consumer.close()
         return polled_msg
@@ -263,6 +266,44 @@ class KafkaCommunicator:
 ''' HELPER FUNCTIONS '''
 
 
+def capture_logs(func: Callable):
+    """Capture confluent kafka logs wrapper"""
+    def wrapper(*args, **kwargs):
+        logging.raiseExceptions = False
+        log_stream = StringIO()
+        log_handler = logging.StreamHandler(stream=log_stream)
+        log_handler.setFormatter(logging.Formatter(logging.BASIC_FORMAT))
+        logger = logging.getLogger()
+        logger.addHandler(log_handler)
+        logger.setLevel(logging.DEBUG)
+        debug_log = ''
+
+        try:
+            result = func(*args, **kwargs)
+        except Exception as e:
+            stacktrace = traceback.format_exc()
+            if log_stream:
+                debug_log = f'{str(e)}\n\nDebug logs:\n\n{log_stream.getvalue()}'
+            elif stacktrace:
+                debug_log = f'{str(e)}\n\nFull stacktrace:\n\n{stacktrace}'
+            else:
+                debug_log = f'{str(e)}'
+        finally:
+            if log_stream:
+                try:
+                    logging.getLogger().removeHandler(log_handler)
+                    log_stream.close()
+                except Exception as e:
+                    debug_log = f'Kafka v3: unexpected exception when trying to remove log handler:{e}\n\n' \
+                                f'Other Exceptions:{debug_log}'
+                finally:
+                    if debug_log:
+                        raise DemistoException(debug_log)
+
+        return result
+    return wrapper
+
+
 def create_incident(message: Message, topic: str) -> dict:
     """Create incident from kafka's message.
 
@@ -286,7 +327,7 @@ def create_incident(message: Message, topic: str) -> dict:
     }
 
     timestamp = message.timestamp()  # returns a list of [timestamp_type, timestamp]
-    if timestamp and timestamp[0] != TIMESTAMP_NOT_AVAILABLE:
+    if timestamp and len(timestamp) == 2 and timestamp[0] != TIMESTAMP_NOT_AVAILABLE:
         incident['occurred'] = timestamp_to_datestring(timestamp[1])
 
     demisto.debug(f"Creating incident from topic {topic} partition {message.partition()} offset {message.offset()}")
@@ -296,6 +337,7 @@ def create_incident(message: Message, topic: str) -> dict:
 ''' COMMANDS '''
 
 
+@capture_logs
 def command_test_module(kafka: KafkaCommunicator, demisto_params: dict) -> str:
     """Test getting available topics using consumer and producer configurations.
     Validate the fetch parameters.
@@ -372,7 +414,7 @@ def produce_message(kafka: KafkaCommunicator, demisto_args: dict) -> None:
     """
     topic = demisto_args.get('topic')
     value = demisto_args.get('value')
-    partition_arg = demisto_args.get('partition')
+    partition_arg = demisto_args.get('partitioning_key')
 
     partition_str = str(partition_arg)
     if partition_str.isdigit():
@@ -515,13 +557,14 @@ def fetch_incidents(kafka: KafkaCommunicator, demisto_params: dict) -> None:
     max_messages = int(handle_empty(demisto_params.get('max_fetch', 50), 50))
     last_fetched_offsets = demisto.getLastRun().get('last_fetched_offsets', {})
     last_topic = demisto.getLastRun().get('last_topic', '')
+
     demisto.debug(f"Starting fetch incidents with:\n last_topic: {last_topic}, "
-                  f"last_fetched_offsets: {last_fetched_offsets}"
-                  f"topic: {topic}, partitions: {partitions}, offset: {offset}, message_max_bytes: {message_max_bytes},"
-                  f" max_messages: {max_messages}\n")
+                  f"last_fetched_offsets: {last_fetched_offsets}, "
+                  f"topic: {topic}, partitions: {partitions}, offset: {offset, type(offset)}, "
+                  f"message_max_bytes: {message_max_bytes}, max_messages: {max_messages}\n")
     incidents = []
 
-    kafka.update_conf_for_fetch(enable_auto_commit=True, message_max_bytes=message_max_bytes)
+    kafka.update_conf_for_fetch(message_max_bytes=message_max_bytes)
 
     kafka_consumer = KConsumer(kafka.conf_consumer)
     check_params(kafka, topic, partitions, offset, True)
@@ -529,9 +572,12 @@ def fetch_incidents(kafka: KafkaCommunicator, demisto_params: dict) -> None:
     if topic != last_topic:
         last_fetched_offsets = {}
 
+    if offset.isdigit():
+        offset = int(offset)
+
     topic_partitions = []
     for partition in partitions:
-        specific_offset = handle_empty(last_fetched_offsets.get(partition), offset)
+        specific_offset = last_fetched_offsets.get(partition, offset) if partition in last_fetched_offsets else offset
         demisto.debug(f'Getting last offset for partition {partition}, specific offset is {specific_offset}\n')
         if isinstance(specific_offset, int):
             specific_offset += 1
@@ -540,17 +586,22 @@ def fetch_incidents(kafka: KafkaCommunicator, demisto_params: dict) -> None:
                 continue
         topic_partitions += kafka.get_topic_partitions(topic=topic, partition=int(partition),
                                                        offset=specific_offset)
-    demisto.debug(f"The topic partitions assigned to the consumer are: {topic_partitions}")
-    if topic_partitions:
-        kafka_consumer.assign(topic_partitions)
+    try:
+        if topic_partitions:
+            kafka_consumer.assign(topic_partitions)
 
-    for _ in range(max_messages):
-        polled_msg = kafka_consumer.poll(1.0)
-        if polled_msg:
-            incidents.append(create_incident(message=polled_msg, topic=topic))
-            last_fetched_offsets[f'{polled_msg.partition()}'] = polled_msg.offset()
+        demisto.debug(f"The topic partitions assigned to the consumer are: {topic_partitions}")
 
-    kafka_consumer.close()
+        for _ in range(max_messages):
+            polled_msg = kafka_consumer.poll(kafka.POLL_TIMEOUT)
+            if polled_msg:
+                demisto.debug("Received a message from Kafka.")
+                incidents.append(create_incident(message=polled_msg, topic=topic))
+                last_fetched_offsets[f'{polled_msg.partition()}'] = polled_msg.offset()
+
+    finally:
+        if kafka_consumer:
+            kafka_consumer.close()
 
     last_run = {'last_fetched_offsets': last_fetched_offsets, 'last_topic': topic}
     demisto.debug(f"Fetching finished, setting last run to {last_run}")
@@ -562,7 +613,7 @@ def fetch_incidents(kafka: KafkaCommunicator, demisto_params: dict) -> None:
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
-def main():
+def main():  # pragma: no cover
     demisto_command = demisto.command()
     demisto_params = demisto.params()
     demisto_args = demisto.args()
@@ -582,7 +633,7 @@ def main():
         ssl_password = demisto_params.get('additional_password', None)
         kafka_kwargs = {'brokers': brokers, 'ca_cert': ca_cert, 'client_cert': client_cert,
                         'client_cert_key': client_cert_key, 'ssl_password': ssl_password, 'offset': offset,
-                        'trust_any_cert': False}
+                        'trust_any_cert': trust_any_cert}
     else:
         kafka_kwargs = {'brokers': brokers, 'offset': offset, 'trust_any_cert': trust_any_cert}
 
@@ -606,11 +657,10 @@ def main():
 
     except Exception as e:
         debug_log = 'Debug logs:'
-        error_message = str(e)
         stacktrace = traceback.format_exc()
         if stacktrace:
             debug_log += f'\nFull stacktrace:\n\n{stacktrace}'
-        return_error(f'{error_message}\n\n{debug_log}')
+        return_error(f'{str(e)}\n\n{debug_log}')
 
     finally:
         if os.path.isfile('ca.cert'):
@@ -621,5 +671,5 @@ def main():
             os.remove(os.path.abspath('client_key.key'))
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
     main()
