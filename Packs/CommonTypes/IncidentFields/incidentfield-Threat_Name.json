@@ -4,6 +4,7 @@
     "cliName": "threatname",
     "closeForm": false,
     "content": true,
+    "description": "Define the threat name such as malware/exploit/phishing/etc",
     "editForm": true,
     "group": 0,
     "hidden": false,

@@ -11,6 +11,7 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
+    "description": "Sates for the Crowdstrike Falcon Active Directory site name",
     "id": "incident_falconhostsitename",
     "isReadOnly": false,
     "locked": false,

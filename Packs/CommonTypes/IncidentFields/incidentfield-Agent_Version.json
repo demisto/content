@@ -5,6 +5,7 @@
     "closeForm": false,
     "content": true,
     "editForm": true,
+    "description": "Reporting Agent/Sensor Version",
     "group": 0,
     "hidden": false,
     "id": "incident_agentversion",

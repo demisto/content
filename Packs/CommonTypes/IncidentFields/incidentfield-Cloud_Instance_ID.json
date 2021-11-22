@@ -4,6 +4,7 @@
     "cliName": "cloudinstanceid",
     "closeForm": false,
     "content": true,
+    "description": "Cloud Instance ID",
     "editForm": true,
     "group": 0,
     "hidden": false,

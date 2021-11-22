@@ -7,6 +7,7 @@
     "cliName": "microsoftdefenderdetectionmechanism",
     "closeForm": false,
     "content": true,
+    "description": "Microsoft Security Center Detection Mechanism",
     "editForm": true,
     "group": 0,
     "hidden": false,

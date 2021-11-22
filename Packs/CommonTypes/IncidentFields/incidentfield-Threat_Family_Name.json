@@ -4,6 +4,7 @@
     "cliName": "threatfamilyname",
     "closeForm": false,
     "content": true,
+    "description": "Threat Family Name Associated with an Attacking Vector",
     "editForm": true,
     "group": 0,
     "hidden": false,

@@ -5,6 +5,7 @@
     "cliName": "deviceou",
     "closeForm": false,
     "content": true,
+    "description": "Device's OU path in Active Directory",
     "editForm": true,
     "group": 0,
     "hidden": false,
