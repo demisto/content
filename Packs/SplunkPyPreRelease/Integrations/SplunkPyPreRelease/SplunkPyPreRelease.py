@@ -13,7 +13,7 @@ import splunklib.results as results
 import urllib2
 import urllib3
 from StringIO import StringIO
-from splunklib.binding import HTTPError, namespace
+from splunklib.binding import HTTPError, namespace, AuthenticationError
 
 from CommonServerPython import *
 
@@ -2104,6 +2104,13 @@ def splunk_parse_raw_command():
 
 
 def test_module(service):
+
+    try:
+        # validate connection
+        service.info()
+    except AuthenticationError:
+        return_error('Authentication error, please validate your credentials.')
+
     params = demisto.params()
     if params.get('isFetch'):
         t = datetime.utcnow() - timedelta(hours=1)
