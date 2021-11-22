@@ -17,7 +17,7 @@ script: >
       counter -= 1
   return_results(res)
 type: python
-subtype: python2
+subtype: python3
 tags: []
 enabled: true
 args:
