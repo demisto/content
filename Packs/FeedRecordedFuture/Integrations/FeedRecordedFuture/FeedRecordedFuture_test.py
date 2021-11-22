@@ -257,30 +257,26 @@ def test_risk_rule_validations(mocker, indicator_type, risk_rules, service, expe
       3. 'connectApi' service, and a comma separated list of a valid risk rule (the first) and an invalid risk rule
         (the second).
 
-     - Mock response of the return_error function, and the 'FeedRecordedFuture.Client.get_risk_rules' command.
+     - Mock response of the 'FeedRecordedFuture.return_error function', and the
+      'FeedRecordedFuture.Client.get_risk_rules' command.
 
     When:
-     - Running the 'test_module' command.
+     - Running the 'Client.run_parameters_validations'.
 
     Then:
      - Verify the right error message appears for each case:
-     1. Error message for setting 'connectApi' service
+     1. Error message for setting 'connectApi' service.
      2. Error message for invalid risk rule.
      3. Error message for invalid risk rule on the second risk rule in the risk rules list.
     """
-    import CommonServerPython
-
-    mocker.patch.object(CommonServerPython, 'return_error', side_effect=mock_return_error)
-    from FeedRecordedFuture import test_module, Client
+    mocker.patch('FeedRecordedFuture.return_error', side_effect=mock_return_error)
+    from FeedRecordedFuture import Client
     client = Client(indicator_type=indicator_type, api_token='123', risk_rule=risk_rules, services=service)
-    args = {
-        'indicator_type': indicator_type,
-        'limit': 1
-    }
+
     mocker.patch('FeedRecordedFuture.Client.get_risk_rules',
                  return_value={'data': {'results': [{'name': 'dhsAis'}, {'name': 'phishingUrl'}]}})
     with pytest.raises(Exception) as e:
-        test_module(client, args)
+        Client.run_parameters_validations(client)
     assert expected_err_msg in str(e.value)
 
 
