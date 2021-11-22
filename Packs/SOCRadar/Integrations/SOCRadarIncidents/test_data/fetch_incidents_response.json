@@ -1,91 +1,107 @@
-[
-  {
-    "alarm_assets": ["Some Asset"],
-    "alarm_mitigation": "Make sure you carefully review the root cause and source whether it's an adversary, customer, employee or 3rd party supplier.",
-    "alarm_notification_texts": {
-      "alarm_html": "Mock HTML",
-      "alarm_mitigation_plan": "Make sure you carefully review the root cause and source whether it's an adversary, customer, employee or 3rd party supplier.",
-      "alarm_text": "Mock Alarm Text",
-      "alarm_title": "Company Related Information is Publicly Available on Github",
-      "id": 229075,
-      "insert_date": "2021-06-25T00:00:00.000000"
+{
+  "data": [
+    {
+      "alarm_assets": [
+        "Some Asset"
+      ],
+      "alarm_mitigation": "Make sure you carefully review the root cause and source whether it's an adversary, customer, employee or 3rd party supplier.",
+      "alarm_notification_texts": {
+        "alarm_html": "Mock HTML",
+        "alarm_mitigation_plan": "Make sure you carefully review the root cause and source whether it's an adversary, customer, employee or 3rd party supplier.",
+        "alarm_text": "Mock Alarm Text",
+        "alarm_title": "Company Related Information is Publicly Available on Github",
+        "id": 229075,
+        "insert_date": "2021-06-25T00:00:00.000000"
+      },
+      "alarm_related_assets": [
+        {
+          "key": "keywords",
+          "value": [
+            "1234567"
+          ]
+        }
+      ],
+      "alarm_related_entities": [
+        {
+          "key": "url",
+          "value": [
+            "http://some.url"
+          ]
+        }
+      ],
+      "alarm_risk_level": "HIGH",
+      "alarm_type_details": {
+        "alarm_default_risk_level": "HIGH",
+        "alarm_group_name": "Surface Web",
+        "alarm_main_type": "Company",
+        "alarm_sub_type": "Suspicious Content On Github"
+      },
+      "extra_info": {
+        "unmasked_raw_data_links": [],
+        "uploaded_img_list": []
+      },
+      "id": 229194,
+      "insert_date": "2021-06-25T00:00:00.000000",
+      "is_false_positive": false,
+      "is_notified": false,
+      "is_resolved": true,
+      "last_notification_date": null,
+      "resolved_by": "Some Resolution Source",
+      "resolved_date": "2021-06-25T00:00:00.000000",
+      "update_date": "2021-06-25T00:00:00.000000"
     },
-    "alarm_related_assets": [
-      {
-        "key": "keywords",
-        "value": ["1234567"]
-      }
-    ],
-    "alarm_related_entities": [
-      {
-        "key": "url",
-        "value": ["http://some.url"
-        ]
-      }
-    ],
-    "alarm_risk_level": "HIGH",
-    "alarm_type_details": {
-      "alarm_default_risk_level": "HIGH",
-      "alarm_group_name": "Surface Web",
-      "alarm_main_type": "Company",
-      "alarm_sub_type": "Suspicious Content On Github"
-    },
-    "extra_info": {
-      "unmasked_raw_data_links": [],
-      "uploaded_img_list": []
-    },
-    "id": 229194,
-    "insert_date": "2021-06-25T00:00:00.000000",
-    "is_false_positive": false,
-    "is_notified": false,
-    "is_resolved": true,
-    "last_notification_date": null,
-    "resolved_by": "Some Resolution Source",
-    "resolved_date": "2021-06-25T00:00:00.000000",
-    "update_date": "2021-06-25T00:00:00.000000"
-  },
-  {
-    "alarm_assets": ["Some Asset"],
-    "alarm_mitigation": "Make sure you carefully review the root cause and source whether it's an adversary, customer, employee or 3rd party supplier.",
-    "alarm_notification_texts": {
-      "alarm_html": "Mock Alarm HTML",
-      "alarm_mitigation_plan": "Make sure you carefully review the root cause and source whether it's an adversary, customer, employee or 3rd party supplier.",
-      "alarm_text": "Mock Alarm Text",
-      "alarm_title": "Company Related Information is Publicly Available on Github",
-      "id": 229074,
-      "insert_date": "2021-06-25T00:00:00.000000"
-    },
-    "alarm_related_assets": [
-      {
-        "key": "keywords",
-        "value": ["1234567"]
-      }
-    ],
-    "alarm_related_entities": [
-      {
-        "key": "url",
-        "value": ["http://some.url"]
-      }
-    ],
-    "alarm_risk_level": "HIGH",
-    "alarm_type_details": {
-      "alarm_default_risk_level": "HIGH",
-      "alarm_group_name": "Surface Web",
-      "alarm_main_type": "Company",
-      "alarm_sub_type": "Suspicious Content On Github"
-    },
-    "extra_info": {
-      "unmasked_raw_data_links": [],
-      "uploaded_img_list": []
-    },
-    "id": 229193,
-    "insert_date": "2021-06-25T00:00:00.000000",
-    "is_false_positive": false,
-    "is_notified": false,
-    "is_resolved": true,
-    "last_notification_date": null,
-    "resolved_by": "Some Resolution Source",
-    "resolved_date": "2021-07-01T00:00:00.000000",
-    "update_date": "2021-06-25T00:00:00.000000"
-  }
-]
+    {
+      "alarm_assets": [
+        "Some Asset"
+      ],
+      "alarm_mitigation": "Make sure you carefully review the root cause and source whether it's an adversary, customer, employee or 3rd party supplier.",
+      "alarm_notification_texts": {
+        "alarm_html": "Mock Alarm HTML",
+        "alarm_mitigation_plan": "Make sure you carefully review the root cause and source whether it's an adversary, customer, employee or 3rd party supplier.",
+        "alarm_text": "Mock Alarm Text",
+        "alarm_title": "Company Related Information is Publicly Available on Github",
+        "id": 229074,
+        "insert_date": "2021-06-25T00:00:00.000000"
+      },
+      "alarm_related_assets": [
+        {
+          "key": "keywords",
+          "value": [
+            "1234567"
+          ]
+        }
+      ],
+      "alarm_related_entities": [
+        {
+          "key": "url",
+          "value": [
+            "http://some.url"
+          ]
+        }
+      ],
+      "alarm_risk_level": "HIGH",
+      "alarm_type_details": {
+        "alarm_default_risk_level": "HIGH",
+        "alarm_group_name": "Surface Web",
+        "alarm_main_type": "Company",
+        "alarm_sub_type": "Suspicious Content On Github"
+      },
+      "extra_info": {
+        "unmasked_raw_data_links": [],
+        "uploaded_img_list": []
+      },
+      "id": 229193,
+      "insert_date": "2021-06-25T00:00:00.000000",
+      "is_false_positive": false,
+      "is_notified": false,
+      "is_resolved": true,
+      "last_notification_date": null,
+      "resolved_by": "Some Resolution Source",
+      "resolved_date": "2021-07-01T00:00:00.000000",
+      "update_date": "2021-06-25T00:00:00.000000"
+    }
+  ],
+  "is_success": true,
+  "message": "Success",
+  "response_code": 200
+}
