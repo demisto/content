@@ -1,0 +1,238 @@
+id: FeedSOCRadarThreatFeed-Test
+name: FeedSOCRadarThreatFeed-Test
+version: -1
+fromversion: 6.0.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 'cbf7757a-00c0-4a26-9b56-fb2613f08047'
+    type: start
+    task:
+      id: 'cbf7757a-00c0-4a26-9b56-fb2613f08047'
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 50}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: 1
+    taskid: 'c352ab4a-662d-4437-89ed-8214e55e9a58'
+    type: regular
+    task:
+      id: 'c352ab4a-662d-4437-89ed-8214e55e9a58'
+      version: -1
+      name: DeleteContext
+      description: ''
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '2':
+    id: 2
+    taskid: '49e79c5d-ad36-4748-b67c-b9eed8da7dfe'
+    type: regular
+    task:
+      id: '49e79c5d-ad36-4748-b67c-b9eed8da7dfe'
+      version: -1
+      name: socradar-get-indicators
+      description: ''
+      script: '|||socradar-get-indicators'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '3':
+    id: '3'
+    taskid: '73d0ef72-dad9-4198-8977-0aec14212c34'
+    type: condition
+    task:
+      id: '73d0ef72-dad9-4198-8977-0aec14212c34'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFeed.Indicators[0].Indicator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFeed.Indicators[0].Indicator Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFeed.Indicators[0].Feed Maintainer Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFeed.Indicators[0].First Seen Date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFeed.Indicators[0].Last Seen Date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFeed.Indicators[0].Seen Count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFeed.Indicators[0].rawJSON
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFeed.Indicators[0].Geo Location.ASN
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFeed.Indicators[0].Geo Location.AsnCode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFeed.Indicators[0].Geo Location.AsnName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFeed.Indicators[0].Geo Location.Cidr
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFeed.Indicators[0].Geo Location.CityName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFeed.Indicators[0].Geo Location.CountryCode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFeed.Indicators[0].Geo Location.CountryName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFeed.Indicators[0].Geo Location.Latitude
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFeed.Indicators[0].Geo Location.Longitude
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFeed.Indicators[0].Geo Location.RegionName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFeed.Indicators[0].Geo Location.Timezone
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFeed.Indicators[0].Geo Location.ZipCode
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '4':
+    id: 4
+    taskid: '569902a1-4fae-4833-9406-9e7f5f9090a6'
+    type: regular
+    task:
+      id: '569902a1-4fae-4833-9406-9e7f5f9090a6'
+      version: -1
+      name: socradar-reset-fetch-indicators
+      description: ''
+      script: '|||socradar-reset-fetch-indicators'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '5':
+    id: '5'
+    taskid: 'd6a4a1ca-a950-481a-9b46-661cb238dfef'
+    type: title
+    task:
+      id: 'd6a4a1ca-a950-481a-9b46-661cb238dfef'
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width":
+  380, "x": 50, "y": 50}}}'
+inputs: []
+outputs: []
+description: ''
