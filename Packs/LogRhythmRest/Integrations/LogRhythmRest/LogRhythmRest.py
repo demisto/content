@@ -1211,7 +1211,7 @@ def http_request(method, url_suffix, data=None, headers=HEADERS):
     try:
         res = requests.request(
             method,
-            BASE_URL + '/' + url_suffix,
+            urljoin(BASE_URL, url_suffix),
             headers=headers,
             verify=INSECURE,
             data=data
@@ -1220,7 +1220,8 @@ def http_request(method, url_suffix, data=None, headers=HEADERS):
         return_error(e)
 
     # Handle error responses gracefully
-    if 'application/json' not in res.headers.get('Content-Type', []):
+    if 'application/json' not in res.headers.get('Content-Type', []) and res.status_code != 204:
+        LOG(f'response status code is: {res.status_code}')
         return_error('invalid url or port: ' + BASE_URL)
 
     if res.status_code == 404:
@@ -1229,11 +1230,13 @@ def http_request(method, url_suffix, data=None, headers=HEADERS):
         else:
             return_error('No data returned')
 
-    if res.status_code not in {200, 201, 202, 207}:
+    if res.status_code not in {200, 201, 202, 207, 204}:
         return_error(
             'Error in API call to {}, status code: {}, reason: {}'.format(BASE_URL + '/' + url_suffix, res.status_code,
                                                                           res.json()['message']))
-
+    if res.status_code == 204:
+        return_outputs(readable_output="No data found")
+        sys.exit(0)
     return res.json()
 
 
@@ -1451,8 +1454,12 @@ def get_hosts(data_args):
     id = data_args.get('host-id')
     if id:
         res = get_host_by_id(id)
+        if not res:
+            return_outputs(readable_output=f"No host was found with ID {id}")
     else:
         res = http_request('GET', 'lr-admin-api/hosts?count=' + data_args['count'])
+        if not res:
+            return_outputs(readable_output=f"No hosts were found")
 
     res = fix_location_value(res)
     res = update_hosts_keys(res)
@@ -1701,6 +1708,8 @@ def get_alarm_events(data_args):
     show_log_message = data_args.get('get-log-message') == 'True'
 
     res = http_request('GET', 'lr-drilldown-cache-api/drilldown/' + id)
+    if not res:
+        return_outputs(readable_output=f"No events were found for alarm with ID {id}")
     res = res['Data']['DrillDownResults']['RuleBlocks']
 
     events = []
