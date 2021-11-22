@@ -1,7 +1,6 @@
 from copy import deepcopy
 import io
 import pytest
-from mock import mock
 import demistomock as demisto
 from CommonServerPython import *
 from datetime import datetime, timedelta
@@ -1063,7 +1062,8 @@ def test_remove_old_incident_ids():
     occurred_start_time = now - timedelta(minutes=60)
     last_run_fetched_ids = {
         "incident_in_fetch_time_range": (now - timedelta(minutes=30)).strftime(SPLUNK_TIME_FORMAT),
-        "incident_not_in_fetch_time_range": (now - timedelta(minutes=70)).strftime(SPLUNK_TIME_FORMAT),  # incident did not fetched on the current fetch
+        "incident_not_in_fetch_time_range": (now - timedelta(minutes=70)).strftime(SPLUNK_TIME_FORMAT),
+        # incident did not fetched on the current fetch
         "incident_in_fetch_start_time_range": occurred_start_time.strftime(SPLUNK_TIME_FORMAT)
     }
     now_splunk_format = now.strftime(SPLUNK_TIME_FORMAT)
@@ -1370,7 +1370,8 @@ def test_increase_batch_size(mocker):
 
     batch_size = 2
     service, mock_dt = mock_fetch_notables(mocker, demisto_params={'fetchQuery': "something", 'enabled_enrichments': [],
-                               'occurrence_look_behind': 120, "batch_size": batch_size})
+                                                                   'occurrence_look_behind': 120,
+                                                                   "batch_size": batch_size})
     mocker.patch('splunklib.results.ResultsReader', return_value=response_two_events)
     splunk.fetch_notables(service)
     next_run = demisto.setLastRun.call_args[0][0]
@@ -1391,7 +1392,7 @@ def test_delayed_index_events(mocker):
     response_two_events = util_load_json("test_data/response_two_events.json")
 
     service, mock_dt = mock_fetch_notables(mocker, demisto_params={'fetchQuery': "something", 'enabled_enrichments': [],
-                               'occurrence_look_behind': 120})
+                                                                   'occurrence_look_behind': 120})
     next_run = {'found_incidents_ids': {'4c9309cc618c50369f63a93587906393': '2020-08-24T13:30:17'},
                 'batch_size': 200, 'time': '2020-08-24T13:30:17'}
     mocker.patch('demistomock.getLastRun', return_value=next_run)
@@ -1477,8 +1478,7 @@ def test_get_fetch_start_time(mocker):
     utc_now = datetime(2020, 8, 24, 14, 00, 12, 703618)
     expected_start_time = datetime(2020, 8, 24, 12, 00, 12, 703618)
     mock_dt.utcnow.return_value = utc_now
-    dem_params = {'fetchQuery': "something", 'enabled_enrichments': [],
-                               'occurrence_look_behind': 120}
+    dem_params = {'fetchQuery': "something", 'enabled_enrichments': [], 'occurrence_look_behind': 120}
     service = mocker.patch('splunklib.client.connect', return_value=None)
     last_run_time = '2020-08-24T13:45:17'
     occurred_look_behind = 120
