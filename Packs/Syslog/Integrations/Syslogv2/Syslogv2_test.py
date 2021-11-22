@@ -3,7 +3,7 @@ import json
 
 import pytest
 from Syslogv2 import parse_rfc_3164_format, parse_rfc_5424_format, fetch_samples, \
-    create_incident_from_syslog_message, Callable, SyslogMessageExtract, Optional, update_integration_context_samples, \
+    create_incident_from_syslog_message, Callable, SyslogMessageExtract, update_integration_context_samples, \
     log_message_passes_filter, perform_long_running_loop
 
 import demistomock as demisto
@@ -114,7 +114,7 @@ def test_fetch_samples(samples: list[dict], mocker):
     assert mock_incident.call_args[0][0] == samples
 
 
-@pytest.mark.parametrize('extracted_msg, incident_type, expected',
+@pytest.mark.parametrize('extracted_msg, expected',
                          [(SyslogMessageExtract(
                              app_name='evntslog',
                              facility='local4',
@@ -133,7 +133,6 @@ def test_fetch_samples(samples: list[dict], mocker):
                              timestamp='2003-10-11T22:14:15.003Z',
                              version=1,
                              occurred='2003-10-11T22:14:15.003Z'),
-                           None,
                            {'name': 'Syslog from [mymachine.example.com][2003-10-11T22:14:15.003Z]',
                             'occurred': '2003-10-11T22:14:15.003Z',
                             'rawJSON': '{"app_name": "evntslog", "facility": "local4", "host_name": '
@@ -142,37 +141,7 @@ def test_fetch_samples(samples: list[dict], mocker):
                                        '{"exampleSDID@32473": {"eventID": "1011", "eventSource": '
                                        '"Application", "iut": "3"}}, "severity": "critical", "timestamp": '
                                        '"2003-10-11T22:14:15.003Z", "version": 1, '
-                                       '"occurred": "2003-10-11T22:14:15.003Z"}',
-                            'type': None}),
-                             (SyslogMessageExtract(
-                                 app_name='evntslog',
-                                 facility='local4',
-                                 host_name='mymachine.example.com',
-                                 msg='BOMAn application event log entry',
-                                 msg_id='ID47',
-                                 process_id=123,
-                                 sd={
-                                     'exampleSDID@32473': {
-                                         'eventID': '1011',
-                                         'eventSource': 'Application',
-                                         'iut': '3'
-                                     }
-                                 },
-                                 severity='critical',
-                                 timestamp='2003-10-11T22:14:15.003Z',
-                                 version=1,
-                                 occurred='2003-10-11T22:14:15.003Z'),
-                              'Syslog Alert RFC-5424',
-                              {'name': 'Syslog from [mymachine.example.com][2003-10-11T22:14:15.003Z]',
-                               'occurred': '2003-10-11T22:14:15.003Z',
-                               'rawJSON': '{"app_name": "evntslog", "facility": "local4", "host_name": '
-                                          '"mymachine.example.com", "msg": "BOMAn application event log '
-                                          'entry", "msg_id": "ID47", "process_id": 123, "sd": '
-                                          '{"exampleSDID@32473": {"eventID": "1011", "eventSource": '
-                                          '"Application", "iut": "3"}}, "severity": "critical", "timestamp": '
-                                          '"2003-10-11T22:14:15.003Z", "version": 1, '
-                                          '"occurred": "2003-10-11T22:14:15.003Z"}',
-                               'type': 'Syslog Alert RFC-5424'}),
+                                       '"occurred": "2003-10-11T22:14:15.003Z"}'}),
                              (SyslogMessageExtract(
                                  app_name=None,
                                  facility='log_alert',
@@ -189,7 +158,6 @@ def test_fetch_samples(samples: list[dict], mocker):
                                  timestamp='2021-11-09T17:07:20',
                                  version=None,
                                  occurred=None),
-                              None,
                               {'name': 'Syslog from [mymachine.example.com][2021-11-09T17:07:20]',
                                'occurred': None,
                                'rawJSON': '{"app_name": null, "facility": "log_alert", "host_name": '
@@ -201,40 +169,8 @@ def test_fetch_samples(samples: list[dict], mocker):
                                           '/Contents/MacOS/com.apple.preferences.softwareupdate.remoteservice)", '
                                           '"msg_id": null, "process_id": null, "sd": {}, "severity": '
                                           '"warning", "timestamp": "2021-11-09T17:07:20", "version": null, '
-                                          '"occurred": null}',
-                               'type': None}),
-                             (SyslogMessageExtract(
-                                 app_name=None,
-                                 facility='log_alert',
-                                 host_name='mymachine.example.com',
-                                 msg="softwareupdated[288]: Removing client SUUpdateServiceClient pid=90550, "
-                                     "uid=375597002, installAuth=NO rights=(), transactions=0 ("
-                                     "/System/Library/PreferencePanes/SoftwareUpdate.prefPane/Contents/XPCServices"
-                                     "/com.apple.preferences.softwareupdate.remoteservice.xpc/Contents/MacOS/com"
-                                     ".apple.preferences.softwareupdate.remoteservice)",
-                                 msg_id=None,
-                                 process_id=None,
-                                 sd={},
-                                 severity='warning',
-                                 timestamp='2021-11-09T17:07:20',
-                                 version=None,
-                                 occurred=None),
-                              'Syslog Alert RFC-3164',
-                              {'name': 'Syslog from [mymachine.example.com][2021-11-09T17:07:20]',
-                               'occurred': None,
-                               'rawJSON': '{"app_name": null, "facility": "log_alert", "host_name": '
-                                          '"mymachine.example.com", "msg": "softwareupdated[288]: Removing '
-                                          'client SUUpdateServiceClient pid=90550, uid=375597002, '
-                                          'installAuth=NO rights=(), transactions=0 '
-                                          '(/System/Library/PreferencePanes/SoftwareUpdate.prefPane/Contents'
-                                          '/XPCServices/com.apple.preferences.softwareupdate.remoteservice.xpc'
-                                          '/Contents/MacOS/com.apple.preferences.softwareupdate.remoteservice)", '
-                                          '"msg_id": null, "process_id": null, "sd": {}, "severity": '
-                                          '"warning", "timestamp": "2021-11-09T17:07:20", "version": null, '
-                                          '"occurred": null}',
-                               'type': 'Syslog Alert RFC-3164'})])
-def test_create_incident_from_syslog_message(extracted_msg: SyslogMessageExtract, incident_type: Optional[str],
-                                             expected: dict):
+                                          '"occurred": null}'})])
+def test_create_incident_from_syslog_message(extracted_msg: SyslogMessageExtract, expected: dict):
     """
     Given:
     - Extracted Syslog message
@@ -244,14 +180,12 @@ def test_create_incident_from_syslog_message(extracted_msg: SyslogMessageExtract
     - Converting extracted message to incident
     Cases:
         Case 1: RFC 5424 message without incident type specified.
-        Case 2: RFC 5424 message with incident type specified.
-        Case 3: RFC 3164 message without incident type specified.
-        Case 4: RFC 3164 message with incident type specified.
+        Case 2: RFC 3164 message without incident type specified.
 
     Then:
     - Ensure expected incident is created
     """
-    assert create_incident_from_syslog_message(extracted_msg, incident_type) == expected
+    assert create_incident_from_syslog_message(extracted_msg) == expected
 
 
 INCIDENT_EXAMPLE = {'name': 'Syslog from [mymachine.example.com][2021-11-09T17:07:20]',
@@ -372,7 +306,6 @@ def test_perform_long_running_loop(mocker, test_data, test_name):
     - log_format: The Syslog format the messages will be sent with. one of the dictionary keys of the
                   constant `FORMAT_TO_PARSER_FUNCTION` variable.
     - message_regex: Message regex to match if exists.
-    - incident_type: Incident type.
     When:
     - Performing one loop in the long-running execution
     Cases:
@@ -387,10 +320,9 @@ def test_perform_long_running_loop(mocker, test_data, test_name):
     - Ensure incident is created if needed for each case, and exists in context data.
     """
     import Syslogv2
-    tmp_format, tmp_reg, temp_incident = Syslogv2.LOG_FORMAT, Syslogv2.MESSAGE_REGEX, Syslogv2.INCIDENT_TYPE
+    tmp_format, tmp_reg = Syslogv2.LOG_FORMAT, Syslogv2.MESSAGE_REGEX
     test_name_data = test_data[test_name]
-    Syslogv2.LOG_FORMAT, Syslogv2.MESSAGE_REGEX, Syslogv2.INCIDENT_TYPE = test_data['log_format'], test_name_data.get(
-        'message_regex'), test_name_data.get('incident_type')
+    Syslogv2.LOG_FORMAT, Syslogv2.MESSAGE_REGEX = test_data['log_format'], test_name_data.get('message_regex')
     set_integration_context({})
     incident_mock = mocker.patch.object(demisto, 'createIncidents')
     if test_name_data.get('expected'):
@@ -401,33 +333,32 @@ def test_perform_long_running_loop(mocker, test_data, test_name):
         perform_long_running_loop(test_data['log_message'].encode())
         assert not demisto.createIncidents.called
         assert not get_integration_context()
-    Syslogv2.LOG_FORMAT, Syslogv2.MESSAGE_REGEX, Syslogv2.INCIDENT_TYPE = tmp_format, tmp_reg, temp_incident
+    Syslogv2.LOG_FORMAT, Syslogv2.MESSAGE_REGEX = tmp_format, tmp_reg
 
 
-@pytest.mark.parametrize('log_format, message_regex, incident_type, certificate, private_key',
-                         [('RFC3164', None, None, None, None),
-                          ('RFC3164', 'a', None, None, None),
-                          ('RFC3164', None, 'Syslog Alert', None, None),
-                          ('RFC3164', 'reg', 'Syslog Alert', None, None),
-                          ('RFC5424', None, None, None, None),
-                          ('RFC5424', 'a', None, None, None),
-                          ('RFC5424', None, 'Syslog Alert', None, None),
-                          ('RFC5424', 'reg', 'Syslog Alert', None, None),
-                          ('RFC3164', None, None, 'a', 'b'),
-                          ('RFC3164', 'reg', None, 'a', 'b'),
-                          ('RFC3164', None, 'Syslog Alert', 'a', 'b'),
-                          ('RFC3164', 'reg', 'Syslog alert', 'a', 'b'),
-                          ('RFC5424', None, None, 'a', 'b'),
-                          ('RFC5424', 'reg', None, 'a', 'b'),
-                          ('RFC5424', None, 'Syslog Alert', 'a', 'b'),
-                          ('RFC5424', 'reg', 'Syslog alert', 'a', 'b')
+@pytest.mark.parametrize('log_format, message_regex, certificate, private_key',
+                         [('RFC3164', None, None, None),
+                          ('RFC3164', 'a', None, None),
+                          ('RFC3164', None, None, None),
+                          ('RFC3164', 'reg', None, None),
+                          ('RFC5424', None, None, None),
+                          ('RFC5424', 'a', None, None),
+                          ('RFC5424', None, None, None),
+                          ('RFC5424', 'reg', None, None),
+                          ('RFC3164', None, 'a', 'b'),
+                          ('RFC3164', 'reg', 'a', 'b'),
+                          ('RFC3164', None, 'a', 'b'),
+                          ('RFC3164', 'reg', 'a', 'b'),
+                          ('RFC5424', None, 'a', 'b'),
+                          ('RFC5424', 'reg', 'a', 'b'),
+                          ('RFC5424', None, 'a', 'b'),
+                          ('RFC5424', 'reg', 'a', 'b')
                           ])
-def test_prepare_globals_and_create_server(log_format, message_regex, incident_type, certificate, private_key):
+def test_prepare_globals_and_create_server(log_format, message_regex, certificate, private_key):
     """
     Given:
     - log_format: The log format.
     - message_regex: The message regex to match.
-    - incident_type: Incident type.
     - certificate: Certificate.
     - private_key: Private key
     When:
@@ -438,11 +369,9 @@ def test_prepare_globals_and_create_server(log_format, message_regex, incident_t
     """
     from Syslogv2 import prepare_globals_and_create_server, StreamServer
     import Syslogv2
-    server: StreamServer = prepare_globals_and_create_server(33333, log_format, message_regex, incident_type,
-                                                             certificate, private_key)
+    server: StreamServer = prepare_globals_and_create_server(33333, log_format, message_regex, certificate, private_key)
     assert Syslogv2.LOG_FORMAT == log_format
     assert Syslogv2.MESSAGE_REGEX == message_regex
-    assert Syslogv2.INCIDENT_TYPE == incident_type
     if certificate and private_key:
         assert 'keyfile' in server.ssl_args and 'certfile' in server.ssl_args
     else:

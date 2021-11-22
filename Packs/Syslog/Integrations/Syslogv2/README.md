@@ -1,6 +1,8 @@
 A Syslog server provides the ability to automatically open incidents from Syslog clients. This integration provides the ability to filter which logs are to be converted to incidents (or choose to convert all logs).
 This integration was integrated and tested with RFC3164 and RFC5424 formats of Syslog.
-
+## Notes
+- **Important**: Make sure not to use an engine group for this integration, as it can cause the integration to run on a different engine, meaning the Syslog server might send logs to an IP at which Syslog is not configured.
+- The integration **does not support** encrypted private keys.
 ## Configure Syslog v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

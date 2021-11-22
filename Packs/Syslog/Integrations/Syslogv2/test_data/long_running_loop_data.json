@@ -7,8 +7,7 @@
     {
      "name": "Syslog from [HostName][2021-11-09T17:07:20]",
      "occurred": null,
-     "rawJSON": "{\"app_name\": null, \"facility\": \"log_alert\", \"host_name\": \"HostName\", \"msg\": \"softwareupdated[288]: Removing client SUUpdateServiceClient pid=90550, uid=375597002, installAuth=NO rights=(), transactions=0 (/System/Library/PreferencePanes/SoftwareUpdate.prefPane/Contents/XPCServices/com.apple.preferences.softwareupdate.remoteservice.xpc/Contents/MacOS/com.apple.preferences.softwareupdate.remoteservice)\", \"msg_id\": null, \"process_id\": null, \"sd\": {}, \"severity\": \"warning\", \"timestamp\": \"2021-11-09T17:07:20\", \"version\": null, \"occurred\": null}",
-     "type": null
+     "rawJSON": "{\"app_name\": null, \"facility\": \"log_alert\", \"host_name\": \"HostName\", \"msg\": \"softwareupdated[288]: Removing client SUUpdateServiceClient pid=90550, uid=375597002, installAuth=NO rights=(), transactions=0 (/System/Library/PreferencePanes/SoftwareUpdate.prefPane/Contents/XPCServices/com.apple.preferences.softwareupdate.remoteservice.xpc/Contents/MacOS/com.apple.preferences.softwareupdate.remoteservice)\", \"msg_id\": null, \"process_id\": null, \"sd\": {}, \"severity\": \"warning\", \"timestamp\": \"2021-11-09T17:07:20\", \"version\": null, \"occurred\": null}"
     }
    ]
   },
@@ -18,8 +17,7 @@
     {
      "name": "Syslog from [HostName][2021-11-09T17:07:20]",
      "occurred": null,
-     "rawJSON": "{\"app_name\": null, \"facility\": \"log_alert\", \"host_name\": \"HostName\", \"msg\": \"softwareupdated[288]: Removing client SUUpdateServiceClient pid=90550, uid=375597002, installAuth=NO rights=(), transactions=0 (/System/Library/PreferencePanes/SoftwareUpdate.prefPane/Contents/XPCServices/com.apple.preferences.softwareupdate.remoteservice.xpc/Contents/MacOS/com.apple.preferences.softwareupdate.remoteservice)\", \"msg_id\": null, \"process_id\": null, \"sd\": {}, \"severity\": \"warning\", \"timestamp\": \"2021-11-09T17:07:20\", \"version\": null, \"occurred\": null}",
-     "type": null
+     "rawJSON": "{\"app_name\": null, \"facility\": \"log_alert\", \"host_name\": \"HostName\", \"msg\": \"softwareupdated[288]: Removing client SUUpdateServiceClient pid=90550, uid=375597002, installAuth=NO rights=(), transactions=0 (/System/Library/PreferencePanes/SoftwareUpdate.prefPane/Contents/XPCServices/com.apple.preferences.softwareupdate.remoteservice.xpc/Contents/MacOS/com.apple.preferences.softwareupdate.remoteservice)\", \"msg_id\": null, \"process_id\": null, \"sd\": {}, \"severity\": \"warning\", \"timestamp\": \"2021-11-09T17:07:20\", \"version\": null, \"occurred\": null}"
     }
    ]
   },
@@ -35,8 +33,7 @@
     {
      "name": "Syslog from [mymachine.example.com][2003-10-11T22:14:15.003Z]",
      "occurred": "2003-10-11T22:14:15.003Z",
-     "rawJSON": "{\"app_name\": \"evntslog\", \"facility\": \"local4\", \"host_name\": \"mymachine.example.com\", \"msg\": \"BOMAn application event log entry\", \"msg_id\": \"ID47\", \"process_id\": null, \"sd\": {\"exampleSDID@32473\": {\"iut\": \"3\", \"eventSource\": \"Application\", \"eventID\": \"1011\"}}, \"severity\": \"notice\", \"timestamp\": \"2003-10-11T22:14:15.003Z\", \"version\": 1, \"occurred\": \"2003-10-11T22:14:15.003Z\"}",
-     "type": null
+     "rawJSON": "{\"app_name\": \"evntslog\", \"facility\": \"local4\", \"host_name\": \"mymachine.example.com\", \"msg\": \"BOMAn application event log entry\", \"msg_id\": \"ID47\", \"process_id\": null, \"sd\": {\"exampleSDID@32473\": {\"iut\": \"3\", \"eventSource\": \"Application\", \"eventID\": \"1011\"}}, \"severity\": \"notice\", \"timestamp\": \"2003-10-11T22:14:15.003Z\", \"version\": 1, \"occurred\": \"2003-10-11T22:14:15.003Z\"}"
     }
    ]
   },
@@ -46,8 +43,7 @@
     {
      "name": "Syslog from [mymachine.example.com][2003-10-11T22:14:15.003Z]",
      "occurred": "2003-10-11T22:14:15.003Z",
-     "rawJSON": "{\"app_name\": \"evntslog\", \"facility\": \"local4\", \"host_name\": \"mymachine.example.com\", \"msg\": \"BOMAn application event log entry\", \"msg_id\": \"ID47\", \"process_id\": null, \"sd\": {\"exampleSDID@32473\": {\"iut\": \"3\", \"eventSource\": \"Application\", \"eventID\": \"1011\"}}, \"severity\": \"notice\", \"timestamp\": \"2003-10-11T22:14:15.003Z\", \"version\": 1, \"occurred\": \"2003-10-11T22:14:15.003Z\"}",
-     "type": null
+     "rawJSON": "{\"app_name\": \"evntslog\", \"facility\": \"local4\", \"host_name\": \"mymachine.example.com\", \"msg\": \"BOMAn application event log entry\", \"msg_id\": \"ID47\", \"process_id\": null, \"sd\": {\"exampleSDID@32473\": {\"iut\": \"3\", \"eventSource\": \"Application\", \"eventID\": \"1011\"}}, \"severity\": \"notice\", \"timestamp\": \"2003-10-11T22:14:15.003Z\", \"version\": 1, \"occurred\": \"2003-10-11T22:14:15.003Z\"}"
     }
    ]
   },

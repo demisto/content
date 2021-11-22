@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from tempfile import NamedTemporaryFile
-from typing import Callable, get_type_hints
+from typing import Callable
 
 import syslogmp
 from gevent.server import StreamServer
@@ -17,7 +17,6 @@ MAX_SAMPLES = 10
 BUF_SIZE = 1024
 LOG_FORMAT: str = ''
 MESSAGE_REGEX: Optional[str] = None
-INCIDENT_TYPE: Optional[str] = None
 MAX_PORT: int = 65535
 
 
@@ -121,12 +120,11 @@ def fetch_samples() -> None:
     demisto.incidents(get_integration_context().get('samples'))
 
 
-def create_incident_from_syslog_message(extracted_message: SyslogMessageExtract, incident_type: Optional[str]) -> dict:
+def create_incident_from_syslog_message(extracted_message: SyslogMessageExtract) -> dict:
     """
     Creates incident from the extracted Syslog message.
     Args:
         extracted_message (SyslogMessageExtract): Syslog message extraction details.
-        incident_type (Optional[str]): Incident type.
 
     Returns:
         (dict): Incident.
@@ -134,8 +132,7 @@ def create_incident_from_syslog_message(extracted_message: SyslogMessageExtract,
     return {
         'name': f'Syslog from [{extracted_message.host_name}][{extracted_message.timestamp}]',
         'rawJSON': json.dumps(vars(extracted_message)),
-        'occurred': extracted_message.occurred,
-        'type': incident_type
+        'occurred': extracted_message.occurred
     }
 
 
@@ -192,7 +189,7 @@ def perform_long_running_loop(socket_data: bytes):
     """
     extracted_message: SyslogMessageExtract = FORMAT_TO_PARSER_FUNCTION[LOG_FORMAT](socket_data)
     if log_message_passes_filter(extracted_message, MESSAGE_REGEX):
-        incident: dict = create_incident_from_syslog_message(extracted_message, INCIDENT_TYPE)
+        incident: dict = create_incident_from_syslog_message(extracted_message)
         update_integration_context_samples(incident)
         demisto.createIncidents([incident])
 
@@ -226,26 +223,23 @@ def perform_long_running_execution(sock: Any, address: tuple) -> None:
 
 
 def prepare_globals_and_create_server(port: int, log_format: str, message_regex: Optional[str],
-                                      incident_type: Optional[str], certificate: Optional[str],
-                                      private_key: Optional[str]) -> StreamServer:
+                                      certificate: Optional[str], private_key: Optional[str]) -> StreamServer:
     """
-    Prepares global environments of LOG_FORMAT, MESSAGE_REGEX, INCIDENT_TYPE and creates the server to listen
+    Prepares global environments of LOG_FORMAT, MESSAGE_REGEX and creates the server to listen
     to Syslog messages.
     Args:
         port (int): Port
         log_format (str): Log format of messages to be received from Syslog, either RFC-3164 or RFC-5424.
         message_regex (Optional[str]): Regex. Will create incident only if Syslog message matches this regex.
-        incident_type (Optional[str]): Incident type.
         certificate (Optional[str]): Certificate. For SSL connection.
         private_key (Optional[str]): Private key. For SSL connection.
 
     Returns:
         (StreamServer): Server to listen to Syslog messages.
     """
-    global LOG_FORMAT, MESSAGE_REGEX, INCIDENT_TYPE
+    global LOG_FORMAT, MESSAGE_REGEX
     LOG_FORMAT = log_format
     MESSAGE_REGEX = message_regex
-    INCIDENT_TYPE = incident_type
     if certificate and private_key:
         certificate_file = NamedTemporaryFile(delete=False)
         certificate_path = certificate_file.name
@@ -266,15 +260,9 @@ def prepare_globals_and_create_server(port: int, log_format: str, message_regex:
 
 
 def get_mapping_fields() -> Dict[str, str]:
-    def transfer_type_to_str_type(type_: Any):
-        type_as_str: str = str(type_)
-        # remove typing from the type name
-        type_as_str = type_as_str.replace('typing.', '')
-        # For classes other than typing, eg <class 'str'>
-        type_as_str = type_as_str.replace('<class ', '').replace("'", '').replace('>', '')
-        return type_as_str
-
-    return {k: transfer_type_to_str_type(v) for k, v in get_type_hints(SyslogMessageExtract).items()}
+    return {'app_name': 'Application Name', 'facility': 'Facility', 'host_name': 'Host Name', 'msg': 'Message',
+            'msg_id': 'Message ID', 'process_id': 'Process ID', 'sd': 'Structured Data', 'severity': 'Severity',
+            'timestamp': 'Timestamp', 'version': 'Syslog Version', 'occurred': 'Occurred Time'}
 
 
 ''' MAIN FUNCTION '''
@@ -284,7 +272,6 @@ def main() -> None:
     params = demisto.params()
     command = demisto.command()
     message_regex: Optional[str] = params.get('message_regex')
-    incident_type: Optional[str] = params.get('incident_type')
     certificate: Optional[str] = params.get('certificate')
     private_key: Optional[str] = params.get('private_key')
 
@@ -304,7 +291,7 @@ def main() -> None:
     try:
         if command == 'test-module':
             try:
-                prepare_globals_and_create_server(port, log_format, message_regex, incident_type, certificate,
+                prepare_globals_and_create_server(port, log_format, message_regex, certificate,
                                                   private_key)
             except OSError as e:
                 if 'Address already in use' in str(e):
@@ -313,10 +300,13 @@ def main() -> None:
                 raise e
             return_results('ok')
         elif command == 'fetch-incidents':
+            # The integration fetches incidents in the long-running-execution command. Fetch incidents is called
+            # only when "Pull From Instance" is clicked in create new classifier section in Cortex XSOAR.
+            # The fetch incidents returns samples of incidents generated by the long-running-execution.
             fetch_samples()
         elif command == 'long-running-execution':
-            server: StreamServer = prepare_globals_and_create_server(port, log_format, message_regex, incident_type,
-                                                                     certificate, private_key)
+            server: StreamServer = prepare_globals_and_create_server(port, log_format, message_regex, certificate,
+                                                                     private_key)
             server.serve_forever()
         elif command == 'get-mapping-fields':
             return_results(get_mapping_fields())
