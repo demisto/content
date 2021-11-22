@@ -101,9 +101,9 @@ def parse_rfc_6587_format(log_message: bytes) -> Optional[SyslogMessageExtract]:
         (SyslogMessageExtract): Extraction data class
     """
     log_message = log_message.decode('utf-8')
-    if not log_message or not log_message.isdigit():
-        return None
     split_msg: List[str] = log_message.split(' ')
+    if not log_message or not log_message[0].isdigit() or not len(split_msg) > 1:
+        return None
     try:
         log_message = ' '.join(split_msg[1:])
         encoded_msg = log_message.encode()
@@ -119,7 +119,8 @@ def parse_rfc_6587_format(log_message: bytes) -> Optional[SyslogMessageExtract]:
     return None
 
 
-format_funcs: List[Callable[[bytes], Optional[SyslogMessageExtract]]] = [parse_rfc_3164_format, parse_rfc_5424_format]
+format_funcs: List[Callable[[bytes], Optional[SyslogMessageExtract]]] = [parse_rfc_3164_format, parse_rfc_5424_format,
+                                                                         parse_rfc_6587_format]
 
 
 def test_module() -> str:
@@ -287,9 +288,19 @@ def prepare_globals_and_create_server(port: int, message_regex: Optional[str], c
 
 
 def get_mapping_fields() -> Dict[str, str]:
-    return {'app_name': 'Application Name', 'facility': 'Facility', 'host_name': 'Host Name', 'msg': 'Message',
-            'msg_id': 'Message ID', 'process_id': 'Process ID', 'sd': 'Structured Data', 'severity': 'Severity',
-            'timestamp': 'Timestamp', 'version': 'Syslog Version', 'occurred': 'Occurred Time'}
+    return {
+        'app_name': 'Application Name',
+        'facility': 'Facility',
+        'host_name': 'Host Name',
+        'msg': 'Message',
+        'msg_id': 'Message ID',
+        'process_id': 'Process ID',
+        'sd': 'Structured Data',
+        'severity': 'Severity',
+        'timestamp': 'Timestamp',
+        'version': 'Syslog Version',
+        'occurred': 'Occurred Time'
+    }
 
 
 ''' MAIN FUNCTION '''

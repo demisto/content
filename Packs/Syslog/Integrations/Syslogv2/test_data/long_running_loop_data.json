@@ -48,5 +48,30 @@
   "regex_doesnt_pass_filter": {
    "message_regex": "Host"
   }
+ },
+  "rfc-6587": {
+  "log_message": "172 <165>1 2003-10-11T22:14:15.003Z mymachine.example.com evntslog - ID47 [exampleSDID@32473 iut=\"3\" eventSource=\"Application\" eventID=\"1011\"] BOMAn application event log entry",
+  "no_regex": {
+   "expected": [
+    {
+     "name": "Syslog from [mymachine.example.com][2003-10-11T22:14:15.003Z]",
+     "occurred": "2003-10-11T22:14:15.003Z",
+     "rawJSON": "{\"app_name\": \"evntslog\", \"facility\": \"local4\", \"host_name\": \"mymachine.example.com\", \"msg\": \"BOMAn application event log entry\", \"msg_id\": \"ID47\", \"process_id\": null, \"sd\": {\"exampleSDID@32473\": {\"iut\": \"3\", \"eventSource\": \"Application\", \"eventID\": \"1011\"}}, \"severity\": \"notice\", \"timestamp\": \"2003-10-11T22:14:15.003Z\", \"version\": 1, \"occurred\": \"2003-10-11T22:14:15.003Z\"}"
+    }
+   ]
+  },
+  "regex_pass_filter": {
+   "message_regex": "BOMAn",
+   "expected": [
+    {
+     "name": "Syslog from [mymachine.example.com][2003-10-11T22:14:15.003Z]",
+     "occurred": "2003-10-11T22:14:15.003Z",
+     "rawJSON": "{\"app_name\": \"evntslog\", \"facility\": \"local4\", \"host_name\": \"mymachine.example.com\", \"msg\": \"BOMAn application event log entry\", \"msg_id\": \"ID47\", \"process_id\": null, \"sd\": {\"exampleSDID@32473\": {\"iut\": \"3\", \"eventSource\": \"Application\", \"eventID\": \"1011\"}}, \"severity\": \"notice\", \"timestamp\": \"2003-10-11T22:14:15.003Z\", \"version\": 1, \"occurred\": \"2003-10-11T22:14:15.003Z\"}"
+    }
+   ]
+  },
+  "regex_doesnt_pass_filter": {
+   "message_regex": "Host"
+  }
  }
 }

@@ -4,7 +4,7 @@ import json
 import pytest
 from Syslogv2 import parse_rfc_3164_format, parse_rfc_5424_format, fetch_samples, \
     create_incident_from_syslog_message, Callable, SyslogMessageExtract, update_integration_context_samples, \
-    log_message_passes_filter, perform_long_running_loop
+    log_message_passes_filter, perform_long_running_loop, parse_rfc_6587_format
 
 import demistomock as demisto
 from CommonServerPython import DemistoException, set_integration_context, get_integration_context
@@ -21,7 +21,11 @@ rfc_test_data = util_load_json('./test_data/rfc_test_data.json')
 @pytest.mark.parametrize('test_case, func', [(rfc_test_data['rfc-3164']['case_one_valid'], parse_rfc_3164_format),
                                              (rfc_test_data['rfc-3164']['case_two_valid'], parse_rfc_3164_format),
                                              (rfc_test_data['rfc-5424']['case_one_valid'], parse_rfc_5424_format),
-                                             (rfc_test_data['rfc-5424']['case_two_valid'], parse_rfc_5424_format)])
+                                             (rfc_test_data['rfc-5424']['case_two_valid'], parse_rfc_5424_format),
+                                             (rfc_test_data['rfc-6587']['case_one_valid'], parse_rfc_6587_format),
+                                             (rfc_test_data['rfc-6587']['case_two_valid'], parse_rfc_6587_format),
+                                             (rfc_test_data['rfc-6587']['case_three_valid'], parse_rfc_6587_format),
+                                             (rfc_test_data['rfc-6587']['case_four_valid'], parse_rfc_6587_format)])
 def test_parse_rfc_format_valid(test_case: dict, func: Callable[[bytes], SyslogMessageExtract]):
     """
     Given:
@@ -296,7 +300,11 @@ loop_data = util_load_json('./test_data/long_running_loop_data.json')
                                                   (loop_data['rfc-3164'], 'regex_doesnt_pass_filter'),
                                                   (loop_data['rfc-5424'], 'no_regex'),
                                                   (loop_data['rfc-5424'], 'regex_pass_filter'),
-                                                  (loop_data['rfc-5424'], 'regex_doesnt_pass_filter')])
+                                                  (loop_data['rfc-5424'], 'regex_doesnt_pass_filter'),
+                                                  (loop_data['rfc-6587'], 'no_regex'),
+                                                  (loop_data['rfc-6587'], 'regex_pass_filter'),
+                                                  (loop_data['rfc-6587'], 'regex_doesnt_pass_filter')
+                                                  ])
 def test_perform_long_running_loop(mocker, test_data, test_name):
     """
     Given:
