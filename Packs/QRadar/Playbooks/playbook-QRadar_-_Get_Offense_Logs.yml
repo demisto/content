@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: QRadar - Get Offense Logs
-description: "Works for QRadar integrations versions 2 and 3, v1 is deprecated.\n\n\
+description: "Works for QRadar integration version 3, v1 and v2 are deprecated.\n\n\
   Note that for QRadar v2 and v3 you can use the integration to fetch the events with\
   \ the offense however it will fetch the events according to the specified limit\
   \ defined in the instance settings. By using this playbook you can define an additional\
@@ -888,5 +888,5 @@ outputs:
   description: The start time of the first event.
   type: string
 tests:
-- No test
+- QRadar - Get Offense Logs Test
 fromversion: 6.0.0

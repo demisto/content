@@ -1,4 +1,4 @@
-Works for QRadar integrations versions 2 and 3, v1 is deprecated.
+Works for QRadar integration version 3, v1 and v2 are deprecated.
 
 Note: For QRadar v2 and v3 you can use the integration to fetch the offense event logs according to the limit defined in the instance settings. Using this playbook you can define an additional search to query a larger number of logs.
 
