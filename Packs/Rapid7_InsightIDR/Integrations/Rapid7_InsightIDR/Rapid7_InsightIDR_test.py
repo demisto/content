@@ -510,7 +510,7 @@ def test_fetch_incidents(requests_mock) -> None:
     assert response[1] == [
         {
             'name': 'Joe enabled account Joebob',
-            'occurred': '2018-06-06T16:56:42.000Z',
+            'occurred': '2018-06-06T16:56:42Z',
             'rawJSON': outputs[0]['rawJSON'],
         },
         {
