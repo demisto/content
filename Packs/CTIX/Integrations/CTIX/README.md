@@ -820,3 +820,50 @@ Return File Details.
 >|blocked|blocked_time|criticality|custom_score|deprecated|deprecated_time|first_seen|indicator_type|is_false_positive|is_following|labels|last_seen|name2|object_type|package_id|published_collections|published_package_id|related_fields|reviewed|reviewed_time|risk_severity|score|source|source_data|stix_object_id|tenant_id|type|under_review|under_reviewed_time|value|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| false | 0 | 3 | 0.0 | true | 1588854933 | 1586262933 | MD5 | false | false | {'id': '23ccc391-6968-4734-b93e-d4985e23dcfd', 'name': 'anomalous-activity', 'colour_code': None, 'created_by': 'system@default.tld', 'created': 1605030281, 'modified_by': 'system@default.tld', 'modified': 1605030281}| 1605791028 | 4ebb2b00a11f9361cf3757e96f14ad4b | indicator | package-d54892d8-b495-4331-b361-17ffbeacdaed,<br/>package-09be25b9-5d6b-4320-b512-4dc0e088f434,<br/>bundle--87151b50-31a4-4f0a-9f5f-282b0f1d1285 | adsa,<br/>newtestcollection1 - edited | 1557df73-68b4-485b-9821-e3036e5fb7a4,<br/>a1eb2b29-fed4-4635-8e5c-a74f4339b8ab | attack_pattern: <br/>campaign: <br/>intrusion_set: <br/>malware: <br/>threat_actor: <br/>tool: <br/>indicator: <br/>ttp: <br/>kill_chain_phases: <br/>course_of_action:  | false | 0 | 5 | 50.0 | Import | {'name': 'Import', 'id': 'd1d3b628-346f-43c3-a369-235661ac6277'} | indicator--2e35588f-cde1-4492-a720-ab0aee7fafaa | 0a834138-cc59-4107-aa69-46e6080f06af | Indicator | false | 0 | 4ebb2b00a11f9361cf3757e96f14ad4b |
+
+### create_intel
+***
+Creates Intel in CTIX platform
+
+
+#### Base Command
+
+`create_intel`
+#### Input
+
+| **Argument Name** | **Type** | **Description** | **Required** |
+| --- | --- | --- | --- |
+| title | String | Title of ioc | Optional |
+| description | String | Description of ioc| Optional |
+| tlp | String | Tlp of ioc | Optional |
+| confidence | String | Confidence of ioc | Optional |
+| ips | List | List of IPs | Optional | 
+| urls | List | List of URLs | Optional |
+| domains | List | List of domains | Optional |
+| files | List | List of files | Optional |
+| emails | List | List of emails | Optional |
+| malwares | List | List of malwares | Optional |
+| threat_actors | List | List of threat actors | Optional |
+| attack_patterns | List |List of attack patterns | Optional |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| data.details | String | Tells response of an api | 
+| data.status | Number | Status code returned from api | 
+
+
+#### Command Example
+```!create_intel ips=1.2.3.4,3.45.56.78 urls=https://ioc_test.com,https://test_ioc.com files=8e7fad44308af9d1d60aac4fafcecdf2f66aa0315eb5f092fafa5bb03a5c2e3e emails=ioc@gmail.com,malicious@gmail.com malwares=dridex,spambot threat_actors=everest,grief attack_patterns=phishing,ddos title=title_xsoar_intel_creation description=xsoar_description tlp=green confidence=70```
+
+#### Context Example
+```json
+{
+    "data": {
+        "details": "Package is pushed in ctix for publishing"
+    },
+    "status": 201
+}
+```

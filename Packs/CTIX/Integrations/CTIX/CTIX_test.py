@@ -255,3 +255,26 @@ def test_file_not_found(requests_mock):
 
     assert response[0].outputs == []
     assert response[0].readable_output == f"No matches found for FILE {file_to_check}"
+
+
+def test_create_intel(requests_mock):
+    from CTIX import Client, create_intel_command
+
+    mock_response = util_load_json('test_data/create_intel.json')
+    requests_mock.post(f'http://test.com/create-intel/', json=mock_response)
+
+    client = Client(
+        base_url=BASE_URL,
+        access_id=ACCESS_ID,
+        secret_key=SECRET_KEY,
+        verify=False,
+        proxies={}
+    )
+    post_data = {
+        "ips": "1.2.3.4,3.45.56.78",
+        "urls": "https://abc_test.com,https://test_abc.com"
+    }
+    response = create_intel_command(client, post_data)
+
+    assert "data", "status" in response.keys()
+    assert response["status"] == 200

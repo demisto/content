@@ -8,6 +8,7 @@ The actions included in this pack enable end-to-end enrichment of threat intelli
 - Enrich an Indicator with CTIX’s signature scoring algorithm
 - Contextualize an IP, Domain, URL, or Hash with data correlated from multiple sources configured on CTIX
 - Manage indicators on various devices coming into CTIX, by analyzing if the indicator has been blocked, deprecated, or even whitelisted on one or more environments
+- Creates intel in CTIX platform (Intel Creation is supported for ctix version 2.9.3 and above)
 
 # For more information
 - [Visit the CTIX website](https://cyware.com/ctix-stix-taxii-cyber-threat-intelligence-exchange)
