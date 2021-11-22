@@ -251,11 +251,10 @@ def fetch_mails(client: IMAPClient,
     if message_id:
         messages_uids = [message_id]
     else:
-        # messages_query = generate_search_query(time_to_fetch_from,
-        #                                        permitted_from_addresses,
-        #                                        permitted_from_domains,
-        #                                        uid_to_fetch_from)
-        messages_query = ['OR', 'HEADER', 'FROM', permitted_from_addresses, 'HEADER', 'FROM', permitted_from_domains, 'SINCE', time_to_fetch_from, 'UID', '1:*']
+        messages_query = generate_search_query(time_to_fetch_from,
+                                               permitted_from_addresses,
+                                               permitted_from_domains,
+                                               uid_to_fetch_from)
         demisto.debug(f'Searching for email messages with criteria: {messages_query}')
         messages_uids = client.search(messages_query)[:limit]
     mails_fetched = []
@@ -301,12 +300,16 @@ def generate_search_query(time_to_fetch_from: Optional[datetime],
     ['OR',
      'OR',
      'OR',
+     'HEADER',
      'FROM',
      'test1@mail.com',
+     'HEADER',
      'FROM',
      'test2@mail.com',
+     'HEADER',
      'FROM',
      'test1.com',
+     'HEADER',
      'FROM',
      'domain2.com',
      'SINCE',
@@ -326,7 +329,7 @@ def generate_search_query(time_to_fetch_from: Optional[datetime],
     if permitted_from_addresses_list + permitted_from_domains_list:
         messages_query = OR(from_=permitted_from_addresses_list + permitted_from_domains_list).format()
         # Removing Parenthesis and quotes
-        messages_query = messages_query.strip('()').replace('"', '')
+        messages_query = messages_query.strip('()').replace('"', '').replace('FROM', 'HEADER FROM')
     # Creating a list of the OR query words
     messages_query_list = messages_query.split()
     if time_to_fetch_from:
