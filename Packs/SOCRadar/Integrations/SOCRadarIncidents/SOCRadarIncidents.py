@@ -321,8 +321,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
     )
 
     for alert in alerts:
-        incident_created_time = int(date_to_timestamp(alert.get('insert_date', '').split('.')[0]))
-
+        incident_created_time = int(datetime.strptime(alert.get('insert_date', '').split('.')[0], '%Y-%m-%dT%H:%M:%S').replace(tzinfo=timezone.utc).timestamp())
         # to prevent duplicates, we are only adding incidents with creation_time > last fetched incident
         if last_fetch:
             if incident_created_time <= last_fetch:
@@ -357,7 +356,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
 
         incident = {
             'name': incident_name,
-            'occurred': timestamp_to_datestring(incident_created_time, is_utc=True),
+            'occurred': timestamp_to_datestring(incident_created_time*1000, is_utc=True),
             'rawJSON': json.dumps(alert),
             'severity': convert_to_demisto_severity(alert.get('alarm_risk_level', 'UNKNOWN')),
             'CustomFields': {
