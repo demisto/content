@@ -163,7 +163,7 @@
                 "Agent Version": {
 					"simple": "hosts.agent_version"
 				},
-                "CrowdStrike Falcon Host Site Name": {
+                "DNS Name": {
                     "simple": "hosts.site_name"
                 },
                 "Hostnames": {
