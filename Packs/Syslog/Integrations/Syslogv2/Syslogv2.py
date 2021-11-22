@@ -15,7 +15,6 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 ''' CONSTANTS '''
 MAX_SAMPLES = 10
 BUF_SIZE = 1024
-LOG_FORMAT: str = ''
 MESSAGE_REGEX: Optional[str] = None
 MAX_PORT: int = 65535
 
@@ -35,19 +34,19 @@ class SyslogMessageExtract:
     occurred: Optional[str]
 
 
-def parse_rfc_3164_format(log_message: bytes) -> SyslogMessageExtract:
+def parse_rfc_3164_format(log_message: bytes) -> Optional[SyslogMessageExtract]:
     """
     Receives a log message which is in RFC 3164 format. Parses it into SyslogMessageExtract data class object
     Args:
         log_message (bytes): Syslog message.
 
     Returns:
-        (SyslogMessageExtract): Extraction data class
+        (Optional[SyslogMessageExtract]): Extraction data class
     """
     try:
         syslog_message: syslogmp.Message = syslogmp.parse(log_message)
-    except syslogmp.parser.MessageFormatError as e:
-        raise DemistoException(f'Could not parse the log message. Error was: {e}') from e
+    except syslogmp.parser.MessageFormatError:
+        return None
     return SyslogMessageExtract(
         app_name=None,
         facility=syslog_message.facility.name,
@@ -64,19 +63,19 @@ def parse_rfc_3164_format(log_message: bytes) -> SyslogMessageExtract:
     )
 
 
-def parse_rfc_5424_format(log_message: bytes) -> SyslogMessageExtract:
+def parse_rfc_5424_format(log_message: bytes) -> Optional[SyslogMessageExtract]:
     """
     Receives a log message which is in RFC 5424 format. Parses it into SyslogMessageExtract data class object
     Args:
         log_message (bytes): Syslog message.
 
     Returns:
-        (SyslogMessageExtract): Extraction data class
+        (Optional[SyslogMessageExtract]): Extraction data class
     """
     try:
         syslog_message: SyslogMessage = SyslogMessage.parse(log_message.decode('utf-8'))
-    except ParseError as e:
-        raise DemistoException(f'Could not parse the log message. Error was: {e}') from e
+    except ParseError:
+        return None
     return SyslogMessageExtract(
         app_name=syslog_message.appname,
         facility=syslog_message.facility.name,
@@ -92,12 +91,35 @@ def parse_rfc_5424_format(log_message: bytes) -> SyslogMessageExtract:
     )
 
 
-RFC3164 = 'RFC3164'
-RFC5424 = 'RFC5424'
-FORMAT_TO_PARSER_FUNCTION: Dict[str, Callable[[bytes], SyslogMessageExtract]] = {
-    RFC3164: parse_rfc_3164_format,
-    RFC5424: parse_rfc_5424_format
-}
+def parse_rfc_6587_format(log_message: bytes) -> Optional[SyslogMessageExtract]:
+    """
+    Receives a log message which is in RFC 5424 format. Parses it into SyslogMessageExtract data class object
+    Args:
+        log_message (bytes): Syslog message.
+
+    Returns:
+        (SyslogMessageExtract): Extraction data class
+    """
+    log_message = log_message.decode('utf-8')
+    if not log_message or not log_message.isdigit():
+        return None
+    split_msg: List[str] = log_message.split(' ')
+    try:
+        log_message = ' '.join(split_msg[1:])
+        encoded_msg = log_message.encode()
+        for format_func in format_funcs:
+            # if it is RFC6587 itself, continue
+            if format_func == parse_rfc_6587_format:
+                continue
+            extracted_message = format_func(encoded_msg)
+            if extracted_message:
+                return extracted_message
+    except ValueError:
+        return None
+    return None
+
+
+format_funcs: List[Callable[[bytes], Optional[SyslogMessageExtract]]] = [parse_rfc_3164_format, parse_rfc_5424_format]
 
 
 def test_module() -> str:
@@ -187,7 +209,14 @@ def perform_long_running_loop(socket_data: bytes):
     Returns:
         (None): Creates incident in Cortex XSOAR platform.
     """
-    extracted_message: SyslogMessageExtract = FORMAT_TO_PARSER_FUNCTION[LOG_FORMAT](socket_data)
+    extracted_message: Optional[SyslogMessageExtract] = None
+    for format_func in format_funcs:
+        extracted_message = format_func(socket_data)
+        if extracted_message:
+            break
+    if not extracted_message:
+        raise DemistoException(f'Could not parse the following message: {socket_data.decode("utf-8")}')
+
     if log_message_passes_filter(extracted_message, MESSAGE_REGEX):
         incident: dict = create_incident_from_syslog_message(extracted_message)
         update_integration_context_samples(incident)
@@ -200,7 +229,7 @@ def perform_long_running_execution(sock: Any, address: tuple) -> None:
     Stops when there is no more data to read.
     Args:
         sock: Socket.
-        _: Address. Not used inside loop so marked as underscore.
+        address(tuple): Address. Not used inside loop so marked as underscore.
 
     Returns:
         (None): Reads data, calls   that creates incidents from inputted data.
@@ -222,14 +251,13 @@ def perform_long_running_execution(sock: Any, address: tuple) -> None:
     file_obj.close()
 
 
-def prepare_globals_and_create_server(port: int, log_format: str, message_regex: Optional[str],
-                                      certificate: Optional[str], private_key: Optional[str]) -> StreamServer:
+def prepare_globals_and_create_server(port: int, message_regex: Optional[str], certificate: Optional[str],
+                                      private_key: Optional[str]) -> StreamServer:
     """
     Prepares global environments of LOG_FORMAT, MESSAGE_REGEX and creates the server to listen
     to Syslog messages.
     Args:
         port (int): Port
-        log_format (str): Log format of messages to be received from Syslog, either RFC-3164 or RFC-5424.
         message_regex (Optional[str]): Regex. Will create incident only if Syslog message matches this regex.
         certificate (Optional[str]): Certificate. For SSL connection.
         private_key (Optional[str]): Private key. For SSL connection.
@@ -237,8 +265,7 @@ def prepare_globals_and_create_server(port: int, log_format: str, message_regex:
     Returns:
         (StreamServer): Server to listen to Syslog messages.
     """
-    global LOG_FORMAT, MESSAGE_REGEX
-    LOG_FORMAT = log_format
+    global MESSAGE_REGEX
     MESSAGE_REGEX = message_regex
     if certificate and private_key:
         certificate_file = NamedTemporaryFile(delete=False)
@@ -275,11 +302,6 @@ def main() -> None:
     certificate: Optional[str] = params.get('certificate')
     private_key: Optional[str] = params.get('private_key')
 
-    log_format: str = params.get('log_format', '')
-    if log_format not in FORMAT_TO_PARSER_FUNCTION:
-        raise DemistoException(f'Given format: {log_format} is not in the expected format.\n'
-                               f'Please choose one of the following formats: {FORMAT_TO_PARSER_FUNCTION.keys()}')
-
     try:
         port = int(params.get('longRunningPort'))
     except (ValueError, TypeError) as e:
@@ -291,8 +313,7 @@ def main() -> None:
     try:
         if command == 'test-module':
             try:
-                prepare_globals_and_create_server(port, log_format, message_regex, certificate,
-                                                  private_key)
+                prepare_globals_and_create_server(port, message_regex, certificate, private_key)
             except OSError as e:
                 if 'Address already in use' in str(e):
                     raise DemistoException(f'Given port: {port} is already in use. Please either change port or '
@@ -305,8 +326,7 @@ def main() -> None:
             # The fetch incidents returns samples of incidents generated by the long-running-execution.
             fetch_samples()
         elif command == 'long-running-execution':
-            server: StreamServer = prepare_globals_and_create_server(port, log_format, message_regex, certificate,
-                                                                     private_key)
+            server: StreamServer = prepare_globals_and_create_server(port, message_regex, certificate, private_key)
             server.serve_forever()
         elif command == 'get-mapping-fields':
             return_results(get_mapping_fields())

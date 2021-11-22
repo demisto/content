@@ -78,9 +78,7 @@ def test_parse_rfc_not_valid(test_case: dict, func: Callable[[bytes], SyslogMess
     - Ensure expected error is returned with the expected error message.
 
     """
-    import re
-    with pytest.raises(DemistoException, match=re.escape(err_message)):
-        func(test_case['log_message'].encode())
+    assert func(test_case['log_message'].encode()) is None
 
 
 @pytest.mark.parametrize('samples', [({}), ([{'app_name': None, 'facility': 'security4', 'host_name': 'mymachine',
@@ -303,8 +301,6 @@ def test_perform_long_running_loop(mocker, test_data, test_name):
     """
     Given:
     - socket: Socket to retrieve Syslog messages from.
-    - log_format: The Syslog format the messages will be sent with. one of the dictionary keys of the
-                  constant `FORMAT_TO_PARSER_FUNCTION` variable.
     - message_regex: Message regex to match if exists.
     When:
     - Performing one loop in the long-running execution
@@ -320,9 +316,9 @@ def test_perform_long_running_loop(mocker, test_data, test_name):
     - Ensure incident is created if needed for each case, and exists in context data.
     """
     import Syslogv2
-    tmp_format, tmp_reg = Syslogv2.LOG_FORMAT, Syslogv2.MESSAGE_REGEX
+    tmp_reg = Syslogv2.MESSAGE_REGEX
     test_name_data = test_data[test_name]
-    Syslogv2.LOG_FORMAT, Syslogv2.MESSAGE_REGEX = test_data['log_format'], test_name_data.get('message_regex')
+    Syslogv2.MESSAGE_REGEX = test_name_data.get('message_regex')
     set_integration_context({})
     incident_mock = mocker.patch.object(demisto, 'createIncidents')
     if test_name_data.get('expected'):
@@ -333,31 +329,22 @@ def test_perform_long_running_loop(mocker, test_data, test_name):
         perform_long_running_loop(test_data['log_message'].encode())
         assert not demisto.createIncidents.called
         assert not get_integration_context()
-    Syslogv2.LOG_FORMAT, Syslogv2.MESSAGE_REGEX = tmp_format, tmp_reg
+    Syslogv2.MESSAGE_REGEX = tmp_reg
 
 
-@pytest.mark.parametrize('log_format, message_regex, certificate, private_key',
-                         [('RFC3164', None, None, None),
-                          ('RFC3164', 'a', None, None),
-                          ('RFC3164', None, None, None),
-                          ('RFC3164', 'reg', None, None),
-                          ('RFC5424', None, None, None),
-                          ('RFC5424', 'a', None, None),
-                          ('RFC5424', None, None, None),
-                          ('RFC5424', 'reg', None, None),
-                          ('RFC3164', None, 'a', 'b'),
-                          ('RFC3164', 'reg', 'a', 'b'),
-                          ('RFC3164', None, 'a', 'b'),
-                          ('RFC3164', 'reg', 'a', 'b'),
-                          ('RFC5424', None, 'a', 'b'),
-                          ('RFC5424', 'reg', 'a', 'b'),
-                          ('RFC5424', None, 'a', 'b'),
-                          ('RFC5424', 'reg', 'a', 'b')
+@pytest.mark.parametrize('message_regex, certificate, private_key',
+                         [(None, None, None),
+                          ('reg', None, None),
+                          (None, 'a', None),
+                          (None, None, 'b'),
+                          ('a', 'b', None),
+                          ('reg', None, 'b'),
+                          (None, 'a', 'b'),
+                          ('reg', 'a', 'b')
                           ])
-def test_prepare_globals_and_create_server(log_format, message_regex, certificate, private_key):
+def test_prepare_globals_and_create_server(message_regex, certificate, private_key):
     """
     Given:
-    - log_format: The log format.
     - message_regex: The message regex to match.
     - certificate: Certificate.
     - private_key: Private key
@@ -369,8 +356,7 @@ def test_prepare_globals_and_create_server(log_format, message_regex, certificat
     """
     from Syslogv2 import prepare_globals_and_create_server, StreamServer
     import Syslogv2
-    server: StreamServer = prepare_globals_and_create_server(33333, log_format, message_regex, certificate, private_key)
-    assert Syslogv2.LOG_FORMAT == log_format
+    server: StreamServer = prepare_globals_and_create_server(33333, message_regex, certificate, private_key)
     assert Syslogv2.MESSAGE_REGEX == message_regex
     if certificate and private_key:
         assert 'keyfile' in server.ssl_args and 'certfile' in server.ssl_args
