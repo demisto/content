@@ -1,0 +1,14 @@
+[
+  {
+    "type": "Domain",
+    "value": "mock_domain.com",
+    "rawJSON": {
+      "type": "Domain",
+      "value": "mock_domain.com"
+    },
+    "fields": {
+      "tags": ["TEST"],
+      "trafficlightprotocol": "GREEN"
+    }
+  }
+]

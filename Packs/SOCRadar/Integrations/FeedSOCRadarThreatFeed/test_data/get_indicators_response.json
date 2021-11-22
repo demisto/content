@@ -1,0 +1,14 @@
+{
+  "data": {
+    "MockCollectionName": {
+      "collection_data_list": [
+        "mock_domain.com"
+      ],
+      "collection_date": "2021-10-30",
+      "collection_feed_type": "hostname"
+    }
+  },
+  "is_success": true,
+  "message": "Success",
+  "response_code": 200
+}
