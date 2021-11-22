@@ -45,39 +45,19 @@ Prints all partitions of a topic.
 
 ##### Input
 
-There is no input for this command.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| include_offsets | Whether to fetch topics available offsets or not, defaults to 'true' | Optional |
 
 ##### Context Output
 
-Path
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Kafka.Topic.Name | string | Topic name |
+| Kafka.Topic.Partitions.ID | Number | Topic partition ID |
+| Kafka.Topic.Partitions.EarliestOffset | Number | Topic partition earliest offset |
+| Kafka.Topic.Partitions.LatestOffset | Number | Topic partition latest offset. |
 
-Type
-
-Description
-
-Kafka.Topic.Name
-
-string
-
-Topic name.
-
-Kafka.Topic.Partitions.ID
-
-Number
-
-Topic partition ID.
-
-Kafka.Topic.Partitions.EarliestOffset
-
-Number
-
-Topic partition earliest offset.
-
-Kafka.Topic.Partitions.LatestOffset
-
-Number
-
-Topic partition latest offset.
 
 ##### Command Example
 
@@ -103,29 +83,11 @@ Publishes a message to Kafka. 
 
 ##### Input
 
-Argument Name
-
-Description
-
-Required
-
-topic
-
-A topic to filter by.
-
-Required
-
-value
-
-Message value (string)
-
-Required
-
-partitioning\_key
-
-Message partition key (number)
-
-Optional
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| topic | A topic to filter by | Required |
+| value | Message value (string) | Required |
+| partition | Message partition (number) | Optional |
 
 ##### Context Output
 
@@ -151,55 +113,19 @@ Consumes a single Kafka message.
 
 ##### Input
 
-Argument Name
-
-Description
-
-Required
-
-topic
-
-A topic to filter by
-
-Required
-
-offset
-
-Message offset to filter by ("Earliest", "Latest", or any other offset number)
-
-Optional
-
-partition
-
-Partition (number)
-
-Optional
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| topic | A topic to filter by | Required |
+| offset | Message offset to filter by ("Earliest", "Latest", or any other offset number) | Optional |
+| partition | Partition (number) | Optional |
 
 ##### Context Output
 
-Path
-
-Type
-
-Description
-
-Kafka.Topic.Name
-
-string
-
-Topic name
-
-Kafka.Topic.Message.Value
-
-string
-
-Message value
-
-Kafka.Topic.Message.Offset
-
-number
-
-Offset of the value in the topic
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Kafka.Topic.Name | string | Topic name |
+| Kafka.Topic.Message.Value | string | Message value |
+| Kafka.Topic.Message.Offset | number | Offset of the value in the topic |
 
 ##### Command Example
 
@@ -225,37 +151,16 @@ Prints all partitions for a topic.
 
 ##### Input
 
-Argument Name
-
-Description
-
-Required
-
-topic
-
-A topic to filter by
-
-Required
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| topic | A topic to filter by | Required |
 
 ##### Context Output
 
-Path
-
-Type
-
-Description
-
-Kafka.Topic.Name
-
-string
-
-Topic name
-
-Kafka.Topic.Partition
-
-number
-
-Number of partitions for the topic
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Kafka.Topic.Name | string | Topic name | 
+| Kafka.Topic.Partition | number | Number of partitions for the topic | 
 
 ##### Command Example
 
