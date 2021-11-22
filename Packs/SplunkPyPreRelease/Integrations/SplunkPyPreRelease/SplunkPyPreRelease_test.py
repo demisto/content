@@ -1066,7 +1066,6 @@ def test_remove_old_incident_ids():
         # incident did not fetched on the current fetch
         "incident_in_fetch_start_time_range": occurred_start_time.strftime(SPLUNK_TIME_FORMAT)
     }
-    now_splunk_format = now.strftime(SPLUNK_TIME_FORMAT)
     occurred_start_time_splunk_format = occurred_start_time.strftime(SPLUNK_TIME_FORMAT)
 
     new_incident_ids_after_remove_olds = remove_old_incident_ids(last_run_fetched_ids, occurred_start_time_splunk_format)

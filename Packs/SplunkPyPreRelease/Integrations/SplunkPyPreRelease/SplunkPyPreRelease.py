@@ -265,7 +265,7 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
 
     last_run_fetched_ids = last_run_data.get('found_incidents_ids', {})
 
-    incidents = []
+    incidents = []  # type: List[Dict]
     notables = []
     incident_ids_to_add = {}
     for item in reader:
@@ -287,7 +287,8 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
 
     extensive_log('[SplunkPyPreRelease] Size of last_run_fetched_ids before adding new IDs: {}'.format(len(last_run_fetched_ids)))
     for incident_id in incident_ids_to_add:
-        last_run_fetched_ids[incident_id] = incident_ids_to_add[incident_id]  # Adding the new incidents with the occurence time.
+        last_run_fetched_ids[incident_id] = incident_ids_to_add[incident_id]
+        # Adding the new incidents with the occurrence time.
     extensive_log(
         '[SplunkPyPreRelease] Size of last_run_fetched_ids after adding new IDs: {}'.format(len(last_run_fetched_ids)))
     last_run_fetched_ids = remove_old_incident_ids(last_run_fetched_ids, occured_start_time)
