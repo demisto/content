@@ -416,10 +416,14 @@ def fetch_incidents():
 
 
 try:
+    command = demisto.command()
+    demisto.debug(f'Command being called is {command}')
     if demisto.command() == 'test-module':
         # This is the call made when pressing the integration test button.
         try:
+            demisto.debug('Getting all integrations for "test-module" run')
             response = lacework_client.integrations.get_all()
+            demisto.debug(response)
             if response['ok']:
                 demisto.results('ok')
         except Exception as error:

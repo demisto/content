@@ -4,7 +4,7 @@ from freezegun import freeze_time
 
 
 Client.severity = 'INFO'
-client = Client({'url': 'test'})
+client = Client({'url': 'https://example.com'})
 
 
 def d_sort(in_dict):
@@ -47,45 +47,54 @@ class TestGetHeaders:
 
 
 class TestHttpRequest:
-    class Res:
-        content = 'error'.encode()
+    def test_http_request_ok(self, requests_mock):
+        """
+            Given:
+                - a client
+            When:
+                - http_request returns status code 200.
+            Then:
+                - do not raise an error
+        """
+        requests_mock.post('https://example.com/public_api/v1/indicators/suffix', status_code=200, json={})
+        client.http_request(url_suffix='suffix', requests_kwargs={})
 
-        def __init__(self, code):
-            self.status_code = code
-
-        @staticmethod
-        def json():
-            return {}
-
-    XDR_SERVER_ERROR = 500
-    INVALID_CREDS = 401
-    LICENSE_ERROR = 402
-    PERMISSION_ERROR = 403
-    OK = 200
-    data_test_http_request_error_codes = [
-        (OK, {}),
-        (XDR_SERVER_ERROR, 'XDR internal server error.\t(error)'),
-        (INVALID_CREDS, 'Unauthorized access. An issue occurred during authentication. This can indicate an incorrect key, id, or other invalid authentication parameters.\t(error)'),  # noqa: E501
-        (LICENSE_ERROR, 'Unauthorized access. User does not have the required license type to run this API.\t(error)'),
-        (PERMISSION_ERROR, 'Unauthorized access. The provided API key does not have the required RBAC permissions to run this API.\t(error)')   # noqa: E501
-    ]
-
-    @pytest.mark.parametrize('res, expected_output', data_test_http_request_error_codes)
-    def test_http_request_error_codes(self, res, expected_output, mocker):
+    @pytest.mark.parametrize('status_code', client.error_codes.keys())
+    def test_http_request_error(self, requests_mock, status_code):
         """
             Given:
                 - Status code
             When:
                 - http_request returns this status code.
             Then:
-                - Verify error/success format.
+                - Verify error message.
+                - Verify exception.res status code matches the http status code.
         """
-        mocker.patch('requests.post', return_value=self.Res(res))
-        try:
-            output = client.http_request('', {})
-        except DemistoException as error:
-            output = str(error)
-        assert output == expected_output, f'status code {res}\n\treturns: {output}\n\tinstead: {expected_output}'
+        with pytest.raises(DemistoException) as e:
+            requests_mock.post('https://example.com/public_api/v1/indicators/suffix', status_code=status_code)
+            client.http_request('suffix', requests_kwargs={})
+        assert e.value.message == client.error_codes[status_code]
+        assert e.value.res.status_code == status_code
+
+    def test_http_request_bad_json(self, requests_mock):
+        """
+            Given:
+                - a client
+            When:
+                - http_request returns a response that is not a json.
+            Then:
+                - Verify error message.
+                - Verify demisto exception
+        """
+        text = 'not a json'
+
+        with pytest.raises(DemistoException) as e:
+            requests_mock.post('https://example.com/public_api/v1/indicators/suffix', status_code=200, text=text)
+            client.http_request('suffix', requests_kwargs={})
+        assert e.value.message == f'Could not parse json out of {text}'
+        assert e.value.res.status_code == 200
+        assert isinstance(e.value.exception, json.JSONDecodeError)
+        assert e.value.exception.args == ('Expecting value: line 1 column 1 (char 0)',)
 
 
 class TestGetRequestsKwargs:

@@ -109,17 +109,20 @@ script:
       description: The confidence rating of the indicator.
       type: number
     - contextPath: DBotScore.Indicator
-      description: The value assigned by DBot for the indicator.
-      type: string
+      description: The indicator that was tested.
+      type: String
     - contextPath: DBotScore.Type
-      description: The type assigned by DBot for the indicator.
-      type: string
-    - contextPath: DBotScore.Score
-      description: The score assigned by DBot for the indicator.
-      type: number
+      description: The indicator type.
+      type: String
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
-      type: string
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
     - contextPath: IP.Address
       description: The IP address of the indicator.
       type: string
@@ -182,16 +185,19 @@ script:
       description: The confidence rating of the indicator.
       type: number
     - contextPath: DBotScore.Indicator
-      description: The value assigned by DBot for the indicator.
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: The type assigned by DBot for the indicator.
+      description: The indicator type.
       type: string
-    - contextPath: DBotScore.Score
-      description: The score assigned by DBot for the indicator.
-      type: number
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
       type: string
     - contextPath: URL.Data
       description: The data of the URL indicator.
@@ -264,16 +270,19 @@ script:
       description: The SHA256 hash of the indicator.
       type: string
     - contextPath: DBotScore.Indicator
-      description: The value assigned by DBot for the indicator.
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: The type assigned by DBot for the indicator.
+      description: The indicator type.
       type: string
-    - contextPath: DBotScore.Score
-      description: The score assigned by DBot for the indicator.
-      type: number
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
       type: string
     - contextPath: File.MD5
       description: The MD5 hash of the indicator.
@@ -355,16 +364,19 @@ script:
       description: The SHA256 hash of the indicator of the file.
       type: string
     - contextPath: DBotScore.Indicator
-      description: The value assigned by DBot for the indicator.
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: The type assigned by DBot for the indicator.
+      description: The indicator type.
       type: string
-    - contextPath: DBotScore.Score
-      description: The score assigned by DBot for the indicator.
-      type: number
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
       type: string
     - contextPath: IP.Address
       description: The IP address of the indicator.
@@ -545,17 +557,20 @@ script:
       description: The contents of the attribute.
       type: string
     - contextPath: DBotScore.Indicator
-      description: The value assigned by DBot for the indicator.
-      type: string
+      description: The indicator that was tested.
+      type: String
     - contextPath: DBotScore.Type
-      description: The type assigned by DBot for the indicator.
-      type: string
-    - contextPath: DBotScore.Score
-      description: The score assigned by DBot for the indicator.
-      type: number
+      description: The indicator type.
+      type: String
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
-      type: string
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
     - contextPath: IP.Address
       description: The IP address of the indicator.
       type: string
@@ -651,17 +666,20 @@ script:
       description: The SHA256 hash of the indicator of the file.
       type: string
     - contextPath: DBotScore.Indicator
-      description: The value assigned by DBot for the tagged indicator.
-      type: string
+      description: The indicator that was tested.
+      type: String
     - contextPath: DBotScore.Type
-      description: The type assigned by DBot for the tagged indicator.
-      type: string
-    - contextPath: DBotScore.Score
-      description: The score assigned by DBot for the tagged indicator.
-      type: number
+      description: The indicator type.
+      type: String
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
-      type: string
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
     - contextPath: IP.Address
       description: The IP address of the tagged indicator.
       type: string
@@ -1037,17 +1055,20 @@ script:
       description: The active indicator (for domains only).
       type: string
     - contextPath: DBotScore.Indicator
-      description: The value assigned by DBot for the indicator.
-      type: string
+      description: The indicator that was tested.
+      type: String
     - contextPath: DBotScore.Type
-      description: The type assigned by DBot for the indicator.
-      type: string
-    - contextPath: DBotScore.Score
-      description: The score assigned by DBot for the indicator.
-      type: number
+      description: The indicator type.
+      type: String
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
-      type: string
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
     - contextPath: Domain.Name
       description: The name of the domain.
       type: string
@@ -1110,17 +1131,20 @@ script:
       description: The SHA256 hash of the indicator of the file.
       type: string
     - contextPath: DBotScore.Indicator
-      description: The value assigned by DBot for the indicator.
-      type: string
+      description: The indicator that was tested.
+      type: String
     - contextPath: DBotScore.Type
-      description: The type assigned by DBot for the indicator.
-      type: string
-    - contextPath: DBotScore.Score
-      description: The score assigned by DBot for the indicator.
-      type: number
+      description: The indicator type.
+      type: String
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
-      type: string
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
     - contextPath: IP.Address
       description: The IP address of the returned indicator.
       type: string
@@ -1199,6 +1223,8 @@ script:
       name: threatAssessConfidence
     - description: Assesses the threat rating of the indicator.
       name: threatAssessRating
+    - description: The owner of the new incident. The default is the "defaultOrg" parameter.
+      name: owner
     description: Updates the indicator in ThreatConnect.
     name: tc-update-indicator
     outputs:
@@ -1989,7 +2015,7 @@ script:
       type: String
     - contextPath: TC.Group.Indicator.ThreatAssessConfidence
       description: The confidence rating of the indicator.
-      type: String
+      type: string
     - contextPath: TC.Group.Indicator.IndicatorID
       description: The ID of the indicator.
       type: Number
@@ -1998,7 +2024,7 @@ script:
       type: Date
     - contextPath: TC.Group.Indicator.Type
       description: The type of the indicator.
-      type: String
+      type: string
     - contextPath: TC.Group.Indicator.Rating
       description: The threat rating of the indicator.
       type: Number
@@ -2007,7 +2033,7 @@ script:
       type: Number
     - contextPath: TC.Group.Indicator.OwnerName
       description: The name of the owner of the indicator.
-      type: String
+      type: string
     - contextPath: TC.Group.Indicator.LastModified
       description: The date that the indicator was last modified.
       type: Date
@@ -2162,7 +2188,7 @@ script:
     - contextPath: File.Extension
       description: The extension of the file.
       type: String
-  dockerimage: demisto/threatconnect-py3-sdk:1.0.0.21898
+  dockerimage: demisto/threatconnect-py3-sdk:1.0.0.23423
   runonce: false
   script: ''
   subtype: python3

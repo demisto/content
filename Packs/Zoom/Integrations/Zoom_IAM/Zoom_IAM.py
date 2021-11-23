@@ -16,7 +16,6 @@ ERROR_CODES_TO_SKIP = [
 ]
 BASE_URL = 'https://api.zoom.us/v2/'
 
-
 '''CLIENT CLASS'''
 
 
@@ -32,20 +31,11 @@ class Client(BaseClient):
     def test(self):
         """ Tests connectivity with the application. """
 
-        self.get_user('me')
+        self.get_user('', 'me')
         return 'ok'
 
-    def get_user(self, email: str) -> Optional[IAMUserAppData]:
-        """ Queries the user in the application using REST API by its email, and returns an IAMUserAppData object
-        that holds the user_id, username, is_active and app_data attributes given in the query response.
-
-        :type email: ``str``
-        :param email: Email address of the user
-
-        :return: An IAMUserAppData object if user exists, None otherwise.
-        :rtype: ``Optional[IAMUserAppData]``
-        """
-        uri = f'/users/{email}'
+    def get_user(self, _, filter_value: str) -> Optional[IAMUserAppData]:
+        uri = f'/users/{filter_value}'
 
         res = self._http_request(
             method='GET',
@@ -59,10 +49,11 @@ class Client(BaseClient):
             user_app_data = res
             user_id = user_app_data.get('id')
             is_active = True if user_app_data.get('status') == 'active' else False
+            email = user_app_data.get('email')
             # the API does not provide user name
             username = ''
 
-            return IAMUserAppData(user_id, username, is_active, user_app_data)
+            return IAMUserAppData(user_id, username, is_active, user_app_data, email=email)
         return None
 
     def update_user(self, user_id: str, user_data: Dict[str, Any]) -> IAMUserAppData:
@@ -109,6 +100,12 @@ class Client(BaseClient):
 
         user_data = {'action': 'deactivate'}
         return self.update_user(user_id, user_data)
+
+    def get_app_fields(self):
+        user_app_data = self.get_user('', 'me')
+        if user_app_data:
+            return {k: underscoreToCamelCase(k) for k, _ in user_app_data.full_data.items()}
+        raise DemistoException('Could not retrieve fields for mapping')
 
     @staticmethod
     def handle_exception(user_profile: IAMUserProfile,
@@ -202,8 +199,19 @@ def test_module(client: Client):
         client.test()
     except Exception as e:
         error_message_index = str(e).find('"message":')
-        return_results(str(e)[error_message_index:])
-    return_results('ok')
+        error_message = str(e)[error_message_index:]
+        if 'Invalid access token' in error_message:
+            error_message = 'Invalid API Key. Please verify that your API key is valid.'
+        if "The Token's Signature resulted invalid" in error_message:
+            error_message = 'Invalid API Secret. Please verify that your API Secret is valid.'
+        return error_message
+    return 'ok'
+
+
+def get_mapping_fields(client: Client):
+    mapping = client.get_app_fields()
+    incident_type_scheme = SchemeTypeMapping(type_name=IAMUserProfile.DEFAULT_INCIDENT_TYPE, fields=mapping)
+    return GetMappingFieldsResponse([incident_type_scheme])
 
 
 def main():
@@ -212,7 +220,7 @@ def main():
     api_key = params.get('api_key')
     api_secret = params.get('api_secret')
     mapper_in = params.get('mapper_in', DEFAULT_INCOMING_MAPPER)
-    mapper_out = params.get('mapper_out', DEFAULT_OUTGOING_MAPPER)
+    # mapper_out = params.get('mapper_out', DEFAULT_OUTGOING_MAPPER)
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     command = demisto.command()
@@ -226,7 +234,9 @@ def main():
                              is_update_enabled=False,
                              create_if_not_exists=False,
                              mapper_in=mapper_in,
-                             mapper_out=mapper_out,
+                             # Currently we don't use scim API endpoints, so we don't map the arguments.
+                             mapper_out=None,
+                             get_user_iam_attrs=['id', 'username', 'email']
                              )
     client = Client(
         base_url=BASE_URL,
@@ -251,7 +261,9 @@ def main():
 
     try:
         if command == 'test-module':
-            test_module(client)
+            return_results(test_module(client))
+        elif command == 'get-mapping-fields':
+            return_results(get_mapping_fields(client))
     except Exception:
         # For any other integration command exception, return an error
         return_error(f'Failed to execute {command} command. Traceback: {traceback.format_exc()}')
