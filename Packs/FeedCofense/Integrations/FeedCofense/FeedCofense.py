@@ -186,20 +186,21 @@ class Client(BaseClient):
                         "geolocation": f'{ip_detail.get("latitude", "")},{ip_detail.get("longitude", "")}' if ip_detail
                         else "",
                         "asn": ip_detail.get("asn"),
-                        "threatid": f'<a href="{threat.get("threatDetailURL")}">{threat_id}</a>',
-                        "continentcode": ip_detail.get("continentCode"),
-                        "lookupon": ip_detail.get("lookupOn"),
-                        "roledescription": block.get("roleDescription"),
-                        "asnorganization": ip_detail.get("asnOrganization"),
-                        "continentname": ip_detail.get("continentName"),
+                        "cofensefeedthreatid": f'<a href="{threat.get("threatDetailURL")}">{threat_id}</a>',
+                        "cofensefeedcontinentcode": ip_detail.get("continentCode"),
+                        "cofensefeedlookupon": ip_detail.get("lookupOn"),
+                        "cofensefeedroledescription": block.get("roleDescription"),
+                        "cofensefeedasnorganization": ip_detail.get("asnOrganization"),
+                        "cofensefeedcontinentname": ip_detail.get("continentName"),
                         "countryname": ip_detail.get("countryName"),
-                        "infrastructuretypedescription": block.get("infrastructureTypeSubclass", {}).get("description"),
-                        "isp": ip_detail.get("isp"),
+                        "cofensefeedinfrastructuretypedescription":
+                            block.get("infrastructureTypeSubclass", {}).get("description"),
+                        "cofensefeedisp": ip_detail.get("isp"),
                         "organization": ip_detail.get("organization"),
-                        "postalcode": ip_detail.get("postalCode"),
-                        "subdivisionisocode": ip_detail.get("subdivisionIsoCode"),
-                        "subdivisionname": ip_detail.get("subdivisionName"),
-                        "timezone": ip_detail.get("timeZone")
+                        "cofensefeedpostalcode": ip_detail.get("postalCode"),
+                        "cofensefeedsubdivisionisocode": ip_detail.get("subdivisionIsoCode"),
+                        "cofensefeedsubdivisionname": ip_detail.get("subdivisionName"),
+                        "cofensefeedtimezone": ip_detail.get("timeZone")
                     }
                 }
 
@@ -249,18 +250,18 @@ class Client(BaseClient):
                         "malwarefamily": malware_family.get("familyName"),
                         "description": malware_family.get("description"),
                         "sourceoriginalseverity": file.get("severityLevel"),
-                        "threatid": f'<a href="{threat.get("threatDetailURL")}">{threat_id}</a>',
-                        "filename": file.get("fileName"),
+                        "cofensefeedthreatid": f'<a href="{threat.get("threatDetailURL")}">{threat_id}</a>',
+                        "cofensefeedfilename": file.get("fileName"),
                         "filetype": file_type,
                         "md5": file.get("md5Hex"),
                         "sha1": file.get("sha1Hex"),
-                        "sha224": file.get("sha224Hex"),
+                        "cofensefeedsha224": file.get("sha224Hex"),
                         "sha256": file.get("sha256Hex"),
-                        "sha384": file.get("sha384Hex"),
+                        "cofensefeedsha384": file.get("sha384Hex"),
                         "sha512": file.get("sha512Hex"),
                         "ssdeep": file.get("ssdeep"),
                         "fileextension": file.get("fileNameExtension"),
-                        "entereddate": arg_to_datetime(file.get("dateEntered")).strftime(DATE_FORMAT)  # type: ignore
+                        "cofensefeedentereddate": arg_to_datetime(file.get("dateEntered")).strftime(DATE_FORMAT)  # type: ignore
                         if file.get("dateEntered") else None
                     }
                 }

@@ -1,5 +1,5 @@
 Use the Cofense Feed Integration to fetch indicators from the feed.
-This integration was integrated and tested with version 2 of Cofense Feed
+This integration was integrated and tested with version 1 of Cofense Feed
 
 ## Configure Cofense Feed on Cortex XSOAR
 
