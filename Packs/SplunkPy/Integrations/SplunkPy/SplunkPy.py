@@ -1722,7 +1722,8 @@ def build_search_human_readable(args, parsed_search_results):
 
                 headers = update_headers_from_field_names(parsed_search_results, chosen_fields)
 
-    human_readable = tableToMarkdown("Splunk Search results for query: {}".format(args['query']),
+    query = args['query'].replace('`', r'\`')
+    human_readable = tableToMarkdown("Splunk Search results for query: {}".format(query),
                                      parsed_search_results, headers)
     return human_readable
 
@@ -2290,6 +2291,7 @@ def main():
     else:
         connection_args['username'] = username
         connection_args['password'] = password
+        connection_args['autologin'] = True
 
     if use_requests_handler:
         handle_proxy()
