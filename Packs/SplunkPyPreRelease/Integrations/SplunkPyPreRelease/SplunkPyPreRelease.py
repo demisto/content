@@ -310,17 +310,16 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
             # want to add data to the integration context (which will ruin the logic of the cache object)
             last_run_data.update({DUMMY: DUMMY})
 
-    if len(incidents) == 0:
+    if len(incidents) == 0 and len(reader) < batch_size:
         next_run = get_next_start_time(last_run_time, now, False)
         extensive_log('[SplunkPyPreRelease] SplunkPyPreRelease - Next run time with no incidents found: {}.'.format(next_run))
         new_last_run = {
             'time': next_run,
             'found_incidents_ids': last_run_fetched_ids,
+            'batch_size': default_batch_size
         }
     else:
-        if len(last_run_fetched_ids) + FETCH_LIMIT >= batch_size:
-            # If we almost saw all the events return from the query, we should increase the batch size to reach
-            # the new events.
+        if len(reader) == batch_size:
             batch_size += default_batch_size
         latest_incident_fetched_time = get_latest_incident_time(incidents)
         next_run = get_next_start_time(latest_incident_fetched_time, now, were_new_incidents_found=True)
