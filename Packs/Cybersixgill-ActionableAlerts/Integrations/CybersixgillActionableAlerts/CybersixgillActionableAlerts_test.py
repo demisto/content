@@ -199,11 +199,12 @@ content_item = {
 expected_alert_output = [{'name': 'Your organization was potentially targeted by a ransomware group',
                           'occurred': '2021-11-08T06:01:05.000000Z', 'severity': 3,
                           'CustomFields': {'cybersixgillthreatlevel': 'imminent',
-                                           'cybersixgillportalurl': 'https://portal.cybersixgill.com'
-                                                                    '/#/?actionable_alert=6188bd21017198385e228437',
+
                                            'cybersixgillthreattype': ['Brand Protection', 'Data Leak'],
                                            'cybersixgillassessment': 'text',
                                            'cybersixgillrecommendations': '',
+                                           'incidentlink': 'https://portal.cybersixgill.com'
+                                                           '/#/?actionable_alert=6188bd21017198385e228437',
                                            'cybersixgillstatus': 'In Treatment',
                                            'cybersixgillsite': 'rw_everest',
                                            'cybersixgillactor': None,
