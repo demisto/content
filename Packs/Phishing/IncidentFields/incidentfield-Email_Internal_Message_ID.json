@@ -5,6 +5,11 @@
         "Phishing Alerts",
         "FireEye EX Alert"
     ],
+    "systemAssociatedTypes": [
+        "Phishing",
+        "Phishing Alerts",
+        "Email Communication"
+    ],
     "caseInsensitive": true,
     "cliName": "emailinternalmessageid",
     "closeForm": false,
