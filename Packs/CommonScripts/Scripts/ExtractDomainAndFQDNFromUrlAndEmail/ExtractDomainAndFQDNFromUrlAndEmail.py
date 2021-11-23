@@ -45,7 +45,7 @@ def unescape_url(escaped_url):
 
 def get_fqdn(the_input):
     fqdn = None
-    domain = get_tld(the_input, fail_silently=True, as_object=True)
+    domain = get_tld(the_input, fail_silently=True, as_object=True, fix_protocol=True)
 
     # handle fqdn if needed
     if domain:
