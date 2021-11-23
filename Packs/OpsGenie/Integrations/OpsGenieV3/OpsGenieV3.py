@@ -73,7 +73,7 @@ class Client(BaseClient):
 
     @staticmethod
     def responders_to_json(responders: List, responder_key: str, one_is_dict: bool = False) \
-            -> Dict[str, List or Dict]:
+            -> Dict[str, Union[List, Dict]]:  # type: ignore
         """
         :param responders: the responders list which we get from demisto.args()
         :param responder_key: Some of the api calls need "responder" and others "responders" as a
@@ -87,14 +87,15 @@ class Client(BaseClient):
         if len(responders) % 3 != 0:
             raise DemistoException("responders must be list of: responder_type, value_type, value")
         responders_triple = list(zip(responders[::3], responders[1::3], responders[2::3]))
-        json_responders = {responder_key: []}
+        json_responders = {responder_key: []}  # type: ignore
         for responder_type, value_type, value in responders_triple:
             if responder_type == "user" and value_type == "name":
                 value_type = "username"
             json_responders[responder_key].append({value_type: value, "type": responder_type})
+        response = json_responders
         if len(responders_triple) == 1 and one_is_dict:
-            json_responders = {responder_key: json_responders[responder_key][0]}
-        return json_responders
+            response = {responder_key: json_responders[responder_key][0]}
+        return response  # type: ignore
 
     def create_alert(self, args: dict):
         args.update(Client.responders_to_json(args.get('responders', []), "responders"))
@@ -366,7 +367,7 @@ def get_polling_paging_result(client: Client, args: dict) -> CommandResults:
 
 
 def run_polling_command(args: dict, cmd: str, results_function: Callable,
-                        action_function: Optional[Callable] = None) -> Dict or CommandResults:
+                        action_function: Optional[Callable] = None) -> Union[Dict, CommandResults]:
 
     ScheduledCommand.raise_error_if_not_supported()
 
@@ -502,7 +503,7 @@ def test_module(client: Client) -> str:
     return 'Failed.'
 
 
-def create_alert(client: Client, args: Dict[str, Any]) -> CommandResults:
+def create_alert(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandResults]:
     args['responders'] = argToList(args.get('responders'))
     polling_args = {
         'request_type_suffix': ALERTS_SUFFIX,
@@ -548,7 +549,7 @@ def list_alerts(client: Client, args: Dict[str, Any]) -> CommandResults:
     return polling_result
 
 
-def delete_alert(client: Client, args: Dict[str, Any]) -> CommandResults:
+def delete_alert(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandResults]:
     polling_args = {
         'request_type_suffix': ALERTS_SUFFIX,
         'output_prefix': 'OpsGenie.DeletedAlert',
@@ -561,7 +562,7 @@ def delete_alert(client: Client, args: Dict[str, Any]) -> CommandResults:
     return polling_result
 
 
-def ack_alert(client: Client, args: Dict[str, Any]) -> CommandResults:
+def ack_alert(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandResults]:
     polling_args = {
         'request_type_suffix': ALERTS_SUFFIX,
         'output_prefix': 'OpsGenie.AckedAlert',
@@ -574,7 +575,7 @@ def ack_alert(client: Client, args: Dict[str, Any]) -> CommandResults:
     return polling_result
 
 
-def close_alert(client: Client, args: Dict[str, Any]) -> CommandResults:
+def close_alert(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandResults]:
     polling_args = {
         'request_type_suffix': ALERTS_SUFFIX,
         'output_prefix': 'OpsGenie.ClosedAlert',
@@ -587,7 +588,7 @@ def close_alert(client: Client, args: Dict[str, Any]) -> CommandResults:
     return polling_result
 
 
-def assign_alert(client: Client, args: Dict[str, Any]) -> CommandResults:
+def assign_alert(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandResults]:
     if args.get("owner_id"):
         owner = {"id": args.get("owner_id")}
     elif args.get("owner_username"):
@@ -607,7 +608,7 @@ def assign_alert(client: Client, args: Dict[str, Any]) -> CommandResults:
     return polling_result
 
 
-def add_responder_alert(client: Client, args: Dict[str, Any]) -> CommandResults:
+def add_responder_alert(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandResults]:
     args['responders'] = argToList(args.get('responders'))
     polling_args = {
         'request_type_suffix': ALERTS_SUFFIX,
@@ -632,7 +633,7 @@ def get_escalations(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def escalate_alert(client: Client, args: Dict[str, Any]) -> CommandResults:
+def escalate_alert(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandResults]:
     if args.get("escalation_id"):
         escalation = {"id": args.get("escalation_id")}
     elif args.get("escalation_name"):
@@ -652,7 +653,7 @@ def escalate_alert(client: Client, args: Dict[str, Any]) -> CommandResults:
     return polling_result
 
 
-def add_alert_tag(client: Client, args: Dict[str, Any]) -> CommandResults:
+def add_alert_tag(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandResults]:
     args['tags'] = argToList(args.get('tags'))
     polling_args = {
         'request_type_suffix': ALERTS_SUFFIX,
@@ -666,7 +667,7 @@ def add_alert_tag(client: Client, args: Dict[str, Any]) -> CommandResults:
     return polling_result
 
 
-def remove_alert_tag(client: Client, args: Dict[str, Any]) -> CommandResults:
+def remove_alert_tag(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandResults]:
     args['tags'] = argToList(args.get('tags'))
     polling_args = {
         'request_type_suffix': ALERTS_SUFFIX,
@@ -739,7 +740,7 @@ def get_on_call(client: Client, args: Dict[str, Any]) -> CommandResults:
     return command_result
 
 
-def create_incident(client: Client, args: Dict[str, Any]) -> CommandResults:
+def create_incident(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandResults]:
     args['responders'] = argToList(args.get('responders'))
     polling_args = {
         'request_type_suffix': INCIDENTS_SUFFIX,
@@ -753,7 +754,7 @@ def create_incident(client: Client, args: Dict[str, Any]) -> CommandResults:
     return polling_result
 
 
-def delete_incident(client: Client, args: Dict[str, Any]) -> CommandResults:
+def delete_incident(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandResults]:
     polling_args = {
         'request_type_suffix': INCIDENTS_SUFFIX,
         'output_prefix': 'OpsGenie.DeletedIncident',
@@ -798,7 +799,7 @@ def list_incidents(client: Client, args: Dict[str, Any]) -> CommandResults:
     return polling_result
 
 
-def close_incident(client: Client, args: Dict[str, Any]) -> CommandResults:
+def close_incident(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandResults]:
     polling_args = {
         'request_type_suffix': INCIDENTS_SUFFIX,
         'output_prefix': 'OpsGenie.ClosedIncident',
@@ -811,7 +812,7 @@ def close_incident(client: Client, args: Dict[str, Any]) -> CommandResults:
     return polling_result
 
 
-def resolve_incident(client: Client, args: Dict[str, Any]) -> CommandResults:
+def resolve_incident(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandResults]:
     polling_args = {
         'request_type_suffix': INCIDENTS_SUFFIX,
         'output_prefix': 'OpsGenie.ResolvedIncident',
@@ -824,7 +825,7 @@ def resolve_incident(client: Client, args: Dict[str, Any]) -> CommandResults:
     return polling_result
 
 
-def add_responder_incident(client: Client, args: Dict[str, Any]) -> CommandResults:
+def add_responder_incident(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandResults]:
     args['responders'] = argToList(args.get('responders'))
     polling_args = {
         'request_type_suffix': INCIDENTS_SUFFIX,
@@ -838,7 +839,7 @@ def add_responder_incident(client: Client, args: Dict[str, Any]) -> CommandResul
     return polling_result
 
 
-def add_tag_incident(client: Client, args: Dict[str, Any]) -> CommandResults:
+def add_tag_incident(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandResults]:
     args['tags'] = argToList(args.get('tags'))
     polling_args = {
         'request_type_suffix': INCIDENTS_SUFFIX,
@@ -852,7 +853,7 @@ def add_tag_incident(client: Client, args: Dict[str, Any]) -> CommandResults:
     return polling_result
 
 
-def remove_tag_incident(client: Client, args: Dict[str, Any]) -> CommandResults:
+def remove_tag_incident(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandResults]:
     args['tags'] = argToList(args.get('tags'))
     polling_args = {
         'request_type_suffix': INCIDENTS_SUFFIX,
