@@ -25,7 +25,7 @@
   "hidden": false,
   "associatedTypes": [
     "Phishing",
-  "Phishing Alerts",
+    "Phishing Alerts",
     "Trend Micro CAS Event",
     "Email Communication",
     "FireEye NX IPS Event",
@@ -34,7 +34,7 @@
   ],
   "systemAssociatedTypes": [
     "Phishing",
-  "Phishing Alerts",
+    "Phishing Alerts",
     "Email Communication"
   ],
   "associatedToAll": false,
