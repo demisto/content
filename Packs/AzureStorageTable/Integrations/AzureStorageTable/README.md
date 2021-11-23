@@ -1,4 +1,4 @@
-# Azure Storage Table
+# Azure Storage Table 
 Create and Manage Azure Storage Tables and Entities.
 This integration was integrated and tested with version "2020-10-02" of Azure Storage Table
 
