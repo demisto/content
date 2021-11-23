@@ -2,7 +2,7 @@
     "id": "indicator_cofensefeedtimezone",
     "version": -1,
     "modified": "2021-11-23T14:53:52.149574357+05:30",
-    "name": "CofenseFeed Time Zone",
+    "name": "Cofense Feed Time Zone",
     "ownerOnly": false,
     "cliName": "cofensefeedtimezone",
     "type": "shortText",

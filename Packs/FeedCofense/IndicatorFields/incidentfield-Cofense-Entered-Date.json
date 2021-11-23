@@ -2,7 +2,7 @@
     "id": "indicator_cofensefeedentereddate",
     "version": -1,
     "modified": "2021-11-23T14:47:48.933017199+05:30",
-    "name": "CofenseFeed Entered Date",
+    "name": "Cofense Feed Entered Date",
     "ownerOnly": false,
     "cliName": "cofensefeedentereddate",
     "type": "date",

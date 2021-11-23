@@ -2,7 +2,7 @@
     "id": "indicator_cofensefeedsha384",
     "version": -1,
     "modified": "2021-11-23T14:52:01.928551255+05:30",
-    "name": "CofenseFeed SHA384",
+    "name": "Cofense Feed SHA384",
     "ownerOnly": false,
     "cliName": "cofensefeedsha384",
     "type": "shortText",

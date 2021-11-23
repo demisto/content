@@ -2,7 +2,7 @@
     "id": "indicator_cofensefeedsubdivisionname",
     "version": -1,
     "modified": "2021-11-23T14:53:03.170433182+05:30",
-    "name": "CofenseFeed Subdivision Name",
+    "name": "Cofense Feed Subdivision Name",
     "ownerOnly": false,
     "cliName": "cofensefeedsubdivisionname",
     "type": "shortText",

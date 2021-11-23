@@ -2,7 +2,7 @@
     "id": "indicator_cofensefeedsubdivisionisocode",
     "version": -1,
     "modified": "2021-11-23T14:52:34.079099412+05:30",
-    "name": "CofenseFeed Subdivision Iso Code",
+    "name": "Cofense Feed Subdivision Iso Code",
     "ownerOnly": false,
     "cliName": "cofensefeedsubdivisionisocode",
     "type": "shortText",

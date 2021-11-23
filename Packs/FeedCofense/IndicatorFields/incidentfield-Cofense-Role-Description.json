@@ -2,7 +2,7 @@
     "id": "indicator_cofensefeedroledescription",
     "version": -1,
     "modified": "2021-11-23T14:51:24.58642602+05:30",
-    "name": "CofenseFeed Role Description",
+    "name": "Cofense Feed Role Description",
     "ownerOnly": false,
     "cliName": "cofensefeedroledescription",
     "type": "shortText",

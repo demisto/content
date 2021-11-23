@@ -2,7 +2,7 @@
     "id": "indicator_cofensefeedasnorganization",
     "version": -1,
     "modified": "2021-11-23T14:44:55.943714813+05:30",
-    "name": "CofenseFeed ASN Organization",
+    "name": "Cofense Feed ASN Organization",
     "ownerOnly": false,
     "cliName": "cofensefeedasnorganization",
     "type": "shortText",

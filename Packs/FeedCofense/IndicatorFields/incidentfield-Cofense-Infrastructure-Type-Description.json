@@ -2,7 +2,7 @@
     "id": "indicator_cofensefeedinfrastructuretypedescription",
     "version": -1,
     "modified": "2021-11-23T14:49:24.308617737+05:30",
-    "name": "CofenseFeed Infrastructure Type Description",
+    "name": "Cofense Feed Infrastructure Type Description",
     "ownerOnly": false,
     "cliName": "cofensefeedinfrastructuretypedescription",
     "type": "shortText",

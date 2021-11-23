@@ -2,7 +2,7 @@
     "id": "indicator_cofensefeedthreatid",
     "version": -1,
     "modified": "2021-11-23T14:53:29.254449736+05:30",
-    "name": "CofenseFeed Threat ID",
+    "name": "Cofense Feed Threat ID",
     "ownerOnly": false,
     "cliName": "cofensefeedthreatid",
     "type": "html",

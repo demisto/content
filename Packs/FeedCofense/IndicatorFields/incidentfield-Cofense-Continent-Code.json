@@ -2,7 +2,7 @@
     "id": "indicator_cofensefeedcontinentcode",
     "version": -1,
     "modified": "2021-11-23T14:46:21.273947795+05:30",
-    "name": "CofenseFeed Continent Code",
+    "name": "Cofense Feed Continent Code",
     "ownerOnly": false,
     "cliName": "cofensefeedcontinentcode",
     "type": "shortText",
