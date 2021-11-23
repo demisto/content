@@ -146,6 +146,9 @@ class Client(BaseClient):
         suffix = f'/company/{self.socradar_company_id}/incidents/v2'
         response = self._http_request(method='GET', url_suffix=suffix, params=api_params, timeout=60,
                                       error_handler=self.handle_error_response)
+        if not response.get('is_success'):
+            message = f"Error while getting API response. SOCRadar API Response: {response.get('message', '')}"
+            raise DemistoException(message=message)
         return response.get('data') if response else []
 
     def mark_incident_as_false_positive(self, incident_id: int, comments: Optional[str]):
