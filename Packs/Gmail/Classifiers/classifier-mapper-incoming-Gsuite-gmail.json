@@ -132,6 +132,13 @@
                     },
                     "simple": null
                 },
+                "Email Internal Message ID": {
+					"complex": {
+						"filters": [],
+						"root": "ID",
+						"transformers": []
+					}
+				},
                 "Email Message ID": {
                     "complex": {
                         "accessor": "",
