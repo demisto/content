@@ -132,7 +132,7 @@ class Client(BaseClient):
         self.tlp_color = tlp_color
 
     def get_collection_indicators(self, collection_name, offset, limit):
-        suffix = f'/threat/intelligence/socradar_collections'
+        suffix = '/threat/intelligence/socradar_collections'
         api_params = {'key': self.api_key, 'collection_names': [collection_name], 'limit': limit, 'offset': offset}
         response = self._http_request(method='GET', url_suffix=suffix, params=api_params, timeout=60,
                                       error_handler=self.handle_error_response)
@@ -173,7 +173,7 @@ class Client(BaseClient):
                 first_seen_date = indicator_dict.get('first_seen_date', '')
                 last_seen_date = indicator_dict.get('latest_seen_date', '')
                 maintainer_name = indicator_dict.get('maintainer_name', '')
-                extra_info = indicator_dict.get('extra_info', '')
+                extra_info = indicator_dict.get('extra_info', {})
 
                 indicator_obj = {
                     "type": indicator_type,

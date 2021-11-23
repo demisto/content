@@ -121,13 +121,12 @@ def test_fetch_indicators_handles_error(requests_mock):
     )
 
     collections_to_fetch = ['MockCollectionName']
-
-    with pytest.raises(DemistoException):
-        fetch_indicators(
-            client=client,
-            collections_to_fetch=collections_to_fetch,
-            limit=1
-        )
+    indicators = fetch_indicators(
+        client=client,
+        collections_to_fetch=collections_to_fetch,
+        limit=1
+    )
+    assert len(indicators) == 0
 
 
 def test_get_indicators_command(requests_mock):
@@ -197,9 +196,9 @@ def test_get_indicators_command_handles_error(requests_mock):
         'limit': 1,
         'collections_to_fetch': 'MockCollectionName'
     }
-
-    with pytest.raises(DemistoException):
-        get_indicators_command(client, mock_args)
+    result = get_indicators_command(client, mock_args)
+    assert isinstance(result, CommandResults)
+    assert len(result.outputs) == 0
 
 
 CONVERT_DEMISTO_INDICATOR_TYPE_INPUTS = [
