@@ -378,7 +378,7 @@ MOCKED_CREATE_THREAT_INDICATOR_OUTPUT = {
     "properties": {
         "confidence": 80,
         "created": "2021-11-21T12:38:43.9928873Z",
-        "createdByRef": "mmm@hh.com",
+        "createdByRef": "",
         "externalId": "indicator--9f973088-3ac8-4391-9eb3-97fa90d3e1b5",
         "lastUpdatedTimeUtc": "2021-11-21T12:38:43.9976961Z",
         "revoked": True,
@@ -423,7 +423,7 @@ MOCKED_UPDATE_THREAT_INDICATOR = {
     "properties": {
         "confidence": 80,
         "created": "2021-11-21T12:38:43.9928873Z",
-        "createdByRef": "mmm@hh.com",
+        "createdByRef": "",
         "externalId": "indicator--9f973088-3ac8-4391-9eb3-97fa90d3e1b5",
         "lastUpdatedTimeUtc": "2021-11-21T12:38:43.9976961Z",
         "revoked": True,
@@ -938,7 +938,7 @@ class TestHappyPath:
         # validate
         assert 'Threat Indicators (1 results)' in readable_output
 
-        assert context['ID'] == 'ind_name', 'Incident name in Azure Sentinel API is Incident ID in Cortex XSOAR'
+        assert context['Name'] == 'ind_name', 'Incident name in Azure Sentinel API is Incident ID in Cortex XSOAR'
         assert context['DisplayName'] == 'displayfortestmay'
 
         assert len(raw_response['value']) == 1
@@ -973,7 +973,7 @@ class TestHappyPath:
 
         assert 'Threat Indicators (1 results)' in readable_output
 
-        assert context['ID'] == 'ind_name', 'Incident name in Azure Sentinel API is Incident ID in Cortex XSOAR'
+        assert context['Name'] == 'ind_name', 'Incident name in Azure Sentinel API is Incident ID in Cortex XSOAR'
         assert context['DisplayName'] == 'displayfortestmay'
 
         assert len(raw_response['value']) == 1
@@ -1006,7 +1006,7 @@ class TestHappyPath:
         # validate
         assert 'New threat Indicator was created' in readable_output
 
-        assert context['ID'] == 'ind_name', 'Incident name in Azure Sentinel API is Incident ID in Cortex XSOAR'
+        assert context['Name'] == 'ind_name', 'Incident name in Azure Sentinel API is Incident ID in Cortex XSOAR'
         assert context['DisplayName'] == 'displayfortestmay'
 
         assert context['Tags'] == 'wereplacedthetag,'  # check why strip doesn't work
@@ -1057,7 +1057,7 @@ class TestHappyPath:
         # validate
         assert 'Tags were appended to ind_name Threat Indicator' in readable_output
 
-        assert context['ID'] == 'ind_name'
+        assert context['Name'] == 'ind_name'
         assert context['DisplayName'] == 'displayfortestmay'
 
         assert context['Tags'] == 'wereplacedthetag,'  # check why strip doesn't work
@@ -1086,7 +1086,7 @@ class TestHappyPath:
         # validate
         assert 'Tags were replaced to ind_name Threat Indicator.' in readable_output
 
-        assert context['ID'] == 'ind_name'
+        assert context['Name'] == 'ind_name'
         assert context['DisplayName'] == 'displayfortestmay'
 
         assert context['Tags'] == 'wereplacedthetag,'  # check why strip doesn't work
@@ -1118,7 +1118,7 @@ class TestHappyPath:
         # validate
         assert 'Threat Indicator ind_name was updated)' in readable_output
 
-        assert context['ID'] == 'ind_name', 'Incident name in Azure Sentinel API is Incident ID in Cortex XSOAR'
+        assert context['Name'] == 'ind_name', 'Incident name in Azure Sentinel API is Incident ID in Cortex XSOAR'
         assert context['DisplayName'] == 'newDisplayName'
 
 

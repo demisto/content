@@ -136,9 +136,7 @@ class AzureSentinelClient:
             proxy=proxy,
         )
 
-    def http_request(
-            self, method, url_suffix=None, full_url=None, params=None, data=None
-    ):
+    def http_request(self, method, url_suffix=None, full_url=None, params=None, data=None):
         """
         Wrapped the client's `http_request` for adding some required params and headers
         """
@@ -201,9 +199,7 @@ def incident_data_to_xsoar_format(inc_data):
         'AssigneeName': properties.get('owner', {}).get('assignedTo'),
         'AssigneeEmail': properties.get('owner', {}).get('email'),
         'Label': [
-            {'Name': label.get('labelName'), 'Type': label.get('labelType')}
-            for label in properties.get('labels', [])
-        ],
+            {'Name': label.get('labelName'), 'Type': label.get('labelType')} for label in properties.get('labels', [])],
         'FirstActivityTimeUTC': format_date(
             properties.get('firstActivityTimeUtc')
         ),
@@ -437,14 +433,8 @@ def severity_to_level(severity):
     return 0
 
 
-def generic_list_incident_items(
-        client,
-        incident_id,
-        items_kind,
-        key_in_raw_result,
-        outputs_prefix,
-        xsoar_transformer,
-):
+def generic_list_incident_items(client, incident_id, items_kind, key_in_raw_result, outputs_prefix,
+                                xsoar_transformer, ):
     """
     Get a list of incident's items
 
@@ -1041,70 +1031,47 @@ def threat_indicators_data_to_xsoar_format(ind_data):
 
     :param ind_data: (dict) The incident raw data.
     """
-    """
+
     properties = ind_data.get('properties', {})
 
     formatted_data = {
         'ID': ind_data.get('id'),
         'Name': ind_data.get('name'),
-        'eTag': ind_data.get('etag'),
+        'ETag': ind_data.get('etag'),
         'Type': ind_data.get('type'),
         'Kind': ind_data.get('kind'),
 
-        'Confidence': properties.get('confidence'),
-        'Created': properties.get('created'),
-        'CreatedByRef': properties.get('createdByRef'),
-        'ExternalId': properties.get('externalId'),
-        'LastUpdatedTimeUtc': properties.get('lastUpdatedTimeUtc'),
-        'Revoked': properties.get('revoked'),
-        'Source': properties.get('source'),
-        'AssigneeEmail': properties.get('owner', {}).get('email'),
-        'ThreatIntelligenceTags': properties.get('threatIntelligenceTags'),
-        'DisplayName': properties.get('displayName'),
-        'Description': properties.get('description'),
+        'Confidence': properties.get('confidence', ''),
+        'Created': properties.get('created', ''),
+        'CreatedByRef': properties.get('createdByRef', ''),
+        'ExternalId': properties.get('externalId', ''),
+        'LastUpdatedTimeUtc': properties.get('lastUpdatedTimeUtc', ''),
+        'Revoked': properties.get('revoked', ''),
+        'Source': properties.get('source', ''),
+        'ThreatIntelligenceTags': properties.get('threatIntelligenceTags', ''),
+        'Tags': properties.get('threatIntelligenceTags', ''),
+        'DisplayName': properties.get('displayName', ''),
+        'Description': properties.get('description', ''),
+        'Types': properties.get('threatTypes', ''),
+        'KillChainPhases': [{
+            "KillChainName": phase.get("killChainName"),
+            "PatternTypeValues": phase.get("phaseName")
+        }
+            for phase in properties.get('KillChainPhases', [])],
 
+        "ParsedPattern": [{
+            "patternTypeKey": pattern.get("patternTypeKey"),
+            "patternTypeValues": pattern.get("patternTypeValues")
+        }
+            for pattern in properties.get("parsedPattern", [])],
 
-
-        'ThreatIntelligenceTags': [{
-            'Name': label.get('labelName'),
-            'Type': label.get('labelType')
-        } for label in properties.get('labels', [])],
-        'FirstActivityTimeUTC': format_date(properties.get('firstActivityTimeUtc')),
-        'LastActivityTimeUTC': format_date(properties.get('lastActivityTimeUtc')),
-        'LastModifiedTimeUTC': format_date(properties.get('lastModifiedTimeUtc')),
-        'CreatedTimeUTC': format_date(properties.get('createdTimeUtc')),
-        'AlertsCount': properties.get('additionalData', {}).get('alertsCount'),
-        'BookmarksCount': properties.get('additionalData', {}).get('bookmarksCount'),
-        'CommentsCount': properties.get('additionalData', {}).get('commentsCount'),
-        'AlertProductNames': properties.get('additionalData', {}).get('alertProductNames'),
-        'Tactics': properties.get('tactics'),
-        'FirstActivityTimeGenerated': format_date(properties.get('firstActivityTimeGenerated')),
-        'LastActivityTimeGenerated': format_date(properties.get('lastActivityTimeGenerated')),
-        'Etag': ind_data.get('etag'),
-        'Deleted': False
+        'Pattern': properties.get('pattern', ''),
+        "PatternType": properties.get("patternType", ''),
+        "ValidFrom": properties.get("validFrom", ''),
+        "ValidUntil": properties.get("validUntil", ''),
+        # "Values": properties.get("parsedPattern")[0].get("patternTypeValues")[0].get("value")
     }
-    """
-
-    properties = ind_data.get('properties', {})
-    parsed_pattern = properties.get('parsedPattern')
-    formatted_data = {
-        'ID': ind_data.get('name'),
-        'DisplayName': properties.get('displayName'),
-        'Values': parsed_pattern[0].get('patternTypeValues')[0].get('value'),
-        'Types': parsed_pattern[0].get('patternTypeKey'),
-        'Source': properties.get('source'),
-        'Confidence': properties.get('confidence'),
-        # 'Alerts': properties.get(),
-        'Tags': ""
-    }
-
-    tags = properties.get('threatIntelligenceTags', [])
-    if tags:
-        for tag in tags:
-            formatted_data['Tags'] += tag
-            formatted_data['Tags'] += ','
-
-    formatted_data['Tags'].strip(",")
+    remove_nulls_from_dictionary(formatted_data)
     return formatted_data
 
 
@@ -1114,7 +1081,6 @@ def get_args_to_filter_ind_by(args):
         'maxConfidence': args.get('max_confidence', ''),
         'minValidUntil': args.get('min_valid_until', ''),
         'maxValidUntil': args.get('max_valid_until', ''),
-        'includeDisabled': args.get('include_disabled', ''),
         'sources': argToList(args.get('sources')),
         'keywords': argToList(args.get('keywords')),
         'threatTypes': argToList(args.get('threat_types')),
@@ -1132,6 +1098,13 @@ def get_args_to_filter_ind_by(args):
                 filtering_args['patternTypes'].append('domain-name')
             else:
                 filtering_args['patternTypes'].append(ind_type)
+
+    include_disabled = args.get('include_disabled', '')
+    if include_disabled:
+        if include_disabled == "true":
+            filtering_args['includeDisabled'] = True
+        else:
+            filtering_args['includeDisabled'] = False
 
     remove_nulls_from_dictionary(filtering_args)
 
@@ -1169,21 +1142,22 @@ def get_data_for_new_ind(args):
     if indicator_type == 'file':
         hash_type = args.get('hash_type')
         data['hashType'] = hash_type
-        data['pattern'] = f"[file:hashes.'{hash_type}' = '{value}']"
+        data['pattern'] = f"[file:hashes.'{hash_type}' = {value}]"
     else:
-        data['pattern'] = f'[{indicator_type}:value = ‘{value}’]'
+        data['pattern'] = f'[{indicator_type}:value = {value}]'
 
     data['killChainPhases'] = []
-    kill_chains = argToList(args.get('kill_chains'))
-    for kill_chain_phase in kill_chains:
-        data['killChainPhases'].append(
-            [
-                {
-                    'killChainName': kill_chain_phase,
-                    'phaseName': kill_chain_phase,
-                }
-            ]
-        )
+
+    kill_chains = argToList(args.get('kill_chains', []))
+    if kill_chains:
+        for kill_chain_phase in kill_chains:
+            data['killChainPhases'].append(
+                    {
+                        'killChainName': kill_chain_phase,
+                        'phaseName': kill_chain_phase,
+                    }
+            )
+
     remove_nulls_from_dictionary(data)
 
     return data
@@ -1219,7 +1193,7 @@ def extract_original_data_from_indicator(original_data):
 ######################### MAY'S NEW COMMANDS ###################################
 
 
-def list_threat_indicators_command(client, args):
+def list_threat_indicator_command(client, args):
     """
     returns a list of threat indicators
 
@@ -1244,10 +1218,11 @@ def list_threat_indicators_command(client, args):
             url_suffix += f'/{name}'
 
         result = client.http_request('GET', url_suffix, params=params)
+
     num_of_threat_indicators = 0
     threat_indicators = []
 
-    if result.get('value') is not None:
+    if result.get('value'):
         threat_indicators = [threat_indicators_data_to_xsoar_format(ind) for ind in result.get('value')]
         num_of_threat_indicators = len(threat_indicators)
 
@@ -1264,7 +1239,6 @@ def list_threat_indicators_command(client, args):
 
     return CommandResults(
         readable_output=readable_output,
-        #outputs_prefix='AzureSentinel.ThreatIndicator',
         outputs=outputs,
         outputs_key_field='ID',
         raw_response=result
@@ -1304,7 +1278,7 @@ def query_threat_indicators_command(client, args):
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='AzureSentinel.ThreatIndicator',
+        # outputs_prefix='AzureSentinel.ThreatIndicator',
         outputs=outputs,
         outputs_key_field='ID',
         raw_response=result
@@ -1346,6 +1320,8 @@ def update_threat_indicator_command(client, args):
         "kind": "indicator",
         "properties": updated_data
     }
+
+    #id_of_indicator = client.server_url + name
 
     new_url_suffix = f'threatIntelligence/main/indicators/{name}'
 
@@ -1464,7 +1440,7 @@ def main():
             'azure-sentinel-list-watchlist-items': list_watchlist_items_command,
             'azure-sentinel-delete-watchlist-item': delete_watchlist_item_command,
             'azure-sentinel-create-update-watchlist-item': create_update_watchlist_item_command,
-            'azure-sentinel-threat-indicators-list': list_threat_indicators_command,
+            'azure-sentinel-threat-indicator-list': list_threat_indicator_command,
             'azure-sentinel-threat-indicator-query': query_threat_indicators_command,
             'azure-sentinel-threat-indicator-create': create_threat_indicator_command,
             'azure-sentinel-threat-indicator-update': update_threat_indicator_command,
