@@ -5,7 +5,7 @@
     "name": "Reported Email CC",
     "ownerOnly": false,
     "description": "",
-    "cliName": "reportedemailfrom",
+    "cliName": "reportedemailcc",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
