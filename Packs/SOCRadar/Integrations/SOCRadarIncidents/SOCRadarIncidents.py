@@ -324,7 +324,10 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
     )
 
     for alert in alerts:
-        incident_created_time = int(datetime.strptime(alert.get('insert_date', '').split('.')[0], '%Y-%m-%dT%H:%M:%S').replace(tzinfo=timezone.utc).timestamp())
+        insert_date_str = alert.get('insert_date', '').split('.')[0]
+        insert_date = datetime.strptime(insert_date_str, '%Y-%m-%dT%H:%M:%S')
+        insert_date_utc = insert_date.replace(tzinfo=timezone.utc)
+        incident_created_time = int(insert_date_utc.timestamp())
         # to prevent duplicates, we are only adding incidents with creation_time > last fetched incident
         if last_fetch:
             if incident_created_time <= last_fetch:
