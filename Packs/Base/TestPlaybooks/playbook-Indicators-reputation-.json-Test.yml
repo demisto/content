@@ -686,61 +686,61 @@ tasks:
             value:
               simple: example.com
       - - operator: containsGeneral
-            left:
-              value:
-                simple: ${Domain.Name}
-              iscontext: true
-            right:
-              value:
-                simple: test.com
+          left:
+            value:
+              simple: ${Domain.Name}
+            iscontext: true
+          right:
+            value:
+              simple: test.com
       - - operator: containsGeneral
-            left:
-              value:
-                simple: ${Domain.Name}
-              iscontext: true
-            right:
-              value:
-                simple: www.xn--t1e2s3t4.com
+          left:
+            value:
+              simple: ${Domain.Name}
+            iscontext: true
+          right:
+            value:
+              simple: www.xn--t1e2s3t4.com
       - - operator: containsGeneral
-            left:
-              value:
-                simple: ${Domain.Name}
-              iscontext: true
-            right:
-              value:
-                simple: subtest.test.com
+          left:
+            value:
+              simple: ${Domain.Name}
+            iscontext: true
+          right:
+            value:
+              simple: subtest.test.com
       - - operator: containsGeneral
-            left:
-              value:
-                simple: ${Domain.Name}
-              iscontext: true
-            right:
-              value:
-                simple: ötest.com
+          left:
+            value:
+              simple: ${Domain.Name}
+            iscontext: true
+          right:
+            value:
+              simple: ötest.com
       - - operator: containsGeneral
-            left:
-              value:
-                simple: ${Domain.Name}
-              iscontext: true
-            right:
-              value:
-                simple: www.teöst.com
+          left:
+            value:
+              simple: ${Domain.Name}
+            iscontext: true
+          right:
+            value:
+              simple: www.teöst.com
       - - operator: containsGeneral
-            left:
-              value:
-                simple: ${Domain.Name}
-              iscontext: true
-            right:
-              value:
-                simple: 見.香港
+          left:
+            value:
+              simple: ${Domain.Name}
+            iscontext: true
+          right:
+            value:
+              simple: 見.香港
       - - operator: containsGeneral
-            left:
-              value:
-                simple: ${Domain.Name}
-              iscontext: true
-            right:
-              value:
-                simple: testing.com
+          left:
+            value:
+              simple: ${Domain.Name}
+            iscontext: true
+          right:
+            value:
+              simple: testing.com
     view: |-
       {
         "position": {
@@ -855,29 +855,29 @@ tasks:
             value:
               simple: not@domain.com
       - - operator: notContainsGeneral
-            left:
-              value:
-                simple: ${Domain.Name}
-              iscontext: true
-            right:
-              value:
-                simple: none.zip
+          left:
+            value:
+              simple: ${Domain.Name}
+            iscontext: true
+          right:
+            value:
+              simple: none.zip
       - - operator: notContainsGeneral
-            left:
-              value:
-                simple: ${Domain.Name}
-              iscontext: true
-            right:
-              value:
-                simple: test.notexist
+          left:
+            value:
+              simple: ${Domain.Name}
+            iscontext: true
+          right:
+            value:
+              simple: test.notexist
       - - operator: notContainsGeneral
-            left:
-              value:
-                simple: ${Domain.Name}
-              iscontext: true
-            right:
-              value:
-                simple: test[.com
+          left:
+            value:
+              simple: ${Domain.Name}
+            iscontext: true
+          right:
+            value:
+              simple: test[.com
     view: |-
       {
         "position": {
