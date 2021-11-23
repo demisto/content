@@ -1,0 +1,108 @@
+commonfields:
+  id: QRadarCreateAQLQuery
+  version: -1
+name: QRadarCreateAQLQuery
+script: ''
+type: python
+tags:
+- Utility
+comment: Build QRadar AQL Query. (Available from Cortex XSOAR 6.0.0).
+args:
+- name: base_values_to_search
+  required: true
+  isArray: true
+  description: The values of the first field to search. This can be a single value
+    or a list of comma delimited values. For example admin1,admin2
+- name: base_fields_to_search
+  isArray: true
+  description: The field names of the first field to search. This can be a single
+    value or a list of comma delimited values. For example admin1,admin2
+- name: base_field_state
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - include
+  - exclude
+  defaultValue: include
+  description: The state of the second field to search, meaning are the values in
+    the field should be included or excluded. Valid options are include or exclude.
+- name: base_field_match
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - exact
+  - partial
+  defaultValue: exact
+  description: Are the values of the second field suppose to be exact match or partial
+    match. Valid options are exact or partial.
+- name: select_fields
+  required: true
+  description: The list of fields to select within the AQL query The default fields
+    are DATEFORMAT(devicetime,'dd-MM-yyyy hh:mm'),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid),sourceip,destinationip,username
+  defaultValue: DATEFORMAT(devicetime,'dd-MM-yyyy hh:mm'),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid),sourceip,destinationip,username
+- name: time_frame
+  required: true
+  description: Time frame as used in AQL Examples can be LAST 7 DAYS START '2019-09-25
+    15:51' STOP '2019-09-25 17:51' For more examples review IBM's AQL documentation.
+  defaultValue: LAST 1 HOURS
+- name: first_additional_values
+  description: The values of the second field to search. This can be a single value
+    or a list of comma delimited values. For example admin1,admin2
+  isArray: true
+- name: first_additional_fields
+  description: The field names of the second field to search. This can be a single
+    value or a list of comma delimited values. For example admin1,admin2
+  isArray: true
+- name: first_additional_field_state
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - include
+  - exclude
+  description: The state of the second field to search, meaning are the values in
+    the field should be included or excluded. Valid options are include or exclude.
+  defaultValue: include
+- name: first_additional_field_match
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - exact
+  - partial
+  description: Are the values of the second field suppose to be exact match or partial
+    match. Valid options are exact or partial.
+  defaultValue: exact
+- name: second_additional_values
+  description: The values of the third field to search. This can be a single value
+    or a list of comma delimited values. For example admin1,admin2
+- name: second_additional_fields
+  description: The field names of the third field to search. This can be a single
+    value or a list of comma delimited values. For example username,user
+- name: second_additional_field_state
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - include
+  - exclude
+  description: The state of the third field to search, meaning are the values in the
+    field should be included or excluded. Valid options are include or exclude.
+  defaultValue: include
+- name: second_additional_field_match
+  auto: PREDEFINED
+  predefined:
+  - exact
+  - partial
+  description: Are the values of the third field suppose to be exact match or partial
+    match. Valid options are exact or partial. When choosing exact the AQL query will
+    use the = operator. When choosing partial the AQL query will ILIKE and add '%%'
+    to the values.
+  defaultValue: exact
+outputs:
+- contextPath: QRadarQuery
+  description: The resultant AQL query based on the inputs.
+  type: string
+subtype: python3
+dockerimage: demisto/python3:3.9.8.24399
+runas: DBotRole
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
