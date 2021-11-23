@@ -16,6 +16,7 @@
         "Spam",
         "Email"
     ],
+    "itemPrefix": ["Email"],
     "useCases": [
         "Phishing"
     ],
