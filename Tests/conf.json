@@ -4664,6 +4664,11 @@
             "timeout": 300
         },
         {
+            "integrations": ["Unit42IntelObjectsFeed", "Demisto REST API"],
+            "playbookID": "Unit42 Intel Objects Feed - Test",
+            "timeout": 300
+        },
+        {
             "playbookID": "Tanium Threat Response V2 Test",
             "integrations": ["Tanium Threat Response v2", "Demisto REST API"],
             "fromversion": "6.0.0",
