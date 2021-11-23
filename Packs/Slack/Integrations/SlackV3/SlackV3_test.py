@@ -4093,56 +4093,21 @@ async def test_fetch_channels_paginated_async(mocker):
     assert returned_time.replace(microsecond=0) >= (last_update + timedelta(seconds=8)).replace(microsecond=0)
 
 
-def test_handle_date_interval_minutes():
-    test_fetch_interval = "3 minutes"
+fetch_interval_test_bank = [
+    ("3 minutes", datetime.datetime(2015, 7, 18, 9, 53, 20)),
+    ("3   hours", datetime.datetime(2015, 7, 18, 12, 50, 20)),
+    ("3 days", datetime.datetime(2015, 7, 21, 9, 50, 20)),
+    ("3 months", datetime.datetime(2015, 10, 16, 9, 50, 20)),
+    ("3 years", datetime.datetime(2018, 7, 17, 9, 50, 20))
+]
+
+
+@pytest.mark.parametrize('test_fetch_interval, expected_datetime', fetch_interval_test_bank)
+def test_handle_date_interval(test_fetch_interval, expected_datetime):
     last_update_time = datetime.datetime(2015, 7, 18, 9, 50, 20)
 
-    from SlackV3 import handle_date_interval
+    from SlackV3 import return_next_interval
 
-    next_update_time = handle_date_interval(fetch_interval=test_fetch_interval, last_update_time=last_update_time)
+    next_update_time = return_next_interval(fetch_interval=test_fetch_interval, last_update_time=last_update_time)
 
-    assert next_update_time == datetime.datetime(2015, 7, 18, 9, 53, 20)
-
-
-def test_handle_date_interval_hour():
-    test_fetch_interval = "3 hours"
-    last_update_time = datetime.datetime(2015, 7, 18, 9, 50, 20)
-
-    from SlackV3 import handle_date_interval
-
-    next_update_time = handle_date_interval(fetch_interval=test_fetch_interval, last_update_time=last_update_time)
-
-    assert next_update_time == datetime.datetime(2015, 7, 18, 12, 50, 20)
-
-
-def test_handle_date_interval_day():
-    test_fetch_interval = "3 days"
-    last_update_time = datetime.datetime(2015, 7, 18, 9, 50, 20)
-
-    from SlackV3 import handle_date_interval
-
-    next_update_time = handle_date_interval(fetch_interval=test_fetch_interval, last_update_time=last_update_time)
-
-    assert next_update_time == datetime.datetime(2015, 7, 21, 9, 50, 20)
-
-
-def test_handle_date_interval_month():
-    test_fetch_interval = "3 months"
-    last_update_time = datetime.datetime(2015, 7, 18, 9, 50, 20)
-
-    from SlackV3 import handle_date_interval
-
-    next_update_time = handle_date_interval(fetch_interval=test_fetch_interval, last_update_time=last_update_time)
-
-    assert next_update_time == datetime.datetime(2015, 10, 16, 9, 50, 20)
-
-
-def test_handle_date_interval_year():
-    test_fetch_interval = "3 years"
-    last_update_time = datetime.datetime(2015, 7, 18, 9, 50, 20)
-
-    from SlackV3 import handle_date_interval
-
-    next_update_time = handle_date_interval(fetch_interval=test_fetch_interval, last_update_time=last_update_time)
-
-    assert next_update_time == datetime.datetime(2018, 7, 17, 9, 50, 20)
+    assert next_update_time == expected_datetime

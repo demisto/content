@@ -1248,12 +1248,15 @@ async def check_and_handle_entitlement(text: str, user: dict, thread_id: str) ->
     return ''
 
 
-def handle_date_interval(fetch_interval: str, last_update_time):
-    range_split = fetch_interval.strip().split(' ')
+def return_next_interval(fetch_interval: str, last_update_time):
+    """
+
+    """
+    range_split = " ".join(fetch_interval.split()).strip().split(' ')
     number = 0
     next_update_time = None
     if len(range_split) != 2:
-        return_error('date_range must be "number date_range_unit", examples: (2 hours, 4 minutes,6 months, 1 day, '
+        return_error('date_range must be "number date_range_unit", examples: (2 hours, 4 minutes, 6 months, 1 day, '
                      'etc.)')
     try:
         number = int(range_split[0])
@@ -1265,23 +1268,23 @@ def handle_date_interval(fetch_interval: str, last_update_time):
                     'years']:
         return_error('The unit of date_range is invalid. Must be minutes, hours, days, months or years.')
 
-    if 'second' in unit:
+    if unit.startswith('second'):
         next_update_time = last_update_time + timedelta(seconds=number)
-    elif 'minute' in unit:
+    elif unit.startswith('minute'):
         next_update_time = last_update_time + timedelta(minutes=number)
-    elif 'hour' in unit:
+    elif unit.startswith('hour'):
         next_update_time = last_update_time + timedelta(hours=number)
-    elif 'day' in unit:
+    elif unit.startswith('day'):
         next_update_time = last_update_time + timedelta(days=number)
-    elif 'month' in unit:
+    elif unit.startswith('month'):
         next_update_time = last_update_time + timedelta(days=number * 30)
-    elif 'year' in unit:
+    elif unit.startswith('year'):
         next_update_time = last_update_time + timedelta(days=number * 365)
     return next_update_time
 
 
 async def fetch_channels_iterable(last_update):
-    expected_next_run = handle_date_interval(fetch_interval=CHANNEL_FETCH_INTERVAL, last_update_time=last_update)
+    expected_next_run = return_next_interval(fetch_interval=CHANNEL_FETCH_INTERVAL, last_update_time=last_update)
     if datetime.now() >= expected_next_run:
         demisto.debug('Fetching updated channels as part of long-running')
         cursor = None
