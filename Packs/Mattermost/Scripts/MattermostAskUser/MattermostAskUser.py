@@ -24,7 +24,11 @@ entitlementString = entitlement + '@' + demisto.investigation()['id']
 
 if demisto.get(demisto.args(), 'task'):
     entitlementString += '|' + demisto.get(demisto.args(), 'task')
-message = '%s - Please reply `%s %s` or `%s %s`' % (demisto.args()['message'], option1, entitlementString, option2, entitlementString)
+message = '%s - Please reply `%s %s` or `%s %s`' % (demisto.args()['message'],
+                                                    option1,
+                                                    entitlementString,
+                                                    option2,
+                                                    entitlementString)
 
 demisto.results(demisto.executeCommand('send-notification', {
     'to': demisto.get(demisto.args(), 'user'),
