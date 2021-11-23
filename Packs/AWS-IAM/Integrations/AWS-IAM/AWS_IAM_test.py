@@ -33,6 +33,10 @@ PAGINATION_CHECK = [
         ['KeyPolicy'])
 ]
 
+ARG_LIST = [({'limit': '2', 'page_size': '3'}, 2, False, 3),
+            ({'page_size': '3', 'page': '4'}, 12, True, 3),
+            ({}, 50, False, None)]
+
 
 class AWSClient:
     def aws_session(self):
@@ -205,3 +209,12 @@ def test_get_user_login_profile(mocker):
 
     assert 'AWS IAM Login Profile for user test' in contents.get('HumanReadable')
     assert data in contents.get('EntryContext').values()
+
+
+@pytest.mark.parametrize('args, limit, is_manual, page_size', ARG_LIST)
+def test_get_limit(args, limit, is_manual, page_size):
+    res_limit, res_is_manual, res_page_size = AWS_IAM.get_limit(args)
+
+    assert res_limit == limit
+    assert res_is_manual == is_manual
+    assert res_page_size == page_size
