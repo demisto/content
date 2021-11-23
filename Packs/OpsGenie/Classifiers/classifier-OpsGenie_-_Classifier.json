@@ -1,36 +1,21 @@
 {
-	"brands": null,
-	"defaultIncidentType": "Unclassified",
-	"definitionId": "",
-	"description": "",
-	"feed": false,
-	"fromServerVersion": "",
-	"id": "OpsGenie",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {
-		"Alerts": "OpsGenie Alert",
-		"Incidents": "OpsGenie Incident"
-	},
-	"locked": false,
-	"logicalVersion": 3,
-	"mapping": null,
-	"name": "OpsGenie - Classifier",
-	"nameRaw": "OpsGenie - Classifier",
-	"packID": "",
-	"propagationLabels": [
-		"all"
-	],
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {
-		"complex": null,
-		"simple": "event_type"
-	},
-	"type": "classification",
-	"unclassifiedCases": null,
-	"version": -1
+    "defaultIncidentType": "Unclassified",
+    "description": "",
+    "feed": false,
+    "id": "OpsGenie",
+    "keyTypeMap": {
+        "Alerts": "OpsGenie Alert",
+        "Incidents": "OpsGenie Incident"
+    },
+    "name": "OpsGenie - Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "complex": null,
+        "simple": "event_type"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
 }
