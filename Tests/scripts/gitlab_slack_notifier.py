@@ -1,6 +1,7 @@
 import argparse
 import logging
 import os
+from typing import Optional, Dict
 from typing import Tuple
 
 import gitlab
@@ -103,8 +104,8 @@ def construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs)
         title += ' - Success'
         color = 'good'
 
-    content_fields = []
     failed_jobs_names = {job.name for job in pipeline_failed_jobs}
+    content_fields = []
     if failed_jobs_names:
         content_fields.append({
             "title": f'{"Failed Jobs"} - ({len(failed_jobs_names)})',
@@ -147,6 +148,53 @@ def collect_pipeline_data(gitlab_client, project_id, pipeline_id) -> Tuple[str, 
             logging.info(f'pipeline associated with failed job is {job.pipeline.get("web_url")}')
             failed_jobs.append(job)
     return pipeline.web_url, failed_jobs
+
+
+def get_coverage_color(coverage_percent: float) -> str:
+    """
+    Returns color to represent coverage percent.
+    Args:
+        coverage_percent (float): Coverage percent.
+
+    Returns:
+        (str): Representing the color
+    """
+    if coverage_percent <= 50.0:
+        return 'danger'
+    elif coverage_percent < 70.0:
+        return 'warning'
+    return 'good'
+
+
+def get_coverage_percent() -> float:
+    """
+    Returns the percentage of the coverage.
+
+    Returns:
+        (float): Representing the coverage
+    """
+    # TODO Implement
+    return 60.0
+
+
+def get_coverage_attachment(build_number: str) -> Optional[Dict]:
+    """
+    Returns content coverage report attachment.
+    Args:
+        build_number (str): Build number in CircleCI.
+
+    Returns:
+        (Dict): Attachment of the coverage if coverage report exists.
+    """
+    coverage_percent = get_coverage_percent()
+    coverage_url: str = f'https://xsoar.docs.pan.run/-/content/-/jobs/{job_id}/artifacts/artifacts/coverage_report/html/index.html'
+    return {
+        'fallback': f'Coverage Report Content: {coverage_percent:.2f}% Total Coverage',
+        'color': get_coverage_color(coverage_percent),
+        'title': f'Coverage Report Content: {coverage_percent:.2f}% Total Coverage',
+        'title_link': coverage_url,
+        'fields': []
+    }
 
 
 def main():
