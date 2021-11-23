@@ -11,7 +11,7 @@
         "Endpoint - High Or Critical Priority Host With Malware - Rule": "Malware",
         "Threat - Suspicious Email - URL - Rule": "Phishing Alerts"
     },
-    "name": "Splunk - Classifier_copy",
+    "name": "Splunk - Classifier",
     "transformer": {
         "simple": "source"
     },
