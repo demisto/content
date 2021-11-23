@@ -73,7 +73,7 @@ class Client(BaseClient):
 
     @staticmethod
     def responders_to_json(responders: List, responder_key: str, one_is_dict: bool = False) \
-            -> Dict[str, List[Dict] or Dict]:
+            -> Dict[str, List or Dict]:
         """
         :param responders: the responders list which we get from demisto.args()
         :param responder_key: Some of the api calls need "responder" and others "responders" as a
@@ -112,18 +112,17 @@ class Client(BaseClient):
             query = args.get("query")
         else:
             query = ""
-            if args.get("status", ALL_TYPE) != ALL_TYPE:
-                if args.get("status"):
-                    query = f'status={args.get("status").lower()}'
-            if args.get("priority", ALL_TYPE) != ALL_TYPE:
-                if args.get("priority"):
-                    query += f' AND ' if query else ''
-                    query += f'priority={args.get("priority")}'
-            if args.get("tags", []):
-                if args.get("tags"):
-                    query += f' AND ' if query else ''
-                    query += f'tag={args.get("tags")}'
-
+            status = args.get("status", ALL_TYPE)
+            if status != ALL_TYPE:
+                query = f'status={status.lower()}'
+            priority = args.get("priority", ALL_TYPE)
+            if priority != ALL_TYPE:
+                query += ' AND ' if query else ''
+                query += f'priority={priority}'
+            tags = args.get("tags", [])
+            if tags:
+                query += ' AND ' if query else ''
+                query += f'tag={tags}'
         params = {
             "sort": args.get("sort"),
             "limit": args.get("limit"),
@@ -268,17 +267,17 @@ class Client(BaseClient):
             query = args.get("query")
         else:
             query = ""
-            if args.get("status", ALL_TYPE) != ALL_TYPE:
-                status = args.get("status").lower()
-                query = f'status={status}'
-            if args.get("priority", ALL_TYPE) != ALL_TYPE:
-                if query:
-                    query += f' AND '
-                query += f'priority={args.get("priority")}'
-            if args.get("tags", []):
-                if query:
-                    query += f' AND '
-                query += f'tag={args.get("tags")}'
+            status = args.get("status", ALL_TYPE)
+            if status != ALL_TYPE:
+                query = f'status={status.lower()}'
+            priority = args.get("priority", ALL_TYPE)
+            if priority != ALL_TYPE:
+                query += ' AND ' if query else ''
+                query += f'priority={priority}'
+            tags = args.get("tags", [])
+            if tags:
+                query += ' AND ' if query else ''
+                query += f'tag={tags}'
 
         params = {
             "limit": args.get("limit"),
