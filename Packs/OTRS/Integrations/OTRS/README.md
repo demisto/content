@@ -3,7 +3,7 @@ This integration was integrated and tested with versions 5, 6 and 7 of OTRS.
 
 ## Prerequisite
 
-You have to enable the webservices in your OTRS instance. It is recommended to use the provided [template](https://gitlab.com/rhab/PyOTRS/raw/master/webservices_templates/GenericTicketConnectorREST.yml). This YAML configuration template includes the Route: /TicketList endpoint that is required for PyOTRS but which is not included in the default OTRS webservice setup.
+You have to enable the webservices in your OTRS instance. It is recommended to use the provided [template](https://gitlab.com/rhab/PyOTRS/raw/master/webservices_templates/GenericTicketConnectorREST.yml). This YAML configuration template includes the Route: /TicketList endpoint that is required for PyOTRS but which is not included in the default OTRS webservice setup. If you choose to use a different file rather than the webservice template, make sure to name your file `GenericTicketConnectorREST.yml`.
 
 ## Configure OTRS on Cortex XSOAR
 
