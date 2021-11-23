@@ -40,7 +40,8 @@ configuration:
   type: 16
 - display: Status
   name: status
-  additionalinfo: Fetch only events with selected status. If query is used, this paramter will be overrided.
+  additionalinfo: Fetch only events with selected status. If query is used, this paramter
+    will be overrided.
   defaultvalue: All
   required: false
   options:
@@ -49,7 +50,8 @@ configuration:
   - Closed
   type: 15
 - display: Priority
-  additionalinfo: Fetch only events with selected priority. If query is used, this paramter will be overrided.
+  additionalinfo: Fetch only events with selected priority. If query is used, this
+    paramter will be overrided.
   name: priority
   defaultvalue: All
   required: false
@@ -62,12 +64,14 @@ configuration:
   - P5
   type: 15
 - display: Tags
-  additionalinfo: Fetch only events with selected tags. If query is used, this paramter will be overrided.
+  additionalinfo: Fetch only events with selected tags. If query is used, this paramter
+    will be overrided.
   name: tags
   required: false
   type: 0
 - display: Query
-  additionalinfo: Query parameters will be used as URL encoded values for “query” key. i.e. 'https://api.opsgenie.com/v2/alerts?query=status%3Aopenor%20acknowledged%3Atrue&limit=10&sort=createdAt'
+  additionalinfo: Query parameters will be used as URL encoded values for “query”
+    key. i.e. 'https://api.opsgenie.com/v2/alerts?query=status%3Aopenor%20acknowledged%3Atrue&limit=10&sort=createdAt'
   name: query
   required: false
   type: 0
@@ -123,12 +127,12 @@ script:
       required: false
       secret: false
     - default: false
-      description: "Teams/users that the alert is routed to via notifications.\n
-        You need to insert it as List of triples - responder_type, value_type, value.\n
-        The responder_type can be: team, user, escalation or schedule.\n
-        The value_type can be: id or name.\n
-        The value you can find from the output of the commands '!opsgenie-get-teams', '!opsgenie-get-schedules' or '!opsgenie-get-escalations'.\n
-        For example: schedule,name,test_schedule,user,id,123,team,name,test_team."
+      description: "Teams/users that the alert is routed to via notifications.\n You\
+        \ need to insert it as List of triples - responder_type, value_type, value.\n\
+        \ The responder_type can be: team, user, escalation or schedule.\n The value_type\
+        \ can be: id or name.\n The value you can find from the output of the commands\
+        \ '!opsgenie-get-teams', '!opsgenie-get-schedules' or '!opsgenie-get-escalations'.\n\
+        \ For example: schedule,name,test_schedule,user,id,123,team,name,test_team."
       isArray: true
       name: responders
       required: false
@@ -207,10 +211,11 @@ script:
       required: false
       secret: false
     - default: false
-      description: "Name of the field that result set will be sorted by.\n
-        The options are: createdAt, updatedAt, tinyId, alias, message, status, acknowledged, isSeen
-        snoozed, snoozedUntil, count, lastOccurredAt, source, owner, integration.name,
-        integration.type, report.ackTime, report.closeTime, report.acknowledgedBy, report.closedBy"
+      description: "Name of the field that result set will be sorted by.\n The options\
+        \ are: createdAt, updatedAt, tinyId, alias, message, status, acknowledged,\
+        \ isSeen snoozed, snoozedUntil, count, lastOccurredAt, source, owner, integration.name,\
+        \ integration.type, report.ackTime, report.closeTime, report.acknowledgedBy,\
+        \ report.closedBy"
       isArray: false
       name: sort
       required: false
@@ -567,14 +572,12 @@ script:
       - tiny
       - alias
     - default: false
-      description: "Team/user that the alert is routed to via notifications.\n
-        For now, it can be inserted only one responder a time.\n
-        You need to insert it as List of triple - responder_type, value_type, value.\n
-        The responder_type can be: team or user.\n
-        The value_type can be: id or name.\n
-        The value you can find from the output of the command '!opsgenie-get-teams'.\n
-        For example: user,id,123
-        Another example: team,name,test_team."
+      description: "Team/user that the alert is routed to via notifications.\n For\
+        \ now, it can be inserted only one responder a time.\n You need to insert\
+        \ it as List of triple - responder_type, value_type, value.\n The responder_type\
+        \ can be: team or user.\n The value_type can be: id or name.\n The value you\
+        \ can find from the output of the command '!opsgenie-get-teams'.\n For example:\
+        \ user,id,123 Another example: team,name,test_team."
       isArray: true
       name: responders
       required: true
@@ -1039,12 +1042,11 @@ script:
       required: false
       secret: false
     - default: false
-      description: "Teams/users that the incident is routed to via notifications.\n
-        You need to insert it as List of triples - responder_type, value_type, value.\n
-        The responder_type can be: team or user.\n
-        The value_type can be: id or name.\n
-        The value you can find from the output of the command '!opsgenie-get-teams'.\n
-        For example: user,id,123,team,name,test_team."
+      description: "Teams/users that the incident is routed to via notifications.\n\
+        \ You need to insert it as List of triples - responder_type, value_type, value.\n\
+        \ The responder_type can be: team or user.\n The value_type can be: id or\
+        \ name.\n The value you can find from the output of the command '!opsgenie-get-teams'.\n\
+        \ For example: user,id,123,team,name,test_team."
       isArray: true
       name: responders
       required: false
@@ -1168,22 +1170,22 @@ script:
     polling: true
 
   - arguments:
-      - name: request_id
-        description: Id of request
-        required: true
-      - name: request_type_suffix
-        description: request_type_suffix
-        required: true
-      - name: output_prefix
-        description: output_prefix
-        required: true
-      - default: false
-        description: Interval in seconds between each poll.
-        isArray: false
-        name: interval_in_seconds
-        required: false
-        secret: false
-        defaultValue: '5'
+    - name: request_id
+      description: Id of request
+      required: true
+    - name: request_type_suffix
+      description: request_type_suffix
+      required: true
+    - name: output_prefix
+      description: output_prefix
+      required: true
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+      defaultValue: '5'
     deprecated: false
     execution: false
     hidden: true
@@ -1415,12 +1417,11 @@ script:
       secret: false
       defaultValue: '5'
     - default: false
-      description: "Teams/users that the incident is routed to via notifications.\n
-        You need to insert it as List of triples - responder_type, value_type, value.\n
-        The responder_type can be: team or user.\n
-        The value_type can be: id or name.\n
-        The value you can find from the output of the command '!opsgenie-get-teams'.\n
-        For example: user,id,123,team,name,test_team."
+      description: "Teams/users that the incident is routed to via notifications.\n\
+        \ You need to insert it as List of triples - responder_type, value_type, value.\n\
+        \ The responder_type can be: team or user.\n The value_type can be: id or\
+        \ name.\n The value you can find from the output of the command '!opsgenie-get-teams'.\n\
+        \ For example: user,id,123,team,name,test_team."
       isArray: true
       name: responders
       required: true
@@ -1601,7 +1602,7 @@ script:
     - contextPath: OpsGenie.Team.name
       description: Team name
       type: String
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   isfetch: true
   runonce: false
   script: '-'
@@ -1609,4 +1610,4 @@ script:
   subtype: python3
 fromversion: '6.2.0'
 tests:
-- No tests (auto formatted)
+- OpsGenieV3TestPlaybook
