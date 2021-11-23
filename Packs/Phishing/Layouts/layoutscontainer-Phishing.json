@@ -76,9 +76,9 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Case Details",
                         "static": false,
@@ -93,9 +93,9 @@
                         "i": "1vduzkpmlh-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Notes",
                         "readOnly": true,
@@ -112,9 +112,9 @@
                         "i": "1vduzkpmlh-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Work Plan",
                         "readOnly": true,
@@ -169,9 +169,9 @@
                         "i": "1vduzkpmlh-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Linked Incidents",
                         "readOnly": true,
@@ -188,9 +188,9 @@
                         "i": "1vduzkpmlh-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Child Incidents",
                         "readOnly": true,
@@ -207,9 +207,9 @@
                         "i": "1vduzkpmlh-4a31afa0-98ba-11e9-a519-93a53c759fe0",
                         "isVisible": true,
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Evidence",
                         "readOnly": true,
@@ -226,9 +226,9 @@
                         "i": "1vduzkpmlh-7717e580-9bed-11e9-9a3f-8b4b2158e260",
                         "isVisible": true,
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Team Members",
                         "readOnly": true,
@@ -310,9 +310,9 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Timeline Information",
                         "static": false,
@@ -362,9 +362,9 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Closing Information",
                         "static": false,
@@ -385,7 +385,7 @@
                         "h": 3,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
-                        "i": "1vduzkpmlh-swtuqptgvs-57f33cc0-97ee-11e9-b8bd-0b00be54d2d3",
+                        "i": "1vduzkpmlh-swtuqptgvs-1vduzkpmlh-swtuqptgvs-57f33cc0-97ee-11e9-b8bd-0b00be54d2d3",
                         "isVisible": true,
                         "items": [
                             {
@@ -397,9 +397,9 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Raw Email HTML",
                         "static": false,
@@ -412,7 +412,7 @@
                         "h": 3,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
-                        "i": "1vduzkpmlh-swtuqptgvs-5a552190-97ee-11e9-b8bd-0b00be54d2d3",
+                        "i": "1vduzkpmlh-swtuqptgvs-1vduzkpmlh-swtuqptgvs-5a552190-97ee-11e9-b8bd-0b00be54d2d3",
                         "isVisible": true,
                         "items": [
                             {
@@ -424,9 +424,9 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Email Text",
                         "static": false,
@@ -438,61 +438,53 @@
                         "displayType": "ROW",
                         "h": 3,
                         "hideName": false,
-                        "i": "1vduzkpmlh-swtuqptgvs-d431b9b0-97ee-11e9-b8bd-0b00be54d2d3",
+                        "i": "1vduzkpmlh-swtuqptgvs-1vduzkpmlh-swtuqptgvs-d431b9b0-97ee-11e9-b8bd-0b00be54d2d3",
                         "isVisible": true,
                         "items": [
                             {
-                                "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "emailfrom",
+                                "fieldId": "reportedemailorigin",
                                 "height": 22,
-                                "id": "58283a00-97ef-11e9-b8bd-0b00be54d2d3",
+                                "id": "aef00a60-4c34-11ec-b64a-e32273790ae7",
                                 "index": 0,
-                                "listId": "d431b9b0-97ee-11e9-b8bd-0b00be54d2d3",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
-                                "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "emailto",
+                                "fieldId": "reportedemailfrom",
                                 "height": 22,
-                                "id": "6136a5a0-97ef-11e9-b8bd-0b00be54d2d3",
+                                "id": "18bb4fa0-4838-11ec-a479-cbb268e453fc",
                                 "index": 1,
-                                "listId": "swtuqptgvs-d431b9b0-97ee-11e9-b8bd-0b00be54d2d3",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
-                                "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "emailsubject",
+                                "fieldId": "reportedemailto",
                                 "height": 22,
-                                "id": "53c5a330-97ef-11e9-b8bd-0b00be54d2d3",
+                                "id": "1b065110-4838-11ec-a479-cbb268e453fc",
                                 "index": 2,
-                                "listId": "swtuqptgvs-d431b9b0-97ee-11e9-b8bd-0b00be54d2d3",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "emailcc",
+                                "fieldId": "reportedemailsubject",
                                 "height": 22,
-                                "id": "66500950-97ef-11e9-b8bd-0b00be54d2d3",
+                                "id": "1d057c70-4838-11ec-a479-cbb268e453fc",
                                 "index": 3,
-                                "listId": "swtuqptgvs-d431b9b0-97ee-11e9-b8bd-0b00be54d2d3",
+                                "listId": "1vduzkpmlh-swtuqptgvs-d431b9b0-97ee-11e9-b8bd-0b00be54d2d3",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
-                                "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "emailbcc",
+                                "fieldId": "reportedemailcc",
                                 "height": 22,
-                                "id": "69b68ce0-97ef-11e9-b8bd-0b00be54d2d3",
+                                "id": "c8889f50-4c34-11ec-b64a-e32273790ae7",
                                 "index": 4,
-                                "listId": "swtuqptgvs-d431b9b0-97ee-11e9-b8bd-0b00be54d2d3",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -519,21 +511,10 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "emailmessageid",
-                                "height": 22,
-                                "id": "b8a85bd0-97ef-11e9-b8bd-0b00be54d2d3",
-                                "index": 7,
-                                "listId": "swtuqptgvs-d431b9b0-97ee-11e9-b8bd-0b00be54d2d3",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
                                 "fieldId": "reporteremailaddress",
                                 "height": 22,
                                 "id": "93c5bbb0-df83-11e9-9d3d-b355b2831118",
-                                "index": 8,
+                                "index": 7,
                                 "listId": "swtuqptgvs-d431b9b0-97ee-11e9-b8bd-0b00be54d2d3",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -543,7 +524,7 @@
                                 "fieldId": "emailsenderip",
                                 "height": 22,
                                 "id": "97d4e2c0-97ef-11e9-b8bd-0b00be54d2d3",
-                                "index": 9,
+                                "index": 8,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -553,15 +534,35 @@
                                 "fieldId": "emailtocount",
                                 "height": 22,
                                 "id": "8d6c3e50-97ef-11e9-b8bd-0b00be54d2d3",
-                                "index": 10,
+                                "index": 9,
                                 "listId": "d431b9b0-97ee-11e9-b8bd-0b00be54d2d3",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "emailmessageid",
+                                "height": 22,
+                                "id": "b8a85bd0-97ef-11e9-b8bd-0b00be54d2d3",
+                                "index": 10,
+                                "listId": "1vduzkpmlh-swtuqptgvs-d431b9b0-97ee-11e9-b8bd-0b00be54d2d3",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "emailinternalmessageid",
+                                "height": 22,
+                                "id": "75fd9cb0-4c37-11ec-8d74-114270d10470",
+                                "index": 11,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Email Basic Information",
                         "static": false,
@@ -573,63 +574,69 @@
                         "displayType": "ROW",
                         "h": 2,
                         "hideName": false,
-                        "i": "1vduzkpmlh-swtuqptgvs-49052550-97f0-11e9-b8bd-0b00be54d2d3",
+                        "i": "1vduzkpmlh-swtuqptgvs-1vduzkpmlh-swtuqptgvs-49052550-97f0-11e9-b8bd-0b00be54d2d3",
                         "isVisible": true,
                         "items": [
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "attachment",
-                                "height": 55,
+                                "height": 53,
                                 "id": "9cd0f990-ac6b-11e9-bb03-dd1b065c10a8",
                                 "index": 0,
                                 "listId": "swtuqptgvs-49052550-97f0-11e9-b8bd-0b00be54d2d3",
+                                "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
                                 "fieldId": "attachmenthash",
-                                "height": 24,
+                                "height": 22,
                                 "id": "bc56ef70-97f0-11e9-b8bd-0b00be54d2d3",
                                 "index": 1,
+                                "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
                                 "fieldId": "attachmentname",
-                                "height": 24,
+                                "height": 22,
                                 "id": "609ba8b0-97f0-11e9-b8bd-0b00be54d2d3",
                                 "index": 2,
+                                "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
                                 "fieldId": "attachmentsize",
-                                "height": 24,
+                                "height": 22,
                                 "id": "c2b35a70-97f0-11e9-b8bd-0b00be54d2d3",
                                 "index": 3,
+                                "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
                                 "fieldId": "attachmentextension",
-                                "height": 24,
+                                "height": 22,
                                 "id": "bf294950-97f0-11e9-b8bd-0b00be54d2d3",
                                 "index": 4,
+                                "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
                                 "fieldId": "attachmenttype",
-                                "height": 24,
+                                "height": 22,
                                 "id": "c47d4500-97f0-11e9-b8bd-0b00be54d2d3",
                                 "index": 5,
+                                "sectionItemType": "field",
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Email Attachments",
                         "static": false,
@@ -641,12 +648,12 @@
                         "displayType": "ROW",
                         "h": 4,
                         "hideName": false,
-                        "i": "1vduzkpmlh-swtuqptgvs-067d4900-98b4-11e9-97d7-ed26ef9e46c8",
+                        "i": "1vduzkpmlh-swtuqptgvs-1vduzkpmlh-swtuqptgvs-067d4900-98b4-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Incident Files",
                         "query": {
@@ -672,12 +679,12 @@
                         "displayType": "ROW",
                         "h": 3,
                         "hideName": false,
-                        "i": "1vduzkpmlh-swtuqptgvs-cc557320-98b7-11e9-b34a-852d068f44fe",
+                        "i": "1vduzkpmlh-swtuqptgvs-1vduzkpmlh-swtuqptgvs-cc557320-98b7-11e9-b34a-852d068f44fe",
                         "isVisible": true,
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 2,
                         "moved": false,
                         "name": "Indicators",
                         "query": "",
@@ -694,12 +701,12 @@
                         "displayType": "ROW",
                         "h": 1,
                         "hideName": false,
-                        "i": "1vduzkpmlh-swtuqptgvs-3205ebf0-98cc-11e9-a519-93a53c759fe0",
+                        "i": "1vduzkpmlh-swtuqptgvs-1vduzkpmlh-swtuqptgvs-3205ebf0-98cc-11e9-a519-93a53c759fe0",
                         "isVisible": true,
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Number of incidents per email address",
                         "query": "NumberOfPhishingAttemptPerUser",
@@ -715,12 +722,12 @@
                         "displayType": "ROW",
                         "h": 4,
                         "hideName": false,
-                        "i": "1vduzkpmlh-swtuqptgvs-0e149ea0-9d8e-11e9-a715-f7bbe72c84a2",
+                        "i": "1vduzkpmlh-swtuqptgvs-1vduzkpmlh-swtuqptgvs-0e149ea0-9d8e-11e9-a715-f7bbe72c84a2",
                         "isVisible": true,
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Email HTML Image",
                         "query": {
@@ -741,7 +748,7 @@
                         "displayType": "ROW",
                         "h": 2,
                         "hideName": false,
-                        "i": "1vduzkpmlh-swtuqptgvs-ac6702e0-df84-11e9-9d3d-b355b2831118",
+                        "i": "1vduzkpmlh-swtuqptgvs-1vduzkpmlh-swtuqptgvs-ac6702e0-df84-11e9-9d3d-b355b2831118",
                         "items": [
                             {
                                 "endCol": 2,
@@ -760,9 +767,9 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Email Type Information",
                         "static": false,
@@ -773,11 +780,11 @@
                     {
                         "h": 3,
                         "hideName": false,
-                        "i": "1vduzkpmlh-swtuqptgvs-b5924880-df88-11e9-9d3d-b355b2831118",
+                        "i": "1vduzkpmlh-swtuqptgvs-1vduzkpmlh-swtuqptgvs-b5924880-df88-11e9-9d3d-b355b2831118",
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "URL Screenshots",
                         "query": {
@@ -798,7 +805,7 @@
                         "h": 2,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
-                        "i": "1vduzkpmlh-swtuqptgvs-a12ae3c0-e032-11e9-9c9e-41d82f09b6f1",
+                        "i": "1vduzkpmlh-swtuqptgvs-1vduzkpmlh-swtuqptgvs-a12ae3c0-e032-11e9-9c9e-41d82f09b6f1",
                         "items": [
                             {
                                 "dropEffect": "move",
@@ -811,9 +818,9 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Email Authenticity Information",
                         "static": false,
@@ -827,7 +834,7 @@
                         "h": 2,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
-                        "i": "1vduzkpmlh-swtuqptgvs-8fd72e00-e837-11e9-9c9e-41d82f09b6f1",
+                        "i": "1vduzkpmlh-swtuqptgvs-1vduzkpmlh-swtuqptgvs-8fd72e00-e837-11e9-9c9e-41d82f09b6f1",
                         "items": [
                             {
                                 "endCol": 2,
@@ -838,9 +845,9 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Critical Assets",
                         "static": false,
@@ -853,7 +860,7 @@
                         "displayType": "ROW",
                         "h": 2,
                         "hideName": false,
-                        "i": "1vduzkpmlh-swtuqptgvs-7852ea30-2c7f-11ea-a369-15269a1bf356",
+                        "i": "1vduzkpmlh-swtuqptgvs-1vduzkpmlh-swtuqptgvs-7852ea30-2c7f-11ea-a369-15269a1bf356",
                         "items": [
                             {
                                 "endCol": 2,
@@ -880,9 +887,9 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Machine-learning Predictions",
                         "static": false,
@@ -893,10 +900,10 @@
                     {
                         "description": "Headers extracted from the original email.",
                         "displayType": "ROW",
-                        "h": 6,
+                        "h": 12,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
-                        "i": "1vduzkpmlh-swtuqptgvs-a142dfe0-b078-11ea-b16f-0d66a9047a0e",
+                        "i": "1vduzkpmlh-swtuqptgvs-1vduzkpmlh-swtuqptgvs-a142dfe0-b078-11ea-b16f-0d66a9047a0e",
                         "items": [
                             {
                                 "endCol": 6,
@@ -908,9 +915,9 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 3,
                         "moved": false,
                         "name": "Email Headers",
                         "static": false,
@@ -921,11 +928,11 @@
                     {
                         "h": 1,
                         "hideName": true,
-                        "i": "1vduzkpmlh-swtuqptgvs-044bccb0-befa-11eb-b351-7bcfe92e5e24",
+                        "i": "1vduzkpmlh-swtuqptgvs-1vduzkpmlh-swtuqptgvs-044bccb0-befa-11eb-b351-7bcfe92e5e24",
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Related Phishing Campaign",
                         "query": "LinkToPhishingCampaign",
@@ -941,7 +948,7 @@
                         "displayType": "ROW",
                         "h": 4,
                         "hideName": false,
-                        "i": "1vduzkpmlh-ef7fd3b0-fdb2-11eb-8fad-971332201675",
+                        "i": "1vduzkpmlh-swtuqptgvs-1vduzkpmlh-ef7fd3b0-fdb2-11eb-8fad-971332201675",
                         "items": [
                             {
                                 "endCol": 2,
@@ -971,9 +978,9 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Microsoft Anti-Spam Headers",
                         "static": false,
@@ -1194,7 +1201,7 @@
         ]
     },
     "group": "incident",
-    "id": "Phishing",
+    "id": "Phishing Incident",
     "mobile": {
         "sections": [
             {
@@ -1495,7 +1502,7 @@
             }
         ]
     },
-    "system": true,
+    "system": false,
     "version": -1,
     "fromVersion": "6.0.0",
     "description": ""
