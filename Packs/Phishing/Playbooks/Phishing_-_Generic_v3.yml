@@ -475,6 +475,20 @@ tasks:
       - "55"
       - "22"
       - "88"
+    scriptarguments:
+      UserID:
+        complex:
+          root: incident
+          accessor: emaifrom
+          transformers:
+            - operator: replaceMatch
+              args:
+                regex:
+                  value:
+                    simple: (?i).*<([A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,})>
+                replaceWith:
+                  value:
+                    simple: $1
     separatecontext: true
     view: |-
       {
