@@ -47,12 +47,12 @@
             "blockType": "URL",
             "role": "Payload",
             "roleDescription": "Location from which a payload is obtained",
-            "data": "http://example.com/mal.exe",
+            "data": "https://example.com/mal.exe",
             "data_1": {
-              "url": "http://example.com/mal.exe",
+              "url": "https://example.com/mal.exe",
               "domain": "example.com",
               "path": "/home/mal.exe",
-              "protocol": "http",
+              "protocol": "https",
               "host": "example.com"
             }
           },
@@ -83,8 +83,8 @@
             "blockType": "IPv4 Address",
             "role": "C2",
             "roleDescription": "Command and control location used by malware",
-            "data": "5.5.5.111",
-            "data_1": "5.5.5.111"
+            "data": "127.0.0.1",
+            "data_1": "127.0.0.1"
           },
           {
             "malwareFamily": {

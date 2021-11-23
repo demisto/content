@@ -12,6 +12,7 @@ urllib3.disable_warnings()
 
 INTEGRATION_NAME = "Cofense Feed"
 _RESULTS_PER_PAGE = 50  # Max for Cofense is 100
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 
 class Client(BaseClient):
@@ -164,8 +165,8 @@ class Client(BaseClient):
             indicator, value = self._convert_block(block)
             block["value"] = value
             block["type"] = indicator
-            block["threat_id"] = threat_id
-            malware_family: dict = block.get("malwarefamily", {})
+            block["threat_id"] = f'[{threat_id}]({threat.get("threatDetailURL")})'
+            malware_family: dict = block.get("malwareFamily", {})
             ip_detail: dict = block.get("ipDetail", {})
             if indicator:
                 indicator_obj = {
@@ -183,7 +184,84 @@ class Client(BaseClient):
                         },
                         "geocountry": ip_detail.get("countryIsoCode"),
                         "geolocation": f'{ip_detail.get("latitude", "")},{ip_detail.get("longitude", "")}' if ip_detail
-                        else ""
+                        else "",
+                        "asn": ip_detail.get("asn"),
+                        "threatid": f'<a href="{threat.get("threatDetailURL")}">{threat_id}</a>',
+                        "continentcode": ip_detail.get("continentCode"),
+                        "lookupon": ip_detail.get("lookupOn"),
+                        "roledescription": block.get("roleDescription"),
+                        "asnorganization": ip_detail.get("asnOrganization"),
+                        "continentname": ip_detail.get("continentName"),
+                        "countryname": ip_detail.get("countryName"),
+                        "infrastructuretypedescription": block.get("infrastructureTypeSubclass", {}).get("description"),
+                        "isp": ip_detail.get("isp"),
+                        "organization": ip_detail.get("organization"),
+                        "postalcode": ip_detail.get("postalCode"),
+                        "subdivisionisocode": ip_detail.get("subdivisionIsoCode"),
+                        "subdivisionname": ip_detail.get("subdivisionName"),
+                        "timezone": ip_detail.get("timeZone")
+                    }
+                }
+
+                if self.tlp_color:
+                    indicator_obj['fields']['trafficlightprotocol'] = self.tlp_color  # type: ignore
+
+                results.append(indicator_obj)
+
+        return results
+
+    def process_file_item(self, threat: dict) -> List[dict]:
+        """Gets a threat and processes them.
+
+        Arguments:
+            threat {dict} -- A threat from Cofense ("threats" key)
+
+        Returns:
+            list -- List of dicts representing File indicators.
+
+        Examples:
+            >>> Client.process_item({"id": 123, "executableSet": [{"md5Hex": "f57ba3e467c72bbdb44b0a65",
+            "fileName": "abc.exe"}]})
+            [{'value': 'f57ba3e467c72bbdb44b0a65', 'type': 'File', 'rawJSON': \
+            {'md5Hex': 'f57ba3e467c72bbdb44b0a65', 'fileName': 'abc.exe', 'value': 'f57ba3e467c72bbdb44b0a65',
+            'type': 'File', 'threat_id': 123}}]
+        """
+        results = list()
+        file_set: List[dict] = threat.get("executableSet", [])
+        threat_id = threat.get("id")
+        for file in file_set:
+            file_type = file.get("type")
+            indicator_type = FeedIndicatorType.File
+            value = file.get("md5Hex")
+            file["value"] = value
+            file["type"] = indicator_type
+            file["threat_id"] = f'[{threat_id}]({threat.get("threatDetailURL")})'
+            file['impact'] = file.get("severityLevel")
+            malware_family: dict = file.get("malwareFamily", {})
+
+            if indicator_type:
+                indicator_obj = {
+                    "value": value,
+                    "type": indicator_type,
+                    "rawJSON": file,
+                    "fields": {
+                        "tags": self.tags,
+                        "malwarefamily": malware_family.get("familyName"),
+                        "description": malware_family.get("description"),
+                        "sourceoriginalseverity": file.get("severityLevel"),
+                        "threatid": f'<a href="{threat.get("threatDetailURL")}">{threat_id}</a>',
+                        "filename": file.get("fileName"),
+                        "filetype": file_type,
+                        "md5": file.get("md5Hex"),
+                        "sha1": file.get("sha1Hex"),
+                        "sha224": file.get("sha224Hex"),
+                        "sha256": file.get("sha256Hex"),
+                        "sha384": file.get("sha384Hex"),
+                        "sha512": file.get("sha512Hex"),
+                        "ssdeep": file.get("ssdeep"),
+                        "fileextension": file.get("fileNameExtension"),
+                        "entereddate": arg_to_datetime(file.get("dateEntered")).strftime(DATE_FORMAT)  # type: ignore
+                        if file.get("dateEntered") else None
                     }
                 }
 
@@ -232,6 +310,8 @@ def fetch_indicators_command(
     for threat in client.build_iterator(begin_time=begin_time, end_time=end_time):
         # get maximum of limit
         new_indicators = client.process_item(threat)
+        new_file_indicators = client.process_file_item(threat)
+        new_indicators.extend(new_file_indicators)
         indicators.extend(new_indicators)
         if limit and limit < len(indicators):
             indicators = indicators[:limit]
