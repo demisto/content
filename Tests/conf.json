@@ -4745,6 +4745,11 @@
             "fromversion": "6.0.0"
         },
         {
+            "integrations": "OpsGenieV3",
+            "playbookID": "OpsGenieV3TestPlaybook",
+            "fromversion": "6.2.0"
+        },
+        {
             "playbookID": "test_AssignToNextShiftOOO",
             "fromversion": "5.5.0"
         }
@@ -4848,7 +4853,6 @@
         "Recorded Future Test": "Quota issue. Need to unskip in 1.12.21"
     },
     "skipped_integrations": {
-
         "_comment1": "~~~ NO INSTANCE ~~~",
         "Ipstack": "Usage limit reached (Issue 38063)",
         "AnsibleAlibabaCloud": "No instance - issue 40447",

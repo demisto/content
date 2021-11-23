@@ -1,5 +1,5 @@
 Integration with Atlassian OpsGenie
-This integration was integrated and tested with version xx of OpsGenieV3
+This integration was integrated and tested with OpsGenie
 
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-opsgenie-v3).
@@ -1128,64 +1128,6 @@ Delete an incident from OpsGenie
 
 >Waiting for request_id=a01676ee-93e1-4615-b986-b0091b70cdc2
 
-### opsgenie-get-polling-result
-***
-Inside command for polling
-
-
-#### Base Command
-
-`opsgenie-get-polling-result`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| request_id | Id of request. | Required | 
-| request_type_suffix | request_type_suffix. | Required | 
-| output_prefix | output_prefix. | Required | 
-| interval_in_seconds | Interval in seconds between each poll. Default is 5. | Optional | 
-
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
-### opsgenie-get-polling-paging-result
-***
-Inside command for polling
-
-
-#### Base Command
-
-`opsgenie-get-polling-paging-result`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| request_id | Id of request. | Required | 
-| request_type_suffix | request_type_suffix. | Required | 
-| output_prefix | output_prefix. | Required | 
-| interval_in_seconds | Interval in seconds between each poll. Default is 5. | Optional | 
-
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### opsgenie-get-incidents
 ***
 List the current incidents from OpsGenie.
@@ -1594,24 +1536,20 @@ Get teams
 
 
 ## Breaking changes from the previous version of this integration - OpsGenie v3
-%%FILL HERE%%
-The following sections list the changes in this version.
+There were added new commands and fetch-commands.
 
 ### Commands
 #### The following commands were removed in this version:
-* *opsgenie-list-alerts* - this command was replaced by XXX.
-* *opsgenie-get-alert* - this command was replaced by XXX.
-* *opsgenie-get-schedule* - this command was replaced by XXX.
-* *opsgenie-list-schedules* - this command was replaced by XXX.
+* *opsgenie-list-alerts* - this command was replaced by *opsgenie-get-alerts*.
+* *opsgenie-get-alert* - this command was replaced by *opsgenie-get-alerts*.
+* *opsgenie-get-schedule* - this command was replaced by *opsgenie-get-schedules*.
+* *opsgenie-list-schedules* - this command was replaced by *opsgenie-get-schedules*.
 
 ### Arguments
 #### The following arguments were removed in this version:
 
-In the *opsgenie-create-alert* command:
-* *priority* - this argument was replaced by XXX.
-
 In the *opsgenie-get-on-call* command:
-* *schedule-id* - this argument was replaced by XXX.
+* *schedule-id* - this argument was replaced by *schedule_id* and *schedule_name*.
 
 #### The behavior of the following arguments was changed:
 
@@ -1622,57 +1560,53 @@ In the *opsgenie-create-alert* command:
 #### The following outputs were removed in this version:
 
 In the *opsgenie-create-alert* command:
-* *OpsGenieV2.CreatedAlert.action* - this output was replaced by XXX.
-* *OpsGenieV2.CreatedAlert.alertId* - this output was replaced by XXX.
-* *OpsGenieV2.CreatedAlert.alias* - this output was replaced by XXX.
-* *OpsGenieV2.CreatedAlert.integrationId* - this output was replaced by XXX.
-* *OpsGenieV2.CreatedAlert.isSuccess* - this output was replaced by XXX.
-* *OpsGenieV2.CreatedAlert.processedAt* - this output was replaced by XXX.
-* *OpsGenieV2.CreatedAlert.requestId* - this output was replaced by XXX.
-* *OpsGenieV2.CreatedAlert.status* - this output was replaced by XXX.
-* *OpsGenieV2.CreatedAlert.success* - this output was replaced by XXX.
+* *OpsGenieV2.CreatedAlert.action* - this output was replaced by *OpsGenie.Alert.action*.
+* *OpsGenieV2.CreatedAlert.alertId* - this output was replaced by *OpsGenie.Alert.alertId*.
+* *OpsGenieV2.CreatedAlert.alias* - this output was replaced by *OpsGenie.Alert.alias*.
+* *OpsGenieV2.CreatedAlert.integrationId* - this output was replaced by *OpsGenie.Alert.integrationId*.
+* *OpsGenieV2.CreatedAlert.isSuccess* - this output was replaced by *OpsGenie.Alert.isSuccess*.
+* *OpsGenieV2.CreatedAlert.processedAt* - this output was replaced by *OpsGenie.Alert.processedAt*.
+* *OpsGenieV2.CreatedAlert.requestId* - this output was replaced by *OpsGenie.Alert.requestId*.
+* *OpsGenieV2.CreatedAlert.status* - this output was replaced by *OpsGenie.Alert.status*.
+* *OpsGenieV2.CreatedAlert.success* - this output was replaced by *OpsGenie.Alert.success*.
 
 In the *opsgenie-delete-alert* command:
-* *OpsGenieV2.DeletedAlert.action* - this output was replaced by XXX.
-* *OpsGenieV2.DeletedAlert.alertId* - this output was replaced by XXX.
-* *OpsGenieV2.DeletedAlert.alias* - this output was replaced by XXX.
-* *OpsGenieV2.DeletedAlert.integrationId* - this output was replaced by XXX.
-* *OpsGenieV2.DeletedAlert.isSuccess* - this output was replaced by XXX.
-* *OpsGenieV2.DeletedAlert.processedAt* - this output was replaced by XXX.
-* *OpsGenieV2.DeletedAlert.requestId* - this output was replaced by XXX.
-* *OpsGenieV2.DeletedAlert.status* - this output was replaced by XXX.
-* *OpsGenieV2.DeletedAlert.success* - this output was replaced by XXX.
+* *OpsGenieV2.DeletedAlert.action* - this output was replaced by *OpsGenie.DeletedAlert.action*.
+* *OpsGenieV2.DeletedAlert.alertId* - this output was replaced by *OpsGenie.DeletedAlert.alertId*.
+* *OpsGenieV2.DeletedAlert.alias* - this output was replaced by *OpsGenie.DeletedAlert.alias*.
+* *OpsGenieV2.DeletedAlert.integrationId* - this output was replaced by *OpsGenie.DeletedAlert.integrationId*.
+* *OpsGenieV2.DeletedAlert.isSuccess* - this output was replaced by *OpsGenie.DeletedAlert.isSuccess*.
+* *OpsGenieV2.DeletedAlert.processedAt* - this output was replaced by *OpsGenie.DeletedAlert.processedAt*.
+* *OpsGenieV2.DeletedAlert.requestId* - this output was replaced by *OpsGenie.DeletedAlert.requestId*.
+* *OpsGenieV2.DeletedAlert.status* - this output was replaced by *OpsGenie.DeletedAlert.status*.
+* *OpsGenieV2.DeletedAlert.success* - this output was replaced by *OpsGenie.DeletedAlert.success*.
 
 In the *opsgenie-ack-alert* command:
-* *OpsGenieV2.AckedAlert.action* - this output was replaced by XXX.
-* *OpsGenieV2.AckedAlert.alertId* - this output was replaced by XXX.
-* *OpsGenieV2.AckedAlert.alias* - this output was replaced by XXX.
-* *OpsGenieV2.AckedAlert.integrationId* - this output was replaced by XXX.
-* *OpsGenieV2.AckedAlert.isSuccess* - this output was replaced by XXX.
-* *OpsGenieV2.AckedAlert.processedAt* - this output was replaced by XXX.
-* *OpsGenieV2.AckedAlert.requestId* - this output was replaced by XXX.
-* *OpsGenieV2.AckedAlert.status* - this output was replaced by XXX.
-* *OpsGenieV2.AckedAlert.success* - this output was replaced by XXX.
+* *OpsGenieV2.AckedAlert.action* - this output was replaced by *OpsGenie.AckedAlert.action*.
+* *OpsGenieV2.AckedAlert.alertId* - this output was replaced by *OpsGenie.AckedAlert.alertId*.
+* *OpsGenieV2.AckedAlert.alias* - this output was replaced by *OpsGenie.AckedAlert.alias*.
+* *OpsGenieV2.AckedAlert.integrationId* - this output was replaced by *OpsGenie.AckedAlert.integrationId*.
+* *OpsGenieV2.AckedAlert.isSuccess* - this output was replaced by *OpsGenie.AckedAlert.isSuccess*.
+* *OpsGenieV2.AckedAlert.processedAt* - this output was replaced by *OpsGenie.AckedAlert.processedAt*.
+* *OpsGenieV2.AckedAlert.requestId* - this output was replaced by *OpsGenie.AckedAlert.requestId*.
+* *OpsGenieV2.AckedAlert.status* - this output was replaced by *OpsGenie.AckedAlert.status*.
+* *OpsGenieV2.AckedAlert.success* - this output was replaced by *OpsGenie.AckedAlert.success*.
 
 In the *opsgenie-get-on-call* command:
-* *OpsGenieV2.OnCall._parent.enabled* - this output was replaced by XXX.
-* *OpsGenieV2.OnCall._parent.id* - this output was replaced by XXX.
-* *OpsGenieV2.OnCall._parent.name* - this output was replaced by XXX.
-* *OpsGenieV2.OnCall.onCallParticipants.id* - this output was replaced by XXX.
-* *OpsGenieV2.OnCall.onCallParticipants.name* - this output was replaced by XXX.
-* *OpsGenieV2.OnCall.onCallParticipants.type* - this output was replaced by XXX.
+* *OpsGenieV2.OnCall._parent.enabled* - this output was replaced by *OpsGenie.Schedule.OnCall._parent.enabled*.
+* *OpsGenieV2.OnCall._parent.id* - this output was replaced by *OpsGenie.Schedule.OnCall._parent.id*.
+* *OpsGenieV2.OnCall._parent.name* - this output was replaced by *OpsGenie.Schedule.OnCall._parent.name*.
+* *OpsGenieV2.OnCall.onCallParticipants.id* - this output was replaced by *OpsGenie.Schedule.OnCall.onCallParticipants.id*.
+* *OpsGenieV2.OnCall.onCallParticipants.name* - this output was replaced by *OpsGenie.Schedule.OnCall.onCallParticipants.name*.
+* *OpsGenieV2.OnCall.onCallParticipants.type* - this output was replaced by *OpsGenie.Schedule.OnCall.onCallParticipants.type*.
 
 In the *opsgenie-close-alert* command:
-* *OpsGenieV2.CloseAlert.action* - this output was replaced by XXX.
-* *OpsGenieV2.CloseAlert.alertId* - this output was replaced by XXX.
-* *OpsGenieV2.CloseAlert.alias* - this output was replaced by XXX.
-* *OpsGenieV2.CloseAlert.integrationId* - this output was replaced by XXX.
-* *OpsGenieV2.CloseAlert.isSuccess* - this output was replaced by XXX.
-* *OpsGenieV2.CloseAlert.processedAt* - this output was replaced by XXX.
-* *OpsGenieV2.CloseAlert.requestId* - this output was replaced by XXX.
-* *OpsGenieV2.CloseAlert.status* - this output was replaced by XXX.
-* *OpsGenieV2.CloseAlert.success* - this output was replaced by XXX.
-
-## Additional Considerations for this version
-%%FILL HERE%%
-* Insert any API changes, any behavioral changes, limitations, or restrictions that would be new to this version.
+* *OpsGenieV2.CloseAlert.action* - this output was replaced by *OpsGenie.ClosedAlert.action*.
+* *OpsGenieV2.CloseAlert.alertId* - this output was replaced by *OpsGenie.ClosedAlert.alertId*.
+* *OpsGenieV2.CloseAlert.alias* - this output was replaced by *OpsGenie.ClosedAlert.alias*.
+* *OpsGenieV2.CloseAlert.integrationId* - this output was replaced by *OpsGenie.ClosedAlert.integrationId*.
+* *OpsGenieV2.CloseAlert.isSuccess* - this output was replaced by *OpsGenie.ClosedAlert.isSuccess*.
+* *OpsGenieV2.CloseAlert.processedAt* - this output was replaced by *OpsGenie.ClosedAlert.processedAt*.
+* *OpsGenieV2.CloseAlert.requestId* - this output was replaced by *OpsGenie.ClosedAlert.requestId*.
+* *OpsGenieV2.CloseAlert.status* - this output was replaced by *OpsGenie.ClosedAlert.status*.
+* *OpsGenieV2.CloseAlert.success* - this output was replaced by *OpsGenie.ClosedAlert.success*.
