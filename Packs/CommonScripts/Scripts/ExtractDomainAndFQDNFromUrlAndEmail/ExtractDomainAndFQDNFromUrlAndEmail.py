@@ -1,7 +1,7 @@
+
 import demistomock as demisto
 from CommonServerPython import *  # lgtm [py/polluting-import]
-from tld import get_tld, get_fld
-from validate_email import validate_email
+from tld import get_tld, get_fld, Result
 from urllib.parse import urlparse, parse_qs, unquote
 import re
 
@@ -48,10 +48,10 @@ def get_fqdn(the_input):
     domain = get_tld(the_input, fail_silently=True, as_object=True, fix_protocol=True)
 
     # handle fqdn if needed
-    if domain:
+    if domain and isinstance(domain, Result):
         # get the subdomain using tld.subdomain
         subdomain = domain.subdomain
-        if (subdomain):
+        if subdomain:
             fqdn = "{}.{}".format(subdomain, domain.fld)
 
     return fqdn
