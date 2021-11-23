@@ -616,11 +616,10 @@ Returns all connections.
 | --- | --- | --- |
 | limit | The maximum number of connections to return. Default is 50. | Optional | 
 | offset | The offset number to begin listing connections. Default is 0. | Optional | 
-| status | Get the connections that match only to a specific status. possible states: disconnected, timeout, waiting, connected. Can be a list, for example status=timeout,waiting. Possible values are: . | Optional | 
-| ip | Get the connections that match only to a specific IP. Can be a list, for example ip=1.1.1.1,8.8.8.8. Possible values are: . | Optional | 
-| platform | Get the connections that match only to a specific platform (OS). (Windows, Linux). Can be a list, for example platform=Windows,Linux . Possible values are: . | Optional | 
-| hostname | Get the connections that match only to a specific hostname, can be a list, for example, hostname="hostname1,hostname2". Possible values are: . | Optional | 
-| id | Get the connections that match only to a specific id, can be a list. for example, id="123,356". Possible values are: . | Optional | 
+| status | Comma-seperated list of statuses to get the connections that match only those statuses, for example status=connected,waiting. Possible values are: disconnected, timeout, waiting, connected. | Optional | 
+| ip | Comma-seperated list of ips to get the connections that match only those ips, for example status=1.1.1.1,1.1.1.1. | Optional | 
+| platform | Comma-seperated list of platforms to get the connections that match only those platforms, for example platform=Linux,Windows. | Optional | 
+| hostname | Comma-seperated list of hostnames to get the connections that match only those hostnames, for example hostname=host1,host2. | Optional | 
 
 
 #### Context Output
@@ -643,7 +642,44 @@ Returns all connections.
 
 
 #### Command Example
-``` ```
+```!tanium-tr-list-connections```
+
+#### Context Example
+```json
+{
+    "Tanium": {
+        "Connection": [
+            {
+                "clientId": "123",
+                "connectedAt": "2021-09-22T12:08:39.000Z",
+                "eid": "2",
+                "hasTools": true,
+                "hostname": "hostname",
+                "id": "remote:hostname:123:",
+                "initiatedAt": "2021-09-22T12:08:35.000Z",
+                "ip": "1.1.1.1",
+                "message": "The connection has been disconnected.",
+                "personaId": 0,
+                "platform": "Windows",
+                "status": "disconnected",
+                "userId": "1"
+            },
+            {
+                "clientId": "11111",
+                "hostname": "localhost",
+                "id": "remote:localhost:11111:",
+                "initiatedAt": "2021-09-09T08:17:38.000Z",
+                "ip": "1.2.3.4",
+                "message": "The connection has timed out.",
+                "personaId": 0,
+                "platform": "Linux",
+                "status": "timeout",
+                "userId": "1"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
@@ -884,9 +920,9 @@ Returns all downloaded files in the system.
 | limit | The maximum number of files to return. Default is 50. | Optional | 
 | offset | Offset to start getting file downloads. Default is 0. | Optional | 
 | sort | Column which to sort by. | Optional | 
-| hash | Get files that match only to a specific hash, can be a list, hash=123,768,878. Possible values are: . | Optional | 
-| hostname | Get files that match only to a specific hostname, can be a list, hostname=hostname1,hostname2,hostname3. Possible values are: . | Optional | 
-| process_start_time | Get files that match only to a process that was created in a specific time, for example process_time_start=2019-09-03T17:51:40.000Z. Possible values are: . | Optional | 
+| hostname | Comma-seperated list of hostnames to get the downloaded files that match only those hostnames, for example hostname=host1,host2. | Optional | 
+| hash | Comma-seperated list of hashes to get the downloaded files that match only those hashes, for example hash=123,456. | Optional | 
+| process_time_start | Get the downloaded files that match only to the process time start, for example process_time_start=2019-09-03T17:51:40.000Z. | Optional | 
 
 
 #### Context Output
@@ -909,10 +945,47 @@ Returns all downloaded files in the system.
 
 
 #### Command Example
-``` ```
+```!tanium-tr-list-file-downloads limit=2```
+
+#### Context Example
+```json
+{
+    "Tanium": {
+        "FileDownload": [
+            {
+                "downloaded": "2020-01-15 13:04:02.827",
+                "evidenceType": "file",
+                "hash": "99297a0e626ca092ff1884ad28f54453",
+                "hostname": "host1",
+                "lastModified": "2020-01-15T08:57:19.000Z",
+                "path": "C:\\Program Files (x86)\\log1.txt",
+                "processCreationTime": "2019-09-03T17:51:40.000Z",
+                "size": 10485904,
+                "uuid": "c0531415-87a6-4d28-a226-b485784b1881"
+            },
+            {
+                "downloaded": "2020-01-15 18:17:10.595",
+                "evidenceType": "file",
+                "hash": "7d1677decbfaf1598ccd745fc197eb1c",
+                "hostname": "host2",
+                "lastModified": "2020-01-13T13:11:35.000Z",
+                "path": "C:\\Program Files (x86)\\log8.txt",
+                "processCreationTime": "2019-09-03T17:51:40.000Z",
+                "size": 10485940,
+                "uuid": "3043ef9c-78a9-4f19-8fb9-ddbab202d03b"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
+>### File downloads
+>|Uuid|Path|Evidence Type|Hostname|Process Creation Time|Size|
+>|---|---|---|---|---|---|
+>| c0531415-87a6-4d28-a226-b485784b1881 | C:\Program Files (x86)\log1.txt | file | host1 | 2019-09-03T17:51:40.000Z | 10485904 |
+>| 3043ef9c-78a9-4f19-8fb9-ddbab202d03b | C:\Program Files (x86)\log8.txt | file | host2 | 2019-09-03T17:51:40.000Z | 10485940 |
 
 
 ### tanium-tr-get-downloaded-file
@@ -1654,8 +1727,8 @@ Returns a list of all available evidence in the system.
 | limit | The maximum number of evidences to return. Default is 50. | Optional | 
 | offset | Offset to start getting the events result set. Default is 0. | Optional | 
 | sort | A comma-separated list of fields by which to sort, using +/- prefixes for ascending/descending, in order of priority (left to right). | Optional | 
-| hostname | Get events that match only to a specific hostname. Possible values are: . | Optional | 
-| type | Get events that only match to a specific type. Possible values are: . | Optional | 
+| hostname | Comma-seperated list of hostnames to get the event evidences that match only those hostnames, for example hostname=123,456. | Optional | 
+| type | Get the event evidences that match only to a specific type, for example type=file. | Optional | 
 
 
 #### Context Output
@@ -1671,10 +1744,53 @@ Returns a list of all available evidence in the system.
 
 
 #### Command Example
-``` ```
+```!tanium-tr-event-evidence-list limit=3```
+
+#### Context Example
+```json
+{
+    "Tanium": {
+        "Evidence": [
+            {
+                "createdAt": "2021-10-06T06:40:48.297Z",
+                "evidenceType": "snapshot",
+                "hostname": "host1",
+                "name": "host1.db",
+                "size": 152064000,
+                "username": "administrator",
+                "uuid": "832dec40-1cc2-4e53-881a-7f61cba835bc"
+            },
+            {
+                "createdAt": "2021-10-06T06:42:07.010Z",
+                "evidenceType": "snapshot",
+                "hostname": "host2",
+                "name": "host2.db",
+                "size": 152064000,
+                "username": "administrator",
+                "uuid": "340a3ac4-560d-430f-bd50-96615d763171"
+            },
+            {
+                "createdAt": "2021-10-07T12:15:30.711Z",
+                "evidenceType": "snapshot",
+                "hostname": "host3",
+                "name": "host3.db",
+                "size": 152064000,
+                "username": "administrator",
+                "uuid": "cf4d8628-8527-4014-8ed2-bdca6c592488"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
+>### Evidence list
+>|Uuid|Name|Evidence Type|Hostname|Created At|Username|
+>|---|---|---|---|---|---|
+>| 832dec40-1cc2-4e53-881a-7f61cba835bc | host1.db | snapshot | host1 | 2021-10-06T06:40:48.297Z | administrator |
+>| 340a3ac4-560d-430f-bd50-96615d763171 | host2.db | snapshot | host2 | 2021-10-06T06:42:07.010Z | administrator |
+>| cf4d8628-8527-4014-8ed2-bdca6c592488 | host3.db | snapshot | host3 | 2021-10-07T12:15:30.711Z | administrator |
 
 
 ### tanium-tr-event-evidence-get-properties
@@ -2734,11 +2850,11 @@ Get system status, to retrieve all possible connection's client ids, hostnames, 
 | --- | --- | --- |
 | limit | The maximum number of entries to return. Default is 50. | Optional | 
 | offset | The offset number to begin listing entries. Default is 0. | Optional | 
-| status | Get reporting clients that match only to a specific status. possible values are: Blocked, Leader, Normal, Slow link. can be a list, for example status= Blocked,Leader. Possible values are: . | Optional | 
-| ip_client | Get reporting clients that match only to a specific client IP. can be a list, for example: ip_client=1.1.1.1,8.8.8.8,3.3.3.3 . Possible values are: . | Optional | 
-| ip_server | Get reporting clients that match only to a specific server IP. can be a list, for example: ip_server=1.1.1.1,8.8.8.8,3.3.3.3 . Possible values are: . | Optional | 
-| port | Ger reporting clients that match only to a specific port. Possible values are: . | Optional | 
-| hostname | Get reporting clients that match only to a specific host, can be a list, for example, hostname="hostname1,hostname2,hostname3". Possible values are: . | Optional | 
+| status | Comma-seperated list of statuses to get the system-status that match only those statuses, for example status=Blocked,Leader. | Optional | 
+| ip_server | Comma-seperated list of ip servers to get the system-status that match only those ip servers, for example ip_server=1.1.1.1,2.2.2.2. | Optional | 
+| ip_client | Comma-seperated list of ip clients to get the system-status that match only those ip clients, for example ip_client=1.1.1.1,2.2.2.2. | Optional | 
+| hostname | Comma-seperated list of hostnames to get the system-status that match only those hostnames, for example hostname=host1,host2. | Optional | 
+| port | port to get the system-status that match only this port, for example port=80. | Optional | 
 
 
 #### Context Output
@@ -2758,10 +2874,57 @@ Get system status, to retrieve all possible connection's client ids, hostnames, 
 
 
 #### Command Example
-``` ```
+```!tanium-tr-get-system-status```
+
+#### Context Example
+```json
+{
+    "Tanium": {
+        "SystemStatus": [
+            {
+                "clientId": 11111,
+                "computerId": 11111,
+                "fullVersion": "7.2.314.3476",
+                "hostName": "tanium",
+                "ipaddressClient": "1.1.1.1",
+                "ipaddressServer": "1.1.1.1",
+                "lastRegistration": "2021-10-07T12:23:13Z",
+                "portNumber": 17472,
+                "protocolVersion": 314,
+                "publicKeyValid": true,
+                "receiveState": "None",
+                "registeredWithTls": false,
+                "sendState": "None",
+                "status": "Leader"
+            },
+            {
+                "clientId": 22222,
+                "computerId": 22222,
+                "fullVersion": "7.4.5.1204",
+                "hostName": "hostname1",
+                "ipaddressClient": "1.2.3.4",
+                "ipaddressServer": "1.2.3.4",
+                "lastRegistration": "2021-10-07T12:23:12Z",
+                "portNumber": 17472,
+                "protocolVersion": 315,
+                "publicKeyValid": true,
+                "receiveState": "None",
+                "registeredWithTls": true,
+                "sendState": "None",
+                "status": "Leader"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
+>### Reporting clients
+>|Host Name|Client Id|Ipaddress Client|Ipaddress Server|Port Number|
+>|---|---|---|---|---|
+>| taniumlinux | 11111 | 1.1.1.1 | 1.1.1.1 | 17472 |
+>| hostname1 | 222222 | 1.2.3.4 | 1.2.3.4 | 17472 |
 
 
 ## Breaking changes from the previous version of this integration - Tanium Threat Response v2

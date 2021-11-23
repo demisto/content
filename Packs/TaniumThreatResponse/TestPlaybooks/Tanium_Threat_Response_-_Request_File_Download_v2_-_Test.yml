@@ -1,0 +1,257 @@
+description: Tanium Threat Response - Request File Download v2 - Test
+id: 2a6607c1-d42c-421b-86c8-3aa8bb105f1b
+inputs:
+- description: Platform such as Windows/Linux
+  key: platform
+  playbookInputQuery: null
+  required: true
+  value:
+    simple: Windows
+- description: ""
+  key: delete-connection
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: "true"
+- description: ""
+  key: download-file
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: "true"
+- description: ""
+  key: path
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: C:\Windows\System32\AtBroker.exe
+name: Tanium Threat Response - Request File Download v2 - Test
+outputs: []
+sourceplaybookid: Tanium Threat Response - Create Connection v2
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 66589216-a39d-453e-893f-3dfc5140974d
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 66589216-a39d-453e-893f-3dfc5140974d
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 20
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      client-id:
+        simple: ${Tanium.SystemStatus.clientId}
+      delete-connection:
+        simple: ${inputs.delete-connection}
+      download-file:
+        simple: ${inputs.download-file}
+      hostname:
+        simple: ${Tanium.SystemStatus.hostName}
+      ip:
+        simple: ${Tanium.SystemStatus.ipaddressClient}
+      path:
+        simple: ${inputs.path}
+      platform:
+        simple: ${inputs.platform}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Request file download from Tanium Threat Response v2.
+      id: 833efb59-9bb8-4165-8751-b748f191c5b3
+      iscommand: false
+      name: Tanium Threat Response - Request File Download v2
+      playbookId: Tanium Threat Response - Request File Download v2
+      type: playbook
+      version: -1
+    taskid: 833efb59-9bb8-4165-8751-b748f191c5b3
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 440
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Tanium Threat Response v2
+      description: Get system status, to retrieve all possible connection's client
+        ids, hostnames, ips.
+      id: c2adc90a-422c-42e5-87c6-64b68ce8d9eb
+      iscommand: true
+      name: tanium-tr-get-system-status
+      script: Tanium Threat Response v2|||tanium-tr-get-system-status
+      type: regular
+      version: -1
+    taskid: c2adc90a-422c-42e5-87c6-64b68ce8d9eb
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 210
+        }
+      }
+  "6":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: File
+          operator: isNotEmpty
+      label: "yes"
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 32607539-4711-428e-89b3-04c2d4bde666
+      iscommand: false
+      name: Check Output
+      type: condition
+      version: -1
+    taskid: 32607539-4711-428e-89b3-04c2d4bde666
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 630
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      message:
+        simple: Error
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints an error entry with a given message
+      id: 18886da3-fa7c-408a-8d1b-ef6aa7480923
+      iscommand: false
+      name: 'Print Error '
+      script: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: 18886da3-fa7c-408a-8d1b-ef6aa7480923
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 850
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: Success
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: dc5f3b94-fb4b-4ae6-8d1a-712c3f0366a8
+      iscommand: false
+      name: Print Success
+      script: Print
+      type: regular
+      version: -1
+    taskid: dc5f3b94-fb4b-4ae6-8d1a-712c3f0366a8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": 850
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 925,
+        "width": 920,
+        "x": -230,
+        "y": 20
+      }
+    }
+  }

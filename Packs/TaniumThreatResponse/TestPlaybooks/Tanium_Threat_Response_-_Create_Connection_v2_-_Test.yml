@@ -1,0 +1,159 @@
+description: Tanium Threat Response - Create Connection v2 - Test
+id: 14f1fb62-d3db-4d07-8014-e71cd8ce8be7
+inputs:
+- description: ""
+  key: platform
+  playbookInputQuery: null
+  required: true
+  value:
+    simple: Windows
+name: Tanium Threat Response - Create Connection v2 - Test
+outputs: []
+sourceplaybookid: Tanium Threat Response - Create Connection v2
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 66589216-a39d-453e-893f-3dfc5140974d
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 66589216-a39d-453e-893f-3dfc5140974d
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 30
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7972d711-0b43-4285-8107-798ede68d466
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 7972d711-0b43-4285-8107-798ede68d466
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 675
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      client-id:
+        simple: ${Tanium.SystemStatus.clientId}
+      hostname:
+        simple: ${Tanium.SystemStatus.hostName}
+      ip:
+        simple: ${Tanium.SystemStatus.ipaddressClient}
+      platform:
+        simple: ${inputs.platform}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates a connection to a remote destination from Tanium Threat
+        Response v2
+      id: 2057081f-2653-4d16-8c7f-df0bc16302c6
+      iscommand: false
+      name: Tanium Threat Response - Create Connection v2
+      playbookId: Tanium Threat Response - Create Connection v2
+      type: playbook
+      version: -1
+    taskid: 2057081f-2653-4d16-8c7f-df0bc16302c6
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 425
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Tanium Threat Response v2
+      description: Get system status, to retrieve all possible connection's client
+        ids, hostnames, ips.
+      id: 66b1fd7e-b209-4f3b-8e6d-c79cc9ce1cd5
+      iscommand: true
+      name: tanium-tr-get-system-status
+      script: Tanium Threat Response v2|||tanium-tr-get-system-status
+      type: regular
+      version: -1
+    taskid: 66b1fd7e-b209-4f3b-8e6d-c79cc9ce1cd5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 210
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 710,
+        "width": 380,
+        "x": 50,
+        "y": 30
+      }
+    }
+  }

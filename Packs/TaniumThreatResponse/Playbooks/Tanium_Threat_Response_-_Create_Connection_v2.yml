@@ -1,32 +1,31 @@
-description: Creates a connection to a remote destination from Tanium (V2 only).
-id: Tanium Threat Response V2 - Create Connection
+description: Creates a connection to a remote destination from Tanium Threat Response v2
+  v2
+id: Tanium Threat Response - Create Connection v2
 inputs:
 - description: ""
   key: client-id
-  playbookInputQuery:
+  playbookInputQuery: null
   required: true
-  value:
-    simple: "2232836718"
+  value: {}
 - description: ""
   key: hostname
-  playbookInputQuery:
+  playbookInputQuery: null
   required: true
-  value:
-    simple: taniumlinux
+  value: {}
 - description: ""
   key: ip
-  playbookInputQuery:
+  playbookInputQuery: null
   required: true
-  value:
-    simple: ""
+  value: {}
 - description: ""
   key: platform
-  playbookInputQuery:
+  playbookInputQuery: null
   required: true
-  value:
-    simple: Linux
-name: Tanium Threat Response V2 - Create Connection
-outputs: []
+  value: {}
+name: Tanium Threat Response - Create Connection v2
+outputs:
+- contextPath: Tanium.Connection.id
+  description: New connection id.
 starttaskid: "0"
 tasks:
   "0":
@@ -43,12 +42,11 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 939dead3-4901-4ba8-821b-99b3c677694b
+      id: 66589216-a39d-453e-893f-3dfc5140974d
       iscommand: false
       name: ""
       version: -1
-      description: ''
-    taskid: 939dead3-4901-4ba8-821b-99b3c677694b
+    taskid: 66589216-a39d-453e-893f-3dfc5140974d
     timertriggers: []
     type: start
     view: |-
@@ -82,13 +80,13 @@ tasks:
     task:
       brand: Tanium Threat Response v2
       description: Creates a local or remote connection.
-      id: f0a548a8-59c2-4b05-8afe-ed81e92ce5db
+      id: 88f41e90-a787-43fc-8748-e09b03da286e
       iscommand: true
       name: Create Connection
       script: Tanium Threat Response v2|||tanium-tr-create-connection
       type: regular
       version: -1
-    taskid: f0a548a8-59c2-4b05-8afe-ed81e92ce5db
+    taskid: 88f41e90-a787-43fc-8748-e09b03da286e
     timertriggers: []
     type: regular
     view: |-
@@ -138,13 +136,13 @@ tasks:
         1. Initiate the operation.
         2. Poll to check if the operation completed.
         3. (optional) Get the results of the operation.
-      id: 0466579e-891a-4f2a-820a-90f03d8f805b
+      id: 0adb5d60-544d-4281-8c95-e2b919ef6d0d
       iscommand: false
       name: GenericPolling
       playbookId: GenericPolling
       type: playbook
       version: -1
-    taskid: 0466579e-891a-4f2a-820a-90f03d8f805b
+    taskid: 0adb5d60-544d-4281-8c95-e2b919ef6d0d
     timertriggers: []
     type: playbook
     view: |-
@@ -165,20 +163,19 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 7822a39a-4735-4f58-893e-b8fe70f25c4c
+      id: 7972d711-0b43-4285-8107-798ede68d466
       iscommand: false
       name: Done
       type: title
       version: -1
-      description: ''
-    taskid: 7822a39a-4735-4f58-893e-b8fe70f25c4c
+    taskid: 7972d711-0b43-4285-8107-798ede68d466
     timertriggers: []
     type: title
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 570
         }
       }
 version: -1
@@ -187,14 +184,13 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 550,
+        "height": 575,
         "width": 380,
         "x": 50,
         "y": 60
       }
     }
   }
+fromversion: "6.0.0"
 tests:
-- Tanium Threat Response V2 Test
-- Tanium Threat Response Test
-fromversion: 5.0.0
+- Tanium Threat Response - Create Connection v2 - Test
