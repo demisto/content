@@ -79,10 +79,10 @@ def add_sub_alerts_shared_fields(incident, item_info):
     incident['severity'] = THREAT_LEVEL_TO_SEVERITY[item_info.get('threat_level', 'unknown')]
     incident['CustomFields'] = {
         'cybersixgillthreatlevel': item_info.get('threat_level', 'unknown'),
-        'cybersixgillportalurl': f"https://portal.cybersixgill.com/#/?actionable_alert={item_info.get('id', '')}",
         'cybersixgillthreattype': item_info.get('threats', []),
         'cybersixgillassessment': item_info.get('assessment', None),
         'cybersixgillrecommendations': '\n\n-----------\n\n'.join(item_info.get('recommendations', [])),
+        'incidentlink': f"https://portal.cybersixgill.com/#/?actionable_alert={item_info.get('id', '')}"
     }
 
 
