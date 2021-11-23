@@ -5941,7 +5941,11 @@ Returns information about an endpoint.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Endpoint.Hostname | String | The endpoint's hostname. | 
+| Endpoint.IPAddress | String | The endpoint's IP address. | 
+| Endpoint.ID | String | The endpoint's ID. | 
 
 #### Command Example
 ```!endpoint hostname=HOSTNAME```
