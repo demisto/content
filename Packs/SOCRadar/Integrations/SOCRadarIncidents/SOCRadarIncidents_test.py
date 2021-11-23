@@ -65,7 +65,7 @@ def test_fetch_incidents(requests_mock):
  SOCRadar Incidents API response, loaded from a local JSON file. Checks
  the output of the command function with the expected output.
  """
-    from Packs.SOCRadar.Integrations.SOCRadarIncidents.SOCRadarIncidents import Client, fetch_incidents
+    from SOCRadarIncidents import Client, fetch_incidents
 
     mock_socradar_company_id = "0"
     mock_socradar_api_key = "APIKey"
