@@ -44,9 +44,6 @@
                 "Cloud Instance ID": {
                     "simple": "aadTenantId"
                 },
-                "Comment": {
-                    "simple": "comments.comment"
-                },
                 "Description": {
                     "simple": "description"
                 },
