@@ -1,10 +1,12 @@
 import json as js
 import threading
 import io
+import time
 
 import pytest
 import slack_sdk
 from slack_sdk.web.slack_response import SlackResponse
+from slack_sdk.web.async_client import AsyncWebClient, AsyncSlackResponse
 from slack_sdk.errors import SlackApiError
 
 from unittest.mock import MagicMock
@@ -4018,3 +4020,129 @@ def test_extract_entitlement():
     assert guid == "fd56c9b8-88cf-4625-8be5-ae386c2a05cd"
     assert incident_id == "155"
     assert task_id == ""
+
+
+@pytest.mark.asyncio
+async def test_fetch_channels_async(mocker):
+    """
+     Given:
+        A fetch channel command where the first result has no pagination
+
+    When:
+        Updating the channel IDs to context
+
+    Then:
+        Expect a successful response and appended context
+    """
+    import SlackV3
+
+    channel_response = {'channels': js.loads(CONVERSATIONS), 'response_metadata': {
+    }}
+    # Set
+    async_slack_response = AsyncSlackResponse(client=None, http_verb='', api_url='', req_args={}, data=channel_response,
+                                              headers={}, status_code=0)
+
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(AsyncWebClient, 'conversations_list', return_value=async_slack_response)
+    last_update = datetime.datetime.now()
+
+    # Arrange
+    SlackV3.init_globals()
+    SlackV3.CHANNEL_FETCH_INTERVAL = "1 second"
+    time.sleep(1)
+    returned_time = await SlackV3.fetch_channels_iterable(last_update=last_update)
+
+    # Assert
+    assert returned_time.replace(microsecond=0) == (last_update + timedelta(seconds=1)).replace(microsecond=0)
+
+
+@pytest.mark.asyncio
+async def test_fetch_channels_paginated_async(mocker):
+    """
+     Given:
+        A fetch channel command where the first result has no pagination
+
+    When:
+        Updating the channel IDs to context
+
+    Then:
+        Expect a successful response and appended context
+    """
+    import SlackV3
+
+    # Set
+    err_response = AsyncSlackResponse(api_url='', client=None, http_verb='GET', req_args={},
+                                      data={'ok': False}, status_code=429, headers={'Retry-After': 3})
+    first_call = {'channels': js.loads(CONVERSATIONS), 'response_metadata': {'next_cursor': 'dGVhbTpDQ0M3UENUTks='}}
+    second_call = SlackApiError('Rate limit reached!', err_response)
+    third_call = {'channels': js.loads(CONVERSATIONS), 'response_metadata': {'next_cursor': ''}}
+
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(AsyncWebClient, 'conversations_list', side_effect=[first_call, second_call, third_call])
+    last_update = datetime.datetime.now() - timedelta(seconds=5)
+
+    # Arrange
+    SlackV3.init_globals()
+    SlackV3.CHANNEL_FETCH_INTERVAL = "3 seconds"
+    time.sleep(1)
+    returned_time = await SlackV3.fetch_channels_iterable(last_update=last_update)
+
+    # Assert
+    assert returned_time.replace(microsecond=0) >= (last_update + timedelta(seconds=8)).replace(microsecond=0)
+
+
+def test_handle_date_interval_minutes():
+    test_fetch_interval = "3 minutes"
+    last_update_time = datetime.datetime(2015, 7, 18, 9, 50, 20)
+
+    from SlackV3 import handle_date_interval
+
+    next_update_time = handle_date_interval(fetch_interval=test_fetch_interval, last_update_time=last_update_time)
+
+    assert next_update_time == datetime.datetime(2015, 7, 18, 9, 53, 20)
+
+
+def test_handle_date_interval_hour():
+    test_fetch_interval = "3 hours"
+    last_update_time = datetime.datetime(2015, 7, 18, 9, 50, 20)
+
+    from SlackV3 import handle_date_interval
+
+    next_update_time = handle_date_interval(fetch_interval=test_fetch_interval, last_update_time=last_update_time)
+
+    assert next_update_time == datetime.datetime(2015, 7, 18, 12, 50, 20)
+
+
+def test_handle_date_interval_day():
+    test_fetch_interval = "3 days"
+    last_update_time = datetime.datetime(2015, 7, 18, 9, 50, 20)
+
+    from SlackV3 import handle_date_interval
+
+    next_update_time = handle_date_interval(fetch_interval=test_fetch_interval, last_update_time=last_update_time)
+
+    assert next_update_time == datetime.datetime(2015, 7, 21, 9, 50, 20)
+
+
+def test_handle_date_interval_month():
+    test_fetch_interval = "3 months"
+    last_update_time = datetime.datetime(2015, 7, 18, 9, 50, 20)
+
+    from SlackV3 import handle_date_interval
+
+    next_update_time = handle_date_interval(fetch_interval=test_fetch_interval, last_update_time=last_update_time)
+
+    assert next_update_time == datetime.datetime(2015, 10, 16, 9, 50, 20)
+
+
+def test_handle_date_interval_year():
+    test_fetch_interval = "3 years"
+    last_update_time = datetime.datetime(2015, 7, 18, 9, 50, 20)
+
+    from SlackV3 import handle_date_interval
+
+    next_update_time = handle_date_interval(fetch_interval=test_fetch_interval, last_update_time=last_update_time)
+
+    assert next_update_time == datetime.datetime(2018, 7, 17, 9, 50, 20)

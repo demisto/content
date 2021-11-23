@@ -1,5 +1,6 @@
 import asyncio
 import concurrent
+import datetime
 import ssl
 import threading
 from distutils.util import strtobool
@@ -1248,64 +1249,107 @@ async def check_and_handle_entitlement(text: str, user: dict, thread_id: str) ->
     return ''
 
 
+def handle_date_interval(fetch_interval: str, last_update_time):
+    range_split = fetch_interval.strip().split(' ')
+    number = 0
+    next_update_time = None
+    if len(range_split) != 2:
+        return_error('date_range must be "number date_range_unit", examples: (2 hours, 4 minutes,6 months, 1 day, '
+                     'etc.)')
+    try:
+        number = int(range_split[0])
+    except ValueError:
+        return_error('The time value is invalid. Must be an integer.')
+
+    unit = range_split[1].lower()
+    if unit not in [
+        'second', 'seconds',
+        'minute', 'minutes',
+        'hour', 'hours',
+        'day', 'days',
+        'month', 'months',
+        'year', 'years',
+        ]:
+        return_error('The unit of date_range is invalid. Must be minutes, hours, days, months or years.')
+
+    if 'second' in unit:
+        next_update_time = last_update_time + timedelta(seconds=number)
+    elif 'minute' in unit:
+        next_update_time = last_update_time + timedelta(minutes=number)
+    elif 'hour' in unit:
+        next_update_time = last_update_time + timedelta(hours=number)
+    elif 'day' in unit:
+        next_update_time = last_update_time + timedelta(days=number)
+    elif 'month' in unit:
+        next_update_time = last_update_time + timedelta(days=number * 30)
+    elif 'year' in unit:
+        next_update_time = last_update_time + timedelta(days=number * 365)
+    return next_update_time
+
+
+async def fetch_channels_iterable(last_update):
+    expected_next_run = handle_date_interval(fetch_interval=CHANNEL_FETCH_INTERVAL, last_update_time=last_update)
+    if datetime.now() >= expected_next_run:
+        demisto.debug('Fetching updated channels as part of long-running')
+        cursor = None
+        updated_channel_list: list = []
+
+        res = await ASYNC_CLIENT.conversations_list(types='private_channel,public_channel', exclude_archived=True,
+                                                    cursor=cursor)
+        integration_context = get_integration_context(SYNC_CONTEXT)
+        while True:
+            cursor = res.get('response_metadata', {}).get('next_cursor')
+            for channel in res.get('channels', []):
+                updated_channel: dict = {
+                    'name': channel.get('name'),
+                    'id': channel.get('id')
+                }
+                updated_channel_list.append(updated_channel)
+            if not cursor:
+                demisto.info("Finished updating channel list")
+                break
+            total_try_time = 0
+            while True:
+                try:
+                    res = await ASYNC_CLIENT.conversations_list(types='private_channel,public_channel',
+                                                                exclude_archived=True, cursor=cursor)
+                except SlackApiError as api_error:
+                    demisto.debug(f'Got rate limit error (sync). Body is: {str(res)}\n{api_error}')
+                    response = api_error.response
+                    headers = response.headers  # type: ignore
+                    if 'Retry-After' in headers:
+                        retry_after = int(headers['Retry-After'])
+                        total_try_time += retry_after
+                        if total_try_time < MAX_LIMIT_TIME:
+                            time.sleep(retry_after)
+                            continue
+                    else:
+                        if total_try_time < MAX_LIMIT_TIME:
+                            time.sleep(5)
+                            continue
+                        else:
+                            raise
+                break
+
+        # Save conversations to cache
+        conversations = integration_context.get('conversations')
+        if conversations:
+            conversations = json.loads(conversations)
+            conversations.extend(updated_channel_list)
+        else:
+            conversations = updated_channel_list
+        set_to_integration_context_with_retries({'conversations': conversations}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+        demisto.debug('Successfully updated channels as part of long-running')
+        return datetime.now()
+
+
 async def fetch_channels_async():
     """
     updates context with all conversations an their IDs
     """
     last_update = datetime.now()
     while True:
-        if datetime.now() >= last_update + dateparser.parse(CHANNEL_FETCH_INTERVAL):
-            demisto.debug('Fetching updated channels as part of long-running')
-            cursor = None
-            updated_channel_list: list = []
-
-            res = await ASYNC_CLIENT.conversations_list(types='private_channel,public_channel', exclude_archived=True,
-                                                        cursor=cursor)
-            integration_context = get_integration_context(SYNC_CONTEXT)
-            while True:
-                cursor = res.get('response_metadata', {}).get('next_cursor')
-                for channel in res.get('channels', []):
-                    updated_channel: dict = {
-                        'name': channel.get('name'),
-                        'id': channel.get('id')
-                    }
-                    updated_channel_list.append(updated_channel)
-                if not cursor:
-                    demisto.info("Finished updating channel list")
-                    break
-                total_try_time = 0
-                while True:
-                    try:
-                        res = await ASYNC_CLIENT.conversations_list(types='private_channel,public_channel',
-                                                                    exclude_archived=True, cursor=cursor)
-                    except SlackApiError as api_error:
-                        demisto.debug(f'Got rate limit error (sync). Body is: {str(res)}\n{api_error}')
-                        response = api_error.response
-                        headers = response.headers  # type: ignore
-                        if 'Retry-After' in headers:
-                            retry_after = int(headers['Retry-After'])
-                            total_try_time += retry_after
-                            if total_try_time < MAX_LIMIT_TIME:
-                                time.sleep(retry_after)
-                                continue
-                        else:
-                            if total_try_time < MAX_LIMIT_TIME:
-                                time.sleep(5)
-                                continue
-                            else:
-                                raise
-                    break
-
-            # Save conversations to cache
-            conversations = integration_context.get('conversations')
-            if conversations:
-                conversations = json.loads(conversations)
-                conversations.extend(updated_channel_list)
-            else:
-                conversations = updated_channel_list
-            set_to_integration_context_with_retries({'conversations': conversations}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
-            last_update = datetime.now()
-            demisto.debug('Successfully updated channels as part of long-running')
+        last_update = await fetch_channels_iterable(last_update)
 
 
 ''' SEND '''
