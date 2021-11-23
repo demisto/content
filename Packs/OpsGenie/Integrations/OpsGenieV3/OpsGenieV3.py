@@ -73,7 +73,7 @@ class Client(BaseClient):
 
     @staticmethod
     def responders_to_json(responders: List, responder_key: str, one_is_dict: bool = False) \
-            -> Dict[str, List[dict] or Dict]:
+            -> Dict[str, List[Dict] or Dict]:
         """
         :param responders: the responders list which we get from demisto.args()
         :param responder_key: Some of the api calls need "responder" and others "responders" as a
@@ -113,16 +113,16 @@ class Client(BaseClient):
         else:
             query = ""
             if args.get("status", ALL_TYPE) != ALL_TYPE:
-                status = args.get("status").lower()
-                query = f'status={status}'
+                if args.get("status"):
+                    query = f'status={args.get("status").lower()}'
             if args.get("priority", ALL_TYPE) != ALL_TYPE:
-                if query:
-                    query += f' AND '
-                query += f'priority={args.get("priority")}'
+                if args.get("priority"):
+                    query += f' AND ' if query else ''
+                    query += f'priority={args.get("priority")}'
             if args.get("tags", []):
-                if query:
-                    query += f' AND '
-                query += f'tag={args.get("tags")}'
+                if args.get("tags"):
+                    query += f' AND ' if query else ''
+                    query += f'tag={args.get("tags")}'
 
         params = {
             "sort": args.get("sort"),
@@ -367,7 +367,7 @@ def get_polling_paging_result(client: Client, args: dict) -> CommandResults:
 
 
 def run_polling_command(args: dict, cmd: str, results_function: Callable,
-                        action_function: Optional[Callable] = None):
+                        action_function: Optional[Callable] = None) -> Dict or CommandResults:
 
     ScheduledCommand.raise_error_if_not_supported()
 
@@ -428,7 +428,7 @@ def run_polling_paging_command(args: dict, cmd: str, results_function: Callable,
     result = args.get('result', [])
     limit = int(args.get('limit', 20))
 
-    if "request_id" not in args:
+    if "request_id" not in args and action_function:
         # starting new flow
         command_results = action_function(args)
         request_id = command_results.get("requestId")
