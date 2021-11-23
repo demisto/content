@@ -193,7 +193,10 @@ def get_email_recipients(email_to, email_from, service_mail, mailbox):
     email_to_set = {email_from}
     email_to = argToList(email_to)
     email_to_set = email_to_set.union(set(email_to))
-    email_to_set.remove(mailbox)
+    if mailbox:
+        mailbox_recipient = next(recipient for recipient in email_to_set if mailbox in recipient)
+        if mailbox_recipient:
+            email_to_set.remove(mailbox_recipient)
     if service_mail:
         service_mail_recipient = next(recipient for recipient in email_to_set if service_mail in recipient)
         if service_mail_recipient:
@@ -207,7 +210,11 @@ def main():
     args = demisto.args()
     incident = demisto.incident()
     incident_id = incident.get('id')
-    mailbox = incident.get('mailbox')
+    labels = incident.get('labels', [])
+    mailbox = None
+    for label in labels:
+        if label.get('type') == 'mailbox':
+            mailbox = label.get('value')
     custom_fields = incident.get('CustomFields')
     email_subject = custom_fields.get('emailsubject')
     email_cc = custom_fields.get('emailcc', '')
