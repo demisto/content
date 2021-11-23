@@ -1,7 +1,7 @@
 commonfields:
-  id: MattermostAskUserTest
+  id: MattermostAskUser
   version: -1
-name: MattermostAskUserTest
+name: MattermostAskUser
 type: python
 subtype: python2
 script: ''
