@@ -23,6 +23,7 @@ configuration:
   type: 8
 contentitemexportablefields:
   contentitemfields:
+    description: "This is a description"
     definitionid: ""
     fromServerVersion: ""
     itemVersion: ""
