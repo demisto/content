@@ -2119,13 +2119,13 @@ def fetch_channels():
     """
     updates context with all conversations an their IDs
     """
-    integration_context = get_integration_context(SYNC_CONTEXT)
-
     demisto.debug('Fetching channels')
 
     cursor = None
-    res = CLIENT.conversations_list(types='private_channel,public_channel', exclude_archived=True, cursor=cursor)
     updated_channel_list: list = []
+
+    integration_context = get_integration_context(SYNC_CONTEXT)
+    res = CLIENT.conversations_list(types='private_channel,public_channel', exclude_archived=True, cursor=cursor)
 
     while True:
         cursor = res.get('response_metadata', {}).get('next_cursor')

@@ -3984,7 +3984,6 @@ def test_fetch_channels_rate_limited(mocker):
     mocker.patch.object(slack_sdk.WebClient, 'conversations_list', side_effect=[first_call, second_call, second_call, third_call])
     mocker.patch.object(time, 'sleep')
 
-
     # Arrange
     fetch_channels()
     args = slack_sdk.WebClient.conversations_list.call_args_list
@@ -3999,4 +3998,16 @@ def test_fetch_channels_rate_limited(mocker):
     assert third_args['cursor'] == 'dGVhbTpDQ0M3UENUTks='
     assert fourth_args['cursor'] == 'dGVhbTpDQ0M3UENUTks='
 
-    # assert slack_sdk.WebClient.conversations_list.call_count == 2
+
+def test_extract_entitlement():
+    from SlackV3 import extract_entitlement
+
+    sample_entitlement_string = "fd56c9b8-88cf-4625-8be5-ae386c2a05cd@155"
+    sample_text = "Thank you for your response."
+
+    content, guid, incident_id, task_id = extract_entitlement(sample_entitlement_string, sample_text)
+
+    assert content == sample_text
+    assert guid == "fd56c9b8-88cf-4625-8be5-ae386c2a05cd"
+    assert incident_id == "155"
+    assert task_id == ""
