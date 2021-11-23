@@ -1,6 +1,5 @@
 ## Configure Syslog in Cortex XSOAR
 - Configure a Syslog server to send its logs to the Cortex XSOAR machine that runs Syslog v2 integration.
-- Select the **Log Format** used by the Syslog server.
 - To create incidents from specific messages, use the **Message Regex** parameter to create incidents only for logs match the given regex. If no message regex is given, an incident will be created for each received Syslog message.
 ## Notes
 - **Important**: Supported log formats: RFC3164, RFC5424, RFC6587 (with RFC3164 or RFC5424)
