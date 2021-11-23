@@ -10,7 +10,7 @@ configuration:
 - display: API Url
   name: api_url
   required: false
-  type: 4
+  type: 0
   defaultvalue: https://api.orcasecurity.io/api
 - defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
