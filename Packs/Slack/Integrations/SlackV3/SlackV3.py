@@ -1,6 +1,5 @@
 import asyncio
 import concurrent
-import datetime
 import ssl
 import threading
 from distutils.util import strtobool
@@ -1262,14 +1261,8 @@ def handle_date_interval(fetch_interval: str, last_update_time):
         return_error('The time value is invalid. Must be an integer.')
 
     unit = range_split[1].lower()
-    if unit not in [
-        'second', 'seconds',
-        'minute', 'minutes',
-        'hour', 'hours',
-        'day', 'days',
-        'month', 'months',
-        'year', 'years',
-        ]:
+    if unit not in ['second', 'seconds', 'minute', 'minutes', 'hour', 'hours', 'day', 'days', 'month', 'months', 'year',
+                    'years']:
         return_error('The unit of date_range is invalid. Must be minutes, hours, days, months or years.')
 
     if 'second' in unit:
