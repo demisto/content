@@ -3,63 +3,8 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from datetime import date
 
-AWS_DEFAULT_REGION = None
-AWS_roleArn = demisto.params()['roleArn']
-AWS_roleSessionName = demisto.params()['roleSessionName']
-AWS_roleSessionDuration = demisto.params()['sessionDuration']
-AWS_rolePolicy = None
 
-
-def aws_session(service='route53', region=None, roleArn=None, roleSessionName=None, roleSessionDuration=None, rolePolicy=None):
-    kwargs = {}
-    if roleArn and roleSessionName is not None:
-        kwargs.update({
-            'RoleArn': roleArn,
-            'RoleSessionName': roleSessionName,
-        })
-    elif AWS_roleArn and AWS_roleSessionName is not None:
-        kwargs.update({
-            'RoleArn': AWS_roleArn,
-            'RoleSessionName': AWS_roleSessionName,
-        })
-
-    if roleSessionDuration is not None:
-        kwargs.update({'DurationSeconds': int(roleSessionDuration)})
-    elif AWS_roleSessionDuration is not None:
-        kwargs.update({'DurationSeconds': int(AWS_roleSessionDuration)})
-
-    if rolePolicy is not None:
-        kwargs.update({'Policy': rolePolicy})
-    elif AWS_rolePolicy is not None:
-        kwargs.update({'Policy': AWS_rolePolicy})
-
-    if kwargs:
-        sts_client = boto3.client('sts')
-        sts_response = sts_client.assume_role(**kwargs)
-        if region is not None:
-            client = boto3.client(
-                service_name=service,
-                region_name=region,
-                aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
-                aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
-                aws_session_token=sts_response['Credentials']['SessionToken']
-            )
-        else:
-            client = boto3.client(
-                service_name=service,
-                region_name=AWS_DEFAULT_REGION,
-                aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
-                aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
-                aws_session_token=sts_response['Credentials']['SessionToken']
-            )
-    else:
-        if region is not None:
-            client = boto3.client(service_name=service, region_name=region)
-        else:
-            client = boto3.client(service_name=service, region_name=AWS_DEFAULT_REGION)
-
-    return client
-
+SERVICE = 'route53'
 
 class DatetimeEncoder(json.JSONEncoder):
     def default(self, obj):  # pylint: disable=E0202
@@ -90,12 +35,13 @@ def raise_error(error):
     }
 
 
-def create_record(args):
+def create_record(aws_client, args):
     try:
-        client = aws_session(
-            roleArn=args.get('roleArn'),
-            roleSessionName=args.get('roleSessionName'),
-            roleSessionDuration=args.get('roleSessionDuration'),
+        client = aws_client.aws_session(
+            service=SERVICE,
+            role_arn=args.get('roleArn'),
+            role_session_name=args.get('roleSessionName'),
+            role_session_duration=args.get('roleSessionDuration'),
         )
         kwargs = {
             'HostedZoneId': args.get('hostedZoneId'),
@@ -133,12 +79,13 @@ def create_record(args):
         return raise_error(e)
 
 
-def delete_record(args):
+def delete_record(aws_client, args):
     try:
-        client = aws_session(
-            roleArn=args.get('roleArn'),
-            roleSessionName=args.get('roleSessionName'),
-            roleSessionDuration=args.get('roleSessionDuration'),
+        client = aws_client.aws_session(
+            service=SERVICE,
+            role_arn=args.get('roleArn'),
+            role_session_name=args.get('roleSessionName'),
+            role_session_duration=args.get('roleSessionDuration'),
         )
         kwargs = {
             'HostedZoneId': args.get('hostedZoneId'),
@@ -173,12 +120,13 @@ def delete_record(args):
         return raise_error(e)
 
 
-def upsert_record(args):
+def upsert_record(aws_client, args):
     try:
-        client = aws_session(
-            roleArn=args.get('roleArn'),
-            roleSessionName=args.get('roleSessionName'),
-            roleSessionDuration=args.get('roleSessionDuration'),
+        client = aws_client.aws_session(
+            service=SERVICE,
+            role_arn=args.get('roleArn'),
+            role_session_name=args.get('roleSessionName'),
+            role_session_duration=args.get('roleSessionDuration'),
         )
         kwargs = {
             'HostedZoneId': args.get('hostedZoneId'),
@@ -216,12 +164,13 @@ def upsert_record(args):
         return raise_error(e)
 
 
-def list_hosted_zones(args):
+def list_hosted_zones(aws_client, args):
     try:
-        client = aws_session(
-            roleArn=args.get('roleArn'),
-            roleSessionName=args.get('roleSessionName'),
-            roleSessionDuration=args.get('roleSessionDuration'),
+        client = aws_client.aws_session(
+            service=SERVICE,
+            role_arn=args.get('roleArn'),
+            role_session_name=args.get('roleSessionName'),
+            role_session_duration=args.get('roleSessionDuration'),
         )
         data = []
         response = client.list_hosted_zones()
@@ -240,12 +189,13 @@ def list_hosted_zones(args):
         return raise_error(e)
 
 
-def list_resource_record_sets(args):
+def list_resource_record_sets(aws_client, args):
     try:
-        client = aws_session(
-            roleArn=args.get('roleArn'),
-            roleSessionName=args.get('roleSessionName'),
-            roleSessionDuration=args.get('roleSessionDuration'),
+        client = aws_client.aws_session(
+            service=SERVICE,
+            role_arn=args.get('roleArn'),
+            role_session_name=args.get('roleSessionName'),
+            role_session_duration=args.get('roleSessionDuration'),
         )
 
         kwargs = {'HostedZoneId': args.get('hostedZoneId')}
@@ -275,12 +225,13 @@ def list_resource_record_sets(args):
         return error
 
 
-def waiter_resource_record_sets_changed(args):
+def waiter_resource_record_sets_changed(aws_client, args):
     try:
-        client = aws_session(
-            roleArn=args.get('roleArn'),
-            roleSessionName=args.get('roleSessionName'),
-            roleSessionDuration=args.get('roleSessionDuration'),
+        client = aws_client.aws_session(
+            service=SERVICE,
+            role_arn=args.get('roleArn'),
+            role_session_name=args.get('roleSessionName'),
+            role_session_duration=args.get('roleSessionDuration'),
         )
         kwargs = {'Id': args.get('id')}
         if args.get('waiterDelay') is not None:
@@ -296,12 +247,13 @@ def waiter_resource_record_sets_changed(args):
         return raise_error(e)
 
 
-def test_dns_answer(args):
+def test_dns_answer(aws_client, args):
     try:
-        client = aws_session(
-            roleArn=args.get('roleArn'),
-            roleSessionName=args.get('roleSessionName'),
-            roleSessionDuration=args.get('roleSessionDuration'),
+        client = aws_client.aws_session(
+            service=SERVICE,
+            role_arn=args.get('roleArn'),
+            role_session_name=args.get('roleSessionName'),
+            role_session_duration=args.get('roleSessionDuration'),
         )
         kwargs = {
             'HostedZoneId': args.get('hostedZoneId'),
@@ -327,9 +279,9 @@ def test_dns_answer(args):
         return error
 
 
-def test_function():
+def test_function(aws_client):
     try:
-        client = aws_session()
+        client = aws_client.aws_session(service=SERVICE)
         response = client.list_hosted_zones()
         if response['ResponseMetadata']['HTTPStatusCode'] == 200:
             return 'ok'
@@ -338,29 +290,62 @@ def test_function():
         return error
 
 
-if demisto.command() == 'test-module':
-    # This is the call made when pressing the integration test button.
-    result = test_function()
+def main():
+    params = demisto.params()
 
-if demisto.command() == 'aws-route53-create-record':
-    result = create_record(demisto.args())
+    aws_default_region = params.get('defaultRegion')
+    aws_role_arn = params.get('roleArn')
+    aws_role_session_name = params.get('roleSessionName')
+    aws_role_session_duration = params.get('sessionDuration')
+    aws_role_policy = None
+    aws_access_key_id = params.get('access_key')
+    aws_secret_access_key = params.get('secret_key')
+    verify_certificate = not params.get('insecure', True)
+    timeout = params.get('timeout')
+    retries = params.get('retries') or 5
+    try:
+        validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id,
+                        aws_secret_access_key)
 
-if demisto.command() == 'aws-route53-upsert-record':
-    result = upsert_record(demisto.args())
+        aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
+                               aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate,
+                               timeout, retries)
 
-if demisto.command() == 'aws-route53-delete-record':
-    result = delete_record(demisto.args())
+        args = demisto.args()
+        if demisto.command() == 'test-module':
+            # This is the call made when pressing the integration test button.
+            result = test_function(aws_client)
 
-if demisto.command() == 'aws-route53-list-hosted-zones':
-    result = list_hosted_zones(demisto.args())
+        if demisto.command() == 'aws-route53-create-record':
+            result = create_record(aws_client, args)
 
-if demisto.command() == 'aws-route53-list-resource-record-sets':
-    result = list_resource_record_sets(demisto.args())
+        if demisto.command() == 'aws-route53-upsert-record':
+            result = upsert_record(aws_client, args)
 
-if demisto.command() == 'aws-route53-waiter-resource-record-sets-changed':
-    result = waiter_resource_record_sets_changed(demisto.args())
+        if demisto.command() == 'aws-route53-delete-record':
+            result = delete_record(aws_client, args)
 
-if demisto.command() == 'aws-route53-test-dns-answer':
-    result = test_dns_answer(demisto.args())
+        if demisto.command() == 'aws-route53-list-hosted-zones':
+            result = list_hosted_zones(aws_client, args)
 
-demisto.results(result)
+        if demisto.command() == 'aws-route53-list-resource-record-sets':
+            result = list_resource_record_sets(aws_client, args)
+
+        if demisto.command() == 'aws-route53-waiter-resource-record-sets-changed':
+            result = waiter_resource_record_sets_changed(aws_client, args)
+
+        if demisto.command() == 'aws-route53-test-dns-answer':
+            result = test_dns_answer(aws_client, args)
+
+        demisto.results(result)
+        sys.exit(0)
+    except Exception as e:
+        return_error('Error has occurred in the AWS GuardDuty Integration: {error}\n {message}'.format(
+            error=type(e), message=e.message))
+
+
+from AWSApiModule import *  # noqa: E402
+
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()

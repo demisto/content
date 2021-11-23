@@ -543,7 +543,7 @@ def main():
     aws_secret_access_key = params.get('secret_key')
     aws_gd_severity = params.get('gs_severity', '')
     verify_certificate = not params.get('insecure', True)
-    timeout = params.get('timeout') or 1
+    timeout = params.get('timeout')
     retries = params.get('retries') or 5
 
     try:
