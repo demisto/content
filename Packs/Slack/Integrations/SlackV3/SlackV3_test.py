@@ -4000,6 +4000,13 @@ def test_fetch_channels_rate_limited(mocker):
 
 
 def test_extract_entitlement():
+    """
+    Given: An entitlement string without a task associated with it
+
+    When: Attempting to extract parts out of the entitlement string
+
+    Then: Return the parts found in the entitlement string
+    """
     from SlackV3 import extract_entitlement
 
     sample_entitlement_string = "fd56c9b8-88cf-4625-8be5-ae386c2a05cd@155"
