@@ -1,4 +1,4 @@
-from typing import Tuple, Iterable
+from typing import Tuple
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -25,7 +25,8 @@ def dedup_by_value(indicators_list: list) -> List:
     return result
 
 
-def find_indicators_with_mal_ratio(max_indicators: int, min_number_of_invs: int, max_results: int, from_date: str) -> Tuple[str, list]:
+def find_indicators_with_mal_ratio(max_indicators: int, min_number_of_invs: int, max_results: int, from_date: str) -> \
+Tuple[str, list]:
     res = demisto.executeCommand("findIndicators", {'query': f'lastSeen:>={from_date}', 'size': max_indicators})
     indicators = res[0]['Contents']
     indicators = [i for i in indicators if len(i.get('investigationIDs') or []) >= min_number_of_invs]
@@ -60,7 +61,8 @@ def main():
         max_results = int(args['maximumNumberOfResults'])
         from_date = args.get('from', '"30 days ago"')
 
-        widget_table, sorted_indicators = find_indicators_with_mal_ratio(max_indicators, min_number_of_invs, max_results, from_date)
+        widget_table, sorted_indicators = find_indicators_with_mal_ratio(max_indicators, min_number_of_invs,
+                                                                         max_results, from_date)
 
         demisto.results({
             'Type': entryTypes['note'],
