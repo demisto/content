@@ -24,15 +24,15 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any integrations.
 
 ### Scripts
-* SetAndHandleEmpty
-* Set
-* SetGridField
-* ParseEmailFiles
 * IdentifyAttachedEmail
+* SetAndHandleEmpty
+* SetGridField
+* Set
+* ParseEmailFiles
 
 ### Commands
-* setIncident
 * rasterize-email
+* setIncident
 
 ## Playbook Inputs
 ---
@@ -49,9 +49,9 @@ This playbook does not use any integrations.
 | EmailHeaders | The email’s headers. | incident.phishingreporteremailheaders | Optional |
 | EmailFormat | The email’s format. | incident.emailformat | Optional |
 | GetOriginalEmail | Retrieves the original email in the thread. Default is "False".<br/><br/>You must have the necessary permissions in your email service to execute global search.<br/><br/>- EWS: eDiscovery<br/>- Gmail: Google Apps Domain-Wide Delegation of Authority<br/>- MSGraph: As described here:<br/>  \* https://docs.microsoft.com/en-us/graph/api/message-get<br/>  \* https://docs.microsoft.com/en-us/graph/api/user-list-messages | False | Optional |
-| MessageID | The original email message id to retrieve. Holds the value of the "Message-ID" header of the original email. This value will be passed as an input to the playbook "Get Original Email - Generic v2" | incident.emailmessageid | Optional |
-| UserID | The user's email address for which to retrieve the original email. This value will be passed as an input to the playbook "Get Original Email - Generic v2". | incident.emailto | Optional |
-| Thread-Topic | The value of the "Thread-Topic" header which holds the original email subject. This is necessary for forwarded emails scenarios. It will be passed as an input to the "Get Original Email - Generic v2" playbook to be used in the relevant sub-playbooks. | incident.emailsubject | Optional |
+| MessageID | The original email message id to retrieve. Holds the value of the "Message-ID" header of the original email. This value will be passed as an input to the playbook "Get Original Email - Generic v2" |  | Optional |
+| UserID | The user's email address for which to retrieve the original email. This value will be passed as an input to the playbook "Get Original Email - Generic v2". | incident.emailfrom | Optional |
+| Thread-Topic | The value of the "Thread-Topic" header which holds the original email subject. This is necessary for forwarded emails scenarios. It will be passed as an input to the "Get Original Email - Generic v2" playbook to be used in the relevant sub-playbooks. |  | Optional |
 | EmailBrand | When this value supplied, only the relevant playbook will run.<br/>Possible values:<br/>- Gmail<br/>- EWS v2<br/>- MicrosoftGraphMail<br/>- EmailSecurityGateway<br/><br/>If none of the above values is supplied, all of the playbooks will run. |  | Optional |
 
 ## Playbook Outputs
@@ -73,4 +73,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![Process Email - Generic v2](https://raw.githubusercontent.com/demisto/content/5153dd815b5288877b560e3fdcc3d9ab28cda57e/Packs/Phishing/doc_files/Process_Email_-_Generic_v2.png)
+![Process Email - Generic v2](Insert the link to your image here)
