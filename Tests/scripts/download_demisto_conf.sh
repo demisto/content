@@ -17,10 +17,11 @@ DEMISTO_PACK_SIGNATURE_UTIL_PATH="./signDirectory"
 echo ${DEMISTO_PACK_SIGNATURE_UTIL_PATH} > demisto_pack_sig_util_path
 
 # download configuration files from github repo
-wget --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN" -O ./test_configuration.zip "https://github.com/demisto/content-test-conf/archive/$UNDERSCORE_BRANCH.zip" --no-check-certificate -q
+echo "CLONING GITLAB"
+git clone --depth=1 https://gitlab-ci-token:${CI_JOB_TOKEN}@code.pan.run/xsoar/content-test-conf.git --branch $UNDERSCORE_BRANCH
 if [ "$?" != "0" ]; then
     echo "No such branch in content-test-conf: $UNDERSCORE_BRANCH , falling back to master"
-    wget --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN" -O ./test_configuration.zip "https://github.com/demisto/content-test-conf/archive/master.zip" --no-check-certificate -q
+    git clone --depth=1 https://gitlab-ci-token:${CI_JOB_TOKEN}@code.pan.run/xsoar/content-test-conf.git
     unzip ./test_configuration.zip
     cp -r ./content-test-conf-master/awsinstancetool ./Tests/scripts/awsinstancetool
     cp -r ./content-test-conf-master/demisto.lic $DEMISTO_LIC_PATH
