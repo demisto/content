@@ -201,6 +201,40 @@ def test_get_indicators_command_handles_error(requests_mock):
     assert len(result.outputs) == 0
 
 
+def test_date_string_to_iso_format_parsing():
+    """Tests the date_string_to_iso_format_parsing function.
+    """
+    from FeedSOCRadarThreatFeed import date_string_to_iso_format_parsing
+
+    mock_date_str = "1111-11-11 11:11:11"
+    formatted_date = date_string_to_iso_format_parsing(mock_date_str)
+
+    assert formatted_date
+
+
+def test_build_entry_context():
+    """Tests the build_entry_context function.
+    """
+    from FeedSOCRadarThreatFeed import build_entry_context
+
+    mock_indicators = util_load_json('test_data/build_entry_context_input.json')
+    context_entry = build_entry_context(mock_indicators)
+    expected_context_entry = util_load_json('test_data/build_entry_context_expected_entry.json')
+
+    assert context_entry == expected_context_entry
+
+
+def test_reset_last_fetch_dict():
+    """Tests the reset_last_fetch_dict function.
+    """
+    from FeedSOCRadarThreatFeed import reset_last_fetch_dict
+
+    result = reset_last_fetch_dict()
+
+    assert isinstance(result, CommandResults)
+    assert 'Fetch history has been successfully deleted!' in result.readable_output
+
+
 CONVERT_DEMISTO_INDICATOR_TYPE_INPUTS = [
     ('hostname', FeedIndicatorType.Domain), ('url', FeedIndicatorType.URL), ('ip', FeedIndicatorType.IP),
     ('hash', FeedIndicatorType.File)
