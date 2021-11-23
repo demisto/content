@@ -1,4 +1,3 @@
-
 import demistomock as demisto
 from CommonServerPython import *  # lgtm [py/polluting-import]
 from tld import get_tld, get_fld, Result
@@ -56,13 +55,14 @@ def get_fqdn(the_input):
 
     return fqdn
 
+
 def decode_and_remove_protocol(the_input):
     the_input = unquote(the_input)
-    if the_input.startswith('http://'):
-        the_input = the_input.split('http://')[1]
-    elif the_input.startswith('https://'):
-        the_input = the_input.split('https://')[1]
+    protocols = ['http://', 'https://', 'ftp://', 'hxxp://', 'hxxps://']
+    for protocol in protocols:
+        the_input = the_input.replace(protocol, '')
     return the_input
+
 
 def extract_fqdn_or_domain(the_input, is_fqdn=None, is_domain=None):
     # Check if it is a Microsoft ATP Safe Link
