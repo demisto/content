@@ -1211,7 +1211,7 @@ def http_request(method, url_suffix, data=None, headers=HEADERS):
     try:
         res = requests.request(
             method,
-            urljoin(BASE_URL, url_suffix),
+            BASE_URL + '/' + url_suffix,
             headers=headers,
             verify=INSECURE,
             data=data
@@ -1241,7 +1241,7 @@ def http_request(method, url_suffix, data=None, headers=HEADERS):
 
 def get_host_by_id(host_id):
     res = http_request('GET', 'lr-admin-api/hosts/' + host_id)
-    return fix_location_value([res]) if res else []
+    return fix_location_value([res])
 
 
 def update_hosts_keys(hosts):
@@ -1441,11 +1441,8 @@ def add_host(data_args):
 
 def get_hosts_by_entity(data_args):
     res = http_request('GET', 'lr-admin-api/hosts?entity=' + data_args['entity-name'] + '&count=' + data_args['count'])
-    # if not res:
-    #     return_outputs(readable_output=f"No hosts were found for entity {data_args['entity-name']}")
-    if res:
-        res = fix_location_value(res)
-        res = update_hosts_keys(res)
+    res = fix_location_value(res)
+    res = update_hosts_keys(res)
     context = createContext(res, removeNull=True)
     human_readable = tableToMarkdown('Hosts for ' + data_args.get('entity-name'), res, HOSTS_HEADERS)
     outputs = {'Logrhythm.Host(val.Name && val.ID === obj.ID)': context}
@@ -1456,15 +1453,11 @@ def get_hosts(data_args):
     id = data_args.get('host-id')
     if id:
         res = get_host_by_id(id)
-        # if not res:
-        #     return_outputs(readable_output=f"No host was found with ID {id}")
     else:
         res = http_request('GET', 'lr-admin-api/hosts?count=' + data_args['count'])
-        # if not res:
-        #     return_outputs(readable_output=f"No hosts were found")
-    if res:
-        res = fix_location_value(res)
-        res = update_hosts_keys(res)
+
+    res = fix_location_value(res)
+    res = update_hosts_keys(res)
     context = createContext(res, removeNull=True)
     human_readable = tableToMarkdown('Hosts information:', res, HOSTS_HEADERS)
     outputs = {'Logrhythm.Host(val.Name && val.ID === obj.ID)': context}
@@ -1480,8 +1473,6 @@ def change_status(data_args):
     res = http_request('PUT', 'lr-admin-api/hosts/status', json.dumps(data))
 
     host_info = get_host_by_id(data_args.get('host-id'))
-    if not host_info:
-        return_outputs(readable_output=f'No host as found with ID {data_args.get("host-id")}')
     context = createContext(update_hosts_keys(host_info), removeNull=True)
     outputs = {'Logrhythm.Host(val.ID === obj.ID)': context}
     return_outputs(readable_output='Status updated to ' + data_args.get('status'), outputs=outputs, raw_response=res)
@@ -1563,14 +1554,9 @@ def get_persons(data_args):
     id = data_args.get('person-id')
     if id:
         res = [http_request('GET', 'lr-admin-api/persons/' + id)]
-        # if not res:
-        #     return_outputs(readable_output=f"No person was found with ID {id}.")
     else:
         res = http_request('GET', 'lr-admin-api/persons?count=' + data_args['count'])
-        # if not res:
-        #     return_outputs(readable_output=f"No persons were found.")
-    if res:
-        res = update_persons_keys(res)
+    res = update_persons_keys(res)
     context = createContext(res, removeNull=True)
     outputs = {'Logrhythm.Person(val.ID === obj.ID)': context}
     human_readable = tableToMarkdown('Persons information', context, PERSON_HEADERS)
@@ -1580,16 +1566,10 @@ def get_persons(data_args):
 def get_users(data_args):
     id = data_args.get('user_id')
     if id:
-        res = http_request('GET', 'lr-admin-api/users/' + id)
-        res = [res] if res else res
-        # if not res:
-        #     return_outputs(readable_output=f"No person was found with ID {id}.")
+        res = [http_request('GET', 'lr-admin-api/users/' + id)]
     else:
         res = http_request('GET', 'lr-admin-api/users?count=' + data_args['count'])
-        # if not res:
-        #     return_outputs(readable_output=f"No persons were found.")
-    if res:
-        res = update_users_keys(res)
+    res = update_users_keys(res)
     context = createContext(res, removeNull=True)
     outputs = {'Logrhythm.User(val.ID === obj.ID)': context}
     human_readable = tableToMarkdown('Users information', context, USER_HEADERS)
@@ -1617,16 +1597,10 @@ def add_user(data_args):
 def get_logins(data_args):
     id = data_args.get('user_id')
     if id:
-        res = http_request('GET', 'lr-admin-api/users/' + id + '/login/')
-        res = [res] if res else res
-        # if not res:
-        #     return_outputs(readable_output=f"No login found for ID {id}.")
+        res = [http_request('GET', 'lr-admin-api/users/' + id + '/login/')]
     else:
         res = http_request('GET', 'lr-admin-api/users/user-logins?count=' + data_args['count'])
-        # if not res:
-        #     return_outputs(readable_output=f"No logins were found.")
-    if res:
-        res = update_logins_keys(res)
+    res = update_logins_keys(res)
     context = createContext(res, removeNull=True)
     outputs = {'Logrhythm.Login(val.Login === obj.Login)': context}
     human_readable = tableToMarkdown('Logins information', context, LOGIN_HEADERS)
@@ -1653,9 +1627,7 @@ def get_privileges(data_args):
     id = data_args.get('user_id')
     res = http_request('GET', 'lr-admin-api/users/' + id + '/privileges?offset='
                        + data_args['offset'] + '&count=' + data_args['count'])
-    # if not res:
-    #     return_outputs(readable_output=f"No privileges found for ID {id}")
-    res = {"ID": id, "Privileges": res} if res else res
+    res = {"ID": id, "Privileges": res}
     context = createContext(res, removeNull=True)
     outputs = {'Logrhythm.Privileges(val.ID === obj.ID)': context}
     human_readable = tableToMarkdown('Privileges information', context, ["Privileges"])
@@ -1665,16 +1637,10 @@ def get_privileges(data_args):
 def get_profiles(data_args):
     id = data_args.get('profile_id')
     if id:
-        res = http_request('GET', 'lr-admin-api/user-profiles/' + id)
-        res = [res] if res else res
-        # if not res:
-        #     return_outputs(readable_output=f"No profile found for ID {id}.")
+        res = [http_request('GET', 'lr-admin-api/user-profiles/' + id)]
     else:
         res = http_request('GET', 'lr-admin-api/user-profiles?count=' + data_args['count'])
-        # if not res:
-        #     return_outputs(readable_output=f"No profiles were found.")
-    if res:
-        res = update_profiles_keys(res)
+    res = update_profiles_keys(res)
     context = createContext(res, removeNull=True)
     outputs = {'Logrhythm.Profile(val.ID === obj.ID)': context}
     human_readable = tableToMarkdown('Users information', context, PROFILE_HEADERS)
@@ -1684,17 +1650,11 @@ def get_profiles(data_args):
 def get_networks(data_args):
     id = data_args.get('network-id')
     if id:
-        res = http_request('GET', 'lr-admin-api/networks/' + id)
-        res = [res] if res else res
-        # if not res:
-        #     return_outputs(readable_output=f"No network was found with ID {id}.")
+        res = [http_request('GET', 'lr-admin-api/networks/' + id)]
     else:
         res = http_request('GET', 'lr-admin-api/networks?count=' + data_args['count'])
-        # if not res:
-        #     return_outputs(readable_output=f"No Networks were found.")
-    if res:
-        res = fix_location_value(res)
-        res = update_networks_keys(res)
+    res = fix_location_value(res)
+    res = update_networks_keys(res)
     context = createContext(res, removeNull=True)
     outputs = {'Logrhythm.Network(val.ID === obj.ID)': context}
     human_readable = tableToMarkdown('Networks information', context, NETWORK_HEADERS)
@@ -1740,7 +1700,8 @@ def get_alarm_data(data_args):
 
 def get_alarm_events(data_args):
     id = data_args.get('alarm-id')
-    count = int(data_args.get('count'))
+    count = data_args.get('count')
+    count = int(count) if count else count
     fields = data_args.get('fields')
     show_log_message = data_args.get('get-log-message') == 'True'
 
@@ -2038,5 +1999,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ == "__builtin__" or __name__ == "builtins" or __name__ =="__main__":
     main()
