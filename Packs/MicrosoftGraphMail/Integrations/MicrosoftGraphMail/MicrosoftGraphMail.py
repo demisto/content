@@ -114,9 +114,6 @@ class MsGraphClient:
         odata = f'{odata}&$top={page_size}' if odata else f'$top={page_size}'
 
         if search:
-            # Data is being handled as a JSON so in cases the search phrase contains double quote ",
-            # we should escape it.
-            search = search.replace('"', '\\"')
             odata = f'{odata}&$search="{quote(search)}"'
         suffix = with_folder if folder_id else no_folder
         if odata:
@@ -809,12 +806,14 @@ class MsGraphClient:
 
         if email.get('hasAttachments', False):  # handling attachments of fetched email
             parsed_email['Attachments'] = self._get_email_attachments(message_id=email.get('id', ''))
-            parsed_email['mailbox'] = self._mailbox_to_fetch
+
+        labels = MsGraphClient._parse_email_as_labels(parsed_email)
+        parsed_email['Mailbox'] = self._mailbox_to_fetch
 
         incident = {
             'name': parsed_email['Subject'],
             'details': email.get('bodyPreview', '') or parsed_email['Body'],
-            'labels': MsGraphClient._parse_email_as_labels(parsed_email),
+            'labels': labels,
             'occurred': parsed_email['ModifiedTime'],
             'attachment': parsed_email.get('Attachments', []),
             'rawJSON': json.dumps(parsed_email)

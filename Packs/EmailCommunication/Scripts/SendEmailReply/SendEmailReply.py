@@ -193,14 +193,16 @@ def get_email_recipients(email_to, email_from, service_mail, mailbox):
     email_to_set = {email_from}
     email_to = argToList(email_to)
     email_to_set = email_to_set.union(set(email_to))
-    if mailbox:
-        mailbox_recipient = next(recipient for recipient in email_to_set if mailbox in recipient)
-        if mailbox_recipient:
-            email_to_set.remove(mailbox_recipient)
-    if service_mail:
-        service_mail_recipient = next(recipient for recipient in email_to_set if service_mail in recipient)
-        if service_mail_recipient:
-            email_to_set.remove(service_mail_recipient)
+
+    recipients_to_remove = []
+    for recipient in email_to_set:
+        if service_mail:
+            recipients_to_remove.append(recipient) if service_mail in recipient else None
+        if mailbox:
+            recipients_to_remove.append(recipient) if mailbox in recipient else None
+
+    for recipient_to_remove in recipients_to_remove:
+        email_to_set.remove(recipient_to_remove)
 
     email_recipients = ','.join(email_to_set)
     return email_recipients
@@ -213,13 +215,14 @@ def main():
     labels = incident.get('labels', [])
     mailbox = None
     for label in labels:
-        if label.get('type') == 'mailbox':
+        if label.get('type') == 'Mailbox':
             mailbox = label.get('value')
     custom_fields = incident.get('CustomFields')
     email_subject = custom_fields.get('emailsubject')
     email_cc = custom_fields.get('emailcc', '')
     add_cc = custom_fields.get('addcctoemail', '')
     service_mail = args.get('service_mail', '')
+    print(f"service_mail issss: {service_mail}")
     email_from = custom_fields.get('emailfrom')
     email_to = custom_fields.get('emailto')
     email_latest_message = custom_fields.get('emaillatestmessage')
