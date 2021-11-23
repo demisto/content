@@ -23,7 +23,7 @@
     "system": false,
     "threshold": 72,
     "type": "markdown",
-    "template": "**Overview**\n\n\n**Threat Type**\n\n\n**Origin**\n\n\n**Targets**\n\n\n**Previous Attacks**\n\n",
+    "template": "### Overview\n\n\n### Threat Type\n\n\n### Origin\n\n\n### Targets\n\n\n### Previous Attacks\n\n",
     "unmapped": false,
     "unsearchable": false,
     "useAsKpi": false,
