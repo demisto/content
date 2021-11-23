@@ -6,7 +6,7 @@ script: >
   var INTERNAL_MODULES_BRANDS = ['Scripts', 'Builtin', 'testmodule'];
 
 
-  var failedInstances = [{}];
+  var failedInstances = [];
 
   var all = getModules();
 
@@ -60,8 +60,12 @@ script: >
 
   var total = (countSuccess + countFailed).toString();
 
+  // When no failed instances were found, the script returns a list with an empty dict because several scripts
 
-  if (failedInstances.length === 0) {
+  // expect the output to be [{}].
+
+  if (countFailed === 0) {
+      failedInstances.push({})
       hr = '### All active instances are available! ✅';
   } else {
       hr = 'Total instances: ' + total +'\n';
