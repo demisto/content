@@ -18,7 +18,7 @@ args:
 - name: title
   description: The markdown title.
 - name: headers
-  description: A comma-separated list of table header values. Default will include
+  description: Comma-separated list of table header values. Default will include
     all available table headers.
 - name: is_auto_json_transform
   description: Try to auto json transform.
