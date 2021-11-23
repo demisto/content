@@ -1,0 +1,387 @@
+{
+    "fromDate": "0001-01-01T00:00:00Z",
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "id": "My Threat Landscape",
+    "layout": [
+        {
+            "forceRange": false,
+            "h": 6,
+            "i": "4fb10b40-0971-11ec-bec9-8fb9dbbe5fb4",
+            "id": "4fb10b40-0971-11ec-bec9-8fb9dbbe5fb4",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "scripts",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "24b8c823-873e-4153-81bf-a79d04743d28",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-08-30T09:04:40.421253809Z",
+                "name": "Unit42 Blog Feed",
+                "packID": "",
+                "params": {
+                    "insecure": "true",
+                    "url": "https://unit42.paloaltonetworks.com/feed/"
+                },
+                "prevName": "Unit42 Blog Feed",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "RSSWidget",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "text"
+            },
+            "x": 0,
+            "y": 2
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "3cddaf60-1bb3-11ec-9e41-67129ae73e48",
+            "id": "3cddaf60-1bb3-11ec-9e41-67129ae73e48",
+            "reflectDimensions": true,
+            "w": 8,
+            "widget": {
+                "Cache": null,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "indicators",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 180,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "ba01f493-c293-4da1-8ddf-ebba4d922f50",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-09-22T14:41:56.747459572Z",
+                "name": "Top 10 File Indicators in Related Incidents",
+                "packID": "",
+                "params": {
+                    "enablePagination": false,
+                    "tableColumns": [
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "value",
+                            "width": 300
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "score",
+                            "width": 120
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "relatedIncCount",
+                            "width": 124
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "sourceInstances",
+                            "width": 175
+                        }
+                    ]
+                },
+                "prevName": "Top File Indicators in Related Incidents",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:File and (verdict:Malicious or verdict:Suspicious) and incident.id:*",
+                "shouldCommit": false,
+                "size": 10,
+                "sort": [
+                    {
+                        "asc": false,
+                        "field": "relatedIncCount",
+                        "fieldType": ""
+                    }
+                ],
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 4,
+                "widgetType": "table"
+            },
+            "x": 4,
+            "y": 5
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "998d60e0-1bb6-11ec-9e41-67129ae73e48",
+            "id": "998d60e0-1bb6-11ec-9e41-67129ae73e48",
+            "reflectDimensions": true,
+            "w": 8,
+            "widget": {
+                "Cache": null,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "indicators",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 180,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "8d75816f-f9c2-451d-8479-08af6b18c3e9",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-09-22T15:06:00.322460607Z",
+                "name": "Top 10 Attack Pattern Indicators in Related Incidents",
+                "packID": "",
+                "params": {
+                    "enablePagination": false,
+                    "tableColumns": [
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "value",
+                            "width": 222
+                        },
+                        {
+                            "displayed": true,
+                            "key": "Tags",
+                            "width": 200
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "relatedIncCount",
+                            "width": 100
+                        },
+                        {
+                            "displayed": true,
+                            "key": "Kill Chain Phases",
+                            "width": 200
+                        }
+                    ]
+                },
+                "prevName": "Top Attack Pattern Indicators in Related Incidents",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:\"Attack Pattern\" and (verdict:Malicious or verdict:Suspicious) and incident.id:*",
+                "shouldCommit": false,
+                "size": 10,
+                "sort": [
+                    {
+                        "asc": false,
+                        "field": "relatedIncCount",
+                        "fieldType": ""
+                    }
+                ],
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 3,
+                "widgetType": "table"
+            },
+            "x": 4,
+            "y": 2
+        },
+        {
+            "forceRange": false,
+            "h": 2,
+            "i": "655c93f0-2aa1-11ec-a172-3d0d6ceca5b8",
+            "id": "655c93f0-2aa1-11ec-a172-3d0d6ceca5b8",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "indicators",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 180,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "5139168e-f555-442c-84a6-ee98aac55c1e",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-10-11T14:41:52.765053897Z",
+                "name": "Malicious/Suspicious Indicators in Incidents",
+                "packID": "",
+                "params": {
+                    "groupBy": [
+                        "firstSeen(d)",
+                        "score"
+                    ],
+                    "timeFrame": "days",
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Malicious/Suspicious Indicators in Incidents",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "(verdict:Malicious or verdict:Suspicious) and incident.id:*",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 3,
+                "widgetType": "line"
+            },
+            "x": 0,
+            "y": 0
+        },
+        {
+            "forceRange": false,
+            "h": 2,
+            "i": "fb35c8b0-2aa1-11ec-a172-3d0d6ceca5b8",
+            "id": "fb35c8b0-2aa1-11ec-a172-3d0d6ceca5b8",
+            "reflectDimensions": true,
+            "w": 8,
+            "widget": {
+                "Cache": null,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "indicators",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 30,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "9a7aeb89-f57e-4caa-8148-85b6ca22cbd5",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-10-11T14:46:11.982732187Z",
+                "name": "Top 10 Indicators in Related Incidents",
+                "packID": "",
+                "params": {
+                    "tableColumns": [
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "indicator_type",
+                            "width": 120
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "value",
+                            "width": 300
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "relatedIncCount",
+                            "width": 150
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "score",
+                            "width": 120
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "sourceBrands",
+                            "width": 175
+                        }
+                    ]
+                },
+                "prevName": "Indicators in Related Incidents",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "incident.id:* and expirationStatus:active and (verdict:Malicious or verdict:Suspicious or verdict:Unknown)",
+                "shouldCommit": false,
+                "size": 10,
+                "sort": [
+                    {
+                        "asc": false,
+                        "field": "relatedIncCount",
+                        "fieldType": ""
+                    }
+                ],
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 5,
+                "widgetType": "table"
+            },
+            "x": 4,
+            "y": 0
+        }
+    ],
+    "name": "My Threat Landscape",
+    "period": {
+        "by": "",
+        "byFrom": "days",
+        "byTo": "",
+        "field": "",
+        "fromValue": 180,
+        "toValue": null
+    },
+    "toDate": "0001-01-01T00:00:00Z",
+    "version": -1,
+    "fromVersion": "6.2.0",
+    "description": "",
+    "isPredefined": true
+}
