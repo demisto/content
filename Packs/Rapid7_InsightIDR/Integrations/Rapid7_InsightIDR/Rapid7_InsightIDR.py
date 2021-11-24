@@ -2,6 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
+import dateparser
 import json
 import urllib3
 from datetime import datetime, timedelta
@@ -12,7 +13,6 @@ from requests import Response
 urllib3.disable_warnings()
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
-DATE_FORMAT_BACKUP = '%Y-%m-%dT%H:%M:%SZ'
 
 INVESTIGATIONS_FIELDS = ['title', 'id', 'status', 'created_time', 'source', 'assignee', 'alerts']
 THREATS_FIELDS = ['name', 'note', 'indicator_count', 'published']
@@ -730,10 +730,7 @@ def fetch_incidents(client: Client,
     investigations = client.list_investigations(remove_empty_elements(params))
     for investigation in investigations.get('data', []):
         investigation_created_time = investigation.get('created_time')
-        try:
-            created_time = datetime.strptime(investigation_created_time, DATE_FORMAT)
-        except ValueError:
-            created_time = datetime.strptime(investigation_created_time, DATE_FORMAT_BACKUP)
+        created_time = dateparser.parse(investigation_created_time)
         incident = {
             'name': investigation.get('title'),
             'occurred': created_time.strftime(DATE_FORMAT)[:-4] + "Z",
