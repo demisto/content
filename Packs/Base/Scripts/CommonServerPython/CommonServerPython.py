@@ -1342,18 +1342,18 @@ def return_next_interval(fetch_interval: str, last_update_time: datetime):
         :return: A datetime object for the next interval.
         :rtype: ``datetime``
     """
-    range_split = " ".join(fetch_interval.split()).strip().split(' ')
+    fetch_interval_split = fetch_interval.strip().split()
     number = 0
     next_update_time = None
-    if len(range_split) != 2:
+    if len(fetch_interval_split) != 2:
         return_error('date_range must be "number date_range_unit", examples: (2 hours, 4 minutes, 6 months, 1 day, '
                      'etc.)')
     try:
-        number = int(range_split[0])
+        number = int(fetch_interval_split[0])
     except ValueError:
         return_error('The time value is invalid. Must be an integer.')
 
-    unit = range_split[1].lower()
+    unit = fetch_interval_split[-1].lower()
     if unit not in ['second', 'seconds', 'minute', 'minutes', 'hour', 'hours', 'day', 'days', 'month', 'months', 'year',
                     'years']:
         return_error('The unit of date_range is invalid. Must be minutes, hours, days, months or years.')

@@ -5734,7 +5734,9 @@ fetch_interval_test_bank = [
     ("3   hours", datetime(2015, 7, 18, 12, 50, 20)),
     ("3 days", datetime(2015, 7, 21, 9, 50, 20)),
     ("3 months", datetime(2015, 10, 16, 9, 50, 20)),
-    ("3 years", datetime(2018, 7, 17, 9, 50, 20))
+    ("3 years", datetime(2018, 7, 17, 9, 50, 20)),
+    ("3 years   ", datetime(2018, 7, 17, 9, 50, 20)),
+    ("   3 years", datetime(2018, 7, 17, 9, 50, 20))
 ]
 
 
