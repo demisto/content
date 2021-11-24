@@ -7,11 +7,11 @@ configuration:
   name: apikey
   required: true
   type: 4
-- display: API Url
-  name: api_url
+- display: API Host
+  name: api_host
   required: false
   type: 0
-  defaultvalue: https://api.orcasecurity.io/api
+  defaultvalue: api.orcasecurity.io
 - defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
@@ -31,8 +31,8 @@ configuration:
   required: false
   type: 0
 - defaultvalue: '1000'
-  display: Limit
-  name: limit
+  display: Fetch Limit
+  name: fetch_limit
   required: false
   type: 0
 - display: Trust any certificate (not secure)

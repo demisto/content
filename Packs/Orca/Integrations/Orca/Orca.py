@@ -246,12 +246,14 @@ def main() -> None:
         command = demisto.command()
         demisto.debug(f'Orca Command being called is {command}')
         api_key = demisto.params().get('apikey')
-        api_url = demisto.params().get('api_url')
+        api_host = demisto.params().get('api_host')
         fetch_informational = demisto.params().get('fetch_informational')
         max_fetch = int(demisto.params().get('max_fetch'))
-        limit = int(demisto.params().get('limit'))
         pull_existing_alerts = demisto.params().get('pull_existing_alerts')
         fetch_type = demisto.params().get('fetch_type')
+        limit = int(demisto.params().get('fetch_limit'))
+
+        api_url = f"https://{api_host}/api"
 
         # How much time before the first fetch to retrieve incidents
         first_fetch_time = None
