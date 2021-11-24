@@ -395,8 +395,8 @@ def run_polling_command(args: dict, cmd: str, results_function: Callable,
                                          outputs={"requestId": request_id})
         return command_results
 
-    command_results = results_function(args)
-    status = command_results.get("data", {}).get("success")
+    results = results_function(args)
+    status = results.get("data", {}).get("success")
     if status is None:
         # schedule next poll
         polling_args = {
@@ -414,9 +414,10 @@ def run_polling_command(args: dict, cmd: str, results_function: Callable,
         command_results = CommandResults(scheduled_command=scheduled_command,
                                          readable_output="Waiting for the polling answer come back",
                                          outputs_prefix=args.get("output_prefix", "OpsGenie"),
-                                         outputs={"requestId": request_id}
+                                         outputs={"requestId": args.get("request_id")}
                                          )
-    return command_results
+        return command_results
+    return results
 
 
 def run_polling_paging_command(args: dict, cmd: str, results_function: Callable,
