@@ -4837,7 +4837,8 @@
         "Carbon Black Edr - Test": "Issue 40132",
         "Phishing v2 - Test - Actual Incident": "Issue 41322",
         "Kaspersky Security Center - Test": "Issue 36487",
-        "carbonBlackEndpointStandardTestPlaybook": "Issue 36936"
+        "carbonBlackEndpointStandardTestPlaybook": "Issue 36936",
+        "RecordedFutureFeed - Test": "Quota issue. Need to unskip in 1.12.21"
     },
     "skipped_integrations": {
 
