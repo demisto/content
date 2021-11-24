@@ -730,7 +730,8 @@ def fetch_incidents(client: Client,
     investigations = client.list_investigations(remove_empty_elements(params))
     for investigation in investigations.get('data', []):
         investigation_created_time = investigation.get('created_time')
-        created_time = dateparser.parse(investigation_created_time)
+        created_time = dateparser.parse(investigation_created_time,
+                                        settings={'RETURN_AS_TIMEZONE_AWARE': False})
         incident = {
             'name': investigation.get('title'),
             'occurred': created_time.strftime(DATE_FORMAT)[:-4] + "Z",
