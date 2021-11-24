@@ -261,7 +261,7 @@
                     "simple": "device.os_version"
                 },
                 "Scenario": {
-                    "simple": "behaviors.[0].scenario"
+                    "simple": "behaviors.scenario"
                 },
                 "severity": {
                     "simple": "fine_score"
