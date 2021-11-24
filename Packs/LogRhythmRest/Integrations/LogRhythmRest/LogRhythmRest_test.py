@@ -1,4 +1,5 @@
 from datetime import date, timedelta
+import demistomock as demisto
 
 
 def test_get_time_frame():
@@ -28,8 +29,9 @@ def test_get_time_frame():
     assert start.strftime(date_format) == '2019-04-01'
 
 
-def test_http_request(requests_mock):
+def test_http_request(requests_mock, mocker):
     from LogRhythmRest import http_request
+    mocker.patch.object(demisto, 'params', return_value={'url': "https://www.test.com"})
     requests_mock.get('https://content.demisto.works:30053/lr-drilldown-cache-api/drilldown/', status_code=204)
     result = http_request('GET', "lr-drilldown-cache-api/drilldown/", headers={})
     assert result == {}
