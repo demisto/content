@@ -1058,3 +1058,4 @@ Date: Wed, 17 Jun 2020 13:12:43 GMT
 &lt;/ns4:AuthenticationFault&gt;&lt;/detail&gt;&lt;/S:Fault&gt;&lt;/S:Body&gt;&lt;/S:Envelope&gt;
 </pre>
 <p>If you encounter an authentication failure, make sure to follow the instructions at the <strong>Permissions</strong> section of this document.</p>
+<p>Having both "Kerberos" and "form" type authentication methods enabled on your Symantec DLP may cause connection issues. Disabling the form-type may assist solving such issues.&nbsp;</p>
