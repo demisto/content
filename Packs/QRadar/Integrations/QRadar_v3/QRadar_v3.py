@@ -563,7 +563,7 @@ class Client(BaseClient):
     def reference_set_delete(self, ref_name: str, purge_only: Optional[str] = None, fields: Optional[str] = None):
         return self.http_request(
             method='DELETE',
-            url_suffix=f'/reference_data/sets/{parse.quote(str(ref_name), safe="")}',
+            url_suffix=f'/reference_data/sets/{parse.quote(ref_name, safe="")}',
             params=assign_params(purge_only=purge_only, fields=fields)
         )
 
@@ -571,14 +571,14 @@ class Client(BaseClient):
                                    fields: Optional[str] = None):
         return self.http_request(
             method='POST',
-            url_suffix=f'/reference_data/sets/{parse.quote(str(ref_name), safe="")}',
+            url_suffix=f'/reference_data/sets/{parse.quote(ref_name, safe="")}',
             params=assign_params(value=value, source=source, fields=fields)
         )
 
     def reference_set_value_delete(self, ref_name: str, value: str):
         return self.http_request(
             method='DELETE',
-            url_suffix=f'/reference_data/sets/{parse.quote(str(ref_name), safe="")}/{value}'
+            url_suffix=f'/reference_data/sets/{parse.quote(ref_name, safe="")}/{value}'
         )
 
     def domains_list(self, domain_id: Optional[int] = None, range_: Optional[str] = None, filter_: Optional[str] = None,
@@ -601,7 +601,7 @@ class Client(BaseClient):
             headers['fields'] = fields
         return self.http_request(
             method='POST',
-            url_suffix=f'/reference_data/sets/bulk_load/{parse.quote(str(ref_name), safe="")}',
+            url_suffix=f'/reference_data/sets/bulk_load/{parse.quote(ref_name, safe="")}',
             json_data=indicators,
             additional_headers=headers
         )
