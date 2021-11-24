@@ -3,8 +3,6 @@ import io
 from CommonServerPython import *
 import OpsGenieV3
 from unittest.mock import MagicMock
-from unittest.mock import patch
-
 
 
 def util_load_json(path):
@@ -26,6 +24,15 @@ def test_get_alerts():
     OpsGenieV3.list_alerts = MagicMock()
     OpsGenieV3.get_alerts(mock_client, {})
     assert OpsGenieV3.list_alerts.called
+
+
+def test_get_alerts(mocker):
+    mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
+    mock_client = OpsGenieV3.Client(base_url="")
+    mocker.patch.object(mock_client, 'list_alerts',
+                        return_value=util_load_json('test_data/get_alerts.json'))
+    res = OpsGenieV3.get_alerts(mock_client, {"limit": 1})
+    assert (len(res.outputs) == 1)
 
 
 def test_delete_alert(mocker):
