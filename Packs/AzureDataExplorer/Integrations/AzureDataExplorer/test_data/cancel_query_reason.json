@@ -23,7 +23,7 @@
                 [
                     false,
                     "XSOAR-DataExplorer1;xxxx-xxxxx-xxxxx-xxxx",
-                    "test-reason"
+                    "Query cancelled by the user's request"
                 ]
             ]
         }

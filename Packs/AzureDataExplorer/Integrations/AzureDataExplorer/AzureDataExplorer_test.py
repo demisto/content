@@ -135,11 +135,11 @@ def test_list_search_running_queries_command(requests_mock):
 @pytest.mark.parametrize("response_mock_file,test_input,expected_reason", [('cancel_query.json', {
     "database_name": DATABASE_NAME,
     "client_activity_id": CLIENT_ACTIVITY_ID
-}, "Query cancelled by the user's request"), ('cancel_query_reason.json', {
+}, "None"), ('cancel_query_reason.json', {
     "database_name": DATABASE_NAME,
     "client_activity_id": CLIENT_ACTIVITY_ID,
-    "reason": "test-reason"
-}, "test-reason")])
+    "reason": "Query cancelled by the user's request"
+}, "Query cancelled by the user's request")])
 def test_cancel_running_search_query_command(response_mock_file, test_input, expected_reason, requests_mock):
     """
     Scenario: execute search query against given database.
