@@ -38,6 +38,6 @@ scripttarget: 0
 script: '-'
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.9.8.24399
 tests:
 - SetAndHandleEmpty test
