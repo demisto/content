@@ -11,7 +11,7 @@ configuration:
 - display: Application ID
   hidden: false
   name: client_id
-  required: false
+  required: true
   type: 0
 - additionalinfo: 'A customized prefix of the client activity identifier for the query
     execution. For example, for a prefix value of ''XSOAR-DataExplorer'', the client
@@ -209,7 +209,7 @@ script:
       description: The principal that invoked the query.
       type: String
     - contextPath: AzureDataExplorer.SearchQuery.ClientRequestProperties.SecurityTokenPresent
-      description: Security token present.
+      description: If true, the security token is present in the request.
       type: Boolean
     - contextPath: AzureDataExplorer.SearchQuery.ClientRequestProperties.AuthorizationScheme
       description: Authorization scheme.
@@ -227,10 +227,10 @@ script:
       description: API version.
       type: String
     - contextPath: AzureDataExplorer.SearchQuery.ClientRequestProperties.Options.request_readonly
-      description: Request readonly.
+      description: If true, the request is read-only.
       type: Boolean
     - contextPath: AzureDataExplorer.SearchQuery.ClientRequestProperties.Options.servertimeout
-      description: Server timeout option.
+      description: Server timeout value.
       type: Number
     - contextPath: AzureDataExplorer.SearchQuery.ClientRequestProperties.Options.servertimeoutorigin
       description: Server timeout origin.
@@ -353,7 +353,7 @@ script:
       description: The principal that invoked the query.
       type: String
     - contextPath: AzureDataExplorer.RunningSearchQuery.ClientRequestProperties.SecurityTokenPresent
-      description: Security token present.
+      description: If true, the security token is present in the request.
       type: Boolean
     - contextPath: AzureDataExplorer.RunningSearchQuery.ClientRequestProperties.AuthorizationScheme
       description: Authorization scheme.
@@ -371,10 +371,10 @@ script:
       description: API version.
       type: String
     - contextPath: AzureDataExplorer.RunningSearchQuery.ClientRequestProperties.Options.request_readonly
-      description: Request readonly.
+      description: If true, the request is read-only.
       type: Boolean
     - contextPath: AzureDataExplorer.RunningSearchQuery.ClientRequestProperties.Options.servertimeout
-      description: Server timeout option.
+      description: Server timeout value.
       type: Number
     - contextPath: AzureDataExplorer.RunningSearchQuery.ClientRequestProperties.Options.servertimeoutorigin
       description: Server timeout origin.
@@ -432,7 +432,7 @@ script:
     name: azure-data-explorer-running-search-query-cancel
     outputs:
     - contextPath: AzureDataExplorer.CanceledSearchQuery.RunningQueryCanceled
-      description: True if the query was successfuly canceled. Otherwise false.
+      description: If true, the query was successfully canceled.
       type: Boolean
     - contextPath: AzureDataExplorer.CanceledSearchQuery.ClientRequestId
       description: Client Activity ID of the cancelled query.
