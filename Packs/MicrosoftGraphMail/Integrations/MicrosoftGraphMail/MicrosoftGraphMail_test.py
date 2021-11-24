@@ -6,7 +6,7 @@ import requests_mock
 from CommonServerPython import *
 from MicrosoftGraphMail import MsGraphClient, build_mail_object, assert_pages, build_folders_path, \
     add_second_to_str_date, list_mails_command, item_result_creator, create_attachment, reply_email_command, \
-    send_email_command
+    send_email_command, prepare_args
 from MicrosoftApiModule import MicrosoftClient
 import demistomock as demisto
 
@@ -488,7 +488,7 @@ SEND_MAIL_COMMAND_ARGS = [
 
 
 @pytest.mark.parametrize('client, args', SEND_MAIL_COMMAND_ARGS)
-def test_send_mail_command(mocker, requests_mock, client, args):
+def test_send_mail_command(mocker, client, args):
     """
         Given:
             - send-mail command's arguments
@@ -498,15 +498,15 @@ def test_send_mail_command(mocker, requests_mock, client, args):
 
         Then:
             - validates that demisto result was called with the correct values.
-
     """
     mocker.patch.object(MicrosoftClient, 'http_request')
     mocker.patch.object(demisto, 'results')
 
     send_email_command(client, args)
-
     assert demisto.results.called
-    contents = demisto.results.call_args[0][0]['Contents']['MicrosoftGraph.Email']
+    
+    contents = demisto.results.call_args[0][0].get('Contents').get('MicrosoftGraph.Email')
+    assert contents
     assert contents.get('body').get('content') == args.get('body') or args.get("htmlBody")
     assert contents.get('subject') == args.get('subject')
     assert contents.get('toRecipients') == args.get('to')
