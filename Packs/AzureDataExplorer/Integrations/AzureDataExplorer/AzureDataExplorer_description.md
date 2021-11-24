@@ -1,3 +1,12 @@
+In order to connect to the Azure Data Explorer using Self-Deployed Azure App, [the device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code) is used.
+
+1. Fill in the required parameters.
+2. Run the ***!azure-data-explorer-auth-start*** command.
+3. Follow the instructions that appear.
+4. Run the ***!azure-data-explorer-auth-complete*** command.
+
+At end of the process you'll see a message that you've logged in successfully.
+
 ### Authorize Cortex XSOAR for Azure Data Explorer (self-deployed configuration)
 
 Follow these steps for a self-deployed configuration.
