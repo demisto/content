@@ -1070,3 +1070,50 @@ def test_build_search_human_readable(mocker):
     splunk.build_search_human_readable(args, results)
     headers = func_patch.call_args[0][1]
     assert headers == expected_headers
+
+
+def test_build_search_kwargs():
+    args = {'earliest_time': '2021-11-23T10:10:10', 'latest_time': '2021-11-23T10:10:20', 'app': 'test_app', 'polling': False}
+    kwargs_normalsearch = splunk.build_search_kwargs(args)
+    for field in args:
+        if field == 'polling':
+            assert 'exec_mode' in kwargs_normalsearch
+        else:
+            assert field in kwargs_normalsearch
+
+
+@pytest.mark.parametrize('polling,status', [
+    (False, 'DONE'), (True, 'DONE'), (True, 'RUNNING')
+])
+def test_splunk_search_command(mocker, polling, status):
+
+    class Jobs:
+        def __init__(self):
+            self.oneshot = None
+
+        def create(query, earliest_time):
+            return {'sid': '123456', 'resultCount': 0}
+
+    class Service:
+        def __init__(self):
+            self.jobs = Jobs()
+
+        def job(sid, a):
+            return {'sid': sid, 'resultCount': 0}
+
+    mocker.patch.object(demisto, 'args', return_value={'query': 'query', 'earliest_time': '2021-11-23T10:10:10',
+                                                       'latest_time': '2020-10-20T10:10:20', 'app': 'test_app',
+                                                       'polling': polling})
+    mocker.patch.object(splunk, 'build_search_query', returnvalue='query')
+    mocker.patch.object(splunk, 'build_search_kwargs', return_value={})
+    mocker.patch.object(splunk, 'splunk_job_status', return_value=CommandResults(outputs={'Status': status}))
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported')
+
+    search_result = splunk.splunk_search_command(Service())
+
+    if search_result.scheduled_command:
+        assert search_result.outputs['Status'] == status
+        assert search_result.scheduled_command._args['sid'] == '123456'
+    else:
+        assert search_result.outputs['Splunk.Result'] == []
+        assert search_result.outputs['Splunk.JobStatus(val.SID && val.SID === obj.SID)']['Status'] == status
