@@ -51,9 +51,8 @@ script:
       secret: false
     - default: false
       defaultValue: '5'
-      description: 'The timeout for the execution of search query on server side.
-        The timeout is in range of 1 minute to 60 minutes. Default value is 5 (five
-        minutes). '
+      description: The timeout for the execution of search query on server side. The
+        timeout is a float number in minutes that ranges from 0 to 60.
       isArray: false
       name: timeout
       required: false
@@ -429,7 +428,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Database name
+      description: Database name.
       isArray: false
       name: database_name
       required: true
