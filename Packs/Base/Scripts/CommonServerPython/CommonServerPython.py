@@ -1328,7 +1328,7 @@ def stringUnEscape(st):
     return st.replace('\\r', '\r').replace('\\n', '\n').replace('\\t', '\t')
 
 
-def return_next_interval(fetch_interval: str, last_update_time: datetime):
+def return_next_interval(fetch_interval, last_update_time):
     """
         Returns a datetime object of the next update time. For example, when the function is given a last update
         datetime, this function will return the next datetime object for the given interval.
