@@ -1328,6 +1328,51 @@ def stringUnEscape(st):
     return st.replace('\\r', '\r').replace('\\n', '\n').replace('\\t', '\t')
 
 
+def return_next_interval(fetch_interval: str, last_update_time: datetime):
+    """
+        Returns a datetime object of the next update time. For example, when the function is given a last update
+        datetime, this function will return the next datetime object for the given interval.
+
+        :type fetch_interval: ``str``
+        :param fetch_interval: A string containing a date range e.g. (2 Days)
+
+        :type last_update_time: ``datetime``
+        :param last_update_time: The datetime object that the date range will be incremented on.
+
+        :return: A datetime object for the next interval.
+        :rtype: ``datetime``
+    """
+    range_split = " ".join(fetch_interval.split()).strip().split(' ')
+    number = 0
+    next_update_time = None
+    if len(range_split) != 2:
+        return_error('date_range must be "number date_range_unit", examples: (2 hours, 4 minutes, 6 months, 1 day, '
+                     'etc.)')
+    try:
+        number = int(range_split[0])
+    except ValueError:
+        return_error('The time value is invalid. Must be an integer.')
+
+    unit = range_split[1].lower()
+    if unit not in ['second', 'seconds', 'minute', 'minutes', 'hour', 'hours', 'day', 'days', 'month', 'months', 'year',
+                    'years']:
+        return_error('The unit of date_range is invalid. Must be minutes, hours, days, months or years.')
+
+    if unit.startswith('second'):
+        next_update_time = last_update_time + timedelta(seconds=number)
+    elif unit.startswith('minute'):
+        next_update_time = last_update_time + timedelta(minutes=number)
+    elif unit.startswith('hour'):
+        next_update_time = last_update_time + timedelta(hours=number)
+    elif unit.startswith('day'):
+        next_update_time = last_update_time + timedelta(days=number)
+    elif unit.startswith('month'):
+        next_update_time = last_update_time + timedelta(days=number * 30)
+    elif unit.startswith('year'):
+        next_update_time = last_update_time + timedelta(days=number * 365)
+    return next_update_time
+
+
 class IntegrationLogger(object):
     """
       a logger for python integrations:

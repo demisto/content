@@ -5712,3 +5712,21 @@ def test_indicators_value_to_clickable_invalid(mocker):
     assert not result
 
 
+fetch_interval_test_bank = [
+    ("3 minutes", datetime(2015, 7, 18, 9, 53, 20)),
+    ("3   hours", datetime(2015, 7, 18, 12, 50, 20)),
+    ("3 days", datetime(2015, 7, 21, 9, 50, 20)),
+    ("3 months", datetime(2015, 10, 16, 9, 50, 20)),
+    ("3 years", datetime(2018, 7, 17, 9, 50, 20))
+]
+
+
+@pytest.mark.parametrize('test_fetch_interval, expected_datetime', fetch_interval_test_bank)
+def test_handle_date_interval(test_fetch_interval, expected_datetime):
+    last_update_time = datetime(2015, 7, 18, 9, 50, 20)
+
+    from CommonServerPython import return_next_interval
+
+    next_update_time = return_next_interval(fetch_interval=test_fetch_interval, last_update_time=last_update_time)
+
+    assert next_update_time == expected_datetime
