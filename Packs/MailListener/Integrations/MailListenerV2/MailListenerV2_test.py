@@ -84,10 +84,59 @@ def test_convert_to_incident():
 
 
 @pytest.mark.parametrize(
-    'time_to_fetch_from, permitted_from_addresses, permitted_from_domains, uid_to_fetch_from, expected_query',
+    'time_to_fetch_from, server_type, permitted_from_addresses, permitted_from_domains, uid_to_fetch_from, expected_query',
     [
         (
             datetime(year=2020, month=10, day=1),
+            'Gmail',
+            ['test1@mail.com', 'test2@mail.com'],
+            ['test1.com', 'domain2.com'],
+            4,
+            [
+                'OR',
+                'OR',
+                'OR',
+                'FROM',
+                'test1@mail.com',
+                'FROM',
+                'test2@mail.com',
+                'FROM',
+                'test1.com',
+                'FROM',
+                'domain2.com',
+                'SINCE',
+                datetime(year=2020, month=10, day=1),
+                'UID',
+                '4:*'
+            ]
+        ),
+        (
+            datetime(year=2020, month=10, day=1),
+            'SomeIMAPServer',
+            ['test1@mail.com', 'test2@mail.com'],
+            ['test1.com', 'domain2.com'],
+            4,
+            [
+                'OR',
+                'OR',
+                'OR',
+                'FROM',
+                'test1@mail.com',
+                'FROM',
+                'test2@mail.com',
+                'FROM',
+                'test1.com',
+                'FROM',
+                'domain2.com',
+                'SINCE',
+                datetime(year=2020, month=10, day=1),
+                'UID',
+                '4:*'
+            ]
+        ),
+        (
+            datetime(year=2020, month=10, day=1),
+            'Office365',
             ['test1@mail.com', 'test2@mail.com'],
             ['test1.com', 'domain2.com'],
             4,
@@ -115,6 +164,7 @@ def test_convert_to_incident():
         ),
         (
             None,
+            '',
             [],
             [],
             1,
@@ -126,7 +176,7 @@ def test_convert_to_incident():
     ]
 )
 def test_generate_search_query(
-        time_to_fetch_from, permitted_from_addresses, permitted_from_domains, uid_to_fetch_from, expected_query
+        time_to_fetch_from, server_type, permitted_from_addresses, permitted_from_domains, uid_to_fetch_from, expected_query
 ):
     """
     Given:
@@ -144,7 +194,7 @@ def test_generate_search_query(
     """
     from MailListenerV2 import generate_search_query
     assert generate_search_query(
-        time_to_fetch_from, permitted_from_addresses, permitted_from_domains, uid_to_fetch_from
+        time_to_fetch_from, server_type, permitted_from_addresses, permitted_from_domains, uid_to_fetch_from
     ) == expected_query
 
 

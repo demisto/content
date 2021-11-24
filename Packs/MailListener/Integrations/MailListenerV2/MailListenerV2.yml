@@ -37,6 +37,14 @@ configuration:
   name: permittedFromDomain
   required: false
   type: 0
+- display: IMAP server type
+  additionalinfo: IMAP server type is required for filtering with the senders email address
+  name: server_type
+  defaultvalue: Gmail
+  type: 15
+  options:
+  - Gmail
+  - Office365
 - defaultvalue: 1 hour
   display: First fetch time
   name: first_fetch
