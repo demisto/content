@@ -52,7 +52,7 @@ This playbook does not use any integrations.
 | MessageID | The original email message id to retrieve. Holds the value of the "Message-ID" header of the original email. This value will be passed as an input to the playbook "Get Original Email - Generic v2" | incident.emailmessageid | Optional |
 | UserID | The user's email address for which to retrieve the original email. This value will be passed as an input to the playbook "Get Original Email - Generic v2". | incident.emailto | Optional |
 | Thread-Topic | The value of the "Thread-Topic" header which holds the original email subject. This is necessary for forwarded emails scenarios. It will be passed as an input to the "Get Original Email - Generic v2" playbook to be used in the relevant sub-playbooks. | incident.emailsubject | Optional |
-| EmailBrand | When this value supplied, only the relevant playbook will run.<br/>Possible values:<br/>- Gmail<br/>- EWS v2<br/>- MicrosoftGraphMail<br/>- EmailSecurityGateway<br/><br/>If none of the above values is supplied, all of the playbooks will run. |  | Optional |
+| EmailBrand | When this value is provided, only the relevant sub-playbook of "Get Original Email - Generic v2" will be executed.<br/>Possible values:<br/>- Gmail<br/>- EWS v2<br/>- MicrosoftGraphMail<br/>- EmailSecurityGateway<br/><br/>If none of the above values is provided, all of the sub-playbooks will be executed. |  | Optional |
 
 ## Playbook Outputs
 ---

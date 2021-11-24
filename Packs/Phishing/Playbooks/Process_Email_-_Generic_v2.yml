@@ -1953,14 +1953,14 @@ inputs:
   value: {}
   required: false
   description: |-
-    When this value supplied, only the relevant playbook will run.
+    When this value is provided, only the relevant sub-playbook of "Get Original Email - Generic v2" will be executed.
     Possible values:
     - Gmail
     - EWS v2
     - MicrosoftGraphMail
     - EmailSecurityGateway
 
-    If none of the above values is supplied, all of the playbooks will run.
+    If none of the above values will be provided, all of the sub-playbooks will be executed.
   playbookInputQuery:
 outputs:
 - contextPath: Email.HTML
