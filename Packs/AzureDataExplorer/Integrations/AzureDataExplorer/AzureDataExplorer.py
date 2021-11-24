@@ -243,7 +243,7 @@ def search_queries_list_command(client: DataExplorerClient, args: Dict[str, Any]
     page_size = arg_to_number(args.get('page_size'))
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
     client_activity_id = str(args.get('client_activity_id', ''))
-    validate_list_command_arguments(page,page_size, limit)
+    validate_list_command_arguments(page, page_size, limit)
     response = client.search_queries_list_request(
         database_name, client_activity_id)
 
@@ -267,7 +267,7 @@ def running_search_queries_list_command(client: DataExplorerClient, args: Dict[s
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
     client_activity_id = str(args.get('client_activity_id', ''))
 
-    validate_list_command_arguments(page,page_size, limit)
+    validate_list_command_arguments(page, page_size, limit)
     response = client.running_search_queries_list_request(
         database_name, client_activity_id)
 
