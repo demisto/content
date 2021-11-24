@@ -14,10 +14,10 @@ def select_indicator_columns(indicator: dict) -> Dict:
     return display_indicator
 
 
-def dedup_by_value(indicators_list: list) -> List:
+def dedup_by_value(indicators: list) -> List:
     exist_values = set()
     result = []
-    for e in indicators_list:
+    for e in indicators:
         value = e['value']
         if value not in exist_values:
             exist_values.add(value)
