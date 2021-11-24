@@ -1211,7 +1211,7 @@ def http_request(method, url_suffix, data=None, headers=HEADERS):
     try:
         res = requests.request(
             method,
-            BASE_URL + '/' + url_suffix,
+            urljoin(BASE_URL, url_suffix),
             headers=headers,
             verify=INSECURE,
             data=data
@@ -1234,7 +1234,7 @@ def http_request(method, url_suffix, data=None, headers=HEADERS):
         return_error(
             'Error in API call to {}, status code: {}, reason: {}'.format(BASE_URL + '/' + url_suffix, res.status_code,
                                                                           res.json()['message']))
-    if res.status_code == 204 and method == 'GET':
+    if res.status_code == 204:
         return {}
     return res.json()
 
