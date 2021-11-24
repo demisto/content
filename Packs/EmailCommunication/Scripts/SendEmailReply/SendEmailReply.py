@@ -183,7 +183,7 @@ def get_reply_body(notes, incident_id, attachments):
 def get_email_recipients(email_to, email_from, service_mail, mailbox):
     """Get the email recipient.
     Args:
-        mailbox:
+        mailbox (str): The mailbox configured in the relevant integration
         email_to (str): The email receiver.
         email_from (str): The email's sender.
         service_mail (str): The mail listener.
@@ -208,21 +208,31 @@ def get_email_recipients(email_to, email_from, service_mail, mailbox):
     return email_recipients
 
 
+def get_mailbox_from_incident_labels(labels):
+    """
+    Gets the mailbox param from the incident labels.
+    Args:
+        labels (list): th incident labels.
+    Returns:
+        The mailbox label.
+    """
+    for label in labels:
+        if label.get('type') == 'Mailbox':
+            return label.get('value')
+    return None
+
+
 def main():
     args = demisto.args()
     incident = demisto.incident()
     incident_id = incident.get('id')
     labels = incident.get('labels', [])
-    mailbox = None
-    for label in labels:
-        if label.get('type') == 'Mailbox':
-            mailbox = label.get('value')
+    mailbox = get_mailbox_from_incident_labels(labels)
     custom_fields = incident.get('CustomFields')
     email_subject = custom_fields.get('emailsubject')
     email_cc = custom_fields.get('emailcc', '')
     add_cc = custom_fields.get('addcctoemail', '')
     service_mail = args.get('service_mail', '')
-    print(f"service_mail issss: {service_mail}")
     email_from = custom_fields.get('emailfrom')
     email_to = custom_fields.get('emailto')
     email_latest_message = custom_fields.get('emaillatestmessage')

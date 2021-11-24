@@ -96,6 +96,7 @@
         "Importance": "normal",
         "ConversationID": "dummy_conversation_id_1",
         "IsRead": false,
+        "Mailbox": "dummy@mailbox.com",
         "IsDraft": false,
         "Headers": [
             {
