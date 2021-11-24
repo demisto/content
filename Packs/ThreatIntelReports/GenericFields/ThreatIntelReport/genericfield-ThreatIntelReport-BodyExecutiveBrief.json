@@ -1,12 +1,12 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Executive Report"
+        "Executive Brief"
     ],
     "caseInsensitive": true,
-    "cliName": "bodyexecutivereport",
-    "id": "generic_ThreatIntelReport_bodyexecutivereport",
-    "name": "Body Executive Report",
+    "cliName": "bodyexecutivebrief",
+    "id": "generic_ThreatIntelReport_bodyexecutivebrief",
+    "name": "Body Executive Brief",
     "closeForm": false,
     "content": true,
     "editForm": true,
@@ -23,9 +23,9 @@
     "system": false,
     "threshold": 72,
     "type": "markdown",
-    "template": "## Summary",
+    "template": "### Summary",
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0"
