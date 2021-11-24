@@ -20,6 +20,19 @@ configuration:
   name: incident_notifications_channel
   required: true
   type: 0
+- additionalinfo: The national cloud endpoint that should be used
+  defaultvalue: Default - Worldwide (.com)
+  display: National Cloud
+  hidden: false
+  name: endpoint
+  options:
+  - Default - Worldwide (.com)
+  - GCC-High (US)
+  - Department of Defence - DoD (US)
+  - Germany (.de)
+  - China (.cn)
+  required: false
+  type: 15
 - display: Certificate (Required for HTTPS)
   name: certificate
   required: false
@@ -40,13 +53,14 @@ configuration:
   - Critical
   required: false
   type: 15
-- additionalinfo: Whether to disable automatic notifications to the configured notifications channel.
+- additionalinfo: Whether to disable automatic notifications to the configured notifications
+    channel.
+  defaultvalue: 'false'
   display: Disable Automatic Notifications
   hidden: false
   name: auto_notifications
   required: false
   type: 8
-  defaultvalue: false
 - display: Allow external users to create incidents via direct message
   name: allow_external_incidents_creation
   required: false
