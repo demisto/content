@@ -13,6 +13,8 @@ from pytz import utc
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
+handle_proxy()
+
 ''' CONSTANTS '''
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 INCIDENT_COLUMNS = ['id', 'incident_type', 'severity', 'start_time', 'end_time',
