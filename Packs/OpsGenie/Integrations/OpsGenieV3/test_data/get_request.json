@@ -1,0 +1,14 @@
+{
+    "data": {
+        "success": true,
+        "action": "Create",
+        "processedAt": "2021-11-24T12:14:41.002Z",
+        "integrationId": "3cc69931-167f-411c-a331-768997c29d2e",
+        "isSuccess": true,
+        "status": "Created alert",
+        "alertId": "b7da6303-0da4-43e2-8e21-9e22faedc594-1637756080926",
+        "alias": "b7da6303-0da4-43e2-8e21-9e22faedc594-1637756080926"
+    },
+    "took": 0.004,
+    "requestId": "fadf302b-1ea6-4dc9-b5fc-59d41fe3abe9"
+}
