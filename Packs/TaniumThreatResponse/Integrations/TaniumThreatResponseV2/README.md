@@ -683,6 +683,11 @@ Returns all connections.
 
 #### Human Readable Output
 
+>### Connections
+>|Id|Status|Hostname|Message|Ip|Platform|Connected At|
+>|---|---|---|---|---|---|---|
+>| rremote:hostname:123: | disconnected | hostname | The connection has been disconnected. | 1.1.1.1 | Windows | 2021-09-22T12:08:39.000Z |
+>| remote:localhost:1111: | timeout | localhost | The connection has timed out. | 1.2.3.4 | Linux |  |
 
 
 ### tanium-tr-create-connection
