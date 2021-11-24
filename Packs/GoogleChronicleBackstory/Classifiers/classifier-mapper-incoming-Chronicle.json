@@ -1,7 +1,7 @@
 {
     "description": "Maps incoming Chronicle incident fields.",
     "feed": false,
-    "id": "Chronicle - Incoming Mapper",
+    "id": "Chronicle-mapper",
     "mapping": {
         "Chronicle Rule Detection": {
             "dontMapEventToLabels": false,
