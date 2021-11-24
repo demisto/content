@@ -5,6 +5,8 @@ import demistomock as demisto
 def main():
     args = demisto.args()
     value = args.get('value')
+    if isinstance(value, str):
+        value = safe_load_json(value)
     title = args.get('title')
     headers = argToList(args.get('headers'))
     is_auto_json_transform = argToBoolean(args.get('is_auto_json_transform', False))
@@ -19,5 +21,5 @@ def main():
     return_results(markdown)
 
 
-if __name__ in ['__builtin__', 'builtins']:
+if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()

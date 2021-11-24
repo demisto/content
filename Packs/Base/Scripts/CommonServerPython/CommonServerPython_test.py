@@ -18,6 +18,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
     url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer
+import CommonServerPython
 
 try:
     from StringIO import StringIO
@@ -242,58 +243,6 @@ COMPLEX_DATA_WITH_URLS = [(
               }
          }
     ])]
-
-NESTED_DATA_EXAMPLE = {"name": "Active Directory Query",
-                       "changelog": {
-                           "1.0.4": {
-                               "path": "",
-                               "releaseNotes": "\n#### Integrations\n##### Active Directory Query v2\nFixed an issue where the ***ad-get-user*** command caused performance issues because the *limit* argument was not defined.\n",
-                               "displayName": "1.0.4 - R124496",
-                               "released": "2020-09-23T17:43:26Z"
-                           },
-                           "1.0.5": {
-                               "path": "",
-                               "releaseNotes": "\n#### Integrations\n##### Active Directory Query v2\n- Fixed several typos.\n- Updated the Docker image to: *demisto/ldap:1.0.0.11282*.\n",
-                               "displayName": "1.0.5 - 132259",
-                               "released": "2020-10-01T17:48:31Z"
-                           },
-                           "1.0.6": {
-                               "path": "",
-                               "releaseNotes": "\n#### Integrations\n##### Active Directory Query v2\n- Fixed an issue where the DN parameter within query in the ***search-computer*** command was incorrect.\n- Updated the Docker image to *demisto/ldap:1.0.0.12410*.\n",
-                               "displayName": "1.0.6 - 151676",
-                               "released": "2020-10-19T14:35:15Z"
-                           },
-                       },
-                       "nested": {
-                           "item1": {
-                               "a": 1,
-                               "b": 2,
-                               "c": 3,
-                               "d": 4
-                           }
-                       }}
-
-COMPLEX_NESTED_DATA_EXAMPLE = {"name": "Active Directory Query",
-                            "changelog": {
-                                "1.0.4": {
-                                    "path": {'a': {'b': {'c': 'we should see this value'}}},
-                                    "releaseNotes": "\n#### Integrations\n##### Active Directory Query v2\nFixed an issue where the ***ad-get-user*** command caused performance issues because the *limit* argument was not defined.\n",
-                                    "displayName": "1.0.4 - R124496",
-                                    "released": "2020-09-23T17:43:26Z"
-                                },
-                                "1.0.5": {
-                                    "path": {'a': {'b': {'c': 'we should see this value'}}},
-                                    "releaseNotes": "\n#### Integrations\n##### Active Directory Query v2\n- Fixed several typos.\n- Updated the Docker image to: *demisto/ldap:1.0.0.11282*.\n",
-                                    "displayName": "1.0.5 - 132259",
-                                    "released": "2020-10-01T17:48:31Z"
-                                },
-                                "1.0.6": {
-                                    "path": {'a': {'b': {'c': 'we should see this value'}}},
-                                    "releaseNotes": "\n#### Integrations\n##### Active Directory Query v2\n- Fixed an issue where the DN parameter within query in the ***search-computer*** command was incorrect.\n- Updated the Docker image to *demisto/ldap:1.0.0.12410*.\n",
-                                    "displayName": "1.0.6 - 151676",
-                                    "released": "2020-10-19T14:35:15Z"
-                                },
-                            }}
 
 
 class TestTableToMarkdown:
@@ -760,40 +709,60 @@ class TestTableToMarkdown:
         Then:
           - Parse the json table to the default format which supports nesting.
         """
-        table = tableToMarkdown("tableToMarkdown test", NESTED_DATA_EXAMPLE,
+        with open('test_data/nested_data_example.json') as f:
+            nested_data_example = json.load(f)
+        table = tableToMarkdown("tableToMarkdown test", nested_data_example,
                                 headers=['name', 'changelog', 'nested'],
                                 is_auto_json_transform=True)
         expected_table = """### tableToMarkdown test
 |name|changelog|nested|
 |---|---|---|
-| Active Directory Query | ***1.0.4***: <br>	**path**: <br>	**releaseNotes**: <br>#### Integrations<br>##### Active Directory Query v2<br>Fixed an issue where the ***ad-get-user*** command caused performance issues because the *limit* argument was not defined.<br><br>	**displayName**: 1.0.4 - R124496<br>	**released**: 2020-09-23T17:43:26Z<br>***1.0.5***: <br>	**path**: <br>	**releaseNotes**: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed several typos.<br>- Updated the Docker image to: *demisto/ldap:1.0.0.11282*.<br><br>	**displayName**: 1.0.5 - 132259<br>	**released**: 2020-10-01T17:48:31Z<br>***1.0.6***: <br>	**path**: <br>	**releaseNotes**: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed an issue where the DN parameter within query in the ***search-computer*** command was incorrect.<br>- Updated the Docker image to *demisto/ldap:1.0.0.12410*.<br><br>	**displayName**: 1.0.6 - 151676<br>	**released**: 2020-10-19T14:35:15Z | ***item1***: <br>	**a**: 1<br>	**b**: 2<br>	**c**: 3<br>	**d**: 4 |
+| Active Directory Query | **1.0.4**:<br>	***path***: <br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>Fixed an issue where the ***ad-get-user*** command caused performance issues because the *limit* argument was not defined.<br><br>	***displayName***: 1.0.4 - R124496<br>	***released***: 2020-09-23T17:43:26Z<br>**1.0.5**:<br>	***path***: <br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed several typos.<br>- Updated the Docker image to: *demisto/ldap:1.0.0.11282*.<br><br>	***displayName***: 1.0.5 - 132259<br>	***released***: 2020-10-01T17:48:31Z<br>**1.0.6**:<br>	***path***: <br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed an issue where the DN parameter within query in the ***search-computer*** command was incorrect.<br>- Updated the Docker image to *demisto/ldap:1.0.0.12410*.<br><br>	***displayName***: 1.0.6 - 151676<br>	***released***: 2020-10-19T14:35:15Z | **item1**:<br>	***a***: 1<br>	***b***: 2<br>	***c***: 3<br>	***d***: 4 |
 """
         assert table == expected_table
 
     @staticmethod
     def test_with_json_transformer_simple():
-        """
-        Given:
-          - Nested json table.
-        When:
-          - Calling tableToMarkdown with JsonTransformer with only `keys_lst` given.
-        Then:
-          - The header key which is transformed will parsed with the relevant keys.
-        """
-
-        changelog_transformer = JsonTransformer(keys_lst=['releaseNotes', 'released'])
-        table_json_transformer = {'changelog': changelog_transformer}
-        table = tableToMarkdown("tableToMarkdown test", NESTED_DATA_EXAMPLE, headers=['name', 'changelog'],
-                                json_transform_mapping=table_json_transformer)
+        with open('test_data/simple_data_example.json') as f:
+            simple_data_example = json.load(f)
+        name_transformer = JsonTransformer(keys=['first', 'second'])
+        json_transformer_mapping = {'name': name_transformer}
+        table = tableToMarkdown("tableToMarkdown test", simple_data_example,
+                                json_transform_mapping=json_transformer_mapping)
         expected_table = """### tableToMarkdown test
-|name|changelog|
+|name|value|
 |---|---|
-| Active Directory Query | ***1.0.4***: <br>	**releaseNotes**: <br>#### Integrations<br>##### Active Directory Query v2<br>Fixed an issue where the ***ad-get-user*** command caused performance issues because the *limit* argument was not defined.<br><br>	**released**: 2020-09-23T17:43:26Z<br>***1.0.5***: <br>	**releaseNotes**: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed several typos.<br>- Updated the Docker image to: *demisto/ldap:1.0.0.11282*.<br><br>	**released**: 2020-10-01T17:48:31Z<br>***1.0.6***: <br>	**releaseNotes**: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed an issue where the DN parameter within query in the ***search-computer*** command was incorrect.<br>- Updated the Docker image to *demisto/ldap:1.0.0.12410*.<br><br>	**released**: 2020-10-19T14:35:15Z |
+| **first**:<br>	***a***: val<br><br>***second***: b | val1 |
+| **first**:<br>	***a***: val2<br><br>***second***: d | val2 |
 """
         assert expected_table == table
 
     @staticmethod
     def test_with_json_transformer_nested():
+        """
+        Given:
+          - Nested json table.
+        When:
+          - Calling tableToMarkdown with JsonTransformer with only `keys` given.
+        Then:
+          - The header key which is transformed will parsed with the relevant keys.
+        """
+
+        with open('test_data/nested_data_example.json') as f:
+            nested_data_example = json.load(f)
+        changelog_transformer = JsonTransformer(keys=['releaseNotes', 'released'], is_nested=True)
+        table_json_transformer = {'changelog': changelog_transformer}
+        table = tableToMarkdown("tableToMarkdown test", nested_data_example, headers=['name', 'changelog'],
+                                json_transform_mapping=table_json_transformer)
+        expected_table = """### tableToMarkdown test
+|name|changelog|
+|---|---|
+| Active Directory Query | **1.0.4**:<br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>Fixed an issue where the ***ad-get-user*** command caused performance issues because the *limit* argument was not defined.<br><br>	***released***: 2020-09-23T17:43:26Z<br>**1.0.5**:<br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed several typos.<br>- Updated the Docker image to: *demisto/ldap:1.0.0.11282*.<br><br>	***released***: 2020-10-01T17:48:31Z<br>**1.0.6**:<br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed an issue where the DN parameter within query in the ***search-computer*** command was incorrect.<br>- Updated the Docker image to *demisto/ldap:1.0.0.12410*.<br><br>	***released***: 2020-10-19T14:35:15Z |
+"""
+        assert expected_table == table
+
+    @staticmethod
+    def test_with_json_transformer_nested_complex():
         """
         Given:
           - Double nested json table.
@@ -802,15 +771,16 @@ class TestTableToMarkdown:
         Then:
           - The header key which is transformed will parsed with the relevant keys.
         """
-        changelog_transformer = JsonTransformer(keys_lst=['releaseNotes', 'c'], is_nested=True)
-
+        with open('test_data/complex_nested_data_example.json') as f:
+            complex_nested_data_example = json.load(f)
+        changelog_transformer = JsonTransformer(keys=['releaseNotes', 'c'], is_nested=True)
         table_json_transformer = {'changelog': changelog_transformer}
-        table = tableToMarkdown('tableToMarkdown test', COMPLEX_NESTED_DATA_EXAMPLE, headers=['name', 'changelog'],
+        table = tableToMarkdown('tableToMarkdown test', complex_nested_data_example, headers=['name', 'changelog'],
                                 json_transform_mapping=table_json_transformer)
         expected_table = """### tableToMarkdown test
 |name|changelog|
 |---|---|
-| Active Directory Query | ***1.0.4***: <br>	**c**: we should see this value<br>	**releaseNotes**: <br>#### Integrations<br>##### Active Directory Query v2<br>Fixed an issue where the ***ad-get-user*** command caused performance issues because the *limit* argument was not defined.<br><br>***1.0.5***: <br>	**c**: we should see this value<br>	**releaseNotes**: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed several typos.<br>- Updated the Docker image to: *demisto/ldap:1.0.0.11282*.<br><br>***1.0.6***: <br>	**c**: we should see this value<br>	**releaseNotes**: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed an issue where the DN parameter within query in the ***search-computer*** command was incorrect.<br>- Updated the Docker image to *demisto/ldap:1.0.0.12410*.<br> |
+| Active Directory Query | **1.0.4**:<br>	**path**:<br>		**a**:<br>			**b**:<br>				***c***: we should see this value<br>**1.0.4**:<br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>Fixed an issue where the ***ad-get-user*** command caused performance issues because the *limit* argument was not defined.<br><br>**1.0.5**:<br>	**path**:<br>		**a**:<br>			**b**:<br>				***c***: we should see this value<br>**1.0.5**:<br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed several typos.<br>- Updated the Docker image to: *demisto/ldap:1.0.0.11282*.<br><br>**1.0.6**:<br>	**path**:<br>		**a**:<br>			**b**:<br>				***c***: we should see this value<br>**1.0.6**:<br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed an issue where the DN parameter within query in the ***search-computer*** command was incorrect.<br>- Updated the Docker image to *demisto/ldap:1.0.0.12410*.<br> |
 """
 
         assert expected_table == table
@@ -821,9 +791,11 @@ class TestTableToMarkdown:
         def changelog_to_str(json_input):
             return ', '.join(json_input.keys())
 
+        with open('test_data/nested_data_example.json') as f:
+            nested_data_example = json.load(f)
         changelog_transformer = JsonTransformer(func=changelog_to_str)
         table_json_transformer = {'changelog': changelog_transformer}
-        table = tableToMarkdown("tableToMarkdown test", NESTED_DATA_EXAMPLE, headers=['name', 'changelog'],
+        table = tableToMarkdown("tableToMarkdown test", nested_data_example, headers=['name', 'changelog'],
                                 json_transform_mapping=table_json_transformer)
         expected_table = """### tableToMarkdown test
 |name|changelog|
@@ -1180,7 +1152,8 @@ def test_logger_replace_strs(mocker):
     ilog('special chars like ZAQ!@#$%&* should be replaced even when url-encoded like ZAQ%21%40%23%24%25%26%2A')
     assert ('' not in ilog.replace_strs)
     assert ilog.messages[0] == '<XX_REPLACED> is <XX_REPLACED> and b64: <XX_REPLACED>'
-    assert ilog.messages[1] == 'special chars like <XX_REPLACED> should be replaced even when url-encoded like <XX_REPLACED>'
+    assert ilog.messages[
+               1] == 'special chars like <XX_REPLACED> should be replaced even when url-encoded like <XX_REPLACED>'
 
 
 TEST_SSH_KEY_ESC = '-----BEGIN OPENSSH PRIVATE KEY-----\\nb3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAACFw' \
@@ -5843,5 +5816,3 @@ def test_indicators_value_to_clickable_invalid(mocker):
     assert not result
     result = indicators_value_to_clickable(None)
     assert not result
-
-
