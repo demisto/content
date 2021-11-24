@@ -1,5 +1,5 @@
 description: Tanium Threat Response - Create Connection v2 - Test
-id: 14f1fb62-d3db-4d07-8014-e71cd8ce8be7
+id: Tanium Threat Response - Create Connection v2 - Test
 inputs:
 - description: ""
   key: platform
@@ -30,6 +30,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ''
     taskid: 4f9ab0ca-bb98-4856-86ae-0827091d8fdc
     timertriggers: []
     type: start
@@ -217,3 +218,4 @@ view: |-
       }
     }
   }
+fromversion: 6.0.0

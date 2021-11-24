@@ -1,5 +1,5 @@
 description: Tanium Threat Response - Request File Download v2 - Test
-id: 2a6607c1-d42c-421b-86c8-3aa8bb105f1b
+id: Tanium Threat Response - Request File Download v2 - Test
 inputs:
 - description: Platform such as Windows/Linux
   key: platform
@@ -48,6 +48,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ''
     taskid: 0533c324-a04d-42c7-8145-e4ec6969bd55
     timertriggers: []
     type: start
@@ -223,6 +224,7 @@ tasks:
         }
       }
 version: -1
+fromversion: 6.0.0
 view: |-
   {
     "linkLabelsPosition": {},

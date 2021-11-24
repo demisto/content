@@ -66,6 +66,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ""
     taskid: 5d412b7c-913d-48a2-86a6-6f77315bd8f1
     timertriggers: []
     type: start
@@ -128,6 +129,7 @@ tasks:
       name: Done
       type: title
       version: -1
+      description: ""
     taskid: f65c7081-edec-405e-88e4-e5f22c43b412
     timertriggers: []
     type: title
@@ -421,6 +423,7 @@ tasks:
       playbookId: GenericPolling
       type: playbook
       version: -1
+      description: ""
     taskid: 288d812c-8afd-48cb-871b-ca250afbd779
     timertriggers: []
     type: playbook
