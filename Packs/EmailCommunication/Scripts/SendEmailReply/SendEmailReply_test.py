@@ -1,5 +1,6 @@
 import pytest
 import json
+import demistomock as demisto
 
 
 def util_open_file(path):
@@ -49,6 +50,23 @@ def test_get_email_recipients(email_to, email_from, service_mail, excepted):
 
     result = set(get_email_recipients(email_to, email_from, service_mail).split(','))
     assert result == excepted
+
+
+@pytest.mark.parametrize(
+    "notes, attachments, expected_results",
+    [([{'Metadata': {'user': 'DBot'}, 'Contents': 'note1'}, {'Metadata': {'user': 'DBot'}, 'Contents': 'note2'}],
+     [{'name': 'attachment1.png'}, {'name': 'attachment2.png'}],
+     "Attachments: ['attachment1.png', 'attachment2.png']\n\nDBot: \nnote1\n\nDBot: \nnote2\n\n")
+     ]
+)
+def test_get_reply_body(mocker, notes, attachments, expected_results):
+    from SendEmailReply import get_reply_body
+    import CommonServerPython
+    mocker.patch.object(demisto, "executeCommand", return_value=[{'EntryContext': {'replyhtmlbody': ''}, 'Type': ''}])
+    mocker.patch.object(CommonServerPython, "dict_safe_get", return_value=None)
+    mocker.patch.object(CommonServerPython, "is_error", return_value=False)
+    reply_body = get_reply_body(notes=notes, incident_id='1', attachments=attachments)[0]
+    assert reply_body == expected_results
 
 
 def test_create_file_data_json():

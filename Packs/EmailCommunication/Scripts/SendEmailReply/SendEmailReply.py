@@ -142,7 +142,7 @@ def create_file_data_json(attachment):
 def get_reply_body(notes, incident_id, attachments):
     """ Get the notes and the incident id and return the reply body
     Args:
-        notes (dict): The notes of the email.
+        notes (list): The notes of the email.
         incident_id (str): The incident id.
         attachments (list): The email's attachments.
     Returns:
