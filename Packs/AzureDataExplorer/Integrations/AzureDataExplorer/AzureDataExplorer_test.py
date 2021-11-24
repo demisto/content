@@ -259,6 +259,6 @@ def test_validate_list_command_arguments():
 
     from AzureDataExplorer import validate_list_command_arguments
     try:
-        validate_list_command_arguments(1, 0)
+        validate_list_command_arguments(1, 0, 1)
     except ValueError as v_error:
         assert str(v_error) == 'Page and limit arguments must be integers greater than 0.'
