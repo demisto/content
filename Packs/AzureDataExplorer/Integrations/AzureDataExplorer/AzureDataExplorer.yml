@@ -470,4 +470,4 @@ script:
   type: python
 tests:
 - playbook-AzureDataExplorer-Test
-fromversion: 5.5.0
+fromversion: 6.0.0

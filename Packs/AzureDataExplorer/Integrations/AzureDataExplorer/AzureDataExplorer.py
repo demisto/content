@@ -564,10 +564,12 @@ def main() -> None:
         if "OneApiErrors" in error_text:
             error_text = "The execution of search query failed due a client cancel request."
         elif "Request execution timeout" in error_text:
-            error_text = "Search query execution took longer than the assigned timeout value and has been aborted."
+            error_text = "Search query execution took longer than the assigned timeout" \
+                         " value and has been aborted."
 
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {command} command.\nError:\n{error_text}')
+
 
 from MicrosoftApiModule import *  # noqa: E402
 
