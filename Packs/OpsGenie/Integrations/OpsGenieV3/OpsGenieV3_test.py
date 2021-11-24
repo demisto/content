@@ -16,6 +16,15 @@ def test_create_alert_wrong_responders():
         OpsGenieV3.create_alert(mock_client, {'responders': ['team', 'id']})
 
 
+def test_get_alerts(mocker):
+    mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
+    mock_client = OpsGenieV3.Client(base_url="")
+    mocker.patch.object(mock_client, 'list_alerts',
+                        return_value=util_load_json('test_data/get_alerts.json'))
+    res = OpsGenieV3.get_alerts(mock_client, {"limit": 1})
+    assert (len(res.outputs) == 1)
+
+
 def test_get_alerts_going_to_right_function():
     mock_client = OpsGenieV3.Client(base_url="")
     mock_client.get_alert = MagicMock()
@@ -24,15 +33,6 @@ def test_get_alerts_going_to_right_function():
     OpsGenieV3.list_alerts = MagicMock()
     OpsGenieV3.get_alerts(mock_client, {})
     assert OpsGenieV3.list_alerts.called
-
-
-def test_get_alerts(mocker):
-    mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
-    mock_client = OpsGenieV3.Client(base_url="")
-    mocker.patch.object(mock_client, 'list_alerts',
-                        return_value=util_load_json('test_data/get_alerts.json'))
-    res = OpsGenieV3.get_alerts(mock_client, {"limit": 1})
-    assert (len(res.outputs) == 1)
 
 
 def test_delete_alert(mocker):
@@ -150,6 +150,16 @@ def test_delete_incident(mocker):
     assert (res.readable_output == "Waiting for request_id=3b078fd5-37d1-472e-823b-9f95b17aba8f")
 
 
+
+def test_get_incidents(mocker):
+    mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
+    mock_client = OpsGenieV3.Client(base_url="")
+    mocker.patch.object(mock_client, 'list_incidents',
+                        return_value=util_load_json('test_data/get_incidents.json'))
+    res = OpsGenieV3.get_incidents(mock_client, {"limit": 1})
+    assert (len(res.outputs) == 1)
+
+
 def test_get_incidents_going_to_right_function():
     mock_client = OpsGenieV3.Client(base_url="")
     mock_client.get_incident = MagicMock()
@@ -159,14 +169,6 @@ def test_get_incidents_going_to_right_function():
     OpsGenieV3.get_incidents(mock_client, {})
     assert OpsGenieV3.list_incidents.called
 
-
-def test_get_incidents(mocker):
-    mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
-    mock_client = OpsGenieV3.Client(base_url="")
-    mocker.patch.object(mock_client, 'list_incidents',
-                        return_value=util_load_json('test_data/get_incidents.json'))
-    res = OpsGenieV3.get_incidents(mock_client, {"limit": 1})
-    assert (len(res.outputs) == 1)
 
 
 def test_close_incident(mocker):
