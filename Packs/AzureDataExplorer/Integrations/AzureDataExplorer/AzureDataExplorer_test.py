@@ -1,5 +1,7 @@
 import json
 
+import pytest
+
 '''MOCK PARAMETERS '''
 CLUSTER_URL = "https://help.kusto.windows.net"
 APPLICATION_ID = "xxx-xxx-xxx"
@@ -52,7 +54,9 @@ def test_execute_search_query_command(requests_mock):
         "query": "StormEvents | take 3"
     })
     outputs = result.outputs
-    assert len(outputs) == 3
+    assert len(outputs) == 4
+    assert outputs['Database'] == DATABASE_NAME
+    assert outputs['Query'] == "StormEvents | take 3"
     assert outputs['PrimaryResults'][0]['StartTime'] == '2007-09-29T08:11:00'
     assert outputs['PrimaryResults'][0]['EndLocation'] == 'MELBOURNE BEACH'
     assert outputs['PrimaryResults'][0]['EndLat'] == 28.0393
@@ -118,7 +122,15 @@ def test_list_search_running_queries_command(requests_mock):
     assert result.outputs_prefix == 'AzureDataExplorer.RunningSearchQuery'
 
 
-def test_cancel_running_search_query_command(requests_mock):
+@pytest.mark.parametrize("response_mock_file,test_input,expected_reason", [('cancel_query.json', {
+    "database_name": DATABASE_NAME,
+    "client_activity_id": CLIENT_ACTIVITY_ID
+}, "Query cancelled by the user's request"), ('cancel_query_reason.json', {
+    "database_name": DATABASE_NAME,
+    "client_activity_id": CLIENT_ACTIVITY_ID,
+    "reason": "test-reason"
+}, "test-reason")])
+def test_cancel_running_search_query_command(response_mock_file, test_input, expected_reason, requests_mock):
     """
     Scenario: execute search query against given database.
     Given:
@@ -131,27 +143,16 @@ def test_cancel_running_search_query_command(requests_mock):
      - Ensure outputs prefix is correct.
     """
     from AzureDataExplorer import running_search_query_cancel_command
-    mock_response = json.loads(load_mock_response('cancel_query.json'))
+    mock_response = json.loads(load_mock_response(response_mock_file))
     url = f'{CLUSTER_URL}{MANAGEMENT_URL_SUFFIX}'
     requests_mock.post(url, json=mock_response)
     requests_mock.post("https://login.microsoftonline.com/organizations/oauth2/v2.0/token", json={})
 
-    cancel_query_result = running_search_query_cancel_command(mock_client(), {
-        "database_name": DATABASE_NAME,
-        "client_activity_id": CLIENT_ACTIVITY_ID
-    })
-    cancel_query_with_reason_result = running_search_query_cancel_command(mock_client(), {
-        "database_name": DATABASE_NAME,
-        "client_activity_id": CLIENT_ACTIVITY_ID,
-        "reason": "test-reason"
-    })
+    cancel_query_result = running_search_query_cancel_command(mock_client(), test_input)
     outputs = cancel_query_result.outputs
-    outputs_with_reason = cancel_query_with_reason_result.outputs
     assert len(outputs) == 1
-    assert outputs[0]['RunningQueryCanceled'] is False
-    assert outputs[0]['ReasonPhrase'] == "Query cancelled by the user's request"
+    assert outputs[0]['ReasonPhrase'] == expected_reason
     assert cancel_query_result.outputs_prefix == 'AzureDataExplorer.CanceledSearchQuery'
-    assert outputs_with_reason[0]['ReasonPhrase'] == "Query cancelled by the user's request"
 
 
 def test_retrieve_common_request_body():
