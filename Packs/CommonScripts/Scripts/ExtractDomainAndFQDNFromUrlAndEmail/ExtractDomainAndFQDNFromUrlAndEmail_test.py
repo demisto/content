@@ -6,6 +6,7 @@ import pytest
 
 @pytest.mark.parametrize('input,fqdn,domain', [  # noqa: E501 disable-secrets-detection
     ('www[.]demisto[.]com', 'www.demisto.com', 'demisto.com'),
+    ('test.zip', '', ''),
     ('https%3A%2F%2Fdulunggakada40[.]com', '', 'dulunggakada40.com'),
     ('https%3A%2F%2Fpath.test.com', 'path.test.com', 'test.com'),
     ('https://urldefense.com/v3/__http://survey.lavulcamktg.cl/index.php/783758', 'survey.lavulcamktg.cl',

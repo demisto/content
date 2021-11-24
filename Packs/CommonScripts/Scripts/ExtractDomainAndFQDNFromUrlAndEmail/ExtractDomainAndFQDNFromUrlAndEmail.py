@@ -1,9 +1,10 @@
 import demistomock as demisto
 from CommonServerPython import *  # lgtm [py/polluting-import]
-from tld import get_tld, get_fld
+from tld import get_tld, get_fld, Result
 from validate_email import validate_email
 from urllib.parse import urlparse, parse_qs, unquote
 import re
+
 
 PROOFPOINT_PREFIXES = ['https://urldefense.proofpoint.com/v1/url?u=', 'https://urldefense.proofpoint.com/v2/url?u=',
                        "https://urldefense.com/v3/__"]
@@ -41,7 +42,7 @@ def proofpoint_get_original_url(safe_url):
 
 def unescape_url(escaped_url):
     # Normalize: 1) [.] --> . 2) hxxp --> http 3) &amp --> & 4) http:\\ --> http://
-    url = escaped_url.lower().replace('[.]', '.').replace('hxxp', 'http').replace('&amp;', '&') \
+    url = escaped_url.lower().replace('[.]', '.').replace('hxxp', 'http').replace('&amp;', '&')\
         .replace('http:\\\\', 'http://')
     # Normalize the URL with http prefix
     if url.find('http:') == 0 and url.find('http://') == -1:
@@ -56,7 +57,7 @@ def get_fqdn(the_input):
     domain = get_tld(the_input, fail_silently=True, as_object=True)
 
     # handle fqdn if needed
-    if domain:
+    if domain and isinstance(domain, Result):
         # get the subdomain using tld.subdomain
         subdomain = domain.subdomain
         if (subdomain):
@@ -102,7 +103,9 @@ def extract_fqdn_or_domain(the_input, is_fqdn=None, is_domain=None):
             indicator = get_fld(full_domain, fail_silently=True)
 
     # convert None to empty string if needed
-    indicator = '' if not indicator else indicator
+    if (indicator and get_tld(indicator, fail_silently=True, fix_protocol=True) == 'zip') or not indicator:
+        indicator = ''
+
     return indicator
 
 
