@@ -36,8 +36,7 @@ def find_indicators_with_mal_ratio(
 
     indicators_map = {i['id']: i for i in indicators}
 
-    res = demisto.executeCommand("maliciousRatio", {'id': ",".join(indicators_map)})
-    malicious_ratio_result = res[0]['Contents']
+    malicious_ratio_result = execute_command("maliciousRatio", {'id': ",".join(indicators_map)})
 
     for mr in malicious_ratio_result:
         indicators_map[mr['indicatorId']]['maliciousRatio'] = mr['maliciousRatio']
