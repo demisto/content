@@ -64,7 +64,19 @@ def test_execute_search_query_command(requests_mock):
     assert result.outputs_prefix == 'AzureDataExplorer.SearchQueryResults'
 
 
-def test_list_search_queries_command(requests_mock):
+@pytest.mark.parametrize("test_input,outputs_size,expected_activity,query",
+                         [({
+                               "database_name": DATABASE_NAME
+                           }, 2, 'KPC.execute;43b2bbf0-1d81-4c6d-9312-3fb93ae84d50',
+                           'StormEvents | take 10'),
+                             ({
+                                  "database_name": DATABASE_NAME,
+                                  "page": 2,
+                                  "page_size": 1
+                              },
+                              1, 'KPC.execute;463b6d97-09ef-4d06-99f8-b4ee21fc6620',
+                              'StormEvents | take 20')])
+def test_list_search_queries_command(test_input, outputs_size, expected_activity, query, requests_mock):
     """
     Scenario: execute search query against given database.
     Given:
@@ -82,13 +94,11 @@ def test_list_search_queries_command(requests_mock):
     url = f'{CLUSTER_URL}{MANAGEMENT_URL_SUFFIX}'
     requests_mock.post(url, json=mock_response)
     requests_mock.post("https://login.microsoftonline.com/organizations/oauth2/v2.0/token", json={})
-    result = search_queries_list_command(mock_client(), {
-        "database_name": DATABASE_NAME
-    })
+    result = search_queries_list_command(mock_client(), test_input)
     outputs = result.outputs
-    assert len(outputs) == 2
-    assert outputs[0]['ClientActivityId'] == 'KPC.execute;43b2bbf0-1d81-4c6d-9312-3fb93ae84d50'
-    assert outputs[0]['Text'] == 'StormEvents | take 10'
+    assert len(outputs) == outputs_size
+    assert outputs[0]['ClientActivityId'] == expected_activity
+    assert outputs[0]['Text'] == query
     assert result.outputs_prefix == 'AzureDataExplorer.SearchQuery'
 
 

@@ -183,7 +183,7 @@
                 ],
                 [
                     "KPC.execute;463b6d97-09ef-4d06-99f8-b4ee21fc6620",
-                    "StormEvents | take 10",
+                    "StormEvents | take 20",
                     "Samples",
                     "2021-10-14T12:26:30.2024346Z",
                     "2021-10-14T12:26:30.2024346Z",
