@@ -1999,5 +1999,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins" or __name__ == "__main__":
+if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
     main()
