@@ -1,3 +1,5 @@
+import tempfile
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -7,11 +9,12 @@ import re
 from base64 import b64decode
 from flask import Flask, Response, request
 from netaddr import IPSet
-from typing import Any, Dict, cast, Iterable
+from typing import Any, Dict, cast, Iterable, Callable, IO
 from math import ceil
 import urllib3
 import dateparser
 import hashlib
+import json
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -27,8 +30,11 @@ EDL_COLLAPSE_ERR_MSG: str = 'The Collapse parameter can only get the following: 
                             '1 - Collapse to Ranges, 2 - Collapse to CIDRS'
 EDL_MISSING_REFRESH_ERR_MSG: str = 'Refresh Rate must be "number date_range_unit", examples: (2 hours, 4 minutes, ' \
                                    '6 months, 1 day, etc.)'
-# based on func ToIoC https://github.com/demisto/server/blob/master/domain/insight.go
-EDL_FILTER_FIELDS: Optional[str] = "name,type"
+EDL_FORMAT_ERR_MSG: str = 'Please provide a valid format from: text, json, json-seq, xsoar-json, csv, mgw and proxysg'
+EDL_MWG_TYPE_ERR_MSG: str = 'The McAFee Web Gateway type can only be one of the following: string,' \
+                            ' applcontrol, dimension, category, ip, mediatype, number, regex'
+EDL_NO_URLS_IN_PROXYSG_FORMAT = 'ProxySG format only outputs URLs - no URLs found in the current query'
+
 EDL_ON_DEMAND_KEY: str = 'UpdateEDL'
 EDL_ON_DEMAND_CACHE_PATH: str = ''
 
@@ -37,49 +43,101 @@ _PROTOCOL_REMOVAL = re.compile('^(?:[a-z]+:)*//')
 _PORT_REMOVAL = re.compile(r'^((?:[a-z]+:)*//([a-z0-9\-\.]+)|([a-z0-9\-\.]+))(?:\:[0-9]+)*')
 _URL_WITHOUT_PORT = r'\g<1>'
 _INVALID_TOKEN_REMOVAL = re.compile(r'(?:[^\./+=\?&]+\*[^\./+=\?&]*)|(?:[^\./+=\?&]*\*[^\./+=\?&]+)')
+_BROAD_PATTERN = re.compile(r'^(?:\*\.)+[a-zA-Z]+(?::[0-9]+)?$')
 
 DONT_COLLAPSE = "Don't Collapse"
 COLLAPSE_TO_CIDR = "To CIDRS"
 COLLAPSE_TO_RANGES = "To Ranges"
+
+FORMAT_CSV: str = 'csv'
+FORMAT_TEXT: str = 'text'
+FORMAT_JSON_SEQ: str = 'json-seq'
+FORMAT_JSON: str = 'json'
+FORMAT_ARG_MWG: str = 'mwg'
+FORMAT_ARG_PANOSURL: str = 'panosurl'
+FORMAT_ARG_BLUECOAT: str = 'bluecoat'
+FORMAT_ARG_PROXYSG: str = 'proxysg'
+FORMAT_MWG: str = 'McAfee Web Gateway'
+FORMAT_PROXYSG: str = "Symantec ProxySG"
+FORMAT_XSOAR_JSON: str = 'XSOAR json'
+FORMAT_ARG_XSOAR_JSON: str = 'xsoar-json'
+FORMAT_XSOAR_JSON_SEQ: str = 'XSOAR json-seq'
+FORAMT_ARG_XSOAR_JSON_SEQ: str = 'xsoar-seq'
+
+MWG_TYPE_OPTIONS = ["string", "applcontrol", "dimension", "category", "ip", "mediatype", "number", "regex"]
 
 '''Request Arguments Class'''
 
 
 class RequestArguments:
     CTX_QUERY_KEY = 'last_query'
+    CTX_OUT_FORMAT = 'out_format'
     CTX_LIMIT_KEY = 'last_limit'
     CTX_OFFSET_KEY = 'last_offset'
     CTX_INVALIDS_KEY = 'drop_invalids'
     CTX_PORT_STRIP_KEY = 'url_port_stripping'
     CTX_COLLAPSE_IPS_KEY = 'collapse_ips'
     CTX_EMPTY_EDL_COMMENT_KEY = 'add_comment_if_empty'
+    CTX_MWG_TYPE = 'mwg_type'
+    CTX_CATEGORY_DEFAULT = 'bc_category'
+    CTX_CATEGORY_ATTRIBUTE = 'category_attribute'
+    CTX_FIELDS_TO_PRESENT = 'fields_to_present'
+
+    FILTER_FIELDS_ON_FORMAT_TEXT = "name,type"
+    FILTER_FIELDS_ON_FORMAT_MWG = "name,type,sourceBrands"
+    FILTER_FIELDS_ON_FORMAT_PROXYSG = "name,type,proxysgcategory"
+    FILTER_FIELDS_ON_FORMAT_CSV = "name,type,createdTime,firstSeen"
+    FILTER_FIELDS_ON_FORMAT_JSON = "name,type,createdTime,firstSeen"
+    FILTER_FIELDS_ON_FORMAT_XSOAR_JSON = "name,type,createdTime,firstSeen"
 
     def __init__(self,
                  query: str,
+                 out_format: str = FORMAT_TEXT,
                  limit: int = 10000,
                  offset: int = 0,
                  url_port_stripping: bool = False,
                  drop_invalids: bool = False,
                  collapse_ips: str = DONT_COLLAPSE,
-                 add_comment_if_empty: bool = True):
+                 add_comment_if_empty: bool = True,
+                 mwg_type: str = 'string',
+                 category_default: str = 'bc_category',
+                 category_attribute: str = '',
+                 fields_to_present: str = None
+                 ):
 
         self.query = query
+        self.out_format = out_format
         self.limit = try_parse_integer(limit, EDL_LIMIT_ERR_MSG)
         self.offset = try_parse_integer(offset, EDL_OFFSET_ERR_MSG)
         self.url_port_stripping = url_port_stripping
         self.drop_invalids = drop_invalids
         self.collapse_ips = collapse_ips
         self.add_comment_if_empty = add_comment_if_empty
+        self.mwg_type = mwg_type
+        self.category_default = category_default
+        self.category_attribute = []  # type:List
+        self.fields_to_present = self.get_fields_to_present(fields_to_present)
+
+        if category_attribute is not None:
+            category_attribute_list = category_attribute.split(',')
+
+            if len(category_attribute_list) != 1 or '' not in category_attribute_list:
+                self.category_attribute = category_attribute_list
 
     def to_context_json(self):
         return {
             self.CTX_QUERY_KEY: self.query,
+            self.CTX_OUT_FORMAT: self.out_format,
             self.CTX_LIMIT_KEY: self.limit,
             self.CTX_OFFSET_KEY: self.offset,
             self.CTX_INVALIDS_KEY: self.drop_invalids,
             self.CTX_PORT_STRIP_KEY: self.url_port_stripping,
             self.CTX_COLLAPSE_IPS_KEY: self.collapse_ips,
             self.CTX_EMPTY_EDL_COMMENT_KEY: self.add_comment_if_empty,
+            self.CTX_MWG_TYPE: self.mwg_type,
+            self.CTX_CATEGORY_DEFAULT: self.category_default,
+            self.CTX_CATEGORY_ATTRIBUTE: self.category_attribute,
+            self.CTX_FIELDS_TO_PRESENT: self.fields_to_present,
         }
 
     @classmethod
@@ -88,14 +146,45 @@ class RequestArguments:
         return cls(
             **assign_params(
                 query=ctx_dict.get(cls.CTX_QUERY_KEY),
+                out_format=ctx_dict.get(cls.CTX_OUT_FORMAT),
                 limit=ctx_dict.get(cls.CTX_LIMIT_KEY),
                 offset=ctx_dict.get(cls.CTX_OFFSET_KEY),
                 drop_invalids=ctx_dict.get(cls.CTX_INVALIDS_KEY),
                 url_port_stripping=ctx_dict.get(cls.CTX_PORT_STRIP_KEY),
                 collapse_ips=ctx_dict.get(cls.CTX_COLLAPSE_IPS_KEY),
                 add_comment_if_empty=ctx_dict.get(cls.CTX_EMPTY_EDL_COMMENT_KEY),
+                mwg_type=ctx_dict.get(cls.CTX_MWG_TYPE),
+                category_default=ctx_dict.get(cls.CTX_CATEGORY_DEFAULT),
+                category_attributeself=ctx_dict.get(cls.CTX_CATEGORY_ATTRIBUTE),
+                fields_to_present=ctx_dict.get(cls.CTX_FIELDS_TO_PRESENT)
             )
         )
+
+    def get_fields_to_present(self, fields_to_present: str):
+        # based on func ToIoC https://github.com/demisto/server/blob/master/domain/insight.go
+
+        if fields_to_present == 'use_legacy_query':
+            return None
+
+        fields_for_format = {
+            FORMAT_TEXT: self.FILTER_FIELDS_ON_FORMAT_TEXT,
+            FORMAT_CSV: self.FILTER_FIELDS_ON_FORMAT_CSV,
+            FORMAT_JSON: self.FILTER_FIELDS_ON_FORMAT_JSON,
+            FORMAT_XSOAR_JSON: self.FILTER_FIELDS_ON_FORMAT_XSOAR_JSON,
+            FORMAT_MWG: self.FILTER_FIELDS_ON_FORMAT_MWG,
+            FORMAT_PROXYSG: self.FILTER_FIELDS_ON_FORMAT_PROXYSG
+        }
+        if self.out_format in [FORMAT_CSV, FORMAT_JSON, FORMAT_XSOAR_JSON] and fields_to_present:
+            if 'all' in argToList(fields_to_present):
+                fields_for_format[FORMAT_CSV] = None
+                fields_for_format[FORMAT_JSON] = None
+                fields_for_format[FORMAT_XSOAR_JSON] = None
+            else:
+                fields_for_format[FORMAT_CSV] = fields_to_present
+                fields_for_format[FORMAT_JSON] = fields_to_present
+                fields_for_format[FORMAT_XSOAR_JSON] = fields_to_present
+
+        return fields_for_format.get(self.out_format, self.FILTER_FIELDS_ON_FORMAT_TEXT)
 
 
 ''' HELPER FUNCTIONS '''
@@ -126,42 +215,234 @@ def create_new_edl(request_args: RequestArguments) -> str:
     """
     limit = request_args.offset + request_args.limit
     indicator_searcher = IndicatorsSearcher(
-        filter_fields=EDL_FILTER_FIELDS,
+        filter_fields=request_args.fields_to_present,
         query=request_args.query,
         size=PAGE_SIZE,
         limit=limit
     )
-    iocs = []
-    formatted_iocs: set = set()
     while True:
-        current_limit = limit + (limit - len(formatted_iocs))
+        current_limit = limit
         indicator_searcher.limit = current_limit
-        new_iocs = find_indicators_to_limit(indicator_searcher)
-        iocs.extend(new_iocs)
-        formatted_iocs = format_indicators(iocs, request_args)
-        # continue searching iocs if 1) iocs was truncated or 2) got all available iocs
-        if len(formatted_iocs) >= len(iocs) or indicator_searcher.total <= current_limit:
+        new_iocs = find_indicators_to_limit(indicator_searcher, request_args)
+        if request_args.out_format == 'text':
+            new_iocs = text_format(new_iocs, request_args)
+            # continue searching iocs if 1) iocs was truncated or 2) got all available iocs
+            #     if len(num_formatted_iocs) >= len(iocs) or indicator_searcher.total <= current_limit:
+            #         break
+        else:
             break
-    return iterable_to_str(list(formatted_iocs)[request_args.offset:limit])
+    new_iocs.seek(0)
+    return new_iocs.read()
 
 
-def find_indicators_to_limit(indicator_searcher: IndicatorsSearcher) -> List[dict]:
+def replace_field_name_to_output_format(fields: str):
+    fields_list = argToList(fields)
+    new_list = []
+    for field in fields_list:
+        if field == 'name':
+            field = 'value'
+        elif field == 'type':
+            field = 'indicator_type'
+        new_list.append(field)
+    return new_list
+
+
+def find_indicators_to_limit(indicator_searcher: IndicatorsSearcher, request_args: RequestArguments) -> Union[
+    IO, IO[str]]:
     """
     Finds indicators using while loop with demisto.searchIndicators, and returns result and last page
 
     Parameters:
         indicator_searcher (IndicatorsSearcher): The indicator searcher used to look for indicators
-
+        request_args (RequestArguments)
     Returns:
         (list): List of Indicators dict with value,indicator_type keys
     """
-    iocs: List[dict] = []
-    for ioc_res in indicator_searcher:
-        fetched_iocs = ioc_res.get('iocs') or []
-        # save only the value and type of each indicator
-        iocs.extend({'value': ioc.get('value'), 'indicator_type': ioc.get('indicator_type')}
-                    for ioc in fetched_iocs)
-    return iocs
+    f = tempfile.TemporaryFile(mode='w+t')
+    list_fields = replace_field_name_to_output_format(request_args.fields_to_present)
+    headers_was_writen = False
+    files_by_category = {}
+    try:
+        for ioc_res in indicator_searcher:
+            fetched_iocs = ioc_res.get('iocs') or []
+            for ioc in fetched_iocs:
+                if request_args.out_format == FORMAT_PROXYSG:
+                    files_by_category, return_indicator = create_proxysg_out_format(ioc, files_by_category,
+                                                                                    request_args.category_attribute,
+                                                                                    request_args.category_default)
+
+                if request_args.out_format == FORMAT_MWG:
+                    f.write(create_mwg_out_format(ioc, request_args.mwg_type, headers_was_writen))
+                    headers_was_writen = True
+
+                if request_args.out_format in [FORMAT_JSON, FORMAT_XSOAR_JSON]:
+                    xsoar = True if request_args.out_format == FORMAT_XSOAR_JSON else False
+                    f.write(json_format(list_fields, ioc, xsoar))
+
+                if request_args.out_format == FORMAT_TEXT:
+                    # save only the value and type of each indicator
+                    f.write(str(json.dumps({"value": ioc.get("value"), "indicator_type": ioc.get("indicator_type")}))+"\n")
+
+                if request_args.out_format == FORMAT_CSV:
+                    f.write(csv_format(headers_was_writen, list_fields, ioc, request_args.fields_to_present))
+                    headers_was_writen = True
+    except Exception as e:
+        demisto.debug(e)
+
+    if request_args.out_format in [FORMAT_JSON, FORMAT_XSOAR_JSON]:
+        ff = tempfile.TemporaryFile(mode='w+t')
+        f.seek(2)
+        ff.write('[' + f.read() + ']')
+        f.close()
+        return ff
+    if request_args.out_format == FORMAT_PROXYSG:
+        f = create_proxysg_all_category(f, files_by_category)
+    return f
+
+
+def json_format(list_fields, indicator, xsoar=False):
+    filtered_json = {}
+    if list_fields:
+        for field in list_fields:
+            value = indicator.get(field)
+            if not value:
+                value = indicator.get('CustomFields').get(field)
+            filtered_json[field] = value
+        indicator = filtered_json
+    if not xsoar:
+        json_format_indicator = {
+            "indicator": indicator.get("value")
+        }
+        indicator.pop("value", None)
+        json_format_indicator["value"] = indicator
+        return ', ' + json.dumps(json_format_indicator)
+
+    return ', ' + json.dumps(indicator)
+
+
+def create_mwg_out_format(indicator: dict, mwg_type: str, headers_was_writen) -> str:
+    if not indicator.get('value'):
+        return ''
+    value = "\"" + indicator.get('value') + "\""
+    sources = indicator.get('sourceBrands')
+    if sources:
+        sources_string = "\"" + ','.join(sources) + "\""
+    else:
+        sources_string = "\"from CORTEX XSOAR\""
+
+    if not headers_was_writen:
+        if isinstance(mwg_type, list):
+            mwg_type = mwg_type[0]
+        return "type=" + mwg_type + "\n" + value + " " + sources_string + '\n'
+    return value + " " + sources_string + '\n'
+
+
+def create_proxysg_all_category(f, files_by_categry: dict):
+    for category, category_file in files_by_categry.items():
+        f.write(f"define category {category}\n")
+        category_file.seek(0)
+        f.write(category_file.read())
+        category_file.close()
+        f.write("end\n")
+
+    return f
+
+
+def create_proxysg_out_format(indicator: dict, files_by_category: dict, category_attribute: list, category_default: str = 'bc_category'):
+    num_of_returned_indicators = 0
+
+    if indicator.get('indicator_type') in ['URL', 'Domain', 'DomainGlob'] and indicator.get('value'):
+        stripped_indicator = _PROTOCOL_REMOVAL.sub('', indicator.get('value'))
+        indicator_proxysg_category = indicator.get('CustomFields', {}).get('proxysgcategory')
+        # if a ProxySG Category is set and it is in the category_attribute list or that the attribute list is empty
+        # than list add the indicator to it's category list
+        if indicator_proxysg_category is not None and \
+                (indicator_proxysg_category in category_attribute or len(category_attribute) == 0):
+            files_by_category = add_indicator_to_category(stripped_indicator, indicator_proxysg_category,
+                                                      files_by_category)
+        else:
+            # if ProxySG Category is not set or does not exist in the category_attribute list
+            files_by_category = add_indicator_to_category(stripped_indicator, category_default, files_by_category)
+        num_of_returned_indicators = 1
+
+    return files_by_category, num_of_returned_indicators
+
+
+def add_indicator_to_category(indicator, category, files_by_category):
+    if category in files_by_category.keys():
+        files_by_category[category].write(indicator + '\n')
+
+    else:
+        files_by_category[category] = tempfile.TemporaryFile(mode='w+t')
+        files_by_category[category].write(indicator + '\n')
+
+    return files_by_category
+
+
+def panos_url_formatting(indicator_data: dict, drop_invalids: bool, strip_port: bool):
+    # only format URLs and Domains
+    indicator = indicator_data.get('value')
+    if not indicator:
+        return ''
+    if indicator_data.get('indicator_type') in ['URL', 'Domain', 'DomainGlob']:
+        indicator = indicator.lower()
+
+        # remove initial protocol - http/https/ftp/ftps etc
+        indicator = _PROTOCOL_REMOVAL.sub('', indicator)
+
+        indicator_with_port = indicator
+        # remove port from indicator - from demisto.com:369/rest/of/path -> demisto.com/rest/of/path
+        indicator = _PORT_REMOVAL.sub(r'\g<1>', indicator)
+        # check if removing the port changed something about the indicator
+        if indicator != indicator_with_port and not strip_port:
+            # if port was in the indicator and strip_port param not set - ignore the indicator
+            return ''
+
+        with_invalid_tokens_indicator = indicator
+        # remove invalid tokens from indicator
+        indicator = _INVALID_TOKEN_REMOVAL.sub('*', indicator)
+
+        # check if the indicator held invalid tokens
+        if with_invalid_tokens_indicator != indicator:
+            # invalid tokens in indicator- if drop_invalids is set - ignore the indicator
+            if drop_invalids:
+                return ''
+
+            # check if after removing the tokens the indicator is too broad if so - ignore
+            # example of too broad terms: "*.paloalto", "*.*.paloalto", "*.paloalto:60"
+            hostname = indicator
+            if '/' in hostname:
+                hostname, _ = hostname.split('/', 1)
+
+            if _BROAD_PATTERN.match(hostname) is not None:
+                return ''
+
+        # for PAN-OS "*.domain.com" does not match "domain.com" - we should provide both
+        if indicator.startswith('*.'):
+            return (indicator[2:]) + '\n' + indicator + '\n'
+
+    return indicator + '\n'
+
+
+def csv_format(headers_was_writen, list_fields, ioc, headers):
+    fields_value_list = []
+    if not list_fields:
+        values = list(ioc.values())
+        if not headers_was_writen:
+            headers = list(ioc.keys())
+            headers_str = list_to_str(headers) + "\n"
+            return headers_str + list_to_str(values, map_func=lambda val: f'"{val}"') + "\n"
+        return list_to_str(values, map_func=lambda val: f'"{val}"') + "\n"
+    else:
+        for field in list_fields:
+            value = ioc.get(field)
+            if not value:
+                value = ioc.get('CustomFields', {}).get(field)
+            fields_value_list.append(value)
+        if not headers_was_writen:
+            headers_str = headers + '\n'
+            return headers_str + list_to_str(fields_value_list, map_func=lambda val: f'"{val}"') + "\n"
+        return list_to_str(fields_value_list, map_func=lambda val: f'"{val}"') + "\n"
 
 
 def ip_groups_to_cidrs(ip_range_groups: Iterable):
@@ -227,7 +508,25 @@ def ips_to_ranges(ips: Iterable, collapse_ips: str):
         return ip_groups_to_cidrs(cidrs)
 
 
-def format_indicators(iocs: list, request_args: RequestArguments) -> set:
+def list_to_str(inp_list: list, delimiter: str = ',', map_func: Callable = str) -> str:
+    """
+    Transforms a list to an str, with a custom delimiter between each list item
+    """
+    str_res = ""
+    if inp_list:
+        if isinstance(inp_list, list):
+            str_res = delimiter.join(map(map_func, inp_list))
+        else:
+            raise AttributeError('Invalid inp_list provided to list_to_str')
+    return str_res
+
+
+# def get_mimetype(request_args):
+#     return
+
+
+def text_format(iocs, request_args: RequestArguments) -> Union[
+    IO, IO[str]]:
     """
     Create a list result of formatted_indicators
      * Empty list:
@@ -240,10 +539,12 @@ def format_indicators(iocs: list, request_args: RequestArguments) -> set:
         1) if drop_invalids, drop invalids (has invalid chars)
         2) if port_stripping, strip ports
     """
-    formatted_indicators = set()
     ipv4_formatted_indicators = set()
     ipv6_formatted_indicators = set()
-    for ioc in iocs:
+    iocs.seek(0)
+    formatted_indicators = tempfile.TemporaryFile(mode='w+t')
+    for str_ioc in iocs:
+        ioc = json.loads(str_ioc.rstrip())
         indicator = ioc.get('value')
         if not indicator:
             continue
@@ -278,7 +579,8 @@ def format_indicators(iocs: list, request_args: RequestArguments) -> set:
             # we should provide both
             # this could generate more than num entries according to PAGE_SIZE
             if indicator.startswith('*.'):
-                formatted_indicators.add(indicator.lstrip('*.'))
+                # formatted_indicators.add(indicator.lstrip('*.'))
+                formatted_indicators.write(str(indicator.lstrip('*.'))+'/n')
 
         if request_args.collapse_ips != DONT_COLLAPSE and ioc_type in (FeedIndicatorType.IP, FeedIndicatorType.CIDR):
             ipv4_formatted_indicators.add(indicator)
@@ -287,15 +589,18 @@ def format_indicators(iocs: list, request_args: RequestArguments) -> set:
             ipv6_formatted_indicators.add(indicator)
 
         else:
-            formatted_indicators.add(indicator)
+            formatted_indicators.write(str(indicator)+'\n')
 
     if len(ipv4_formatted_indicators) > 0:
         ipv4_formatted_indicators = ips_to_ranges(ipv4_formatted_indicators, request_args.collapse_ips)
-        formatted_indicators.update(ipv4_formatted_indicators)
+        for ip in ipv4_formatted_indicators:
+            formatted_indicators.write(str(ip)+'\n')
 
     if len(ipv6_formatted_indicators) > 0:
         ipv6_formatted_indicators = ips_to_ranges(ipv6_formatted_indicators, request_args.collapse_ips)
-        formatted_indicators.update(ipv6_formatted_indicators)
+        for ip in ipv6_formatted_indicators:
+            formatted_indicators.write(str(ip)+'\n')
+
     return formatted_indicators
 
 
@@ -379,6 +684,7 @@ def route_edl() -> Response:
         edl_size = edl.count('\n') + 1  # add 1 as last line doesn't have a \n
     if len(edl) == 0 and request_args.add_comment_if_empty:
         edl = '# Empty EDL'
+    # mimetype = get_mimetype(request_args)
     max_age = ceil((datetime.now() - dateparser.parse(cache_refresh_rate)).total_seconds())  # type: ignore[operator]
     demisto.debug(f'Returning edl of size: [{edl_size}], created: [{created}], query time seconds: [{query_time}],'
                   f' max age: [{max_age}], etag: [{etag}]')
@@ -406,11 +712,17 @@ def get_request_args(request_args: dict, params: dict) -> RequestArguments:
     """
     limit = try_parse_integer(request_args.get('n', params.get('edl_size') or 10000), EDL_LIMIT_ERR_MSG)
     offset = try_parse_integer(request_args.get('s', 0), EDL_OFFSET_ERR_MSG)
+    out_format = request.args.get('v', params.get('format', 'text'))
     query = request_args.get('q', params.get('indicators_query') or '')
     strip_port = request_args.get('sp', params.get('url_port_stripping') or False)
     drop_invalids = request_args.get('di', params.get('drop_invalids') or False)
     collapse_ips = request_args.get('tr', params.get('collapse_ips', DONT_COLLAPSE))
     add_comment_if_empty = request_args.get('ce', params.get('add_comment_if_empty', True))
+    mwg_type = request.args.get('t', params.get('mwg_type', "string"))
+    category_default = request.args.get('cd', params.get('category_default', 'bc_category'))
+    category_attribute = request.args.get('ca', params.get('category_attribute', ''))
+    fields_to_present = request.args.get('f', params.get('fields_filter', ''))
+
 
     # handle flags
     if drop_invalids == '':
@@ -431,13 +743,45 @@ def get_request_args(request_args: dict, params: dict) -> RequestArguments:
             2: COLLAPSE_TO_CIDR
         }
         collapse_ips = collapse_options[collapse_ips]
+    if out_format not in [FORMAT_PROXYSG, FORMAT_TEXT, FORMAT_JSON, FORMAT_CSV,
+                          FORMAT_JSON_SEQ, FORMAT_MWG, FORMAT_ARG_BLUECOAT, FORMAT_ARG_MWG,
+                          FORMAT_ARG_PROXYSG, FORMAT_XSOAR_JSON, FORMAT_ARG_XSOAR_JSON,
+                          FORMAT_XSOAR_JSON_SEQ, FORAMT_ARG_XSOAR_JSON_SEQ]:
+        raise DemistoException(EDL_FORMAT_ERR_MSG)
+
+    elif out_format in [FORMAT_ARG_PROXYSG, FORMAT_ARG_BLUECOAT]:
+        out_format = FORMAT_PROXYSG
+
+    elif out_format == FORMAT_ARG_MWG:
+        out_format = FORMAT_MWG
+
+    elif out_format == FORMAT_ARG_XSOAR_JSON:
+        out_format = FORMAT_XSOAR_JSON
+
+    elif out_format == FORAMT_ARG_XSOAR_JSON_SEQ:
+        out_format = FORMAT_XSOAR_JSON_SEQ
+
+    if out_format == FORMAT_MWG:
+        if mwg_type not in MWG_TYPE_OPTIONS:
+            raise DemistoException(EDL_MWG_TYPE_ERR_MSG)
+
+    if params.get('use_legacy_query'):
+        # workaround for "msgpack: invalid code" error
+        fields_to_present = 'use_legacy_query'
+
     return RequestArguments(query,
+                            out_format,
                             limit,
                             offset,
                             strip_port,
                             drop_invalids,
                             collapse_ips,
-                            add_comment_if_empty)
+                            add_comment_if_empty,
+                            mwg_type,
+                            category_default,
+                            category_attribute,
+                            fields_to_present
+                            )
 
 
 ''' COMMAND FUNCTIONS '''
@@ -485,13 +829,28 @@ def update_edl_command(args: Dict, params: Dict):
     drop_invalids = get_bool_arg_or_param(args, params, 'drop_invalids')
     add_comment_if_empty = get_bool_arg_or_param(args, params, 'add_comment_if_empty')
     offset = try_parse_integer(args.get('offset', 0), EDL_OFFSET_ERR_MSG)
+    mwg_type = params.get('mwg_type', "string")
+    category_default = params.get('category_default', 'bc_category')
+    category_attribute = params.get('category_attribute', '')
+    fields_to_present = params.get('fields_filter', '')
+    out_format = params.get('format', 'text')
+
+    if params.get('use_legacy_query'):
+        # workaround for "msgpack: invalid code" error
+        fields_to_present = 'use_legacy_query'
+
     request_args = RequestArguments(query,
+                                    out_format,
                                     limit,
                                     offset,
                                     url_port_stripping,
                                     drop_invalids,
                                     collapse_ips,
-                                    add_comment_if_empty)
+                                    add_comment_if_empty,
+                                    mwg_type,
+                                    category_default,
+                                    category_attribute,
+                                    fields_to_present)
     ctx = request_args.to_context_json()
     ctx[EDL_ON_DEMAND_KEY] = True
     set_integration_context(ctx)
@@ -507,14 +866,28 @@ def initialize_edl_context(params: dict):
     url_port_stripping = params.get('url_port_stripping', False)
     drop_invalids = params.get('drop_invalids', False)
     add_comment_if_empty = params.get('add_comment_if_empty', True)
+    mwg_type = params.get('mwg_type', "string")
+    category_default = params.get('category_default', 'bc_category')
+    category_attribute = params.get('category_attribute', '')
+    fields_to_present = params.get('fields_filter', '')
+    out_format = params.get('format', 'text')
+    if params.get('use_legacy_query'):
+        # workaround for "msgpack: invalid code" error
+        fields_to_present = 'use_legacy_query'
     offset = 0
     request_args = RequestArguments(query,
+                                    out_format,
                                     limit,
                                     offset,
                                     url_port_stripping,
                                     drop_invalids,
                                     collapse_ips,
-                                    add_comment_if_empty)
+                                    add_comment_if_empty,
+                                    mwg_type,
+                                    category_default,
+                                    category_attribute,
+                                    fields_to_present
+                                    )
     EDL_ON_DEMAND_CACHE_PATH = demisto.uniqueFile()
     ctx = request_args.to_context_json()
     ctx[EDL_ON_DEMAND_KEY] = True
@@ -525,15 +898,12 @@ def main():
     """
     Main
     """
-    global PAGE_SIZE, EDL_FILTER_FIELDS
+    global PAGE_SIZE
     params = demisto.params()
     try:
         PAGE_SIZE = max(1, int(params.get('page_size') or PAGE_SIZE))
     except ValueError:
         demisto.debug(f'Non integer "page_size" provided: {params.get("page_size")}. defaulting to {PAGE_SIZE}')
-    if params.get('use_legacy_query'):
-        # workaround for "msgpack: invalid code" error
-        EDL_FILTER_FIELDS = None
     credentials = params.get('credentials') if params.get('credentials') else {}
     username: str = credentials.get('identifier', '')
     password: str = credentials.get('password', '')
@@ -561,8 +931,309 @@ def main():
         err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
         return_error(err_msg)
 
+# from NGINXApiModule import *  # noqa: E402
 
-from NGINXApiModule import *  # noqa: E402
+from multiprocessing import Process
+from gevent.pywsgi import WSGIServer
+import subprocess
+import gevent
+from signal import SIGUSR1
+import requests
+from flask.logging import default_handler
+from typing import Any, Dict
+import os
+import traceback
+from string import Template
+
+
+class Handler:
+    @staticmethod
+    def write(msg: str):
+        demisto.info(msg)
+
+
+class ErrorHandler:
+    @staticmethod
+    def write(msg: str):
+        demisto.error(f'wsgi error: {msg}')
+
+
+DEMISTO_LOGGER: Handler = Handler()
+ERROR_LOGGER: ErrorHandler = ErrorHandler()
+
+
+# nginx server params
+NGINX_SERVER_ACCESS_LOG = '/var/log/nginx/access.log'
+NGINX_SERVER_ERROR_LOG = '/var/log/nginx/error.log'
+NGINX_SERVER_CONF_FILE = '/etc/nginx/conf.d/default.conf'
+NGINX_SSL_KEY_FILE = '/etc/nginx/ssl/ssl.key'
+NGINX_SSL_CRT_FILE = '/etc/nginx/ssl/ssl.crt'
+NGINX_SSL_CERTS = f'''
+    ssl_certificate {NGINX_SSL_CRT_FILE};
+    ssl_certificate_key {NGINX_SSL_KEY_FILE};
+'''
+NGINX_SERVER_CONF = '''
+server {
+
+    listen $port default_server $ssl;
+
+    $sslcerts
+
+    proxy_cache_key $scheme$proxy_host$request_uri$extra_cache_key;
+
+    # Static test file
+    location = /nginx-test {
+        alias /var/lib/nginx/html/index.html;
+        default_type text/html;
+    }
+
+    # Proxy everything to python
+    location / {
+        proxy_pass http://localhost:$serverport/;
+        add_header X-Proxy-Cache $upstream_cache_status;
+        # allow bypassing the cache with an arg of nocache=1 ie http://server:7000/?nocache=1
+        proxy_cache_bypass $arg_nocache;
+    }
+}
+
+'''
+
+
+def create_nginx_server_conf(file_path: str, port: int, params: Dict):
+    """Create nginx conf file
+
+    Args:
+        file_path (str): path of server conf file
+        port (int): listening port. server port to proxy to will be port+1
+        params (Dict): additional nginx params
+
+    Raises:
+        DemistoException: raised if there is a detected config error
+    """
+    params = demisto.params() if not params else params
+    template_str = params.get('nginx_server_conf') or NGINX_SERVER_CONF
+    certificate: str = params.get('certificate', '')
+    private_key: str = params.get('key', '')
+    ssl = ''
+    sslcerts = ''
+    serverport = port + 1
+    extra_cache_key = ''
+    if (certificate and not private_key) or (private_key and not certificate):
+        raise DemistoException('If using HTTPS connection, both certificate and private key should be provided.')
+    if certificate and private_key:
+        demisto.debug('Using HTTPS for nginx conf')
+        with open(NGINX_SSL_CRT_FILE, 'wt') as f:
+            f.write(certificate)
+        with open(NGINX_SSL_KEY_FILE, 'wt') as f:
+            f.write(private_key)
+        ssl = 'ssl'  # to be included in the listen directive
+        sslcerts = NGINX_SSL_CERTS
+    credentials = params.get('credentials') or {}
+    if credentials.get('identifier'):
+        extra_cache_key = "$http_authorization"
+    server_conf = Template(template_str).safe_substitute(port=port, serverport=serverport, ssl=ssl,
+                                                         sslcerts=sslcerts, extra_cache_key=extra_cache_key)
+    with open(file_path, mode='wt+') as f:
+        f.write(server_conf)
+
+
+def start_nginx_server(port: int, params: Dict = {}) -> subprocess.Popen:
+    params = demisto.params() if not params else params
+    create_nginx_server_conf(NGINX_SERVER_CONF_FILE, port, params)
+    nginx_global_directives = 'daemon off;'
+    global_directives_conf = params.get('nginx_global_directives')
+    if global_directives_conf:
+        nginx_global_directives = f'{nginx_global_directives} {global_directives_conf}'
+    directive_args = ['-g', nginx_global_directives]
+    # we first do a test that all config is good and log it
+    try:
+        nginx_test_command = ['nginx', '-T']
+        nginx_test_command.extend(directive_args)
+        test_output = subprocess.check_output(nginx_test_command, stderr=subprocess.STDOUT, text=True)
+        demisto.info(f'ngnix test passed. command: [{nginx_test_command}]')
+        demisto.debug(f'nginx test ouput:\n{test_output}')
+    except subprocess.CalledProcessError as err:
+        raise ValueError(f"Failed testing nginx conf. Return code: {err.returncode}. Output: {err.output}")
+    nginx_command = ['nginx']
+    nginx_command.extend(directive_args)
+    res = subprocess.Popen(nginx_command, text=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    demisto.info(f'done starting nginx with pid: {res.pid}')
+    return res
+
+
+def nginx_log_process(nginx_process: subprocess.Popen):
+    try:
+        old_access = NGINX_SERVER_ACCESS_LOG + '.old'
+        old_error = NGINX_SERVER_ERROR_LOG + '.old'
+        log_access = False
+        log_error = False
+        # first check if one of the logs are missing. This may happen on rare ocations that we renamed and deleted the file
+        # before nginx completed the role over of the logs
+        missing_log = False
+        if not os.path.isfile(NGINX_SERVER_ACCESS_LOG):
+            missing_log = True
+            demisto.info(f'Missing access log: {NGINX_SERVER_ACCESS_LOG}. Will send roll signal to nginx.')
+        if not os.path.isfile(NGINX_SERVER_ERROR_LOG):
+            missing_log = True
+            demisto.info(f'Missing error log: {NGINX_SERVER_ERROR_LOG}. Will send roll signal to nginx.')
+        if missing_log:
+            nginx_process.send_signal(int(SIGUSR1))
+            demisto.info(f'Done sending roll signal to nginx (pid: {nginx_process.pid}) after detecting missing log file.'
+                         ' Will skip this iteration.')
+            return
+        if os.path.getsize(NGINX_SERVER_ACCESS_LOG):
+            log_access = True
+            os.rename(NGINX_SERVER_ACCESS_LOG, old_access)
+        if os.path.getsize(NGINX_SERVER_ERROR_LOG):
+            log_error = True
+            os.rename(NGINX_SERVER_ERROR_LOG, old_error)
+        if log_access or log_error:
+            # nginx rolls the logs when getting sigusr1
+            nginx_process.send_signal(int(SIGUSR1))
+            gevent.sleep(0.5)  # sleep 0.5 to let nginx complete the roll
+        if log_access:
+            with open(old_access, 'rt') as f:
+                start = 1
+                for lines in batch(f.readlines(), 100):
+                    end = start + len(lines)
+                    demisto.info(f'nginx access log ({start}-{end-1}): ' + ''.join(lines))
+                    start = end
+            os.unlink(old_access)
+        if log_error:
+            with open(old_error, 'rt') as f:
+                start = 1
+                for lines in batch(f.readlines(), 100):
+                    end = start + len(lines)
+                    demisto.error(f'nginx error log ({start}-{end-1}): ' + ''.join(lines))
+                    start = end
+            os.unlink(old_error)
+    except Exception as e:
+        demisto.error(f'Failed nginx log processing: {e}. Exception: {traceback.format_exc()}')
+
+
+def nginx_log_monitor_loop(nginx_process: subprocess.Popen):
+    """An endless loop to monitor nginx logs. Meant to be spawned as a greenlet.
+    Will run every minute and if needed will dump the nginx logs and roll them if needed.
+
+    Args:
+        nginx_process (subprocess.Popen): the nginx process. Will send signal for log rolling.
+    """
+    while True:
+        gevent.sleep(60)
+        nginx_log_process(nginx_process)
+
+
+def test_nginx_server(port: int, params: Dict):
+    nginx_process = start_nginx_server(port, params)
+    # let nginx startup
+    time.sleep(0.5)
+    try:
+        protocol = 'https' if params.get('key') else 'http'
+        res = requests.get(f'{protocol}://localhost:{port}/nginx-test',
+                           verify=False, proxies={"http": "", "https": ""})  # nosec guardrails-disable-line
+        res.raise_for_status()
+        welcome = 'Welcome to nginx'
+        if welcome not in res.text:
+            raise ValueError(f'Unexpected response from nginx-text (does not contain "{welcome}"): {res.text}')
+    finally:
+        try:
+            nginx_process.terminate()
+            nginx_process.wait(1.0)
+        except Exception as ex:
+            demisto.error(f'failed stoping test nginx process: {ex}')
+
+
+def try_parse_integer(int_to_parse: Any, err_msg: str) -> int:
+    """
+    Tries to parse an integer, and if fails will throw DemistoException with given err_msg
+    """
+    try:
+        res = int(int_to_parse)
+    except (TypeError, ValueError):
+        raise DemistoException(err_msg)
+    return res
+
+
+def get_params_port(params: Dict = None) -> int:
+    """
+    Gets port from the integration parameters
+    """
+    params = demisto.params() if not params else params
+    port_mapping: str = params.get('longRunningPort', '')
+    err_msg: str
+    port: int
+    if port_mapping:
+        err_msg = f'Listen Port must be an integer. {port_mapping} is not valid.'
+        if ':' in port_mapping:
+            port = try_parse_integer(port_mapping.split(':')[1], err_msg)
+        else:
+            port = try_parse_integer(port_mapping, err_msg)
+    else:
+        raise ValueError('Please provide a Listen Port.')
+    return port
+
+
+def run_long_running(params: Dict = None, is_test: bool = False):
+    """
+    Start the long running server
+    :param params: Demisto params
+    :param is_test: Indicates whether it's test-module run or regular run
+    :return: None
+    """
+    params = demisto.params() if not params else params
+    nginx_process = None
+    nginx_log_monitor = None
+
+    try:
+
+        nginx_port = get_params_port()
+        server_port = nginx_port + 1
+        # set our own log handlers
+        APP.logger.removeHandler(default_handler)  # type: ignore[name-defined] # pylint: disable=E0602
+        integration_logger = IntegrationLogger()
+        integration_logger.buffering = False
+        log_handler = DemistoHandler(integration_logger)
+        log_handler.setFormatter(
+            logging.Formatter("flask log: [%(asctime)s] %(levelname)s in %(module)s: %(message)s")
+        )
+        APP.logger.addHandler(log_handler)  # type: ignore[name-defined] # pylint: disable=E0602
+        demisto.debug('done setting demisto handler for logging')
+        server = WSGIServer(('0.0.0.0', server_port),
+                            APP, log=DEMISTO_LOGGER,  # type: ignore[name-defined] # pylint: disable=E0602
+                            error_log=ERROR_LOGGER)
+        if is_test:
+            test_nginx_server(nginx_port, params)
+            server_process = Process(target=server.serve_forever)
+            server_process.start()
+            time.sleep(5)
+            try:
+                server_process.terminate()
+                server_process.join(1.0)
+            except Exception as ex:
+                demisto.error(f'failed stoping test wsgi server process: {ex}')
+
+        else:
+            nginx_process = start_nginx_server(nginx_port, params)
+            nginx_log_monitor = gevent.spawn(nginx_log_monitor_loop, nginx_process)
+            demisto.updateModuleHealth('')
+            server.serve_forever()
+    except Exception as e:
+        error_message = str(e)
+        demisto.error(f'An error occurred: {error_message}. Exception: {traceback.format_exc()}')
+        demisto.updateModuleHealth(f'An error occurred: {error_message}')
+        raise ValueError(error_message)
+
+    finally:
+        if nginx_process:
+            try:
+                nginx_process.terminate()
+            except Exception as ex:
+                demisto.error(f'Failed stopping nginx process when exiting: {ex}')
+        if nginx_log_monitor:
+            try:
+                nginx_log_monitor.kill(timeout=1.0)
+            except Exception as ex:
+                demisto.error(f'Failed stopping nginx_log_monitor when exiting: {ex}')
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()

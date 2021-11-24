@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: EDL
+  id: new export indicator
   version: -1
 configuration:
 - additionalinfo: The query to run to update the EDL. To view expected results, you
@@ -42,6 +42,25 @@ configuration:
   name: longRunningPort
   required: true
   type: 0
+- defaultvalue: text
+  display: Outbound Format
+  name: format
+  options:
+    - text
+    - json
+    - json-seq
+    - XSOAR json
+    - XSOAR json-seq
+    - csv
+    - McAfee Web Gateway
+    - Symantec ProxySG
+    - PAN-OS URL
+  required: false
+  type: 15
+- display: fields
+  name: fields_filter
+  isArray: true
+  required: false
 - display: Certificate (Required for HTTPS)
   name: certificate
   required: false
@@ -87,6 +106,37 @@ configuration:
   - To Ranges
   required: false
   type: 15
+- additionalinfo: For use with McAfee Web Gateway format to indicate the list type.
+  defaultvalue: string
+  display: Mcafee Gateway Indicator List Type
+  hidden: false
+  name: mwg_type
+  options:
+  - string
+  - applcontrol
+  - dimension
+  - category
+  - ip
+  - mediatype
+  - number
+  - regex
+  required: false
+  type: 15
+- additionalinfo: For use with Symantec ProxySG format - set the default category
+    for the output.
+  defaultvalue: bc_category
+  display: Symantec ProxySG Default Category
+  hidden: false
+  name: category_default
+  required: false
+  type: 0
+- additionalinfo: For use with Symantec ProxySG format - set the categories that should
+    be listed in the output. If not set, will list all existing categories.
+  display: Symantec ProxySG Listed Categories
+  hidden: false
+  name: category_attribute
+  required: false
+  type: 0
 - additionalinfo: Internal page size used when querying Cortex XSOAR for the EDL. By default,
     this value shouldn't be changed.
   defaultvalue: '2000'
@@ -120,8 +170,8 @@ configuration:
   type: 8
 description: This integration provides External Dynamic List (EDL) as a service for
   the system indicators (Outbound feed).
-display: Palo Alto Networks PAN-OS EDL Service
-name: EDL
+display: new export indicator
+name: new export indicator
 script:
   commands:
   - arguments:
