@@ -4,7 +4,7 @@
     "cliName": "threatfamilyname",
     "closeForm": false,
     "content": true,
-    "description": "Threat Family Name Associated with an Attacking Vector. I.E. Meterpreter as toolkit or Extortion\Fraud\Espionage",
+    "description": "Threat Family Name Associated with an Attacking Vector. I.E. Meterpreter as toolkit or Extortion\\ֿFraud\\Espionage",
     "editForm": true,
     "group": 0,
     "hidden": false,
