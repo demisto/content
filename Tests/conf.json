@@ -4664,6 +4664,11 @@
             "timeout": 300
         },
         {
+            "integrations": ["Unit42IntelObjectsFeed", "Demisto REST API"],
+            "playbookID": "Unit42 Intel Objects Feed - Test",
+            "timeout": 300
+        },
+        {
             "playbookID": "Tanium Threat Response V2 Test",
             "integrations": ["Tanium Threat Response v2", "Demisto REST API"],
             "fromversion": "6.0.0",
@@ -4733,6 +4738,10 @@
             "integrations": "MalwareBazaar",
             "playbookID": "MalwareBazaar_Test",
             "fromversion": "6.0.0"
+        },
+        {
+            "playbookID": "test_AssignToNextShiftOOO",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
@@ -4829,7 +4838,7 @@
         "Phishing v2 - Test - Actual Incident": "Issue 41322",
         "Kaspersky Security Center - Test": "Issue 36487",
         "carbonBlackEndpointStandardTestPlaybook": "Issue 36936",
-        "LogRhythm REST test": "Issue 40654"
+        "RecordedFutureFeed - Test": "Quota issue. Need to unskip in 1.12.21"
     },
     "skipped_integrations": {
 
@@ -5052,6 +5061,7 @@
         "LogRhythm": "Cannot use proxy",
         "Create-Mock-Feed-Relationships": "recording is redundant for this integration",
         "RSA Archer v2": "cannot connect to proxy",
+        "Anomali ThreatStream v3": "recording is not working",
         "LogRhythmRest V2": "Submits a file - tests that send files shouldn't be mocked."
     },
     "parallel_integrations": [
