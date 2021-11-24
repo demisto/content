@@ -488,7 +488,7 @@ SEND_MAIL_COMMAND_ARGS = [
 
 
 @pytest.mark.parametrize('client, args', SEND_MAIL_COMMAND_ARGS)
-def test_send_mail_command(mocker, client, args):
+def test_send_mail_command(mocker, requests_mock, client, args):
     """
         Given:
             - send-mail command's arguments

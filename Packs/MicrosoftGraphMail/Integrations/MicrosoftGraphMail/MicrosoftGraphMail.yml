@@ -984,7 +984,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The email content body in html format.
+      description: The content (body) of the email (in HTML format).
       isArray: false
       name: htmlBody
       required: false
