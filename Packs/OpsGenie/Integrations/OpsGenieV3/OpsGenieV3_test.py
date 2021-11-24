@@ -3,6 +3,8 @@ import io
 from CommonServerPython import *
 import OpsGenieV3
 from unittest.mock import MagicMock
+from unittest.mock import patch
+
 
 
 def util_load_json(path):
@@ -27,6 +29,7 @@ def test_get_alerts():
 
 
 def test_delete_alert(mocker):
+    mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
     mock_client = OpsGenieV3.Client(base_url="")
     mocker.patch.object(mock_client, 'delete_alert',
                         return_value=util_load_json('test_data/request.json'))
@@ -35,6 +38,7 @@ def test_delete_alert(mocker):
 
 
 def test_ack_alert(mocker):
+    mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
     mock_client = OpsGenieV3.Client(base_url="")
     mocker.patch.object(mock_client, 'ack_alert',
                         return_value=util_load_json('test_data/request.json'))
@@ -43,6 +47,7 @@ def test_ack_alert(mocker):
 
 
 def test_close_alert(mocker):
+    mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
     mock_client = OpsGenieV3.Client(base_url="")
     mocker.patch.object(mock_client, 'close_alert',
                         return_value=util_load_json('test_data/request.json'))
@@ -75,6 +80,7 @@ def test_escalate_alert_without_args():
 
 
 def test_add_alert_tag(mocker):
+    mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
     mock_client = OpsGenieV3.Client(base_url="")
     mocker.patch.object(mock_client, 'add_alert_tag',
                         return_value=util_load_json('test_data/request.json'))
@@ -83,6 +89,7 @@ def test_add_alert_tag(mocker):
 
 
 def test_remove_alert_tag(mocker):
+    mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
     mock_client = OpsGenieV3.Client(base_url="")
     mocker.patch.object(mock_client, 'remove_alert_tag',
                         return_value=util_load_json('test_data/request.json'))
@@ -91,6 +98,7 @@ def test_remove_alert_tag(mocker):
 
 
 def test_get_alert_attachments(mocker):
+    mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
     mock_client = OpsGenieV3.Client(base_url="")
     mocker.patch.object(mock_client, 'get_alert_attachments',
                         return_value=util_load_json('test_data/get_alert_attachments.json'))
@@ -127,6 +135,7 @@ def test_create_incident():
 
 
 def test_delete_incident(mocker):
+    mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
     mock_client = OpsGenieV3.Client(base_url="")
     mocker.patch.object(mock_client, 'delete_incident',
                         return_value=util_load_json('test_data/request.json'))
@@ -145,6 +154,7 @@ def test_get_incidents():
 
 
 def test_close_incident(mocker):
+    mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
     mock_client = OpsGenieV3.Client(base_url="")
     mocker.patch.object(mock_client, 'close_incident',
                         return_value=util_load_json('test_data/request.json'))
@@ -153,6 +163,7 @@ def test_close_incident(mocker):
 
 
 def test_resolve_incident(mocker):
+    mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
     mock_client = OpsGenieV3.Client(base_url="")
     mocker.patch.object(mock_client, 'resolve_incident',
                         return_value=util_load_json('test_data/request.json'))
