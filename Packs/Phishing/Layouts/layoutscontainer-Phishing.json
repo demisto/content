@@ -1493,7 +1493,7 @@
             }
         ]
     },
-    "system": false,
+    "system": true,
     "version": -1,
     "fromVersion": "6.0.0",
     "description": ""
