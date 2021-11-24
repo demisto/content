@@ -200,8 +200,8 @@ def search_query_execute_command(client: DataExplorerClient, args: Dict[str, Any
     query = str(args['query'])
     database_name = str(args['database_name'])
     timeout = arg_to_number(args.get('timeout', '5'))
-    if timeout < 1 or timeout > 60:
-        raise ValueError("Timeout argument should be a number between 1 to 60.")
+    if timeout < 0 or timeout > 60:
+        raise ValueError("Timeout argument should be a float number between 0 to 60.")
 
     client_activity_id = f"{client.client_activity_prefix};{uuid.uuid4()}"
     response = client.search_query_execute_request(database_name, query, timeout, client_activity_id)
