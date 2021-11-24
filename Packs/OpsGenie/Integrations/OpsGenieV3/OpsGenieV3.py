@@ -458,21 +458,21 @@ def run_polling_paging_command(args: dict, cmd: str, results_function: Callable,
             command_results = CommandResults(scheduled_command=scheduled_command)
             return command_results
 
-    command_results = results_function(args)
-    result = result + command_results.get("data")
-    command_results['data'] = result
-    next_paging = command_results.get("paging", {}).get("next")
+    results = results_function(args)
+    result = result + results.get("data")
+    results['data'] = result
+    next_paging = results.get("paging", {}).get("next")
     if not next_paging or len(result) >= limit:
         # If not a paged request, simply return
-        return command_results
+        return results
 
     if len(result) < limit:
         # schedule next poll
-        args['request_id'] = command_results.get('request_id')
+        args['request_id'] = results.get('request_id')
         args['result'] = result
         args['paging'] = next_paging
         polling_args = {
-            'request_id': command_results.get('request_id'),
+            'request_id': results.get('request_id'),
             'paging': next_paging,
             'interval_in_seconds': interval_in_secs,
             'polling': True,
@@ -490,7 +490,8 @@ def run_polling_paging_command(args: dict, cmd: str, results_function: Callable,
                                          outputs={"requestId": args.get("request_id")},
                                          readable_output="Waiting for the polling answer come back",
                                          )
-    return command_results
+        return command_results
+    return results
 
 
 def test_module(client: Client) -> str:
