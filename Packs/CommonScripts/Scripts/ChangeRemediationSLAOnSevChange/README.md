@@ -1,4 +1,5 @@
-Looks up incidents with a specified indicator. Uses `currentIncidentId` to omit the existing incident from output.
+Changes the remediation SLA once a change in incident severity occurs.
+This is automatic and changes can be configured to your needs.
 
 ## Permissions
 ---
@@ -12,21 +13,18 @@ For more information, see the section about permissions here: [https://docs.palo
 
 | **Name** | **Description** |
 | --- | --- |
-| Script Type | javascript |
-| Tags | Utility |
-
+| Script Type | python |
+| Tags | field-change-triggered, example |
+| Cortex XSOAR Version | 4.1.0+ |
 
 ## Inputs
 ---
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| indicator | The indicator to search for. |
+| old | The old value of the field that was changed. |
+| new | The new value of the field that was changed. |
 
 ## Outputs
 ---
-
-| **Path** | **Description** | **Type** |
-| --- | --- | --- |
-| IncidentsWithIndicator.Indicator | The indicator that was found in other incidents. | Unknown |
-| IncidentsWithIndicator.incidentIDs | The incident IDs that the indicator was found in. | Unknown |
+There are no outputs for this script.
