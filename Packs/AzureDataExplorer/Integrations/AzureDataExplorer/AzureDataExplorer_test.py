@@ -1,4 +1,4 @@
-from CommonServerPython import *
+import json
 
 '''MOCK PARAMETERS '''
 CLUSTER_URL = "https://help.kusto.windows.net"
