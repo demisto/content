@@ -29,6 +29,11 @@ class DataExplorerClient:
             integration_context.update(current_refresh_token=refresh_token)
             set_integration_context(integration_context)
 
+        if not cluster_url.startswith('https://'):
+            raise ValueError(
+                "Cluster URL parameter must contain "
+                "'https://' as prefix (e.g. https://help.kusto.windows.net).")
+
         self.cluster_url = cluster_url
         self.host = cluster_url.split("https://")[1]
         self.scope = f'{cluster_url}/user_impersonation offline_access user.read'
