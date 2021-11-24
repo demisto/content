@@ -1701,7 +1701,7 @@ def get_alarm_data(data_args):
 def get_alarm_events(data_args):
     id = data_args.get('alarm-id')
     count = data_args.get('count')
-    count = int(count) if count else count
+    count = int(data_args.get('count'))
     fields = data_args.get('fields')
     show_log_message = data_args.get('get-log-message') == 'True'
 
