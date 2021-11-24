@@ -178,6 +178,7 @@ def test_add_responder_incident():
 
 
 def test_add_tag_incident(mocker):
+    mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
     mock_client = OpsGenieV3.Client(base_url="")
     mocker.patch.object(mock_client, 'add_tag_incident',
                         return_value=util_load_json('test_data/request.json'))
@@ -186,6 +187,7 @@ def test_add_tag_incident(mocker):
 
 
 def test_remove_tag_incident(mocker):
+    mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
     mock_client = OpsGenieV3.Client(base_url="")
     mocker.patch.object(mock_client, 'remove_tag_incident',
                         return_value=util_load_json('test_data/request.json'))
