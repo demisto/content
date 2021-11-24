@@ -1,0 +1,17 @@
+{
+    "name": "BarTest",
+    "description": "test",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "test",
+    "url": "",
+    "email": "",
+    "created": "2021-11-24T14:17:17Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "barchen1"
+    ]
+}
