@@ -473,10 +473,10 @@ script:
       required: false
       secret: false
       predefined:
-        - disconnected
-        - timeout
-        - waiting
-        - connected
+      - disconnected
+      - timeout
+      - waiting
+      - connected
     - default: false
       description: Comma-seperated list of ips to get the connections that match only those ips, for example status=1.1.1.1,1.1.1.1.
       isArray: true
@@ -2208,6 +2208,11 @@ script:
       required: false
       secret: false
     - default: false
+      predefined:
+      - Blocked
+      - Leader
+      - Normal
+      - Slow link
       description: Comma-seperated list of ip servers to get the system-status that match only those ip servers, for example ip_server=1.1.1.1,2.2.2.2.
       isArray: true
       name: ip_server
