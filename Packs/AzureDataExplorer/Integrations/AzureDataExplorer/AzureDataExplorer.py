@@ -22,6 +22,13 @@ class DataExplorerClient:
     """
 
     def __init__(self, cluster_url: str, client_id: str, client_activity_prefix: str, verify: bool, proxy: bool):
+
+        if '@' in client_id:  # for use in test-playbook
+            client_id, refresh_token = client_id.split('@')
+            integration_context = get_integration_context()
+            integration_context.update(current_refresh_token=refresh_token)
+            set_integration_context(integration_context)
+
         self.cluster_url = cluster_url
         self.host = cluster_url.split("https://")[1]
         self.scope = f'{cluster_url}/user_impersonation offline_access user.read'
@@ -371,7 +378,7 @@ def convert_kusto_response_to_dict(kusto_response: KustoResponseDataSet, page: i
     Returns:
         Dict[str, Any]: Converted response.
     """
-    raw_data = kusto_response.primary_results[0].to_dict()['data']
+    raw_data = kusto_response.primary_results[0].to_dict().get('data', [])
     if page and limit:
         from_index = min((page - 1) * limit, len(raw_data))
         to_index = min(from_index + limit, len(raw_data))
@@ -510,7 +517,7 @@ def test_connection(client: DataExplorerClient) -> str:
           str: Message about successfully connected to the Azure Data Explorer.
     """
     client.ms_client.get_access_token()
-    return 'Success!'
+    return '✅ Success!'
 
 
 def main() -> None:
