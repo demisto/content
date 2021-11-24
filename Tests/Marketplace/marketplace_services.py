@@ -1489,6 +1489,7 @@ class Pack(object):
                 PackFolders.GENERIC_TYPES.value: "generictype",
                 PackFolders.LISTS.value: "list",
                 PackFolders.PREPROCESS_RULES.value: "preprocessrule",
+                PackFolders.JOBS.value: "job",
             }
 
             for root, pack_dirs, pack_files_names in os.walk(self._pack_path, topdown=False):
@@ -1655,6 +1656,12 @@ class Pack(object):
                         })
                     elif current_directory == PackFolders.PREPROCESS_RULES.value:
                         folder_collected_items.append({
+                            'name': content_item.get('name', ""),
+                            'description': content_item.get('description', ""),
+                        })
+                    elif current_directory == PackFolders.JOBS.value:
+                        folder_collected_items.append({
+                            # note that `name` may be blank, but shouldn't pass validations if it is blank
                             'name': content_item.get('name', ""),
                             'description': content_item.get('description', ""),
                         })
