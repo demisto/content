@@ -1,6 +1,5 @@
 This widget script generates a map of the Open Expanse Issue Incidents with provider On Prem. The map is generated as a static PNG file embedded in Markdown.
 
-
 ## Permissions
 ---
 

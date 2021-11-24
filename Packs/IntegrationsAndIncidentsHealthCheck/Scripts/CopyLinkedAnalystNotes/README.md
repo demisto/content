@@ -1,4 +1,5 @@
 Copies the anaylst notes from the integrations and incidents grid.
+
 ## Permissions
 ---
 

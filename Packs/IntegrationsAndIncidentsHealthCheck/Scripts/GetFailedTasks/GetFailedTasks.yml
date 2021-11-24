@@ -20,10 +20,12 @@ args:
   name: rest_api_instance
   required: false
   secret: false
-comment: "Gets failed tasks details for incidents based on a query. Limited to 1000\
-  \ incidents.\nThis automation runs using the default Limited User role, unless you\
-  \ explicitly change the permissions.\nFor more information, see the section about\
-  \ permissions here: \nhttps://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html"
+comment: |-
+  Gets failed tasks details for incidents based on a query. Limited to 1000 incidents.
+
+  This automation runs using the default Limited User role, unless you explicitly change the permissions.
+  For more information, see the section about permissions here:
+  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
 commonfields:
   id: GetFailedTasks
   version: -1

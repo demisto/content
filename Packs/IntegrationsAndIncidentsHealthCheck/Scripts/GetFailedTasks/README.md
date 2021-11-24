@@ -1,4 +1,5 @@
 Gets failed tasks details for incidents based on a query. Limited to 1000 incidents
+
 ## Permissions
 ---
 
