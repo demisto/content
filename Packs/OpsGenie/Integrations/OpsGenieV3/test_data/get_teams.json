@@ -1,0 +1,24 @@
+{
+    "data": [
+        {
+            "id": "51d69df8-c40b-439e-9808-e1a78e54f91b",
+            "name": "Engineering",
+            "description": "Engineering",
+            "links": {
+                "web": "https://demisto1.app.opsgenie.com/teams/dashboard/51d69df8-c40b-439e-9808-e1a78e54f91b/main",
+                "api": "https://api.opsgenie.com/v2/teams/51d69df8-c40b-439e-9808-e1a78e54f91b"
+            }
+        },
+        {
+            "id": "fbbc3f9a-12f4-4794-9938-7e0a85a06f8b",
+            "name": "Integration Team",
+            "description": "Integration Team",
+            "links": {
+                "web": "https://demisto1.app.opsgenie.com/teams/dashboard/fbbc3f9a-12f4-4794-9938-7e0a85a06f8b/main",
+                "api": "https://api.opsgenie.com/v2/teams/fbbc3f9a-12f4-4794-9938-7e0a85a06f8b"
+            }
+        }
+    ],
+    "took": 0.017,
+    "requestId": "69c25a4f-32dd-422f-a7c2-4f12ad58dcac"
+}

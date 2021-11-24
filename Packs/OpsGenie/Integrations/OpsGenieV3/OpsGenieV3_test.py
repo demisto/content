@@ -74,10 +74,18 @@ def test_add_responder_alert_wrong_responders():
         OpsGenieV3.assign_alert(mock_client, {'responders': ['team', 'id']})
 
 
-def test_get_escalations():
+def test_get_escalations_without_args():
     mock_client = OpsGenieV3.Client(base_url="")
     with pytest.raises(DemistoException):
         OpsGenieV3.escalate_alert(mock_client, {})
+
+
+def test_get_escalations(mocker):
+    mock_client = OpsGenieV3.Client(base_url="")
+    mocker.patch.object(mock_client, 'get_escalations',
+                        return_value=util_load_json('test_data/get_escalations.json'))
+    res = OpsGenieV3.get_escalations(mock_client, {})
+    assert len(res.outputs) == 2
 
 
 def test_escalate_alert_without_args():
@@ -150,7 +158,6 @@ def test_delete_incident(mocker):
     assert (res.readable_output == "Waiting for request_id=3b078fd5-37d1-472e-823b-9f95b17aba8f")
 
 
-
 def test_get_incidents(mocker):
     mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
     mock_client = OpsGenieV3.Client(base_url="")
@@ -168,7 +175,6 @@ def test_get_incidents_going_to_right_function():
     OpsGenieV3.list_incidents = MagicMock()
     OpsGenieV3.get_incidents(mock_client, {})
     assert OpsGenieV3.list_incidents.called
-
 
 
 def test_close_incident(mocker):
@@ -213,7 +219,15 @@ def test_remove_tag_incident(mocker):
     assert (res.readable_output == "Waiting for request_id=3b078fd5-37d1-472e-823b-9f95b17aba8f")
 
 
-def test_get_teams():
+def test_get_teams(mocker):
+    mock_client = OpsGenieV3.Client(base_url="")
+    mocker.patch.object(mock_client, 'list_teams',
+                        return_value=util_load_json('test_data/get_teams.json'))
+    res = OpsGenieV3.get_teams(mock_client, {})
+    assert len(res.outputs) == 2
+
+
+def test_get_teams_going_to_right_function():
     mock_client = OpsGenieV3.Client(base_url="")
     mock_client.get_team = MagicMock()
     OpsGenieV3.get_teams(mock_client, {"team_id": 1234})
@@ -221,3 +235,23 @@ def test_get_teams():
     mock_client.list_teams = MagicMock()
     OpsGenieV3.get_teams(mock_client, {})
     assert mock_client.list_teams.called
+
+
+def test_get_polling_result_not_finished(mocker):
+    mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
+    mock_client = OpsGenieV3.Client(base_url="")
+    mocker.patch.object(mock_client, 'get_request',
+                        return_value=util_load_json('test_data/request.json'))
+    res = OpsGenieV3.get_polling_result(mock_client, {'request_id': "3b078fd5-37d1-472e-823b-9f95b17aba8f"})
+    assert isinstance(res, CommandResults)
+    assert res.scheduled_command
+
+
+def test_get_polling_result_finished(mocker):
+    mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
+    mock_client = OpsGenieV3.Client(base_url="")
+    mocker.patch.object(mock_client, 'get_request',
+                        return_value=util_load_json('test_data/get_request.json'))
+    res = OpsGenieV3.get_polling_result(mock_client, {'request_id': "f04636e9-4863-4bee-b13b-9eef0e1f3165"})
+    assert isinstance(res, CommandResults)
+    assert not res.scheduled_command
