@@ -4658,7 +4658,18 @@
         "AutoFocus V2 test": "Issue 26464",
         "Kaspersky Security Center - Test": "Issue 36487",
         "carbonBlackEndpointStandardTestPlaybook": "Issue 36936",
-        "LogRhythm REST test": "Issue 40654"
+        "LogRhythm REST test": "Issue 40654",
+        "Tenable.io Scan Test": "Issue 26728",
+        "test playbook - QRadarCorrelations For V2": "Issue 30876",
+        "VMWare Test": "Issue 43823",
+        "XsoarPowershellTesting-Test": "Issue 32689",
+        "EWS_O365_test": "Issue 25605",
+        "McAfee ESM v2 - Test v11.1.3": "Issue 43825",
+        "Recorded Future Test": "Issue 26741",
+        "RedCanaryTest": "Issue 43818",
+        "CarbonBlackLiveResponseCloud-Test": "Issue 39282",
+        "RecordedFutureFeed - Test": "Issue 43923",
+        "MicrosoftManagementActivity - Test": "Issue 43922"
     },
     "skipped_integrations": {
         
