@@ -4312,7 +4312,7 @@ tasks:
       id: 38543939-4f14-400b-8826-2b6f8fb1f616
       iscommand: false
       name: File Enrichment - File reputation
-      playbookId: File Enrichment - File reputation
+      playbookId: file_enrichment_-_file_reputation
       type: playbook
       version: -1
       description: ''
@@ -4359,7 +4359,7 @@ tasks:
       id: 4f0b92e8-6179-4382-8aac-a3541d0f125b
       iscommand: false
       name: File Enrichment - File reputation
-      playbookId: File Enrichment - File reputation
+      playbookId: file_enrichment_-_file_reputation
       type: playbook
       version: -1
       description: ''
