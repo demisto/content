@@ -1661,7 +1661,7 @@ class Pack(object):
                         })
                     elif current_directory == PackFolders.JOBS.value:
                         folder_collected_items.append({
-                            # note that `name` may be blank, but shouldn't pass validations if it is blank
+                            # note that `name` may technically be blank, but shouldn't pass validations
                             'name': content_item.get('name', ""),
                             'description': content_item.get('description', ""),
                         })
