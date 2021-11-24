@@ -1,10 +1,10 @@
-import boto3
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from datetime import date
 
 
 SERVICE = 'route53'
+
 
 class DatetimeEncoder(json.JSONEncoder):
     def default(self, obj):  # pylint: disable=E0202
