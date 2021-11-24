@@ -313,7 +313,7 @@ def retrieve_command_results_of_list_commands(response: Dict[str, Any], base_hea
     """
     response_kusto_dataset = KustoResponseDataSetV1(response)
     total_rows = response_kusto_dataset.primary_results[0].rows_count
-    total_pages = total_rows // limit + 1
+    total_pages = total_rows // limit + (total_rows % limit != 0)
     outputs = convert_kusto_response_to_dict(response_kusto_dataset, page, limit)
     readable_header = format_header_for_list_commands(base_header,
                                                       total_rows, total_pages, page, limit)
