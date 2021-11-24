@@ -6,7 +6,7 @@ import requests_mock
 from CommonServerPython import *
 from MicrosoftGraphMail import MsGraphClient, build_mail_object, assert_pages, build_folders_path, \
     add_second_to_str_date, list_mails_command, item_result_creator, create_attachment, reply_email_command, \
-    send_email_command, prepare_args
+    send_email_command
 from MicrosoftApiModule import MicrosoftClient
 import demistomock as demisto
 
@@ -504,7 +504,6 @@ def test_send_mail_command(mocker, client, args):
 
     send_email_command(client, args)
     assert demisto.results.called
-    
     contents = demisto.results.call_args[0][0].get('Contents').get('MicrosoftGraph.Email')
     assert contents
     assert contents.get('body').get('content') == args.get('body') or args.get("htmlBody")
