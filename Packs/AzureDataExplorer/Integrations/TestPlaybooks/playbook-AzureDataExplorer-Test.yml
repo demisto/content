@@ -4,6 +4,7 @@ vcShouldKeepItemLegacyProdMachine: false
 name: playbook-AzureDataExplorer-Test
 description: Test playbook for Azure Data Explorer integration.
 starttaskid: "0"
+fromversion: 6.0.0
 tasks:
   "0":
     id: "0"
