@@ -2,7 +2,8 @@
     "associatedToAll": false,
     "associatedTypes": [
         "Qradar Generic",
-        "Carbon Black EDR"
+        "Carbon Black EDR",
+        "CrowdStrike Falcon Detection"
     ],
     "breachScript": "",
     "caseInsensitive": true,

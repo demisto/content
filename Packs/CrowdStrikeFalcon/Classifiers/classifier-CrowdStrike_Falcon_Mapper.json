@@ -83,6 +83,12 @@
                 "MAC Address": {
                     "simple": "device.mac_address"
                 },
+                "Event Names": {
+					"simple": "behaviors.display_name"
+				},
+                "Event Descriptions": {
+					"simple": "behaviors.description"
+				},
                 "OS": {
                     "simple": "device.os_version"
                 },
