@@ -57,30 +57,6 @@ def hash_multiple(value, fields_to_hash, to_hash=False):
             return value
 
 
-def find_indicators_with_limit(indicator_query: str, limit: int, offset: int) -> list:
-    """
-    Finds indicators using demisto.searchIndicators
-    """
-    # calculate the starting page (each page holds 200 entries)
-    if offset:
-        next_page = int(offset / PAGE_SIZE)
-
-        # set the offset from the starting page
-        offset_in_page = offset - (PAGE_SIZE * next_page)
-
-    else:
-        next_page = 0
-        offset_in_page = 0
-
-    iocs, _ = find_indicators_with_limit_loop(indicator_query, limit, next_page=next_page)
-
-    # if offset in page is bigger than the amount of results returned return empty list
-    if len(iocs) <= offset_in_page:
-        return []
-
-    return iocs[offset_in_page:limit + offset_in_page]
-
-
 def parse_ioc(ioc):
     global fields_to_hash, unpopulate_fields, populate_fields
     # flat
@@ -107,21 +83,16 @@ def parse_ioc(ioc):
     return ioc
 
 
-def find_indicators_with_limit_loop(indicator_query: str, limit: int, total_fetched: int = 0, next_page: int = 0,
-                                    last_found_len: int = PAGE_SIZE):
+def find_indicators_with_limit_loop(indicator_query: str, limit: int):
     """
     Finds indicators using while loop with demisto.searchIndicators, and returns result and last page
     """
     iocs: List[dict] = []
-    search_indicators = IndicatorsSearcher(page=next_page)
-    if not last_found_len:
-        last_found_len = total_fetched
-    while last_found_len == PAGE_SIZE and limit and total_fetched < limit:
-        fetched_iocs = search_indicators.search_indicators_by_version(query=indicator_query, size=PAGE_SIZE).get('iocs')
+    search_indicators = IndicatorsSearcher(query=indicator_query, limit=limit, size=PAGE_SIZE)
+    for ioc_res in search_indicators:
+        fetched_iocs = ioc_res.get('iocs') or []
         iocs.extend(fetched_iocs)
-        last_found_len = len(fetched_iocs)
-        total_fetched += last_found_len
-    return list(map(lambda x: parse_ioc(x), iocs)), next_page
+    return list(map(lambda x: parse_ioc(x), iocs))
 
 
 fields_to_hash, unpopulate_fields, populate_fields = [], [], []  # type: ignore
@@ -136,7 +107,7 @@ def main():
     limit = int(args.get('limit', PAGE_SIZE))
     query = args.get('query', '')
     offset = int(args.get('offset', 0))
-    indicators = find_indicators_with_limit(query, limit, offset)
+    indicators = find_indicators_with_limit_loop(query, limit + offset)[offset:offset + limit]
 
     entry = fileResult("indicators.json", json.dumps(indicators).encode('utf8'))
     entry['Contents'] = indicators
