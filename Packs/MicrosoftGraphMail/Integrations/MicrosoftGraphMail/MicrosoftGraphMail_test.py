@@ -497,15 +497,21 @@ def test_send_mail_command(mocker, client, args):
             - sending a mail
 
         Then:
-            - validates that demisto result was called with the correct values.
+            - validates that http request to send-mail was called with the correct values.
     """
-    mocker.patch.object(MicrosoftClient, 'http_request')
-    mocker.patch.object(demisto, 'results')
+    with requests_mock.Mocker() as request_mocker:
+        from_email = args.get('from')
 
-    send_email_command(client, args)
-    assert demisto.results.called
-    contents = demisto.results.call_args[0][0].get('Contents').get('MicrosoftGraph.Email')
-    assert contents
-    assert contents.get('body').get('content') == args.get('body') or args.get("htmlBody")
-    assert contents.get('subject') == args.get('subject')
-    assert contents.get('toRecipients') == args.get('to')
+        mocker.patch.object(client.ms_client, 'get_access_token')
+        send_mail_mocker = request_mocker.post(
+            f'https://graph.microsoft.com/v1.0/users/{from_email}/SendMail'
+        )
+
+        send_email_command(client, args)
+
+        assert send_mail_mocker.called
+        message = send_mail_mocker.last_request.json().get('message')
+        assert message
+        assert message.get('toRecipients')[0].get('emailAddress').get("address") == args.get('to')[0]
+        assert message.get('body').get('content') == args.get('htmlBody') or args.get('body')
+        assert message.get('subject') == args.get('subject')
