@@ -26,30 +26,7 @@ BOT_PASSWORD: str = PARAMS.get('bot_password', '')
 USE_SSL: bool = not PARAMS.get('insecure', False)
 APP: Flask = Flask('demisto-teams')
 PLAYGROUND_INVESTIGATION_TYPE: int = 9
-ENDPOINT = PARAMS.get('endpoint', 'Default - Worldwide (.com)')
-LOGIN_ENDPOINTS = {
-    'Default - Worldwide (.com)': 'https://login.microsoftonline.com',
-    'GCC-High (US)': 'https://login.microsoftonline.us',
-    'Department of Defence - DoD (US)': 'https://login.microsoftonline.us',
-    'Germany (.de)': 'https://login.microsoftonline.de',
-    'China (.cn)': 'https://login.chinacloudapi.cn',
-}
-GRAPH_ENDPOINTS = {
-    'Default - Worldwide (.com)': 'https://graph.microsoft.com',
-    'GCC-High (US)': 'https://graph.microsoft.us',
-    'Department of Defence - DoD (US)': 'https://dod-graph.microsoft.us',
-    'Germany (.de)': 'https://graph.microsoft.de',
-    'China (.cn)': 'https://microsoftgraph.chinacloudapi.cn'
-}
-BOTFRAMEWORK_ENDPOINT = {
-    'Default - Worldwide (.com)': 'botframework.com',
-    'GCC-High (US)': 'botframework.azure.us',
-    'Department of Defence - DoD (US)': 'botframework.azure.us'
-}
-
-LOGIN_URL: str = LOGIN_ENDPOINTS.get(ENDPOINT, 'https://login.microsoftonline.com')
-GRAPH_BASE_URL: str = GRAPH_ENDPOINTS.get(ENDPOINT, 'https://graph.microsoft.com')
-BOTFRAMEWORK: str = BOTFRAMEWORK_ENDPOINT.get(ENDPOINT, 'botframework.com')
+GRAPH_BASE_URL: str = 'https://graph.microsoft.com'
 
 INCIDENT_TYPE: str = PARAMS.get('incidentType', '')
 
@@ -424,12 +401,12 @@ def get_bot_access_token() -> str:
     if access_token and valid_until:
         if epoch_seconds() < valid_until:
             return access_token
-    url: str = f'{LOGIN_URL}/{BOTFRAMEWORK}/oauth2/v2.0/token'
+    url: str = 'https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token'
     data: dict = {
         'grant_type': 'client_credentials',
         'client_id': BOT_ID,
         'client_secret': BOT_PASSWORD,
-        'scope': f'https://api.{BOTFRAMEWORK}/.default'
+        'scope': 'https://api.botframework.com/.default'
     }
     response: requests.Response = requests.post(
         url,
@@ -472,11 +449,11 @@ def get_graph_access_token() -> str:
             'Did not receive tenant ID from Microsoft Teams, verify the messaging endpoint is configured correctly. '
             'See https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#troubleshooting for more information'
         )
-    url: str = f'{LOGIN_URL}/{tenant_id}/oauth2/v2.0/token'
+    url: str = f'https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token'
     data: dict = {
         'grant_type': 'client_credentials',
         'client_id': BOT_ID,
-        'scope': f'{GRAPH_BASE_URL}/.default',
+        'scope': 'https://graph.microsoft.com/.default',
         'client_secret': BOT_PASSWORD
     }
 
@@ -638,7 +615,7 @@ def validate_auth_header(headers: dict) -> bool:
 
     decoded_payload: dict = jwt.decode(jwt=jwt_token, options={'verify_signature': False})
     issuer: str = decoded_payload.get('iss', '')
-    if issuer != f'https://api.{BOTFRAMEWORK}':
+    if issuer != 'https://api.botframework.com':
         demisto.info('Authorization header validation - failed to verify issuer')
         return False
 
@@ -659,7 +636,7 @@ def validate_auth_header(headers: dict) -> bool:
     if not key_object:
         # Didn't find requested key in cache, getting new keys
         try:
-            open_id_url: str = f'https://login.{BOTFRAMEWORK}/v1/.well-known/openidconfiguration'
+            open_id_url: str = 'https://login.botframework.com/v1/.well-known/openidconfiguration'
             response: requests.Response = requests.get(open_id_url, verify=USE_SSL)
             if not response.ok:
                 demisto.info(f'Authorization header validation failed to fetch open ID config - {response.reason}')
@@ -774,7 +751,7 @@ def add_user_to_channel(team_aad_id: str, channel_id: str, user_id: str):
     requestjson_: dict = {
         '@odata.type': '#microsoft.graph.aadUserConversationMember',
         'roles': [],
-        'user@odata.bind': f'{GRAPH_BASE_URL}/beta/users/{user_id}'  # disable-secrets-detection
+        'user@odata.bind': f'https://graph.microsoft.com/beta/users/{user_id}'  # disable-secrets-detection
     }
     http_request('POST', url, json_=requestjson_)
 
