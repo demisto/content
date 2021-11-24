@@ -74,6 +74,9 @@ script:
     - contextPath: AzureDataExplorer.SearchQueryResults.PrimaryResults
       description: The results of the query execution.
       type: Unknown
+    - contextPath: AzureDataExplorer.SearchQueryResults.Database
+      description: Database against query will be executed.
+      type: String
   - arguments:
     - default: false
       description: 'The name of the database to list the completed search queries. '

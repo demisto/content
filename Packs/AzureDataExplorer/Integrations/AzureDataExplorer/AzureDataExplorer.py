@@ -196,6 +196,7 @@ def search_query_execute_command(client: DataExplorerClient, args: Dict[str, Any
     response_kusto_dataset = KustoResponseDataSetV1(response)
     primary_results = convert_kusto_response_to_dict(response_kusto_dataset)
     outputs = {
+        'Database': database_name,
         'Query': query,
         'ClientActivityID': client_activity_id,
         'PrimaryResults': primary_results
