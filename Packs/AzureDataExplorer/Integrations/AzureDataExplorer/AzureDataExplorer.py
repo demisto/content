@@ -372,7 +372,7 @@ def convert_kusto_response_to_dict(kusto_response: KustoResponseDataSet, page: i
                                    page_size: int = None, limit: int = None) -> List[dict]:
     """
     Converting KustoResponseDataSet object to dict type.
-
+    Support two use cases of pagination: 'Manual Pagination' and 'Automatic Pagination'.
     Args:
         kusto_response (KustoResponseDataSet): The response from API call.
         page (int): First index to retrieve from.
@@ -383,15 +383,15 @@ def convert_kusto_response_to_dict(kusto_response: KustoResponseDataSet, page: i
         Dict[str, Any]: Converted response.
     """
     raw_data = kusto_response.primary_results[0].to_dict().get('data', [])
-    if page and page_size:  # when user enter page & page size arguments
+    if page and page_size:  # Manual Pagination
         from_index = min((page - 1) * page_size, len(raw_data))
         to_index = min(from_index + page_size, len(raw_data))
         relevant_raw_data = raw_data[from_index:to_index]
 
-    elif limit:  # in case the method was invoked by list command without page size argument.
+    elif limit:  # Automatic Pagination
         relevant_raw_data = raw_data[:min(len(raw_data), limit)]
 
-    else:
+    else:  # used only in search query execution command
         relevant_raw_data = raw_data
     serialized_data: List[dict] = convert_datetime_fields(relevant_raw_data)
     return serialized_data
@@ -401,7 +401,8 @@ def format_header_for_list_commands(base_header: str, rows_count: int,
                                     page: int, page_size: int, limit: int) -> str:
     """
     Retrieve the header of the readable output for list commands.
-
+    Format the header according to the pagination use case:
+    'Manual Pagination' or 'Automatic Pagination'.
     Args:
         base_header (str): The header prefix.
         rows_count (int): The number of rows in the output.
