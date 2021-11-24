@@ -241,7 +241,7 @@ List search queries that have reached a final state in the given database.  A da
             "FailureReason": "[none]",
             "LastUpdatedOn": "2021-11-24T15:15:27",
             "MemoryPeak": 0,
-            "Principal": "aaduser=0cd1dcb9-3fa1-4470-b5f9-c9f2574a0c4d;0dd6c060-d39a-4e06-873c-48a43c2e24dd",
+            "Principal": "aaduser=xxx-xxxx-xxxx",
             "ResultSetStatistics": {
                 "TableCount": 2,
                 "TablesStatistics": [
@@ -362,7 +362,7 @@ Other users can only see search queries that were invoked by them.
             "FailureReason": "",
             "LastUpdatedOn": "2021-11-24T15:16:34",
             "MemoryPeak": 0,
-            "Principal": "aaduser=0cd1dcb9-3fa1-4470-b5f9-c9f2574a0c4d;0dd6c060-d39a-4e06-873c-48a43c2e24dd",
+            "Principal": "aaduser=xxx-xxxx-xxxx",
             "ResultSetStatistics": "null",
             "RootActivityId": "c8233607-30a9-4cc0-9c54-ec716e5fc246",
             "ScannedExtentsStatistics": "null",
