@@ -29,17 +29,38 @@ def test_send_reply(mocker):
     assert "Mail sent successfully. To: test1@gmail.com,test2@gmail.com Cc: test3@gmail.com" == result
 
 
+GET_EMAIL_RECIPIENTS = [
+    ('["avishai@demistodev.onmicrosoft.com", "test test <\'test@test.com\'>"]',
+     "test123@gmail.com",
+     "avishai@demistodev.onmicrosoft.com",
+     "test@test.com",
+     {"test123@gmail.com"}),
+    ('["avishai@demistodev.onmicrosoft.com", "test test <\'test@test.com\'>"]',
+     "test123@gmail.com",
+     "",
+     "test@test.com",
+     {"test123@gmail.com", "avishai@demistodev.onmicrosoft.com"}),
+    ('["avishai@demistodev.onmicrosoft.com", "test1@gmail.com"]',
+     "test123@gmail.com",
+     "avishai@demistodev.onmicrosoft.com",
+     "",
+     {"test123@gmail.com", "test1@gmail.com"}),
+    ('["avishai@demistodev.onmicrosoft.com", "test1@gmail.com"]',
+     "test123@gmail.com",
+     "",
+     "",
+     {"test123@gmail.com", "test1@gmail.com", "avishai@demistodev.onmicrosoft.com"}),
+]
+
+
 @pytest.mark.parametrize(
-    "email_to, email_from, service_mail, excepted",
-    [('["avishai@demistodev.onmicrosoft.com"]', "test123@gmail.com", "avishai@demistodev.onmicrosoft.com",
-      {'test123@gmail.com'}),
-     ('["avishai@demistodev.onmicrosoft.com", "test1@gmail.com"]', "test123@gmail.com",
-      "avishai@demistodev.onmicrosoft.com", {'test123@gmail.com', 'test1@gmail.com'})])
-def test_get_email_recipients(email_to, email_from, service_mail, excepted):
+    "email_to, email_from, service_mail, mailbox, excepted", GET_EMAIL_RECIPIENTS
+)
+def test_get_email_recipients(email_to, email_from, service_mail, mailbox, excepted):
     """Unit test
         Given
-        - Single email recipient, single email author, service mail.
-        - Multiple email recipients, single email author, service mail.
+        - Single email recipient, single email author, service mail and mailbox.
+        - Multiple email recipients, single email author, service mail and mailbox.
         When
         - Getting the email recipients.
         Then
@@ -47,7 +68,7 @@ def test_get_email_recipients(email_to, email_from, service_mail, excepted):
         """
     from SendEmailReply import get_email_recipients
 
-    result = set(get_email_recipients(email_to, email_from, service_mail).split(','))
+    result = set(get_email_recipients(email_to, email_from, service_mail, mailbox).split(','))
     assert result == excepted
 
 
