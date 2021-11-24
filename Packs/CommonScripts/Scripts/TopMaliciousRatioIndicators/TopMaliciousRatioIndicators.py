@@ -27,8 +27,7 @@ def dedup_by_value(indicators_list: list) -> List:
 
 def find_indicators_with_mal_ratio(
         max_indicators: int, min_number_of_invs: int, max_results: int, from_date: str) -> Tuple[str, list]:
-    res = demisto.executeCommand("findIndicators", {'query': f'lastSeen:>={from_date}', 'size': max_indicators})
-    indicators = res[0]['Contents']
+    indicators = execute_command("findIndicators", {'query': f'lastSeen:>={from_date}', 'size': max_indicators})
     indicators = [i for i in indicators if len(i.get('investigationIDs') or []) >= min_number_of_invs]
 
     if not indicators:
