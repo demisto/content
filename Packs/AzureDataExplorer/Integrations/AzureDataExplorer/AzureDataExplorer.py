@@ -11,7 +11,7 @@ from datetime import datetime
 
 ''' CONSTANTS '''
 DEFAULT_PAGE_NUMBER = '1'
-DEFAULT_PAGE_SIZE = '50'
+DEFAULT_LIMIT = '50'
 DATE_TIME_FORMAT = '%Y-%m-%dT%H:%M:%S'
 REQUEST_BASE_TIMEOUT = 20
 
@@ -235,14 +235,15 @@ def search_queries_list_command(client: DataExplorerClient, args: Dict[str, Any]
 
     database_name = str(args['database_name'])
     page = arg_to_number(args.get('page', DEFAULT_PAGE_NUMBER))
-    limit = arg_to_number(args.get('limit', DEFAULT_PAGE_SIZE))
+    page_size = arg_to_number(args.get('page_size'))
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
     client_activity_id = str(args.get('client_activity_id', ''))
     validate_list_command_arguments(page, limit)
     response = client.search_queries_list_request(
         database_name, client_activity_id)
 
     return retrieve_command_results_of_list_commands(response, 'List of Completed Search Queries',
-                                                     page, limit, 'AzureDataExplorer.SearchQuery')
+                                                     page, page_size, limit, 'AzureDataExplorer.SearchQuery')
 
 
 def running_search_queries_list_command(client: DataExplorerClient, args: Dict[str, Any]) -> CommandResults:
@@ -257,7 +258,8 @@ def running_search_queries_list_command(client: DataExplorerClient, args: Dict[s
     """
     database_name = str(args['database_name'])
     page = arg_to_number(args.get('page', DEFAULT_PAGE_NUMBER))
-    limit = arg_to_number(args.get('limit', DEFAULT_PAGE_SIZE))
+    page_size = arg_to_number(args.get('page_size'))
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
     client_activity_id = str(args.get('client_activity_id', ''))
 
     validate_list_command_arguments(page, limit)
@@ -265,7 +267,7 @@ def running_search_queries_list_command(client: DataExplorerClient, args: Dict[s
         database_name, client_activity_id)
 
     return retrieve_command_results_of_list_commands(response, 'List of Currently running Search Queries',
-                                                     page, limit, 'AzureDataExplorer.RunningSearchQuery')
+                                                     page, page_size, limit, 'AzureDataExplorer.RunningSearchQuery')
 
 
 def running_search_query_cancel_command(client: DataExplorerClient, args: Dict[str, Any]) -> \
@@ -306,7 +308,8 @@ def running_search_query_cancel_command(client: DataExplorerClient, args: Dict[s
 
 
 def retrieve_command_results_of_list_commands(response: Dict[str, Any], base_header: str,
-                                              page: int, limit: int, outputs_prefix: str) -> CommandResults:
+                                              page: int, page_size: int, limit: int,
+                                              outputs_prefix: str) -> CommandResults:
     """
     Retrieves the command results of list commands.
     Args:
@@ -320,10 +323,10 @@ def retrieve_command_results_of_list_commands(response: Dict[str, Any], base_hea
     """
     response_kusto_dataset = KustoResponseDataSetV1(response)
     total_rows = response_kusto_dataset.primary_results[0].rows_count
-    total_pages = total_rows // limit + (total_rows % limit != 0)
-    outputs = convert_kusto_response_to_dict(response_kusto_dataset, page, limit)
+
+    outputs = convert_kusto_response_to_dict(response_kusto_dataset, page, page_size, limit)
     readable_header = format_header_for_list_commands(base_header,
-                                                      total_rows, total_pages, page, limit)
+                                                      total_rows, page, page_size, limit)
     readable_output = tableToMarkdown(readable_header,
                                       outputs,
                                       headers=['ClientActivityId', 'User', 'Text',
@@ -366,47 +369,55 @@ def convert_datetime_fields(raw_data: List[dict]) -> List[dict]:
 
 
 def convert_kusto_response_to_dict(kusto_response: KustoResponseDataSet, page: int = None,
-                                   limit: int = None) -> List[dict]:
+                                   page_size: int = None, limit: int = None) -> List[dict]:
     """
     Converting KustoResponseDataSet object to dict type.
 
     Args:
         kusto_response (KustoResponseDataSet): The response from API call.
         page (int): First index to retrieve from.
+        page_size (int) : Number of records to return per page.
         limit (int): Limit on the number of the results to return.
 
     Returns:
         Dict[str, Any]: Converted response.
     """
     raw_data = kusto_response.primary_results[0].to_dict().get('data', [])
-    if page and limit:
-        from_index = min((page - 1) * limit, len(raw_data))
-        to_index = min(from_index + limit, len(raw_data))
+    if page and page_size:  # when user enter page & page size arguments
+        from_index = min((page - 1) * page_size, len(raw_data))
+        to_index = min(from_index + page_size, len(raw_data))
         relevant_raw_data = raw_data[from_index:to_index]
+
+    elif limit:  # in case the method was invoked by list command without page size argument.
+        relevant_raw_data = raw_data[:min(len(raw_data), limit)]
+
     else:
         relevant_raw_data = raw_data
     serialized_data: List[dict] = convert_datetime_fields(relevant_raw_data)
     return serialized_data
 
 
-def format_header_for_list_commands(base_header: str, rows_count: int, total_pages: int,
-                                    page: int, limit: int) -> str:
+def format_header_for_list_commands(base_header: str, rows_count: int,
+                                    page: int, page_size: int, limit: int) -> str:
     """
     Retrieve the header of the readable output for list commands.
 
     Args:
         base_header (str): The header prefix.
         rows_count (int): The number of rows in the output.
-        total_pages (int): Total number of pages.
         page (int): Client's page number argument.
+        page_size (int): number of records per page.
         limit (int): Client's limit argument.
     Returns:
         Dict[str, Any]: Header for readable output of the command.
     """
-    if rows_count > 0:
-        base_header += f' \nShowing page {page} out of {total_pages} total pages.' \
-                       f' Current page size: {limit}.'
-
+    if page_size:
+        total_pages = rows_count // page_size + (rows_count % page_size != 0)
+        if rows_count > 0:
+            base_header += f' \nShowing page {page} out of {total_pages} total pages.' \
+                           f' Current page size: {page_size}.'
+    else:
+        base_header += f' \nShowing 0 to {limit} records out of {rows_count}.'
     return base_header
 
 

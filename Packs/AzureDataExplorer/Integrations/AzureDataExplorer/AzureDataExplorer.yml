@@ -85,25 +85,32 @@ script:
       required: true
       secret: false
     - default: false
-      defaultValue: '1'
-      description: The page number from which to start a search. Default value is
-        1.
+      description: The client activity ID property of search query. Use this to get
+        a specific search query.
       isArray: false
-      name: page
+      name: client_activity_id
       required: false
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of completed queries to return. Default is 50.
+      description: The maximum number of completed queries to return.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: The client activity ID property of search query. Use this to get
-        a specific search query.
+      defaultValue: '1'
+      description: The page number from which to start a search.
       isArray: false
-      name: client_activity_id
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: The maximum number of completed queries to return per page. If
+        this argument is not provided, an automatic pagination will be made accroding
+        to the limit argument.
+      isArray: false
+      name: page_size
       required: false
       secret: false
     deprecated: false
@@ -276,24 +283,32 @@ script:
       required: true
       secret: false
     - default: false
-      defaultValue: '1'
-      description: The page number from which to start a search. Default is 1.
+      description: The client activity ID property of search query. Use this to get
+        a specific running search query.
       isArray: false
-      name: page
+      name: client_activity_id
       required: false
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of running queries to return. Default is 50.
+      description: The maximum number of running queries to return.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: The client activity ID property of search query. Use this to get
-        a specific running search query.
+      defaultValue: '1'
+      description: The page number from which to start a search.
       isArray: false
-      name: client_activity_id
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: The maximum number of running queries to return per page. If this
+        argument is not provided, an automatic pagination will be made accroding to
+        the limit argument.
+      isArray: false
+      name: page_size
       required: false
       secret: false
     deprecated: false
