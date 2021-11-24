@@ -3,25 +3,25 @@ id: 2a6607c1-d42c-421b-86c8-3aa8bb105f1b
 inputs:
 - description: Platform such as Windows/Linux
   key: platform
-  playbookInputQuery: null
+  playbookInputQuery:
   required: true
   value:
     simple: Windows
 - description: ""
   key: delete-connection
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: "true"
 - description: ""
   key: download-file
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: "true"
 - description: ""
   key: path
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: C:\Windows\System32\AtBroker.exe
@@ -44,11 +44,11 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 66589216-a39d-453e-893f-3dfc5140974d
+      id: 0533c324-a04d-42c7-8145-e4ec6969bd55
       iscommand: false
       name: ""
       version: -1
-    taskid: 66589216-a39d-453e-893f-3dfc5140974d
+    taskid: 0533c324-a04d-42c7-8145-e4ec6969bd55
     timertriggers: []
     type: start
     view: |-
@@ -93,13 +93,13 @@ tasks:
     task:
       brand: ""
       description: Request file download from Tanium Threat Response v2.
-      id: 833efb59-9bb8-4165-8751-b748f191c5b3
+      id: 5e7398c0-5f83-4e63-862c-7230638b17c5
       iscommand: false
       name: Tanium Threat Response - Request File Download v2
       playbookId: Tanium Threat Response - Request File Download v2
       type: playbook
       version: -1
-    taskid: 833efb59-9bb8-4165-8751-b748f191c5b3
+    taskid: 5e7398c0-5f83-4e63-862c-7230638b17c5
     timertriggers: []
     type: playbook
     view: |-
@@ -125,13 +125,13 @@ tasks:
       brand: Tanium Threat Response v2
       description: Get system status, to retrieve all possible connection's client
         ids, hostnames, ips.
-      id: c2adc90a-422c-42e5-87c6-64b68ce8d9eb
+      id: d654fc90-fc1d-45e1-85c7-8c6bbe6ec1cd
       iscommand: true
       name: tanium-tr-get-system-status
       script: Tanium Threat Response v2|||tanium-tr-get-system-status
       type: regular
       version: -1
-    taskid: c2adc90a-422c-42e5-87c6-64b68ce8d9eb
+    taskid: d654fc90-fc1d-45e1-85c7-8c6bbe6ec1cd
     timertriggers: []
     type: regular
     view: |-
@@ -147,16 +147,27 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: File
-          operator: isNotEmpty
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: File.Name
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: e9812993-c272-4c3e-bf90-1b39cc3864c4.zip
+                root: File.Name
+          operator: isEqualString
+          right:
+            value:
+              simple: e9812993-c272-4c3e-bf90-1b39cc3864c4.zip
       label: "yes"
     id: "6"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
-      '#default#':
-      - "7"
       "yes":
       - "8"
     note: false
@@ -165,12 +176,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 32607539-4711-428e-89b3-04c2d4bde666
+      id: 71f45eed-aba4-42a5-803e-247690500e8c
       iscommand: false
       name: Check Output
       type: condition
       version: -1
-    taskid: 32607539-4711-428e-89b3-04c2d4bde666
+    taskid: 71f45eed-aba4-42a5-803e-247690500e8c
     timertriggers: []
     type: condition
     view: |-
@@ -178,37 +189,6 @@ tasks:
         "position": {
           "x": 50,
           "y": 630
-        }
-      }
-  "7":
-    id: "7"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    note: false
-    quietmode: 0
-    scriptarguments:
-      message:
-        simple: Error
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Prints an error entry with a given message
-      id: 18886da3-fa7c-408a-8d1b-ef6aa7480923
-      iscommand: false
-      name: 'Print Error '
-      script: PrintErrorEntry
-      type: regular
-      version: -1
-    taskid: 18886da3-fa7c-408a-8d1b-ef6aa7480923
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": -230,
-          "y": 850
         }
       }
   "8":
@@ -226,13 +206,13 @@ tasks:
     task:
       brand: ""
       description: Prints text to war room (Markdown supported)
-      id: dc5f3b94-fb4b-4ae6-8d1a-712c3f0366a8
+      id: fc2436c6-2cc5-40a6-8131-a6b12a3ff0e3
       iscommand: false
       name: Print Success
       script: Print
       type: regular
       version: -1
-    taskid: dc5f3b94-fb4b-4ae6-8d1a-712c3f0366a8
+    taskid: fc2436c6-2cc5-40a6-8131-a6b12a3ff0e3
     timertriggers: []
     type: regular
     view: |-
@@ -249,8 +229,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 925,
-        "width": 920,
-        "x": -230,
+        "width": 640,
+        "x": 50,
         "y": 20
       }
     }

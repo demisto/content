@@ -3,48 +3,48 @@ id: Tanium Threat Response - Request File Download v2
 inputs:
 - description: Path of file.
   key: path
-  playbookInputQuery: null
+  playbookInputQuery:
   required: true
   value: {}
 - description: If true, the file will be downloaded, otherwise, only a file download
     object will be created.
   key: download-file
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: If true, the connection will be deleted in the end of the playbook,
     otherwise, it will remain open.
   key: delete-connection
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: |
     Client id. Use `tanium-tr-get-system-status` to get all possible client_ids.
   key: client-id
-  playbookInputQuery: null
+  playbookInputQuery:
   required: true
   value: {}
 - description: Hostname of the computer to connect. Use `tanium-tr-get-system-status`
     to get all possible hostnames.
   key: hostname
-  playbookInputQuery: null
+  playbookInputQuery:
   required: true
   value: {}
 - description: IP address to connect. Use `tanium-tr-get-system-status` to get all
     possible ips.
   key: ip
-  playbookInputQuery: null
+  playbookInputQuery:
   required: true
   value: {}
 - description: Computers platform - "Windows", "Linux", etc.
   key: platform
-  playbookInputQuery: null
+  playbookInputQuery:
   required: true
   value: {}
 name: Tanium Threat Response - Request File Download v2
 outputs:
 - contextPath: File
-  description: Downloaded file information
+  description: Get downloaded file info
   type: unknown
 starttaskid: "0"
 tasks:
@@ -62,11 +62,11 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 8cc20976-5d60-4397-895a-21b1c37ccbb6
+      id: 5d412b7c-913d-48a2-86a6-6f77315bd8f1
       iscommand: false
       name: ""
       version: -1
-    taskid: 8cc20976-5d60-4397-895a-21b1c37ccbb6
+    taskid: 5d412b7c-913d-48a2-86a6-6f77315bd8f1
     timertriggers: []
     type: start
     view: |-
@@ -83,7 +83,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - "17"
+      - "18"
     note: false
     quietmode: 0
     scriptarguments:
@@ -96,20 +96,20 @@ tasks:
     task:
       brand: Tanium Threat Response v2
       description: Requests a new file download.
-      id: 2ce9453b-a7c3-4c3a-8d19-82201b644806
+      id: 3c6058c3-0a60-4a9f-8ae7-528d3be44708
       iscommand: true
       name: tanium-tr-request-file-download
       script: Tanium Threat Response v2|||tanium-tr-request-file-download
       type: regular
       version: -1
-    taskid: 2ce9453b-a7c3-4c3a-8d19-82201b644806
+    taskid: 3c6058c3-0a60-4a9f-8ae7-528d3be44708
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 370
+          "y": 350
         }
       }
   "3":
@@ -123,19 +123,19 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: ba215b96-187d-4d1b-8b69-6e9e70f133c6
+      id: f65c7081-edec-405e-88e4-e5f22c43b412
       iscommand: false
       name: Done
       type: title
       version: -1
-    taskid: ba215b96-187d-4d1b-8b69-6e9e70f133c6
+    taskid: f65c7081-edec-405e-88e4-e5f22c43b412
     timertriggers: []
     type: title
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 1595
+          "y": 1635
         }
       }
   "5":
@@ -156,20 +156,20 @@ tasks:
     task:
       brand: Tanium Threat Response v2
       description: Deletes a connection by connection id.
-      id: 79834fd7-c1df-402a-8350-f85e037531a4
+      id: a7a5f5c0-300a-4bc6-80e3-cedd0237bbd1
       iscommand: true
       name: tanium-tr-delete-connection
       script: Tanium Threat Response v2|||tanium-tr-delete-connection
       type: regular
       version: -1
-    taskid: 79834fd7-c1df-402a-8350-f85e037531a4
+    taskid: a7a5f5c0-300a-4bc6-80e3-cedd0237bbd1
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1450
         }
       }
   "8":
@@ -201,19 +201,19 @@ tasks:
       brand: ""
       description: If true, the connection will be deleted in the end of the playbook,
         otherwise, it will remain open.
-      id: c5c89b06-f970-42e1-87a4-bb37d09cdd4c
+      id: 30f7edf0-8955-4bd4-876f-e1c0aa9af388
       iscommand: false
       name: Delete connection?
       type: condition
       version: -1
-    taskid: c5c89b06-f970-42e1-87a4-bb37d09cdd4c
+    taskid: 30f7edf0-8955-4bd4-876f-e1c0aa9af388
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 1245
+          "y": 1275
         }
       }
   "9":
@@ -246,20 +246,20 @@ tasks:
       brand: Tanium Threat Response v2
       description: 'Gets the actual content of a downloaded file by file ID. Downloaded
         file password: `infected`.'
-      id: 25a78f99-4dd4-4e33-82be-8f017651aabe
+      id: 2f27202f-57b1-4c17-8bce-c294fc37f6fe
       iscommand: true
       name: Get downloaded file
       script: Tanium Threat Response v2|||tanium-tr-get-downloaded-file
       type: regular
       version: -1
-    taskid: 25a78f99-4dd4-4e33-82be-8f017651aabe
+    taskid: 2f27202f-57b1-4c17-8bce-c294fc37f6fe
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 1090
         }
       }
   "10":
@@ -291,19 +291,19 @@ tasks:
       brand: ""
       description: If true, the file will be downloaded, otherwise, only a file download
         object will be created.
-      id: a15fedb0-d502-4493-81e4-59bc33851168
+      id: 39442a56-3883-4204-8fed-94bffc162073
       iscommand: false
       name: Should the file be downloaded?
       type: condition
       version: -1
-    taskid: a15fedb0-d502-4493-81e4-59bc33851168
+    taskid: 39442a56-3883-4204-8fed-94bffc162073
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 825
+          "y": 870
         }
       }
   "15":
@@ -336,13 +336,13 @@ tasks:
       brand: ""
       description: Creates a connection to a remote destination from Tanium Threat
         Response v2
-      id: c818398a-e4e1-4cd5-8170-a93ccd138ebb
+      id: 4a118afa-2340-430b-8cda-e9459d324656
       iscommand: false
       name: Tanium Threat Response - Create Connection v2
       playbookId: Tanium Threat Response - Create Connection v2
       type: playbook
       version: -1
-    taskid: c818398a-e4e1-4cd5-8170-a93ccd138ebb
+    taskid: 4a118afa-2340-430b-8cda-e9459d324656
     timertriggers: []
     type: playbook
     view: |-
@@ -367,20 +367,68 @@ tasks:
     task:
       brand: ""
       description: Returns all downloaded files in the system.
-      id: 47f9c483-024a-4f7e-8bed-57b7dd29814d
+      id: d71af257-87e3-4889-8135-83df785fa516
       iscommand: true
       name: tanium-tr-list-file-downloads
       script: '|||tanium-tr-list-file-downloads'
       type: regular
       version: -1
-    taskid: 47f9c483-024a-4f7e-8bed-57b7dd29814d
+    taskid: d71af257-87e3-4889-8135-83df785fa516
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 600
+          "y": 680
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Ids:
+        simple: ${Tanium.FileDownloadTask.taskId}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: task_id
+      PollingCommandName:
+        simple: tanium-tr-get-task-by-id
+      Timeout:
+        simple: "10"
+      dt:
+        simple: "Tanium.Task(val.status != '\tCOMPLETED')"
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 288d812c-8afd-48cb-871b-ca250afbd779
+      iscommand: false
+      name: GenericPolling
+      playbookId: GenericPolling
+      type: playbook
+      version: -1
+    taskid: 288d812c-8afd-48cb-871b-ca250afbd779
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 515
         }
       }
 version: -1
@@ -389,13 +437,13 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1610,
+        "height": 1650,
         "width": 492.5,
         "x": 50,
         "y": 50
       }
     }
   }
-fromversion: "6.0.0"
+fromversion: 6.0.0
 tests:
 - Tanium Threat Response - Request File Download v2 - Test

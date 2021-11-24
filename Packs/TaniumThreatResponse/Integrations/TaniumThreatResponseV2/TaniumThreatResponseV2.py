@@ -12,7 +12,7 @@ import json
 import urllib3
 import urllib.parse
 from dateutil.parser import parse
-from typing import Any, Tuple
+from typing import Any, Tuple, List
 from lxml import etree
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -167,7 +167,7 @@ def convert_to_int(int_to_parse: Any) -> Optional[int]:
     return res
 
 
-def are_filters_match_response_content(all_filter_arguments: list, api_response: dict) -> bool:
+def are_filters_match_response_content(all_filter_arguments: List[Tuple[list, str]], api_response: dict) -> bool:
     """
     Verify whether any filter arguments of a command match the api response content.
 
@@ -181,7 +181,7 @@ def are_filters_match_response_content(all_filter_arguments: list, api_response:
     for arguments in all_filter_arguments:
         command_args, resp_key = arguments
         for arg in command_args:
-            if arg == api_response[resp_key]:
+            if arg == api_response.get(resp_key):
                 return True
     return False
 
@@ -1050,23 +1050,20 @@ def get_connections(client, command_args) -> Tuple[str, dict, Union[list, dict]]
     Returns:
         tuple (str, dict, list[dict]): table output, context output and raw response by the Tanium-Threat-Response API.
     """
-    _ip, _status, _hostname, _platform, _id = "ip", "status", "hostname", "platform", "id"
-
     limit = arg_to_number(command_args.get('limit'))
     offset = arg_to_number(command_args.get('offset'))
-    ids = argToList(arg=command_args.get("id"))
-    ips = argToList(arg=command_args.get(_ip))
-    statuses = argToList(arg=command_args.get(_status))
-    hostnames = argToList(arg=command_args.get(_hostname))
-    platforms = argToList(arg=command_args.get(_platform))
+    ips = argToList(arg=command_args.get('ip'))
+    statuses = argToList(arg=command_args.get('status'))
+    hostnames = argToList(arg=command_args.get('hostname'))
+    platforms = argToList(arg=command_args.get('platform'))
 
     raw_response = client.do_request(method='GET', url_suffix='/plugin/products/threat-response/api/v1/conns')
 
     from_idx = min(offset, len(raw_response))
     to_idx = min(offset + limit, len(raw_response))  # type: ignore
 
-    is_resp_filtering_required = ips or statuses or hostnames or platforms or ids
-    filter_arguments = [(ids, _id), (ips, _ip), (statuses, _status), (hostnames, _hostname), (platforms, _platform)]
+    is_resp_filtering_required = ips or statuses or hostnames or platforms
+    filter_arguments = [(ips, 'ip'), (statuses, 'status'), (hostnames, 'hostname'), (platforms, 'platform')]
 
     connections = raw_response[from_idx:to_idx]
     filtered_connections = []
@@ -1277,17 +1274,15 @@ def get_file_downloads(client, command_args) -> Tuple[str, dict, Union[list, dic
     Returns:
         tuple (str, dict, list[dict]): table output, context output and raw response by the Tanium-Threat-Response API.
     """
-    _hash, _hostname = "hash", "hostname"
-
     limit = arg_to_number(command_args.get('limit'))
     offset = arg_to_number(command_args.get('offset'))
     sort = command_args.get('sort')
-    hashes = argToList(arg=command_args.get(_hash))
-    hostnames = argToList(arg=command_args.get(_hostname))
-    process_time_start = command_args.get("process_time_start")
+    hashes = argToList(arg=command_args.get('hash'))
+    hostnames = argToList(arg=command_args.get('hostname'))
+    process_time_start = command_args.get('process_time_start')
 
     is_filtering_resp_required = hashes or hostnames or process_time_start
-    filter_arguments = [(hostnames, _hostname), (hashes, _hash), ([process_time_start], "process_creation_time")]
+    filter_arguments = [(hostnames, 'hostname'), (hashes, 'hash'), ([process_time_start], 'process_creation_time')]
 
     params = assign_params(limit=limit, offset=offset, sort=sort)
     raw_response = client.do_request('GET', '/plugin/products/threat-response/api/v1/filedownload', params=params)
@@ -1309,7 +1304,7 @@ def get_file_downloads(client, command_args) -> Tuple[str, dict, Union[list, dic
 
     context = createContext(files, removeNull=True, keyTransform=lambda x: underscoreToCamelCase(x, upper_camel=False))
     outputs = {'Tanium.FileDownload(val.uuid === obj.uuid)': context}
-    table_headers = ['uuid', 'path', 'evidenceType', _hostname, 'processCreationTime', 'size']
+    table_headers = ['uuid', 'path', 'evidenceType', 'hostname', 'processCreationTime', 'size']
     table = tableToMarkdown('File downloads', context, headers=table_headers,
                             headerTransform=pascalToSpace, removeNull=True)
     return table, outputs, raw_response
@@ -1691,18 +1686,16 @@ def list_evidence(client, commands_args) -> Tuple[str, dict, Union[list, dict]]:
     Returns:
         tuple (str, dict, list[dict]): table output, context output and raw response by the Tanium-Threat-Response API.
     """
-    _limit, _offset, _hostname, _sort, _type, _created_at = "limit", "offset", "hostname", "sort", "type", "createdAt"
-
-    limit = arg_to_number(commands_args.get(_limit))
-    offset = arg_to_number(commands_args.get(_offset))
-    hostnames = argToList(arg=commands_args.get(_hostname))
-    sort = commands_args.get(_sort)
-    type = commands_args.get(_type)
+    limit = arg_to_number(commands_args.get('limit'))
+    offset = arg_to_number(commands_args.get('offset'))
+    hostnames = argToList(arg=commands_args.get('hostname'))
+    sort = commands_args.get('sort')
+    type = commands_args.get('type')
 
     params = assign_params(sort=sort, type=type)
     raw_response = client.do_request('GET', '/plugin/products/threat-response/api/v1/evidence', params=params)
 
-    filter_arguments = [(hostnames, _hostname)]
+    filter_arguments = [(hostnames, 'hostname')]
 
     from_idx = min(offset, len(raw_response))
     to_idx = min(offset + limit, len(raw_response))  # type: ignore
@@ -1711,9 +1704,9 @@ def list_evidence(client, commands_args) -> Tuple[str, dict, Union[list, dict]]:
     filtered_evidences_by_hostname = []
 
     for item in evidences:
-        if created := item.get(_created_at):
+        if created := item.get('createdAt'):
             try:
-                item[_created_at] = timestamp_to_datestring(created)
+                item['createdAt'] = timestamp_to_datestring(created)
             except ValueError:
                 pass
         if hostnames and are_filters_match_response_content(all_filter_arguments=filter_arguments, api_response=item):
@@ -1724,7 +1717,7 @@ def list_evidence(client, commands_args) -> Tuple[str, dict, Union[list, dict]]:
 
     context = createContext(data=evidences, removeNull=True)
     outputs = {'Tanium.Evidence(val.uuid && val.uuid === obj.uuid)': context}
-    table_headers = ['uuid', 'name', 'evidenceType', _hostname, _created_at, 'username']
+    table_headers = ['uuid', 'name', 'evidenceType', 'hostname', 'createdAt', 'username']
     table_output = tableToMarkdown(
         name='Evidence list', t=evidences, headers=table_headers, headerTransform=pascalToSpace, removeNull=True
     )
@@ -1887,23 +1880,21 @@ def get_system_status(client, command_args) -> Tuple[str, dict, Union[list, dict
     Returns:
         tuple (str, dict, list[dict]): table output, context output and raw response by the Tanium-Threat-Response API.
     """
-    _status = "status"
-
     limit = arg_to_number(command_args.get('limit'))
     offset = arg_to_number(command_args.get('offset'))
-    statuses = argToList(arg=command_args.get(_status))
-    hostnames = argToList(arg=command_args.get("hostname"))
-    ipaddrs_client = argToList(arg=command_args.get("ip_client"))
-    ipaddrs_server = argToList(arg=command_args.get("ip_server"))
-    port = arg_to_number(arg=command_args.get("port"))
+    statuses = argToList(arg=command_args.get('status'))
+    hostnames = argToList(arg=command_args.get('hostname'))
+    ipaddrs_client = argToList(arg=command_args.get('ip_client'))
+    ipaddrs_server = argToList(arg=command_args.get('ip_server'))
+    port = arg_to_number(arg=command_args.get('port'))
 
     is_resp_filtering_required = statuses or hostnames or ipaddrs_client or ipaddrs_client or ipaddrs_server or port
     filter_arguments = [
-        (statuses, _status),
-        (hostnames, "host_name"),
-        (ipaddrs_client, "ipaddress_client"),
-        (ipaddrs_server, "ipaddress_server"),
-        ([port], "port_number")
+        (statuses, 'status'),
+        (hostnames, 'host_name'),
+        (ipaddrs_client, 'ipaddress_client'),
+        (ipaddrs_server, 'ipaddress_server'),
+        ([port], 'port_number')
     ]
 
     raw_response = client.do_request('GET', '/api/v2/system_status')

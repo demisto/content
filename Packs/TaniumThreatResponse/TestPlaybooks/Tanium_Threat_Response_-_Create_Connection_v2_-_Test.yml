@@ -3,7 +3,7 @@ id: 14f1fb62-d3db-4d07-8014-e71cd8ce8be7
 inputs:
 - description: ""
   key: platform
-  playbookInputQuery: null
+  playbookInputQuery:
   required: true
   value:
     simple: Windows
@@ -26,11 +26,11 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 66589216-a39d-453e-893f-3dfc5140974d
+      id: 4f9ab0ca-bb98-4856-86ae-0827091d8fdc
       iscommand: false
       name: ""
       version: -1
-    taskid: 66589216-a39d-453e-893f-3dfc5140974d
+    taskid: 4f9ab0ca-bb98-4856-86ae-0827091d8fdc
     timertriggers: []
     type: start
     view: |-
@@ -38,32 +38,6 @@ tasks:
         "position": {
           "x": 50,
           "y": 30
-        }
-      }
-  "3":
-    id: "3"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 7972d711-0b43-4285-8107-798ede68d466
-      iscommand: false
-      name: Done
-      type: title
-      version: -1
-    taskid: 7972d711-0b43-4285-8107-798ede68d466
-    timertriggers: []
-    type: title
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 675
         }
       }
   "4":
@@ -78,7 +52,7 @@ tasks:
       wait: 1
     nexttasks:
       '#none#':
-      - "3"
+      - "6"
     note: false
     quietmode: 0
     scriptarguments:
@@ -96,13 +70,13 @@ tasks:
       brand: ""
       description: Creates a connection to a remote destination from Tanium Threat
         Response v2
-      id: 2057081f-2653-4d16-8c7f-df0bc16302c6
+      id: 670d8471-7413-41c1-87ed-138238137d5e
       iscommand: false
       name: Tanium Threat Response - Create Connection v2
       playbookId: Tanium Threat Response - Create Connection v2
       type: playbook
       version: -1
-    taskid: 2057081f-2653-4d16-8c7f-df0bc16302c6
+    taskid: 670d8471-7413-41c1-87ed-138238137d5e
     timertriggers: []
     type: playbook
     view: |-
@@ -128,13 +102,13 @@ tasks:
       brand: Tanium Threat Response v2
       description: Get system status, to retrieve all possible connection's client
         ids, hostnames, ips.
-      id: 66b1fd7e-b209-4f3b-8e6d-c79cc9ce1cd5
+      id: 5692a54a-2675-476b-8aff-66d373731a6d
       iscommand: true
       name: tanium-tr-get-system-status
       script: Tanium Threat Response v2|||tanium-tr-get-system-status
       type: regular
       version: -1
-    taskid: 66b1fd7e-b209-4f3b-8e6d-c79cc9ce1cd5
+    taskid: 5692a54a-2675-476b-8aff-66d373731a6d
     timertriggers: []
     type: regular
     view: |-
@@ -144,14 +118,100 @@ tasks:
           "y": 210
         }
       }
+  "6":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Tanium.Connection.id
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Tanium.Connection.id
+          operator: containsGeneral
+          right:
+            value:
+              simple: 'remote:taniumlinux:2232836718:'
+        - left:
+            iscontext: true
+            value:
+              simple: Tanium.Connection.id
+          operator: isEqualString
+          right:
+            value:
+              simple: 'remote:ec2amaz-kgmro60:9065264:'
+      label: "yes"
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "yes":
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: bece9d48-f176-4e03-83cb-d5fce142b88c
+      iscommand: false
+      name: Check Output
+      type: condition
+      version: -1
+    taskid: bece9d48-f176-4e03-83cb-d5fce142b88c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 660
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: Success
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: 350e0e31-61cc-4b89-84ec-8bd3eef44003
+      iscommand: false
+      name: Print Success
+      script: Print
+      type: regular
+      version: -1
+    taskid: 350e0e31-61cc-4b89-84ec-8bd3eef44003
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 330,
+          "y": 900
+        }
+      }
 version: -1
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "6_7_yes": 0.42
+    },
     "paper": {
       "dimensions": {
-        "height": 710,
-        "width": 380,
+        "height": 965,
+        "width": 660,
         "x": 50,
         "y": 30
       }
