@@ -1230,7 +1230,7 @@ def http_request(method, url_suffix, data=None, headers=HEADERS):
         else:
             return_error('No data returned')
 
-    if res.status_code not in {200, 201, 202, 207, 204}:
+    if res.status_code not in {200, 201, 202, 204, 207}:
         return_error(
             'Error in API call to {}, status code: {}, reason: {}'.format(BASE_URL + '/' + url_suffix, res.status_code,
                                                                           res.json()['message']))
