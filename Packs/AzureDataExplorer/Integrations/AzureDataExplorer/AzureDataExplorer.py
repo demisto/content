@@ -504,7 +504,7 @@ def complete_auth(client: DataExplorerClient) -> str:
           str: Message about completing the authorization process successfully.
     """
     client.ms_client.get_access_token()
-    return 'Authorization completed successfully.'
+    return '✅ Authorization completed successfully.'
 
 
 def reset_auth() -> str:
