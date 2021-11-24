@@ -5281,7 +5281,7 @@ def arg_to_number(arg, arg_name=None, required=False):
 
         return None
 
-    # arg = encode_string_results(arg)
+    arg = encode_string_results(arg)
 
     if isinstance(arg, str):
         if arg.isdigit():
