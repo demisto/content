@@ -1,6 +1,6 @@
 Finds the top malicious ratio indicators. The malicious ratio is defined by the ratio between the number of "bad" incidents divided by the total number of incidents that the indicators appears in.
 
-## Script Data
+Script Data
 ---
 
 | **Name** | **Description** |
@@ -9,7 +9,7 @@ Finds the top malicious ratio indicators. The malicious ratio is defined by the 
 | Tags | widget |
 | Cortex XSOAR Version | 4.0.0+ |
 
-## Inputs
+Inputs
 ---
 
 | **Argument Name** | **Description** |
@@ -18,6 +18,6 @@ Finds the top malicious ratio indicators. The malicious ratio is defined by the 
 | minimumNumberOfInvs | The minimum number of investigations the indicator has to appear in. |
 | maximumNumberOfResults | The maximum number of results to display. |
 
-## Outputs
+Outputs
 ---
 There are no outputs for this script.
