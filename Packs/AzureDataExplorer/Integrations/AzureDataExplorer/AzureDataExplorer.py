@@ -58,7 +58,9 @@ class DataExplorerClient:
                                           json_data=data,
                                           params=params,
                                           resp_type='response',
-                                          timeout=timeout)
+                                          timeout=timeout,
+                                          ok_codes=(200, 204, 400, 401, 403, 404, 409))
+
         if res.status_code in (200, 204) and not res.text:
             return res
 
