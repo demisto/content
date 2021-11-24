@@ -466,18 +466,19 @@ def calculate_total_request_timeout(server_timeout: int) -> int:
     return server_timeout_in_seconds + REQUEST_BASE_TIMEOUT
 
 
-def validate_list_command_arguments(page: int, limit: int) -> None:
+def validate_list_command_arguments(page: int, page_size: int, limit: int) -> None:
     """
     Validation of page and limit arguments in list commands.
 
     Args:
         page (int): The page number.
-        limit (int): Limit on page size.
+        page_size(int) : Limit on page size.
+        limit (int): Limit on number of records.
 
     Raises:
         ValueError: Error message.
     """
-    if not page >= 1 and limit >= 1:
+    if not page >= 1 and limit >= 1 and page_size >= 1:
         raise ValueError("Page and limit arguments must be integers greater than 0.")
 
 
