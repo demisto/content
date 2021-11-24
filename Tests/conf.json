@@ -4669,7 +4669,8 @@
         "RedCanaryTest": "Issue 43818",
         "CarbonBlackLiveResponseCloud-Test": "Issue 39282",
         "RecordedFutureFeed - Test": "Issue 43923",
-        "MicrosoftManagementActivity - Test": "Issue 43922"
+        "MicrosoftManagementActivity - Test": "Issue 43922",
+        "GuardiCoreV2-Test": "Issue 43822"
     },
     "skipped_integrations": {
         
