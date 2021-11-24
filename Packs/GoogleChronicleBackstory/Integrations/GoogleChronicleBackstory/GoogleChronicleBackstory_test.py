@@ -37,6 +37,12 @@ ARGS = {
     'domain': 'test.com'
 }
 
+invalid_start_time_error_message = 'Invalid start time. Some supported formats are ISO date format and relative time. ' \
+                                   'e.g. 2019-10-17T00:00:00Z, 3 days'
+
+invalid_end_time_error_message = 'Invalid end time. Some supported formats are ISO date format and relative time. ' \
+                                 'e.g. 2019-10-17T00:00:00Z, 3 days'
+
 
 @pytest.fixture
 def client():
@@ -2113,84 +2119,54 @@ def test_list_detections_command(client):
     assert hr == 'No Detections Found'
 
 
-def test_validate_and_parse_list_detections_args():
+@pytest.mark.parametrize("args, error_msg", [
+    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'page_size': 'dummy'}, 'Page size must be a non-zero '
+                                                                                   'numeric value'),
+    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'page_size': '100000'}, 'Page size should be in the range '
+                                                                                    'from 1 to 1000.'),
+    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'detection_start_time': 'December 2019'},
+     invalid_start_time_error_message),
+    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'detection_start_time': '6'},
+     invalid_start_time_error_message),
+    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'detection_start_time': '-5'},
+     invalid_start_time_error_message),
+    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'detection_start_time': '645.08'},
+     invalid_start_time_error_message),
+    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'detection_start_time': '-325.21'},
+     invalid_start_time_error_message),
+    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'detection_end_time': 'December 2019'},
+     invalid_end_time_error_message),
+    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'detection_end_time': '6'},
+     invalid_end_time_error_message),
+    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'detection_end_time': '-5'},
+     invalid_end_time_error_message),
+    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'detection_end_time': '645.08'},
+     invalid_end_time_error_message),
+    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'detection_end_time': '-325.21'},
+     invalid_end_time_error_message),
+    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'start_time': 'December 2019'},
+     invalid_start_time_error_message),
+    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'start_time': '6'}, invalid_start_time_error_message),
+    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'start_time': '-5'}, invalid_start_time_error_message),
+    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'start_time': '645.08'}, invalid_start_time_error_message),
+    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'start_time': '-325.21'}, invalid_start_time_error_message),
+    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'end_time': 'December 2019'},
+     invalid_end_time_error_message),
+    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'end_time': '6'}, invalid_end_time_error_message),
+    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'end_time': '-5'}, invalid_end_time_error_message),
+    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'end_time': '645.08'}, invalid_end_time_error_message),
+    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'end_time': '-325.21'}, invalid_end_time_error_message),
+    ({'detection_for_all_versions': True}, "If \"detection_for_all_versions\" is true, rule id is required."),
+    ({'list_basis': 'CREATED_TIME'}, "To sort detections by \"list_basis\", either \"start_time\" or \"end_time\" "
+                                     "argument is required.")
+])
+def test_validate_and_parse_list_detections_args(args, error_msg):
     from GoogleChronicleBackstory import validate_and_parse_list_detections_args
 
     with pytest.raises(ValueError) as e:
-        validate_and_parse_list_detections_args(args={'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f',
-                                                      'page_size': 'dummy'})
+        validate_and_parse_list_detections_args(args)
 
-    assert str(e.value) == 'Page size must be a non-zero numeric value'
-
-    with pytest.raises(ValueError) as e:
-        validate_and_parse_list_detections_args(args={'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f',
-                                                      'page_size': '100000'})
-
-    assert str(e.value) == 'Page size should be in the range from 1 to 1000.'
-
-    invalid_start_time_error_message = 'Invalid start time. Some supported formats are ISO date format and relative' \
-                                       ' time. e.g. 2019-10-17T00:00:00Z, 3 days'
-    with pytest.raises(ValueError) as e:
-        validate_and_parse_list_detections_args(args={'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f',
-                                                      'detection_start_time': 'December 2019'})
-
-    assert str(e.value) == invalid_start_time_error_message
-
-    with pytest.raises(ValueError) as e:
-        validate_and_parse_list_detections_args(args={'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f',
-                                                      'detection_start_time': '6'})
-
-    assert str(e.value) == invalid_start_time_error_message
-
-    with pytest.raises(ValueError) as e:
-        validate_and_parse_list_detections_args(args={'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f',
-                                                      'detection_start_time': '-5'})
-
-    assert str(e.value) == invalid_start_time_error_message
-
-    with pytest.raises(ValueError) as e:
-        validate_and_parse_list_detections_args(args={'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f',
-                                                      'detection_start_time': '645.08'})
-
-    assert str(e.value) == invalid_start_time_error_message
-
-    with pytest.raises(ValueError) as e:
-        validate_and_parse_list_detections_args(args={'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f',
-                                                      'detection_start_time': '-325.21'})
-
-    assert str(e.value) == invalid_start_time_error_message
-
-    invalid_end_time_error_message = 'Invalid end time. Some supported formats are ISO date format and relative' \
-                                     ' time. e.g. 2019-10-17T00:00:00Z, 3 days'
-    with pytest.raises(ValueError) as e:
-        validate_and_parse_list_detections_args(args={'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f',
-                                                      'detection_end_time': 'December 2019'})
-
-    assert str(e.value) == invalid_end_time_error_message
-
-    with pytest.raises(ValueError) as e:
-        validate_and_parse_list_detections_args(args={'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f',
-                                                      'detection_end_time': '6'})
-
-    assert str(e.value) == invalid_end_time_error_message
-
-    with pytest.raises(ValueError) as e:
-        validate_and_parse_list_detections_args(args={'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f',
-                                                      'detection_end_time': '-5'})
-
-    assert str(e.value) == invalid_end_time_error_message
-
-    with pytest.raises(ValueError) as e:
-        validate_and_parse_list_detections_args(args={'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f',
-                                                      'detection_end_time': '645.08'})
-
-    assert str(e.value) == invalid_end_time_error_message
-
-    with pytest.raises(ValueError) as e:
-        validate_and_parse_list_detections_args(args={'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f',
-                                                      'detection_end_time': '-325.21'})
-
-    assert str(e.value) == invalid_end_time_error_message
+    assert str(e.value) == error_msg
 
 
 def validate_duplicate_incidents(incidents):
@@ -2979,7 +2955,7 @@ def test_list_rules_command(client):
     with open("./TestData/list_rules_ec.json", "r") as f:
         dummy_ec = json.load(f)
 
-    with open("./TestData/list_rules_hr.txt", "r") as f:
+    with open("./TestData/list_rules_hr.md", "r") as f:
         dummy_hr = f.read()
 
     mock_response = (
