@@ -43,6 +43,11 @@ script:
             requestUrl += '/';
         }
         requestUrl += uri;
+        try {
+            body = JSON.parse(body);
+        } catch (ex) {
+            // do nothing, use the body as is in the request.
+        }
 
         var res = httpMultipart(
             requestUrl,
@@ -54,7 +59,7 @@ script:
                     'Accept': ['application/json']
                 },
             },
-            JSON.parse(body),
+            body,
             params.insecure,
             params.proxy,
             undefined,
