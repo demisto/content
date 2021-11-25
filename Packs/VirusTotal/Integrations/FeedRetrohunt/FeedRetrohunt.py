@@ -27,13 +27,12 @@ class Client(BaseClient):
         """
 
         result = []
-
-        response = self.list_last_job_matches(limit, job_id)
+        jobs = self.list_job_matches(limit, job_id)
 
         try:
-            for indicator in response.get('data', []):
+            for job in jobs:
                 result.append({
-                    'data': indicator,
+                    'data': job,
                     'type': 'file',
                     'FeedURL': self._base_url
                 })
@@ -42,9 +41,9 @@ class Client(BaseClient):
             raise ValueError(f'Could not parse returned data as indicator. \n\nError message: {err}')
         return result
 
-    def list_last_job_matches(
+    def list_job_matches(
             self,
-            limit: Optional[int] = None,
+            limit=40,
             job_id: str = ''
     ) -> dict:
         """ Retrieve matches for a given retrohunt job (latest by default).
@@ -52,22 +51,36 @@ class Client(BaseClient):
         if not job_id:
             jobs = self._http_request(
                 'GET',
-                'intelligence/retrohunt_jobs',
-                params=assign_params(limit=limit)
+                'intelligence/retrohunt_jobs'
             )
             if not jobs.get('data'):
                 return {}
             job_id = jobs.get('data')[0].get('id')
 
-        return self._http_request(
+        response = self._http_request(
             'GET',
             'intelligence/retrohunt_jobs/{}/matching_files'.format(job_id),
-            params=assign_params(limit=limit)
+            params=assign_params(limit=min(limit, 40))
         )
+        matches = response.get('data', [])
+
+        # If response.data length is less than limit and there are more pages,
+        # get the next pages until limit is reached or there are no more pages.
+        cursor = response.get('meta', {}).get('cursor')
+        while(cursor and len(matches) < limit):
+            response = self._http_request(
+                'GET',
+                'intelligence/retrohunt_jobs/{}/matching_files?cursor={}'.format(job_id, cursor),
+                params=assign_params(limit=min(limit, 40), cursor=response.get('meta').get('cursor'))
+            )
+            matches.extend(response.get('data', []))
+            cursor = response.get('meta', {}).get('cursor')
+
+        return matches
 
 
 def test_module(client: Client, args: dict) -> str:
-    client.list_last_job_matches()
+    client.list_job_matches()
     return 'ok'
 
 
