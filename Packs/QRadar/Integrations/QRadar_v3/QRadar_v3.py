@@ -1348,7 +1348,9 @@ def create_search_with_retry(client: Client, fetch_mode: str, offense: Dict, eve
         f'START {offense_start_time}'
     )
     print_debug_msg(f'Trying to get events for offense ID: {offense_id}, '
-                    f'query_expression: {query_expression}.')
+                    f'offense_start_time: {offense_start_time}, '
+                    f'additional_where: {additional_where}, '
+                    f'events_limit: {events_limit}.')
     num_of_failures = 0
     while num_of_failures <= max_retries:
         try:
@@ -1356,8 +1358,10 @@ def create_search_with_retry(client: Client, fetch_mode: str, offense: Dict, eve
                             f'query_expression: {query_expression}.')
             ret_value = client.search_create(query_expression=query_expression)
             print_debug_msg(f'Created search for offense ID: {offense_id}, '
-                            f'query_expression: {query_expression}, '
-                            f'ret_value: {ret_value}.')
+                    f'offense_start_time: {offense_start_time}, '
+                    f'additional_where: {additional_where}, '
+                    f'events_limit: {events_limit}, '
+                    f'ret_value: {ret_value}.')
             return ret_value
         except Exception:
             print_debug_msg(f'Failed to create search for offense ID: {offense_id}. '
