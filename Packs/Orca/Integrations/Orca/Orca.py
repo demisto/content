@@ -8,6 +8,7 @@ from typing import Any, Dict, Union, Optional
 DEMISTO_OCCURRED_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 DEMISTO_INFORMATIONAL = 0.5
 ORCA_API_TIMEOUT = 30  # Increase timeout for ORCA API
+ORCA_HTTP_QUERIES_LIMIT = 50
 
 
 class OrcaClient:
@@ -84,6 +85,7 @@ class OrcaClient:
         params["limit"] = limit
         next_page_token = None
 
+        queries_counter = 0
         while True:
             if next_page_token:
                 params["next_page_token"] = next_page_token
@@ -101,6 +103,10 @@ class OrcaClient:
                 break
             else:
                 next_page_token = response.get("next_page_token")
+
+            if queries_counter > ORCA_HTTP_QUERIES_LIMIT:
+                # Prevent API throttling error
+                break
 
         demisto.info(f"done fetching orca alerts, fetched {len(alerts)} alerts")
 
@@ -256,7 +262,6 @@ def main() -> None:
         max_fetch = int(demisto.params().get('max_fetch'))
         pull_existing_alerts = demisto.params().get('pull_existing_alerts')
         fetch_type = demisto.params().get('fetch_type')
-        limit = int(demisto.params().get('fetch_limit'))
 
         api_url = f"https://{api_host}/api"
 
@@ -282,8 +287,7 @@ def main() -> None:
             asset_unique_id = demisto_args.get('asset_unique_id')
             alerts = orca_client.get_alerts_by_filter(
                 alert_type=alert_type,
-                asset_unique_id=asset_unique_id,
-                limit=limit
+                asset_unique_id=asset_unique_id
             )
             if isinstance(alerts, str):
                 #  this means alert is an error
@@ -306,8 +310,7 @@ def main() -> None:
                 fetch_informational=fetch_informational,
                 pull_existing_alerts=pull_existing_alerts,
                 fetch_type=fetch_type,
-                first_fetch_time=first_fetch_time,
-                limit=limit
+                first_fetch_time=first_fetch_time
             )
 
         elif command == "test-module":
