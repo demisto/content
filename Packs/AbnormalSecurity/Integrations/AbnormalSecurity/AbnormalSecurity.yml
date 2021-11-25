@@ -590,7 +590,7 @@ script:
       - contextPath: AbnormalSecurity.SubmitInquiry.detail
         description: Confirmation of inquiry sent
         type: String
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   isfetch: false
   script: ''
   subtype: python3
