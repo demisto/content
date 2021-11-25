@@ -18,7 +18,14 @@ def filter_OOO_users(get_users_response, ooo_list_name):
     if isError(ooo_list[0]):
         return_error(f'Error occurred while trying to get OOO users: {ooo_list[0].get("Contents")}')
 
+    # Get Away Users
+    away_users_response = demisto.executeCommand("GetAwayUsers", {})
+    if is_error(away_users_response) or not away_users_response:
+        return_error(f'Failed to get away users: {str(get_error(away_users_response))}')
+    away_users: List[Dict] = away_users_response[0]['Contents']
+
     list_info = ooo_list[0].get('EntryContext').get('ShiftManagment.OOOUsers')
+    list_info = list_info + away_users
     OOO_usernames = [i['username'] for i in list_info]
 
     try:
@@ -48,6 +55,7 @@ def main():
 
         if contents == 'No data returned':
             contents = 'On-Call Team members\nNo team members were found on-call.'
+
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['markdown'],
