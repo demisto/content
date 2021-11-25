@@ -7,6 +7,7 @@ from typing import Any, Dict, Union, Optional
 
 DEMISTO_OCCURRED_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 DEMISTO_INFORMATIONAL = 0.5
+ORCA_API_TIMEOUT = 30  # Increase timeout for ORCA API
 
 
 class OrcaClient:
@@ -17,7 +18,7 @@ class OrcaClient:
         demisto.info("validate_api_key, enter")
         invalid_token_string = "Test failed becasue the Orca API key that was entered is invalid, please provide a valid API key"
         try:
-            response = self.client._http_request(method="GET", url_suffix="/user/action?")
+            response = self.client._http_request(method="GET", url_suffix="/user/action?", timeout=ORCA_API_TIMEOUT)
         except Exception:
             return invalid_token_string
 
@@ -49,7 +50,8 @@ class OrcaClient:
 
         params["limit"] = str(limit)
 
-        response = self.client._http_request(method="GET", url_suffix=url_suffix, params=params)
+        response = self.client._http_request(method="GET", url_suffix=url_suffix, params=params,
+                                             timeout=ORCA_API_TIMEOUT)
 
         if response['status'] != 'success':
             demisto.info("bad response from Orca API")
@@ -86,7 +88,8 @@ class OrcaClient:
             if next_page_token:
                 params["next_page_token"] = next_page_token
 
-            response = self.client._http_request(method="GET", url_suffix="/query/alerts", params=params)
+            response = self.client._http_request(method="GET", url_suffix="/query/alerts", params=params,
+                                                 timeout=ORCA_API_TIMEOUT)
             if response['status'] != 'success':
                 demisto.info(f"got bad response, {response['error']}")
                 return response['error']
@@ -106,7 +109,8 @@ class OrcaClient:
     def get_asset(self, asset_unique_id: str) -> Union[Dict[str, Any], str]:  # pylint: disable=E1136
         demisto.debug("get_asset, enter")
         try:
-            response = self.client._http_request(method="GET", url_suffix=f"/assets/{asset_unique_id}")
+            response = self.client._http_request(method="GET", url_suffix=f"/assets/{asset_unique_id}",
+                                                 timeout=ORCA_API_TIMEOUT)
         except DemistoException:
             demisto.debug(f"could not find {asset_unique_id}")
             return {}
@@ -120,7 +124,8 @@ class OrcaClient:
         demisto.info("get_kafka_alerts, enter")
 
         try:
-            response = self.client._http_request(method="GET", url_suffix="/query/alerts/updates")
+            response = self.client._http_request(method="GET", url_suffix="/query/alerts/updates",
+                                                 timeout=ORCA_API_TIMEOUT)
             if response['status'] != 'success':
                 demisto.info(f"got bad response, {response['error']}")
                 return []
