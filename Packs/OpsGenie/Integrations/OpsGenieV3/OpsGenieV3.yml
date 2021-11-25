@@ -119,6 +119,9 @@ script:
       name: alias
       required: false
       secret: false
+    - name: request_id
+      description: Id of request for polling. You don't need to enter here value.
+      required: false
     - default: false
       description: Description field of the alert that is generally used to provide
         a detailed information about the alert.
@@ -271,6 +274,16 @@ script:
       name: query
       required: false
       secret: false
+    - name: request_id
+      description: Id of polling request. You don't need to enter value here.
+      required: false
+    - name: paging
+      description: The next url to request. You don't need to enter value here.
+      required: false
+    - name: result
+      description: result of the previous command. You don't need to enter value here.
+      isArray: true
+      required: false
     deprecated: false
     description: List the current alerts from OpsGenie.
     execution: false
@@ -365,6 +378,9 @@ script:
       name: alert-id
       required: true
       secret: false
+    - name: request_id
+      description: Id of request for polling. You don't need to enter here value.
+      required: false
     deprecated: false
     description: Delete an Alert from OpsGenie
     execution: false
@@ -411,6 +427,9 @@ script:
       name: note
       required: false
       secret: false
+    - name: request_id
+      description: Id of request for polling. You don't need to enter here value.
+      required: false
     deprecated: false
     description: Acknowledge an alert in OpsGenie
     execution: false
@@ -458,6 +477,9 @@ script:
       name: note
       required: false
       secret: false
+    - name: request_id
+      description: Id of request for polling. You don't need to enter here value.
+      required: false
     deprecated: false
     description: Close an alert in OpsGenie
     execution: false
@@ -519,6 +541,9 @@ script:
       name: note
       required: false
       secret: false
+    - name: request_id
+      description: Id of request for polling. You don't need to enter here value.
+      required: false
     deprecated: false
     description: Assign an OpsGenie Alert
     execution: false
@@ -588,6 +613,9 @@ script:
       name: note
       required: false
       secret: false
+    - name: request_id
+      description: Id of request for polling. You don't need to enter here value.
+      required: false
     deprecated: false
     description: Add responder to an OpsGenie Alert
     execution: false
@@ -702,6 +730,9 @@ script:
       name: note
       required: false
       secret: false
+    - name: request_id
+      description: Id of request for polling. You don't need to enter here value.
+      required: false
     deprecated: false
     description: Escalate an OpsGenie Alert
     execution: false
@@ -758,6 +789,9 @@ script:
       name: note
       required: false
       secret: false
+    - name: request_id
+      description: Id of request for polling. You don't need to enter here value.
+      required: false
     deprecated: false
     description: Add tag into OpsGenie Alert
     execution: false
@@ -811,6 +845,9 @@ script:
       name: note
       required: false
       secret: false
+    - name: request_id
+      description: Id of request for polling. You don't need to enter here value.
+      required: false
     deprecated: false
     description: Remove tag from OpsGenie Alert
     execution: false
@@ -1071,6 +1108,9 @@ script:
       required: false
       secret: false
       defaultValue: P3
+    - name: request_id
+      description: Id of request for polling. You don't need to enter here value.
+      required: false
     description: Create an Incident in opsgenie
     deprecated: false
     name: opsgenie-create-incident
@@ -1114,6 +1154,9 @@ script:
       required: false
       secret: false
       defaultValue: '5'
+    - name: request_id
+      description: Id of request for polling. You don't need to enter here value.
+      required: false
     deprecated: false
     description: Delete an incident from OpsGenie
     execution: false
@@ -1144,54 +1187,6 @@ script:
     - contextPath: OpsGenie.DeletedIncident.success
       description: Bool, whether the request was a success
       type: Boolean
-
-  - arguments:
-    - name: request_id
-      description: Id of request
-      required: true
-    - name: request_type_suffix
-      description: request_type_suffix
-      required: true
-    - name: output_prefix
-      description: output_prefix
-      required: true
-    - default: false
-      description: Interval in seconds between each poll.
-      isArray: false
-      name: interval_in_seconds
-      required: false
-      secret: false
-      defaultValue: '5'
-    deprecated: false
-    execution: false
-    hidden: true
-    name: opsgenie-get-polling-result
-    description: Inside command for polling
-    polling: true
-
-  - arguments:
-    - name: request_id
-      description: Id of request
-      required: true
-    - name: request_type_suffix
-      description: request_type_suffix
-      required: true
-    - name: output_prefix
-      description: output_prefix
-      required: true
-    - default: false
-      description: Interval in seconds between each poll.
-      isArray: false
-      name: interval_in_seconds
-      required: false
-      secret: false
-      defaultValue: '5'
-    deprecated: false
-    execution: false
-    hidden: true
-    name: opsgenie-get-polling-paging-result
-    description: Inside command for polling
-    polling: true
 
   - arguments:
     - default: false
@@ -1251,6 +1246,16 @@ script:
       name: query
       required: false
       secret: false
+    - name: request_id
+      description: Id of polling request. You don't need to enter value here.
+      required: false
+    - name: paging
+      description: The next url to request. You don't need to enter value here.
+      required: false
+    - name: result
+      description: result of the previous command. You don't need to enter value here.
+      isArray: true
+      required: false
     deprecated: false
     description: List the current incidents from OpsGenie.
     execution: false
@@ -1320,6 +1325,9 @@ script:
       name: note
       required: false
       secret: false
+    - name: request_id
+      description: Id of request for polling. You don't need to enter here value.
+      required: false
     deprecated: false
     description: Close an incident from OpsGenie
     execution: false
@@ -1371,6 +1379,9 @@ script:
       name: note
       required: false
       secret: false
+    - name: request_id
+      description: Id of request for polling. You don't need to enter here value.
+      required: false
     deprecated: false
     description: Resolve an incident from OpsGenie
     execution: false
@@ -1432,6 +1443,9 @@ script:
       name: note
       required: false
       secret: false
+    - name: request_id
+      description: Id of request for polling. You don't need to enter here value.
+      required: false
     deprecated: false
     description: Add responder to an OpsGenie Incident
     execution: false
@@ -1489,6 +1503,9 @@ script:
       name: note
       required: false
       secret: false
+    - name: request_id
+      description: Id of request for polling. You don't need to enter here value.
+      required: false
     deprecated: false
     description: Add tag into OpsGenie Incident
     execution: false
@@ -1546,6 +1563,9 @@ script:
       name: note
       required: false
       secret: false
+    - name: request_id
+      description: Id of request for polling. You don't need to enter here value.
+      required: false
     deprecated: false
     description: Remove tag from OpsGenie Alert
     execution: false
