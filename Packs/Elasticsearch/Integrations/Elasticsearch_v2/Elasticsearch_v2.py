@@ -674,7 +674,7 @@ def main():
             get_mapping_fields_command()
     except Exception as e:
         if 'The client noticed that the server is not a supported distribution of Elasticsearch' in str(e):
-            return_error('Failed executing {}. Seem that the client does not support the server\'s distribution, '
+            return_error('Failed executing {}. Seems that the client does not support the server\'s distribution, '
                          'Please try using the Open Search client in the instance configuration.'
                          '\nError message: {}'.format(demisto.command(), str(e)), error=e)
         return_error("Failed executing {}.\nError message: {}".format(demisto.command(), str(e)), error=e)
