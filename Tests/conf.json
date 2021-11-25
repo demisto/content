@@ -873,13 +873,6 @@
             "timeout": 2400
         },
         {
-            "integrations": "QRadar_v2",
-            "playbookID": "test playbook - QRadarCorrelations For V2",
-            "timeout": 2600,
-            "fromversion": "6.0.0",
-            "is_mockable": false
-        },
-        {
             "integrations": "Awake Security",
             "playbookID": "awake_security_test_pb"
         },
@@ -2905,6 +2898,12 @@
         {
             "integrations": "QRadar_v2",
             "playbookID": "QRadar Indicator Hunting Test",
+            "timeout": 600,
+            "fromversion": "6.0.0"
+        },
+        {
+            "integrations": "QRadar v3",
+            "playbookID": "QRadar - Get Offense Logs Test",
             "timeout": 600,
             "fromversion": "6.0.0"
         },
