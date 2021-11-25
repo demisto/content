@@ -2300,7 +2300,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Number of results to display. Default value is 50.
+      description: Number of results to display.
+      defaultValue: '50'
       isArray: false
       name: limit
       required: false
@@ -2350,7 +2351,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Number of results to display. Default value is 50.
+      description: Number of results to display.
+      defaultValue: '50'
       isArray: false
       name: limit
       required: false
@@ -2403,7 +2405,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Number of results to display. Default value is 50.
+      description: Number of results to display.
+      defaultValue: '50'
       isArray: false
       name: limit
       required: false
