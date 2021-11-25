@@ -468,7 +468,7 @@ def calculate_total_request_timeout(server_timeout: int) -> int:
 
 def validate_list_command_arguments(page: int, page_size: int, limit: int) -> None:
     """
-    Validation of page and limit arguments in list commands.
+    Validation of page number, page size and limit arguments in list commands.
 
     Args:
         page (int): The page number.
