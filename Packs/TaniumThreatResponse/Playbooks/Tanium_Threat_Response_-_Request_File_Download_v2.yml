@@ -19,24 +19,24 @@ inputs:
   required: false
   value: {}
 - description: |
-    Client id. Use `tanium-tr-get-system-status` to get all possible client_ids.
+    The client ID. Use tanium-tr-get-system-status to get all possible client_ids.
   key: client-id
   playbookInputQuery:
   required: true
   value: {}
-- description: Hostname of the computer to connect. Use `tanium-tr-get-system-status`
+- description: The hostname of the computer to connect. Use tanium-tr-get-system-status
     to get all possible hostnames.
   key: hostname
   playbookInputQuery:
   required: true
   value: {}
-- description: IP address to connect. Use `tanium-tr-get-system-status` to get all
-    possible ips.
+- description: The IP address to connect. Use tanium-tr-get-system-status to get all
+    possible IPs.
   key: ip
   playbookInputQuery:
   required: true
   value: {}
-- description: Computers platform - "Windows", "Linux", etc.
+- description: The computer platform, for example "Windows" or "Linux".
   key: platform
   playbookInputQuery:
   required: true
