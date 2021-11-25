@@ -67,7 +67,7 @@ class Client(BaseClient):
     def get_paged(self, args: dict):
         data = self._http_request(
             method='GET',
-            url_suffix=args.get("paging")
+            full_url=args.get('paging')
         )
         return data
 
@@ -98,6 +98,7 @@ class Client(BaseClient):
         return response  # type: ignore
 
     def create_alert(self, args: dict):
+        args['responders'] = argToList(args.get('responders'))
         args.update(Client.responders_to_json(args.get('responders', []), "responders"))
         return self._http_request(method='POST',
                                   url_suffix=f"/v2/{ALERTS_SUFFIX}",
@@ -109,26 +110,12 @@ class Client(BaseClient):
                                   )
 
     def list_alerts(self, args: dict):
-        if args.get("query"):
-            query = args.get("query")
-        else:
-            query = ""
-            status = args.get("status", ALL_TYPE)
-            if status != ALL_TYPE:
-                query = f'status={status.lower()}'
-            priority = args.get("priority", ALL_TYPE)
-            if priority != ALL_TYPE:
-                query += ' AND ' if query else ''
-                query += f'priority={priority}'
-            tags = args.get("tags", [])
-            if tags:
-                query += ' AND ' if query else ''
-                query += f'tag={tags}'
+        args['tags'] = argToList(args.get('tags'))
         params = {
             "sort": args.get("sort"),
             "limit": args.get("limit"),
             "offset": args.get("offset"),
-            "query": query
+            "query": Client.build_query(args)
         }
         return self._http_request(method='GET',
                                   url_suffix=f"/v2/{ALERTS_SUFFIX}",
@@ -159,6 +146,7 @@ class Client(BaseClient):
     def add_responder_alert(self, args: dict):
         alert_id = args.get('alert-id')
         identifier = args.get('identifierType', 'id')
+        args['responders'] = argToList(args.get('responders'))
         args.update(Client.responders_to_json(responders=args.get('responders', []),
                                               responder_key="responder",
                                               one_is_dict=True))
@@ -188,11 +176,13 @@ class Client(BaseClient):
                                   json_data=args)
 
     def add_alert_tag(self, args: dict):
+        args['tags'] = argToList(args.get('tags'))
         return self._http_request(method='POST',
                                   url_suffix=f"/v2/{ALERTS_SUFFIX}/{args.get('alert-id')}/tags",
                                   json_data=args)
 
     def remove_alert_tag(self, args: dict):
+        args['tags'] = argToList(args.get('tags'))
         return self._http_request(method='DELETE',
                                   url_suffix=f"/v2/{ALERTS_SUFFIX}/{args.get('alert-id')}/tags",
                                   params={"tags": args.get('tags')},
@@ -248,6 +238,7 @@ class Client(BaseClient):
                                   )
 
     def create_incident(self, args: dict):
+        args['responders'] = argToList(args.get('responders'))
         args.update(Client.responders_to_json(args.get('responders', []), "responders"))
         return self._http_request(method='POST',
                                   url_suffix=f"/v1/{INCIDENTS_SUFFIX}/create",
@@ -263,11 +254,13 @@ class Client(BaseClient):
                                   url_suffix=f"/v1/{INCIDENTS_SUFFIX}/{args.get('incident_id')}",
                                   )
 
-    def list_incidents(self, args: dict):
-        if args.get("query"):
-            query = args.get("query")
-        else:
-            query = ""
+    @staticmethod
+    def build_query(args: dict) -> str:
+        query = ""
+        if args.get("query", ""):
+            query = args.get("query", "")
+        if args.get("is_fetch_query", False) or not args.get("query", ""):
+            query += ' AND ' if query else ''
             status = args.get("status", ALL_TYPE)
             if status != ALL_TYPE:
                 query = f'status={status.lower()}'
@@ -279,11 +272,14 @@ class Client(BaseClient):
             if tags:
                 query += ' AND ' if query else ''
                 query += f'tag={tags}'
+        return query
 
+    def list_incidents(self, args: dict):
+        args['tags'] = argToList(args.get('tags'))
         params = {
             "limit": args.get("limit"),
             "offset": args.get("offset"),
-            "query": query
+            "query": Client.build_query(args)
         }
         return self._http_request(method='GET',
                                   url_suffix=f"/v1/{INCIDENTS_SUFFIX}",
@@ -303,6 +299,7 @@ class Client(BaseClient):
                                   json_data=args)
 
     def add_responder_incident(self, args: dict):
+        args['responders'] = argToList(args.get('responders'))
         args.update(Client.responders_to_json(args.get('responders', []), "responder"))
         return self._http_request(method='POST',
                                   url_suffix=f"/v1/{INCIDENTS_SUFFIX}/"
@@ -310,12 +307,14 @@ class Client(BaseClient):
                                   json_data=args)
 
     def add_tag_incident(self, args: dict):
+        args['tags'] = argToList(args.get('tags'))
         return self._http_request(method='POST',
                                   url_suffix=f"/v1/{INCIDENTS_SUFFIX}/"
                                              f"{args.get('incident_id')}/tags",
                                   json_data=args)
 
     def remove_tag_incident(self, args: dict):
+        args['tags'] = argToList(args.get('tags'))
         return self._http_request(method='DELETE',
                                   url_suffix=f"/v1/{INCIDENTS_SUFFIX}/"
                                              f"{args.get('incident_id')}/tags",
@@ -336,46 +335,16 @@ class Client(BaseClient):
 ''' COMMAND FUNCTIONS '''
 
 
-def get_polling_result(client: Client, args: dict) -> CommandResults:
-    polling_result = run_polling_command(args=args,
-                                         cmd='opsgenie-get-polling-result',
-                                         results_function=client.get_request)
-    if isinstance(polling_result, CommandResults):
-        return polling_result
-    command_result = CommandResults(
-        outputs_prefix=args.get("output_prefix", "OpsGenie"),
-        outputs=polling_result.get("data"),
-        readable_output=tableToMarkdown("OpsGenie", polling_result.get('data')),
-        raw_response=polling_result
-    )
-    return command_result
-
-
-def get_polling_paging_result(client: Client, args: dict) -> CommandResults:
-    polling_result = run_polling_command(args=args,
-                                         cmd='opsgenie-get-polling-paging-result',
-                                         results_function=client.get_paged)
-    if isinstance(polling_result, CommandResults):
-        return polling_result
-    command_result = CommandResults(
-        outputs_prefix=args.get("output_prefix", "OpsGenie"),
-        outputs=polling_result.get("data"),
-        readable_output=tableToMarkdown("OpsGenie", polling_result.get('data')),
-        raw_response=polling_result
-    )
-    return command_result
-
-
 def run_polling_command(args: dict, cmd: str, results_function: Callable,
-                        action_function: Optional[Callable] = None) -> Union[Dict, CommandResults]:
+                        action_function: Optional[Callable] = None) -> CommandResults:
 
     ScheduledCommand.raise_error_if_not_supported()
 
     if "request_id" not in args and action_function:
-        command_results = action_function(args)
-        request_id = command_results.get("requestId")
+        results = action_function(args)
+        request_id = results.get("requestId")
         if not request_id:
-            raise ConnectionError(f"Failed to send request - {command_results}")
+            raise ConnectionError(f"Failed to send request - {results}")
         args['request_id'] = request_id
         polling_args = {
             'polling': True,
@@ -417,11 +386,16 @@ def run_polling_command(args: dict, cmd: str, results_function: Callable,
                                          outputs={"requestId": args.get("request_id")}
                                          )
         return command_results
-    return results
+    return CommandResults(
+        outputs_prefix=args.get("output_prefix", "OpsGenie"),
+        outputs=results.get("data"),
+        readable_output=tableToMarkdown("OpsGenie", results.get('data')),
+        raw_response=results
+    )
 
 
 def run_polling_paging_command(args: dict, cmd: str, results_function: Callable,
-                               action_function: Optional[Callable] = None):
+                               action_function: Optional[Callable] = None) -> CommandResults:
 
     ScheduledCommand.raise_error_if_not_supported()
 
@@ -431,21 +405,26 @@ def run_polling_paging_command(args: dict, cmd: str, results_function: Callable,
 
     if "request_id" not in args and action_function:
         # starting new flow
-        command_results = action_function(args)
-        request_id = command_results.get("requestId")
+        results = action_function(args)
+        request_id = results.get("requestId")
         if not request_id:
-            raise ConnectionError(f"Failed to send request - {command_results}")
-        next_paging = command_results.get("paging", {}).get("next")
-        result = result + command_results.get("data")
+            raise ConnectionError(f"Failed to send request - {results}")
+        next_paging = results.get("paging", {}).get("next")
+        result = result + results.get("data")
         if not next_paging or len(result) >= limit:
             # If not a paged request, simply return
-            return command_results
+            return CommandResults(
+                outputs_prefix=args.get("output_prefix", "OpsGenie"),
+                outputs=results.get("data"),
+                readable_output=tableToMarkdown("OpsGenie", results.get('data')),
+                raw_response=results
+            )
         else:
             # If a paged request, return scheduled_command
+            args['request_id'] = request_id
+            args['result'] = result
+            args['paging'] = next_paging
             polling_args = {
-                'request_id': request_id,
-                'paging': next_paging,
-                'result': result,
                 'interval_in_seconds': interval_in_secs,
                 'polling': True,
                 **args
@@ -456,8 +435,10 @@ def run_polling_paging_command(args: dict, cmd: str, results_function: Callable,
                 args=polling_args,
                 timeout_in_seconds=int(args.get('timeout_in_seconds', 60)),
             )
-            command_results = CommandResults(scheduled_command=scheduled_command)
-            return command_results
+            return CommandResults(scheduled_command=scheduled_command,
+                                  readable_output=f"Waiting for request_id={request_id}",
+                                  outputs_prefix=args.get("output_prefix", "OpsGenie"),
+                                  outputs={"requestId": request_id})
 
     results = results_function(args)
     result = result + results.get("data")
@@ -465,7 +446,12 @@ def run_polling_paging_command(args: dict, cmd: str, results_function: Callable,
     next_paging = results.get("paging", {}).get("next")
     if not next_paging or len(result) >= limit:
         # If not a paged request, simply return
-        return results
+        return CommandResults(
+            outputs_prefix=args.get("output_prefix", "OpsGenie"),
+            outputs=results.get("data"),
+            readable_output=tableToMarkdown("OpsGenie", results.get('data')),
+            raw_response=results
+        )
 
     if len(result) < limit:
         # schedule next poll
@@ -473,8 +459,6 @@ def run_polling_paging_command(args: dict, cmd: str, results_function: Callable,
         args['result'] = result
         args['paging'] = next_paging
         polling_args = {
-            'request_id': results.get('request_id'),
-            'paging': next_paging,
             'interval_in_seconds': interval_in_secs,
             'polling': True,
             **args
@@ -487,12 +471,15 @@ def run_polling_paging_command(args: dict, cmd: str, results_function: Callable,
         )
         # result with scheduled_command only - no update to the war room
         command_results = CommandResults(scheduled_command=scheduled_command,
+                                         readable_output=f"Waiting for request_id={args.get('request_id')}",
                                          outputs_prefix=args.get("output_prefix", "OpsGenie"),
-                                         outputs={"requestId": args.get("request_id")},
-                                         readable_output="Waiting for the polling answer come back",
-                                         )
+                                         outputs={"requestId": args.get('request_id')})
         return command_results
-    return results
+    return CommandResults(outputs_prefix=args.get("output_prefix", "OpsGenie"),
+                          outputs=results.get("data"),
+                          readable_output=tableToMarkdown("OpsGenie", results.get('data')),
+                          raw_response=results
+                          )
 
 
 def test_module(client: Client) -> str:
@@ -506,14 +493,13 @@ def test_module(client: Client) -> str:
 
 
 def create_alert(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandResults]:
-    args['responders'] = argToList(args.get('responders'))
     polling_args = {
         'request_type_suffix': ALERTS_SUFFIX,
         'output_prefix': 'OpsGenie.Alert',
         **args
     }
     polling_result = run_polling_command(args=polling_args,
-                                         cmd='opsgenie-get-polling-result',
+                                         cmd='opsgenie-create-alert',
                                          action_function=client.create_alert,
                                          results_function=client.get_request)
     return polling_result
@@ -533,20 +519,18 @@ def get_alerts(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def list_alerts(client: Client, args: Dict[str, Any]) -> CommandResults:
-    args['tags'] = argToList(args.get('tags'))
     polling_args = {
         'url_suffix': f"/v2/{ALERTS_SUFFIX}",
         'output_prefix': 'OpsGenie.Alert',
+        'request_type_suffix': ALERTS_SUFFIX,
         **args
     }
     polling_result = run_polling_paging_command(args=polling_args,
-                                                cmd='opsgenie-get-polling-paging-result',
+                                                cmd='opsgenie-get-alerts',
                                                 action_function=client.list_alerts,
                                                 results_function=client.get_paged)
-    if isinstance(polling_result, CommandResults):
-        return polling_result
-    if len(polling_result['data']) > 0:
-        for result in polling_result['data']:
+    if isinstance(polling_result.outputs, list) and not polling_result.scheduled_command:
+        for result in polling_result.outputs:
             result['event_type'] = ALERT_TYPE
     return polling_result
 
@@ -558,7 +542,7 @@ def delete_alert(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandRes
         **args
     }
     polling_result = run_polling_command(args=polling_args,
-                                         cmd='opsgenie-get-polling-result',
+                                         cmd='opsgenie-delete-alert',
                                          action_function=client.delete_alert,
                                          results_function=client.get_request)
     return polling_result
@@ -571,7 +555,7 @@ def ack_alert(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandResult
         **args
     }
     polling_result = run_polling_command(args=polling_args,
-                                         cmd='opsgenie-get-polling-result',
+                                         cmd='opsgenie-ack-alert',
                                          action_function=client.ack_alert,
                                          results_function=client.get_request)
     return polling_result
@@ -584,7 +568,7 @@ def close_alert(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandResu
         **args
     }
     polling_result = run_polling_command(args=polling_args,
-                                         cmd='opsgenie-get-polling-result',
+                                         cmd='opsgenie-close-alert',
                                          action_function=client.close_alert,
                                          results_function=client.get_request)
     return polling_result
@@ -604,21 +588,20 @@ def assign_alert(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandRes
         **args
     }
     polling_result = run_polling_command(args=polling_args,
-                                         cmd='opsgenie-get-polling-result',
+                                         cmd='opsgenie-assign-alert',
                                          action_function=client.assign_alert,
                                          results_function=client.get_request)
     return polling_result
 
 
 def add_responder_alert(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandResults]:
-    args['responders'] = argToList(args.get('responders'))
     polling_args = {
         'request_type_suffix': ALERTS_SUFFIX,
         'output_prefix': 'OpsGenie.AddResponderAlert',
         **args
     }
     polling_result = run_polling_command(args=polling_args,
-                                         cmd='opsgenie-get-polling-result',
+                                         cmd='opsgenie-add-responder-alert',
                                          action_function=client.add_responder_alert,
                                          results_function=client.get_request)
     return polling_result
@@ -649,35 +632,33 @@ def escalate_alert(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandR
         **args
     }
     polling_result = run_polling_command(args=polling_args,
-                                         cmd='opsgenie-get-polling-result',
+                                         cmd='opsgenie-escalate-alert',
                                          action_function=client.escalate_alert,
                                          results_function=client.get_request)
     return polling_result
 
 
 def add_alert_tag(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandResults]:
-    args['tags'] = argToList(args.get('tags'))
     polling_args = {
         'request_type_suffix': ALERTS_SUFFIX,
         'output_prefix': 'OpsGenie.AddTagAlert',
         **args
     }
     polling_result = run_polling_command(args=polling_args,
-                                         cmd='opsgenie-get-polling-result',
+                                         cmd='opsgenie-add-alert-tag',
                                          action_function=client.add_alert_tag,
                                          results_function=client.get_request)
     return polling_result
 
 
 def remove_alert_tag(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandResults]:
-    args['tags'] = argToList(args.get('tags'))
     polling_args = {
         'request_type_suffix': ALERTS_SUFFIX,
         'output_prefix': 'OpsGenie.RemoveTagAlert',
         **args
     }
     polling_result = run_polling_command(args=polling_args,
-                                         cmd='opsgenie-get-polling-result',
+                                         cmd='opsgenie-remove-alert-tag',
                                          action_function=client.remove_alert_tag,
                                          results_function=client.get_request)
     return polling_result
@@ -743,14 +724,13 @@ def get_on_call(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def create_incident(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandResults]:
-    args['responders'] = argToList(args.get('responders'))
     polling_args = {
         'request_type_suffix': INCIDENTS_SUFFIX,
         'output_prefix': 'OpsGenie.Incident',
         **args
     }
     polling_result = run_polling_command(args=polling_args,
-                                         cmd='opsgenie-get-polling-result',
+                                         cmd='opsgenie-create-incident',
                                          action_function=client.create_incident,
                                          results_function=client.get_request)
     return polling_result
@@ -763,7 +743,7 @@ def delete_incident(client: Client, args: Dict[str, Any]) -> Union[Dict, Command
         **args
     }
     polling_result = run_polling_command(args=polling_args,
-                                         cmd='opsgenie-get-polling-result',
+                                         cmd='opsgenie-delete-incident',
                                          action_function=client.delete_incident,
                                          results_function=client.get_request)
     return polling_result
@@ -783,20 +763,17 @@ def get_incidents(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def list_incidents(client: Client, args: Dict[str, Any]) -> CommandResults:
-    args['tags'] = argToList(args.get('tags'))
     polling_args = {
         'url_suffix': f"/v1/{INCIDENTS_SUFFIX}",
         'output_prefix': 'OpsGenie.Incident',
         **args
     }
     polling_result = run_polling_paging_command(args=polling_args,
-                                                cmd='opsgenie-get-polling-paging-result',
+                                                cmd='opsgenie-get-incidents',
                                                 action_function=client.list_incidents,
                                                 results_function=client.get_paged)
-    if isinstance(polling_result, CommandResults):
-        return polling_result
-    if len(polling_result['data']) > 0:
-        for result in polling_result['data']:
+    if isinstance(polling_result.outputs, list) and not polling_result.scheduled_command:
+        for result in polling_result.outputs:
             result['event_type'] = INCIDENT_TYPE
     return polling_result
 
@@ -808,7 +785,7 @@ def close_incident(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandR
         **args
     }
     polling_result = run_polling_command(args=polling_args,
-                                         cmd='opsgenie-get-polling-result',
+                                         cmd='opsgenie-close-incident',
                                          action_function=client.close_incident,
                                          results_function=client.get_request)
     return polling_result
@@ -821,49 +798,46 @@ def resolve_incident(client: Client, args: Dict[str, Any]) -> Union[Dict, Comman
         **args
     }
     polling_result = run_polling_command(args=polling_args,
-                                         cmd='opsgenie-get-polling-result',
+                                         cmd='opsgenie-resolve-incident',
                                          action_function=client.resolve_incident,
                                          results_function=client.get_request)
     return polling_result
 
 
 def add_responder_incident(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandResults]:
-    args['responders'] = argToList(args.get('responders'))
     polling_args = {
         'request_type_suffix': INCIDENTS_SUFFIX,
         'output_prefix': 'OpsGenie.AddResponderIncident',
         **args
     }
     polling_result = run_polling_command(args=polling_args,
-                                         cmd='opsgenie-get-polling-result',
+                                         cmd='opsgenie-add-responder-incident',
                                          action_function=client.add_responder_incident,
                                          results_function=client.get_request)
     return polling_result
 
 
 def add_tag_incident(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandResults]:
-    args['tags'] = argToList(args.get('tags'))
     polling_args = {
         'request_type_suffix': INCIDENTS_SUFFIX,
         'output_prefix': 'OpsGenie.AddTagIncident',
         **args
     }
     polling_result = run_polling_command(args=polling_args,
-                                         cmd='opsgenie-get-polling-result',
+                                         cmd='opsgenie-add-tag-incident',
                                          action_function=client.add_tag_incident,
                                          results_function=client.get_request)
     return polling_result
 
 
 def remove_tag_incident(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandResults]:
-    args['tags'] = argToList(args.get('tags'))
     polling_args = {
         'request_type_suffix': INCIDENTS_SUFFIX,
         'output_prefix': 'OpsGenie.RemoveTagIncident',
         **args
     }
     polling_result = run_polling_command(args=polling_args,
-                                         cmd='opsgenie-get-polling-result',
+                                         cmd='opsgenie-remove-tag-incident',
                                          action_function=client.remove_tag_incident,
                                          results_function=client.get_request)
     return polling_result
@@ -897,11 +871,16 @@ def fetch_incidents_by_type(client: Client,
     time_query = f'createdAt>={timestamp_last_run} AND createdAt<{timestamp_now}'
     params['query'] = f'{query} AND {time_query}' if query else f'{time_query}'
     params['limit'] = limit
+    params['is_fetch_query'] = True if params.get('query') else False
 
-    raw_response = incident_fetching_func(client, params).get('data')
+    raw_response = incident_fetching_func(client, params)
+    if isinstance(raw_response, CommandResults):
+        return raw_response
+    else:
+        data = raw_response.get('data')
     incidents = []
-    if raw_response:
-        for event in raw_response:
+    if data:
+        for event in data:
             incidents.append({
                 'name': event.get('message'),
                 'occurred': event.get('createdAt'),
@@ -983,8 +962,6 @@ def main() -> None:
             'opsgenie-add-tag-incident': add_tag_incident,
             'opsgenie-remove-tag-incident': remove_tag_incident,
             'opsgenie-get-teams': get_teams,
-            'opsgenie-get-polling-result': get_polling_result,
-            'opsgenie-get-polling-paging-result': get_polling_paging_result,
         }
         command = demisto.command()
         if command == 'test-module':
