@@ -41,7 +41,7 @@ configuration:
   type: 0
 - additionalinfo: The initial offset to start fetching from, not including the value
     set (e.g. if 3 is set, the first event that will be fetched will be with offset
-    4).
+    4). If you want to start from the earliest or latest, type in 'earliest' or 'latest' accordingly.
   display: Offset to fetch messages from (Exclusive)
   name: first_fetch
   required: false
@@ -117,7 +117,7 @@ script:
     - default: false
       description: Message partition (number)
       isArray: false
-      name: partition
+      name: partitioning_key
       required: false
       secret: false
     deprecated: false
@@ -141,7 +141,7 @@ script:
     - default: false
       description: Partition (number)
       isArray: false
-      name: partitioning_key
+      name: partition
       required: false
       secret: false
     deprecated: false
