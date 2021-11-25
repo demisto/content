@@ -30,7 +30,7 @@ configuration:
 - display: Client certificate key password (if required)
   name: additional_password
   required: false
-  type: 4
+  type: 9
 - display: Topic to fetch incidents from (Required for fetch incidents)
   name: topic
   required: false
