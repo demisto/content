@@ -1,10 +1,10 @@
 # type: ignore
 # Disable insecure warnings
 from CommonServerPython import *
-
 ''' IMPORTS '''
 import uuid
 from typing import Dict, List
+from decimal import Decimal
 import requests
 from azure.kusto.data.response import KustoResponseDataSet, KustoResponseDataSetV1
 from datetime import datetime
@@ -88,7 +88,7 @@ class DataExplorerClient:
         return res_json
 
     def search_query_execute_request(self, database_name: str, query: str,
-                                     server_timeout: int, client_activity_id: str) -> Dict[str, Any]:
+                                     server_timeout: Decimal, client_activity_id: str) -> Dict[str, Any]:
         """
             Execute a KQL query against the given database inside the specified cluster.
             The query's client activity ID is a combination of the user's
@@ -101,7 +101,6 @@ class DataExplorerClient:
         Returns:
             Dict[str,Any]: API response from Azure.
         """
-
         data = retrieve_common_request_body(database_name, query, {
             "Options": {
                 "servertimeout": f"{server_timeout}m"
@@ -199,7 +198,7 @@ def search_query_execute_command(client: DataExplorerClient, args: Dict[str, Any
     """
     query = str(args['query'])
     database_name = str(args['database_name'])
-    timeout = arg_to_number(args.get('timeout', '5'))
+    timeout = Decimal(args.get('timeout', '5'))
     if timeout < 0 or timeout > 60:
         raise ValueError("Timeout argument should be a float number between 0 to 60.")
 
@@ -321,6 +320,7 @@ def retrieve_command_results_of_list_commands(response: Dict[str, Any], base_hea
         response (Dict[str,Any]): API response from Azure.
         base_header: (str) Header prefix in the readable output.
         page (int): Page number.
+        page_size (int): Page size.
         limit (int): Page size.
         outputs_prefix (str): Command context outputs prefix.
     Returns:
@@ -447,11 +447,10 @@ def retrieve_common_request_body(database_name: str, query: str,
     }
     if properties:
         data['properties'] = properties
-
     return data
 
 
-def calculate_total_request_timeout(server_timeout: int) -> int:
+def calculate_total_request_timeout(server_timeout: Decimal) -> int:
     """
     Calculates the total timeout duration of a request.
     Takes into consideration the timeout duration on server side.
@@ -462,7 +461,7 @@ def calculate_total_request_timeout(server_timeout: int) -> int:
     Returns:
         int: Total timeout duration of a request.
     """
-    server_timeout_in_seconds = server_timeout * 60
+    server_timeout_in_seconds = int(server_timeout * 60)
     return server_timeout_in_seconds + REQUEST_BASE_TIMEOUT
 
 
