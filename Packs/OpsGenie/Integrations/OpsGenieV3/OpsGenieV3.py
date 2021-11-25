@@ -492,7 +492,7 @@ def test_module(client: Client) -> str:
     return 'Failed.'
 
 
-def create_alert(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandResults]:
+def create_alert(client: Client, args: Dict[str, Any]) -> CommandResults:
     polling_args = {
         'request_type_suffix': ALERTS_SUFFIX,
         'output_prefix': 'OpsGenie.Alert',
@@ -535,7 +535,7 @@ def list_alerts(client: Client, args: Dict[str, Any]) -> CommandResults:
     return polling_result
 
 
-def delete_alert(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandResults]:
+def delete_alert(client: Client, args: Dict[str, Any]) -> CommandResults:
     polling_args = {
         'request_type_suffix': ALERTS_SUFFIX,
         'output_prefix': 'OpsGenie.DeletedAlert',
@@ -548,7 +548,7 @@ def delete_alert(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandRes
     return polling_result
 
 
-def ack_alert(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandResults]:
+def ack_alert(client: Client, args: Dict[str, Any]) -> CommandResults:
     polling_args = {
         'request_type_suffix': ALERTS_SUFFIX,
         'output_prefix': 'OpsGenie.AckedAlert',
@@ -561,7 +561,7 @@ def ack_alert(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandResult
     return polling_result
 
 
-def close_alert(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandResults]:
+def close_alert(client: Client, args: Dict[str, Any]) -> CommandResults:
     polling_args = {
         'request_type_suffix': ALERTS_SUFFIX,
         'output_prefix': 'OpsGenie.ClosedAlert',
@@ -574,7 +574,7 @@ def close_alert(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandResu
     return polling_result
 
 
-def assign_alert(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandResults]:
+def assign_alert(client: Client, args: Dict[str, Any]) -> CommandResults:
     if args.get("owner_id"):
         owner = {"id": args.get("owner_id")}
     elif args.get("owner_username"):
@@ -594,7 +594,7 @@ def assign_alert(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandRes
     return polling_result
 
 
-def add_responder_alert(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandResults]:
+def add_responder_alert(client: Client, args: Dict[str, Any]) -> CommandResults:
     polling_args = {
         'request_type_suffix': ALERTS_SUFFIX,
         'output_prefix': 'OpsGenie.AddResponderAlert',
@@ -618,7 +618,7 @@ def get_escalations(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def escalate_alert(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandResults]:
+def escalate_alert(client: Client, args: Dict[str, Any]) -> CommandResults:
     if args.get("escalation_id"):
         escalation = {"id": args.get("escalation_id")}
     elif args.get("escalation_name"):
@@ -638,7 +638,7 @@ def escalate_alert(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandR
     return polling_result
 
 
-def add_alert_tag(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandResults]:
+def add_alert_tag(client: Client, args: Dict[str, Any]) -> CommandResults:
     polling_args = {
         'request_type_suffix': ALERTS_SUFFIX,
         'output_prefix': 'OpsGenie.AddTagAlert',
@@ -651,7 +651,7 @@ def add_alert_tag(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandRe
     return polling_result
 
 
-def remove_alert_tag(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandResults]:
+def remove_alert_tag(client: Client, args: Dict[str, Any]) -> CommandResults:
     polling_args = {
         'request_type_suffix': ALERTS_SUFFIX,
         'output_prefix': 'OpsGenie.RemoveTagAlert',
@@ -723,7 +723,7 @@ def get_on_call(client: Client, args: Dict[str, Any]) -> CommandResults:
     return command_result
 
 
-def create_incident(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandResults]:
+def create_incident(client: Client, args: Dict[str, Any]) -> CommandResults:
     polling_args = {
         'request_type_suffix': INCIDENTS_SUFFIX,
         'output_prefix': 'OpsGenie.Incident',
@@ -736,7 +736,7 @@ def create_incident(client: Client, args: Dict[str, Any]) -> Union[Dict, Command
     return polling_result
 
 
-def delete_incident(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandResults]:
+def delete_incident(client: Client, args: Dict[str, Any]) -> CommandResults:
     polling_args = {
         'request_type_suffix': INCIDENTS_SUFFIX,
         'output_prefix': 'OpsGenie.DeletedIncident',
@@ -778,7 +778,7 @@ def list_incidents(client: Client, args: Dict[str, Any]) -> CommandResults:
     return polling_result
 
 
-def close_incident(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandResults]:
+def close_incident(client: Client, args: Dict[str, Any]) -> CommandResults:
     polling_args = {
         'request_type_suffix': INCIDENTS_SUFFIX,
         'output_prefix': 'OpsGenie.ClosedIncident',
@@ -791,7 +791,7 @@ def close_incident(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandR
     return polling_result
 
 
-def resolve_incident(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandResults]:
+def resolve_incident(client: Client, args: Dict[str, Any]) -> CommandResults:
     polling_args = {
         'request_type_suffix': INCIDENTS_SUFFIX,
         'output_prefix': 'OpsGenie.ResolvedIncident',
@@ -804,7 +804,7 @@ def resolve_incident(client: Client, args: Dict[str, Any]) -> Union[Dict, Comman
     return polling_result
 
 
-def add_responder_incident(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandResults]:
+def add_responder_incident(client: Client, args: Dict[str, Any]) -> CommandResults:
     polling_args = {
         'request_type_suffix': INCIDENTS_SUFFIX,
         'output_prefix': 'OpsGenie.AddResponderIncident',
@@ -817,7 +817,7 @@ def add_responder_incident(client: Client, args: Dict[str, Any]) -> Union[Dict, 
     return polling_result
 
 
-def add_tag_incident(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandResults]:
+def add_tag_incident(client: Client, args: Dict[str, Any]) -> CommandResults:
     polling_args = {
         'request_type_suffix': INCIDENTS_SUFFIX,
         'output_prefix': 'OpsGenie.AddTagIncident',
@@ -830,7 +830,7 @@ def add_tag_incident(client: Client, args: Dict[str, Any]) -> Union[Dict, Comman
     return polling_result
 
 
-def remove_tag_incident(client: Client, args: Dict[str, Any]) -> Union[Dict, CommandResults]:
+def remove_tag_incident(client: Client, args: Dict[str, Any]) -> CommandResults:
     polling_args = {
         'request_type_suffix': INCIDENTS_SUFFIX,
         'output_prefix': 'OpsGenie.RemoveTagIncident',
@@ -904,9 +904,9 @@ def fetch_incidents_command(client: Client,
     Returns:
         incidents, new last_run
     """
-    demisto.debug(f"Got incidentType={params.get('event_types')}")
+    # demisto.debug(f"Got incidentType={params.get('event_types')}")
     event_type = params.get('event_types', [ALL_TYPE])
-    demisto.debug(f"Got event_type={event_type}")
+    # demisto.debug(f"Got event_type={event_type}")
     now = datetime.utcnow()
     incidents = []
     alerts = []
