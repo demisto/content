@@ -1415,7 +1415,7 @@ script:
       secret: false
     - default: false
       description: Additional fields to present in the War Room entry and incident
-        context.
+        context. Can be nested (in the form of field1.field2).
       isArray: true
       name: additional_fields
       required: false
@@ -2407,7 +2407,7 @@ script:
       is used as part of a Mirroring feature, which is available from version 6.1.
     execution: false
     name: get-modified-remote-data
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   feed: false
   isfetch: true
   longRunning: false
