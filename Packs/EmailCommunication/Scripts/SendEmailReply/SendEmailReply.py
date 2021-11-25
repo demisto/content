@@ -185,10 +185,10 @@ def get_reply_body(notes, incident_id, attachments):
 def get_email_recipients(email_to, email_from, service_mail, mailbox):
     """Get the email recipient.
     Args:
-        mailbox (str): The mailbox configured in the relevant integration
         email_to (str): The email receiver.
         email_from (str): The email's sender.
         service_mail (str): The mail listener.
+        mailbox (str): The mailbox configured in the relevant integration.
     Returns:
         The email recipients.
     """
@@ -212,7 +212,7 @@ def get_email_recipients(email_to, email_from, service_mail, mailbox):
 
 def get_mailbox_from_incident_labels(labels):
     """
-    Gets the mailbox param from the incident labels.
+    Gets the mailbox from which the incident was fetched from the incident labels.
     Args:
         labels (list): th incident labels.
     Returns:
