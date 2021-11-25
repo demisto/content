@@ -47,6 +47,7 @@ tasks:
       id: 6830f039-0a55-4a81-8de1-f67410c84481
       iscommand: false
       name: ""
+      description: ""
       version: -1
     taskid: 6830f039-0a55-4a81-8de1-f67410c84481
     timertriggers: []
@@ -170,6 +171,7 @@ tasks:
       name: Done
       type: title
       version: -1
+      description: ""
     taskid: 327d8461-cbbf-4cfc-843f-d6f5eaf17734
     timertriggers: []
     type: title
