@@ -9,6 +9,7 @@ import tempfile
 import requests
 import traceback
 import logging
+import time
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -39,6 +40,7 @@ class KafkaCommunicator:
     SESSION_TIMEOUT: int = 10000
     REQUESTS_TIMEOUT: float = 10.0
     POLL_TIMEOUT: float = 1.0
+    MAX_POLLS_FOR_LOG: int = 100
 
     def __init__(self, brokers: str, offset: str = 'earliest', group_id: str = 'xsoar_group',
                  message_max_bytes: Optional[int] = None,
@@ -117,16 +119,61 @@ class KafkaCommunicator:
         else:
             raise DemistoException('Kafka consumer was not yet initialized.')
 
-    def test_connection(self) -> str:
+    def test_connection(self, kafka_logger: Optional[logging.Logger] = None,
+                        log_stream: Optional[StringIO] = None) -> str:
         """Test getting topics with the consumer and producer configurations."""
+        error_msg = ''
+        consumer: Optional[KConsumer] = None
+        producer: Optional[KProducer] = None
         try:
-            KConsumer(self.conf_consumer)
-            KProducer(self.conf_producer)
-            self.get_topics(consumer=True)
-            self.get_topics(consumer=False)  # Checks the KProducer
+            if kafka_logger:
+                consumer = KConsumer(self.conf_consumer, logger=kafka_logger)
+            else:
+                consumer = KConsumer(self.conf_consumer)
+
+            consumer_topics = consumer.list_topics(timeout=self.REQUESTS_TIMEOUT)
+            consumer_topics.topics
 
         except Exception as e:
-            raise DemistoException(f'Error connecting to kafka: {str(e)}\n{traceback.format_exc()}')
+            error_msg = f'Error connecting to kafka using consumer: {str(e)}\n{traceback.format_exc()}'
+        finally:
+            try:
+                if error_msg and consumer:
+                    demisto.debug('Polling consumer for debug logs')
+                    consumer.poll(1.0)  # For the logger to be updated with consumer errors.
+                    if log_stream:
+                        polls = 0
+                        while not log_stream.getvalue() and polls < self.MAX_POLLS_FOR_LOG:
+                            polls += 1
+                            consumer.poll(1.0)
+            finally:
+                if error_msg:
+                    raise DemistoException(error_msg)
+
+        try:
+            if kafka_logger:
+                producer = KProducer(self.conf_producer, logger=kafka_logger)
+            else:
+                producer = KProducer(self.conf_producer)
+
+            producer_topics = producer.list_topics(timeout=self.REQUESTS_TIMEOUT)
+            producer_topics.topics
+
+        except Exception as e:
+            error_msg = f'Error connecting to kafka using producer: {str(e)}\n{traceback.format_exc()}'
+        finally:
+            try:
+                if error_msg and producer:
+                    demisto.debug('Polling producer for debug logs')
+                    producer.flush()  # For the logger to updated with producer errors.
+                    if log_stream:
+                        polls = 0
+                        while not log_stream.getvalue() and polls < self.MAX_POLLS_FOR_LOG:
+                            polls += 1
+                            producer.flush()
+            finally:
+                if error_msg:
+                    raise DemistoException(error_msg)
 
         return 'ok'
 
@@ -152,7 +199,7 @@ class KafkaCommunicator:
             client = KConsumer(self.conf_consumer)
         else:
             client = KProducer(self.conf_producer)
-        cluster_metadata = client.list_topics()  # client.list_topics(timeout=self.REQUESTS_TIMEOUT)
+        cluster_metadata = client.list_topics(timeout=self.REQUESTS_TIMEOUT)
         return cluster_metadata.topics
 
     def get_partition_offsets(self, topic: str, partition: int) -> Tuple[int, int]:
@@ -273,21 +320,21 @@ def capture_logs(func: Callable):
         log_stream = StringIO()
         log_handler = logging.StreamHandler(stream=log_stream)
         log_handler.setFormatter(logging.Formatter(logging.BASIC_FORMAT))
-        logger = logging.getLogger()
-        logger.addHandler(log_handler)
-        logger.setLevel(logging.DEBUG)
+        kafka_logger = logging.getLogger()
+        kafka_logger.addHandler(log_handler)
+        kafka_logger.setLevel(logging.DEBUG)
         debug_log = ''
 
         try:
+            kwargs['kafka_logger'] = kafka_logger
+            kwargs['log_stream'] = log_stream
             result = func(*args, **kwargs)
         except Exception as e:
-            stacktrace = traceback.format_exc()
-            if log_stream:
-                debug_log = f'{str(e)}\n\nDebug logs:\n\n{log_stream.getvalue()}'
-            elif stacktrace:
-                debug_log = f'{str(e)}\n\nFull stacktrace:\n\n{stacktrace}'
+            captured_logs = log_stream.getvalue()
+            if captured_logs:
+                debug_log = f'\n{str(e)}\nDebug logs:\n{captured_logs}\n'
             else:
-                debug_log = f'{str(e)}'
+                debug_log = f'\n{str(e)}\n'
         finally:
             if log_stream:
                 try:
@@ -338,7 +385,8 @@ def create_incident(message: Message, topic: str) -> dict:
 
 
 @capture_logs
-def command_test_module(kafka: KafkaCommunicator, demisto_params: dict) -> str:
+def command_test_module(kafka: KafkaCommunicator, demisto_params: dict, kafka_logger: Optional[logging.Logger] = None,
+                        log_stream: Optional[StringIO] = None) -> str:
     """Test getting available topics using consumer and producer configurations.
     Validate the fetch parameters.
 
@@ -346,9 +394,10 @@ def command_test_module(kafka: KafkaCommunicator, demisto_params: dict) -> str:
         kafka: initialized KafkaCommunicator object to preform actions with.
         demisto_params: The demisto parameters.
 
+
     Return 'ok' if everything went well, raise relevant exception otherwise
     """
-    kafka.test_connection()
+    kafka.test_connection(kafka_logger=kafka_logger, log_stream=log_stream)
     if demisto_params.get('isFetch', False):
         check_params(kafka=kafka,
                      topic=demisto_params.get('topic', None),
@@ -560,7 +609,7 @@ def fetch_incidents(kafka: KafkaCommunicator, demisto_params: dict) -> None:
 
     demisto.debug(f"Starting fetch incidents with:\n last_topic: {last_topic}, "
                   f"last_fetched_offsets: {last_fetched_offsets}, "
-                  f"topic: {topic}, partitions: {partitions}, offset: {offset, type(offset)}, "
+                  f"topic: {topic}, partitions: {partitions}, offset: {offset}, "
                   f"message_max_bytes: {message_max_bytes}, max_messages: {max_messages}\n")
     incidents = []
 
@@ -656,10 +705,10 @@ def main():  # pragma: no cover
             raise NotImplementedError(f'Command {demisto_command} not found in command list')
 
     except Exception as e:
-        debug_log = 'Debug logs:'
+        debug_log = ''
         stacktrace = traceback.format_exc()
         if stacktrace:
-            debug_log += f'\nFull stacktrace:\n\n{stacktrace}'
+            debug_log += f'Debug logs:\nFull stacktrace:\n\n{stacktrace}'
         return_error(f'{str(e)}\n\n{debug_log}')
 
     finally:
