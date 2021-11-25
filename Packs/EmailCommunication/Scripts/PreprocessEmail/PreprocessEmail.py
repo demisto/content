@@ -158,7 +158,7 @@ def check_incident_status(incident_details, email_related_incident):
 
 def get_attachments_using_instance(email_related_incident, labels):
     """Use the instance from which the email was received to fetch the attachments.
-        Only supported with: EWS V2, Gmail
+        Only supported with: EWS V2, Gmail, MS Graph Mail
 
     Args:
         email_related_incident (str): ID of the incident to attach the files to.
@@ -168,6 +168,7 @@ def get_attachments_using_instance(email_related_incident, labels):
     message_id = ''
     instance_name = ''
     integration_name = ''
+    mailbox = ''
 
     for label in labels:
         if label.get('type') == 'Email/ID':
@@ -176,6 +177,8 @@ def get_attachments_using_instance(email_related_incident, labels):
             instance_name = label.get('value')
         elif label.get('type') == 'Brand':
             integration_name = label.get('value')
+        elif label.get('type') == 'Mailbox':
+            mailbox = label.get('value')
 
     if integration_name == 'EWS v2':
         demisto.executeCommand("executeCommandAt",
@@ -186,6 +189,12 @@ def get_attachments_using_instance(email_related_incident, labels):
         demisto.executeCommand("executeCommandAt",
                                {'command': 'gmail-get-attachments', 'incidents': email_related_incident,
                                 'arguments': {'user-id': 'me', 'message-id': str(message_id), 'using': instance_name}})
+
+    elif integration_name == 'MicrosoftGraphMail':
+        demisto.executeCommand("executeCommandAt",
+                               {'command': 'msgraph-mail-get-attachment', 'incidents': email_related_incident,
+                                'arguments': {'user-id': mailbox, 'message-id': str(message_id),
+                                              'using': instance_name}})
 
     else:
         demisto.debug('Attachments could only be retrieved from EWS v2 or Gmail')
@@ -255,6 +264,7 @@ def main():
     email_subject = custom_fields.get('emailsubject')
     email_html = custom_fields.get('emailhtml')
     attachments = incident.get('attachment', [])
+    demisto.debug(f"attachmenters areeee: {attachments}")
     email_latest_message = custom_fields.get('emaillatestmessage')
 
     try:
