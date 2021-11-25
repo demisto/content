@@ -1,22 +1,25 @@
-description: Creates a connection to a remote destination from Tanium Threat Response v2
+description: Creates a connection to a remote destination from Tanium Threat Response
+  v2 v2
 id: Tanium Threat Response - Create Connection v2
 inputs:
-- description: ""
+- description: Client id. Use `tanium-tr-get-system-status` to get all possible client_ids.
   key: client-id
   playbookInputQuery:
   required: true
   value: {}
-- description: ""
+- description: Hostname of the computer to connect. Use `tanium-tr-get-system-status`
+    to get all possible hostnames.
   key: hostname
   playbookInputQuery:
   required: true
   value: {}
-- description: ""
+- description: IP address to connect. Use `tanium-tr-get-system-status` to get all
+    possible ips.
   key: ip
   playbookInputQuery:
   required: true
   value: {}
-- description: ""
+- description: Computers platform - "Windows", "Linux", etc.
   key: platform
   playbookInputQuery:
   required: true
