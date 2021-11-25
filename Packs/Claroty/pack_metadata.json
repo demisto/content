@@ -7,7 +7,9 @@
     "url": "",
     "email": "support@claroty.com",
     "created": "2020-03-11T12:58:02Z",
-    "categories": [],
+    "categories": [
+        "Network Security"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [
