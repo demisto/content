@@ -1574,7 +1574,7 @@ tasks:
                   simple: 7 days ago
       query:
         simple: '`emailfrom:${incident.emailfrom} AND emailsubject:${incident.emailsubject}
-          AND  type:"Phishing Alerts"`'
+          AND (type:"Phishing Alerts" or type:"Phishing")`'
     continueonerror: true
     separatecontext: false
     view: |-
