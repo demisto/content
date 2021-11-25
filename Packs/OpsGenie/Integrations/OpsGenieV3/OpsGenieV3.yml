@@ -8,12 +8,11 @@ configuration:
   name: url
   required: true
   type: 0
-- additionalinfo: Must be created from the Teams API Integration section.
-  display: API Token
-  hidden: false
-  name: token
+- displaypassword: API Token
+  name: credentials
+  type: 9
   required: false
-  type: 4
+  hiddenusername: true
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -42,7 +41,7 @@ configuration:
   name: status
   additionalinfo: Fetch only events with selected status. If query is used, this paramter
     will be overrided.
-  defaultvalue: All
+  defaultvalue: Open
   required: false
   options:
   - All

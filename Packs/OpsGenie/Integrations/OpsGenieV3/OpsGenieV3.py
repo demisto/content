@@ -112,15 +112,18 @@ class Client(BaseClient):
     def list_alerts(self, args: dict):
         args['tags'] = argToList(args.get('tags'))
         params = {
-            "sort": args.get("sort"),
             "limit": args.get("limit"),
             "offset": args.get("offset"),
             "query": Client.build_query(args)
         }
-        return self._http_request(method='GET',
-                                  url_suffix=f"/v2/{ALERTS_SUFFIX}",
-                                  params=params
-                                  )
+        res = self._http_request(method='GET',
+                                 url_suffix=f"/v2/{ALERTS_SUFFIX}",
+                                 params=params
+                                 )
+        if len(res.get("data", [])) > 0:
+            for result in res.get("data"):
+                result['event_type'] = ALERT_TYPE
+        return res
 
     def delete_alert(self, args: dict):
         return self._http_request(method='DELETE',
@@ -260,9 +263,9 @@ class Client(BaseClient):
         if args.get("query", ""):
             query = args.get("query", "")
         if args.get("is_fetch_query", False) or not args.get("query", ""):
-            query += ' AND ' if query else ''
             status = args.get("status", ALL_TYPE)
             if status != ALL_TYPE:
+                query += ' AND ' if query else ''
                 query = f'status={status.lower()}'
             priority = args.get("priority", ALL_TYPE)
             if priority != ALL_TYPE:
@@ -281,10 +284,14 @@ class Client(BaseClient):
             "offset": args.get("offset"),
             "query": Client.build_query(args)
         }
-        return self._http_request(method='GET',
-                                  url_suffix=f"/v1/{INCIDENTS_SUFFIX}",
-                                  params=params
-                                  )
+        res = self._http_request(method='GET',
+                                 url_suffix=f"/v1/{INCIDENTS_SUFFIX}",
+                                 params=params
+                                 )
+        if len(res.get("data", [])) > 0:
+            for result in res.get("data"):
+                result['event_type'] = ALERT_TYPE
+        return res
 
     def close_incident(self, args: dict):
         return self._http_request(method='POST',
@@ -529,9 +536,6 @@ def list_alerts(client: Client, args: Dict[str, Any]) -> CommandResults:
                                                 cmd='opsgenie-get-alerts',
                                                 action_function=client.list_alerts,
                                                 results_function=client.get_paged)
-    if isinstance(polling_result.outputs, list) and not polling_result.scheduled_command:
-        for result in polling_result.outputs:
-            result['event_type'] = ALERT_TYPE
     return polling_result
 
 
@@ -772,9 +776,6 @@ def list_incidents(client: Client, args: Dict[str, Any]) -> CommandResults:
                                                 cmd='opsgenie-get-incidents',
                                                 action_function=client.list_incidents,
                                                 results_function=client.get_paged)
-    if isinstance(polling_result.outputs, list) and not polling_result.scheduled_command:
-        for result in polling_result.outputs:
-            result['event_type'] = INCIDENT_TYPE
     return polling_result
 
 
@@ -857,27 +858,31 @@ def fetch_incidents_by_type(client: Client,
                             params: Dict[str, Any],
                             incident_fetching_func: Callable,
                             now: datetime,
-                            last_run: Optional[str] = None) -> List[Dict[str, Any]]:
+                            last_run_dict: Optional[dict] = None) \
+        -> Tuple[List[Dict[str, str]], str, str]:
     query = params.get('query')
     limit = int(params.get('max_fetch', 50))
     fetch_time = params.get('first_fetch', '3 days').strip()
 
-    if not last_run:
+    if not last_run_dict:
         new_last_run = dateparser.parse(date_string=f"{fetch_time} UTC").strftime(DATE_FORMAT)
-        last_run = new_last_run
+        last_run_dict = {'lastRun': new_last_run,
+                         'next_page': None}
 
-    timestamp_now = int(now.timestamp())
-    timestamp_last_run = int(dateparser.parse(last_run).timestamp())
-    time_query = f'createdAt>={timestamp_last_run} AND createdAt<{timestamp_now}'
-    params['query'] = f'{query} AND {time_query}' if query else f'{time_query}'
-    params['limit'] = limit
-    params['is_fetch_query'] = True if params.get('query') else False
-
-    raw_response = incident_fetching_func(client, params)
-    if isinstance(raw_response, CommandResults):
-        return raw_response
+    if last_run_dict.get('next_page'):
+        raw_response = client.get_paged({"paging": last_run_dict.get('next_page')})
     else:
-        data = raw_response.get('data')
+        timestamp_now = int(now.timestamp())
+        last_run = last_run_dict.get('lastRun')
+        timestamp_last_run = int(dateparser.parse(last_run).timestamp())
+        time_query = f'createdAt>={timestamp_last_run} AND createdAt<{timestamp_now}'
+        params['query'] = f'{query} AND {time_query}' if query else f'{time_query}'
+        params['limit'] = limit
+        params['is_fetch_query'] = True if params.get('query') else False
+        raw_response = incident_fetching_func(params)
+        last_run_dict['lastRun'] = now.strftime(DATE_FORMAT)
+
+    data = raw_response.get('data')
     incidents = []
     if data:
         for event in data:
@@ -887,12 +892,12 @@ def fetch_incidents_by_type(client: Client,
                 'rawJSON': json.dumps(event)
             })
 
-    return incidents
+    return incidents, raw_response.get("paging", {}).get("next"), last_run_dict.get('lastRun')
 
 
 def fetch_incidents_command(client: Client,
                             params: Dict[str, Any],
-                            last_run: Optional[str] = None) -> Tuple[List[Dict[str, Any]], Dict]:
+                            last_run: Optional[dict] = None) -> Tuple[List[Dict[str, Any]], Dict]:
     """Uses to fetch incidents into Demisto
     Documentation: https://github.com/demisto/content/tree/master/docs/fetching_incidents
 
@@ -904,24 +909,40 @@ def fetch_incidents_command(client: Client,
     Returns:
         incidents, new last_run
     """
-    # demisto.debug(f"Got incidentType={params.get('event_types')}")
+    demisto.debug(f"Got incidentType={params.get('event_types')}")
     event_type = params.get('event_types', [ALL_TYPE])
-    # demisto.debug(f"Got event_type={event_type}")
+    demisto.debug(f"Got event_type={event_type}")
     now = datetime.utcnow()
     incidents = []
     alerts = []
+    last_run_alerts = demisto.get(last_run, f"{ALERT_TYPE}.lastRun")
+    next_page_alerts = demisto.get(last_run, f"{ALERT_TYPE}.next_page")
+    last_run_incidents = demisto.get(last_run, f"{INCIDENT_TYPE}.lastRun")
+    next_page_incidents = demisto.get(last_run, f"{INCIDENT_TYPE}.next_page")
     if ALERT_TYPE in event_type or ALL_TYPE in event_type:
-        alerts = fetch_incidents_by_type(client, params, list_alerts, now, last_run)
+        alerts, next_page_alerts, last_run_alerts = fetch_incidents_by_type(client,
+                                                                            params,
+                                                                            client.list_alerts,
+                                                                            now,
+                                                                            demisto.get(last_run, f"{ALERT_TYPE}"))
     if INCIDENT_TYPE in event_type or ALL_TYPE in event_type:
-        incidents = fetch_incidents_by_type(client, params, list_incidents, now, last_run)
-    return incidents + alerts, {'lastRun': now.strftime(DATE_FORMAT)}
+        incidents, next_page_incidents, last_run_incidents = fetch_incidents_by_type(client,
+                                                                                     params,
+                                                                                     client.list_incidents,
+                                                                                     now,
+                                                                                     demisto.get(last_run, f"{INCIDENT_TYPE}"))
+    return incidents + alerts, {ALERT_TYPE: {'lastRun': last_run_alerts,
+                                             'next_page': next_page_alerts},
+                                INCIDENT_TYPE: {'lastRun': last_run_incidents,
+                                                'next_page': next_page_incidents}
+                                }
 
 
 ''' MAIN FUNCTION '''
 
 
 def main() -> None:
-    api_key = demisto.params().get('token')
+    api_key = demisto.params().get('credentials', {}).get("password")
     base_url = demisto.params().get('url')
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
