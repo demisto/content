@@ -267,10 +267,11 @@ class Client(BaseClient):
             if status != ALL_TYPE:
                 query += ' AND ' if query else ''
                 query = f'status={status.lower()}'
-            priority = args.get("priority", ALL_TYPE)
-            if priority != ALL_TYPE:
+            priority = argToList(args.get("priority", [ALL_TYPE]))
+            if ALL_TYPE not in priority:
                 query += ' AND ' if query else ''
-                query += f'priority={priority}'
+                priority_parsed = ' OR '.join([p for p in priority])
+                query += f'priority: ({priority_parsed})'
             tags = args.get("tags", [])
             if tags:
                 query += ' AND ' if query else ''
@@ -290,7 +291,7 @@ class Client(BaseClient):
                                  )
         if len(res.get("data", [])) > 0:
             for result in res.get("data"):
-                result['event_type'] = ALERT_TYPE
+                result['event_type'] = INCIDENT_TYPE
         return res
 
     def close_incident(self, args: dict):
@@ -875,7 +876,7 @@ def fetch_incidents_by_type(client: Client,
         timestamp_now = int(now.timestamp())
         last_run = last_run_dict.get('lastRun')
         timestamp_last_run = int(dateparser.parse(last_run).timestamp())
-        time_query = f'createdAt>={timestamp_last_run} AND createdAt<{timestamp_now}'
+        time_query = f'createdAt>{timestamp_last_run} AND createdAt<={timestamp_now}'
         params['query'] = f'{query} AND {time_query}' if query else f'{time_query}'
         params['limit'] = limit
         params['is_fetch_query'] = True if params.get('query') else False
@@ -891,6 +892,8 @@ def fetch_incidents_by_type(client: Client,
                 'occurred': event.get('createdAt'),
                 'rawJSON': json.dumps(event)
             })
+            if last_run_dict.get('lastRun') < event.get('createdAt'):
+                last_run_dict['lastRun'] = event.get('createdAt')
 
     return incidents, raw_response.get("paging", {}).get("next"), last_run_dict.get('lastRun')
 
