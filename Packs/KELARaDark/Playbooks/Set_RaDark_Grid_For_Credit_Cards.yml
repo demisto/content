@@ -3,7 +3,6 @@ id: Set RaDark Grid For Credit Cards
 inputs: []
 name: Set RaDark Grid For Credit Cards
 outputs: []
-sourceplaybookid: Get RaDark Detailed Items
 starttaskid: "0"
 tasks:
   "0":
@@ -242,3 +241,5 @@ view: |-
     }
   }
 fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

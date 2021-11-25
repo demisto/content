@@ -3,7 +3,6 @@ id: Set RaDark Grid For Hacking Discussions
 inputs: []
 name: Set RaDark Grid For Hacking Discussions
 outputs: []
-sourceplaybookid: Get RaDark Detailed Items
 starttaskid: "0"
 tasks:
   "0":
@@ -190,3 +189,5 @@ view: |-
     }
   }
 fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
