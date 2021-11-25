@@ -218,9 +218,11 @@ def blacklist_ip(ip, description):
 
 @logger
 def blacklist_ip_command(args):
-    ip = args.get('ip', None)
+    ips = args.get('ip', None)
     description = args.get('description', 'Added by ThreatX Demisto Integration')
-    results = blacklist_ip(ip, description)
+    results = []
+    for ip in argToList(ips):
+        results.append(blacklist_ip(ip, description))
 
     md = tableToMarkdown('Blacklist IP',
                          results,
@@ -229,7 +231,7 @@ def blacklist_ip_command(args):
 
     ec = {
         'IP(val.Address === obj.Address)': {
-            'Address': ip
+            'Address': ips
         }
     }
 
