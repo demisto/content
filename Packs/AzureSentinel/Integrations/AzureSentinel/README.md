@@ -1286,3 +1286,356 @@ Create or update a watchlist item.
 >|---|---|
 >| 6b21d1ef-18fa-420f-ae4a-a6f94588ebe8 | name: test_4_item<br/>IP: 4.4.4.4 |
 
+### azure-sentinel-threat-indicator-tags-append
+***
+azure-sentinel-threat-indicator-tags-append appens new tags to an existing indicator
+
+
+#### Base Command
+
+`azure-sentinel-threat-indicator-tags-append`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Tha name of the indicator. | Required | 
+| tags | Tha tags you want to append, seperated by commas. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureSentinel.ThreatIndicator.ID | String | The threat indicator ID | 
+| AzureSentinel.ThreatIndicator.Name | String | The threat indicator name | 
+| AzureSentinel.ThreatIndicator.ETag | String | The threat indicator etag | 
+| AzureSentinel.ThreatIndicator.Type | String | The threat indicator type | 
+| AzureSentinel.ThreatIndicator.Kind | String | The threat indicator kind | 
+| AzureSentinel.ThreatIndicator.Properties.Confidence | Number | The threat indicator confidence, A number between 0-100 | 
+| AzureSentinel.ThreatIndicator.Properties.Created | Date | When was the threat indicator created | 
+| AzureSentinel.ThreatIndicator.Properties.CreatedByRef | String | The threat indicator creator | 
+| AzureSentinel.ThreatIndicator.Properties.ExternalID | String | The threat indicator external id | 
+| AzureSentinel.ThreatIndicator.Properties.Revoked | Boolean | Was the threat indicator revoked or not | 
+| AzureSentinel.ThreatIndicator.Properties.Source | String | The threat indicator source | 
+| AzureSentinel.ThreatIndicator.Properties.ThreatIntelligenceTags | Unknown | The threat indicator tags | 
+| AzureSentinel.ThreatIndicator.Properties.DisplayName | String | The threat indicator display name | 
+| AzureSentinel.ThreatIndicator.Properties.Description | String | The threat indicator description | 
+| AzureSentinel.ThreatIndicator.Properties.ThreatTypes | Unknown | The threat types of the threat indicator | 
+| AzureSentinel.ThreatIndicator.Properties.KillChainPhases | Unknown | The threat indicator killchains phases | 
+| AzureSentinel.ThreatIndicator.Properties.ParsedPattern | Unknown | The threat indicator parsed pattern | 
+| AzureSentinel.ThreatIndicator.Properties.Pattern | String | The threat indicator pattern | 
+| AzureSentinel.ThreatIndicator.Properties.PatternType | String | The threat indicator pattern type | 
+| AzureSentinel.ThreatIndicator.Properties.ValidFrom | Date | The date which the indicator is valid from | 
+| AzureSentinel.ThreatIndicator.Properties.ValidUntil | Date | The date which the indicator is valid until | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+
+### azure-sentinel-threat-indicator-tags-replace
+***
+azure-sentinel-threat-indicator-tags-replace replaces the tags of a given indicator
+
+
+#### Base Command
+
+`azure-sentinel-threat-indicator-tags-replace`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name of the treat indicator. | Required | 
+| tags | Tags to append to an existing indicator, seperated by commas. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureSentinel.ThreatIndicator.ID | String | The threat indicator ID | 
+| AzureSentinel.ThreatIndicator.Name | String | The threat indicator name | 
+| AzureSentinel.ThreatIndicator.ETag | String | The threat indicator etag | 
+| AzureSentinel.ThreatIndicator.Type | String | The threat indicator type | 
+| AzureSentinel.ThreatIndicator.Kind | String | The threat indicator kind | 
+| AzureSentinel.ThreatIndicator.Properties.Confidence | Number | The threat indicator confidence, A number between 0-100 | 
+| AzureSentinel.ThreatIndicator.Properties.Created | Date | When was the threat indicator created | 
+| AzureSentinel.ThreatIndicator.Properties.CreatedByRef | String | The threat indicator creator | 
+| AzureSentinel.ThreatIndicator.Properties.ExternalID | String | The threat indicator external id | 
+| AzureSentinel.ThreatIndicator.Properties.Revoked | Boolean | Was the threat indicator revoked or not | 
+| AzureSentinel.ThreatIndicator.Properties.Source | String | The threat indicator source | 
+| AzureSentinel.ThreatIndicator.Properties.ThreatIntelligenceTags | Unknown | The threat indicator tags | 
+| AzureSentinel.ThreatIndicator.Properties.DisplayName | String | The threat indicator display name | 
+| AzureSentinel.ThreatIndicator.Properties.Description | String | The threat indicator description | 
+| AzureSentinel.ThreatIndicator.Properties.ThreatTypes | Unknown | The threat types of the threat indicator | 
+| AzureSentinel.ThreatIndicator.Properties.KillChainPhases | Unknown | The threat indicator killchains phases | 
+| AzureSentinel.ThreatIndicator.Properties.ParsedPattern | Unknown | The threat indicator parsed pattern | 
+| AzureSentinel.ThreatIndicator.Properties.Pattern | String | The threat indicator pattern | 
+| AzureSentinel.ThreatIndicator.Properties.PatternType | String | The threat indicator pattern type | 
+| AzureSentinel.ThreatIndicator.Properties.ValidFrom | Date | The date which the indicator is valid from | 
+| AzureSentinel.ThreatIndicator.Properties.ValidUntil | Date | The date which the indicator is valid until | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+### azure-sentinel-threat-indicator-list
+***
+list_threat_indicator_command returns a list of threat indicators
+
+
+#### Base Command
+
+`azure-sentinel-threat-indicator-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The indicator name. | Optional | 
+| limit | Limit the number of shown results on the screen. Default is 50. | Optional | 
+| next_link | Link for the next page of entries. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureSentinel.ThreatIndicator.ID | String | The threat indicator ID | 
+| AzureSentinel.ThreatIndicator.Name | String | The threat indicator name | 
+| AzureSentinel.ThreatIndicator.ETag | String | The threat indicator etag | 
+| AzureSentinel.ThreatIndicator.Type | String | The threat indicator type | 
+| AzureSentinel.ThreatIndicator.Kind | String | The threat indicator kind | 
+| AzureSentinel.ThreatIndicator.Properties.Confidence | Number | The threat indicator confidence, A number between 0-100 | 
+| AzureSentinel.ThreatIndicator.Properties.Created | Date | When was the threat indicator created | 
+| AzureSentinel.ThreatIndicator.Properties.CreatedByRef | String | The threat indicator creator | 
+| AzureSentinel.ThreatIndicator.Properties.ExternalID | String | The threat indicator external id | 
+| AzureSentinel.ThreatIndicator.Properties.Revoked | Boolean | Was the threat indicator revoked or not | 
+| AzureSentinel.ThreatIndicator.Properties.Source | String | The threat indicator source | 
+| AzureSentinel.ThreatIndicator.Properties.ThreatIntelligenceTags | Unknown | The threat indicator tags | 
+| AzureSentinel.ThreatIndicator.Properties.DisplayName | String | The threat indicator display name | 
+| AzureSentinel.ThreatIndicator.Properties.Description | String | The threat indicator description | 
+| AzureSentinel.ThreatIndicator.Properties.ThreatTypes | Unknown | The threat types of the threat indicator | 
+| AzureSentinel.ThreatIndicator.Properties.KillChainPhases | Unknown | The threat indicator killchains phases | 
+| AzureSentinel.ThreatIndicator.Properties.ParsedPattern | Unknown | The threat indicator parsed pattern | 
+| AzureSentinel.ThreatIndicator.Properties.Pattern | String | The threat indicator pattern | 
+| AzureSentinel.ThreatIndicator.Properties.PatternType | String | The threat indicator pattern type | 
+| AzureSentinel.ThreatIndicator.Properties.ValidFrom | Date | The date which the indicator is valid from | 
+| AzureSentinel.ThreatIndicator.Properties.ValidUntil | Date | The date which the indicator is valid until | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+### azure-sentinel-threat-indicator-query
+***
+query_threat_indicators_command returns a list of threat indicators with specific entities
+
+
+#### Base Command
+
+`azure-sentinel-threat-indicator-query`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | Limit the number of shown results on the screen. Default is 50. | Optional | 
+| next_link | Link for the next page of entries. | Optional | 
+| min_confidence | The minimum confidence number for a threat indicator. | Optional | 
+| max_confidence | The maximum confidence number for a threat indicator. | Optional | 
+| min_valid_until | Should be in format: 2020-04-05T17:44:005Z OR by days/hours. | Optional | 
+| max_valid_until | Should be in format: 2020-04-05T17:44:005Z OR by days/hours. | Optional | 
+| include_disabled | Should the query return disabled indicators or not. Possible values are: true, false. | Optional | 
+| sources | Threat indicator sources. | Optional | 
+| indicator_types | The threat indicator types. Possible values are: ipv4, ipv6, file, url, domain . | Optional | 
+| threat_types | Threat indicator types, a multi-select variable from the list. Possible values are: anomalous-activity, attribution, anonymization, benign, malicious-activity, compromised, unknown<br/>. | Optional | 
+| keywords | Keywords, seperated by commas. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureSentinel.ThreatIndicator.ID | String | The threat indicator ID | 
+| AzureSentinel.ThreatIndicator.Name | String | The threat indicator name | 
+| AzureSentinel.ThreatIndicator.ETag | String | The threat indicator etag | 
+| AzureSentinel.ThreatIndicator.Type | String | The threat indicator type | 
+| AzureSentinel.ThreatIndicator.Kind | String | The threat indicator kind | 
+| AzureSentinel.ThreatIndicator.Properties.Confidence | Number | The threat indicator confidence, A number between 0-100 | 
+| AzureSentinel.ThreatIndicator.Properties.Created | Date | When was the threat indicator created | 
+| AzureSentinel.ThreatIndicator.Properties.CreatedByRef | String | The threat indicator creator | 
+| AzureSentinel.ThreatIndicator.Properties.ExternalID | String | The threat indicator external id | 
+| AzureSentinel.ThreatIndicator.Properties.Revoked | Boolean | Was the threat indicator revoked or not | 
+| AzureSentinel.ThreatIndicator.Properties.Source | String | The threat indicator source | 
+| AzureSentinel.ThreatIndicator.Properties.ThreatIntelligenceTags | Unknown | The threat indicator tags | 
+| AzureSentinel.ThreatIndicator.Properties.DisplayName | String | The threat indicator display name | 
+| AzureSentinel.ThreatIndicator.Properties.Description | String | The threat indicator description | 
+| AzureSentinel.ThreatIndicator.Properties.ThreatTypes | Unknown | The threat types of the threat indicator | 
+| AzureSentinel.ThreatIndicator.Properties.KillChainPhases | Unknown | The threat indicator killchains phases | 
+| AzureSentinel.ThreatIndicator.Properties.ParsedPattern | Unknown | The threat indicator parsed pattern | 
+| AzureSentinel.ThreatIndicator.Properties.Pattern | String | The threat indicator pattern | 
+| AzureSentinel.ThreatIndicator.Properties.PatternType | String | The threat indicator pattern type | 
+| AzureSentinel.ThreatIndicator.Properties.ValidFrom | Date | The date which the indicator is valid from | 
+| AzureSentinel.ThreatIndicator.Properties.ValidUntil | Date | The date which the indicator is valid until | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+### azure-sentinel-threat-indicator-create
+***
+azure-sentinel-threat-indicator-create creates a new threat indicator
+
+
+#### Base Command
+
+`azure-sentinel-threat-indicator-create`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| value | The value of the threat indicator. | Required | 
+| display_name | The name to display of the new indicator. | Required | 
+| description | The description of the new indicator. | Optional | 
+| indicator_type | The type of the new indicator. Possible values are: ipv4, ipv6, file, url, domain. | Required | 
+| hash_type | The hash type of the new indicator.This argument is mendatory if the indicator type is file. Possible values are: MD5, SHA-1, SHA-256, SHA-512. | Optional | 
+| confidence | The confidence of the new threat indicator,a number between 0-100. | Optional | 
+| threat_types | The threat types of the new indicator. Possible values are: anomalous-activity, attribution, anonymization, benign, malicious-activity, compromised, unknown. | Required | 
+| kill_chains | The indicator kill_chains phases. | Optional | 
+| tags | The tags of the new threat indicator, seperated by commas. | Optional | 
+| valid_from | The date which the indicator is valid from, should be in 2020-04-05T17:44:00.114052Z format. | Optional | 
+| valid_until | The date which the indicator is valid until, should be in 2020-04-05T17:44:00.114052Z format. | Optional | 
+| created_by | The creator of the new indicator. | Optional | 
+| revoked | Is the indicator revoked or not. Possible values are: true, false. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureSentinel.ThreatIndicator.ID | String | The threat indicator ID | 
+| AzureSentinel.ThreatIndicator.Name | String | The threat indicator name | 
+| AzureSentinel.ThreatIndicator.ETag | String | The threat indicator etag | 
+| AzureSentinel.ThreatIndicator.Type | String | The threat indicator type | 
+| AzureSentinel.ThreatIndicator.Kind | String | The threat indicator kind | 
+| AzureSentinel.ThreatIndicator.Properties.Confidence | Number | The threat indicator confidence, A number between 0-100 | 
+| AzureSentinel.ThreatIndicator.Properties.Created | Date | When was the threat indicator created | 
+| AzureSentinel.ThreatIndicator.Properties.CreatedByRef | String | The threat indicator creator | 
+| AzureSentinel.ThreatIndicator.Properties.ExternalID | String | The threat indicator external id | 
+| AzureSentinel.ThreatIndicator.Properties.Revoked | Boolean | Was the threat indicator revoked or not | 
+| AzureSentinel.ThreatIndicator.Properties.Source | String | The threat indicator source | 
+| AzureSentinel.ThreatIndicator.Properties.ThreatIntelligenceTags | Unknown | The threat indicator tags | 
+| AzureSentinel.ThreatIndicator.Properties.DisplayName | String | The threat indicator display name | 
+| AzureSentinel.ThreatIndicator.Properties.Description | String | The threat indicator description | 
+| AzureSentinel.ThreatIndicator.Properties.ThreatTypes | Unknown | The threat types of the threat indicator | 
+| AzureSentinel.ThreatIndicator.Properties.KillChainPhases | Unknown | The threat indicator killchains phases | 
+| AzureSentinel.ThreatIndicator.Properties.ParsedPattern | Unknown | The threat indicator parsed pattern | 
+| AzureSentinel.ThreatIndicator.Properties.Pattern | String | The threat indicator pattern | 
+| AzureSentinel.ThreatIndicator.Properties.PatternType | String | The threat indicator pattern type | 
+| AzureSentinel.ThreatIndicator.Properties.ValidFrom | Date | The date which the indicator is valid from | 
+| AzureSentinel.ThreatIndicator.Properties.ValidUntil | Date | The date which the indicator is valid until | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+### azure-sentinel-threat-indicator-update
+***
+azure-sentinel-threat-indicator-update updates an existing threat indicator
+
+
+#### Base Command
+
+`azure-sentinel-threat-indicator-update`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name of the indicator. | Required | 
+| value | The value of the indicator. | Required | 
+| display_name | The display name of the indicator. | Required | 
+| description | The description of the threat indicator. | Optional | 
+| indicator_type | The type of the indicator. Possible values are: ipv4, ipv6, file, url, domain-name. | Required | 
+| hash_type | If indicator_type is file, this entry is mandatory. | Optional | 
+| revoked | Is the indicator revoked or not. | Optional | 
+| confidence | The confidence of the threat indicator, a number between 0-100. | Optional | 
+| threat_types | The threat types of the indicator. Possible values are: anomalous-activity, attribution, anonymization, benign, malicious-activity, compromised, unknown<br/>. | Optional | 
+| kill_chains | The kill chains phases of the indicator, seperated by commas. | Optional | 
+| tags | Tha tags of the threat indicator, seperated by commas. | Optional | 
+| valid_from | The date which the indicator is valid from, should be in 2020-04-05T17:44:00.114052Z format. | Optional | 
+| valid_until | The date which the indicator is valid until, should be in 2020-04-05T17:44:00.114052Z format. | Optional | 
+| created_by | The creator of the indicator. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureSentinel.ThreatIndicator.ID | String | The threat indicator ID | 
+| AzureSentinel.ThreatIndicator.Name | String | The threat indicator name | 
+| AzureSentinel.ThreatIndicator.ETag | String | The threat indicator etag | 
+| AzureSentinel.ThreatIndicator.Type | String | The threat indicator type | 
+| AzureSentinel.ThreatIndicator.Kind | String | The threat indicator kind | 
+| AzureSentinel.ThreatIndicator.Properties.Confidence | Number | The threat indicator confidence, A number between 0-100 | 
+| AzureSentinel.ThreatIndicator.Properties.Created | Date | When was the threat indicator created | 
+| AzureSentinel.ThreatIndicator.Properties.CreatedByRef | String | The threat indicator creator | 
+| AzureSentinel.ThreatIndicator.Properties.ExternalID | String | The threat indicator external id | 
+| AzureSentinel.ThreatIndicator.Properties.Revoked | Boolean | Was the threat indicator revoked or not | 
+| AzureSentinel.ThreatIndicator.Properties.Source | String | The threat indicator source | 
+| AzureSentinel.ThreatIndicator.Properties.ThreatIntelligenceTags | Unknown | The threat indicator tags | 
+| AzureSentinel.ThreatIndicator.Properties.DisplayName | String | The threat indicator display name | 
+| AzureSentinel.ThreatIndicator.Properties.Description | String | The threat indicator description | 
+| AzureSentinel.ThreatIndicator.Properties.ThreatTypes | Unknown | The threat types of the threat indicator | 
+| AzureSentinel.ThreatIndicator.Properties.KillChainPhases | Unknown | The threat indicator killchains phases | 
+| AzureSentinel.ThreatIndicator.Properties.ParsedPattern | Unknown | The threat indicator parsed pattern | 
+| AzureSentinel.ThreatIndicator.Properties.Pattern | String | The threat indicator pattern | 
+| AzureSentinel.ThreatIndicator.Properties.PatternType | String | The threat indicator pattern type | 
+| AzureSentinel.ThreatIndicator.Properties.ValidFrom | Date | The date which the indicator is valid from | 
+| AzureSentinel.ThreatIndicator.Properties.ValidUntil | Date | The date which the indicator is valid until | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+### azure-sentinel-threat-indicator-delete
+***
+azure-sentinel-threat-indicator-delete deletes an existing threat indicator
+
+
+#### Base Command
+
+`azure-sentinel-threat-indicator-delete`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name of the indicator to delete. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+

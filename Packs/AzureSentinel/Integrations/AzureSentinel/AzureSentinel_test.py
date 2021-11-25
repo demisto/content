@@ -10,9 +10,10 @@ from AzureSentinel import AzureSentinelClient, list_incidents_command, list_inci
     list_incident_alerts_command, list_watchlists_command, \
     delete_watchlist_command, list_watchlist_items_command, \
     create_update_watchlist_command, create_update_watchlist_item_command, delete_watchlist_item_command, \
-    delete_incident_command, XSOAR_USER_AGENT, incident_delete_comment_command, list_threat_indicators_command, \
+    delete_incident_command, XSOAR_USER_AGENT, incident_delete_comment_command,  \
     query_threat_indicators_command, create_threat_indicator_command, delete_threat_indicator_command, \
-    append_tags_threat_indicator_command, replace_tags_threat_indicator_command, update_threat_indicator_command
+    append_tags_threat_indicator_command, replace_tags_threat_indicator_command, update_threat_indicator_command, \
+    list_threat_indicator_command
 
 TEST_ITEM_ID = 'test_watchlist_item_id_1'
 
@@ -931,7 +932,7 @@ class TestHappyPath:
             mocked_indicators['nextLink'] = expected_next_link
 
         # execute
-        command_res = list_threat_indicators_command(client, args=args)
+        command_res = list_threat_indicator_command(client, args=args)
         readable_output, outputs, raw_response = command_res.readable_output, command_res.outputs, command_res.raw_response
         context = outputs['AzureSentinel.ThreatIndicator'][0]
 
@@ -1009,7 +1010,7 @@ class TestHappyPath:
         assert context['Name'] == 'ind_name', 'Incident name in Azure Sentinel API is Incident ID in Cortex XSOAR'
         assert context['DisplayName'] == 'displayfortestmay'
 
-        assert context['Tags'] == 'wereplacedthetag,'  # check why strip doesn't work
+        assert context['Tags'][0] == 'wereplacedthetag'  # check why strip doesn't work
 
     @pytest.mark.parametrize('args, client', [  # disable-secrets-detection
         ({'name': 'ind_name'}, mock_client())])
@@ -1060,7 +1061,7 @@ class TestHappyPath:
         assert context['Name'] == 'ind_name'
         assert context['DisplayName'] == 'displayfortestmay'
 
-        assert context['Tags'] == 'wereplacedthetag,'  # check why strip doesn't work
+        assert context['Tags'][0] == 'wereplacedthetag'  # check why strip doesn't work
 
     @pytest.mark.parametrize('args, client', [  # disable-secrets-detection
         ({'name': 'ind_name', 'tags': 'wereplacedthetag'}, mock_client())])
@@ -1089,7 +1090,7 @@ class TestHappyPath:
         assert context['Name'] == 'ind_name'
         assert context['DisplayName'] == 'displayfortestmay'
 
-        assert context['Tags'] == 'wereplacedthetag,'  # check why strip doesn't work
+        assert context['Tags'][0] == 'wereplacedthetag'  # check why strip doesn't work
 
     @pytest.mark.parametrize('args, client', [  # disable-secrets-detection
         (ARGS_TO_UPDATE, mock_client())])

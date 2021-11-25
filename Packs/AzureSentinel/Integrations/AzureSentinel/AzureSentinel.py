@@ -1049,7 +1049,7 @@ def threat_indicators_data_to_xsoar_format(ind_data):
         'Revoked': properties.get('revoked', ''),
         'Source': properties.get('source', ''),
         'ThreatIntelligenceTags': properties.get('threatIntelligenceTags', ''),
-        'Tags': properties.get('threatIntelligenceTags', ''),
+        'Tags': properties.get('threatIntelligenceTags', 'No Tags'),
         'DisplayName': properties.get('displayName', ''),
         'Description': properties.get('description', ''),
         'Types': properties.get('threatTypes', ''),
@@ -1069,7 +1069,7 @@ def threat_indicators_data_to_xsoar_format(ind_data):
         "PatternType": properties.get("patternType", ''),
         "ValidFrom": properties.get("validFrom", ''),
         "ValidUntil": properties.get("validUntil", ''),
-        # "Values": properties.get("parsedPattern")[0].get("patternTypeValues")[0].get("value")
+        "Values": properties.get("parsedPattern")[0].get("patternTypeValues")[0].get("value")
     }
     remove_nulls_from_dictionary(formatted_data)
     return formatted_data
@@ -1122,7 +1122,7 @@ def get_data_for_new_ind(args):
         'confidence': arg_to_number(args.get('confidence')),
         'threatTypes': argToList(args.get('threat_types')),
         'includeDisabled': args.get('includeDisabled', ''),
-        'source': 'Azure Sentinel',
+        'source': args.get("source", "Azure Sentinel"),
         'threatIntelligenceTags': argToList(args.get('tags')),
         'validFrom': args.get('valid_from', ''),
         'validUntil': args.get('valid_until', ''),
@@ -1184,9 +1184,13 @@ def extract_original_data_from_indicator(original_data):
         "validFrom": original_data.get("validFrom", ''),
         "validUntil": original_data.get("validUntil", ''),
         "createdByRef": original_data.get("createdByRef", ''),
-        "created": original_data.get('created', '')
+        "created": original_data.get('created', ''),
+        "externalId": original_data.get("externalId"),
+        'displayName': original_data.get("displayName"),
+        'source': original_data.get("source")
     }
 
+    remove_nulls_from_dictionary(extracted_data)
     return extracted_data
 
 
@@ -1321,8 +1325,6 @@ def update_threat_indicator_command(client, args):
         "properties": updated_data
     }
 
-    #id_of_indicator = client.server_url + name
-
     new_url_suffix = f'threatIntelligence/main/indicators/{name}'
 
     result = client.http_request('PUT', new_url_suffix, data=data)
@@ -1354,7 +1356,7 @@ def delete_threat_indicator_command(client, args):
     return CommandResults(
         readable_output=f'Threat Intelligence Indicators were deleted successfully.',
         outputs_prefix='AzureSentinel.ThreatIndicator',
-        outputs_key_field='ID',
+        outputs=[],
         raw_response={},
     )
 
