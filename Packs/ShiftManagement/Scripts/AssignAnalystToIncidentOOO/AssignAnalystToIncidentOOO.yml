@@ -37,10 +37,10 @@ args:
 comment: |-
   Assigns analysts who are not out of the office to the shift handover incident. Use the ManageOOOusers automation to add or remove analysts from the out-of-office list.
 commonfields:
-  id: AssignAnalystToIncidentOOO
+  id: AssignAnalystToIncidentOOODEV
   version: -1
 enabled: true
-name: AssignAnalystToIncidentOOO
+name: AssignAnalystToIncidentOOODEV
 script: '-'
 subtype: python3
 system: false
