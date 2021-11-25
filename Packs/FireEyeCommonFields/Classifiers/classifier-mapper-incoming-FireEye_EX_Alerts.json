@@ -81,6 +81,9 @@
                 "FireEye Malware Informationֿ": {
                     "simple": "explanation.malwareDetected.malware"
                 },
+                "FireEye Malware Info": {
+                    "simple": "explanation.malwareDetected.malware"
+                },
                 "MD5": {
                     "simple": "explanation.malwareDetected.malware.md5Sum"
                 },
