@@ -983,6 +983,12 @@ script:
       name: from
       required: false
       secret: false
+    - default: false
+      description: The content (body) of the email (in HTML format).
+      isArray: false
+      name: htmlBody
+      required: false
+      secret: false
     deprecated: false
     description: Sends an email using Microsoft Graph.
     execution: false
