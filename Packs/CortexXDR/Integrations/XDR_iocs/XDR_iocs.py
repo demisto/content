@@ -7,7 +7,7 @@ import string
 import tempfile
 from datetime import timezone
 from typing import Dict, Optional, List, Tuple, Union
-from dateutil.parser import parse
+from dateparser import parse
 from urllib3 import disable_warnings
 from math import ceil
 
@@ -42,7 +42,8 @@ class Client:
              + 'incorrect key, id, or other invalid authentication parameters.',
         402: 'Unauthorized access. User does not have the required license type to run this API.',
         403: 'Unauthorized access. The provided API key does not have the required RBAC permissions to run this API.',
-        404: 'XDR Not found: The provided URL may not be of an active XDR server.'
+        404: 'XDR Not found: The provided URL may not be of an active XDR server.',
+        413: 'Requst entity too large please reach XDR support.'
     }
 
     def __init__(self, params: Dict):
@@ -231,10 +232,13 @@ def get_temp_file() -> str:
 
 def sync(client: Client):
     temp_file_path: str = get_temp_file()
-    create_file_sync(temp_file_path)
-    requests_kwargs: Dict = get_requests_kwargs(file_path=temp_file_path)
-    path: str = 'sync_tim_iocs'
-    client.http_request(path, requests_kwargs)
+    try:
+        create_file_sync(temp_file_path)
+        requests_kwargs: Dict = get_requests_kwargs(file_path=temp_file_path)
+        path: str = 'sync_tim_iocs'
+        client.http_request(path, requests_kwargs)
+    finally:
+        os.remove(temp_file_path)
     demisto.setIntegrationContext({'ts': int(datetime.now(timezone.utc).timestamp() * 1000),
                                    'time': datetime.now(timezone.utc).strftime(DEMISTO_TIME_FORMAT),
                                    'iocs_to_keep_time': create_iocs_to_keep_time()})
@@ -245,10 +249,13 @@ def iocs_to_keep(client: Client):
     if not datetime.utcnow().hour in range(1, 3):
         raise DemistoException('iocs_to_keep runs only between 01:00 and 03:00.')
     temp_file_path: str = get_temp_file()
-    create_file_iocs_to_keep(temp_file_path)
-    requests_kwargs: Dict = get_requests_kwargs(file_path=temp_file_path)
-    path = 'iocs_to_keep'
-    client.http_request(path, requests_kwargs)
+    try:
+        create_file_iocs_to_keep(temp_file_path)
+        requests_kwargs: Dict = get_requests_kwargs(file_path=temp_file_path)
+        path = 'iocs_to_keep'
+        client.http_request(path, requests_kwargs)
+    finally:
+        os.remove(temp_file_path)
     return_outputs('sync with XDR completed.')
 
 
@@ -434,6 +441,26 @@ def get_indicator_xdr_score(indicator: str, xdr_server: int):
         return xdr_local
 
 
+def set_sync_time(time: str):
+    date_time_obj = parse(time, settings={'TIMEZONE': 'UTC'})
+    if not date_time_obj:
+        raise ValueError('invalid time format.')
+    demisto.setIntegrationContext({'ts': int(date_time_obj.timestamp() * 1000),
+                                   'time': date_time_obj.strftime(DEMISTO_TIME_FORMAT),
+                                   'iocs_to_keep_time': create_iocs_to_keep_time()})
+    return_results(f'set sync time to {time} seccedded.')
+
+
+def get_sync_file():
+    temp_file_path = get_temp_file()
+    try:
+        create_file_sync(temp_file_path)
+        with open(temp_file_path, 'r') as _tmpfile:
+            return_results(fileResult('xdr-sync-file', _tmpfile.read()))
+    finally:
+        os.remove(temp_file_path)
+
+
 def main():
     # """
     # Executes an integration command
@@ -454,6 +481,10 @@ def main():
     try:
         if command == 'fetch-indicators':
             fetch_indicators(client, params.get('autoSync', False))
+        elif command == 'xdr-iocs-set-sync-time':
+            set_sync_time(demisto.args()['time'])
+        elif command == 'xdr-iocs-create-sync-file':
+            get_sync_file()
         elif command in commands:
             commands[command](client)
         elif command == 'xdr-iocs-sync':
