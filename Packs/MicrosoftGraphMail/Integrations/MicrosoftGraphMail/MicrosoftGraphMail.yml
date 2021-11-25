@@ -39,7 +39,8 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-- additionalinfo: The timeout of the HTTP requests sent to Microsoft Graph API (in seconds).
+- additionalinfo: The timeout of the HTTP requests sent to Microsoft Graph API (in
+    seconds).
   defaultvalue: '10'
   display: HTTP Timeout
   name: timeout
@@ -982,6 +983,12 @@ script:
       name: from
       required: false
       secret: false
+    - default: false
+      description: The content (body) of the email (in HTML format).
+      isArray: false
+      name: htmlBody
+      required: false
+      secret: false
     deprecated: false
     description: Sends an email using Microsoft Graph.
     execution: false
@@ -1153,7 +1160,7 @@ script:
     - contextPath: MicrosoftGraph.SentMail.ID
       description: The immutable ID of the message.
       type: String
-  dockerimage: demisto/crypto:1.0.0.24037
+  dockerimage: demisto/crypto:1.0.0.24380
   feed: false
   isfetch: true
   longRunning: false
