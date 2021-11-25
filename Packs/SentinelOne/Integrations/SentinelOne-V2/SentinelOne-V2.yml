@@ -7,10 +7,12 @@ configuration:
   name: url
   required: true
   type: 0
-- display: API Token
-  name: token
-  required: true
-  type: 4
+- display: ''
+  name: credentials
+  required: false
+  type: 9
+  hiddenusername: true
+  displaypassword: API Token (Recommended)
 - defaultvalue: '2.1'
   display: API Version.
   required: true
@@ -55,6 +57,11 @@ configuration:
   name: fetch_site_ids
   type: 0
   required: false
+- display: API Token (Deprecated)
+  name: token
+  required: false
+  type: 4
+  additionalinfo: Use the "API Token (Recommended)" parameter instead.
 description: Use the SentinelOne integration to send requests to your management server and get responses with data pulled from agents or from the management database.
 display: SentinelOne v2
 name: SentinelOne V2
