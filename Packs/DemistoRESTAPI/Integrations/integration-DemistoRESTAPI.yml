@@ -252,5 +252,5 @@ script:
     execution: true
   runonce: false
 tests:
-- DemistoUploadFile Test
+- DemistoUploadFileV2 Test
 fromversion: 5.0.0
