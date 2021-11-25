@@ -6,7 +6,7 @@
         "Phishing Alerts": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                " Email Internal Message ID": {
+                "Email Internal Message ID": {
                     "complex": null,
                     "simple": "GUID"
                 },
