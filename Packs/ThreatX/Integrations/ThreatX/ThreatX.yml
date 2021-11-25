@@ -76,7 +76,7 @@ script:
   - arguments:
     - default: false
       description: 'IP address or CIDR, for example: "10.1.1.1" or "10.1.1.0/24".'
-      isArray: false
+      isArray: true
       name: ip
       required: true
       secret: false

@@ -221,21 +221,30 @@ def blacklist_ip_command(args):
     ips = args.get('ip', None)
     description = args.get('description', 'Added by ThreatX Demisto Integration')
     results = []
+    errors = []
     for ip in argToList(ips):
-        results.append(blacklist_ip(ip, description))
+        try:
+            ip_result = blacklist_ip(ip, description)
+        except Exception as error:
+            demisto.error('failed adding ip: {} to balcklist\n{}'.format(ip, traceback.format_exc()))
+            errors.append('Failed to add ip: {} to blacklist error: {}'.format(ip, error))
+        except SystemExit:
+            # exception was handled with return_error
+            pass
+        else:
+            results.append(ip_result)
 
-    md = tableToMarkdown('Blacklist IP',
-                         results,
-                         ['Result'],
-                         removeNull=True)
+    readable_outputs = tableToMarkdown('Blacklist IP',
+                                       results,
+                                       ['Result'],
+                                       removeNull=True)
 
-    ec = {
-        'IP(val.Address === obj.Address)': {
-            'Address': ips
-        }
-    }
-
-    return_outputs(md, ec, results)
+    return_results(CommandResults(
+        outputs=results, readable_output=readable_outputs,
+        outputs_prefix='IP(val.Address === obj.Address).Address'
+    ))
+    if errors:
+        return_error('\n'.join(errors))
 
 
 @logger
