@@ -1866,16 +1866,19 @@ class JsonTransformer:
             for k, v in json_input.items():
 
                 if is_in_path or k in self.keys:
-                    if isinstance(v, dict):  # if the value is dictionary, parse all the dictionary as well
-                        yield from self.json_to_path_generator(v, path + [k])
+                    if isinstance(v, dict):
+                        for res in self.json_to_path_generator(v, path + [k]): # this is yield from for python2 BC
+                            yield res
                     else:
                         yield path, k, v
 
                 if self.is_nested:
-                    yield from self.json_to_path_generator(v, path + [k])
+                    for res in self.json_to_path_generator(v, path + [k]):  # this is yield from for python2 BC
+                        yield res
         if isinstance(json_input, list):
             for item in json_input:
-                yield from self.json_to_path_generator(item, path)
+                for res in self.json_to_path_generator(item, path):  # this is yield from for python2 BC
+                    yield res
 
 
 def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None, url_keys=None,
@@ -8341,3 +8344,4 @@ def indicators_value_to_clickable(indicators):
             indicator_url = os.path.join('#', 'indicator', indicator_id)
             res[indicator] = '[{indicator}]({indicator_url})'.format(indicator=indicator, indicator_url=indicator_url)
     return res
+
