@@ -55,11 +55,22 @@ def test_get_email_recipients(email_to, email_from, service_mail, excepted):
 @pytest.mark.parametrize(
     "notes, attachments, expected_results",
     [([{'Metadata': {'user': 'DBot'}, 'Contents': 'note1'}, {'Metadata': {'user': 'DBot'}, 'Contents': 'note2'}],
-     [{'name': 'attachment1.png'}, {'name': 'attachment2.png'}],
-     "Attachments: ['attachment1.png', 'attachment2.png']\n\nDBot: \nnote1\n\nDBot: \nnote2\n\n")
+      [{'name': 'attachment1.png'}, {'name': 'attachment2.png'}],
+      "DBot: \nnote1\n\nDBot: \nnote2\n\nAttachments: ['attachment1.png', 'attachment2.png']\n\n"),
+     ([{'Metadata': {'user': 'DBot'}, 'Contents': 'note1'}, {'Metadata': {'user': 'DBot'}, 'Contents': 'note2'}],
+      [],
+      "DBot: \nnote1\n\nDBot: \nnote2\n\n"),
      ]
 )
 def test_get_reply_body(mocker, notes, attachments, expected_results):
+    """Unit test
+        Given
+        - List of notes and list of attachments.
+        When
+        - Getting the email reply body.
+        Then
+        - validate that the correct reply is returned.
+        """
     from SendEmailReply import get_reply_body
     import CommonServerPython
     mocker.patch.object(demisto, "executeCommand", return_value=[{'EntryContext': {'replyhtmlbody': ''}, 'Type': ''}])
