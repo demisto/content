@@ -61,7 +61,7 @@ configuration:
   - P3
   - P4
   - P5
-  type: 15
+  type: 16
 - display: Tags
   additionalinfo: Fetch only events with selected tags. If query is used, this paramter
     will be overrided.
