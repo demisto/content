@@ -75,7 +75,6 @@ STIX_PREFIX = "STIX "
 ZERO = timedelta(0)
 HOUR = timedelta(hours=1)
 
-
 if IS_PY3:
     STRING_TYPES = (str, bytes)  # type: ignore
     STRING_OBJ_TYPES = (str,)
@@ -1254,6 +1253,7 @@ class SmartGetDict(dict):
     :rtype: ``SmartGetDict``
 
     """
+
     def get(self, key, default=None):
         res = dict.get(self, key)
         if res is not None:
@@ -1783,6 +1783,9 @@ def create_clickable_url(url):
 
 
 class JsonTransformer:
+    """
+    A class to transform a json input to a markdown string
+    """
     def __init__(self, flatten=False, keys=None, is_nested=False, func=None):
         """
         Constructor for JsonTransformer
@@ -1819,7 +1822,7 @@ class JsonTransformer:
 
         str_lst = []
         prev_path = None
-        for path, key, val in self.item_generator(json_input):
+        for path, key, val in self.json_to_path_generator(json_input):
             if path != prev_path:  # need to construct tha `path` string only of it changed from the last one
                 str_path = '\n'.join(["{tabs}**{p}**:".format(p=p, tabs=i * '\t') for i, p in enumerate(path)])
                 str_lst.append(str_path)
@@ -1830,25 +1833,34 @@ class JsonTransformer:
 
         return '\n'.join(str_lst)
 
-    def item_generator(self, json_input, path=None):
+    def json_to_path_generator(self, json_input, path=None):
+        """
+        :type json_input: ``list`` or ``dict``
+        :param json_input: The json input to transform
+
+        :type path: ``List[str]``
+        :param path: The path of the key, value pair inside the json
+
+        :rtype ``Tuple[List[str], str, str]``
+        :return:  A tuple. the second and third elements are key, values, and the first is their path in the json
+        """
         if path is None:
             path = []
+        is_in_path = not self.keys or any(p for p in path if p in self.keys)
         if isinstance(json_input, dict):
             for k, v in json_input.items():
 
-                if not self.keys or k in self.keys:
+                if is_in_path or k in self.keys:
                     if isinstance(v, dict):  # if the value is dictionary, parse all the dictionary as well
-                        yield from self.item_generator(v, path + [k])
+                        yield from self.json_to_path_generator(v, path + [k])
                     else:
                         yield path, k, v
-                elif any(p for p in path if p in self.keys):  # check if the path includes one of our keys
-                    yield path, k, v
 
                 if self.is_nested:
-                    yield from self.item_generator(v, path + [k])
+                    yield from self.json_to_path_generator(v, path + [k])
         if isinstance(json_input, list):
             for item in json_input:
-                yield from self.item_generator(item, path)
+                yield from self.json_to_path_generator(item, path)
 
 
 def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None, url_keys=None,
@@ -2628,7 +2640,7 @@ class Common(object):
             if not context_prefix:
                 raise ValueError('context_prefix is mandatory for creating the indicator')
 
-            self.CONTEXT_PATH = '{context_prefix}(val.value && val.value == obj.value)'.\
+            self.CONTEXT_PATH = '{context_prefix}(val.value && val.value == obj.value)'. \
                 format(context_prefix=context_prefix)
 
             self.value = value
@@ -4195,6 +4207,7 @@ class Common(object):
         :return: None
         :rtype: ``None``
         """
+
         class Algorithm(object):
             """
             Algorithm class to enumerate available algorithms
@@ -4217,18 +4230,18 @@ class Common(object):
                 )
 
         def __init__(
-            self,
-            algorithm,  # type: str
-            length,  # type: int
-            publickey=None,  # type: str
-            p=None,  # type: str
-            q=None,  # type: str
-            g=None,  # type: str
-            modulus=None,  # type: str
-            exponent=None,  # type: int
-            x=None,  # type: str
-            y=None,  # type: str
-            curve=None  # type: str
+                self,
+                algorithm,  # type: str
+                length,  # type: int
+                publickey=None,  # type: str
+                p=None,  # type: str
+                q=None,  # type: str
+                g=None,  # type: str
+                modulus=None,  # type: str
+                exponent=None,  # type: int
+                x=None,  # type: str
+                y=None,  # type: str
+                curve=None  # type: str
         ):
 
             if not Common.CertificatePublicKey.Algorithm.is_valid_type(algorithm):
@@ -4318,9 +4331,9 @@ class Common(object):
             )
 
         def __init__(
-            self,
-            gn_value,  # type: str
-            gn_type  # type: str
+                self,
+                gn_value,  # type: str
+                gn_type  # type: str
         ):
             if not Common.GeneralName.is_valid_type(gn_type):
                 raise TypeError(
@@ -4407,6 +4420,7 @@ class Common(object):
         :return: None
         :rtype: ``None``
         """
+
         class SubjectAlternativeName(object):
             """
             SubjectAlternativeName class
@@ -4424,11 +4438,12 @@ class Common(object):
             :return: None
             :rtype: ``None``
             """
+
             def __init__(
-                self,
-                gn=None,  # type: Optional[Common.GeneralName]
-                gn_type=None,  # type: Optional[str]
-                gn_value=None  # type: Optional[str]
+                    self,
+                    gn=None,  # type: Optional[Common.GeneralName]
+                    gn_type=None,  # type: Optional[str]
+                    gn_value=None  # type: Optional[str]
             ):
                 if gn:
                     self.gn = gn
@@ -4438,7 +4453,8 @@ class Common(object):
                         gn_type=gn_type
                     )
                 else:
-                    raise ValueError('either GeneralName or gn_type/gn_value required to inizialize SubjectAlternativeName')
+                    raise ValueError(
+                        'either GeneralName or gn_type/gn_value required to inizialize SubjectAlternativeName')
 
             def to_context(self):
                 return self.gn.to_context()
@@ -4463,11 +4479,12 @@ class Common(object):
             :return: None
             :rtype: ``None``
             """
+
             def __init__(
-                self,
-                issuer=None,  # type: Optional[List[Common.GeneralName]]
-                serial_number=None,  # type: Optional[str]
-                key_identifier=None  # type: Optional[str]
+                    self,
+                    issuer=None,  # type: Optional[List[Common.GeneralName]]
+                    serial_number=None,  # type: Optional[str]
+                    key_identifier=None  # type: Optional[str]
             ):
                 self.issuer = issuer
                 self.serial_number = serial_number
@@ -4506,12 +4523,13 @@ class Common(object):
             :return: None
             :rtype: ``None``
             """
+
             def __init__(
-                self,
-                full_name=None,  # type: Optional[List[Common.GeneralName]]
-                relative_name=None,  # type:  Optional[str]
-                crl_issuer=None,  # type: Optional[List[Common.GeneralName]]
-                reasons=None  # type: Optional[List[str]]
+                    self,
+                    full_name=None,  # type: Optional[List[Common.GeneralName]]
+                    relative_name=None,  # type:  Optional[str]
+                    crl_issuer=None,  # type: Optional[List[Common.GeneralName]]
+                    reasons=None  # type: Optional[List[str]]
             ):
                 self.full_name = full_name
                 self.relative_name = relative_name
@@ -4545,10 +4563,11 @@ class Common(object):
             :return: None
             :rtype: ``None``
             """
+
             def __init__(
-                self,
-                policy_identifier,  # type: str
-                policy_qualifiers=None  # type: Optional[List[str]]
+                    self,
+                    policy_identifier,  # type: str
+                    policy_qualifiers=None  # type: Optional[List[str]]
             ):
                 self.policy_identifier = policy_identifier
                 self.policy_qualifiers = policy_qualifiers
@@ -4577,10 +4596,11 @@ class Common(object):
             :return: None
             :rtype: ``None``
             """
+
             def __init__(
-                self,
-                access_method,  # type: str
-                access_location  # type: Common.GeneralName
+                    self,
+                    access_method,  # type: str
+                    access_location  # type: Common.GeneralName
             ):
                 self.access_method = access_method
                 self.access_location = access_location
@@ -4605,10 +4625,11 @@ class Common(object):
             :return: None
             :rtype: ``None``
             """
+
             def __init__(
-                self,
-                ca,  # type: bool
-                path_length=None  # type: int
+                    self,
+                    ca,  # type: bool
+                    path_length=None  # type: int
             ):
                 self.ca = ca
                 self.path_length = path_length
@@ -4643,6 +4664,7 @@ class Common(object):
             :return: None
             :rtype: ``None``
             """
+
             class EntryType(object):
                 """
                 EntryType class
@@ -4662,13 +4684,12 @@ class Common(object):
                     )
 
             def __init__(
-                self,
-                entry_type,  # type: str
-                version,  # type: int
-                log_id,  # type: str
-                timestamp  # type: str
+                    self,
+                    entry_type,  # type: str
+                    version,  # type: int
+                    log_id,  # type: str
+                    timestamp  # type: str
             ):
-
                 if not Common.CertificateExtension.SignedCertificateTimestamp.EntryType.is_valid_type(entry_type):
                     raise TypeError(
                         'entry_type must be of type Common.CertificateExtension.SignedCertificateTimestamp.EntryType enum'
@@ -4728,28 +4749,31 @@ class Common(object):
                 )
 
         def __init__(
-            self,
-            extension_type,  # type: str
-            critical,  # type: bool
-            oid=None,  # type: Optional[str]
-            extension_name=None,  # type: Optional[str]
-            subject_alternative_names=None,  # type: Optional[List[Common.CertificateExtension.SubjectAlternativeName]]
-            authority_key_identifier=None,  # type: Optional[Common.CertificateExtension.AuthorityKeyIdentifier]
-            digest=None,  # type: str
-            digital_signature=None,  # type: Optional[bool]
-            content_commitment=None,  # type: Optional[bool]
-            key_encipherment=None,  # type: Optional[bool]
-            data_encipherment=None,  # type: Optional[bool]
-            key_agreement=None,  # type: Optional[bool]
-            key_cert_sign=None,  # type: Optional[bool]
-            crl_sign=None,  # type: Optional[bool]
-            usages=None,  # type: Optional[List[str]]
-            distribution_points=None,  # type: Optional[List[Common.CertificateExtension.DistributionPoint]]
-            certificate_policies=None,  # type: Optional[List[Common.CertificateExtension.CertificatePolicy]]
-            authority_information_access=None,  # type: Optional[List[Common.CertificateExtension.AuthorityInformationAccess]]
-            basic_constraints=None,  # type: Optional[Common.CertificateExtension.BasicConstraints]
-            signed_certificate_timestamps=None,  # type: Optional[List[Common.CertificateExtension.SignedCertificateTimestamp]]
-            value=None  # type: Optional[Union[str, List[Any], Dict[str, Any]]]
+                self,
+                extension_type,  # type: str
+                critical,  # type: bool
+                oid=None,  # type: Optional[str]
+                extension_name=None,  # type: Optional[str]
+                subject_alternative_names=None,
+                # type: Optional[List[Common.CertificateExtension.SubjectAlternativeName]]
+                authority_key_identifier=None,  # type: Optional[Common.CertificateExtension.AuthorityKeyIdentifier]
+                digest=None,  # type: str
+                digital_signature=None,  # type: Optional[bool]
+                content_commitment=None,  # type: Optional[bool]
+                key_encipherment=None,  # type: Optional[bool]
+                data_encipherment=None,  # type: Optional[bool]
+                key_agreement=None,  # type: Optional[bool]
+                key_cert_sign=None,  # type: Optional[bool]
+                crl_sign=None,  # type: Optional[bool]
+                usages=None,  # type: Optional[List[str]]
+                distribution_points=None,  # type: Optional[List[Common.CertificateExtension.DistributionPoint]]
+                certificate_policies=None,  # type: Optional[List[Common.CertificateExtension.CertificatePolicy]]
+                authority_information_access=None,
+                # type: Optional[List[Common.CertificateExtension.AuthorityInformationAccess]]
+                basic_constraints=None,  # type: Optional[Common.CertificateExtension.BasicConstraints]
+                signed_certificate_timestamps=None,
+                # type: Optional[List[Common.CertificateExtension.SignedCertificateTimestamp]]
+                value=None  # type: Optional[Union[str, List[Any], Dict[str, Any]]]
         ):
             if not Common.CertificateExtension.ExtensionType.is_valid_type(extension_type):
                 raise TypeError('algorithm must be of type Common.CertificateExtension.ExtensionType enum')
@@ -4839,20 +4863,20 @@ class Common(object):
             }  # type: Dict[str, Any]
 
             if (
-                self.extension_type == Common.CertificateExtension.ExtensionType.SUBJECTALTERNATIVENAME
-                and self.subject_alternative_names is not None
+                    self.extension_type == Common.CertificateExtension.ExtensionType.SUBJECTALTERNATIVENAME
+                    and self.subject_alternative_names is not None
             ):
                 extension_context["Value"] = [san.to_context() for san in self.subject_alternative_names]
 
             elif (
-                self.extension_type == Common.CertificateExtension.ExtensionType.AUTHORITYKEYIDENTIFIER
-                and self.authority_key_identifier is not None
+                    self.extension_type == Common.CertificateExtension.ExtensionType.AUTHORITYKEYIDENTIFIER
+                    and self.authority_key_identifier is not None
             ):
                 extension_context["Value"] = self.authority_key_identifier.to_context()
 
             elif (
-                self.extension_type == Common.CertificateExtension.ExtensionType.SUBJECTKEYIDENTIFIER
-                and self.digest is not None
+                    self.extension_type == Common.CertificateExtension.ExtensionType.SUBJECTKEYIDENTIFIER
+                    and self.digest is not None
             ):
                 extension_context["Value"] = {
                     "Digest": self.digest
@@ -4879,49 +4903,49 @@ class Common(object):
                     extension_context["Value"] = key_usage
 
             elif (
-                self.extension_type == Common.CertificateExtension.ExtensionType.EXTENDEDKEYUSAGE
-                and self.usages is not None
+                    self.extension_type == Common.CertificateExtension.ExtensionType.EXTENDEDKEYUSAGE
+                    and self.usages is not None
             ):
                 extension_context["Value"] = {
                     "Usages": [u for u in self.usages]
                 }
 
             elif (
-                self.extension_type == Common.CertificateExtension.ExtensionType.CRLDISTRIBUTIONPOINTS
-                and self.distribution_points is not None
+                    self.extension_type == Common.CertificateExtension.ExtensionType.CRLDISTRIBUTIONPOINTS
+                    and self.distribution_points is not None
             ):
                 extension_context["Value"] = [dp.to_context() for dp in self.distribution_points]
 
             elif (
-                self.extension_type == Common.CertificateExtension.ExtensionType.CERTIFICATEPOLICIES
-                and self.certificate_policies is not None
+                    self.extension_type == Common.CertificateExtension.ExtensionType.CERTIFICATEPOLICIES
+                    and self.certificate_policies is not None
             ):
                 extension_context["Value"] = [cp.to_context() for cp in self.certificate_policies]
 
             elif (
-                self.extension_type == Common.CertificateExtension.ExtensionType.AUTHORITYINFORMATIONACCESS
-                and self.authority_information_access is not None
+                    self.extension_type == Common.CertificateExtension.ExtensionType.AUTHORITYINFORMATIONACCESS
+                    and self.authority_information_access is not None
             ):
                 extension_context["Value"] = [aia.to_context() for aia in self.authority_information_access]
 
             elif (
-                self.extension_type == Common.CertificateExtension.ExtensionType.BASICCONSTRAINTS
-                and self.basic_constraints is not None
+                    self.extension_type == Common.CertificateExtension.ExtensionType.BASICCONSTRAINTS
+                    and self.basic_constraints is not None
             ):
                 extension_context["Value"] = self.basic_constraints.to_context()
 
             elif (
-                self.extension_type in [
-                    Common.CertificateExtension.ExtensionType.SIGNEDCERTIFICATETIMESTAMPS,
-                    Common.CertificateExtension.ExtensionType.PRESIGNEDCERTIFICATETIMESTAMPS
-                ]
-                and self.signed_certificate_timestamps is not None
+                    self.extension_type in [
+                Common.CertificateExtension.ExtensionType.SIGNEDCERTIFICATETIMESTAMPS,
+                Common.CertificateExtension.ExtensionType.PRESIGNEDCERTIFICATETIMESTAMPS
+            ]
+                    and self.signed_certificate_timestamps is not None
             ):
                 extension_context["Value"] = [sct.to_context() for sct in self.signed_certificate_timestamps]
 
             elif (
-                self.extension_type == Common.CertificateExtension.ExtensionType.OTHER
-                and self.value is not None
+                    self.extension_type == Common.CertificateExtension.ExtensionType.OTHER
+                    and self.value is not None
             ):
                 extension_context["Value"] = self.value
 
@@ -4994,26 +5018,26 @@ class Common(object):
                        'val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512)'
 
         def __init__(
-            self,
-            subject_dn,  # type: str
-            dbot_score=None,  # type: Optional[Common.DBotScore]
-            name=None,  # type: Optional[Union[str, List[str]]]
-            issuer_dn=None,  # type: Optional[str]
-            serial_number=None,  # type: Optional[str]
-            validity_not_after=None,  # type: Optional[str]
-            validity_not_before=None,  # type: Optional[str]
-            sha512=None,  # type: Optional[str]
-            sha256=None,  # type: Optional[str]
-            sha1=None,  # type: Optional[str]
-            md5=None,  # type: Optional[str]
-            publickey=None,  # type: Optional[Common.CertificatePublicKey]
-            spki_sha256=None,  # type: Optional[str]
-            signature_algorithm=None,  # type: Optional[str]
-            signature=None,  # type: Optional[str]
-            subject_alternative_name=None, \
-            # type: Optional[List[Union[str,Dict[str, str],Common.CertificateExtension.SubjectAlternativeName]]]
-            extensions=None,  # type: Optional[List[Common.CertificateExtension]]
-            pem=None  # type: Optional[str]
+                self,
+                subject_dn,  # type: str
+                dbot_score=None,  # type: Optional[Common.DBotScore]
+                name=None,  # type: Optional[Union[str, List[str]]]
+                issuer_dn=None,  # type: Optional[str]
+                serial_number=None,  # type: Optional[str]
+                validity_not_after=None,  # type: Optional[str]
+                validity_not_before=None,  # type: Optional[str]
+                sha512=None,  # type: Optional[str]
+                sha256=None,  # type: Optional[str]
+                sha1=None,  # type: Optional[str]
+                md5=None,  # type: Optional[str]
+                publickey=None,  # type: Optional[Common.CertificatePublicKey]
+                spki_sha256=None,  # type: Optional[str]
+                signature_algorithm=None,  # type: Optional[str]
+                signature=None,  # type: Optional[str]
+                subject_alternative_name=None, \
+                # type: Optional[List[Union[str,Dict[str, str],Common.CertificateExtension.SubjectAlternativeName]]]
+                extensions=None,  # type: Optional[List[Common.CertificateExtension]]
+                pem=None  # type: Optional[str]
 
         ):
 
@@ -5051,13 +5075,13 @@ class Common(object):
             # if subject_alternative_name is set and is a list
             # make sure it is a list of strings, dicts of strings or SAN Extensions
             if (
-                subject_alternative_name
-                and isinstance(subject_alternative_name, list)
-                and not all(
-                    isinstance(san, str)
-                    or isinstance(san, dict)
-                    or isinstance(san, Common.CertificateExtension.SubjectAlternativeName)
-                    for san in subject_alternative_name)
+                    subject_alternative_name
+                    and isinstance(subject_alternative_name, list)
+                    and not all(
+                isinstance(san, str)
+                or isinstance(san, dict)
+                or isinstance(san, Common.CertificateExtension.SubjectAlternativeName)
+                for san in subject_alternative_name)
             ):
                 raise TypeError(
                     'subject_alternative_name must be list of str or Common.CertificateExtension.SubjectAlternativeName'
@@ -5065,9 +5089,9 @@ class Common(object):
             self.subject_alternative_name = subject_alternative_name
 
             if (
-                extensions
-                and not isinstance(extensions, list)
-                and any(isinstance(e, Common.CertificateExtension) for e in extensions)
+                    extensions
+                    and not isinstance(extensions, list)
+                    and any(isinstance(e, Common.CertificateExtension) for e in extensions)
             ):
                 raise TypeError('extensions must be of type List[Common.CertificateExtension]')
             self.extensions = extensions
@@ -5091,14 +5115,14 @@ class Common(object):
                         })
                     elif isinstance(san, dict):
                         san_list.append(san)
-                    elif(isinstance(san, Common.CertificateExtension.SubjectAlternativeName)):
+                    elif (isinstance(san, Common.CertificateExtension.SubjectAlternativeName)):
                         san_list.append(san.to_context())
 
             elif self.extensions:  # autogenerate it from extensions
                 for ext in self.extensions:
                     if (
-                        ext.extension_type == Common.CertificateExtension.ExtensionType.SUBJECTALTERNATIVENAME
-                        and ext.subject_alternative_names is not None
+                            ext.extension_type == Common.CertificateExtension.ExtensionType.SUBJECTALTERNATIVENAME
+                            and ext.subject_alternative_names is not None
                     ):
                         for san in ext.subject_alternative_names:
                             san_list.append(san.to_context())
@@ -5115,11 +5139,11 @@ class Common(object):
                     name = set([
                         sn['Value'] for sn in san_list
                         if (
-                            'Value' in sn
-                            and (
-                                'Type' not in sn
-                                or sn['Type'] in (Common.GeneralName.DNSNAME, Common.GeneralName.IPADDRESS)
-                            )
+                                'Value' in sn
+                                and (
+                                        'Type' not in sn
+                                        or sn['Type'] in (Common.GeneralName.DNSNAME, Common.GeneralName.IPADDRESS)
+                                )
                         )
                     ])
 
@@ -5298,6 +5322,7 @@ class IndicatorsTimeline:
     :return: None
     :rtype: ``None``
     """
+
     def __init__(self, indicators=None, category=None, message=None):
         # type: (list, str, str) -> None
         if indicators is None:
@@ -6749,7 +6774,8 @@ class DebugLogger(object):
             self.http_client_print = getattr(http_client, 'print', None)  # save in case someone else patched it already
             setattr(http_client, 'print', self.int_logger.print_override)
         self.handler = DemistoHandler(self.int_logger)
-        demisto_formatter = logging.Formatter(fmt='python logging: %(levelname)s [%(name)s] - %(message)s', datefmt=None)
+        demisto_formatter = logging.Formatter(fmt='python logging: %(levelname)s [%(name)s] - %(message)s',
+                                              datefmt=None)
         self.handler.setFormatter(demisto_formatter)
         self.root_logger = logging.getLogger()
         self.prev_log_level = self.root_logger.getEffectiveLevel()
@@ -6784,15 +6810,17 @@ class DebugLogger(object):
         """
         Utility function to log start of debug mode logging
         """
-        msg = "debug-mode started.\n#### http client print found: {}.\n#### Env {}.".format(self.http_client_print is not None,
-                                                                                            os.environ)
+        msg = "debug-mode started.\n#### http client print found: {}.\n#### Env {}.".format(
+            self.http_client_print is not None,
+            os.environ)
         if hasattr(demisto, 'params'):
             msg += "\n#### Params: {}.".format(json.dumps(demisto.params(), indent=2))
         calling_context = demisto.callingContext.get('context', {})
         msg += "\n#### Docker image: [{}]".format(calling_context.get('DockerImage'))
         brand = calling_context.get('IntegrationBrand')
         if brand:
-            msg += "\n#### Integration: brand: [{}] instance: [{}]".format(brand, calling_context.get('IntegrationInstance'))
+            msg += "\n#### Integration: brand: [{}] instance: [{}]".format(brand,
+                                                                           calling_context.get('IntegrationInstance'))
         sm = get_schedule_metadata(context=calling_context)
         if sm.get('is_polling'):
             msg += "\n#### Schedule Metadata: scheduled command: [{}] args: [{}] times ran: [{}] scheduled: [{}] end " \
@@ -7057,7 +7085,8 @@ if 'requests' in sys.modules:
                 # we ignore exceptions raised due to session not used by the client and hence do not exist in __del__
                 pass
             except Exception:  # noqa
-                demisto.debug('failed to close BaseClient session with the following error:\n{}'.format(traceback.format_exc()))
+                demisto.debug(
+                    'failed to close BaseClient session with the following error:\n{}'.format(traceback.format_exc()))
 
         def _implement_retry(self, retries=0,
                              status_list_to_retry=None,
@@ -7102,7 +7131,8 @@ if 'requests' in sys.modules:
                 been exhausted.
             """
             try:
-                method_whitelist = "allowed_methods" if hasattr(Retry.DEFAULT, "allowed_methods") else "method_whitelist"
+                method_whitelist = "allowed_methods" if hasattr(Retry.DEFAULT,
+                                                                "allowed_methods") else "method_whitelist"
                 whitelist_kawargs = {
                     method_whitelist: frozenset(['GET', 'POST', 'PUT'])
                 }
@@ -7230,7 +7260,8 @@ if 'requests' in sys.modules:
                 headers = headers if headers else self._headers
                 auth = auth if auth else self._auth
                 if retries:
-                    self._implement_retry(retries, status_list_to_retry, backoff_factor, raise_on_redirect, raise_on_status)
+                    self._implement_retry(retries, status_list_to_retry, backoff_factor, raise_on_redirect,
+                                          raise_on_status)
                 # Execute
                 res = self._session.request(
                     method,
@@ -8180,6 +8211,7 @@ class AutoFocusKeyRetriever:
     :return: No data returned
     :rtype: ``None``
     """
+
     def __init__(self, api_key):
         # demisto.getAutoFocusApiKey() is available from version 6.2.0
         if not api_key:
@@ -8188,7 +8220,8 @@ class AutoFocusKeyRetriever:
             try:
                 api_key = demisto.getAutoFocusApiKey()  # is not available on tenants
             except ValueError as err:
-                raise DemistoException('AutoFocus API Key is only available on the main account for TIM customers. ' + str(err))
+                raise DemistoException(
+                    'AutoFocus API Key is only available on the main account for TIM customers. ' + str(err))
         self.key = api_key
 
 
