@@ -1152,8 +1152,7 @@ def test_logger_replace_strs(mocker):
     ilog('special chars like ZAQ!@#$%&* should be replaced even when url-encoded like ZAQ%21%40%23%24%25%26%2A')
     assert ('' not in ilog.replace_strs)
     assert ilog.messages[0] == '<XX_REPLACED> is <XX_REPLACED> and b64: <XX_REPLACED>'
-    assert ilog.messages[
-               1] == 'special chars like <XX_REPLACED> should be replaced even when url-encoded like <XX_REPLACED>'
+    assert ilog.messages[1] == 'special chars like <XX_REPLACED> should be replaced even when url-encoded like <XX_REPLACED>'
 
 
 TEST_SSH_KEY_ESC = '-----BEGIN OPENSSH PRIVATE KEY-----\\nb3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAACFw' \
@@ -5833,3 +5832,12 @@ def test_indicators_value_to_clickable_invalid(mocker):
     assert not result
     result = indicators_value_to_clickable(None)
     assert not result
+
+
+def test_arg_to_number():
+    """
+    Test if arg_to_number handles unicode object without failing.
+    """
+    from CommonServerPython import arg_to_number
+    result = arg_to_number(u'1')
+    assert result == 1
