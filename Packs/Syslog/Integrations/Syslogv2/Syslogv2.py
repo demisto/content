@@ -155,7 +155,8 @@ def create_incident_from_syslog_message(extracted_message: SyslogMessageExtract)
     return {
         'name': f'Syslog from [{extracted_message.host_name}][{extracted_message.timestamp}]',
         'rawJSON': json.dumps(vars(extracted_message)),
-        'occurred': extracted_message.occurred
+        'occurred': extracted_message.occurred,
+        'details': '\n'.join([f'{k}: {v}' for k, v in vars(extracted_message).items() if v])
     }
 
 
@@ -237,19 +238,21 @@ def perform_long_running_execution(sock: Any, address: tuple) -> None:
     """
     demisto.debug('Starting long running execution')
     file_obj = sock.makefile(mode='rb')
-    while True:
-        try:
-            line = file_obj.readline()
-            if not line:
-                demisto.info(f'Disconnected from {address}')
-                break
-            perform_long_running_loop(line.strip())
-        except Exception as e:
-            demisto.error(traceback.format_exc())  # print the traceback
-            demisto.error(f'Error occurred during long running loop. Error was: {e}')
-        finally:
-            demisto.debug('Finished reading message')
-    file_obj.close()
+    try:
+        while True:
+            try:
+                line = file_obj.readline()
+                if not line:
+                    demisto.info(f'Disconnected from {address}')
+                    break
+                perform_long_running_loop(line.strip())
+            except Exception as e:
+                demisto.error(traceback.format_exc())  # print the traceback
+                demisto.error(f'Error occurred during long running loop. Error was: {e}')
+            finally:
+                demisto.debug('Finished reading message')
+    finally:
+        file_obj.close()
 
 
 def prepare_globals_and_create_server(port: int, message_regex: Optional[str], certificate: Optional[str],
@@ -312,11 +315,11 @@ def main() -> None:
     message_regex: Optional[str] = params.get('message_regex')
     certificate: Optional[str] = params.get('certificate')
     private_key: Optional[str] = params.get('private_key')
-
+    port: Union[Optional[str], int] = params.get('longRunningPort')
     try:
         port = int(params.get('longRunningPort'))
-    except (ValueError, TypeError) as e:
-        raise DemistoException(f'Invalid listen port - {e}') from e
+    except (ValueError, TypeError):
+        raise DemistoException(f'Invalid listen port - {port}. Make sure your port is a number')
     if port < 0 or MAX_PORT < port:
         raise DemistoException(f'Given port: {port} is not valid and must be between 0-{MAX_PORT}')
 

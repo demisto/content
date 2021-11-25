@@ -135,7 +135,19 @@ def test_fetch_samples(samples: list[dict], mocker):
                              timestamp='2003-10-11T22:14:15.003Z',
                              version=1,
                              occurred='2003-10-11T22:14:15.003Z'),
-                           {'name': 'Syslog from [mymachine.example.com][2003-10-11T22:14:15.003Z]',
+                           {'details': 'app_name: evntslog\n'
+                                       'facility: local4\n'
+                                       'host_name: mymachine.example.com\n'
+                                       'msg: BOMAn application event log entry\n'
+                                       'msg_id: ID47\n'
+                                       'process_id: 123\n'
+                                       "sd: {'exampleSDID@32473': {'eventID': '1011', 'eventSource': "
+                                       "'Application', 'iut': '3'}}\n"
+                                       'severity: critical\n'
+                                       'timestamp: 2003-10-11T22:14:15.003Z\n'
+                                       'version: 1\n'
+                                       'occurred: 2003-10-11T22:14:15.003Z',
+                            'name': 'Syslog from [mymachine.example.com][2003-10-11T22:14:15.003Z]',
                             'occurred': '2003-10-11T22:14:15.003Z',
                             'rawJSON': '{"app_name": "evntslog", "facility": "local4", "host_name": '
                                        '"mymachine.example.com", "msg": "BOMAn application event log '
@@ -160,7 +172,17 @@ def test_fetch_samples(samples: list[dict], mocker):
                                  timestamp='2021-11-09T17:07:20',
                                  version=None,
                                  occurred=None),
-                              {'name': 'Syslog from [mymachine.example.com][2021-11-09T17:07:20]',
+                              {'details': 'facility: log_alert\n'
+                                          'host_name: mymachine.example.com\n'
+                                          'msg: softwareupdated[288]: Removing client SUUpdateServiceClient '
+                                          'pid=90550, uid=375597002, installAuth=NO rights=(), '
+                                          'transactions=0 '
+                                          '(/System/Library/PreferencePanes/SoftwareUpdate.prefPane/Contents'
+                                          '/XPCServices/com.apple.preferences.softwareupdate.remoteservice.xpc'
+                                          '/Contents/MacOS/com.apple.preferences.softwareupdate.remoteservice)\n'
+                                          'severity: warning\n'
+                                          'timestamp: 2021-11-09T17:07:20',
+                               'name': 'Syslog from [mymachine.example.com][2021-11-09T17:07:20]',
                                'occurred': None,
                                'rawJSON': '{"app_name": null, "facility": "log_alert", "host_name": '
                                           '"mymachine.example.com", "msg": "softwareupdated[288]: Removing '
@@ -375,13 +397,11 @@ def test_prepare_globals_and_create_server(message_regex, certificate, private_k
 
 @pytest.mark.parametrize('params, expected_err_message',
                          [({'log_format': 'RFC3164'},
-                           "Invalid listen port - int() argument must be a string, a bytes-like object or"
-                           " a number, not 'NoneType'"),
+                           'Invalid listen port - None. Make sure your port is a number'),
                           ({'log_format': 'RFC5424'},
-                           "Invalid listen port - int() argument must be a string, a bytes-like object or"
-                           " a number, not 'NoneType'"),
+                           'Invalid listen port - None. Make sure your port is a number'),
                           ({'log_format': 'RFC3164', 'longRunningPort': 'a'},
-                           "Invalid listen port - invalid literal for int() with base 10: 'a'"),
+                           'Invalid listen port - a. Make sure your port is a number'),
                           ({'log_format': 'RFC5424', 'longRunningPort': -2},
                            'Given port: -2 is not valid and must be between 0-65535')
                           ])
