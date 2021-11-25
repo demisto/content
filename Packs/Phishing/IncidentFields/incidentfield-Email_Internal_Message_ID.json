@@ -8,7 +8,7 @@
     "systemAssociatedTypes": [
         "Phishing",
         "Phishing Alerts",
-        "Email Communication"
+        "FireEye EX Alert"
     ],
     "caseInsensitive": true,
     "cliName": "emailinternalmessageid",
