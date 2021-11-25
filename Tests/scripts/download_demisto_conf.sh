@@ -17,7 +17,7 @@ DEMISTO_PACK_SIGNATURE_UTIL_PATH="./signDirectory"
 echo ${DEMISTO_PACK_SIGNATURE_UTIL_PATH} > demisto_pack_sig_util_path
 
 # download configuration files from Gitlab repo
-echo "Trying to clone from branch: $UNDERSCORE_BRANCH in content-test-conf"
+echo "clone content-test-conf from branch: $UNDERSCORE_BRANCH in content-test-conf"
 git clone --depth=1 https://gitlab-ci-token:${CI_JOB_TOKEN}@code.pan.run/xsoar/content-test-conf.git --branch $UNDERSCORE_BRANCH
 if [ "$?" != "0" ]; then
     echo "No such branch in content-test-conf: $UNDERSCORE_BRANCH , falling back to master"
