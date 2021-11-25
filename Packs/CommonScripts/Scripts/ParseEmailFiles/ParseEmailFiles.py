@@ -3774,10 +3774,6 @@ def main():
         file_path = result[0]['Contents']['path']
         file_name = result[0]['Contents']['name']
         result = demisto.executeCommand('getEntry', {'id': entry_id})
-
-        demisto.info('aaaaa ===>>>')
-        demisto.info(result)
-
         if is_error(result):
             return_error(get_error(result))
 
