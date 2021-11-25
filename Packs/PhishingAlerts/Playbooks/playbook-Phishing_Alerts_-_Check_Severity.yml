@@ -626,12 +626,12 @@ inputs:
 - key: escalationRole
   value: {}
   required: false
-  description: ""
+  description: "Higher Tier role to assign the incident to."
   playbookInputQuery:
 - key: OnCall
   value: {}
   required: false
-  description: ""
+  description: "Use to assign only for analysts who're on current shift."
   playbookInputQuery:
 - key: AuthenticityCheck
   value: {}
