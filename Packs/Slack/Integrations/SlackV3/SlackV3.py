@@ -819,25 +819,36 @@ class SlackLogger:
 
 
 async def slack_loop():
+    exception_await_seconds = 1
     while True:
-        # SocketModeClient does not respect environment variables for ssl verification.
-        # Instead we use a custom session.
-        session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(verify_ssl=VERIFY_CERT))
-        slack_logger = SlackLogger()
-        client = SocketModeClient(
-            app_token=APP_TOKEN,
-            web_client=ASYNC_CLIENT,
-            logger=slack_logger  # type: ignore
-        )
-        client.aiohttp_client_session = session
-        client.socket_mode_request_listeners.append(listen)  # type: ignore
         try:
-            await client.connect()
-            await asyncio.sleep(float("inf"))
+            # SocketModeClient does not respect environment variables for ssl verification.
+            # Instead we use a custom session.
+            # session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(verify_ssl=VERIFY_CERT))
+            slack_logger = SlackLogger()
+            client = SocketModeClient(
+                app_token=APP_TOKEN,
+                web_client=ASYNC_CLIENT,
+                logger=slack_logger  # type: ignore
+            )
+            # client.aiohttp_client_session.connector(aiohttp.TCPConnector(verify_ssl=VERIFY_CERT))
+            client.socket_mode_request_listeners.append(listen)  # type: ignore
+
+            try:
+                await client.connect()
+                await asyncio.sleep(float("inf"))
+            except Exception as e:
+                await handle_listen_error(f"An error occurred {str(e)}")
+            finally:
+                try:
+                    await client.disconnect()
+                except Exception as e:
+                    demisto.debug(f"Failed to close client. - {e}")
+            exception_await_seconds = 1
         except Exception as e:
-            await handle_listen_error(f"An error occurred {str(e)}")
-        finally:
-            await client.disconnect()
+            demisto.debug(f"Exception in long running loop, waiting {exception_await_seconds} - {e}")
+            await asyncio.sleep(exception_await_seconds)
+            exception_await_seconds *= exception_await_seconds
 
 
 async def handle_listen_error(error: str):
@@ -2052,6 +2063,62 @@ def pin_message():
         return_error(f"{slack_error}")
 
 
+def fetch_channels():
+    """
+    updates context with all conversations an their IDs
+    """
+    integration_context = get_integration_context(SYNC_CONTEXT)
+
+    demisto.debug('Fetching channels')
+
+    cursor = None
+    res = CLIENT.conversations_list(types='private_channel,public_channel', exclude_archived=True, cursor=cursor)
+    updated_channel_list: list = []
+
+    while True:
+        cursor = res.get('response_metadata', {}).get('next_cursor')
+        for channel in res.get('channels', []):
+            updated_channel: dict = {
+                'name': channel.get('name'),
+                'id': channel.get('id')
+            }
+            updated_channel_list.append(updated_channel)
+        if not cursor:
+            demisto.info("Finished updating channel list")
+            break
+        total_try_time = 0
+        while True:
+            try:
+                res = CLIENT.conversations_list(types='private_channel,public_channel', exclude_archived=True, cursor=cursor)
+            except SlackApiError as api_error:
+                demisto.debug(f'Got rate limit error (sync). Body is: {str(res)}\n{api_error}')
+                response = api_error.response
+                headers = response.headers  # type: ignore
+                if 'Retry-After' in headers:
+                    retry_after = int(headers['Retry-After'])
+                    total_try_time += retry_after
+                    if total_try_time < MAX_LIMIT_TIME:
+                        time.sleep(retry_after)
+                        continue
+                else:
+                    if total_try_time < MAX_LIMIT_TIME:
+                        time.sleep(5)
+                        continue
+                    else:
+                        raise
+            break
+
+    # Save conversations to cache
+    conversations = integration_context.get('conversations')
+    if conversations:
+        conversations = json.loads(conversations)
+        conversations.extend(updated_channel_list)
+    else:
+        conversations = updated_channel_list
+    set_to_integration_context_with_retries({'conversations': conversations}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+    demisto.results("Successfully updated channels to the Integration Context")
+
+
 def long_running_main():
     """
     Starts the long running thread.
@@ -2157,7 +2224,8 @@ def main() -> None:
         'slack-get-user-details': get_user,
         'slack-get-integration-context': slack_get_integration_context,
         'slack-edit-message': slack_edit_message,
-        'slack-pin-message': pin_message
+        'slack-pin-message': pin_message,
+        'slack-fetch-channels': fetch_channels
     }
 
     command_name: str = demisto.command()

@@ -400,7 +400,7 @@ tasks:
       - "11"
     scriptarguments:
       seconds:
-        simple: "150"
+        simple: "15"
     separatecontext: false
     view: |-
       {
@@ -964,7 +964,7 @@ tasks:
       - "19"
     scriptarguments:
       seconds:
-        simple: "120"
+        simple: "15"
     separatecontext: false
     view: |-
       {
@@ -998,7 +998,7 @@ tasks:
       - "4"
     scriptarguments:
       seconds:
-        simple: "150"
+        simple: "15"
     separatecontext: false
     view: |-
       {
