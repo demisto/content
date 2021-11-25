@@ -1,5 +1,4 @@
-description: Creates a connection to a remote destination from Tanium Threat Response
-  v2 v2
+description: Creates a connection to a remote destination from Tanium Threat Response v2
 id: Tanium Threat Response - Create Connection v2
 inputs:
 - description: ""
@@ -42,12 +41,11 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 501eeafb-77b5-490c-8820-0ae0cdbc855f
+      id: 6830f039-0a55-4a81-8de1-f67410c84481
       iscommand: false
       name: ""
       version: -1
-      description: ""
-    taskid: 501eeafb-77b5-490c-8820-0ae0cdbc855f
+    taskid: 6830f039-0a55-4a81-8de1-f67410c84481
     timertriggers: []
     type: start
     view: |-
@@ -81,13 +79,13 @@ tasks:
     task:
       brand: Tanium Threat Response v2
       description: Creates a local or remote connection.
-      id: db18f45b-9cda-440a-8282-4a68df0f4c92
+      id: 394a29a9-d0b1-48a6-83fe-d7f4d5fbfc56
       iscommand: true
       name: Create Connection
       script: Tanium Threat Response v2|||tanium-tr-create-connection
       type: regular
       version: -1
-    taskid: db18f45b-9cda-440a-8282-4a68df0f4c92
+    taskid: 394a29a9-d0b1-48a6-83fe-d7f4d5fbfc56
     timertriggers: []
     type: regular
     view: |-
@@ -137,13 +135,13 @@ tasks:
         1. Initiate the operation.
         2. Poll to check if the operation completed.
         3. (optional) Get the results of the operation.
-      id: 5133a740-c4ec-47de-8150-712ff0c6769e
+      id: 8a1c38ea-01ff-4cc4-88f1-13c46c5c7f5c
       iscommand: false
       name: GenericPolling
       playbookId: GenericPolling
       type: playbook
       version: -1
-    taskid: 5133a740-c4ec-47de-8150-712ff0c6769e
+    taskid: 8a1c38ea-01ff-4cc4-88f1-13c46c5c7f5c
     timertriggers: []
     type: playbook
     view: |-
@@ -164,13 +162,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 4bbe24c3-6ac9-4189-89ab-1f349f22689f
+      id: 327d8461-cbbf-4cfc-843f-d6f5eaf17734
       iscommand: false
       name: Done
       type: title
       version: -1
-      description: ""
-    taskid: 4bbe24c3-6ac9-4189-89ab-1f349f22689f
+    taskid: 327d8461-cbbf-4cfc-843f-d6f5eaf17734
     timertriggers: []
     type: title
     view: |-
