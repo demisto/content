@@ -1024,7 +1024,6 @@ def fetch_incidents(client, last_run, first_fetch_time, min_severity):
     return next_run, incidents
 
 
-########################## MAY'S NEW HELP FUNCTIONS #################################
 def threat_indicators_data_to_xsoar_format(ind_data):
     """
     Convert the threat indicators data from the raw to XSOAR format.
@@ -1151,12 +1150,9 @@ def get_data_for_new_ind(args):
     kill_chains = argToList(args.get('kill_chains', []))
     if kill_chains:
         for kill_chain_phase in kill_chains:
-            data['killChainPhases'].append(
-                    {
+            data['killChainPhases'].append({
                         'killChainName': kill_chain_phase,
-                        'phaseName': kill_chain_phase,
-                    }
-            )
+                        'phaseName': kill_chain_phase})
 
     remove_nulls_from_dictionary(data)
 
@@ -1192,9 +1188,6 @@ def extract_original_data_from_indicator(original_data):
 
     remove_nulls_from_dictionary(extracted_data)
     return extracted_data
-
-
-######################### MAY'S NEW COMMANDS ###################################
 
 
 def list_threat_indicator_command(client, args):
@@ -1298,7 +1291,7 @@ def create_threat_indicator_command(client, args):
 
     threat_indicators = [threat_indicators_data_to_xsoar_format(result)]
 
-    readable_output = tableToMarkdown(f'New threat Indicator was created', threat_indicators,
+    readable_output = tableToMarkdown('New threat Indicator was created', threat_indicators,
                                       headers=THREAT_INDICATORS_HEADERS,
                                       headerTransform=pascalToSpace,
                                       removeNull=True)
@@ -1354,7 +1347,7 @@ def delete_threat_indicator_command(client, args):
         client.http_request('DELETE', url_suffix)
 
     return CommandResults(
-        readable_output=f'Threat Intelligence Indicators were deleted successfully.',
+        readable_output='Threat Intelligence Indicators were deleted successfully.',
         outputs_prefix='AzureSentinel.ThreatIndicator',
         outputs=[],
         raw_response={},
@@ -1405,7 +1398,6 @@ def replace_tags_threat_indicator_command(client, args):
     )
 
 
-###############################################################
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS

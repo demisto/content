@@ -334,7 +334,7 @@ MOCKED_UPDATE_INCIDENT = {
 MOCKED_THREAT_INDICATOR_OUTPUT = {
     "value": [
         {
-            "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/demisto-sentinel2/providers/Microsoft.OperationalInsights/workspaces/demisto-sentinel/providers/Microsoft.SecurityInsights/threatIntelligence/ind_name",
+            "id": "ind_id",
             "name": "ind_name",
             "etag": "\"1200b4fe-0000-0800-0000-6194cfae0000\"",
             "type": "Microsoft.SecurityInsights/threatIntelligence",
@@ -371,7 +371,7 @@ MOCKED_THREAT_INDICATOR_OUTPUT = {
 }
 
 MOCKED_CREATE_THREAT_INDICATOR_OUTPUT = {
-    "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/demisto-sentinel2/providers/Microsoft.OperationalInsights/workspaces/demisto-sentinel/providers/Microsoft.SecurityInsights/threatIntelligence/60378118-4ef8-2703-8b22-39d22abcba98",
+    "id": "ind_id",
     "name": "ind_name",
     "etag": "\"1f002899-0000-0800-0000-619a3dd40000\"",
     "type": "Microsoft.SecurityInsights/threatIntelligence",
@@ -416,7 +416,7 @@ MOCKED_CREATE_THREAT_INDICATOR_OUTPUT = {
 }
 
 MOCKED_UPDATE_THREAT_INDICATOR = {
-    "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/demisto-sentinel2/providers/Microsoft.OperationalInsights/workspaces/demisto-sentinel/providers/Microsoft.SecurityInsights/threatIntelligence/60378118-4ef8-2703-8b22-39d22abcba98",
+    "id": "ind_id",
     "name": "ind_name",
     "etag": "\"1f002899-0000-0800-0000-619a3dd40000\"",
     "type": "Microsoft.SecurityInsights/threatIntelligence",
@@ -1001,7 +1001,7 @@ class TestHappyPath:
 
         # execute
         command_res = create_threat_indicator_command(client, args=args)
-        readable_output, outputs, raw_response = command_res.readable_output, command_res.outputs, command_res.raw_response
+        readable_output, outputs = command_res.readable_output, command_res.outputs
         context = outputs[0]
 
         # validate
@@ -1052,7 +1052,7 @@ class TestHappyPath:
 
         # execute
         command_res = append_tags_threat_indicator_command(client, args=args)
-        readable_output, outputs, raw_response = command_res.readable_output, command_res.outputs, command_res.raw_response
+        readable_output, outputs = command_res.readable_output, command_res.outputs
         context = outputs[0]
 
         # validate
@@ -1081,7 +1081,7 @@ class TestHappyPath:
 
         # execute
         command_res = replace_tags_threat_indicator_command(client, args=args)
-        readable_output, outputs, raw_response = command_res.readable_output, command_res.outputs, command_res.raw_response
+        readable_output, outputs = command_res.readable_output, command_res.outputs
         context = outputs[0]
 
         # validate
@@ -1113,7 +1113,7 @@ class TestHappyPath:
 
         # execute
         command_res = update_threat_indicator_command(client, args=args)
-        readable_output, outputs, raw_response = command_res.readable_output, command_res.outputs, command_res.raw_response
+        readable_output, outputs = command_res.readable_output, command_res.outputs
         context = outputs[0]
 
         # validate
