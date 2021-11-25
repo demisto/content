@@ -20,7 +20,7 @@ def util_load_json(path):
 
 
 # DUMMY DATA
-fake_analyst_ids = ['admin', 'person']
+fake_analyst_ids = 'admin,person'
 fake_category = 'fake_cat'
 fake_created = 'fake_date'
 fake_id = 'fake_id'

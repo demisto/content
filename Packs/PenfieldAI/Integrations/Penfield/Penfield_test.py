@@ -10,7 +10,7 @@ def util_load_json(path):
 
 
 def test_main(mocker):
-    mock_users = util_load_json('test_data/test_2_users.json')
+    mock_users = "username1,username2"
     mock_incident = util_load_json('test_data/test_incident.json')
 
     mocker.patch.object(demisto, 'command', return_value="penfield-get-assignee")
@@ -26,7 +26,7 @@ def test_main(mocker):
 
 def test_get_assignee(mocker):
 
-    mock_users = util_load_json('test_data/test_2_users.json')
+    mock_users = "username1,username2"
 
     mocker.patch.object(demisto, 'args', return_value={
         'analyst_ids': mock_users,
