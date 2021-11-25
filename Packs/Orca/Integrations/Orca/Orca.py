@@ -48,7 +48,7 @@ class OrcaClient:
         elif asset_unique_id:
             params = {"asset_unique_id": asset_unique_id}
 
-        params["limit"] = str(limit)
+        # params["limit"] = str(limit)
 
         response = self.client._http_request(method="GET", url_suffix=url_suffix, params=params,
                                              timeout=ORCA_API_TIMEOUT)
@@ -81,7 +81,7 @@ class OrcaClient:
                 ]
             })
 
-        params["limit"] = limit
+        # params["limit"] = limit
         next_page_token = None
 
         while True:
