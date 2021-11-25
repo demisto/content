@@ -1,9 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-# noqa: F401
-# noqa: F401
-# noqa: F401
-# noqa: F401
 import dateparser
 import requests
 import json
@@ -102,7 +98,7 @@ def get_incidents_list(client, pageToken, first_fetch):
     """
     Hits the Armorblox API and returns the list of fetched incidents.
     """
-    response = client.get_incidents(pageSize=MAX_INCIDENTS_TO_FETCH, pageToken=pageToken, first_fetch=FIRST_FETCH)
+    response = client.get_incidents(pageSize=MAX_INCIDENTS_TO_FETCH, pageToken=pageToken, first_fetch=first_fetch)
     results = []
     if 'incidents' in response.keys():
         results = response['incidents']
@@ -171,12 +167,14 @@ def fetch_incidents_command(client):
     pageToken = int()
     response = {}
     incidents = []
-    if (not last_run) is True:
+    if 'start_time' not in last_run.keys():
         pageToken = -1
         response = client.get_incidents(pageSize=1, pageToken=pageToken, first_fetch=FIRST_FETCH)
         if 'incidents' in response.keys():
             start_time = response['incidents'][0]['date']
             start_time = dateparser.parse(start_time)
+            message_ids = get_incident_message_ids(client, response['incidents'][0]['id'])
+            response['incidents'][0]['message_ids'] = message_ids
             curr_incident = {'rawJSON': json.dumps(response['incidents'][0]), 'details': json.dumps(response['incidents'][0])}
             incidents.append(curr_incident)
 
@@ -203,14 +201,7 @@ def fetch_incidents_command(client):
     demisto.debug(str(len(incidents)))
     # Save the next_run as a dict with the start_time key to be stored
     demisto.setLastRun({'start_time': str(last_time), 'pageToken': pageToken})
-    demisto.incidents(incidents)
-    # readable_output = f'## {len(incidents)}'
-    # return CommandResults(
-    #     readable_output=readable_output,
-    #     outputs_prefix='Armorblox',
-    #     outputs_key_field='',
-    #     outputs=incidents
-    # )
+    return incidents
 
 
 def main():
@@ -225,7 +216,8 @@ def main():
             proxy=proxy)
 
         if demisto.command() == "fetch-incidents":
-            fetch_incidents_command(client)
+            incident_results = fetch_incidents_command(client)
+            demisto.incidents(incident_results)
             return_results("Incidents fetched successfully!!")
             # return_results(fetch_incidents_command(client))
         if demisto.command() == "armorblox-check-remediation-action":
