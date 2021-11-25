@@ -142,7 +142,7 @@ def create_file_data_json(attachment):
 def get_reply_body(notes, incident_id, attachments):
     """ Get the notes and the incident id and return the reply body
     Args:
-        notes (dict): The notes of the email.
+        notes (list): The notes of the email.
         incident_id (str): The incident id.
         attachments (list): The email's attachments.
     Returns:
@@ -155,9 +155,11 @@ def get_reply_body(notes, incident_id, attachments):
             note_userdata = demisto.executeCommand("getUserByUsername", {"username": note_user})
             user_fullname = dict_safe_get(note_userdata[0], ['Contents', 'name']) or "DBot"
             reply_body += f"{user_fullname}: \n{note['Contents']}\n\n"
-            if attachments:
-                attachment_names = [attachment.get('name') for attachment in attachments]
-                reply_body += f'Attachments: {attachment_names}\n'
+
+        if attachments:
+            attachment_names = [attachment.get('name') for attachment in attachments]
+            reply_body += f'Attachments: {attachment_names}\n\n'
+
             entry_note = json.dumps(
                 [{"Type": 1, "ContentsFormat": 'html', "Contents": reply_body, "tags": ['email-thread']}])
             entry_tags_res = demisto.executeCommand("addEntries", {"entries": entry_note, 'id': incident_id})
