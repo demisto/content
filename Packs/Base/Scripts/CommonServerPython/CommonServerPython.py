@@ -1784,14 +1784,29 @@ def create_clickable_url(url):
 
 class JsonTransformer:
     """
-    A class to transform a json input to a markdown string
+    A class to transform a json to
+
+    :type flatten: ``bool``
+    :param flatten: Should we flatten the json using `flattenCell` (for BC)
+
+    :type keys: ``Set[str]``
+    :param keys: Set of keys to keep
+
+    :type is_nested: ``bool``
+    :param is_nested: If look for nested
+
+    :type func: ``Callable``
+    :param func: A function to parse the json
+
+    :return: None
+    :rtype: ``None``
     """
     def __init__(self, flatten=False, keys=None, is_nested=False, func=None):
         """
         Constructor for JsonTransformer
 
         :type flatten: ``bool``
-        :param flatten:  Should we flatten the json using `flattenCell` (the default behavior)
+        :param flatten:  Should we flatten the json using `flattenCell` (for BC)
 
         :type keys: ``Iterable[str]``
         :param keys: an iterable of relevant keys list from the json. Notice we save it as a set in the class
@@ -1837,7 +1852,7 @@ class JsonTransformer:
         """
         :type json_input: ``list`` or ``dict``
         :param json_input: The json input to transform
-
+ fca
         :type path: ``List[str]``
         :param path: The path of the key, value pair inside the json
 
