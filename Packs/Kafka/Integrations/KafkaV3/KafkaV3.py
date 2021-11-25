@@ -9,7 +9,6 @@ import tempfile
 import requests
 import traceback
 import logging
-import time
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -314,7 +313,13 @@ class KafkaCommunicator:
 
 
 def capture_logs(func: Callable):
-    """Capture confluent kafka logs wrapper"""
+    """Capture confluent kafka logs and add them when raising exceptions.
+
+    Args:
+        func: Has to support kafka_logger and log_stream kwargs
+
+    return: the func's result
+    """
     def wrapper(*args, **kwargs):
         logging.raiseExceptions = False
         log_stream = StringIO()
