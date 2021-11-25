@@ -1151,11 +1151,8 @@ def get_data_for_new_ind(args):
     if kill_chains:
         for kill_chain_phase in kill_chains:
             data['killChainPhases'].append(
-                {
-                        'killChainName': kill_chain_phase,
-                        'phaseName': kill_chain_phase
-                }
-            )
+                {'killChainName': kill_chain_phase,
+                 'phaseName': kill_chain_phase})
 
     remove_nulls_from_dictionary(data)
 
