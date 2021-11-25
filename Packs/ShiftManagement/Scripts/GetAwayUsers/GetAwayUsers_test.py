@@ -1,15 +1,10 @@
-"""Base Script for Cortex XSOAR - Unit Tests file
-
-Pytest Unit Tests: all funcion names must start with "test_"
-
-More details: https://xsoar.pan.dev/docs/integrations/unit-testing
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-"""
-
-import json
 import io
+import json
+from copy import deepcopy
+
+import GetAwayUsers
+
+import demistomock as demisto
 
 
 def util_load_json(path):
@@ -17,23 +12,49 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-# TODO: REMOVE the following dummy unit test function
-def test_basescript_dummy():
-    """Tests helloworld-say-hello command function.
+away_user_data = util_load_json('test_data/away_user.json')
 
-    Checks the output of the command function with the expected output.
 
-    No mock is needed here because the say_hello_command does not call
-    any external API.
+def test_script_valid(mocker):
     """
-    from BaseScript import basescript_dummy_command
+    Given:
 
-    args = {
-        'dummy': 'this is a dummy response'
-    }
-    response = basescript_dummy_command(args)
+    When:
+    - Calling to GetAwayUsers Script.
 
-    mock_response = util_load_json('test_data/basescript-dummy.json')
+    Then:
+    - Ensure expected outputs are returned.
 
-    assert response.outputs == mock_response
-# TODO: ADD HERE your unit tests
+    """
+    from GetAwayUsers import main
+    return_results_mock = mocker.patch.object(GetAwayUsers, 'return_results')
+    away_user = away_user_data
+    not_away_user = deepcopy(away_user_data)
+    not_away_user['isAway'] = False
+    mocker.patch.object(demisto, 'executeCommand', return_value=[{'Type': '1', 'Contents': [away_user, not_away_user]}])
+    main()
+    command_results = return_results_mock.call_args[0][0]
+    assert command_results.outputs == [away_user]
+
+
+def test_script_valid(mocker):
+    """
+    Given:
+
+    When:
+    - Calling to GetAwayUsers Script. Error during the demisto.executeCommand to getUsers.
+
+    Then:
+    - Ensure error is returned.
+
+    """
+    from GetAwayUsers import main
+    error_entry_type: int = 4
+    return_results_mock = mocker.patch.object(GetAwayUsers, 'return_error')
+    away_user = away_user_data
+    not_away_user = deepcopy(away_user_data)
+    not_away_user['isAway'] = False
+    mocker.patch.object(demisto, 'executeCommand',
+                        return_value=[{'Type': error_entry_type, 'Contents': [away_user, not_away_user]}])
+    main()
+    assert GetAwayUsers.return_error.called
