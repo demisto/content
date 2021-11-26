@@ -610,7 +610,6 @@ def test_get_alerts_queries_limit(requests_mock, orca_client: OrcaClient) -> Non
     start_queries_count = len(requests_mock.request_history)
 
     requests_mock.get(f"{DUMMY_ORCA_API_DNS_NAME}/query/alerts", json=mock_response)
-    alerts = orca_client.get_all_alerts(first_fetch=None)
-
+    orca_client.get_all_alerts(first_fetch=None)
     end_queries_count = len(requests_mock.request_history)
     assert end_queries_count - start_queries_count == ORCA_HTTP_QUERIES_LIMIT
