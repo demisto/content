@@ -40,7 +40,7 @@ class Client(BaseClient):
 
 
 def get_assignee(client: Client, args) -> CommandResults:
-    analyst_ids = args.get('analyst_ids')
+    analyst_ids = args.get('analyst_ids').split(',')
     category = args.get('category')
     created = args.get('created')
     arg_id = args.get('id')

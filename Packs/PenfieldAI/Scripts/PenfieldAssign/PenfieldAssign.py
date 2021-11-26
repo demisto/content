@@ -27,9 +27,9 @@ def main():
 
         # get online analyst ids
         analysts = demisto.executeCommand('getUsers', {'online': True})[0]['Contents']
-        analyst_ids = []
-        for analyst in analysts:
-            analyst_ids.append(analyst['id'])
+        usernames = [a['username'] for a in analysts]
+        analyst_ids = ''
+        analyst_ids += ','.join(usernames)
 
         # get relevant incident information
         incident = demisto.incidents()[0]
