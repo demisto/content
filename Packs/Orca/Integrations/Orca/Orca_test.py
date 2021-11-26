@@ -2,7 +2,7 @@ from datetime import datetime
 
 import pytest
 import json
-from Orca import OrcaClient, BaseClient, DEMISTO_OCCURRED_FORMAT, fetch_incidents
+from Orca import OrcaClient, BaseClient, DEMISTO_OCCURRED_FORMAT, fetch_incidents, ORCA_HTTP_QUERIES_LIMIT
 
 import demistomock as demisto
 
@@ -595,3 +595,22 @@ def test_test_module_fail(requests_mock, orca_client: OrcaClient) -> None:
     requests_mock.get(f"{DUMMY_ORCA_API_DNS_NAME}/user/action?", json=mock_response)
     res = orca_client.validate_api_key()
     assert res == "Test failed becasue the Orca API key that was entered is invalid, please provide a valid API key"
+
+
+def test_get_alerts_queries_limit(requests_mock, orca_client: OrcaClient) -> None:
+    mock_response = {
+        "version": "0.1.0",
+        "status": "success",
+        "total_items": 58,
+        "total_ungrouped_items": 58,
+        "total_supported_items": 10000,
+        "next_page_token": "mock_next_page",
+        "data": [{"type": "malware"}]
+    }
+    start_queries_count = len(requests_mock.request_history)
+
+    requests_mock.get(f"{DUMMY_ORCA_API_DNS_NAME}/query/alerts", json=mock_response)
+    alerts = orca_client.get_all_alerts(first_fetch=None)
+
+    end_queries_count = len(requests_mock.request_history)
+    assert end_queries_count - start_queries_count == ORCA_HTTP_QUERIES_LIMIT

@@ -90,6 +90,10 @@ class OrcaClient:
 
         queries_counter = 0
         while True:
+            if queries_counter >= ORCA_HTTP_QUERIES_LIMIT:
+                # Prevent API throttling error
+                break
+
             if next_page_token:
                 params["next_page_token"] = next_page_token
 
@@ -112,9 +116,7 @@ class OrcaClient:
             else:
                 next_page_token = response.get("next_page_token")
 
-            if queries_counter > ORCA_HTTP_QUERIES_LIMIT:
-                # Prevent API throttling error
-                break
+            queries_counter += 1
 
         demisto.info(f"done fetching orca alerts, fetched {len(alerts)} alerts")
 
