@@ -9,7 +9,7 @@ DEMISTO_OCCURRED_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 DEMISTO_INFORMATIONAL = 0.5
 ORCA_API_TIMEOUT = 5  # Increase timeout for ORCA API
 ORCA_HTTP_QUERIES_LIMIT = 50
-ORCA_FETCH_LIMIT = 500
+ORCA_API_LIMIT = 500
 
 
 class OrcaClient:
@@ -299,7 +299,7 @@ def main() -> None:
             alerts = orca_client.get_alerts_by_filter(
                 alert_type=alert_type,
                 asset_unique_id=asset_unique_id,
-                limit=ORCA_FETCH_LIMIT,
+                limit=ORCA_API_LIMIT,
             )
             if isinstance(alerts, str):
                 #  this means alert is an error
@@ -323,7 +323,7 @@ def main() -> None:
                 pull_existing_alerts=pull_existing_alerts,
                 fetch_type=fetch_type,
                 first_fetch_time=first_fetch_time,
-                limit=ORCA_FETCH_LIMIT
+                limit=ORCA_API_LIMIT
             )
 
         elif command == "test-module":
