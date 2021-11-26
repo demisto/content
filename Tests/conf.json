@@ -873,13 +873,6 @@
             "timeout": 2400
         },
         {
-            "integrations": "QRadar_v2",
-            "playbookID": "test playbook - QRadarCorrelations For V2",
-            "timeout": 2600,
-            "fromversion": "6.0.0",
-            "is_mockable": false
-        },
-        {
             "integrations": "Awake Security",
             "playbookID": "awake_security_test_pb"
         },
@@ -2909,6 +2902,12 @@
             "fromversion": "6.0.0"
         },
         {
+            "integrations": "QRadar v3",
+            "playbookID": "QRadar - Get Offense Logs Test",
+            "timeout": 600,
+            "fromversion": "6.0.0"
+        },
+        {
             "playbookID": "SetAndHandleEmpty test",
             "fromversion": "4.5.0"
         },
@@ -4837,7 +4836,8 @@
         "Carbon Black Edr - Test": "Issue 40132",
         "Phishing v2 - Test - Actual Incident": "Issue 41322",
         "Kaspersky Security Center - Test": "Issue 36487",
-        "carbonBlackEndpointStandardTestPlaybook": "Issue 36936"
+        "carbonBlackEndpointStandardTestPlaybook": "Issue 36936",
+        "RecordedFutureFeed - Test": "Quota issue. Need to unskip in 1.12.21"
     },
     "skipped_integrations": {
 
@@ -5060,6 +5060,7 @@
         "LogRhythm": "Cannot use proxy",
         "Create-Mock-Feed-Relationships": "recording is redundant for this integration",
         "RSA Archer v2": "cannot connect to proxy",
+        "Anomali ThreatStream v3": "recording is not working",
         "LogRhythmRest V2": "Submits a file - tests that send files shouldn't be mocked."
     },
     "parallel_integrations": [
