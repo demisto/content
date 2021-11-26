@@ -9,6 +9,7 @@ DEMISTO_OCCURRED_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 DEMISTO_INFORMATIONAL = 0.5
 ORCA_API_TIMEOUT = 5  # Increase timeout for ORCA API
 ORCA_HTTP_QUERIES_LIMIT = 50
+ORCA_FETCH_LIMIT = 500
 
 
 class OrcaClient:
@@ -51,16 +52,18 @@ class OrcaClient:
 
         params["limit"] = str(limit)
 
-        response = self.client._http_request(method="GET", url_suffix=url_suffix, params=params,
-                                             timeout=ORCA_API_TIMEOUT)
+        try:
+            response = self.client._http_request(method="GET", url_suffix=url_suffix, params=params,
+                                                 timeout=ORCA_API_TIMEOUT)
+            if response['status'] != 'success':
+                demisto.info("bad response from Orca API")
+                return response['error']
 
-        if response['status'] != 'success':
-            demisto.info("bad response from Orca API")
-            return response['error']
-
-        alerts = response.get("data")
-
-        return alerts
+            alerts = response.get("data")
+            return alerts
+        except requests.exceptions.ReadTimeout as e:
+            demisto.info(f"Alerts Request ReadTimeout error: {str(e)}")
+            return []
 
     def get_all_alerts(
             self,
@@ -93,8 +96,8 @@ class OrcaClient:
             try:
                 response = self.client._http_request(method="GET", url_suffix="/query/alerts", params=params,
                                                      timeout=ORCA_API_TIMEOUT)
-            except DemistoException as e:
-                demisto.info(f"Alerts Request error: {e}")
+            except requests.exceptions.ReadTimeout as e:
+                demisto.info(f"Alerts Request ReadTimeout error: {str(e)}")
                 break
 
             if response['status'] != 'success':
@@ -124,6 +127,9 @@ class OrcaClient:
                                                  timeout=ORCA_API_TIMEOUT)
         except DemistoException:
             demisto.debug(f"could not find {asset_unique_id}")
+            return {}
+        except requests.exceptions.ReadTimeout as e:
+            demisto.info(f"Assets Request ReadTimeout error: {str(e)}")
             return {}
 
         if 'error' in response or not response:
@@ -292,7 +298,8 @@ def main() -> None:
             asset_unique_id = demisto_args.get('asset_unique_id')
             alerts = orca_client.get_alerts_by_filter(
                 alert_type=alert_type,
-                asset_unique_id=asset_unique_id
+                asset_unique_id=asset_unique_id,
+                limit=ORCA_FETCH_LIMIT,
             )
             if isinstance(alerts, str):
                 #  this means alert is an error
@@ -315,7 +322,8 @@ def main() -> None:
                 fetch_informational=fetch_informational,
                 pull_existing_alerts=pull_existing_alerts,
                 fetch_type=fetch_type,
-                first_fetch_time=first_fetch_time
+                first_fetch_time=first_fetch_time,
+                limit=ORCA_FETCH_LIMIT
             )
 
         elif command == "test-module":
