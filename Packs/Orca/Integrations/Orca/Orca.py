@@ -7,7 +7,7 @@ from typing import Any, Dict, Union, Optional
 
 DEMISTO_OCCURRED_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 DEMISTO_INFORMATIONAL = 0.5
-ORCA_API_TIMEOUT = 30  # Increase timeout for ORCA API
+ORCA_API_TIMEOUT = 5  # Increase timeout for ORCA API
 ORCA_HTTP_QUERIES_LIMIT = 50
 
 
@@ -90,8 +90,13 @@ class OrcaClient:
             if next_page_token:
                 params["next_page_token"] = next_page_token
 
-            response = self.client._http_request(method="GET", url_suffix="/query/alerts", params=params,
-                                                 timeout=ORCA_API_TIMEOUT)
+            try:
+                response = self.client._http_request(method="GET", url_suffix="/query/alerts", params=params,
+                                                     timeout=ORCA_API_TIMEOUT)
+            except DemistoException as e:
+                demisto.info(f"Alerts Request error: {e}")
+                break
+
             if response['status'] != 'success':
                 demisto.info(f"got bad response, {response['error']}")
                 return response['error']
