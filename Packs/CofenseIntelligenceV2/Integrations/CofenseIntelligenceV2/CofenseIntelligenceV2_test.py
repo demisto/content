@@ -20,7 +20,7 @@ headers: Dict = {
 }
 DOMAIN_RELATIONSHIP = [
     {'brand': 'Cofense Intelligence', 'entityA': 'domain', 'entityAFamily': 'Indicator', 'entityAType': 'Domain',
-     'entityB': 'stun2.l.google.com', 'entityBFamily': 'Indicator', 'entityBType': 'Domain Name', 'fields': {},
+     'entityB': 'stun2.l.google.com', 'entityBFamily': 'Indicator', 'entityBType': 'Domain', 'fields': {},
      'name': 'related-to', 'reverseName': 'related-to', 'type': 'IndicatorToIndicator'},
     {'brand': 'Cofense Intelligence', 'entityA': 'domain', 'entityAFamily': 'Indicator', 'entityAType': 'Domain',
      'entityB': '506b0267b19d58dc7354a0386d3d6f15', 'entityBFamily': 'Indicator', 'entityBType': 'File',
@@ -28,10 +28,10 @@ DOMAIN_RELATIONSHIP = [
 
 FILE_RELATIONSHIP = [
     {'brand': 'Cofense Intelligence', 'entityA': 'file', 'entityAFamily': 'Indicator', 'entityAType': 'File',
-     'entityB': 'com', 'entityBFamily': 'Indicator', 'entityBType': 'Domain Name', 'fields': {}, 'name': 'related-to',
+     'entityB': 'com', 'entityBFamily': 'Indicator', 'entityBType': 'Domain', 'fields': {}, 'name': 'related-to',
      'reverseName': 'related-to', 'type': 'IndicatorToIndicator'},
     {'brand': 'Cofense Intelligence', 'entityA': 'file', 'entityAFamily': 'Indicator', 'entityAType': 'File',
-     'entityB': 'jjj', 'entityBFamily': 'Indicator', 'entityBType': 'IPv4 Address', 'fields': {}, 'name': 'related-to',
+     'entityB': '127.0.0.1', 'entityBFamily': 'Indicator', 'entityBType': 'IP', 'fields': {}, 'name': 'related-to',
      'reverseName': 'related-to', 'type': 'IndicatorToIndicator'},
     {'brand': 'Cofense Intelligence', 'entityA': 'file', 'entityAFamily': 'Indicator', 'entityAType': 'File',
      'entityB': 'md5', 'entityBFamily': 'Indicator', 'entityBType': 'File', 'fields': {}, 'name': 'related-to',
@@ -52,19 +52,19 @@ EMAIL_RELATIONSHIP = [
 
 URL_RELATIONSHIP = [
     {'brand': 'Cofense Intelligence', 'entityA': 'url', 'entityAFamily': 'Indicator', 'entityAType': 'URL',
-     'entityB': 'url', 'entityBFamily': 'Indicator', 'entityBType': 'Domain Name', 'fields': {}, 'name': 'related-to',
+     'entityB': 'dummy.com', 'entityBFamily': 'Indicator', 'entityBType': 'Domain', 'fields': {}, 'name': 'related-to',
      'reverseName': 'related-to', 'type': 'IndicatorToIndicator'},
     {'brand': 'Cofense Intelligence', 'entityA': 'url', 'entityAFamily': 'Indicator', 'entityAType': 'URL',
-     'entityB': 'url', 'entityBFamily': 'Indicator', 'entityBType': 'Domain Name', 'fields': {}, 'name': 'related-to',
+     'entityB': 'dummy.com', 'entityBFamily': 'Indicator', 'entityBType': 'Domain', 'fields': {}, 'name': 'related-to',
      'reverseName': 'related-to', 'type': 'IndicatorToIndicator'},
     {'brand': 'Cofense Intelligence', 'entityA': 'url',
-     'entityAFamily': 'Indicator', 'entityAType': 'URL', 'entityB': 'url', 'entityBFamily': 'Indicator',
-     'entityBType': 'IPv4 Address', 'fields': {}, 'name': 'related-to', 'reverseName': 'related-to',
+     'entityAFamily': 'Indicator', 'entityAType': 'URL', 'entityB': '127.0.0.1', 'entityBFamily': 'Indicator',
+     'entityBType': 'IP', 'fields': {}, 'name': 'related-to', 'reverseName': 'related-to',
      'type': 'IndicatorToIndicator'}]
 
 IP_RELATIONSHIP = [
     {'brand': 'Cofense Intelligence', 'entityA': '127.0.0.1', 'entityAFamily': 'Indicator', 'entityAType': 'IP',
-     'entityB': 'url', 'entityBFamily': 'Indicator', 'entityBType': 'URL', 'fields': {}, 'name': 'related-to',
+     'entityB': 'https://www.dummy.com', 'entityBFamily': 'Indicator', 'entityBType': 'URL', 'fields': {}, 'name': 'related-to',
      'reverseName': 'related-to', 'type': 'IndicatorToIndicator'},
     {'brand': 'Cofense Intelligence', 'entityA': '127.0.0.1', 'entityAFamily': 'Indicator', 'entityAType': 'IP',
      'entityB': 'md5', 'entityBFamily': 'Indicator', 'entityBType': 'File', 'fields': {}, 'name': 'related-to',
@@ -101,7 +101,7 @@ def test_threats_analysis():
     mock_threats = util_load_json('test_data/test_threats.json').get('threats')
     mock_md_data = util_load_json('test_data/test_threats.json').get('mock_md_data')
     mock_dbot_score = util_load_json('test_data/test_threats.json').get('mock_dbot_score')
-    md_data, dbot_score = threats_analysis(mock_threats, indicator, threshold)
+    md_data, dbot_score = threats_analysis(client.severity_score, mock_threats, indicator, threshold)
     assert mock_dbot_score == dbot_score
     assert mock_md_data == md_data
 
