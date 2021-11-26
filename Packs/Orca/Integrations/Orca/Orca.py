@@ -7,7 +7,7 @@ from typing import Any, Dict, Union, Optional
 
 DEMISTO_OCCURRED_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 DEMISTO_INFORMATIONAL = 0.5
-ORCA_API_TIMEOUT = 5  # Increase timeout for ORCA API
+ORCA_API_TIMEOUT = 30  # Increase timeout for ORCA API
 ORCA_HTTP_QUERIES_LIMIT = 50
 ORCA_API_LIMIT = 500
 
