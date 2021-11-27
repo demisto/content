@@ -1,5 +1,6 @@
 id: QRadar_v3-test
 version: -1
+fromversion: 5.0.0
 name: QRadar_v3-test
 description: QRadar v3 test playbook. Tests commands of QRadar, validates outputs
   and expected behaviour.
