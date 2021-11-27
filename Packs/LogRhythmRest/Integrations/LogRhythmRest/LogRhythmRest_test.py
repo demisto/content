@@ -1,5 +1,4 @@
 from datetime import date, timedelta
-import demistomock as demisto
 
 
 def test_get_time_frame():
