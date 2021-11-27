@@ -190,7 +190,6 @@ def http_request(uri: str, method: str, headers: dict = {},
     return json_result
 
 
-@logger
 def add_argument_list(arg: Any, field_name: str, member: Optional[bool], any_: Optional[bool] = False) -> str:
     member_stringify_list = ''
     if arg:
@@ -3016,7 +3015,6 @@ def panorama_edit_rule_command(args: dict):
         params['xpath'] += '/' + element_to_change
 
         result = http_request(URL, 'POST', body=params)
-        demisto.info(f'\n\n\nresponse=\n{result}\n\n\n')
 
         rule_output = {
             'Name': rulename,
