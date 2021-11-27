@@ -190,6 +190,7 @@ def http_request(uri: str, method: str, headers: dict = {},
     return json_result
 
 
+@logger
 def add_argument_list(arg: Any, field_name: str, member: Optional[bool], any_: Optional[bool] = False) -> str:
     member_stringify_list = ''
     if arg:
@@ -2904,10 +2905,11 @@ def panorama_get_current_element(element_to_change: str, xpath: str) -> list:
         return []
 
     result = response.get('response').get('result')
-    if '@dirtyId' in result:
+    current_object = result.get(element_to_change, {})
+    if '@dirtyId' in result or '@dirtyId' in current_object:
         LOG(f'Found uncommitted item:\n{result}')
-        raise Exception('Please commit the instance prior to editing the Security rule.')
-    current_object = result.get(element_to_change)
+        raise DemistoException('Please commit the instance prior to editing the Security rule.')
+
     if 'list' in current_object:
         current_objects_items = argToList(current_object['list']['member'])
     elif 'member' in current_object:
@@ -3014,6 +3016,7 @@ def panorama_edit_rule_command(args: dict):
         params['xpath'] += '/' + element_to_change
 
         result = http_request(URL, 'POST', body=params)
+        demisto.info(f'\n\n\nresponse=\n{result}\n\n\n')
 
         rule_output = {
             'Name': rulename,
@@ -7126,8 +7129,8 @@ def main():
     try:
         args = demisto.args()
         params = demisto.params()
-        additional_malicious = argToList(demisto.params().get('additional_malicious'))
-        additional_suspicious = argToList(demisto.params().get('additional_suspicious'))
+        additional_malicious = argToList(params.get('additional_malicious'))
+        additional_suspicious = argToList(params.get('additional_suspicious'))
         initialize_instance(args=args, params=params)
         LOG(f'Command being called is: {demisto.command()}')
 
@@ -7492,7 +7495,7 @@ def main():
         else:
             raise NotImplementedError(f'Command {demisto.command()} was not implemented.')
     except Exception as err:
-        return_error(str(err))
+        return_error(str(err), error=traceback.format_exc())
 
     finally:
         LOG.print_log()

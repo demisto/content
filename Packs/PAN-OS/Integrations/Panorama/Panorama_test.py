@@ -698,3 +698,60 @@ def test_prettify_rule():
     prettify_rule = prettify_rule(rule)
 
     assert prettify_rule == expected_prettify_rule
+
+
+class TestPanoramaEditRuleCommand:
+    EDIT_SUCCESS_RESPONSE = {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+
+    @staticmethod
+    def test_sanity(mocker):
+        import Panorama
+        args = {
+            'rulename': 'TestRule',
+            'element_to_change': 'source',
+            'element_value': '1.9.9.1,1.3.3.7',
+            'behaviour': 'add',
+        }
+        commited_rule_item = {
+            'response': {
+                '@status': 'success',
+                '@code': '19',
+                'result': {
+                    '@total-count': '1',
+                    '@count': '1',
+                    'source': {
+                         'member': ['1.9.9.1', '1.3.3.7', '1.9.9.17'],
+        }}}}
+        mocker.patch('Panorama.http_request', return_value=commited_rule_item)
+        Panorama.panorama_edit_rule_command(args)
+
+    @staticmethod
+    def test_add_to_element_on_uncommited_rule(mocker):
+        import Panorama
+        args = {
+            'rulename': 'TestRule',
+            'element_to_change': 'source',
+            'element_value': '1.2.3.4',
+            'behaviour': 'add',
+        }
+        uncommited_rule_item = {
+            'response': {
+                '@status': 'success',
+                '@code': '19',
+                'result': {
+                    '@total-count': '1',
+                    '@count': '1',
+                    'source': {
+                        '@admin': 'admin',
+                        '@dirtyId': '1616',
+                        '@time': '2021/11/27 10:55:18',
+                        'member': {
+                            '@admin': 'admin',
+                            '@dirtyId': '1616',
+                            '@time': '2021/11/27 10:55:18',
+                            '#text': '1.3.3.7'
+                        }}}}}
+        mocker.patch('Panorama.http_request', return_value=uncommited_rule_item)
+
+        with pytest.raises(DemistoException):
+            Panorama.panorama_edit_rule_command(args)
