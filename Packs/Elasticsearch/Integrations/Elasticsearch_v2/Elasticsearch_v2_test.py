@@ -655,7 +655,10 @@ def test_elasticsearch_builder_called_with_no_creds(params, mocker):
     assert es_mock.call_args[1].get('api_key') is None
 
 
-def test_elasticsearch_parse_subtree():
+@pytest.mark.parametrize('params', MOCK_PARAMS)
+def test_elasticsearch_parse_subtree(params, mocker):
+    mocker.patch.object(demisto, 'params', return_value=params)
+    importlib.reload(Elasticsearch_v2)  # To reset the Elasticsearch client with the OpenSearch library
     from Elasticsearch_v2 import parse_subtree
     sub_tree = parse_subtree(MOCK_ES7_SCHEMA_INPUT)
     assert str(sub_tree) == str(MOCK_ES7_SCHEMA_OUTPUT)
