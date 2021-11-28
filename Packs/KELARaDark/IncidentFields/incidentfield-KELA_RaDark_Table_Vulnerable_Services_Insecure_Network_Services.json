@@ -4,7 +4,7 @@
         "RaDark"
     ],
     "caseInsensitive": true,
-    "cliName": "kelaradarktableleakedcredentialsfromcitadel",
+    "cliName": "kelaradarktablevulnerableservicesinsecurenetworkservices",
     "closeForm": false,
     "columns": [
         {
@@ -20,11 +20,11 @@
             "width": 150
         },
         {
-            "displayName": "Email",
+            "displayName": "IP",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "email",
+            "key": "ip",
             "required": false,
             "script": "",
             "selectValues": null,
@@ -32,11 +32,11 @@
             "width": 150
         },
         {
-            "displayName": "Domain",
+            "displayName": "Hostname",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "domain",
+            "key": "hostname",
             "required": false,
             "script": "",
             "selectValues": null,
@@ -44,11 +44,11 @@
             "width": 150
         },
         {
-            "displayName": "Password",
+            "displayName": "Port",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "password",
+            "key": "port",
             "required": false,
             "script": "",
             "selectValues": null,
@@ -56,11 +56,11 @@
             "width": 150
         },
         {
-            "displayName": "Password Type",
+            "displayName": "Service",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "passwordtype",
+            "key": "service",
             "required": false,
             "script": "",
             "selectValues": null,
@@ -68,23 +68,11 @@
             "width": 150
         },
         {
-            "displayName": "Dump Post Date",
+            "displayName": "ISP",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "dumppostdate",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "date",
-            "width": 150
-        },
-        {
-            "displayName": "Compromised Website",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "compromisedwebsite",
+            "key": "isp",
             "required": false,
             "script": "",
             "selectValues": null,
@@ -97,10 +85,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_kelaradarktableleakedcredentialsfromcitadel",
+    "id": "incident_kelaradarktablevulnerableservicesinsecurenetworkservices",
     "isReadOnly": false,
     "locked": false,
-    "name": "KELA RaDark Table Leaked Credentials From Citadel",
+    "name": "KELA RaDark Table Vulnerable Services Insecure Network Services",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,

@@ -4,7 +4,7 @@
         "RaDark"
     ],
     "caseInsensitive": true,
-    "cliName": "kelaradarktableleakedcredentialsfromcitadel",
+    "cliName": "kelaradarktabletwoeasy",
     "closeForm": false,
     "columns": [
         {
@@ -20,11 +20,11 @@
             "width": 150
         },
         {
-            "displayName": "Email",
+            "displayName": "Bot ID",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "email",
+            "key": "botid",
             "required": false,
             "script": "",
             "selectValues": null,
@@ -32,11 +32,35 @@
             "width": 150
         },
         {
-            "displayName": "Domain",
+            "displayName": "Updated Date",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "domain",
+            "key": "updateddate",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "date",
+            "width": 150
+        },
+        {
+            "displayName": "Resource",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "resource",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "Username",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "username",
             "required": false,
             "script": "",
             "selectValues": null,
@@ -56,11 +80,11 @@
             "width": 150
         },
         {
-            "displayName": "Password Type",
+            "displayName": "Country",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "passwordtype",
+            "key": "country",
             "required": false,
             "script": "",
             "selectValues": null,
@@ -68,23 +92,23 @@
             "width": 150
         },
         {
-            "displayName": "Dump Post Date",
+            "displayName": "Tags",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "dumppostdate",
+            "key": "tags",
             "required": false,
             "script": "",
             "selectValues": null,
-            "type": "date",
+            "type": "shortText",
             "width": 150
         },
         {
-            "displayName": "Compromised Website",
+            "displayName": "Price",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "compromisedwebsite",
+            "key": "price",
             "required": false,
             "script": "",
             "selectValues": null,
@@ -97,10 +121,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_kelaradarktableleakedcredentialsfromcitadel",
+    "id": "incident_kelaradarktabletwoeasy",
     "isReadOnly": false,
     "locked": false,
-    "name": "KELA RaDark Table Leaked Credentials From Citadel",
+    "name": "KELA RaDark Table TwoEasy",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,
@@ -112,5 +136,5 @@
     "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.0.0"
+    "fromVersion": "5.5.0"
 }
