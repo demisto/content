@@ -34,10 +34,15 @@ def test_script_valid(mocker):
     mocker.patch.object(demisto, 'executeCommand', return_value=[{'Type': '1', 'Contents': [away_user, not_away_user]}])
     main()
     command_results = return_results_mock.call_args[0][0]
-    assert command_results.outputs == [away_user]
+    assert command_results.outputs == [{'email': '',
+                                        'id': 'admin',
+                                        'name': 'Admin',
+                                        'phone': '+650-123456',
+                                        'roles': {'demisto': ['Administrator']},
+                                        'username': 'admin'}]
 
 
-def test_script_valid(mocker):
+def test_script_invalid(mocker):
     """
     Given:
 
