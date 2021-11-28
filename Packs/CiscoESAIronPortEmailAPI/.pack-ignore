@@ -1,2 +1,4 @@
 [file:CiscoIronPortEMailAPI.yml]
 ignore=IN145
+[file:CiscoESAIronPortEmailAPI]
+ignore=PA129
