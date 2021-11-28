@@ -961,6 +961,7 @@ Sends an email using Microsoft Graph.
 | attachNames | The comma-separated list of names of attachments to display in the email to send. It must have the same number of elements as attachIDs. | Optional |
 | attachCIDs | The comma-separated list of CIDs to embed attachments within the actual email. | Optional |
 | from | The email address from which to send the email. | Optional |
+| htmlBody | The content (body) of the email (in HTML format). | Optional |
 
 
 ##### Context Output
