@@ -100,18 +100,35 @@ def add_ip_objects_command(client: Client, args: Dict[str, Any]) -> CommandResul
     """
     list_type = args['list_type']
     cidr_range = args['cidr_range']
-    ip_address, mask = get_ip_and_mask_from_cidr(cidr_range)
     list_target = args.get('list_target', 'proxy-routed')
     duration = int(args.get('duration', 0))
     note = args.get('note', "")
     tags = argToList(args.get('tags', []))
     url_suffix = f'{list_type}/ip_objects'
 
-    body = define_body_for_add_ip_command(list_target, mask, ip_address, duration, note, tags)
+    errors_list = []
+    success_list = []
+    for ip_address, mask in map(get_ip_and_mask_from_cidr, argToList(cidr_range)):
+        try:
+            body = define_body_for_add_ip_command(list_target, mask, ip_address, duration, note, tags)
 
-    client.request_ip_objects(body=body, method='POST', url_suffix=url_suffix, params={}, resp_type='content')
-    human_readable = f"IP object with CIDR range address: {ip_address}/{mask} added successfully into the {list_type}" \
-                     f" list."
+            client.request_ip_objects(body=body, method='POST', url_suffix=url_suffix, params={}, resp_type='content')
+            success_list.append(f'| {ip_address}/{mask} |')
+        except SystemExit:
+            # an error occurred but it was handled with the return_error method.
+            pass
+        except Exception as error:
+            demisto.error(traceback.format_exc())
+            errors_list.append(f'could not add {ip_address}/{mask} to {list_type}. error: {error}')
+
+    if errors_list:
+        try:
+            return_error('\n'.join(errors_list))
+        except SystemExit:
+            if not success_list:
+                raise
+    success_list = '\n'.join(success_list)
+    human_readable = f"IP objects wehre added successfully into the {list_type}\n| IP |\n| - |\n{success_list}"
     return CommandResults(readable_output=human_readable)
 
 
