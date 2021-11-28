@@ -37,9 +37,10 @@ configuration:
   name: permittedFromDomain
   required: false
   type: 0
-- display: IMAP server type
-  additionalinfo: IMAP server type is required for filtering with the senders email address
-  name: server_type
+- display: Mail service
+  additionalinfo: There are changes between email services regarding how to set the query with filters (such as the sender's email address) to fetch emails
+    So if you are having anhy issues with the fetch emails when you add filters consider using the Office365 email service
+  name: mail_service
   defaultvalue: Gmail
   type: 15
   options:
