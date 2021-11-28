@@ -1,8 +1,11 @@
 id: PAN-OS Query Logs For Indicators
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: PAN-OS Query Logs For Indicators
-fromversion: 5.0.0
-description: 'This playbook queries the following PAN-OS log types: traffic, threat, url, data-filtering and wildfire. The playbook accepts inputs such as IP. hash, and url.'
+description: 'This playbook queries the following PAN-OS log types: traffic, threat,
+  url, data-filtering and wildfire. The playbook accepts inputs such as IP. hash,
+  and url.'
 starttaskid: "0"
 tasks:
   "0":
@@ -30,6 +33,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
     taskid: 46712325-47fc-42d4-8934-37612d712661
@@ -38,7 +45,8 @@ tasks:
       id: 46712325-47fc-42d4-8934-37612d712661
       version: -1
       name: Is Palo Alto Networks PAN-OS enabled?
-      description: Checks if there is a valid instance of the Palo Alto Networks PAN-OS. integration enabled.
+      description: Checks if there is a valid instance of the Palo Alto Networks PAN-OS.
+        integration enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -87,6 +95,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
     taskid: f707846a-7396-42fc-8573-a1005da8c985
@@ -104,23 +116,11 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
-      action: {}
-      addr-dst: {}
-      addr-src: {}
-      filedigest: {}
       ip:
         complex:
           root: inputs.ip
       log-type:
         simple: traffic
-      number_of_logs: {}
-      port-dst: {}
-      query: {}
-      rule: {}
-      time-generated: {}
-      url: {}
-      zone-dst: {}
-      zone-src: {}
     separatecontext: false
     view: |-
       {
@@ -132,6 +132,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
     taskid: 05af0c11-4d31-4d09-8fb7-67f85eaa3bad
@@ -156,8 +160,6 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      AdditionalPollingCommandArgNames: {}
-      AdditionalPollingCommandArgValues: {}
       Ids:
         complex:
           root: Panorama
@@ -177,6 +179,7 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -187,15 +190,21 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: d50a296b-4183-4856-843c-b4f1f8f18cc7
+    taskid: b1e89a31-b783-4775-8076-8b6b9b42ecdb
     type: regular
     task:
-      id: d50a296b-4183-4856-843c-b4f1f8f18cc7
+      id: b1e89a31-b783-4775-8076-8b6b9b42ecdb
       version: -1
       name: Panorama Get Logs
       description: Retrieves log query data by job ID.
+      tags:
+      - PanoramaResults
       script: '|||panorama-get-logs'
       type: regular
       iscommand: true
@@ -204,7 +213,6 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      ignore_auto_extract: {}
       job_id:
         complex:
           root: Panorama
@@ -229,6 +237,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: d69222cb-a986-4d52-8f73-f020b67ef103
@@ -252,6 +264,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
     taskid: 00f77558-b083-4b8c-8197-323be797a56e
@@ -284,6 +300,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
     taskid: 24f322d7-af0e-4c7a-8788-ddd02de8cc13
@@ -331,6 +351,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
     taskid: 80d6c8b3-ebe9-4fc9-8fcf-d070a430a6a8
@@ -348,23 +372,11 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
-      action: {}
-      addr-dst: {}
-      addr-src: {}
-      filedigest: {}
       ip:
         complex:
           root: inputs.ip
       log-type:
         simple: threat
-      number_of_logs: {}
-      port-dst: {}
-      query: {}
-      rule: {}
-      time-generated: {}
-      url: {}
-      zone-dst: {}
-      zone-src: {}
     separatecontext: false
     view: |-
       {
@@ -376,6 +388,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
     taskid: f0295d6d-ca7b-4da7-84e2-6a4534187c98
@@ -402,6 +418,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
     taskid: 1a8ee268-d796-4441-87f3-6d39648ab2f1
@@ -442,6 +462,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
     taskid: bb903d3a-ba81-4125-8546-af1c3015dd2f
@@ -459,23 +483,11 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
-      action: {}
-      addr-dst: {}
-      addr-src: {}
-      filedigest: {}
       ip:
         complex:
           root: inputs.ip
       log-type:
         simple: wildfire
-      number_of_logs: {}
-      port-dst: {}
-      query: {}
-      rule: {}
-      time-generated: {}
-      url: {}
-      zone-dst: {}
-      zone-src: {}
     separatecontext: false
     view: |-
       {
@@ -487,6 +499,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "17":
     id: "17"
     taskid: 19eb4b7b-ee52-469b-812b-ff3b80755677
@@ -504,23 +520,11 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
-      action: {}
-      addr-dst: {}
-      addr-src: {}
-      filedigest: {}
       ip:
         complex:
           root: inputs.ip
       log-type:
         simple: data
-      number_of_logs: {}
-      port-dst: {}
-      query: {}
-      rule: {}
-      time-generated: {}
-      url: {}
-      zone-dst: {}
-      zone-src: {}
     separatecontext: false
     view: |-
       {
@@ -532,6 +536,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "18":
     id: "18"
     taskid: 1f844f68-5a2f-4985-8462-33e9b7056665
@@ -549,23 +557,11 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
-      action: {}
-      addr-dst: {}
-      addr-src: {}
-      filedigest: {}
       ip:
         complex:
           root: inputs.ip
       log-type:
         simple: url
-      number_of_logs: {}
-      port-dst: {}
-      query: {}
-      rule: {}
-      time-generated: {}
-      url: {}
-      zone-dst: {}
-      zone-src: {}
     separatecontext: false
     view: |-
       {
@@ -577,6 +573,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "20":
     id: "20"
     taskid: cee28744-b9b4-498c-86d4-080aae03e0d7
@@ -603,6 +603,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "21":
     id: "21"
     taskid: 3e4145cb-b2cb-4055-841f-cd0f9aebfeda
@@ -639,6 +643,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "23":
     id: "23"
     taskid: b2f18cd5-7555-4983-888a-b596ca9787ff
@@ -656,23 +664,11 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
-      action: {}
-      addr-dst: {}
-      addr-src: {}
       filedigest:
         complex:
           root: inputs.filedigest
-      ip: {}
       log-type:
         simple: wildfire
-      number_of_logs: {}
-      port-dst: {}
-      query: {}
-      rule: {}
-      time-generated: {}
-      url: {}
-      zone-dst: {}
-      zone-src: {}
     separatecontext: false
     view: |-
       {
@@ -684,6 +680,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "24":
     id: "24"
     taskid: d931076b-f81a-4714-8d4a-d6dea69249ff
@@ -710,6 +710,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "25":
     id: "25"
     taskid: b9be6fea-a396-4e1c-8fdd-adc32ad3c1ca
@@ -748,6 +752,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "30":
     id: "30"
     taskid: f2f84fe6-e723-4196-8840-7d36965e817b
@@ -765,23 +773,11 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
-      action: {}
-      addr-dst: {}
-      addr-src: {}
-      filedigest: {}
-      ip: {}
       log-type:
         simple: threat
-      number_of_logs: {}
-      port-dst: {}
-      query: {}
-      rule: {}
-      time-generated: {}
       url:
         complex:
           root: inputs.url
-      zone-dst: {}
-      zone-src: {}
     separatecontext: false
     view: |-
       {
@@ -793,6 +789,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "31":
     id: "31"
     taskid: aaa97f96-f2bd-4f0e-8b11-b650d33fa2b0
@@ -810,23 +810,11 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
-      action: {}
-      addr-dst: {}
-      addr-src: {}
-      filedigest: {}
-      ip: {}
       log-type:
         simple: data
-      number_of_logs: {}
-      port-dst: {}
-      query: {}
-      rule: {}
-      time-generated: {}
       url:
         complex:
           root: inputs.url
-      zone-dst: {}
-      zone-src: {}
     separatecontext: false
     view: |-
       {
@@ -838,6 +826,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "32":
     id: "32"
     taskid: c3e6d2d2-e461-454d-829e-e61808fee61e
@@ -855,23 +847,11 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
-      action: {}
-      addr-dst: {}
-      addr-src: {}
-      filedigest: {}
-      ip: {}
       log-type:
         simple: url
-      number_of_logs: {}
-      port-dst: {}
-      query: {}
-      rule: {}
-      time-generated: {}
       url:
         complex:
           root: inputs.url
-      zone-dst: {}
-      zone-src: {}
     separatecontext: false
     view: |-
       {
@@ -883,6 +863,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -902,26 +887,32 @@ inputs:
   value: {}
   required: false
   description: 'URL, for example: "safebrowsing.googleapis.com".'
+  playbookInputQuery:
 - key: filedigest
   value: {}
   required: false
   description: File hash (for WildFire logs only).
+  playbookInputQuery:
 - key: ip
   value: {}
   required: false
   description: Source or destination address
+  playbookInputQuery:
 outputs:
 - contextPath: Panorama.Monitor
   description: Monitor logs object.
   type: string
 - contextPath: Panorama.Monitor.Logs.Action
-  description: Action taken for the session. Can be "alert", "allow", "deny", "drop", "drop-all-packets", "reset-client", "reset-server", "reset-both", or "block-url".
+  description: Action taken for the session. Can be "alert", "allow", "deny", "drop",
+    "drop-all-packets", "reset-client", "reset-server", "reset-both", or "block-url".
   type: string
 - contextPath: Panorama.Monitor.Logs.Application
   description: Application associated with the session.
   type: string
 - contextPath: Panorama.Monitor.Logs.Category
-  description: For URL subtype, it is the URL category; For WildFire subtype, it is the verdict on the file and is either ‘malicious’, ‘phishing’, ‘grayware’, or ‘benign’; For other subtypes, the value is ‘any’.
+  description: For URL subtype, it is the URL category; For WildFire subtype, it is
+    the verdict on the file and is either ‘malicious’, ‘phishing’, ‘grayware’, or
+    ‘benign’; For other subtypes, the value is ‘any’.
   type: string
 - contextPath: Panorama.Monitor.Logs.DeviceName
   description: The hostname of the firewall on which the session was logged.
@@ -933,7 +924,8 @@ outputs:
   description: Username of the user to which the session was destined.
   type: string
 - contextPath: Panorama.Monitor.Logs.DestinationCountry
-  description: Destination country or internal region for private addresses. Maximum length is 32 bytes.
+  description: Destination country or internal region for private addresses. Maximum
+    length is 32 bytes.
   type: string
 - contextPath: Panorama.Monitor.Logs.DestinationPort
   description: Destination port utilized by the session.
@@ -980,7 +972,10 @@ outputs:
   description: Post-NAT source port.
   type: string
 - contextPath: Panorama.Monitor.Logs.PCAPid
-  description: The packet capture (pcap) ID is a 64 bit unsigned integral denoting an ID to correlate threat pcap files with extended pcaps taken as a part of that flow. All threat logs will contain either a pcap_id of 0 (no associated pcap), or an ID referencing the extended pcap file.
+  description: The packet capture (pcap) ID is a 64 bit unsigned integral denoting
+    an ID to correlate threat pcap files with extended pcaps taken as a part of that
+    flow. All threat logs will contain either a pcap_id of 0 (no associated pcap),
+    or an ID referencing the extended pcap file.
   type: string
 - contextPath: Panorama.Monitor.Logs.IPProtocol
   description: IP protocol associated with the session.
@@ -1011,13 +1006,15 @@ outputs:
   description: The serial number of the firewall on which the session was logged.
   type: string
 - contextPath: Panorama.Monitor.Logs.Severity
-  description: Severity associated with the threat. Can be "informational", "low", "medium", "high", or "critical".
+  description: Severity associated with the threat. Can be "informational", "low",
+    "medium", "high", or "critical".
   type: string
 - contextPath: Panorama.Monitor.Logs.SourceAddress
   description: Original session source IP address.
   type: string
 - contextPath: Panorama.Monitor.Logs.SourceCountry
-  description: Source country or internal region for private addresses. Maximum length is 32 bytes.
+  description: Source country or internal region for private addresses. Maximum length
+    is 32 bytes.
   type: string
 - contextPath: Panorama.Monitor.Logs.SourceUser
   description: Username of the user who initiated the session.
@@ -1026,7 +1023,8 @@ outputs:
   description: Source port utilized by the session.
   type: string
 - contextPath: Panorama.Monitor.Logs.Name
-  description: Palo Alto Networks identifier for the threat. It is a description string followed by a 64-bit numerical identifier.
+  description: Palo Alto Networks identifier for the threat. It is a description string
+    followed by a 64-bit numerical identifier.
   type: string
 - contextPath: Panorama.Monitor.Logs.ID
   description: Palo Alto Networks ID for the threat.
@@ -1038,7 +1036,8 @@ outputs:
   description: Time that the log was generated on the dataplane.
   type: string
 - contextPath: Panorama.Monitor.Logs.URLCategoryList
-  description: A list of the URL filtering categories that the firewall used to enforce policy.
+  description: A list of the URL filtering categories that the firewall used to enforce
+    policy.
   type: string
 - contextPath: Panorama.Monitor.JobID
   description: Job ID of the logs query.
@@ -1048,6 +1047,6 @@ outputs:
 - contextPath: Panorama.Monitor.Message
   description: Message  of the logs query.
   type: string
-
 tests:
 - PAN-OS Query Logs For Indicators Test
+fromversion: 5.0.0

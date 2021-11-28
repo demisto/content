@@ -5280,6 +5280,9 @@ def arg_to_number(arg, arg_name=None, required=False):
                 raise ValueError('Missing required argument')
 
         return None
+
+    arg = encode_string_results(arg)
+
     if isinstance(arg, str):
         if arg.isdigit():
             return int(arg)
