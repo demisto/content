@@ -8,6 +8,9 @@
         "Saas Security Incident",
         "Tanium TR Incident",
         "Logrhythm Case",
+        "CrowdStrike Falcon Detection",
+        "CrowdStrike Falcon Incident",
+        "Microsoft Defender For Endpoint"
         "OpsGenie Incident",
         "OpsGenie Alert"
     ],
