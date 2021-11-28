@@ -278,7 +278,7 @@ script:
       name: interval_in_seconds
       required: false
       secret: false
-      defaultValue: '60'
+      defaultValue: '30'
     - default: false
       description: The job sid.
       isArray: false
