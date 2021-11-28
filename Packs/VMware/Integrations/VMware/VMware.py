@@ -4,9 +4,10 @@
 import ssl
 from cStringIO import StringIO
 
-from pyVim.connect import Disconnect, SmartConnect
-from pyVim.task import WaitForTask
+from pyvim.connect import Disconnect, SmartConnect
+from pyvim.task import WaitForTask
 from pyVmomi import vim, vmodl
+from vmware.vapi.vsphere.client import create_vsphere_client
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -18,9 +19,11 @@ PASSWORD = demisto.params()['credentials']['password']
 PORT = str(FULL_URL[1])
 
 
+
 def login():
     s = ssl.SSLContext(ssl.PROTOCOL_TLS)
     s.verify_mode = ssl.CERT_NONE
+    vsphere_client = create_vsphere_client(server=URL, username=USERNAME, password=PASSWORD)
     try:
         si = SmartConnect(host=URL,
                           user=USERNAME,
@@ -32,7 +35,7 @@ def login():
                           pwd=PASSWORD,
                           port=PORT,
                           sslContext=s)
-    return si
+    return si, vsphere_client
 
 
 def logout(si):
@@ -44,6 +47,23 @@ def get_vm(uuid):
     if vm is None:
         raise SystemExit('Unable to locate Virtual Machine.')
     return vm
+
+def search_for_obj(content, vim_type, name, folder=None, recurse=True):
+    if folder is None:
+        folder = content.rootFolder
+    if not name:
+        return None
+    obj = None
+    container = content.viewManager.CreateContainerView(folder, vim_type, recurse)
+
+    for managed_object_ref in container.view:
+        if managed_object_ref.name == name:
+            obj = managed_object_ref
+            break
+    container.Destroy()
+    if not obj:
+            raise RuntimeError("Managed Object " + name + " not found.")
+    return obj
 
 
 def get_vms():
@@ -373,15 +393,196 @@ def change_nic_state(args):
             'EntryContext': ec
         }
     elif task.info.state == 'error':
-        raise SystemExit('Error occurred while trying to change NIC state.')
+        raise SystemExit('Error occurred while trying to clone VM.')
 
 
+def list_vm_tags(uuid, parent_category_name):
+        vm = get_vm(uuid)
+        content = si.RetrieveContent()
+        storage = content.vStorageObjectManager
+        res = storage.ListVStorageObject()
+        res = storage.ListTagsAttachedToVStorageObject(vm)
+        x=2
+
+
+def create_vm(args):
+    content = si.RetrieveContent()
+    folder = search_for_obj(content, [vim.Folder], args.get('folder'))
+    host = search_for_obj(content, [vim.HostSystem], args.get('host'))
+    pool = search_for_obj(content, [vim.ResourcePool], args.get('pool'))
+    spec = vim.vm.ConfigSpec()
+    resource_allocation_spec = vim.ResourceAllocationInfo()
+    resource_allocation_info = vim.ResourceAllocationInfo()
+    resource_allocation_spec.limit = args.get('cpu-allocation')
+    resource_allocation_info.limit = args.get('memory')
+    spec.name = args.get('name')
+    spec.numCPUs = args.get('cpu-num')
+    spec.cpuAllocation = resource_allocation_spec
+    spec.memoryAllocation = resource_allocation_info
+    spec.memoryMB = args.get('virtual-memory')
+    spec.guestId = args.get('guestId')
+    # missing 2 args
+    task = folder.CreateVM_Task(config=spec, pool=pool, host=host)
+    wait_for_tasks(si,[task])
+
+    if task.info.state == 'success':
+        mac_address = ''
+        summary = task.info.result.summary
+
+        try:
+            for dev in task.info.result.config.hardware.device:
+                if isinstance(dev, vim.vm.device.VirtualEthernetCard):  # type: ignore
+                    mac_address = dev.macAddress
+                    break
+        except Exception:  # noqa
+            pass
+
+        data = {
+            'Name': summary.config.name,
+            'Template': summary.config.template,
+            'Path': summary.config.vmPathName,
+            'Guest': summary.config.guestFullName,
+            'UUID': summary.config.instanceUuid,
+            'IP': summary.guest.ipAddress if summary.guest.ipAddress else ' ',
+            'State': summary.runtime.powerState,
+            'HostName': summary.guest.hostName if summary.guest.hostName else ' ',
+            'MACAddress': mac_address,
+        }
+        ec = {
+        'VMWare(val.UUID && val.UUID === obj.UUID)': data
+        }
+        return {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': data,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Virtual Machine', data),
+            'EntryContext': ec
+        }
+    elif task.info.state == 'error':
+        raise SystemExit('Error occurred while trying to create a VM.')
+
+# def add_tag(uuid, category, tag):
+def clone_vm(args):
+    vm = get_vm(args.get('uuid'))
+    content = si.RetrieveContent()
+    spec = vim.vm.CloneSpec()
+    relocate_spec = vim.vm.RelocateSpec()
+    relocate_spec.datastore = search_for_obj(content, [vim.Datastore], args.get('datastore'))
+    relocate_spec.host = search_for_obj(content, [vim.HostSystem], args.get('host'))
+    relocate_spec.pool = search_for_obj(content, [vim.ResourcePool], args.get('pool'))
+    spec.location = relocate_spec
+    spec.template = args.get('template', False)
+    spec.powerOn = args.get('powerOn', False)
+
+    folder = search_for_obj(content, [vim.Folder], args.get('folder'))
+    task = vm.CloneVM_Task(folder=folder, name=args.get('name'), spec=spec)
+    wait_for_tasks(si,[task])
+
+    if task.info.state == 'success':
+        mac_address = ''
+        summary = task.info.result.summary
+
+        try:
+            for dev in task.info.result.config.hardware.device:
+                if isinstance(dev, vim.vm.device.VirtualEthernetCard):  # type: ignore
+                    mac_address = dev.macAddress
+                    break
+        except Exception:  # noqa
+            pass
+
+        data = {
+            'Name': summary.config.name,
+            'Template': summary.config.template,
+            'Path': summary.config.vmPathName,
+            'Guest': summary.config.guestFullName,
+            'UUID': summary.config.instanceUuid,
+            'IP': summary.guest.ipAddress if summary.guest.ipAddress else ' ',
+            'State': summary.runtime.powerState,
+            'HostName': summary.guest.hostName if summary.guest.hostName else ' ',
+            'MACAddress': mac_address,
+        }
+        ec = {
+        'VMWare(val.UUID && val.UUID === obj.UUID)': data
+        }
+        return {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': data,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Virtual Machine', data),
+            'EntryContext': ec
+        }
+    elif task.info.state == 'error':
+        raise SystemExit('Error occurred while trying to clone VM.')
+
+# def relocate_vm(args):
+#     vm = get_vm(args.get('args'))
+#     content = si.RetrieveContent()
+#     spec = vim.vm.RelocateSpec
+#     spec.folder = search_for_obj(content, [vim.Folder], args.get('folder'))
+#     spec.datastore = search_for_obj(content, [vim.Datastore], args.get('datastore'))
+#     spec.host = search_for_obj(content, [vim.HostSystem], args.get('host'))
+#     spec.pool = search_for_obj(content, [vim.ResourcePool], args.get('pool'))
+#     spec.service = args.get('service')
+#     spec.profile = args.get('profile')
+
+def delete_vm(args):
+    vm = get_vm(args.get('uuid'))
+    task = vm.Destroy_Task()
+    wait_for_tasks(si,[task])
+    if task.info.state == 'success':
+        return {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': {},
+            'ReadableContentsFormat': formats['text'],
+            'HumanReadable': 'Virtual Machine was deleted successfully.',
+            'EntryContext': {}
+        }
+    elif task.info.state == 'error':
+        raise SystemExit('Error occurred while trying to delete VM.')
+
+    
+def register_vm(args):
+    content = si.RetrieveContent()
+    folder = search_for_obj(content, [vim.Folder], args.get('folder'))
+    host = search_for_obj(content, [vim.HostSystem], args.get('host'))
+    pool = search_for_obj(content, [vim.ResourcePool], args.get('pool'))
+    task = folder.RegisterVM_Task(path=args.get('path'), name=args.get('name'), asTemplate=args.get('asTemplaet', False), pool=pool, host=host)
+    wait_for_tasks(si,[task])
+    if task.info.state == 'success':
+        return {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': {},
+            'ReadableContentsFormat': formats['text'],
+            'HumanReadable': 'Virtual Machine was registered successfully.',
+            'EntryContext': {}
+        }
+    elif task.info.state == 'error':
+        raise SystemExit('Error occurred while trying to register VM.')
+
+
+def unregister_vm(args):
+    vm = get_vm(args.get('uuisd'))
+    vm.UnregisterVM()
+    return {
+        'ContentsFormat': formats['json'],
+        'Type': entryTypes['note'],
+        'Contents': {},
+        'ReadableContentsFormat': formats['text'],
+        'HumanReadable': 'Virtual Machine was unregistered successfully.',
+        'EntryContext': {}
+    }
+  
 sout = sys.stdout
 sys.stdout = StringIO()
 res = []
 si = None
+vsphere_client = None 
 try:
-    si = login()
+    si, vsphere_client = login()
 
     if demisto.command() == 'test-module':
         result = 'ok'
@@ -405,6 +606,21 @@ try:
         result = get_events(demisto.args()['vm-uuid'], demisto.args()['event-type'])
     if demisto.command() == 'vmware-change-nic-state':
         result = change_nic_state(demisto.args())
+    if demisto.command() == 'vmware-list-vm-tags':
+        result = list_vm_tags(demisto.args()['vm-uuid'], demisto.args()['parent-category-name'])
+    if demisto.command() == 'vmware-add-tag':
+        result = list_vm_tags(demisto.args()['vm-uuid'], demisto.args()['parent-category-name'])
+    if demisto.command() == 'vmware-clone-vm':
+        result = clone_vm(demisto.args())
+    if demisto.command() == 'vmware-relocate-vm':
+        # result = relocate_vm(demisto.args())
+        pass
+    if demisto.command() == 'vmware-delete-vm':
+        result = delete_vm(demisto.args())
+    if demisto.command() == 'vmware-register-vm':
+        result = register_vm(demisto.args())
+    if demisto.command() == 'vmware-unregister-vm':
+        result = unregister_vm(demisto.args())
     res.append(result)
 except Exception as ex:
     res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": str(ex)})  # type: ignore
