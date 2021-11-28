@@ -1707,7 +1707,7 @@ script:
       type: Date
   dockerimage: demisto/crypto:1.0.0.24380
   feed: false
-  isfetch: false
+  isfetch: true
   longRunning: false
   longRunningPort: false
   runonce: false
