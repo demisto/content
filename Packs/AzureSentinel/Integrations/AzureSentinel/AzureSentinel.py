@@ -196,6 +196,7 @@ def incident_data_to_xsoar_format(inc_data):
         'Description': properties.get('description'),
         'Severity': properties.get('severity'),
         'Status': properties.get('status'),
+        'IncidentUrl': properties.get("incidentUrl"),
         'AssigneeName': properties.get('owner', {}).get('assignedTo'),
         'AssigneeEmail': properties.get('owner', {}).get('email'),
         'Label': [
@@ -228,7 +229,7 @@ def incident_data_to_xsoar_format(inc_data):
             properties.get('lastActivityTimeGenerated')
         ),
         'Etag': inc_data.get('etag'),
-        'Deleted': False,
+        'Deleted': False
     }
     return formatted_data
 

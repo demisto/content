@@ -144,6 +144,9 @@ script:
     - contextPath: AzureSentinel.Incident.Etag
       description: The Etag of the incident.
       type: String
+    - contextPath: AzureSentinel.Incident.IncidentUrl
+      description: The Url of the incident
+      type: String
   - arguments:
     - default: false
       defaultValue: '50'
