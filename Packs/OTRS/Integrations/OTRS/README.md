@@ -1,9 +1,9 @@
 Service management suite that comprises ticketing, workflow automation, and notification.
-This integration was integrated and tested with versions 5, 6 and 7 of OTRS.
+This integration was integrated and tested with OTRS versions 5, 6, and 7.
 
 ## Prerequisite
 
-You have to enable the webservices in your OTRS instance. It is recommended to use the provided [template](https://gitlab.com/rhab/PyOTRS/raw/master/webservices_templates/GenericTicketConnectorREST.yml). This YAML configuration template includes the Route: /TicketList endpoint that is required for PyOTRS but which is not included in the default OTRS webservice setup.
+Before configuring OTRS on Cortex XSOAR, you need to enable the webservices in your OTRS instance. It is recommended to use the provided [YAML webservice configuration template](https://gitlab.com/rhab/PyOTRS/raw/master/webservices_templates/GenericTicketConnectorREST.yml), which includes the Route: /TicketList endpoint required for PyOTRS but which is not included in the default OTRS webservice setup. If you use a different file than the template, make sure to name your file `GenericTicketConnectorREST.yml`.
 
 ## Configure OTRS on Cortex XSOAR
 
@@ -13,15 +13,15 @@ You have to enable the webservices in your OTRS instance. It is recommended to u
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| server | OTRS Server URL \(e.g. http://example.com\) | True |
+| server | OTRS Server URL \(for example http://example.com \)| True |
 | credentials | OTRS Credentials | True |
 | unsecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 | isFetch | Fetch incidents | False |
 | incidentType | Incident type | False |
-| fetch_queue | Queues to fetch tickets from  \(&quot;Any&quot; fetches from all queues. CSV supported, e.g., Misc,Raw\) | False |
+| fetch_queue | Queues to fetch tickets from  \(&quot;Any&quot; fetches from all queues. CSV supported, for example Misc, Raw\) | False |
 | fetch_priority | Fetch tickets in priority | False |
-| fetch_time | First fetch timestamp \(&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year\) | False |
+| fetch_time | First fetch timestamp \(formatted as &lt;number&gt; &lt;time unit&gt;, for example 12 hours, 7 days, 3 months, 1 year\) | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -29,7 +29,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### otrs-get-ticket
 ***
-Retrieves details for an OTRS ticket by ticket ID or ticket number. The arguments are both optional, but at least one is required for this integration to run.
+Retrieves details for an OTRS ticket by ticket ID or ticket number. At least one input argument is required for the integration to run.
 
 
 ##### Base Command
@@ -39,8 +39,8 @@ Retrieves details for an OTRS ticket by ticket ID or ticket number. The argument
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ticket_id | Ticket ID of the ticket to get details of. Ticket ID of the ticket to get details of. If not supplied, the ticket_number argument is required. | Optional | 
-| ticket_number | Ticket Number of the ticket to get details of. Ticket Number of the ticket to get details of. If not supplied, the ticket_id argument is required. | Optional | 
+| ticket_id | Ticket ID of the ticket to get details for. If not spcecified, the ticket_number argument is required. | Optional | 
+| ticket_number | Ticket Number of the ticket to get details for. If not specified, the ticket_id argument is required. | Optional | 
 
 
 ##### Context Output
@@ -50,7 +50,7 @@ Retrieves details for an OTRS ticket by ticket ID or ticket number. The argument
 | OTRS.Ticket.ID | string | Ticket ID | 
 | OTRS.Ticket.Number | string | Ticket number | 
 | OTRS.Ticket.Created | date | Ticket creation date | 
-| OTRS.Ticket.CustomerUser | string | Customer user related to ticket | 
+| OTRS.Ticket.CustomerUser | string | Customer user related to the ticket | 
 | OTRS.Ticket.Owner | string | Ticket owner | 
 | OTRS.Ticket.Priority | string | Ticket priority | 
 | OTRS.Ticket.Queue | string | Queue the ticket is in | 
@@ -131,7 +131,7 @@ Retrieves details for an OTRS ticket by ticket ID or ticket number. The argument
 ### OTRS Ticket 7023
 |ID|Number|Age|Title|State|Lock|Queue|Owner|CustomerID|Priority|Type|Created|DynamicField|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 7023 | 2020042610000031 | 0 h 09 m | UpdatedTitle | open | unlock | Inbox::SIEM | siem | jb | 1 very low | Incident | 2020-04-26 11:05:07 | Firstname: Jens<br\>Gender: male |
+| 7023 | 2020042610000031 | 0 h 09 m | UpdatedTitle | open | unlock | Inbox::SIEM | siem | jb | 1 very low | Incident | 2020-04-26 11:05:07 | Firstname: Jens<br />Gender: male |
 ### Articles
 |ID|From|Subject|Body|CreateTime|ContentType|
 |---|---|---|---|---|---|
@@ -151,13 +151,13 @@ Search for an OTRS ticket using search filters
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| state | Ticket States to filter by in CSV format (e.g., New,Open) | Optional | 
-| created_before | Filter for a ticket created before this date. Given in format &quot;&lt;number&gt; &lt;time unit&gt;&quot;, e.g. 1 day, 30 minutes, 2 weeks, 6 months, 1 year | Optional | 
-| created_after | Filter for a ticket created after this date. Given in format &quot;&lt;number&gt; &lt;time unit&gt;&quot;, e.g. 1 day, 30 minutes, 2 weeks, 6 months, 1 year | Optional | 
-| title | Ticket Title to filter by | Optional | 
-| queue | Ticket Queues to filter by in CSV format (e.g., Raw,Misc) | Optional | 
-| priority | Ticket Priority to filter by in CSV format (e.g., 4High,5VeryHigh) | Optional | 
-| type | Ticket type to filter by | Optional | 
+| state | Ticket states to filter for in CSV format (for example New, Open) | Optional | 
+| created_before | Filter for a ticket created before this date. (formatted as &lt;number&gt; &lt;time unit&gt;, for example 1 day, 30 minutes, 2 weeks, 6 months, 1 year) | Optional | 
+| created_after | Filter for a ticket created after this date. (formatted as &lt;number&gt; &lt;time unit&gt;, for example 1 day, 30 minutes, 2 weeks, 6 months, 1 year) | Optional | 
+| title | Ticket Title to filter for | Optional | 
+| queue | Ticket Queues to filter for in CSV format (for example Raw,Misc) | Optional | 
+| priority | Ticket priority to filter for in CSV format (for example 4High,5VeryHigh) | Optional | 
+| type | Ticket type to filter for | Optional | 
 
 
 ##### Context Output
@@ -204,11 +204,11 @@ Create a new ticket in OTRS
 | state | State to assign to the new ticket | Required | 
 | priority | Priority to assign to the new ticket | Required | 
 | customer_user | Customer user related to the new ticket | Required | 
-| article_subject | Article Subject to apply to the new ticket | Required | 
-| article_body | Text to add to the Article Body of the new ticket | Required | 
-| type | Ticket Type to assign to the new ticket | Optional | 
-| dynamic_fields | Dynamic fields to apply to the new ticket, in the format: field1=value1,field2=value2. For example: ProcessManagementProcessID=1,ProcessManagementActivityStatus=2 | Optional | 
-| attachment | File entry ID of the file to add as an attachment to the new ticket in CSV format, e.g., 123@20,124@21  | Optional | 
+| article_subject | Article subject to apply to the new ticket | Required | 
+| article_body | Text to add to the article body of the new ticket | Required | 
+| type | Ticket type to assign to the new ticket | Optional | 
+| dynamic_fields | Dynamic fields to apply to the new ticket in the format: field1=value1,field2=value2. For example: ProcessManagementProcessID=1,ProcessManagementActivityStatus=2 | Optional | 
+| attachment | File entry ID of the file to add as an attachment to the new ticket in CSV format. For example: 123@20,124@21  | Optional | 
 
 
 ##### Context Output
@@ -271,15 +271,15 @@ Update an OTRS ticket
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ticket_id | Ticket ID of the ticket to update | Required | 
-| title | Ticket Title of the ticket to update | Optional | 
-| state | Ticket State of the ticket to update | Optional | 
+| title | Ticket title of the ticket to update | Optional | 
+| state | Ticket state of the ticket to update | Optional | 
 | priority | Priority of the ticket to update | Optional | 
-| article_subject | Article Subject of the ticket to update | Optional | 
-| article_body | Article Body of the ticket to update | Optional | 
+| article_subject | Article subject of the ticket to update | Optional | 
+| article_body | Article body of the ticket to update | Optional | 
 | queue | Queue that the ticket to update is in | Optional | 
-| type | Ticket Type of the ticket to update | Optional | 
+| type | Ticket type of the ticket to update | Optional | 
 | dynamic_fields | Dynamic fields to apply to the updated ticket, in the format: field1=value1,field2=value2. For example: ProcessManagementProcessID=1,ProcessManagementActivityStatus=2 | Optional | 
-| attachment | File entry ID of the file to add as an attachment to the updated ticket in CSV format, e.g., 123@20,124@21  | Optional | 
+| attachment | File entry ID of the file to add as an attachment to the updated ticket in CSV format. For example: 123@20,124@21  | Optional | 
 
 
 ##### Context Output
@@ -331,8 +331,8 @@ Close an OTRS ticket
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ticket_id | Ticket ID of the ticket to close | Required | 
-| article_subject | Article Subject of the ticket to close | Required | 
-| article_body | Article Body of the ticket to close | Required | 
+| article_subject | Article subject of the ticket to close | Required | 
+| article_body | Article body of the ticket to close | Required | 
 
 
 ##### Context Output

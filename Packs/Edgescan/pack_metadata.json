@@ -7,7 +7,9 @@
     "url": "",
     "email": "",
     "created": "2021-07-05T17:30:11Z",
-    "categories": [],
+    "categories": [
+        "Vulnerability Management"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],

@@ -21,7 +21,102 @@ def mock_client():
 BASE_URL = 'https://test.com'
 MOCK_CLIENT = mock_client()
 
-''' GENERAL HELPER FUNCTIONS TESTS'''
+FILTER_FILE_DOWNLOADS_ARGS = [
+    ({'offset': '0', 'limit': '50', 'hostname': 'host1'}, 3),
+    ({'offset': '0', 'limit': '50', 'hostname': 'host2'}, 2),
+    ({'offset': '0', 'limit': '50', 'hostname': 'host3'}, 2),
+    ({'offset': '0', 'limit': '50', 'hostname': 'host2,host3'}, 4),
+    (
+        {
+            'offset': '0',
+            'limit': '50',
+            'hash': '123',
+        },
+        2,
+    ),
+    (
+        {
+            'offset': '0',
+            'limit': '50',
+            'hash': '123,1234',
+        },
+        3,
+    ),
+]
+
+FILTER_CONNECTIONS_LIST_ARGS = [
+    ({'offset': '0', 'limit': '50', 'hostname': 'host1'}, 3),
+    ({'offset': '0', 'limit': '50', 'hostname': 'host2'}, 2),
+    ({'offset': '0', 'limit': '50', 'hostname': 'host3'}, 2),
+    ({'offset': '0', 'limit': '50', 'hostname': 'host1,host2'}, 5),
+    ({'offset': '0', 'limit': '50', 'platform': 'Linux'}, 3),
+    ({'offset': '0', 'limit': '50', 'platform': 'Windows'}, 4),
+    ({'offset': '0', 'limit': '50', 'status': 'connected'}, 2),
+    ({'offset': '0', 'limit': '50', 'status': 'disconnected'}, 5),
+    ({'offset': '0', 'limit': '50', 'ip': '3.3.3.3'}, 4),
+    (
+        {
+            'offset': '0',
+            'limit': '50',
+            'ip': '3.3.3.3',
+            'hostname': 'host2',
+        },
+        6
+    ),
+]
+
+FILTER_EVIDENCE_LIST_ARGS = [
+    ({'offset': '0', 'limit': '50', 'hostname': 'host1,host2'}, 6),
+    ({'offset': '0', 'limit': '50', 'hostname': 'host1'}, 3),
+    ({'offset': '0', 'limit': '50', 'hostname': 'host2'}, 3),
+    ({'offset': '0', 'limit': '50', 'hostname': 'host3'}, 2),
+    (
+        {
+            'offset': '0',
+            'limit': '50',
+            'hostname': 'host1,host3',
+            'type': 'event',
+        },
+        5,
+    ),
+]
+
+FILTER_GET_SYSTEM_STATUS_ARGS = [
+    ({'offset': '0', 'limit': '50', 'status': 'Leader'}, 2),
+    ({'offset': '0', 'limit': '50', 'status': 'Normal'}, 1),
+    (
+        {
+            'offset': '0',
+            'limit': '50',
+            'status': 'Normal',
+            'hostname': 'host1',
+        },
+        3,
+    ),
+    (
+        {
+            'offset': '0',
+            'limit': '50',
+            'hostname': 'host1',
+            'ip_client': '3.3.3.3',
+        },
+        4,
+    ),
+    (
+        {
+            'offset': '0',
+            'limit': '50',
+            'hostname': 'host3',
+            'ip_server': '1.1.1.1',
+        },
+        2,
+    ),
+    ({'offset': '0', 'limit': '50', 'hostname': 'host1,host2,host4'}, 4),
+    ({'offset': '0', 'limit': '50', 'port': '8080'}, 2),
+]
+
+
+""" GENERAL HELPER FUNCTIONS TESTS"""
 
 
 @pytest.mark.parametrize('test_input, expected_output', [('2', 2), (None, None), (2, 2), ('', None)])
@@ -52,6 +147,7 @@ def test_format_context_data(test_input, expected_output):
         A dict or a list of dicts to format to standard context.
 
     When -
+        Running format_context_data function.
         Running format_context_data function.
 
     Then -
@@ -538,6 +634,40 @@ def test_get_connections(requests_mock):
     assert len(outputs.get('Tanium.Connection(val.id === obj.id)')) == 2
 
 
+@pytest.mark.parametrize(
+    'command_args, expected_output_len', FILTER_CONNECTIONS_LIST_ARGS
+)
+def test_filter_get_connections(
+    requests_mock, command_args, expected_output_len
+):
+    """
+    Given -
+        offset, limit, hostname/platform/status/ip as filter parameters to 'get_connections' function
+
+    When -
+        Running 'get_connections' function
+
+    Then -
+        'get_connections' function will filter and return response output length the same as expected_output_len
+    """
+    api_raw_response = util_load_json('test_files/filter_get_connections.json')
+    requests_mock.get(
+        BASE_URL + '/api/v2/session/login',
+        json={'data': {'session': 'session-id'}},
+    )
+    requests_mock.get(
+        BASE_URL + '/plugin/products/threat-response/api/v1/conns',
+        json=api_raw_response,
+    )
+
+    _, outputs, _ = TaniumThreatResponseV2.get_connections(
+        client=MOCK_CLIENT, command_args=command_args
+    )
+    response = outputs.get('Tanium.Connection(val.id === obj.id)', {})
+    full_response_len = len(response)
+    assert full_response_len == expected_output_len, f'Actual: {full_response_len}, Expected: {expected_output_len}'
+
+
 def test_create_connection(requests_mock):
     """
     Given - ip, client_id, hostname to create new connection.
@@ -815,6 +945,32 @@ def test_list_evidence(requests_mock):
     assert len(outputs.get('Tanium.Evidence(val.uuid && val.uuid === obj.uuid)')) == 2
 
 
+@pytest.mark.parametrize(
+    'command_args, expected_output_len', FILTER_EVIDENCE_LIST_ARGS
+)
+def test_filter_list_evidence(requests_mock, command_args, expected_output_len):
+    """
+    Given -
+        offset, limit, hash/hostname as filter arguments for 'get_file_downloads_function'
+
+    When -
+        Running 'get_file_downloads' function
+
+    Then -
+        'get_file_downloads' function will filter and return response in the same length as expected_output_len.
+    """
+    api_raw_response = util_load_json('test_files/filter_list_evidence.json')
+    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.get(BASE_URL + '/plugin/products/threat-response/api/v1/evidence',
+                      json=api_raw_response)
+
+    _, outputs, _ = TaniumThreatResponseV2.list_evidence(MOCK_CLIENT, command_args)
+    response = outputs.get('Tanium.Evidence(val.uuid && val.uuid === obj.uuid)', {})
+    assert (
+        len(response) == expected_output_len
+    ), f'Actual length: {len(response)}, Expected length: {expected_output_len}'
+
+
 def test_event_evidence_get_properties(requests_mock):
     """
     Given - event_evidence_get_properties command.
@@ -924,6 +1080,30 @@ def test_get_file_downloads(requests_mock):
     assert 'File downloads' in human_readable
     assert outputs.get('Tanium.FileDownload(val.uuid === obj.uuid)', [{}])[0].get('uuid') == '1'
     assert outputs.get('Tanium.FileDownload(val.uuid === obj.uuid)', [{}])[0].get('evidenceType') == 'file'
+
+
+@pytest.mark.parametrize(
+    'command_args, expected_output_len', FILTER_FILE_DOWNLOADS_ARGS
+)
+def test_filter_get_file_downloads(requests_mock, command_args, expected_output_len):
+    """
+    Given -
+        offset, limit, hash/hostname as filter arguments for 'get_file_downloads_function'
+
+    When -
+        Running 'get_file_downloads' function
+
+    Then -
+        'get_file_downloads' function will filter and return response in the same length as expected_output_len.
+    """
+    api_raw_response = util_load_json('test_files/filter_get_file_downloads.json')
+    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.get(BASE_URL + '/plugin/products/threat-response/api/v1/filedownload',
+                      json=api_raw_response)
+
+    _, outputs, _ = TaniumThreatResponseV2.get_file_downloads(MOCK_CLIENT, command_args)
+    response = outputs.get('Tanium.FileDownload(val.uuid === obj.uuid)', {})
+    assert len(response) == expected_output_len, f"Expected length: {expected_output_len}, actual: {len(response)}"
 
 
 def test_get_file_download_info(requests_mock):
@@ -1112,6 +1292,45 @@ def test_get_system_status(requests_mock):
     human_readable, outputs, _ = TaniumThreatResponseV2.get_system_status(MOCK_CLIENT, args)
     assert 'Reporting clients' in human_readable
     assert outputs.get('Tanium.SystemStatus(val.clientId === obj.clientId)', {})[0].get('clientId') == 1
+
+
+@pytest.mark.parametrize(
+    'command_args, expected_output_len', FILTER_GET_SYSTEM_STATUS_ARGS
+)
+def test_filter_get_system_status(
+    requests_mock, command_args, expected_output_len
+):
+    """
+    Given -
+        offset, limit, status/hostname/ip_server/ip_client/port as filter arguments for 'get_system_status' function
+
+    When -
+        Running 'get_system_status' function
+
+    Then -
+        'get_system_status' function will filter and return response in the same length as expected_output_len.
+    """
+    api_raw_response = util_load_json(
+        'test_files/filter_get_system_status.json'
+    )
+
+    requests_mock.get(
+        BASE_URL + '/api/v2/session/login',
+        json={'data': {'session': 'session-id'}},
+    )
+    requests_mock.get(
+        BASE_URL + '/api/v2/system_status', json=api_raw_response
+    )
+
+    _, outputs, _ = TaniumThreatResponseV2.get_system_status(
+        MOCK_CLIENT, command_args
+    )
+    response = outputs.get(
+        'Tanium.SystemStatus(val.clientId === obj.clientId)', {}
+    )
+    assert (
+        len(response) == expected_output_len
+    ), f'Actual length: {len(response)}, Expected length: {expected_output_len}'
 
 
 def test_fetch_all_incidents(requests_mock):
