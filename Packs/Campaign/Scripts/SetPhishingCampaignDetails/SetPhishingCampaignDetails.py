@@ -1,5 +1,4 @@
 import traceback
-from typing import List
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -7,9 +6,10 @@ import dateparser
 
 EMAIL_CAMPAIGN_KEY = 'EmailCampaign'
 
+
 class SetPhishingCampaignDetails:
 
-    def __init__(self, _demisto = demisto, execute_command = execute_command, is_error = is_error):
+    def __init__(self, _demisto=demisto, execute_command=execute_command, is_error=is_error):
         self.incident_context = _demisto.context()
         self.dt = _demisto.dt
         self.execute_command = execute_command
@@ -21,7 +21,7 @@ class SetPhishingCampaignDetails:
         current_incident_campaign_data = self.incident_context.get(EMAIL_CAMPAIGN_KEY, {})
         return current_incident_campaign_data
 
-    def get_campaign_context(self, incident_id: str):
+    def get_campaign_context_from_incident(self, incident_id: str):
         # Getting the campaign current context under the campaign key.
         incident_context = self.execute_command('getContext', {'id': incident_id})
         if self.is_error(incident_context):
@@ -33,7 +33,7 @@ class SetPhishingCampaignDetails:
         return campaign_context if campaign_context else {}
 
     def get_similarities_from_incident(self, incident_id: str) -> dict:
-        incident_data = self.get_campaign_context(incident_id)
+        incident_data = self.get_campaign_context_from_incident(incident_id)
         return {incident["id"]: incident["similarity"] for incident in incident_data.get('incidents', [])}
 
     def is_incident_new_in_campaign(self, incident_id, campaign_data):
@@ -66,6 +66,7 @@ class SetPhishingCampaignDetails:
         most_current_incident_id = self._get_most_updated_incident_id(campaign_incidents)
         similarities_according_to_last_updated = self.get_similarities_from_incident(most_current_incident_id)
         for incident in campaign_incidents:
+            # Assuming most recent sees all incidents that was created before it.
             if incident['id'] in similarities_according_to_last_updated:
                 incident['similarity'] = similarities_according_to_last_updated[incident['id']]
 
@@ -88,7 +89,6 @@ class SetPhishingCampaignDetails:
         else:
             return campaign_data
 
-
     def copy_campaign_data_to_incident(self, incident_id: int, merged_campaign: dict, append: bool):
 
         args = {'key': EMAIL_CAMPAIGN_KEY, 'value': merged_campaign, 'append': append}
@@ -102,6 +102,7 @@ class SetPhishingCampaignDetails:
             }
         )
         if self.is_error(res):
+            demisto.debug(f"error in setting merged campaign data to incident id {incident_id}. Error: {res}")
             return_error(f"error in setting merged campaign data to incident id {incident_id}. Error: {res}")
 
         return res
@@ -111,11 +112,9 @@ class SetPhishingCampaignDetails:
             raise ValueError("Please provide Campaign incident id.")
 
         current_incident_campaign_data = self.get_current_incident_campaign_data()
-        campaign_data = self.get_campaign_context(campaign_incident_id)
+        campaign_data = self.get_campaign_context_from_incident(campaign_incident_id)
         merged_campaign = self.merge_contexts(current_incident_campaign_data, campaign_data)
-        res = self.copy_campaign_data_to_incident(campaign_incident_id, merged_campaign, append)
-        if res:
-            demisto.results(res)
+        return self.copy_campaign_data_to_incident(campaign_incident_id, merged_campaign, append)
 
 
 def main():
@@ -126,8 +125,9 @@ def main():
         append = argToBoolean(args['append'])
 
         set_phishing_campaign_details = SetPhishingCampaignDetails()
-        set_phishing_campaign_details.run(incident_id, append)
-
+        res = set_phishing_campaign_details.run(incident_id, append)
+        if res:
+            return_outputs('Added incident successfully to Campaign.')
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to set campaign details.\nError:\n{str(e)}')
