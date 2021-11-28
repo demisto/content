@@ -302,93 +302,70 @@ script:
     execution: false
     name: azure-devops-pull-request-create
     outputs:
-    - contextPath: AzureDevOps.Project.name
+    - contextPath: AzureDevOps.PullRequest.repository.project.name
       description: The name of the project.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.id
+    - contextPath: AzureDevOps.PullRequest.repository.id
       description: The ID of the repository.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.name
+    - contextPath: AzureDevOps.PullRequest.repository.name
       description: The name of the repository.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.url
+    - contextPath: AzureDevOps.PullRequest.repository.url
       description: The URL of the repository.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.size
+    - contextPath: AzureDevOps.PullRequest.repository.size
       description: The size of the repository.
       type: Number
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.Id
+    - contextPath: AzureDevOps.PullRequest.pullRequestId
       description: The ID of the pull request.
       type: Number
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.status
+    - contextPath: AzureDevOps.PullRequest.status
       description: The status of the pull request.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.CreatedBy.displayName
+    - contextPath: AzureDevOps.PullRequest.createdBy.displayName
       description: The display name of the pull request creator.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.CreatedBy.id
+    - contextPath: AzureDevOps.PullRequest.createdBy.id
       description: The ID of the pull request creator.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.CreatedBy.uniqueName
+    - contextPath: AzureDevOps.PullRequest.createdBy.uniqueName
       description: The unique name of the pull request creator.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.creationDate
+    - contextPath: AzureDevOps.PullRequest.creationDate
       description: The creation date of the pull request.
       type: Date
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.title
+    - contextPath: AzureDevOps.PullRequest.title
       description: The title of the pull request
       type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.description
+    - contextPath: AzureDevOps.PullRequest.description
       description: The description of the pull request.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.sourceRefName
+    - contextPath: AzureDevOps.PullRequest.sourceRefName
       description: The source branch of the pull request.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.targetRefName
+    - contextPath: AzureDevOps.PullRequest.targetRefName
       description: The target branch of the pull request.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.mergeStatus
+    - contextPath: AzureDevOps.PullRequest.mergeStatus
       description: The current status of the pull request merge.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.isDraft
+    - contextPath: AzureDevOps.PullRequest.isDraft
       description: Draft / WIP pull request.
       type: Boolean
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.LastMergeSourceCommit.commitId
+    - contextPath: AzureDevOps.PullRequest.lastMergeSourceCommit.commitId
       description: The ID of the commit at the head of the source branch at the time
         of the last pull request merge.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.LastMergeSourceCommit.url
+    - contextPath: AzureDevOps.PullRequest.lastMergeSourceCommit.url
       description: The REST URL for this resource.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.LastMergeTargetCommit.commitId
+    - contextPath: AzureDevOps.PullRequest.lastMergeTargetCommit.commitId
       description: The ID of the commit at the head of the target branch at the time
         of the last pull request merge.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.LastMergeTargetCommit.url
+    - contextPath: AzureDevOps.PullRequest.lastMergeTargetCommit.url
       description: The REST URL for this resource.
-      type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.reviewerUrl
-      description: URL to retrieve information about the reviewer identity.
-      type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.vote
-      description: 'Vote on a pull request: 10 - approved 5 - approved with suggestions
-        0 - no vote -5 - waiting for author -10 - rejected'
-      type: Number
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.hasDeclined
-      description: Indicates if this reviewer has declined to review this pull request.
-      type: Boolean
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.isFlagged
-      description: Indicates if this reviewer is flagged for attention on this pull
-        request.
-      type: Boolean
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.displayName
-      description: The display name of the pull request reviewer.
-      type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.id
-      description: The ID of the pull request reviewer.
-      type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.uniqueName
-      description: The unique name of the pull request reviewer.
       type: String
   - arguments:
     - default: false
@@ -438,88 +415,70 @@ script:
     execution: false
     name: azure-devops-pull-request-update
     outputs:
-    - contextPath: AzureDevOps.Project.name
+    - contextPath: AzureDevOps.PullRequest.repository.project.name
       description: The name of the project.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.id
+    - contextPath: AzureDevOps.PullRequest.repository.id
       description: The ID of the repository.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.name
+    - contextPath: AzureDevOps.PullRequest.repository.name
       description: The name of the repository.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.url
+    - contextPath: AzureDevOps.PullRequest.repository.url
       description: The URL of the repository.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.size
+    - contextPath: AzureDevOps.PullRequest.repository.size
       description: The size of the repository.
       type: Number
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.Id
+    - contextPath: AzureDevOps.PullRequest.pullRequestId
       description: The ID of the pull request.
       type: Number
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.status
+    - contextPath: AzureDevOps.PullRequest.status
       description: The status of the pull request.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.CreatedBy.displayName
+    - contextPath: AzureDevOps.PullRequest.createdBy.displayName
       description: The display name of the pull request creator.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.CreatedBy.id
+    - contextPath: AzureDevOps.PullRequest.createdBy.id
       description: The ID of the pull request creator.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.CreatedBy.uniqueName
+    - contextPath: AzureDevOps.PullRequest.createdBy.uniqueName
       description: The unique name of the pull request creator.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.creationDate
+    - contextPath: AzureDevOps.PullRequest.creationDate
       description: The creation date of the pull request.
       type: Date
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.title
+    - contextPath: AzureDevOps.PullRequest.title
       description: The title of the pull request
       type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.description
+    - contextPath: AzureDevOps.PullRequest.description
       description: The description of the pull request.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.sourceRefName
+    - contextPath: AzureDevOps.PullRequest.sourceRefName
       description: The source branch of the pull request.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.targetRefName
+    - contextPath: AzureDevOps.PullRequest.targetRefName
       description: The target branch of the pull request.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.mergeStatus
+    - contextPath: AzureDevOps.PullRequest.mergeStatus
       description: The current status of the pull request merge.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.isDraft
+    - contextPath: AzureDevOps.PullRequest.isDraft
       description: Draft / WIP pull request.
       type: Boolean
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.LastMergeSourceCommit.commitId
-      description: The ID of the commit.
+    - contextPath: AzureDevOps.PullRequest.lastMergeSourceCommit.commitId
+      description: The ID of the commit at the head of the source branch at the time
+        of the last pull request merge.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.LastMergeSourceCommit.url
+    - contextPath: AzureDevOps.PullRequest.lastMergeSourceCommit.url
       description: The REST URL for this resource.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.LastMergeTargetCommit.commitId
-      description: The ID of the commit.
+    - contextPath: AzureDevOps.PullRequest.lastMergeTargetCommit.commitId
+      description: The ID of the commit at the head of the target branch at the time
+        of the last pull request merge.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.reviewerUrl
-      description: URL to retrieve information about the reviewer identity.
-      type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.vote
-      description: 'Vote on a pull request: 10 - approved 5 - approved with suggestions
-        0 - no vote -5 - waiting for author -10 - rejected'
-      type: Number
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.hasDeclined
-      description: Indicates if this reviewer has declined to review this pull request.
-      type: Boolean
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.isFlagged
-      description: Indicates if this reviewer is flagged for attention on this pull
-        request.
-      type: Boolean
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.displayName
-      description: The display name of the pull request reviewer.
-      type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.id
-      description: The ID of the pull request reviewer.
-      type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.uniqueName
-      description: The unique name of the pull request reviewer.
+    - contextPath: AzureDevOps.PullRequest.lastMergeTargetCommit.url
+      description: The REST URL for this resource.
       type: String
   - arguments:
     - default: false
@@ -553,85 +512,67 @@ script:
     execution: false
     name: azure-devops-pull-request-list
     outputs:
-    - contextPath: AzureDevOps.Project.name
+    - contextPath: AzureDevOps.PullRequest.repository.project.name
       description: The name of the project.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.id
+    - contextPath: AzureDevOps.PullRequest.repository.id
       description: The ID of the repository.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.name
+    - contextPath: AzureDevOps.PullRequest.repository.name
       description: The name of the repository.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.url
+    - contextPath: AzureDevOps.PullRequest.repository.url
       description: The URL of the repository.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.Id
+    - contextPath: AzureDevOps.PullRequest.pullRequestId
       description: The ID of the pull request.
       type: Number
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.status
+    - contextPath: AzureDevOps.PullRequest.status
       description: The status of the pull request.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.CreatedBy.displayName
+    - contextPath: AzureDevOps.PullRequest.createdBy.displayName
       description: The display name of the pull request creator.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.CreatedBy.id
+    - contextPath: AzureDevOps.PullRequest.createdBy.id
       description: The ID of the pull request creator.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.CreatedBy.uniqueName
+    - contextPath: AzureDevOps.PullRequest.createdBy.uniqueName
       description: The unique name of the pull request creator.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.creationDate
+    - contextPath: AzureDevOps.PullRequest.creationDate
       description: The creation date of the pull request.
       type: Date
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.title
+    - contextPath: AzureDevOps.PullRequest.title
       description: The title of the pull request
       type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.description
+    - contextPath: AzureDevOps.PullRequest.description
       description: The description of the pull request.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.sourceRefName
+    - contextPath: AzureDevOps.PullRequest.sourceRefName
       description: The source branch of the pull request.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.targetRefName
+    - contextPath: AzureDevOps.PullRequest.targetRefName
       description: The target branch of the pull request.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.mergeStatus
+    - contextPath: AzureDevOps.PullRequest.mergeStatus
       description: The current status of the pull request merge.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.isDraft
+    - contextPath: AzureDevOps.PullRequest.isDraft
       description: Draft / WIP pull request.
       type: Boolean
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.LastMergeSourceCommit.commitId
-      description: The ID of the commit.
+    - contextPath: AzureDevOps.PullRequest.lastMergeSourceCommit.commitId
+      description: The ID of the commit at the head of the source branch at the time
+        of the last pull request merge.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.LastMergeSourceCommit.url
+    - contextPath: AzureDevOps.PullRequest.lastMergeSourceCommit.url
       description: The REST URL for this resource.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.LastMergeTargetCommit.commitId
-      description: The ID of the commit.
+    - contextPath: AzureDevOps.PullRequest.lastMergeTargetCommit.commitId
+      description: The ID of the commit at the head of the target branch at the time
+        of the last pull request merge.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.reviewerUrl
-      description: URL to retrieve information about the reviewer identity.
-      type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.vote
-      description: 'Vote on a pull request: 10 - approved 5 - approved with suggestions
-        0 - no vote -5 - waiting for author -10 - rejected'
-      type: Number
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.hasDeclined
-      description: Indicates if this reviewer has declined to review this pull request.
-      type: Boolean
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.isFlagged
-      description: Indicates if this reviewer is flagged for attention on this pull
-        request.
-      type: Boolean
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.displayName
-      description: The display name of the pull request reviewer.
-      type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.id
-      description: The ID of the pull request reviewer.
-      type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.uniqueName
-      description: The unique name of the pull request reviewer.
+    - contextPath: AzureDevOps.PullRequest.lastMergeTargetCommit.url
+      description: The REST URL for this resource.
       type: String
   - arguments:
     - default: false
@@ -776,93 +717,70 @@ script:
     execution: false
     name: azure-devops-pull-request-get
     outputs:
-    - contextPath: AzureDevOps.Project.name
+    - contextPath: AzureDevOps.PullRequest.repository.project.name
       description: The name of the project.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.id
+    - contextPath: AzureDevOps.PullRequest.repository.id
       description: The ID of the repository.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.name
+    - contextPath: AzureDevOps.PullRequest.repository.name
       description: The name of the repository.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.url
+    - contextPath: AzureDevOps.PullRequest.repository.url
       description: The URL of the repository.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.size
+    - contextPath: AzureDevOps.PullRequest.repository.size
       description: The size of the repository.
       type: Number
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.Id
+    - contextPath: AzureDevOps.PullRequest.pullRequestId
       description: The ID of the pull request.
       type: Number
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.status
+    - contextPath: AzureDevOps.PullRequest.status
       description: The status of the pull request.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.CreatedBy.displayName
+    - contextPath: AzureDevOps.PullRequest.createdBy.displayName
       description: The display name of the pull request creator.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.CreatedBy.id
+    - contextPath: AzureDevOps.PullRequest.createdBy.id
       description: The ID of the pull request creator.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.CreatedBy.uniqueName
+    - contextPath: AzureDevOps.PullRequest.createdBy.uniqueName
       description: The unique name of the pull request creator.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.creationDate
+    - contextPath: AzureDevOps.PullRequest.creationDate
       description: The creation date of the pull request.
       type: Date
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.title
+    - contextPath: AzureDevOps.PullRequest.title
       description: The title of the pull request
       type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.description
+    - contextPath: AzureDevOps.PullRequest.description
       description: The description of the pull request.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.sourceRefName
+    - contextPath: AzureDevOps.PullRequest.sourceRefName
       description: The source branch of the pull request.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.targetRefName
+    - contextPath: AzureDevOps.PullRequest.targetRefName
       description: The target branch of the pull request.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.mergeStatus
+    - contextPath: AzureDevOps.PullRequest.mergeStatus
       description: The current status of the pull request merge.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.isDraft
+    - contextPath: AzureDevOps.PullRequest.isDraft
       description: Draft / WIP pull request.
       type: Boolean
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.LastMergeSourceCommit.commitId
+    - contextPath: AzureDevOps.PullRequest.lastMergeSourceCommit.commitId
       description: The ID of the commit at the head of the source branch at the time
         of the last pull request merge.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.LastMergeSourceCommit.url
+    - contextPath: AzureDevOps.PullRequest.lastMergeSourceCommit.url
       description: The REST URL for this resource.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.LastMergeTargetCommit.commitId
+    - contextPath: AzureDevOps.PullRequest.lastMergeTargetCommit.commitId
       description: The ID of the commit at the head of the target branch at the time
         of the last pull request merge.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.LastMergeTargetCommit.url
+    - contextPath: AzureDevOps.PullRequest.lastMergeTargetCommit.url
       description: The REST URL for this resource.
-      type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.reviewerUrl
-      description: URL to retrieve information about the reviewer identity.
-      type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.vote
-      description: 'Vote on a pull request: 10 - approved 5 - approved with suggestions
-        0 - no vote -5 - waiting for author -10 - rejected'
-      type: Number
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.hasDeclined
-      description: Indicates if this reviewer has declined to review this pull request.
-      type: Boolean
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.isFlagged
-      description: Indicates if this reviewer is flagged for attention on this pull
-        request.
-      type: Boolean
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.displayName
-      description: The display name of the pull request reviewer.
-      type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.id
-      description: The ID of the pull request reviewer.
-      type: String
-    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.uniqueName
-      description: The unique name of the pull request reviewer.
       type: String
   - arguments:
     - default: false

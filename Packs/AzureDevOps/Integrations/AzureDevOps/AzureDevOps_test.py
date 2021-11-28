@@ -186,10 +186,9 @@ def test_azure_devops_pull_request_create_command(requests_mock):
                                                   'description': 'test-description',
                                                   'reviewers_ids': '2'})
 
-    assert len(result.outputs) == 2
-    assert result.outputs_prefix == 'AzureDevOps.Project'
-    assert result.outputs.get('name') == 'xsoar'
-    assert result.outputs.get('Repository').get('name') == 'xsoar'
+    assert len(result.outputs) == 21
+    assert result.outputs_prefix == 'AzureDevOps.PullRequest'
+    assert result.outputs.get('repository').get('name') == 'xsoar'
 
 
 def test_azure_devops_pull_request_get_command(requests_mock):
@@ -228,10 +227,9 @@ def test_azure_devops_pull_request_get_command(requests_mock):
                                                'pull_request_id': pull_request_id
                                                })
 
-    assert len(result.outputs) == 2
-    assert result.outputs_prefix == 'AzureDevOps.Project'
-    assert result.outputs.get('name') == 'xsoar'
-    assert result.outputs.get('Repository').get('name') == 'xsoar'
+    assert len(result.outputs) == 21
+    assert result.outputs_prefix == 'AzureDevOps.PullRequest'
+    assert result.outputs.get('repository').get('name') == 'xsoar'
 
 
 def test_azure_devops_pull_request_update_command(requests_mock):
@@ -271,10 +269,9 @@ def test_azure_devops_pull_request_update_command(requests_mock):
                                                   'title': 'new-title'
                                                   })
 
-    assert len(result.outputs) == 2
-    assert result.outputs_prefix == 'AzureDevOps.Project'
-    assert result.outputs.get('name') == 'xsoar'
-    assert result.outputs.get('Repository').get('name') == 'xsoar'
+    assert len(result.outputs) == 21
+    assert result.outputs_prefix == 'AzureDevOps.PullRequest'
+    assert result.outputs.get('repository').get('name') == 'xsoar'
 
     with pytest.raises(Exception):
         pull_request_update_command(client, {'project': project,
@@ -319,9 +316,9 @@ def test_azure_devops_pull_request_list_command(requests_mock):
                                                  })
 
     assert len(result.outputs) == 2
-    assert result.outputs_prefix == 'AzureDevOps.Project'
-    assert result.outputs.get('name') == 'xsoar'
-    assert result.outputs.get('Repository').get('name') == 'xsoar'
+    assert result.outputs_prefix == 'AzureDevOps.PullRequest'
+    assert result.outputs[0].get('repository').get('name') == 'xsoar'
+
     with pytest.raises(Exception):
         pull_requests_list_command(client, {'project': project,
                                             'repository': repository,

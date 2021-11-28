@@ -787,14 +787,15 @@ def pull_request_create_command(client: Client, args: Dict[str, Any]) -> Command
     response = client.pull_request_create_request(
         project, repository_id, source_branch, target_branch, title, description, reviewers)
 
-    outputs = generate_pull_request_output(response)
+    outputs = copy.deepcopy(response)
+    outputs['creationDate'] = arg_to_datetime(response.get('creationDate')).isoformat()
 
     readable_output = generate_pull_request_readable_information(response)
 
     command_results = CommandResults(
         readable_output=readable_output,
-        outputs_prefix='AzureDevOps.Project',
-        outputs_key_field='name',
+        outputs_prefix='AzureDevOps.PullRequest',
+        outputs_key_field='pullRequestId',
         outputs=outputs,
         raw_response=response
     )
@@ -831,14 +832,15 @@ def pull_request_update_command(client: Client, args: Dict[str, Any]) -> Command
     response = client.pull_request_update_request(
         project, repository_id, pull_request_id, title, description, status, last_merge_source_commit)
 
-    outputs = generate_pull_request_output(response)
+    outputs = copy.deepcopy(response)
+    outputs['creationDate'] = arg_to_datetime(response.get('creationDate')).isoformat()
 
     readable_output = generate_pull_request_readable_information(response)
 
     command_results = CommandResults(
         readable_output=readable_output,
-        outputs_prefix='AzureDevOps.Project',
-        outputs_key_field='name',
+        outputs_prefix='AzureDevOps.PullRequest',
+        outputs_key_field='pullRequestId',
         outputs=outputs,
         raw_response=response
     )
@@ -863,14 +865,15 @@ def pull_request_get_command(client: Client, args: Dict[str, Any]) -> CommandRes
 
     response = client.pull_requests_get_request(project, repository_id, pull_request_id)
 
-    outputs = generate_pull_request_output(response)
+    outputs = copy.deepcopy(response)
+    outputs['creationDate'] = arg_to_datetime(response.get('creationDate')).isoformat()
 
     readable_output = generate_pull_request_readable_information(response)
 
     command_results = CommandResults(
         readable_output=readable_output,
-        outputs_prefix='AzureDevOps.Project',
-        outputs_key_field='name',
+        outputs_prefix='AzureDevOps.PullRequest',
+        outputs_key_field='pullRequestId',
         outputs=outputs,
         raw_response=response
     )
@@ -903,14 +906,16 @@ def pull_requests_list_command(client: Client, args: Dict[str, Any]) -> CommandR
 
     readable_message = f'Pull Request List:\n Current page size: {limit}\n Showing page {page} out others that may exist.'
 
-    outputs = generate_pull_request_output(response.get('value'))
+    outputs = copy.deepcopy(response.get('value'))
+    for pr in outputs:
+        pr['creationDate'] = arg_to_datetime(pr.get('creationDate')).isoformat()
 
     readable_output = generate_pull_request_readable_information(response.get('value'), message=readable_message)
 
     command_results = CommandResults(
         readable_output=readable_output,
-        outputs_prefix='AzureDevOps.Project',
-        outputs_key_field='name',
+        outputs_prefix='AzureDevOps.PullRequest',
+        outputs_key_field='pullRequestId',
         outputs=outputs,
         raw_response=response
     )
