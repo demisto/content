@@ -1,11 +1,23 @@
 import pytest
-from PaloAltoNetworks_PrismaCloudCompute import Client, camel_case_transformer, fetch_incidents, get_headers, \
-    HEADERS_BY_NAME
+from collections import OrderedDict
+from PaloAltoNetworks_PrismaCloudCompute import PrismaCloudComputeClient, camel_case_transformer, fetch_incidents,\
+    get_headers, HEADERS_BY_NAME, get_profile_host_list
 
 from CommonServerPython import DemistoException
 
 
-def test_camel_case_transformer(requests_mock):
+
+BASE_URL = 'https://test.com'
+
+
+@pytest.fixture
+def client() -> PrismaCloudComputeClient:
+    return PrismaCloudComputeClient(
+        base_url=BASE_URL, verify='False', project='', auth=('test', 'test')
+    )
+
+
+def test_camel_case_transformer():
     test_strings = ['camelCase', 'camelCaSe', 'camelCaseString', 'camelcase', 'CAMELCASE', 'cve', 'id', 4]
     expected_results = ['Camel Case', 'Camel Ca Se', 'Camel Case String', 'Camelcase', 'Camelcase', 'CVE', 'ID', '4']
 
@@ -17,11 +29,10 @@ def test_camel_case_transformer(requests_mock):
 
 
 def test_api_fallback(requests_mock):
-    test_url = 'https://test.com'
-    xsoar_endpoint = test_url + '/xsoar-alerts'
-    demisto_endpoint = test_url + '/demisto-alerts'
+    xsoar_endpoint = BASE_URL + '/xsoar-alerts'
+    demisto_endpoint = BASE_URL + '/demisto-alerts'
     test_response = {'foo': 'bar'}
-    client = Client(base_url=test_url, verify='False', project='', auth=('test', 'test'))
+    client = PrismaCloudComputeClient(base_url=BASE_URL, verify='False', project='', auth=('test', 'test'))
 
     # Validate new API
     requests_mock.get(xsoar_endpoint, json=test_response)
@@ -365,7 +376,7 @@ def test_fetch_incidents(requests_mock):
                     '|\\n"}'}]
 
     requests_mock.get('https://test.com/xsoar-alerts', json=json_incidents_mock_response)
-    client = Client(base_url='https://test.com', verify='False', project='', auth=('test', 'test'))
+    client = PrismaCloudComputeClient(base_url=BASE_URL, verify='False', project='', auth=('test', 'test'))
     assert fetch_incidents(client) == expected_incidents
 
 
@@ -412,3 +423,68 @@ def test_get_headers():
             "status": ""
         }]
     assert get_headers('unknownType', data) == list(data[0].keys())
+
+
+PROFILE_HOST_LIST_COMMAND_ARGS = [
+    (
+        OrderedDict(
+            cluster="cluster", hostname="hostname", id="1", image="image", namespace="namespace", os="os",
+            state="state", limit="10", offset="0"
+        ),
+        get_profile_host_list,
+        "/profiles/host"
+    ),
+    (
+        OrderedDict(
+            cluster="cluster", hostname="hostname", id="1", image="image", namespace="namespace", os="os",
+            state="state", limit="100", offset="0"
+        ),
+        get_profile_host_list,
+        "/profiles/host"
+    )
+]
+
+
+def query_params_to_str(params: dict) -> str:
+    """
+    Transform params dict to a string http request query.
+
+    Args:
+        params (dict): query http parameters.
+
+    For example,
+    {
+        'limit': "10",
+        'offset': '0'
+    } ---> '?limit=10&offset=0'
+    """
+    query_params = '?'
+
+    if int(params.get('limit')) > 50:
+        params['limit'] = '50'
+
+    for key, val in params.items():
+        query_params += f'{key}={val}&'
+
+    return query_params[:len(query_params) - 1]
+
+
+@pytest.mark.parametrize("args, func, url_suffix", PROFILE_HOST_LIST_COMMAND_ARGS)
+def test_get_profile_host_list_query_params(requests_mock, args, func, url_suffix, client):
+    """
+    Given:
+        - command arguments for the 'prisma-cloud-compute-profile-host-list'.
+
+    When:
+        - Calling the http-request for the command endpoint.
+
+    Then:
+        - Verify that the full URL of the http request is sent with the correct query params.
+    """
+    full_url = BASE_URL + url_suffix
+
+    mocker = requests_mock.get(url=full_url, json={})
+    func(client=client, args=args)
+
+    assert full_url + query_params_to_str(params=args) == mocker.last_request._url_parts.geturl()
+

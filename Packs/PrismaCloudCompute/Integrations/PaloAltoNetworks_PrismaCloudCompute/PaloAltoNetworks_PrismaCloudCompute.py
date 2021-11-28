@@ -25,7 +25,7 @@ HEADERS_BY_NAME = {
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
-class Client(BaseClient):
+class PrismaCloudComputeClient(BaseClient):
     def __init__(self, base_url, verify, project, proxy=False, ok_codes=tuple(), headers=None, auth=None):
         """
         Extends the init method of BaseClient by adding the arguments below,
@@ -45,6 +45,18 @@ class Client(BaseClient):
             super().__init__(base_url, True, proxy, ok_codes, headers, auth)
             self._verify = verify
 
+    def api_request(
+        self, method, url_suffix, full_url=None, headers=None, auth=None, json_data=None, params=None, data=None,
+        files=None, timeout=10, resp_type='json', ok_codes=None, **kwargs
+    ):
+        """
+        A wrapper method for the http request.
+        """
+        return self._http_request(
+            method=method, url_suffix=url_suffix, full_url=full_url, headers=headers, auth=auth, json_data=json_data,
+            params=params, data=data, files=files, timeout=timeout, resp_type=resp_type, ok_codes=ok_codes, **kwargs
+        )
+
     def _http_request(self, method, url_suffix, full_url=None, headers=None,
                       auth=None, json_data=None, params=None, data=None, files=None,
                       timeout=10, resp_type='json', ok_codes=None, **kwargs):
@@ -52,7 +64,6 @@ class Client(BaseClient):
         Extends the _http_request method of BaseClient.
         If self._project is available, a 'project=projectID' query param is automatically added to all requests.
         """
-
         # if project is given add it to params and call super method
         if self._project:
             params = params or {}
@@ -253,9 +264,121 @@ def fetch_incidents(client):
     return incidents
 
 
+def validate_limit_and_offset(func):
+    """
+    Decorator to validate that the limit and offset in the command arguments are correct.
+    """
+    def wrapper(*args, **kwargs):
+
+        api_limit_call = 50
+
+        command_args = kwargs.get('args')
+        offset = arg_to_number(arg=command_args.get('offset'), arg_name='offset')
+        if offset < 0:
+            offset = 0
+        command_args['offset'] = offset
+
+        limit = arg_to_number(arg=command_args.get('limit'), arg_name='limit')
+        if limit - offset > api_limit_call:
+            limit = offset + api_limit_call
+        command_args['limit'] = limit
+
+        return func(*args, **kwargs)
+
+    return wrapper
+
+
+def get_api_info(
+    client: PrismaCloudComputeClient, url_suffix: str, args: dict = None, method: str = 'GET'
+):
+    """
+    Get api information from the PrismaCloudCompute client.
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        method (str): the api method type. e.g.: 'GET,POST,PUT'
+        url_suffix (str): url suffix of the base api url.
+        args (dict): any command arguments if exist.
+
+    Returns:
+        list: api response.
+    """
+    return client.api_request(method=method, url_suffix=url_suffix, params=assign_params(**args))
+
+
+def build_profile_host_table_response(full_response: List[dict]) -> str:
+    """
+    Build a table from the api response of the profile host
+    list for the command 'prisma-cloud-compute-profile-host-list'
+
+    Args:
+        full_response (list[dict]): the api raw response.
+
+    Returns:
+        str: markdown table output for the apps and ssh events of a host.
+    """
+    apps_table = []
+    ssh_events_table = []
+
+    for response in full_response:
+        for app in response.get('apps', []):
+            apps_table.append(
+                {
+                    'HostId': response.get('_id'),
+                    'AppName': app.get('name'),
+                    'StartupProcess': app.get('startupProcess').get('path'),
+                    'User': app.get('startupProcess').get('user'),
+                    'LaunchTime': app.get('startupProcess').get('time'),
+                }
+            )
+        for event in response.get('sshEvents'):
+            ssh_events_table.append(
+                {
+                    'HostId': response.get('_id'),
+                    'User': event.get('user'),
+                    'Ip': event.get('ip'),
+                    'ProcessPath': event.get('path'),
+                    'Command': event.get('command'),
+                    'Time': event.get('time'),
+                }
+            )
+
+    apps_markdown_table = tableToMarkdown(
+        name='Apps', t=apps_table, headers=['HostId', 'AppName', 'StartupProcess', 'User', 'LaunchTime']
+    )
+    ssh_events_markdown_table = tableToMarkdown(
+        name='SSH Events', t=ssh_events_table, headers=['HostId', 'User', 'Ip', 'ProcessPath', 'Command', 'Time']
+    )
+
+    return apps_markdown_table + ssh_events_markdown_table
+
+
+@validate_limit_and_offset
+def get_profile_host_list(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
+    """
+    Get information about the hosts and their profile events.
+    Implement the command 'prisma-cloud-compute-profile-host-list'
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-profile-host-list command arguments.
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    full_response = get_api_info(client=client, args=args, url_suffix='/profiles/host')
+
+    return CommandResults(
+        outputs_prefix='prismaCloudCompute.profileHost',
+        outputs_key_field='_id',
+        outputs=full_response,
+        readable_output=build_profile_host_table_response(full_response=full_response)
+    )
+
+
 def main():
     """
-        PARSE AND VALIDATE INTEGRATION PARAMS
+    PARSE AND VALIDATE INTEGRATION PARAMS
     """
     params = demisto.params()
     username = params.get('credentials').get('identifier')
@@ -277,31 +400,39 @@ def main():
         # Save boolean as a string
         verify = str(verify_certificate)
 
+    available_commands = {
+        'prisma-cloud-compute-profile-host-list': get_profile_host_list,
+    }
+
     try:
-        LOG(f'Command being called is {demisto.command()}')
+        requested_command = demisto.command()
+        LOG(f'Command being called is {requested_command}')
 
         # Init the client
-        client = Client(
+        client = PrismaCloudComputeClient(
             base_url=urljoin(base_url, 'api/v1/'),
             verify=verify,
             auth=(username, password),
             proxy=proxy,
-            project=project)
+            project=project
+        )
 
-        if demisto.command() == 'test-module':
+        if requested_command == 'test-module':
             # This is the call made when pressing the integration test button
             result = test_module(client)
             demisto.results(result)
 
-        elif demisto.command() == 'fetch-incidents':
+        elif requested_command == 'fetch-incidents':
             # Fetch incidents from Prisma Cloud Compute
             # this method is called periodically when 'fetch incidents' is checked
             incidents = fetch_incidents(client)
             demisto.incidents(incidents)
+        elif requested_command in available_commands:
+            return_results(results=available_commands[requested_command](client=client, args=demisto.args()))
 
     # Log exceptions
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+        return_error(f'Failed to execute {requested_command} command. Error: {str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

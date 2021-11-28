@@ -1,0 +1,1 @@
+prisma-cloud-compute-profile-host-list hostName=*249* namespace=prod
