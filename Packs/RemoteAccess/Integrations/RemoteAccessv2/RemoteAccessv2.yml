@@ -161,4 +161,4 @@ script:
   dockerimage: demisto/netmiko:1.0.0.24037
 fromversion: 6.0.0
 tests:
-- No tests (auto formatted)
+- RemoteAccessTest
