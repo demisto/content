@@ -7,7 +7,9 @@
     "url": "https://pentera.io",
     "email": "support@pentera.io",
     "created": "2020-03-10T08:37:18Z",
-    "categories": [],
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],

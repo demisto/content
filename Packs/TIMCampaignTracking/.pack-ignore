@@ -1,2 +1,4 @@
 [file:README.md]
 ignore=RM104
+[file:TIMCampaignTracking]
+ignore=PA129
