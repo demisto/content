@@ -442,6 +442,11 @@ def test_utf_subject_convert(encoded_subject, decoded_subject):
     assert decoded == decoded_subject
     assert 'utf-8' not in decoded
 
+def test_utf_subject_convert(encoded_subject, decoded_subject):
+    decoded = convert_to_unicode(encoded_subject)
+    assert decoded == decoded_subject
+    assert 'utf-8' not in decoded
+
 
 def test_unfold():
     assert unfold('test\n\tthis') == 'test this'
@@ -1071,6 +1076,27 @@ def test_create_headers_map_empty_headers():
 def test_eml_contains_htm_attachment_empty_file(mocker):
     """
     Given: An email containing both an empty text file and a base64 encoded htm file.
+    When: Parsing a valid email file with default parameters.
+    Then: Three entries will be returned to the war room. One containing the command results. Another
+          containing the empty file. The last contains the htm file.
+    """
+    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
+    mocker.patch.object(demisto, 'executeCommand',
+                        side_effect=exec_command_for_file('eml_contains_emptytxt_htm_file.eml'))
+    mocker.patch.object(demisto, 'results')
+    # validate our mocks are good
+    assert demisto.args()['entryid'] == 'test'
+    main()
+
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0]['Type'] == entryTypes['note']
+    assert results[0]['EntryContext']['Email'][0]['AttachmentNames'] == ['unknown_file_name0', 'SomeTest.HTM']
+
+
+def test_eml_contains_htm_attachment_unknown_encoded_file_name(mocker):
+    """
+    Given: An email containing an attachment file with unknown encoded name.
     When: Parsing a valid email file with default parameters.
     Then: Three entries will be returned to the war room. One containing the command results. Another
           containing the empty file. The last contains the htm file.
