@@ -435,6 +435,17 @@ script:
     description: Retrieves the Zscaler default blacklist.
     execution: false
     name: zscaler-get-blacklist
+    arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Filter results by URL or IP objects.
+      name: filter
+      predefined:
+      - 'url'
+      - 'ip'
+    - default: false
+      description: Query (Python regular expression) to match against, e.g. 8.*.*.8
+      name: query
     outputs:
     - contextPath: Zscaler.Blacklist
       description: The Zscaler blacklist.

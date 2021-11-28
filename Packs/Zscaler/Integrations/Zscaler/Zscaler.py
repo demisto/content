@@ -324,8 +324,31 @@ def unwhitelist_ip(ip):
     return 'Removed the following IP addresses from the whitelist successfully:\n' + list_of_ips
 
 
-def get_blacklist_command():
+def get_blacklist_command(args):
     blacklist = get_blacklist().get('blacklistUrls')
+    if blacklist:
+        filter_ = args.get('filter', '')
+        query = args.get('query', '')
+        if filter_ or query:
+            filtered_blacklist = []
+            for entity in blacklist:
+                # if filter / query were not provided, then there is a match on it vacuously
+                is_filter_match = not filter_
+                is_query_match = not query
+                if filter_:
+                    if re.match(ipv4Regex, entity):
+                        if filter_ == 'ip':
+                            is_filter_match = True
+                    elif filter_ == 'url':
+                        is_filter_match = True
+                if query:
+                    if re.search(query, entity):
+                        is_query_match = True
+                    else:
+                        is_query_match = False
+                if is_filter_match and is_query_match:
+                    filtered_blacklist.append(entity)
+            blacklist = filtered_blacklist
     if blacklist:
         hr = '### Zscaler blacklist\n'
         for url in blacklist:
@@ -936,7 +959,7 @@ def main():
             elif command == 'zscaler-get-categories':
                 return_results(get_categories_command(args))
             elif command == 'zscaler-get-blacklist':
-                return_results(get_blacklist_command())
+                return_results(get_blacklist_command(args))
             elif command == 'zscaler-get-whitelist':
                 return_results(get_whitelist_command())
             elif command == 'zscaler-sandbox-report':
