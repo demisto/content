@@ -21,8 +21,10 @@ def test_create_alert(mocker):
     mock_client = OpsGenieV3.Client(base_url="")
     mocker.patch.object(mock_client, 'create_alert',
                         return_value=util_load_json('test_data/request.json'))
+    mocker.patch.object(mock_client, 'get_request',
+                        return_value=util_load_json('test_data/create_alert.json'))
     res = OpsGenieV3.create_alert(mock_client, {'responders': []})
-    assert (res.readable_output == "Waiting for request_id=3b078fd5-37d1-472e-823b-9f95b17aba8f")
+    assert (res.raw_response == util_load_json('test_data/create_alert.json'))
 
 
 def test_get_alerts(mocker):
@@ -49,8 +51,10 @@ def test_delete_alert(mocker):
     mock_client = OpsGenieV3.Client(base_url="")
     mocker.patch.object(mock_client, 'delete_alert',
                         return_value=util_load_json('test_data/request.json'))
+    mocker.patch.object(mock_client, 'get_request',
+                        return_value=util_load_json('test_data/delete_alert.json'))
     res = OpsGenieV3.delete_alert(mock_client, {"alert-id": 1234})
-    assert(res.readable_output == "Waiting for request_id=3b078fd5-37d1-472e-823b-9f95b17aba8f")
+    assert (res.raw_response == util_load_json('test_data/delete_alert.json'))
 
 
 def test_ack_alert(mocker):
@@ -58,8 +62,10 @@ def test_ack_alert(mocker):
     mock_client = OpsGenieV3.Client(base_url="")
     mocker.patch.object(mock_client, 'ack_alert',
                         return_value=util_load_json('test_data/request.json'))
+    mocker.patch.object(mock_client, 'get_request',
+                        return_value=util_load_json('test_data/ack_alert.json'))
     res = OpsGenieV3.ack_alert(mock_client, {"alert-id": 1234})
-    assert (res.readable_output == "Waiting for request_id=3b078fd5-37d1-472e-823b-9f95b17aba8f")
+    assert (res.raw_response == util_load_json('test_data/ack_alert.json'))
 
 
 def test_close_alert(mocker):
@@ -67,8 +73,10 @@ def test_close_alert(mocker):
     mock_client = OpsGenieV3.Client(base_url="")
     mocker.patch.object(mock_client, 'close_alert',
                         return_value=util_load_json('test_data/request.json'))
+    mocker.patch.object(mock_client, 'get_request',
+                        return_value=util_load_json('test_data/close_alert.json'))
     res = OpsGenieV3.close_alert(mock_client, {"alert-id": 1234})
-    assert (res.readable_output == "Waiting for request_id=3b078fd5-37d1-472e-823b-9f95b17aba8f")
+    assert (res.raw_response == util_load_json('test_data/close_alert.json'))
 
 
 def test_assign_alert_without_args():
@@ -108,8 +116,10 @@ def test_add_alert_tag(mocker):
     mock_client = OpsGenieV3.Client(base_url="")
     mocker.patch.object(mock_client, 'add_alert_tag',
                         return_value=util_load_json('test_data/request.json'))
+    mocker.patch.object(mock_client, 'get_request',
+                        return_value=util_load_json('test_data/add_alert_tag.json'))
     res = OpsGenieV3.add_alert_tag(mock_client, {"alert-id": 1234, "tags": [1, 2]})
-    assert (res.readable_output == "Waiting for request_id=3b078fd5-37d1-472e-823b-9f95b17aba8f")
+    assert (res.raw_response == util_load_json('test_data/add_alert_tag.json'))
 
 
 def test_remove_alert_tag(mocker):
@@ -117,8 +127,10 @@ def test_remove_alert_tag(mocker):
     mock_client = OpsGenieV3.Client(base_url="")
     mocker.patch.object(mock_client, 'remove_alert_tag',
                         return_value=util_load_json('test_data/request.json'))
+    mocker.patch.object(mock_client, 'get_request',
+                        return_value=util_load_json('test_data/remove_alert_tag.json'))
     res = OpsGenieV3.remove_alert_tag(mock_client, {"alert-id": 1234, "tags": [1, 2]})
-    assert (res.readable_output == "Waiting for request_id=3b078fd5-37d1-472e-823b-9f95b17aba8f")
+    assert (res.raw_response == util_load_json('test_data/remove_alert_tag.json'))
 
 
 def test_get_alert_attachments(mocker):
@@ -163,8 +175,10 @@ def test_delete_incident(mocker):
     mock_client = OpsGenieV3.Client(base_url="")
     mocker.patch.object(mock_client, 'delete_incident',
                         return_value=util_load_json('test_data/request.json'))
+    mocker.patch.object(mock_client, 'get_request',
+                        return_value=util_load_json('test_data/delete_incident.json'))
     res = OpsGenieV3.delete_incident(mock_client, {"incident_id": 1234})
-    assert (res.readable_output == "Waiting for request_id=3b078fd5-37d1-472e-823b-9f95b17aba8f")
+    assert (res.raw_response == util_load_json('test_data/delete_incident.json'))
 
 
 def test_get_incidents(mocker):
@@ -191,8 +205,10 @@ def test_close_incident(mocker):
     mock_client = OpsGenieV3.Client(base_url="")
     mocker.patch.object(mock_client, 'close_incident',
                         return_value=util_load_json('test_data/request.json'))
+    mocker.patch.object(mock_client, 'get_request',
+                        return_value=util_load_json('test_data/close_incident.json'))
     res = OpsGenieV3.close_incident(mock_client, {"incident_id": 1234})
-    assert (res.readable_output == "Waiting for request_id=3b078fd5-37d1-472e-823b-9f95b17aba8f")
+    assert (res.raw_response == util_load_json('test_data/close_incident.json'))
 
 
 def test_resolve_incident(mocker):
@@ -200,8 +216,10 @@ def test_resolve_incident(mocker):
     mock_client = OpsGenieV3.Client(base_url="")
     mocker.patch.object(mock_client, 'resolve_incident',
                         return_value=util_load_json('test_data/request.json'))
+    mocker.patch.object(mock_client, 'get_request',
+                        return_value=util_load_json('test_data/resolve_incident.json'))
     res = OpsGenieV3.resolve_incident(mock_client, {"incident_id": 1234})
-    assert (res.readable_output == "Waiting for request_id=3b078fd5-37d1-472e-823b-9f95b17aba8f")
+    assert (res.raw_response == util_load_json('test_data/resolve_incident.json'))
 
 
 def test_add_responder_incident():
@@ -215,8 +233,10 @@ def test_add_tag_incident(mocker):
     mock_client = OpsGenieV3.Client(base_url="")
     mocker.patch.object(mock_client, 'add_tag_incident',
                         return_value=util_load_json('test_data/request.json'))
+    mocker.patch.object(mock_client, 'get_request',
+                        return_value=util_load_json('test_data/add_tag_incident.json'))
     res = OpsGenieV3.add_tag_incident(mock_client, {"incident_id": 1234, "tags": [1, 2]})
-    assert (res.readable_output == "Waiting for request_id=3b078fd5-37d1-472e-823b-9f95b17aba8f")
+    assert (res.raw_response == util_load_json('test_data/add_tag_incident.json'))
 
 
 def test_remove_tag_incident(mocker):
@@ -224,8 +244,10 @@ def test_remove_tag_incident(mocker):
     mock_client = OpsGenieV3.Client(base_url="")
     mocker.patch.object(mock_client, 'remove_tag_incident',
                         return_value=util_load_json('test_data/request.json'))
+    mocker.patch.object(mock_client, 'get_request',
+                        return_value=util_load_json('test_data/remove_tag_incident.json'))
     res = OpsGenieV3.remove_tag_incident(mock_client, {"incident_id": 1234, "tags": [1, 2]})
-    assert (res.readable_output == "Waiting for request_id=3b078fd5-37d1-472e-823b-9f95b17aba8f")
+    assert (res.raw_response == util_load_json('test_data/remove_tag_incident.json'))
 
 
 def test_get_teams(mocker):
