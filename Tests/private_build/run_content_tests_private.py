@@ -15,7 +15,7 @@ from Tests.test_integration import check_integration
 from demisto_sdk.commands.common.constants import PB_Status
 from demisto_sdk.commands.common.tools import str2bool
 
-from Tests.test_content import SettingsTester, DataKeeperTester, \
+from Tests.private_build.test_content import SettingsTester, DataKeeperTester, \
     print_test_summary, update_test_msg, turn_off_telemetry, \
     create_result_files, get_all_tests, get_instances_ips_and_names, get_server_numeric_version, \
     initialize_queue_and_executed_tests_set, get_test_records_of_given_test_names, \
