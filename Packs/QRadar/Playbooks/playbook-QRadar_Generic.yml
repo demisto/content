@@ -3,11 +3,10 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: QRadar Generic
-description: This is a generic playbook to be executed for the QRadar Generic incident
-  type. The playbook performs all the common parts of the investigation, including
-  notifying the SOC, enriching the data for indicators and users, calculating the
-  severity, assigning the incident, notifying the SIEM admin for false positives and
-  more.
+description: The QRadar Generic playbook is executed for the QRadar Generic incident
+  type. It performs all the common parts of the investigation, including
+  notifying the SOC, enriching data for indicators and users, calculating severity, 
+  assigning incidents, and notifying the SIEM admin about false positives.
 starttaskid: "0"
 tasks:
   "0":
@@ -29,7 +28,7 @@ tasks:
       {
         "position": {
           "x": 210,
-          "y": -780
+          "y": -1920
         }
       }
     note: false
@@ -75,7 +74,7 @@ tasks:
       {
         "position": {
           "x": 210,
-          "y": -305
+          "y": -1105
         }
       }
     note: false
@@ -103,7 +102,7 @@ tasks:
       {
         "position": {
           "x": 210,
-          "y": 690
+          "y": -110
         }
       }
     note: false
@@ -133,7 +132,7 @@ tasks:
       {
         "position": {
           "x": 562.5,
-          "y": -120
+          "y": -920
         }
       }
     note: false
@@ -161,20 +160,20 @@ tasks:
       {
         "position": {
           "x": 210,
-          "y": 1195
+          "y": 395
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     message:
-      to:
-      subject:
-      body:
+      to: null
+      subject: null
+      body: null
       methods: []
       format: ""
-      bcc:
-      cc:
+      bcc: null
+      cc: null
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -219,24 +218,17 @@ tasks:
       '#none#':
       - "12"
     scriptarguments:
-      assetid: {}
       closeNotes:
         simple: |-
           Closed By: ${Investigation Notes.Answers.name}
           ${Investigation Notes.Answers.0}
-      closeReason: {}
-      emailclassification: {}
-      id: {}
-      incomingmirrorerror: {}
-      outgoingmirrorerror: {}
-      phishingsubtype: {}
     reputationcalc: 1
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 210,
-          "y": 3390
+          "x": 220,
+          "y": 3740
         }
       }
     note: false
@@ -262,9 +254,6 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
-      entryID: {}
-      filePath: {}
-      investigationID: {}
       text:
         complex:
           root: incident
@@ -274,7 +263,7 @@ tasks:
       {
         "position": {
           "x": 562.5,
-          "y": 10
+          "y": -790
         }
       }
     note: false
@@ -303,7 +292,7 @@ tasks:
       {
         "position": {
           "x": 562.5,
-          "y": 170
+          "y": -630
         }
       }
     note: false
@@ -327,8 +316,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 210,
-          "y": 3540
+          "x": 220,
+          "y": 3880
         }
       }
     note: false
@@ -353,7 +342,6 @@ tasks:
       '#none#':
       - "8"
     scriptarguments:
-      attachCIDs: {}
       attachIDs:
         complex:
           root: InfoFile
@@ -367,8 +355,6 @@ tasks:
                 value:
                   simple: report_Investigation_Summary
           accessor: EntryID
-      attachNames: {}
-      bcc: {}
       body:
         complex:
           root: ${demistoUrls
@@ -381,9 +367,6 @@ tasks:
                   simple: |
                     Link to the incident
               suffix: {}
-      cc: {}
-      htmlBody: {}
-      replyTo: {}
       subject:
         complex:
           root: inputs.SocMailSubject
@@ -401,8 +384,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -220,
-          "y": 3210
+          "x": -110,
+          "y": 3570
         }
       }
     note: false
@@ -426,7 +409,7 @@ tasks:
       False Positive:
       - "29"
       True Positive:
-      - "15"
+      - "45"
     separatecontext: false
     view: |-
       {
@@ -438,6 +421,21 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body: null
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - "Yes"
+      - "No"
     skipunavailable: false
     quietmode: 0
   "15":
@@ -463,14 +461,12 @@ tasks:
         complex:
           root: incident
           accessor: id
-      name: {}
-      type: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 210,
-          "y": 2720
+          "x": 220,
+          "y": 2880
         }
       }
     note: false
@@ -511,7 +507,7 @@ tasks:
       {
         "position": {
           "x": 562.5,
-          "y": 350
+          "y": -450
         }
       }
     note: false
@@ -548,8 +544,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 210,
-          "y": 2870
+          "x": 220,
+          "y": 3030
         }
       }
     note: false
@@ -586,8 +582,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -10,
-          "y": 2050
+          "x": -60,
+          "y": 2040
         }
       }
     note: false
@@ -614,18 +610,15 @@ tasks:
     scriptarguments:
       assignBy:
         simple: random
-      email: {}
       onCall:
         complex:
           root: inputs.OnCall
-      roles: {}
-      username: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 210,
-          "y": 1015
+          "y": 215
         }
       }
     note: false
@@ -640,20 +633,20 @@ tasks:
     task:
       id: 381f98db-b60a-4514-89d8-959cd9189cb3
       version: -1
-      name: Post Incident Activity
+      name: XSOAR Exclude Indicators
       type: title
       iscommand: false
       brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - "14"
+      - "39"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 210,
-          "y": 1380
+          "y": 560
         }
       }
     note: false
@@ -681,21 +674,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -10,
-          "y": 1890
+          "x": -60,
+          "y": 1870
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     message:
-      to:
-      subject:
-      body:
+      to: null
+      subject: null
+      body: null
       methods: []
       format: ""
-      bcc:
-      cc:
+      bcc: null
+      cc: null
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -709,11 +702,11 @@ tasks:
         required: false
         gridcolumns: []
         defaultrows: []
-        type: shortText
+        type: multiSelect
         options: []
         optionsarg:
-        - simple: "Yes"
-        - simple: "No"
+        - {}
+        - simple: ${incident.listofrulesoffense}
         fieldassociated: ""
         placeholder: ""
         tooltip: ""
@@ -721,15 +714,47 @@ tasks:
       - id: "1"
         label: ""
         labelarg:
-          simple: Which indicators need to be excluded?
+          simple: Which indicators need to be excluded in QRadar?
         required: false
         gridcolumns: []
         defaultrows: []
-        type: shortText
+        type: multiSelect
         options: []
         optionsarg:
-        - simple: "Yes"
-        - simple: "No"
+        - {}
+        - complex:
+            root: ExtractedIndicators
+            transformers:
+            - operator: getField
+              args:
+                field:
+                  value:
+                    simple: Domain
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: ExtractedIndicators.IP
+                  iscontext: true
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: ExtractedIndicators.URL
+                  iscontext: true
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: ExtractedIndicators.Email
+                  iscontext: true
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: ExtractedIndicators.File
+                  iscontext: true
+            - operator: uniq
         fieldassociated: ""
         placeholder: ""
         tooltip: ""
@@ -741,27 +766,843 @@ tasks:
       totalanswers: 0
     skipunavailable: false
     quietmode: 0
-  "23":
-    id: "23"
-    taskid: 75317a1a-1b21-43d7-8ed1-eab2b3d7bd67
+  "25":
+    id: "25"
+    taskid: 8873fc30-eabd-4137-8f78-8ba80684a2a0
     type: regular
     task:
-      id: 75317a1a-1b21-43d7-8ed1-eab2b3d7bd67
+      id: 8873fc30-eabd-4137-8f78-8ba80684a2a0
+      version: -1
+      name: Determine incident severity according to offense info
+      description: Sets the incident severity according to the FieldToSetSeverityFrom
+        and ScaleToSetSeverityFrom playbook inputs, which specify the relevant offense
+        field and the scale for the severity translation.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      severity:
+        complex:
+          root: inputs.FieldToSetSeverityFrom
+          transformers:
+          - operator: MapValuesTransformer
+            args:
+              input_values:
+                value:
+                  simple: 1,2,3,4,5,6,7,8,9,10
+              mapped_values:
+                value:
+                  simple: inputs.ScaleToSetSeverityFrom
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": -1620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 226309cb-824c-486f-8b8a-f977f03bba67
+    type: title
+    task:
+      id: 226309cb-824c-486f-8b8a-f977f03bba67
+      version: -1
+      name: Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: d8d79caa-94a4-4f02-8bda-d306a1357b34
+    type: regular
+    task:
+      id: d8d79caa-94a4-4f02-8bda-d306a1357b34
+      version: -1
+      name: Set as false positive
+      description: Sets the incident status as false positive.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      closeReason:
+        simple: False Positive
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -60,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 88147dfd-8093-46f6-8a63-5ef810b03328
+    type: title
+    task:
+      id: 88147dfd-8093-46f6-8a63-5ef810b03328
+      version: -1
+      name: SIEM Admin
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "23"
+      - "15"
+      - "52"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -60,
+          "y": 2390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: e02854a2-f41b-444b-8953-067035e160ca
+    type: title
+    task:
+      id: e02854a2-f41b-444b-8953-067035e160ca
+      version: -1
+      name: SOC Summary
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "13"
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -110,
+          "y": 3250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: b6008b80-dc3e-4381-8c5f-5ead8aa3debe
+    type: playbook
+    task:
+      id: b6008b80-dc3e-4381-8c5f-5ead8aa3debe
+      version: -1
+      name: Calculate Severity - Standard
+      playbookName: Calculate Severity - Standard
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": -280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: 9a80f6b4-18be-413a-8397-794a919efa0b
+    type: condition
+    task:
+      id: 9a80f6b4-18be-413a-8397-794a919efa0b
+      version: -1
+      name: Use custom severity?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "34"
+      use custom:
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: use custom
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: inputs.UseCustomSeveritySettings
+            iscontext: true
+          right:
+            value:
+              simple: "false"
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": -1790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 359cb86e-fb0e-4a4c-8291-edef6d443ee2
+    type: condition
+    task:
+      id: 359cb86e-fb0e-4a4c-8291-edef6d443ee2
+      version: -1
+      name: Run additional searches?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "1"
+      "yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.RunAdditionalSeach
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": -1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: bb27c52d-e30b-491a-80a8-c20fb7f914dd
+    type: playbook
+    task:
+      id: bb27c52d-e30b-491a-80a8-c20fb7f914dd
+      version: -1
+      name: QRadar - Get Offense Logs
+      description: "Works for QRadar integrations versions 2 and 3, v1 is deprecated.\n\nNote:
+        For QRadar v2 and v3 you can use the integration to fetch the events
+        according to the limit defined in the instance settings. Using this playbook you can define
+        you can define an additional search to query a larger number of logs.\n\nDefault playbook
+        inputs use the QRadar incident fields such as idoffense, starttime. These
+        fields can be replaced, but need to point to relevant offense ID and starttime
+        fields. "
+      playbookName: QRadar - Get Offense Logs
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      Fields:
+        simple: ${inputs.Fields}
+      GetOnlyCREEvents:
+        simple: ${inputs.GetOnlyCREEvents}
+      ID:
+        complex:
+          root: incident
+          accessor: idoffense
+      MaxLogsCount:
+        simple: ${inputs.MaxLogsCount}
+      StartTime:
+        complex:
+          root: incident
+          accessor: starttime
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": -1280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 379235d9-c4b9-46c1-81f8-ceac15a2b23a
+    type: condition
+    task:
+      id: 379235d9-c4b9-46c1-81f8-ceac15a2b23a
+      version: -1
+      name: Any indicators to tag?
+      description: |-
+        Checks if one number(float) as bigger than the other(float)
+        Returns yes: if first > second
+        Returns no: if first <= second
+        Returns exception if one of the inputs is not a number
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThan
+          left:
+            value:
+              complex:
+                root: Provide closing reason and tag indicators.Answers
+                accessor: "0"
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 2040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 78b79c26-5204-4982-8530-8cc48542474d
+    type: regular
+    task:
+      id: 78b79c26-5204-4982-8530-8cc48542474d
+      version: -1
+      name: Tag Indicators
+      description: commands.local.cmd.set.indicator
+      script: Builtin|||setIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      tags:
+        simple: ${inputs.IndicatorTag}
+      value:
+        simple: ${Provide closing reason and tag indicators.Answers.0}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 2700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 57166b79-05fa-43af-8d85-fa6e622371ca
+    type: condition
+    task:
+      id: 57166b79-05fa-43af-8d85-fa6e622371ca
+      version: -1
+      name: Is Indicator exclusion allowed in XSOAR?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "42"
+      "yes":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: inputs.ExcludeIndicatorsInXSOAR
+            iscontext: true
+          right:
+            value:
+              simple: "false"
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 511e4e6a-ea30-4ca6-8249-d1a11fc267b3
+    type: condition
+    task:
+      id: 511e4e6a-ea30-4ca6-8249-d1a11fc267b3
+      version: -1
+      name: Any indicators to exclude?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "42"
+      "yes":
+      - "43"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThan
+          left:
+            value:
+              complex:
+                root: Indicators to exclude in XSOAR.Answers
+                accessor: "0"
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 1030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: f6ca219f-b710-403c-8d4b-c9dbc86b607c
+    type: title
+    task:
+      id: f6ca219f-b710-403c-8d4b-c9dbc86b607c
+      version: -1
+      name: True/False Positive tuning
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: f5ef5d8f-37c9-4fe1-8021-f1f49e9cad32
+    type: regular
+    task:
+      id: f5ef5d8f-37c9-4fe1-8021-f1f49e9cad32
+      version: -1
+      name: Exclude Indicators
+      description: commands.local.cmd.exclude.indicators
+      script: Builtin|||excludeIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      indicatorsValues:
+        simple: ${Indicators to exclude in XSOAR.Answers.0}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -170,
+          "y": 1220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 1d1b35bd-3d25-4ffa-839e-b2b4f647bd2c
+    type: collection
+    task:
+      id: 1d1b35bd-3d25-4ffa-839e-b2b4f647bd2c
+      version: -1
+      name: Select indicators to exclude
+      description: Provide data to adjust the rule in order to avoid similar false
+        positives in the future.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body: null
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Which indicators need to be excluded in XSOAR?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - {}
+        - complex:
+            root: ExtractedIndicators
+            transformers:
+            - operator: getField
+              args:
+                field:
+                  value:
+                    simple: Domain
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: ExtractedIndicators.IP
+                  iscontext: true
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: ExtractedIndicators.URL
+                  iscontext: true
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: ExtractedIndicators.Email
+                  iscontext: true
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: ExtractedIndicators.File
+                  iscontext: true
+            - operator: uniq
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Indicators to exclude in XSOAR
+      description: Provide what should be adjusted in the rule
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 19cfa6ac-e92f-4950-8a66-e38083737378
+    type: collection
+    task:
+      id: 19cfa6ac-e92f-4950-8a66-e38083737378
+      version: -1
+      name: Provide closing reason and tag indicators
+      description: Provide data to adjust the rule in order to avoid similar false
+        positives in the future.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body: null
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: 'Which indicators need to be tagged? '
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - {}
+        - complex:
+            root: ExtractedIndicators
+            transformers:
+            - operator: getField
+              args:
+                field:
+                  value:
+                    simple: Domain
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: ExtractedIndicators.IP
+                  iscontext: true
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: ExtractedIndicators.URL
+                  iscontext: true
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: ExtractedIndicators.Email
+                  iscontext: true
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: ExtractedIndicators.File
+                  iscontext: true
+            - operator: uniq
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: What is the closing reason?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Provide closing reason and tag indicators
+      description: Provide what should be adjusted in the rule
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: eacc95db-5005-477b-88d5-ecc5947beccb
+    type: regular
+    task:
+      id: eacc95db-5005-477b-88d5-ecc5947beccb
+      version: -1
+      name: Set closing reason
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      closeReason:
+        simple: ${Provide closing reason and tag indicators.Answers.1}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 1870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: bb2db2a5-aa9b-403c-828b-b89904706e34
+    type: collection
+    task:
+      id: bb2db2a5-aa9b-403c-828b-b89904706e34
       version: -1
       name: Send email to SIEM admin
       description: Sends an email using EWS.
-      script: '|||send-mail'
-      type: regular
-      iscommand: true
+      type: collection
+      iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "15"
     scriptarguments:
-      attachCIDs: {}
-      attachIDs: {}
-      attachNames: {}
-      bcc: {}
       body:
         complex:
           root: Data for rule adjustment by the SIEM admin
@@ -810,9 +1651,6 @@ tasks:
                 value:
                   simple: Data for rule adjustment by the SIEM admin.Answers.1
                 iscontext: true
-      cc: {}
-      htmlBody: {}
-      replyTo: {}
       subject:
         complex:
           root: inputs.SiemAdminMailSubject
@@ -830,980 +1668,103 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -220,
-          "y": 2540
+          "x": -60,
+          "y": 2710
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    message:
+      to:
+        simple: ${inputs.SiemAdminEmailAddress}
+      subject:
+        complex:
+          root: inputs.SiemAdminMailSubject
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: incident.idoffense
+                iscontext: true
+      body:
+        simple: |
+          Dear ${inputs.SocEmailAddress}
+          please adjust the following rules
+          ${Data for rule adjustment by the SIEM admin.Answers.0}
+
+          And the following indicators
+          ${Data for rule adjustment by the SIEM admin.Answers.1}
+      methods:
+      - email
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Were the rules adjusted?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - {}
+        - simple: "Yes"
+        - simple: "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Were the indicators adjusted?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - {}
+        - simple: "Yes"
+        - simple: "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Adjustments to SIEM
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
     skipunavailable: true
     quietmode: 0
-  "25":
-    id: "25"
-    taskid: 8873fc30-eabd-4137-8f78-8ba80684a2a0
-    type: regular
-    task:
-      id: 8873fc30-eabd-4137-8f78-8ba80684a2a0
-      version: -1
-      name: Determine incident severity according to offense info
-      description: Sets the incident severity according to the FieldToSetSeverityFrom
-        and ScaleToSetSeverityFrom playbook inputs, which specify the relevant offense
-        field and the scale for the severity translation.
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "1"
-    scriptarguments:
-      accountid: {}
-      accountname: {}
-      addLabels: {}
-      agentid: {}
-      alertid: {}
-      alertname: {}
-      app: {}
-      appendMultiSelect: {}
-      appendTags: {}
-      applicationid: {}
-      applicationname: {}
-      assetid: {}
-      assettable: {}
-      assigneduser: {}
-      assignmentgroup: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      blockedaction: {}
-      bugtraq: {}
-      caller: {}
-      categorycount: {}
-      city: {}
-      closeNotes: {}
-      closeReason: {}
-      closetime: {}
-      closingreason: {}
-      closinguser: {}
-      cloudservice: {}
-      commandline: {}
-      compliancenotes: {}
-      costcenter: {}
-      costcentercode: {}
-      country: {}
-      countryname: {}
-      credibilityoffense: {}
-      criticalassets: {}
-      customFields: {}
-      cve: {}
-      cvss: {}
-      cvssavailabilityrequirement: {}
-      cvsscollateraldamagepotential: {}
-      cvssconfidentialityrequirement: {}
-      cvssintegrityrequirement: {}
-      dbotMirrorDirection: {}
-      dbotMirrorId: {}
-      dbotMirrorInstance: {}
-      dbotMirrorTags: {}
-      dbotprediction: {}
-      dbotpredictionprobability: {}
-      dbottextsuggestionhighlighted: {}
-      deleteEmptyField: {}
-      department: {}
-      descriptionasset: {}
-      descriptionoffense: {}
-      dest: {}
-      desthostname: {}
-      destinationgeolocation: {}
-      destinationhostname: {}
-      destinationip: {}
-      destinationipoffense: {}
-      destinationips: {}
-      destinationipv6: {}
-      destinationmacaddress: {}
-      destinationnetwork: {}
-      destinationnetworkoffense: {}
-      destinationport: {}
-      destntdomain: {}
-      destos: {}
-      details: {}
-      detectedexternalhosts: {}
-      detectedexternalips: {}
-      detectedinternalhosts: {}
-      detectedinternalips: {}
-      detectedusers: {}
-      detectionendtime: {}
-      detectionid: {}
-      detectionupdatetime: {}
-      detectionurl: {}
-      deviceexternalip: {}
-      devicehash: {}
-      deviceid: {}
-      devicelocalip: {}
-      devicemodel: {}
-      devicename: {}
-      devicetime: {}
-      displayname: {}
-      dnsname: {}
-      domainoffense: {}
-      dstports: {}
-      duration: {}
-      email: {}
-      emailauthenticitycheck: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailcc: {}
-      emailclassification: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailheaders: {}
-      emailhtml: {}
-      emailhtmlimage: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emaillabels: {}
-      emaillatestmessage: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      employeedisplayname: {}
-      employeeemail: {}
-      employeemanageremail: {}
-      errorcode: {}
-      errormessage: {}
-      escalation: {}
-      eventaction: {}
-      eventdescriptions: {}
-      eventid: {}
-      eventnames: {}
-      events: {}
-      eventtype: {}
-      externaladdresses: {}
-      filehash: {}
-      filename: {}
-      filepath: {}
-      filesize: {}
-      firstname: {}
-      firstseen: {}
-      followup: {}
-      givenname: {}
-      helloworldid: {}
-      helloworldstatus: {}
-      helloworldtype: {}
-      highlevelcategories: {}
-      hostname: {}
-      id: {}
-      idasset: {}
-      idoffense: {}
-      incomingmirrorerror: {}
-      infectedhosts: {}
-      internaladdresses: {}
-      investigationstage: {}
-      iotincidenturl: {}
-      ipaddressasset: {}
-      isolated: {}
-      jobcode: {}
-      jobfamily: {}
-      jobfunction: {}
-      labels: {}
-      lastmirroredintime: {}
-      lastmodifiedby: {}
-      lastmodifiedon: {}
-      lastname: {}
-      lastseen: {}
-      lastupdatetime: {}
-      leadership: {}
-      linktooffense: {}
-      listofrulesevent: {}
-      listofrulesoffense: {}
-      location: {}
-      locationasset: {}
-      locationregion: {}
-      logsource: {}
-      logsourcename: {}
-      logsourcetype: {}
-      lowlevelcategoriesevents: {}
-      lowlevelcategoriesoffense: {}
-      macaddress: {}
-      macaddressasset: {}
-      magnitudeoffense: {}
-      maliciousbehavior: {}
-      malwarefamily: {}
-      malwarename: {}
-      manageremailaddress: {}
-      managername: {}
-      md5: {}
-      mobiledevicemodel: {}
-      mobilephone: {}
-      name: {}
-      numberofeventsinoffense: {}
-      numberoffetchedevents: {}
-      numberofflows: {}
-      numberoflogsources: {}
-      occurred: {}
-      offenseinactive: {}
-      os: {}
-      osversion: {}
-      outgoingmirrorerror: {}
-      owner: {}
-      parentprocessid: {}
-      pcapencryptionkey: {}
-      pcapendtime: {}
-      pcapfile: {}
-      pcapfilename: {}
-      pcapfilesize: {}
-      pcapflows: {}
-      pcapnumberofpackets: {}
-      pcapnumberofstreams: {}
-      pcapstarttime: {}
-      personalemail: {}
-      phase: {}
-      phishingsubtype: {}
-      phonenumber: {}
-      pid: {}
-      policydeleted: {}
-      policydescription: {}
-      policydetails: {}
-      policyid: {}
-      policyrecommendation: {}
-      policyremediable: {}
-      policyseverity: {}
-      policytype: {}
-      postnatdestinationip: {}
-      postnatdestinationport: {}
-      postnatsourceip: {}
-      postnatsourceport: {}
-      prenatdestinationport: {}
-      prenatsourceip: {}
-      prenatsourceport: {}
-      protocol: {}
-      protocolevent: {}
-      protocols: {}
-      quarantined: {}
-      rating: {}
-      rawevent: {}
-      region: {}
-      regionid: {}
-      relevanceoffense: {}
-      replacePlaybook: {}
-      reporteremailaddress: {}
-      resourceid: {}
-      resourcename: {}
-      resourcetype: {}
-      riskrating: {}
-      riskscore: {}
-      roles: {}
-      samaccountname: {}
-      servicenowassignedto: {}
-      servicenowassignmentgroup: {}
-      servicenowcaller: {}
-      servicenowcallerid: {}
-      servicenowcategory: {}
-      servicenowclosedby: {}
-      servicenowcloseddate: {}
-      servicenowdescription: {}
-      servicenowduedate: {}
-      servicenowescalation: {}
-      servicenowimpact: {}
-      servicenownotify: {}
-      servicenowopeneddate: {}
-      servicenowpriority: {}
-      servicenowrecordid: {}
-      servicenowresolutioncode: {}
-      servicenowresolutionnotes: {}
-      servicenowresolvedtime: {}
-      servicenowseverity: {}
-      servicenowstate: {}
-      servicenowtablename: {}
-      servicenowticketnumber: {}
-      servicenowurgency: {}
-      severity:
-        complex:
-          root: inputs.FieldToSetSeverityFrom
-          transformers:
-          - operator: MapValuesTransformer
-            args:
-              input_values:
-                value:
-                  simple: 1,2,3,4,5,6,7,8,9,10
-              mapped_values:
-                value:
-                  simple: inputs.ScaleToSetSeverityFrom
-                iscontext: true
-      severityoffense: {}
-      sha1: {}
-      sha256: {}
-      sha512: {}
-      signature: {}
-      skuname: {}
-      skutier: {}
-      sla: {}
-      slaField: {}
-      sourcegeolocation: {}
-      sourcehostname: {}
-      sourceip: {}
-      sourceipoffense: {}
-      sourceips: {}
-      sourceipv6: {}
-      sourcemacaddress: {}
-      sourcenetwork: {}
-      sourcenetworkoffense: {}
-      sourceport: {}
-      sourceusername: {}
-      src: {}
-      srchostname: {}
-      srcntdomain: {}
-      srcos: {}
-      srcports: {}
-      srcuser: {}
-      starttime: {}
-      state: {}
-      statusoffense: {}
-      streetaddress: {}
-      subcategory: {}
-      subtype: {}
-      surname: {}
-      switchidasset: {}
-      switchportidasset: {}
-      systems: {}
-      targetfirewallversion: {}
-      technicalowner: {}
-      technicalownercontact: {}
-      technicaluser: {}
-      tenantname: {}
-      terminatedaction: {}
-      threatactor: {}
-      ticketcloseddate: {}
-      ticketnumber: {}
-      ticketopeneddate: {}
-      title: {}
-      trafficdirection: {}
-      triggeredsecurityprofile: {}
-      type: {}
-      typeoffense: {}
-      uniqueports: {}
-      urlsslverification: {}
-      user: {}
-      useraccountcontrol: {}
-      userid: {}
-      username: {}
-      usernamecountoffense: {}
-      usernames: {}
-      vendorid: {}
-      vendorproduct: {}
-      vulnerabilitycategory: {}
-      workphone: {}
-      xdralertcount: {}
-      xdralerts: {}
-      xdrassigneduseremail: {}
-      xdrassigneduserprettyname: {}
-      xdrdescription: {}
-      xdrdetectiontime: {}
-      xdrfileartifacts: {}
-      xdrhighseverityalertcount: {}
-      xdrhostcount: {}
-      xdrincidentid: {}
-      xdrlowseverityalertcount: {}
-      xdrmanualseverity: {}
-      xdrmediumseverityalertcount: {}
-      xdrmodificationtime: {}
-      xdrnetworkartifacts: {}
-      xdrnotes: {}
-      xdrresolvecomment: {}
-      xdrstatus: {}
-      xdrstatusv2: {}
-      xdrurl: {}
-      xdrusercount: {}
-      xsoarReadOnlyRoles: {}
-      zipcode: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -150,
-          "y": -480
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "28":
-    id: "28"
-    taskid: 226309cb-824c-486f-8b8a-f977f03bba67
-    type: title
-    task:
-      id: 226309cb-824c-486f-8b8a-f977f03bba67
-      version: -1
-      name: Investigation
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "19"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 210,
-          "y": 860
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "29":
-    id: "29"
-    taskid: d8d79caa-94a4-4f02-8bda-d306a1357b34
-    type: regular
-    task:
-      id: d8d79caa-94a4-4f02-8bda-d306a1357b34
-      version: -1
-      name: Set as false positive
-      description: Sets the incident status as false positive.
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "22"
-    scriptarguments:
-      accountid: {}
-      accountname: {}
-      addLabels: {}
-      agentid: {}
-      alertid: {}
-      alertname: {}
-      app: {}
-      appendMultiSelect: {}
-      appendTags: {}
-      applicationid: {}
-      applicationname: {}
-      assetid: {}
-      assettable: {}
-      assigneduser: {}
-      assignmentgroup: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      blockedaction: {}
-      bugtraq: {}
-      caller: {}
-      categorycount: {}
-      city: {}
-      closeNotes: {}
-      closeReason:
-        simple: False Positive
-      closetime: {}
-      closingreason: {}
-      closinguser: {}
-      cloudservice: {}
-      commandline: {}
-      compliancenotes: {}
-      costcenter: {}
-      costcentercode: {}
-      country: {}
-      countryname: {}
-      credibilityoffense: {}
-      criticalassets: {}
-      customFields: {}
-      cve: {}
-      cvss: {}
-      cvssavailabilityrequirement: {}
-      cvsscollateraldamagepotential: {}
-      cvssconfidentialityrequirement: {}
-      cvssintegrityrequirement: {}
-      dbotMirrorDirection: {}
-      dbotMirrorId: {}
-      dbotMirrorInstance: {}
-      dbotMirrorTags: {}
-      dbotprediction: {}
-      dbotpredictionprobability: {}
-      dbottextsuggestionhighlighted: {}
-      deleteEmptyField: {}
-      department: {}
-      descriptionasset: {}
-      descriptionoffense: {}
-      dest: {}
-      desthostname: {}
-      destinationgeolocation: {}
-      destinationhostname: {}
-      destinationip: {}
-      destinationipoffense: {}
-      destinationips: {}
-      destinationipv6: {}
-      destinationmacaddress: {}
-      destinationnetwork: {}
-      destinationnetworkoffense: {}
-      destinationport: {}
-      destntdomain: {}
-      destos: {}
-      details: {}
-      detectedexternalhosts: {}
-      detectedexternalips: {}
-      detectedinternalhosts: {}
-      detectedinternalips: {}
-      detectedusers: {}
-      detectionendtime: {}
-      detectionid: {}
-      detectionupdatetime: {}
-      detectionurl: {}
-      deviceexternalip: {}
-      devicehash: {}
-      deviceid: {}
-      devicelocalip: {}
-      devicemodel: {}
-      devicename: {}
-      devicetime: {}
-      displayname: {}
-      dnsname: {}
-      domainoffense: {}
-      dstports: {}
-      duration: {}
-      email: {}
-      emailauthenticitycheck: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailcc: {}
-      emailclassification: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailheaders: {}
-      emailhtml: {}
-      emailhtmlimage: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emaillabels: {}
-      emaillatestmessage: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      employeedisplayname: {}
-      employeeemail: {}
-      employeemanageremail: {}
-      errorcode: {}
-      errormessage: {}
-      escalation: {}
-      eventaction: {}
-      eventdescriptions: {}
-      eventid: {}
-      eventnames: {}
-      events: {}
-      eventtype: {}
-      externaladdresses: {}
-      filehash: {}
-      filename: {}
-      filepath: {}
-      filesize: {}
-      firstname: {}
-      firstseen: {}
-      followup: {}
-      givenname: {}
-      helloworldid: {}
-      helloworldstatus: {}
-      helloworldtype: {}
-      highlevelcategories: {}
-      hostname: {}
-      id: {}
-      idasset: {}
-      idoffense: {}
-      incomingmirrorerror: {}
-      infectedhosts: {}
-      internaladdresses: {}
-      investigationstage: {}
-      iotincidenturl: {}
-      ipaddressasset: {}
-      isolated: {}
-      jobcode: {}
-      jobfamily: {}
-      jobfunction: {}
-      labels: {}
-      lastmirroredintime: {}
-      lastmodifiedby: {}
-      lastmodifiedon: {}
-      lastname: {}
-      lastseen: {}
-      lastupdatetime: {}
-      leadership: {}
-      linktooffense: {}
-      listofrulesevent: {}
-      listofrulesoffense: {}
-      location: {}
-      locationasset: {}
-      locationregion: {}
-      logsource: {}
-      logsourcename: {}
-      logsourcetype: {}
-      lowlevelcategoriesevents: {}
-      lowlevelcategoriesoffense: {}
-      macaddress: {}
-      macaddressasset: {}
-      magnitudeoffense: {}
-      maliciousbehavior: {}
-      malwarefamily: {}
-      malwarename: {}
-      manageremailaddress: {}
-      managername: {}
-      md5: {}
-      mobiledevicemodel: {}
-      mobilephone: {}
-      name: {}
-      numberofeventsinoffense: {}
-      numberoffetchedevents: {}
-      numberofflows: {}
-      numberoflogsources: {}
-      occurred: {}
-      offenseinactive: {}
-      os: {}
-      osversion: {}
-      outgoingmirrorerror: {}
-      owner: {}
-      parentprocessid: {}
-      pcapencryptionkey: {}
-      pcapendtime: {}
-      pcapfile: {}
-      pcapfilename: {}
-      pcapfilesize: {}
-      pcapflows: {}
-      pcapnumberofpackets: {}
-      pcapnumberofstreams: {}
-      pcapstarttime: {}
-      personalemail: {}
-      phase: {}
-      phishingsubtype: {}
-      phonenumber: {}
-      pid: {}
-      policydeleted: {}
-      policydescription: {}
-      policydetails: {}
-      policyid: {}
-      policyrecommendation: {}
-      policyremediable: {}
-      policyseverity: {}
-      policytype: {}
-      postnatdestinationip: {}
-      postnatdestinationport: {}
-      postnatsourceip: {}
-      postnatsourceport: {}
-      prenatdestinationport: {}
-      prenatsourceip: {}
-      prenatsourceport: {}
-      protocol: {}
-      protocolevent: {}
-      protocols: {}
-      quarantined: {}
-      rating: {}
-      rawevent: {}
-      region: {}
-      regionid: {}
-      relevanceoffense: {}
-      replacePlaybook: {}
-      reporteremailaddress: {}
-      resourceid: {}
-      resourcename: {}
-      resourcetype: {}
-      riskrating: {}
-      riskscore: {}
-      roles: {}
-      samaccountname: {}
-      servicenowassignedto: {}
-      servicenowassignmentgroup: {}
-      servicenowcaller: {}
-      servicenowcallerid: {}
-      servicenowcategory: {}
-      servicenowclosedby: {}
-      servicenowcloseddate: {}
-      servicenowdescription: {}
-      servicenowduedate: {}
-      servicenowescalation: {}
-      servicenowimpact: {}
-      servicenownotify: {}
-      servicenowopeneddate: {}
-      servicenowpriority: {}
-      servicenowrecordid: {}
-      servicenowresolutioncode: {}
-      servicenowresolutionnotes: {}
-      servicenowresolvedtime: {}
-      servicenowseverity: {}
-      servicenowstate: {}
-      servicenowtablename: {}
-      servicenowticketnumber: {}
-      servicenowurgency: {}
-      severity: {}
-      severityoffense: {}
-      sha1: {}
-      sha256: {}
-      sha512: {}
-      signature: {}
-      skuname: {}
-      skutier: {}
-      sla: {}
-      slaField: {}
-      sourcegeolocation: {}
-      sourcehostname: {}
-      sourceip: {}
-      sourceipoffense: {}
-      sourceips: {}
-      sourceipv6: {}
-      sourcemacaddress: {}
-      sourcenetwork: {}
-      sourcenetworkoffense: {}
-      sourceport: {}
-      sourceusername: {}
-      src: {}
-      srchostname: {}
-      srcntdomain: {}
-      srcos: {}
-      srcports: {}
-      srcuser: {}
-      starttime: {}
-      state: {}
-      statusoffense: {}
-      streetaddress: {}
-      subcategory: {}
-      subtype: {}
-      surname: {}
-      switchidasset: {}
-      switchportidasset: {}
-      systems: {}
-      targetfirewallversion: {}
-      technicalowner: {}
-      technicalownercontact: {}
-      technicaluser: {}
-      tenantname: {}
-      terminatedaction: {}
-      threatactor: {}
-      ticketcloseddate: {}
-      ticketnumber: {}
-      ticketopeneddate: {}
-      title: {}
-      trafficdirection: {}
-      triggeredsecurityprofile: {}
-      type: {}
-      typeoffense: {}
-      uniqueports: {}
-      urlsslverification: {}
-      user: {}
-      useraccountcontrol: {}
-      userid: {}
-      username: {}
-      usernamecountoffense: {}
-      usernames: {}
-      vendorid: {}
-      vendorproduct: {}
-      vulnerabilitycategory: {}
-      workphone: {}
-      xdralertcount: {}
-      xdralerts: {}
-      xdrassigneduseremail: {}
-      xdrassigneduserprettyname: {}
-      xdrdescription: {}
-      xdrdetectiontime: {}
-      xdrfileartifacts: {}
-      xdrhighseverityalertcount: {}
-      xdrhostcount: {}
-      xdrincidentid: {}
-      xdrlowseverityalertcount: {}
-      xdrmanualseverity: {}
-      xdrmediumseverityalertcount: {}
-      xdrmodificationtime: {}
-      xdrnetworkartifacts: {}
-      xdrnotes: {}
-      xdrresolvecomment: {}
-      xdrstatus: {}
-      xdrstatusv2: {}
-      xdrurl: {}
-      xdrusercount: {}
-      xsoarReadOnlyRoles: {}
-      zipcode: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -10,
-          "y": 1740
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "30":
-    id: "30"
-    taskid: 88147dfd-8093-46f6-8a63-5ef810b03328
-    type: title
-    task:
-      id: 88147dfd-8093-46f6-8a63-5ef810b03328
-      version: -1
-      name: SIEM Admin
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "23"
-      - "15"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -10,
-          "y": 2400
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "31":
-    id: "31"
-    taskid: e02854a2-f41b-444b-8953-067035e160ca
-    type: title
-    task:
-      id: e02854a2-f41b-444b-8953-067035e160ca
-      version: -1
-      name: SOC Summary
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "13"
-      - "8"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -10,
-          "y": 3070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "32":
-    id: "32"
-    taskid: b6008b80-dc3e-4381-8c5f-5ead8aa3debe
-    type: playbook
-    task:
-      id: b6008b80-dc3e-4381-8c5f-5ead8aa3debe
-      version: -1
-      name: Calculate Severity - Standard
-      playbookName: Calculate Severity - Standard
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "2"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 760,
-          "y": 520
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "33":
-    id: "33"
-    taskid: 9a80f6b4-18be-413a-8397-794a919efa0b
-    type: condition
-    task:
-      id: 9a80f6b4-18be-413a-8397-794a919efa0b
-      version: -1
-      name: Use custom severity?
-      type: condition
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#default#':
-      - "1"
-      use custom:
-      - "25"
-    separatecontext: false
-    conditions:
-    - label: use custom
-      condition:
-      - - operator: isNotEqualString
-          left:
-            value:
-              simple: inputs.UseCustomSeveritySettings
-            iscontext: true
-          right:
-            value:
-              simple: "false"
-    view: |-
-      {
-        "position": {
-          "x": 210,
-          "y": -650
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
-      "14_15_True Positive": 0.62,
-      "18_15_#default#": 0.3
+      "14_29_False Positive": 0.56,
+      "14_45_True Positive": 0.66,
+      "18_15_#default#": 0.3,
+      "37_15_#default#": 0.3
     },
     "paper": {
       "dimensions": {
-        "height": 4385,
-        "width": 1360,
-        "x": -220,
-        "y": -780
+        "height": 5865,
+        "width": 1310,
+        "x": -170,
+        "y": -1920
       }
     }
   }
@@ -1812,55 +1773,53 @@ inputs:
   value:
     simple: "true"
   required: false
-  description: Determines whether to enrich all indicators in the incident. Default
-    is True.
-  playbookInputQuery:
+  description: Determines whether to enrich all indicators in the incident.
+  playbookInputQuery: null
 - key: OnCall
   value:
     simple: "false"
   required: false
-  description: Set to true to assign only the user that is currently on shift. Default
-    is False. Requires Cortex XSOAR v5.5 or later.
-  playbookInputQuery:
+  description: Set to true to assign only the user that is currently on shift. Requires Cortex XSOAR v5.5 or later.
+  playbookInputQuery: null
 - key: SocEmailAddress
   value: {}
   required: false
   description: The SOC team's email address.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: SocMailSubject
   value:
     simple: 'XSOAR Summary report, ID - '
   required: false
   description: The subject of the email to send to the SOC.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: SiemAdminEmailAddress
   value: {}
   required: false
   description: The SIEM admin's email address.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: UseCalculateSeverity
   value:
     simple: "true"
   required: false
   description: Determines whether to use the Calculate Severity playbook to calculate
-    the incident severity. Default is True. If the playbook isn't used, the severity
+    the incident severity. If the playbook isn't used, the severity
     is determined by the QRadar magnitude value.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: SiemAdminMailSubject
   value:
     simple: 'Adjustment/Exclusion for offense '
   required: false
   description: The subject of the email to send to the SIEM admin.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: UseCustomSeveritySettings
   value:
     simple: "false"
   required: false
-  description: Determines whether to use the default mapping as provided in the QRadar
-    generic mapper to set the XSOAR incident severity or set the severity using the
-    FieldToSetSeverityFrom and ScaleToSetSeverityFrom playbook inputs. The mapper will be used by default.
-    Any value other than False will be considered as True and will cause the playbook inputs to be used.
-  playbookInputQuery:
+  description: Determines whether to use the default mapping in the QRadar
+    generic mapper to set the XSOAR incident severity, or set the severity using the
+    FieldToSetSeverityFrom and ScaleToSetSeverityFrom playbook inputs. Any value other than false is considered as true
+    and causes the playbook inputs to be used.
+  playbookInputQuery: null
 - key: FieldToSetSeverityFrom
   value:
     complex:
@@ -1868,21 +1827,72 @@ inputs:
       accessor: magnitudeoffense
   required: false
   description: |
-    Specify the field to use for calculating the incident severity. The default field is magnitude. An example of another field is the severity field.
-  playbookInputQuery:
+    Specifies the field to use for calculating the incident severity, for example the severity field.
+  playbookInputQuery: null
 - key: ScaleToSetSeverityFrom
   value:
     simple: 1,1,1,2,2,2,2,3,3,3
   required: false
-  description: "The range of values of FieldToSetSeverityFrom is 1-10. The XSOAR incident\
-    \ severity field values range is 0-4 where\n0 - Informational\n1 - Low\n2 - Medium\n\
-    3 - High\n4 - Critical\n\nA scale is required to translate the value of FieldToSetSeverityFrom\
-    \ to a valid incident severity value. The default scale is 1,1,1,2,2,2,2,3,3,3\
-    \ \nThe meaning of the default scale is that values 1-3 of FieldToSetSeverityFrom\
-    \ will be translated to low severity (positions 1-3 in the scale), values 4-7\
-    \ will be translated to medium severity (positions 4-7 in the scale) and values\
-    \ 8-10 will be translated to high severity (positions 8-10 in the scale)."
-  playbookInputQuery:
+  description: "The range of values of FieldToSetSeverityFrom is 1-10. The XSOAR incident
+    severity field value range is 0-4 where\n0 - Informational\n1 - Low\n2 - Medium\n3
+    - High\n4 - Critical\n\nThe scale translates the value of FieldToSetSeverityFrom
+    to a valid incident severity value. The default scale is 1,1,1,2,2,2,2,3,3,3 \nThis
+    means that values 1-3 of FieldToSetSeverityFrom are 
+    translated to low severity (positions 1-3 in the scale), values 4-7 are
+    translated to medium severity (positions 4-7 in the scale) and values 8-10 are
+    translated to high severity (positions 8-10 in the scale)."
+  playbookInputQuery: null
+- key: RunAdditionalSeach
+  value:
+    simple: "true"
+  required: false
+  description: By default the incident fetches the events defined in the integration
+    instance settings (default is 20 events). To fetch
+    additional events, change this setting to true.
+  playbookInputQuery: null
+- key: MaxLogsCount
+  value:
+    simple: "50"
+  required: false
+  description: 'Maximum number of log entires to query from QRadar.
+    Used for the QRadar - Get Offense Logs subplaybook.'
+  playbookInputQuery: null
+- key: GetOnlyCREEvents
+  value:
+    simple: All
+  required: false
+  description: |
+    If this value is "OnlyCRE", get only events made by CRE. Values can be "OnlyCRE", "OnlyNotCRE", "All". Used for the QRadar - Get Offense Logs subplaybook.
+  playbookInputQuery: null
+- key: Fields
+  value:
+    simple: QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory),
+      CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip,
+      destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME("creEventList"),
+      sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation,
+      destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude,
+      eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP,
+      postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort,
+      UTF8(payload), starttime, devicetime
+  required: false
+  description: |
+    A comma-separated list of extra fields to get from each event. You can use different fields or rename the existing fields. Used for the QRadar - Get Offense Logs subplaybook.
+  playbookInputQuery: null
+- key: IndicatorTag
+  value:
+    simple: block
+  required: false
+  description: The tag to provide for true positive indicators, for example to use
+    the indicators in an EDL (External Dynamic List).
+  playbookInputQuery: null
+- key: ExcludeIndicatorsInXSOAR
+  value:
+    simple: "false"
+  required: false
+  description: If this value is not false, add indicators
+    to the XSOAR exclude list. The excluded indicators won't be created
+    in XSOAR anymore.
+  playbookInputQuery: null
 outputs: []
 tests:
 - No test
