@@ -4670,6 +4670,16 @@
             "timeout": 3000
         },
         {
+            "playbookID": "Tanium Threat Response - Create Connection v2 - Test",
+            "integrations": "Tanium Threat Response v2",
+            "fromversion": "6.0.0"
+        },
+        {
+            "playbookID": "Tanium Threat Response - Request File Download v2 - Test",
+            "integrations": "Tanium Threat Response v2",
+            "fromversion": "6.0.0"
+        },
+        {
             "playbookID": "IndicatorMaliciousRatioCalculation_test",
             "fromversion": "5.0.0"
         },
