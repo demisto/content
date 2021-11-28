@@ -155,22 +155,33 @@ def block_ip(ip, description):
 
 @logger
 def block_ip_command(args):
-    ip = args.get('ip', None)
+    ips = args.get('ip', [])
     description = args.get('description', 'Added by ThreatX Demisto Integration')
-    results = block_ip(ip, description)
+    results = []
+    errors = []
+    for ip in argToList(ips):
+        try:
+            ip_result = block_ip(ip, description)
+        except Exception as error:
+            demisto.error('failed block ip: {}\n{}'.format(ip, traceback.format_exc()))
+            errors.append('Failed to block ip: {} error: {}'.format(ip, error))
+        except SystemExit:
+            # exception was handled with return_error
+            pass
+        else:
+            results.append(ip_result)
 
-    md = tableToMarkdown('Block IP',
-                         results,
-                         ['Result'],
-                         removeNull=True)
+    readable_outputs = tableToMarkdown('Block IP',
+                                       results,
+                                       ['Result'],
+                                       removeNull=True)
 
-    ec = {
-        'IP(val.Address === obj.Address)': {
-            'Address': ip
-        }
-    }
-
-    return_outputs(md, ec, results)
+    return_results(CommandResults(
+        outputs=results, readable_output=readable_outputs,
+        outputs_prefix='IP(val.Address === obj.Address).Address'
+    ))
+    if errors:
+        return_error('\n'.join(errors))
 
 
 @logger
