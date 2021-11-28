@@ -5729,3 +5729,10 @@ def test_indicators_value_to_clickable_invalid(mocker):
     assert not result
 
 
+def test_arg_to_number():
+    """
+    Test if arg_to_number handles unicode object without failing.
+    """
+    from CommonServerPython import arg_to_number
+    result = arg_to_number(u'1')
+    assert result == 1

@@ -55,7 +55,6 @@ def main():
 
         if contents == 'No data returned':
             contents = 'On-Call Team members\nNo team members were found on-call.'
-
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['markdown'],
