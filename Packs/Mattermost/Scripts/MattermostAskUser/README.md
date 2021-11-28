@@ -12,7 +12,7 @@ Asks a user a question on `Mattermost` and expects a response. The response can 
 ## Dependencies
 ---
 This script uses the following commands and scripts.
-* mattermost-send
+* send-notification
 
 ## Inputs
 ---
