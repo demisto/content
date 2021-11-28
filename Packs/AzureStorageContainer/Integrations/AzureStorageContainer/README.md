@@ -12,10 +12,18 @@ This integration was integrated and tested with version "2020-10-02" of Azure St
     | --- | --- |
     | Storage account name | True |
     | Account SAS Token | True |
-    | Use system proxy | False |
-    | Trust any certificate | False |
+    | Use system proxy settings | False |
+    | Trust any certificate (not secure) | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+## Shared Access Signatures (SAS) Permissions
+In order to use the integration use-cases, 
+please make sure your SAS token contains the following permissions:
+  1. 'Blob' service.
+  2. 'Service', 'Container' and 'Object' resource types.
+  3. 'Read', 'Write', 'Delete', 'List', 'Create', 'Add', 'Update' and 'Immutable storage' permissions.
+  4. 'Blob versioning permissions'
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -79,7 +87,7 @@ Create a new Container under the specified account.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| container_name | The name of the Container to create. | Required | 
+| container_name | The name of the Container to create. Rules for naming containers can be found here:<br/>https://docs.microsoft.com/en-us/rest/api/storageservices/naming-and-referencing-containers--blobs--and-metadata<br/>. | Required | 
 
 
 #### Context Output
@@ -131,17 +139,17 @@ Retrieve properties for the specified Container.
         "Container": {
             "Property": {
                 "content_length": "0",
-                "date": "2021-09-23T11:17:25",
+                "date": "2021-11-28T12:43:05",
                 "default_encryption_scope": "$account-encryption-key",
                 "deny_encryption_scope_override": "false",
-                "etag": "\"0x8D97E83B550986C\"",
+                "etag": "\"0x8D9B26C9BBF026C\"",
                 "has_immutability_policy": "false",
                 "has_legal_hold": "false",
                 "immutable_storage_with_versioning_enabled": "false",
-                "last_modified": "2021-09-23T11:17:19",
+                "last_modified": "2021-11-28T12:42:58",
                 "lease_state": "available",
                 "lease_status": "unlocked",
-                "request_id": "10b95aab-101e-002c-466c-b0fc9b000000",
+                "request_id": "00a9c6bf-f01e-007a-5255-e448bd000000",
                 "server": "Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0",
                 "version": "2020-10-02"
             },
@@ -156,7 +164,7 @@ Retrieve properties for the specified Container.
 >### Container xsoar Properties:
 >|Last Modified|Etag|Lease Status|Lease State|Has Immutability Policy|Has Legal Hold|
 >|---|---|---|---|---|---|
->| 2021-09-23T11:17:19 | "0x8D97E83B550986C" | unlocked | available | false | false |
+>| 2021-11-28T12:42:58 | "0x8D9B26C9BBF026C" | unlocked | available | false | false |
 
 
 ### azure-storage-container-delete
@@ -253,7 +261,7 @@ Create a new Blob under the specified Container.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | container_name | The name of the Blob Container. | Required | 
-| file_entry_id | XSOAR file entry ID. | Required | 
+| file_entry_id | The entry ID of the file to upload as a new blob. Available from XSOAR war room while the context data contains file output. | Required | 
 | blob_name | The name of the Blob to create. Default is XSOAR file name. | Optional | 
 
 
@@ -262,7 +270,7 @@ Create a new Blob under the specified Container.
 There is no context output for this command.
 
 #### Command Example
-```!azure-storage-container-blob-create container_name="xsoar" file_entry_id=""XXXX" blob_name="xsoar.txt"```
+```!azure-storage-container-blob-create container_name="xsoar" file_entry_id="16488@b5e40781-86c8-4799-8f10-ace443e93234" blob_name="xsoar.txt"```
 
 #### Human Readable Output
 
@@ -281,7 +289,7 @@ Update the content of an existing Blob.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | container_name | The name of the Blob Container. | Required | 
-| file_entry_id | XSOAR file entry ID. | Required | 
+| file_entry_id | The entry ID of the file to upload as a new blob. Available from XSOAR war room while the context data contains file output. | Required | 
 | blob_name | The name of the Blob to update. | Required | 
 
 
@@ -290,7 +298,7 @@ Update the content of an existing Blob.
 There is no context output for this command.
 
 #### Command Example
-```!azure-storage-container-blob-update container_name="xsoar" file_entry_id="XXXX" blob_name="xsoar.txt"```
+```!azure-storage-container-blob-update container_name="xsoar" file_entry_id="16488@b5e40781-86c8-4799-8f10-ace443e93234" blob_name="xsoar.txt"```
 
 #### Human Readable Output
 
@@ -335,17 +343,17 @@ Retrieve Blob from Container.
 ```json
 {
     "File": {
-        "EntryID": "XXXX",
+        "EntryID": "16508@b5e40781-86c8-4799-8f10-ace443e93234",
         "Extension": "txt",
         "Info": "text/plain; charset=utf-8",
-        "MD5": "0851a698747621af9d8f7c66ae5c361f",
+        "MD5": "950eb0708854a661313dd150a643af8b",
         "Name": "xsoar.txt",
-        "SHA1": "1ab557b3f2e8cf975902b881dee5c162fed32339",
-        "SHA256": "5b5e9535b6415794e2a483097c74f917f7855ca27e28f96a57dc4e1313778064",
-        "SHA512": "d41dbfa5eda143025450dd1af92375f154378658daec30451d14dac23135bbfb5250f04f21381fac76504b8cf98eade4996f829b73c02fca802c04e031b0c4d8",
-        "SSDeep": "768:/NRxnYun56IhNMbGCZ4ewD+pdX8qdF8tdjXLxfcrjxzvLImTFvFbX214Rs:PXfmGjyph8S8t29vLIMFvFZ+",
-        "Size": 52575,
-        "Type": "PDF document, version 1.5"
+        "SHA1": "2f82d9a13f948a1ced93f9da85323d45fb2eedf8",
+        "SHA256": "150296c0c1a1ca044fc132010b6049342c460f4a68386ab24de9b6a167e54765",
+        "SHA512": "6d9deaacce47943767d19c8de846c9e57692543c90b4f45c3abbe4123380bd1665dc4bd9b4d0a99d09d3a0f8c67da842826181834223362f1c75f5f9e6c358ef",
+        "SSDeep": "3:h8Kpl:Rpl",
+        "Size": 11,
+        "Type": "ASCII text, with no line terminators"
     }
 }
 ```
@@ -512,16 +520,16 @@ Retrieve Blob properties.
                     "access_tier": "Hot",
                     "access_tier_inferred": "true",
                     "blob_type": "BlockBlob",
-                    "content_length": "52575",
-                    "content_md5": "CFGmmHR2Ia+dj3xmrlw2Hw==",
+                    "content_length": "11",
+                    "content_md5": "lQ6wcIhUpmExPdFQpkOviw==",
                     "content_type": "application/octet-stream",
-                    "creation_time": "2021-09-23T11:17:30",
-                    "date": "2021-09-23T11:17:43",
-                    "etag": "\"0x8D97E83BFC44D27\"",
-                    "last_modified": "2021-09-23T11:17:37",
+                    "creation_time": "2021-11-28T12:43:09",
+                    "date": "2021-11-28T12:43:24",
+                    "etag": "\"0x8D9B26CA6AD74B3\"",
+                    "last_modified": "2021-11-28T12:43:17",
                     "lease_state": "available",
                     "lease_status": "unlocked",
-                    "request_id": "94de3d85-901e-0022-776c-b0d52b000000",
+                    "request_id": "8f64c941-501e-0097-4255-e403f0000000",
                     "server": "Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0",
                     "server_encrypted": "true",
                     "version": "2020-10-02"
@@ -539,7 +547,7 @@ Retrieve Blob properties.
 >### Blob xsoar.txt Properties:
 >|Creation Time|Last Modified|Content Length|Content Type|Etag|
 >|---|---|---|---|---|
->| 2021-09-23T11:17:30 | 2021-09-23T11:17:37 | 52575 | application/octet-stream | "0x8D97E83BFC44D27" |
+>| 2021-11-28T12:43:09 | 2021-11-28T12:43:17 | 11 | application/octet-stream | "0x8D9B26CA6AD74B3" |
 
 
 ### azure-storage-container-blob-property-set
@@ -556,12 +564,12 @@ Set Blob properties.
 | --- | --- | --- |
 | container_name | The name of the Blob Container. | Required | 
 | blob_name | The name of the blob. | Required | 
-| content_type | Blob content type. | Optional | 
-| content_md5 | Blob MD5 hash. | Optional | 
-| content_encoding | Blob content encoding. | Optional | 
-| content_language | Blob content language. | Optional | 
-| content_disposition | Blob content disposition. | Optional | 
-| cache_control | Modifies the cache control string for the blob. | Optional | 
+| content_type | Blob content type. Indicates the media type of the blob. | Optional | 
+| content_md5 | Blob MD5 hash value. Can be used by the client to check for content integrity. | Optional | 
+| content_encoding | Blob content encoding. Used to specify the compression algorithm of the blob content. | Optional | 
+| content_language | Blob content language. Describes the human languages of the blob content. | Optional | 
+| content_disposition | Blob content disposition. Conveys additional information about how to process the response payload, and also can be used to attach additional metadata. | Optional | 
+| cache_control | Modifies the cache control string for the blob. Indicates directives for caching in both requests and responses. | Optional | 
 | request_id | Request ID generated by the client and recorded in the analytics logs when storage analytics logging is enabled. | Optional | 
 | lease_id | Required if the blob has an active lease. | Optional | 
 

@@ -16,14 +16,13 @@ class MicrosoftStorageClient(BaseClient):
         self._base_url = server_url
 
     def http_request(
-            self, *args, method, url_suffix="", params=None, resp_type='response', headers=None,
+            self, *args, url_suffix="", params=None, resp_type='response', headers=None,
             return_empty_response=False, full_url="", **kwargs):
         """
         Overrides Base client request function.
         Create and adds to the headers the Authorization Header component before sending the request.
         Parse Azure XML response.
         Args:
-            method (str): Request method.
             url_suffix (str): Request URL suffix.
             params (dict): Request Params.
             resp_type (str): Determines which data format to return from the HTTP request.
@@ -56,7 +55,7 @@ class MicrosoftStorageClient(BaseClient):
             default_headers.update(headers)
 
         response = super()._http_request(  # type: ignore[misc]
-            *args, method=method, url_suffix=url_suffix, params=params, resp_type='response', headers=default_headers,
+            *args, url_suffix=url_suffix, params=params, resp_type='response', headers=default_headers,
             full_url=full_url, **kwargs)
 
         # 206 indicates Partial Content, reason will be in the warning header.

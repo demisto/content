@@ -14,12 +14,20 @@ This integration was integrated and tested with version "2020-10-02" of Azure St
     | Account SAS Token |  | True |
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
-    | Fetch incidents |  | False |
-    | Maximum incidents for one fetch. | Default is 10. Maximum is 32. | False |
-    | The name of the Queue to fetch incidents. |  | False |
+    | Maximum incidents for one fetch. | Default is 10. Maximum is 32 \(due to an API limit\). | False |
+    | Queue name | The name of the queue from which the messages will be retrieved. | False |
     | Incident type |  | False |
+    | Fetch incidents |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+## Shared Access Signatures (SAS) Permissions
+In order to use the integration use-cases, 
+please make sure your SAS token contains the following permissions:
+  1. 'Queue' service.
+  2. 'Service' and 'Object' resource types.
+  3. 'Read', 'Write', 'Delete', 'List', 'Create', 'Add', 'Update', 'Process' and 'Immutable storage' permissions.
+  
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -89,7 +97,7 @@ Create new queue in storage account.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| queue_name | The name of the Queue to create. | Required | 
+| queue_name | The name of the Queue to create.  Rules for naming queues can be found here: https://docs.microsoft.com/en-us/rest/api/storageservices/naming-queues-and-metadata. | Required | 
 
 
 #### Context Output
@@ -145,7 +153,7 @@ Add a new message to the back of the queue.
 | queue_name | The name of the Queue. | Required | 
 | base64_encoding | Indicates whether the message should be encoded or not. Default is 'False'. Possible values are: False, True. Default is False. | Optional | 
 | visibility_time_out | Specifies the new visibility timeout value, in seconds, relative to server time. Must be larger than or equal to 0, and cannot be larger than 7 days. The visibility timeout of a message cannot be set to a value later than the expiry time.<br/>Default is 0. | Optional | 
-| time_to_live | Specifies the time-to-live interval for the message, in seconds.<br/>the maximum time-to-live can be any positive number, as well as -1 indicating that the message does not expire.<br/>Default time-to-live is 7 days. | Optional | 
+| expiration | Specifies the time-to-live (expiration) interval for the message, in seconds.<br/>the maximum time-to-live can be any positive number, as well as -1 indicating that the message does not expire.<br/>Default expiration time is 7 days. | Optional | 
 
 
 #### Context Output
@@ -155,7 +163,7 @@ Add a new message to the back of the queue.
 | AzureStorageQueue.Queue.Message.MessageId | String | Message ID. | 
 | AzureStorageQueue.Queue.Message.InsertionTime | Date | Message insertion time. | 
 | AzureStorageQueue.Queue.Message.ExpirationTime | Date | Message expiration time. | 
-| AzureStorageQueue.Queue.Message.PopReceipt | String | Message pop receipt value. | 
+| AzureStorageQueue.Queue.Message.PopReceipt | String | Message pop receipt value. This value changes each time the message is retrieved or updated and used to ensure that message has not been dequeued by another user before deleting or updating the message. | 
 | AzureStorageQueue.Queue.Message.TimeNextVisible | Date | Message next visible time. | 
 | AzureStorageQueue.Queue.name | String | Queue name. | 
 
@@ -169,11 +177,11 @@ Add a new message to the back of the queue.
     "AzureStorageQueue": {
         "Queue": {
             "Message": {
-                "ExpirationTime": "2021-09-30T09:14:01",
-                "InsertionTime": "2021-09-23T09:14:01",
-                "MessageId": "f802b202-a939-44e6-84a9-84f4405be6d8",
-                "PopReceipt": "AgAAAAMAAAAAAAAAzCEfWVuw1wE=",
-                "TimeNextVisible": "2021-09-23T09:14:01"
+                "ExpirationTime": "2021-12-05T11:55:31",
+                "InsertionTime": "2021-11-28T11:55:31",
+                "MessageId": "0d579602-222f-4256-9003-8772f0d65399",
+                "PopReceipt": "AgAAAAMAAAAAAAAAN734107k1wE=",
+                "TimeNextVisible": "2021-11-28T11:55:31"
             },
             "name": "xsoar-test"
         }
@@ -186,7 +194,7 @@ Add a new message to the back of the queue.
 >### xsoar-test Queue message:
 >|Message Id|Expiration Time|Insertion Time|Time Next Visible|Pop Receipt|
 >|---|---|---|---|---|
->| f802b202-a939-44e6-84a9-84f4405be6d8 | 2021-09-30T09:14:01 | 2021-09-23T09:14:01 | 2021-09-23T09:14:01 | AgAAAAMAAAAAAAAAzCEfWVuw1wE= |
+>| 0d579602-222f-4256-9003-8772f0d65399 | 2021-12-05T11:55:31 | 2021-11-28T11:55:31 | 2021-11-28T11:55:31 | AgAAAAMAAAAAAAAAN734107k1wE= |
 
 
 ### azure-storage-queue-message-get
@@ -213,7 +221,7 @@ Retrieves messages from the front of the queue. Retrieved messages will move to 
 | AzureStorageQueue.Queue.Message.MessageId | String | Message ID. | 
 | AzureStorageQueue.Queue.Message.InsertionTime | Date | Message insertion time. | 
 | AzureStorageQueue.Queue.Message.ExpirationTime | Date | Message expiration time. | 
-| AzureStorageQueue.Queue.Message.PopReceipt | String | Message pop receipt value. | 
+| AzureStorageQueue.Queue.Message.PopReceipt | String | Message pop receipt value. This value changes each time the message is retrieved or updated and used to ensure that message has not been dequeued by another user before deleting or updating the message. | 
 | AzureStorageQueue.Queue.Message.TimeNextVisible | Date | Message next visible time. | 
 | AzureStorageQueue.Queue.Message.MessageText | String | Message text content. | 
 | AzureStorageQueue.Queue.name | String | Queue name. | 
@@ -221,7 +229,7 @@ Retrieves messages from the front of the queue. Retrieved messages will move to 
 
 
 #### Command Example
-```!azure-storage-queue-message-get limit="2" queue_name="xsoar-test"```
+```!azure-storage-queue-message-get limit="1" queue_name="xsoar-test"```
 
 #### Context Example
 ```json
@@ -231,12 +239,12 @@ Retrieves messages from the front of the queue. Retrieved messages will move to 
             "Message": [
                 {
                     "DequeueCount": "1",
-                    "ExpirationTime": "2021-09-30T09:14:01",
-                    "InsertionTime": "2021-09-23T09:14:01",
-                    "MessageId": "f802b202-a939-44e6-84a9-84f4405be6d8",
+                    "ExpirationTime": "2021-12-05T11:55:31",
+                    "InsertionTime": "2021-11-28T11:55:31",
+                    "MessageId": "0d579602-222f-4256-9003-8772f0d65399",
                     "MessageText": "test demo",
-                    "PopReceipt": "AgAAAAMAAAAAAAAA82JFcVuw1wE=",
-                    "TimeNextVisible": "2021-09-23T09:14:41"
+                    "PopReceipt": "AgAAAAMAAAAAAAAAziUx7U7k1wE=",
+                    "TimeNextVisible": "2021-11-28T11:56:06"
                 }
             ],
             "name": "xsoar-test"
@@ -250,7 +258,7 @@ Retrieves messages from the front of the queue. Retrieved messages will move to 
 >### xsoar-test Queue messages:
 >|Message Text|Message Id|Pop Receipt|Dequeue Count|Expiration Time|Insertion Time|Time Next Visible|
 >|---|---|---|---|---|---|---|
->| test demo | f802b202-a939-44e6-84a9-84f4405be6d8 | AgAAAAMAAAAAAAAA82JFcVuw1wE= | 1 | 2021-09-30T09:14:01 | 2021-09-23T09:14:01 | 2021-09-23T09:14:41 |
+>| test demo | 0d579602-222f-4256-9003-8772f0d65399 | AgAAAAMAAAAAAAAAziUx7U7k1wE= | 1 | 2021-12-05T11:55:31 | 2021-11-28T11:55:31 | 2021-11-28T11:56:06 |
 
 
 ### azure-storage-queue-message-peek
@@ -282,7 +290,7 @@ Retrieves messages from the front of the queue. The command does not alter the v
 
 
 #### Command Example
-```!azure-storage-queue-message-peek limit="2" queue_name="xsoar-test"```
+```!azure-storage-queue-message-peek limit="1" queue_name="xsoar-test"```
 
 #### Context Example
 ```json
@@ -343,7 +351,7 @@ Update message content in the  queue.
 | queue_name | The name of the Queue. | Required | 
 | message_content | New message content. | Required | 
 | message_id | The ID of the message to update. | Required | 
-| pop_receipt | Message PopReceipt parameter. | Required | 
+| pop_receipt | Message PopReceipt parameter. This value changes each time the message is retrieved or updated and used to ensure that message has not been dequeued by another user before deleting or updating the message. | Required | 
 | base64_encoding | Indicates whether the message content should be encoded or not. Default is 'False'. Possible values are: False, True. Default is False. | Optional | 
 | visibility_time_out | Specifies the new visibility timeout value of the message. The new value must be larger than or equal to 0, and cannot be larger than 7 days. The visibility timeout of a message cannot be set to a value later than the expiry time. Default is 0. Possible values are: . Default is 0. | Optional | 
 
@@ -353,7 +361,7 @@ Update message content in the  queue.
 There is no context output for this command.
 
 #### Command Example
-```!azure-storage-queue-message-update queue_name="test-xsoar" message_content="new content" message_id="9b67986e-3b02-464c-a81b-dc332f473e4b" pop_receipt="AgAAAAMAAAAAAAAAD+s2EFuw1wE="```
+```!azure-storage-queue-message-update queue_name="test-xsoar" message_content="new content" message_id="ea0db196-dad3-4c12-b845-dc6223739870" pop_receipt="AgAAAAMAAAAAAAAA0xNSmE7k1wE="```
 
 #### Human Readable Output
 
@@ -372,7 +380,7 @@ Delete message from a Queue.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | message_id | The ID of the message to delete. | Required | 
-| pop_receipt | Message PopReceipt parameter. | Required | 
+| pop_receipt | Message PopReceipt parameter. This value changes each time the message is retrieved or updated and used to ensure that message has not been dequeued by another user before deleting or updating the message. | Required | 
 | queue_name | The name of the Queue. | Required | 
 
 
@@ -381,7 +389,7 @@ Delete message from a Queue.
 There is no context output for this command.
 
 #### Command Example
-```!azure-storage-queue-message-delete queue_name="test-xsoar" message_id="37d87b60-abef-4769-b2a0-ff0abb5830a2" pop_receipt="AgAAAAMAAAAAAAAAD+s2EFuw1wE="```
+```!azure-storage-queue-message-delete queue_name="test-xsoar" message_id="66df94e9-4a66-428a-9c4a-e2a3c4fe7284" pop_receipt="AgAAAAMAAAAAAAAA0xNSmE7k1wE="```
 
 #### Human Readable Output
 
