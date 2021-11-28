@@ -79,7 +79,7 @@ script:
       type: string
     description: Returns the verdict for a scanned file.
   runonce: false
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
 tests:
 - Detonate File - BitDam Test
 fromversion: 5.0.0
