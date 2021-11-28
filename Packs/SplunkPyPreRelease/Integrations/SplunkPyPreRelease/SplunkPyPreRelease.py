@@ -256,7 +256,7 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
     extensive_log('[SplunkPyPreRelease] SplunkPyPreRelease last run time: {}, now: {}'.format(last_run_time, now))
 
     default_batch_size = int(dem_params.get('batch_size', 200))
-    batch_size = last_run_data.get('batch_size') or default_batch_size
+    batch_size = last_run_data.get('next_batch_size') or default_batch_size
     extensive_log('[SplunkPyPreRelease] SplunkPyPreRelease batch size is : {}'.format(batch_size))
 
     kwargs_oneshot = build_fetch_kwargs(dem_params, batch_size, occured_start_time, now)
@@ -333,7 +333,7 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
     new_last_run = {
         'time': next_run,
         'found_incidents_ids': last_run_fetched_ids,
-        'batch_size': batch_size
+        'next_batch_size': batch_size
     }
     last_run_data.update(new_last_run)
     demisto.setLastRun(last_run_data)
