@@ -19,7 +19,7 @@ This integration was integrated and tested with version "2020-10-02" of Azure St
 ## Shared Access Signatures (SAS) Permissions
 In order to use the integration use-cases, 
 please make sure your SAS token contains the following permissions:
-  1. 'Blob' service.
+  1. 'File' and 'Blob' services.
   2. 'Service', 'Container' and 'Object' resource types.
   3. 'Read', 'Write', 'Delete', 'List', 'Create', 'Add', 'Update' and 'Immutable storage' permissions.
   4. 'Blob versioning permissions'

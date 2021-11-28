@@ -12,10 +12,19 @@ This integration was integrated and tested with version "2020-10-02" of Azure St
     | --- | --- |
     | Storage account name | True |
     | Account SAS Token | True |
-    | Use system proxy | False |
-    | Trust any certificate | False |
+    | Use system proxy settings | False |
+    | Trust any certificate (not secure) | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+## Shared Access Signatures (SAS) Permissions
+In order to use the integration use-cases, 
+please make sure your SAS token contains the following permissions:
+  1. 'Table' service.
+  2. 'Service' and 'Object' resource types.
+  3. 'Read', 'Write', 'Delete', 'List', 'Create', 'Add', 'Update' and 'Immutable storage' permissions.
+
+* Review and select "Generate".
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -31,7 +40,7 @@ Creates a new table in a storage account.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| table_name | The name of the new table to create. | Required | 
+| table_name | The name of the new table to create. Rules for naming tables can be found here: https://docs.microsoft.com/en-us/rest/api/storageservices/understanding-the-table-service-data-model. | Required | 
 
 
 #### Context Output
@@ -174,7 +183,7 @@ Insert a new entity into a table.
                     "Age": 20,
                     "PartitionKey": "xsoar-partition",
                     "RowKey": "xsoar-row",
-                    "Timestamp": "2021-09-23T06:55:52"
+                    "Timestamp": "2021-11-28T13:23:18"
                 }
             ],
             "name": "xsoar"
@@ -188,7 +197,7 @@ Insert a new entity into a table.
 >### Entity Fields for xsoar Table:
 >|Age|Partition Key|Row Key|Timestamp|
 >|---|---|---|---|
->| 20 | xsoar-partition | xsoar-row | 2021-09-23T06:55:52 |
+>| 20 | xsoar-partition | xsoar-row | 2021-11-28T13:23:18 |
 
 
 ### azure-storage-table-entity-update
@@ -266,8 +275,8 @@ Query Entities in a table.
 | row_key | Unique identifier for an entity within a given partition. If specified, 'partition_key' argument must also be specified. | Optional | 
 | filter | Filter Entities query expression.<br/>Information about Query expression structure can be found here: https://docs.microsoft.com/en-us/rest/api/storageservices/querying-tables-and-entities#constructing-filter-strings. | Optional | 
 | select | Comma-separated Entity properties to return. If not specified - all fields will be retrieved. | Optional | 
-| limit | Number of entities to retrieve. Default is 50.<br/>This argument is unusable when 'partition_key' or 'row_key'  are provided. Default is 50. | Optional | 
-| page | Page number. Default is 1.<br/>This argument is unusable when 'partition_key' is provided. Default is 1. | Optional | 
+| limit | Number of entities to retrieve. Default is 50.<br/>This argument is will be ignored when 'partition_key' or 'row_key' arguments are provided. Default is 50. | Optional | 
+| page | Page number. Default is 1.<br/>This argument is will be ignored when 'partition_key' or 'row_key' arguments are provided. Default is 1. | Optional | 
 
 
 #### Context Output
@@ -291,7 +300,7 @@ Query Entities in a table.
                     "City": "TLV",
                     "PartitionKey": "xsoar-partition",
                     "RowKey": "xsoar-row",
-                    "Timestamp": "2021-09-23T06:56:01"
+                    "Timestamp": "2021-11-28T13:23:27"
                 }
             ],
             "name": "xsoar"
@@ -307,7 +316,7 @@ Query Entities in a table.
 > Showing page 1 out others that may exist
 >|Address|City|Partition Key|Row Key|Timestamp|
 >|---|---|---|---|---|
->| New York | TLV | xsoar-partition | xsoar-row | 2021-09-23T06:56:01 |
+>| New York | TLV | xsoar-partition | xsoar-row | 2021-11-28T13:23:27 |
 
 
 ### azure-storage-table-entity-delete

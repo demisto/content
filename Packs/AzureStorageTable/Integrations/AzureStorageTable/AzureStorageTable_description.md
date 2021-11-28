@@ -10,7 +10,7 @@ To create and copy your storage account SAS Token you have to:
 * Specify the signed key Start and Expiry date and time.
 * Select the Time zone for the Start and Expiry date and time (default is Local).
 * Define your Permissions by checking and/or clearing the appropriate check box.
-  1. Allow the 'Blob' service.
+  1. Allow the 'Table' service.
   2. Allow the 'Service' and 'Object' resource types.
   3. Please allow the following permissions: 'Read', 'Write', 'Delete', 'List', 'Create', 'Add', 'Update' and 'Immutable storage' in order to be able to achieve all integration use-cases.
 * Review and select "Generate".
