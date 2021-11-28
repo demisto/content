@@ -8,7 +8,9 @@
     "url": "",
     "email": "support@twinwave.io",
     "created": "2020-11-24T18:14:27Z",
-    "categories": [],
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
     "tags": [],
     "githubUser": [
         "twbryan"
