@@ -12,10 +12,17 @@ This integration was integrated and tested with version "2020-10-02" of Azure St
     | --- | --- |
     | Storage account name | True |
     | Account SAS Token | True |
-    | Use system proxy | False |
-    | Trust any certificate | False |
+    | Use system proxy settings | False |
+    | Trust any certificate (not secure) | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+## Shared Access Signatures (SAS) Permissions
+In order to use the integration use-cases, 
+please make sure your SAS token contains the following permissions:
+  1. 'Blob' service.
+  2. 'Service', 'Container' and 'Object' resource types.
+  3. 'Read', 'Write', 'Delete', 'List', 'Create', 'Add', 'Update' and 'Immutable storage' permissions.
+  4. 'Blob versioning permissions'
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -31,7 +38,7 @@ Create a new Azure file share under the specified account.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| share_name | The name of the new Share to create. | Required | 
+| share_name | The name of the new Share to create. Rules for naming shares can be found here: https://docs.microsoft.com/en-us/rest/api/storageservices/naming-and-referencing-shares--directories--files--and-metadata. | Required | 
 
 
 #### Context Output
@@ -134,7 +141,7 @@ List files and directories under the specified share or directory.
 | prefix | Filters the results to return only files and directories whose name begins with the specified prefix. | Optional | 
 | limit | Number of directories and files to retrieve. Default is 50. Default is 50. | Optional | 
 | share_name | The name of the Share in which the directories ans files are located. | Required | 
-| directory_path | The path to the parent directory of the directories and files to retrieve. If the parent directory path is omitted, the directory will be referred to the first level of the specified share. | Optional | 
+| directory_path | The path to the parent directory of the directories and files to retrieve. A path name is composed of one or more directory name components separated by the forward-slash (/) character. If the parent directory path is omitted, the directory will be referred to the first level of the specified share. | Optional | 
 | page | Page number. Default is 1. Default is 1. | Optional | 
 
 
@@ -262,7 +269,7 @@ Create a new directory under the specified share or parent directory.
 | --- | --- | --- |
 | share_name | The name of the Share in which the new directory will be created. | Required | 
 | directory_name | The name of the new directory. | Required | 
-| directory_path | The path to the parent directory where the new directory will be created. If the parent directory path is omitted, the directory will be created within the specified share. | Optional | 
+| directory_path | The path to the parent directory where the new directory will be created. A path name is composed of one or more directory name components separated by the forward-slash (/) character. If the parent directory path is omitted, the directory will be referred to the first level of the specified share. | Optional | 
 
 
 #### Context Output
@@ -290,7 +297,7 @@ Delete the specified empty directory. Note that the directory must be empty befo
 | --- | --- | --- |
 | share_name | The name of the Share in which the directory is located. | Required | 
 | directory_name | The name of the directory to delete. | Required | 
-| directory_path | The path to the parent directory of the directory to delete. If the parent directory path is omitted, the directory will be referred to the first level of the specified share. | Optional | 
+| directory_path | The path to the parent directory of the directory to delete. A path name is composed of one or more directory name components separated by the forward-slash (/) character. If the parent directory path is omitted, the directory will be referred to the first level of the specified share. | Optional | 
 
 
 #### Context Output
@@ -317,9 +324,9 @@ Creates a new file in Share.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | share_name | The name of the Share in which the new file will be created. | Required | 
-| file_entry_id | XSOAR file entry ID. | Required | 
-| directory_path | The path to the parent directory where the new file will be created. If the parent directory path is omitted, the directory will be created within the specified share. | Optional | 
-| file_name | The name of the new file to create. Default is XSOAR file name. | Optional | 
+| file_entry_id | The entry ID of the file to upload as a new file. Available from XSOAR war room while the context data contains file output. | Required | 
+| directory_path | The path to the parent directory where the new file will be created. A path name is composed of one or more directory name components separated by the forward-slash (/) character. If the parent directory path is omitted, the directory will be created within first level of the specified share. | Optional | 
+| file_name | The name of the new file to create. Default is XSOAR file name. The file suffix should be specified. for example: test.txt. | Optional | 
 
 
 #### Context Output
@@ -327,7 +334,7 @@ Creates a new file in Share.
 There is no context output for this command.
 
 #### Command Example
-```!azure-storage-fileshare-file-create share_name="test-xsoar" directory_path="xsoar-directory" file_name="AzureStorage.txt" file_entry_id="XXXX"```
+```!azure-storage-fileshare-file-create share_name="test-xsoar" directory_path="xsoar-directory" file_name="AzureStorage.txt" file_entry_id="16488@b5e40781-86c8-4799-8f10-ace443e93234"```
 
 #### Human Readable Output
 
@@ -346,8 +353,8 @@ Retrieve file from Share.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | share_name | The name of the Share in which the file is located. | Required | 
-| file_name | The name of the file to retrieve. | Required | 
-| directory_path | The path to the parent directory of the file to retrieve. If the parent directory path is omitted, the directory will be referred to the first level of the specified share. | Optional | 
+| file_name | The name of the file to retrieve. The file suffix should be specified. for example: test.txt. | Required | 
+| directory_path | The path to the parent directory of the file to retrieve. A path name is composed of one or more directory name components separated by the forward-slash (/) character. If the parent directory path is omitted, the directory will be referred to the first level of the specified share. | Optional | 
 
 
 #### Context Output
@@ -373,17 +380,17 @@ Retrieve file from Share.
 ```json
 {
     "File": {
-        "EntryID": "XXXX",
+        "EntryID": "16572@b5e40781-86c8-4799-8f10-ace443e93234",
         "Extension": "txt",
         "Info": "text/plain; charset=utf-8",
-        "MD5": "0851a698747621af9d8f7c66ae5c361f",
+        "MD5": "950eb0708854a661313dd150a643af8b",
         "Name": "AzureStorage.txt",
-        "SHA1": "1ab557b3f2e8cf975902b881dee5c162fed32339",
-        "SHA256": "5b5e9535b6415794e2a483097c74f917f7855ca27e28f96a57dc4e1313778064",
-        "SHA512": "d41dbfa5eda143025450dd1af92375f154378658daec30451d14dac23135bbfb5250f04f21381fac76504b8cf98eade4996f829b73c02fca802c04e031b0c4d8",
-        "SSDeep": "768:/NRxnYun56IhNMbGCZ4ewD+pdX8qdF8tdjXLxfcrjxzvLImTFvFbX214Rs:PXfmGjyph8S8t29vLIMFvFZ+",
-        "Size": 52575,
-        "Type": "PDF document, version 1.5"
+        "SHA1": "2f82d9a13f948a1ced93f9da85323d45fb2eedf8",
+        "SHA256": "150296c0c1a1ca044fc132010b6049342c460f4a68386ab24de9b6a167e54765",
+        "SHA512": "6d9deaacce47943767d19c8de846c9e57692543c90b4f45c3abbe4123380bd1665dc4bd9b4d0a99d09d3a0f8c67da842826181834223362f1c75f5f9e6c358ef",
+        "SSDeep": "3:h8Kpl:Rpl",
+        "Size": 11,
+        "Type": "ASCII text, with no line terminators"
     }
 }
 ```
@@ -405,8 +412,8 @@ Delete file from Share.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | share_name | The name of the Share in which the file is located. | Required | 
-| file_name | The name of the file to delete. | Required | 
-| directory_path | The path to the parent directory of the file to delete. If the parent directory path is omitted, the directory will be referred to the first level of the specified share. | Optional | 
+| file_name | The name of the file to delete. The file suffix should be specified. for example: test.txt. | Required | 
+| directory_path | The path to the parent directory of the file to delete. A path name is composed of one or more directory name components separated by the forward-slash (/) character. If the parent directory path is omitted, the directory will be referred to the first level of the specified share. | Optional | 
 
 
 #### Context Output
