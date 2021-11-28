@@ -17,7 +17,7 @@ import urllib3
 from google.api_core.exceptions import PreconditionFailed
 from google.cloud import storage
 
-from Tests.test_dependencies import get_used_integrations
+from demisto_sdk.commands.test_content.TestContentClasses import BuildContext
 from demisto_sdk.commands.common.constants import FILTER_CONF
 from demisto_sdk.commands.test_content.ParallelLoggingManager import ParallelLoggingManager
 
@@ -411,7 +411,7 @@ def get_unmockable_tests(tests_settings):
     unmockable_tests = []
     for test_record in tests:
         test_name = test_record.get("playbookID")
-        integrations_used_in_test = get_used_integrations(test_record)
+        integrations_used_in_test = BuildContext._get_used_integrations(test_record)
         unmockable_integrations_used = [integration_name for integration_name in integrations_used_in_test if
                                         integration_name in unmockable_integrations]
         if test_name and (not integrations_used_in_test or unmockable_integrations_used):
