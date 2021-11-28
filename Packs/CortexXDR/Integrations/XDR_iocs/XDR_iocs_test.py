@@ -1,7 +1,6 @@
 from XDR_iocs import *
 import pytest
 from freezegun import freeze_time
-from CommonServerPython import fileResult
 
 
 Client.severity = 'INFO'
@@ -734,7 +733,7 @@ class TestParams:
         assert output[0]['fields'].get('trafficlightprotocol') == expected_tlp_color
 
 
-def test_test_file_deleted(mocker):
+def test_file_deleted_for_create_file_sync(mocker):
     file_path = 'test'
     mocker.patch('XDR_iocs.get_temp_file', return_value=file_path)
     open(file_path, 'w').close()
@@ -742,10 +741,10 @@ def test_test_file_deleted(mocker):
     def raise_function(*_args, **_kwargs):
         raise DemistoException(file_path)
 
-        mocker.patch(f'XDR_iocs.create_file_sync', new=raise_function)
+    mocker.patch('XDR_iocs.create_file_sync', new=raise_function)
     with pytest.raises(DemistoException):
         get_sync_file()
-    assert os.path.exists(file_path) == False
+    assert os.path.exists(file_path) is False
 
 
 data_test_test_file_deleted = [
@@ -756,7 +755,7 @@ data_test_test_file_deleted = [
 
 @pytest.mark.parametrize('method_to_test,iner_method', data_test_test_file_deleted)
 @freeze_time('2020-06-03T02:00:00Z')
-def test_test_file_deleted(mocker, method_to_test, iner_method):
+def test_file_deleted(mocker, method_to_test, iner_method):
     file_path = 'test'
     mocker.patch('XDR_iocs.get_temp_file', return_value=file_path)
     open(file_path, 'w').close()
@@ -767,4 +766,4 @@ def test_test_file_deleted(mocker, method_to_test, iner_method):
     mocker.patch(f'XDR_iocs.{iner_method}', new=raise_function)
     with pytest.raises(DemistoException):
         method_to_test(None)
-    assert os.path.exists(file_path) == False
+    assert os.path.exists(file_path) is False
