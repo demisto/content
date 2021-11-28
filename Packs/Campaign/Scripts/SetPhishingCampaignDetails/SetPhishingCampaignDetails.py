@@ -15,13 +15,13 @@ class SetPhishingCampaignDetails:
         self.execute_command = execute_command
         self.is_error = is_error
 
-    def get_current_incident_campaign_data(self):
+    def get_current_incident_campaign_data(self) -> dict:
         # Getting the context of the current incident under the campaign key.
         # An example for context is available in 'context_example' file
         current_incident_campaign_data = self.incident_context.get(EMAIL_CAMPAIGN_KEY, {})
         return current_incident_campaign_data
 
-    def get_campaign_context_from_incident(self, incident_id: str):
+    def get_campaign_context_from_incident(self, incident_id: str) -> dict:
         # Getting the campaign current context under the campaign key.
         incident_context = self.execute_command('getContext', {'id': incident_id})
         if self.is_error(incident_context):
@@ -36,7 +36,7 @@ class SetPhishingCampaignDetails:
         incident_data = self.get_campaign_context_from_incident(incident_id)
         return {incident["id"]: incident["similarity"] for incident in incident_data.get('incidents', [])}
 
-    def is_incident_new_in_campaign(self, incident_id, campaign_data):
+    def is_incident_new_in_campaign(self, incident_id: str, campaign_data: dict) -> bool:
         incidents = campaign_data.get('incidents', [])
         incidents_ids = [incident["id"] for incident in incidents]
         return incident_id not in incidents_ids
@@ -62,7 +62,7 @@ class SetPhishingCampaignDetails:
                 last_id = incident["id"]
         return last_id
 
-    def update_similarity_to_last_incident(self, campaign_incidents: list):
+    def update_similarity_to_last_incident(self, campaign_incidents: list) -> None:
         most_current_incident_id = self._get_most_updated_incident_id(campaign_incidents)
         similarities_according_to_last_updated = self.get_similarities_from_incident(most_current_incident_id)
         for incident in campaign_incidents:
@@ -89,7 +89,7 @@ class SetPhishingCampaignDetails:
         else:
             return campaign_data
 
-    def copy_campaign_data_to_incident(self, incident_id: int, merged_campaign: dict, append: bool):
+    def copy_campaign_data_to_incident(self, incident_id: str, merged_campaign: dict, append: bool) -> dict:
 
         args = {'key': EMAIL_CAMPAIGN_KEY, 'value': merged_campaign, 'append': append}
 
@@ -102,12 +102,11 @@ class SetPhishingCampaignDetails:
             }
         )
         if self.is_error(res):
-            demisto.debug(f"error in setting merged campaign data to incident id {incident_id}. Error: {res}")
-            return_error(f"error in setting merged campaign data to incident id {incident_id}. Error: {res}")
+            raise DemistoException(f"error in setting merged campaign data to incident id {incident_id}. Error: {res}")
 
         return res
 
-    def run(self, campaign_incident_id, append):
+    def run(self, campaign_incident_id: str, append: bool) -> dict:
         if not campaign_incident_id:
             raise ValueError("Please provide Campaign incident id.")
 
@@ -127,7 +126,8 @@ def main():
         set_phishing_campaign_details = SetPhishingCampaignDetails()
         res = set_phishing_campaign_details.run(incident_id, append)
         if res:
-            return_outputs('Added incident successfully to Campaign.')
+            CommandResults(readable_output='Added incident successfully to Campaign.')
+
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to set campaign details.\nError:\n{str(e)}')
