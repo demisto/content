@@ -709,7 +709,7 @@ class TestPanoramaEditRuleCommand:
         args = {
             'rulename': 'TestRule',
             'element_to_change': 'source',
-            'element_value': '1.9.9.1,1.3.3.7',
+            'element_value': '2.3.4.5,3.3.3.3',
             'behaviour': 'add',
         }
         commited_rule_item = {
@@ -720,8 +720,11 @@ class TestPanoramaEditRuleCommand:
                     '@total-count': '1',
                     '@count': '1',
                     'source': {
-                         'member': ['1.9.9.1', '1.3.3.7', '1.9.9.17'],
-        }}}}
+                         'member': ['1.1.1.1', '3.3.3.3', '2.3.4.5'],
+                    }
+                }
+            }
+        }
         mocker.patch('Panorama.http_request', return_value=commited_rule_item)
         Panorama.panorama_edit_rule_command(args)
 
@@ -731,7 +734,7 @@ class TestPanoramaEditRuleCommand:
         args = {
             'rulename': 'TestRule',
             'element_to_change': 'source',
-            'element_value': '1.2.3.4',
+            'element_value': '2.3.4.5',
             'behaviour': 'add',
         }
         uncommited_rule_item = {
@@ -749,8 +752,12 @@ class TestPanoramaEditRuleCommand:
                             '@admin': 'admin',
                             '@dirtyId': '1616',
                             '@time': '2021/11/27 10:55:18',
-                            '#text': '1.3.3.7'
-                        }}}}}
+                            '#text': '3.3.3.3',
+                        }
+                    }
+                }
+            }
+        }
         mocker.patch('Panorama.http_request', return_value=uncommited_rule_item)
 
         with pytest.raises(DemistoException):
