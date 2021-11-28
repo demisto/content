@@ -7,7 +7,7 @@ configuration:
   defaultvalue: https://management.azure.com
   hidden: false
   name: server_url
-  required: false
+  required: true
   type: 0
 - display: Tenant ID
   name: tenant_id
@@ -931,7 +931,7 @@ script:
     - contextPath: AzureSentinel.WatchlistItem.ItemsKeyValue
       description: Key-value pairs for a watchlist item.
       type: Unknown
-  dockerimage: demisto/crypto:1.0.0.24037
+  dockerimage: demisto/crypto:1.0.0.24380
   feed: false
   isfetch: true
   longRunning: false

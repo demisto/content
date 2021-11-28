@@ -120,6 +120,7 @@ outputs:
   type: String
 script: '-'
 subtype: python3
+runas: DBotRole
 system: false
 tags:
 - Utility

@@ -2,7 +2,6 @@ import concurrent.futures
 import secrets
 from enum import Enum
 from ipaddress import ip_address
-from threading import Lock
 from typing import Tuple, Set, Dict, Callable
 
 import pytz
@@ -22,13 +21,13 @@ FAILURE_SLEEP = 15  # sleep between consecutive failures events fetch
 FETCH_SLEEP = 60  # sleep between fetches
 BATCH_SIZE = 100  # batch size used for offense ip enrichment
 OFF_ENRCH_LIMIT = BATCH_SIZE * 10  # max amount of IPs to enrich per offense
-LOCK_WAIT_TIME = 0.5  # time to wait for lock.acquire
 MAX_WORKERS = 8  # max concurrent workers used for events enriching
 DOMAIN_ENRCH_FLG = 'true'  # when set to true, will try to enrich offense and assets with domain names
 RULES_ENRCH_FLG = 'true'  # when set to true, will try to enrich offense with rule names
 MAX_FETCH_EVENT_RETIRES = 3  # max iteration to try search the events of an offense
 SLEEP_FETCH_EVENT_RETIRES = 10  # sleep between iteration to try search the events of an offense
 MAX_NUMBER_OF_OFFENSES_TO_CHECK_SEARCH = 5  # Number of offenses to check during mirroring if search was completed.
+DEFAULT_EVENTS_TIMEOUT = 30  # default timeout for the events enrichment in minutes
 
 ADVANCED_PARAMETERS_STRING_NAMES = [
     'DOMAIN_ENRCH_FLG',
@@ -41,10 +40,10 @@ ADVANCED_PARAMETER_INT_NAMES = [
     'FETCH_SLEEP',
     'BATCH_SIZE',
     'OFF_ENRCH_LIMIT',
-    'LOCK_WAIT_TIME',
     'MAX_WORKERS',
     'MAX_FETCH_EVENT_RETIRES',
-    'SLEEP_FETCH_EVENT_RETIRES'
+    'SLEEP_FETCH_EVENT_RETIRES',
+    'DEFAULT_EVENTS_TIMEOUT'
 ]
 
 ''' CONSTANTS '''
@@ -59,7 +58,6 @@ MAXIMUM_MIRROR_LIMIT = 100
 DEFAULT_EVENTS_LIMIT = 20
 MAXIMUM_OFFENSES_PER_FETCH = 50
 DEFAULT_OFFENSES_PER_FETCH = 20
-TERMINATING_SEARCH_STATUSES = {'CANCELED', 'ERROR', 'COMPLETED'}
 DEFAULT_MIRRORING_DIRECTION = 'No Mirroring'
 MIRROR_OFFENSE_AND_EVENTS = 'Mirror Offense and Events'
 MIRROR_DIRECTION: Dict[str, Optional[str]] = {
@@ -74,7 +72,6 @@ UTC_TIMEZONE = pytz.timezone('utc')
 ID_QUERY_REGEX = re.compile(r'(?:\s+|^)id((\s)*)>(=?)((\s)*)((\d)+)(?:\s+|$)')
 ASCENDING_ID_ORDER = '+id'
 EXECUTOR = concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS)
-lock = Lock()
 
 ''' OUTPUT FIELDS REPLACEMENT MAPS '''
 OFFENSE_OLD_NEW_NAMES_MAP = {
@@ -1190,18 +1187,11 @@ def get_offense_enrichment(enrichment: str) -> Tuple[bool, bool]:
 def print_debug_msg(msg: str):
     """
     Prints a message to debug with QRadarMsg prefix.
-    Uses lock because calls can be concurrent.
-    If lock cannot be acquired until timeout, will skip writing message to log.
     Args:
         msg (str): Message to be logged.
 
     """
-    debug_msg = f'QRadarMsg - {msg}'
-    if lock.acquire(timeout=LOCK_WAIT_TIME):
-        try:
-            demisto.debug(debug_msg)
-        finally:
-            lock.release()
+    demisto.debug(f'QRadarMsg - {msg}')
 
 
 def reset_mirroring_events_variables(mirror_options: str):
@@ -1230,32 +1220,23 @@ def reset_mirroring_events_variables(mirror_options: str):
     set_to_integration_context_with_retries(encode_context_data(ctx))
 
 
-def is_reset_triggered(handle_reset: bool = False):
+def is_reset_triggered():
     """
     Checks if reset of integration context have been made by the user.
     Because fetch is long running execution, user communicates with us
     by calling 'qradar-reset-last-run' command which sets reset flag in
     context.
-    Using lock because calls to this function concurrent
-    Args:
-        handle_reset (bool): Whether the reset should be handled by the caller.
 
     Returns:
         (bool):
         - True if reset flag was set. If 'handle_reset' is true, also resets integration context.
-        - False if lock could not be acquired until timeout.
-        - False if lock was acquired, and reset flag was not found in integration context.
+        - False if reset flag was not found in integration context.
     """
-    if lock.acquire(timeout=LOCK_WAIT_TIME):
-        try:
-            ctx = get_integration_context()
-            if ctx and RESET_KEY in ctx:
-                if handle_reset:
-                    print_debug_msg('Reset fetch-incidents.')
-                    set_integration_context({'samples': '[]'})
-                return True
-        finally:
-            lock.release()
+    ctx = get_integration_context()
+    if ctx and RESET_KEY in ctx:
+        print_debug_msg('Reset fetch-incidents.')
+        set_integration_context({'samples': '[]'})
+        return True
     return False
 
 
@@ -1366,12 +1347,22 @@ def create_search_with_retry(client: Client, fetch_mode: str, offense: Dict, eve
         f'SELECT {event_columns} FROM events WHERE INOFFENSE({offense_id}) {additional_where} limit {events_limit} '
         f'START {offense_start_time}'
     )
+    print_debug_msg(f'Trying to get events for offense ID: {offense_id}, '
+                    f'offense_start_time: {offense_start_time}, '
+                    f'additional_where: {additional_where}, '
+                    f'events_limit: {events_limit}.')
     num_of_failures = 0
     while num_of_failures <= max_retries:
-        if is_reset_triggered():
-            return None
         try:
-            return client.search_create(query_expression=query_expression)
+            print_debug_msg(f'Creating search for offense ID: {offense_id}, '
+                            f'query_expression: {query_expression}.')
+            ret_value = client.search_create(query_expression=query_expression)
+            print_debug_msg(f'Created search for offense ID: {offense_id}, '
+                            f'offense_start_time: {offense_start_time}, '
+                            f'additional_where: {additional_where}, '
+                            f'events_limit: {events_limit}, '
+                            f'ret_value: {ret_value}.')
+            return ret_value
         except Exception:
             print_debug_msg(f'Failed to create search for offense ID: {offense_id}. '
                             f'Retry number {num_of_failures}/{max_retries}.')
@@ -1381,13 +1372,14 @@ def create_search_with_retry(client: Client, fetch_mode: str, offense: Dict, eve
                 print_debug_msg(f'Max retries for creating search for offense: {offense_id}. Returning empty.')
                 break
             time.sleep(FAILURE_SLEEP)
+    print_debug_msg(f'Returning empty events for offense ID: {offense_id}.')
     return None
 
 
 def poll_offense_events_with_retry(client: Client, search_id: str, offense_id: int,
                                    max_retries: int = EVENTS_FAILURE_LIMIT) -> Tuple[List[Dict], str]:
     """
-    Polls QRadar service for search ID given until status returned is within 'TERMINATING_SEARCH_STATUSES'.
+    Polls QRadar service for search ID given until status returned is within '{'CANCELED', 'ERROR', 'COMPLETED'}'.
     Afterwards, performs a call to retrieve the events returned by the search.
     Has retry mechanism, because QRadar service tends to return random errors when
     it is loaded.
@@ -1408,13 +1400,20 @@ def poll_offense_events_with_retry(client: Client, search_id: str, offense_id: i
     failure_message = ''
     while num_of_failures <= max_retries:
         try:
-            if is_reset_triggered():
-                return [], 'Reset was triggered for integration.'
+            print_debug_msg(f"Getting search status for {search_id}")
             search_status_response = client.search_status_get(search_id)
+            print_debug_msg(f"Got search status for {search_id}")
             query_status = search_status_response.get('status')
             # failures are relevant only when consecutive
             num_of_failures = 0
-            if query_status in TERMINATING_SEARCH_STATUSES:
+            print_debug_msg(f'Search query_status: {query_status}')
+            # Possible values for query_status: {'CANCELED', 'ERROR', 'COMPLETED'}
+            # Don't try to get events if CANCELLED or ERROR
+            if query_status in {'CANCELED', 'ERROR'}:
+                if failure_message == '':
+                    failure_message = f'query_status is {query_status}'
+                return [], failure_message
+            elif query_status == 'COMPLETED':
                 print_debug_msg(f'Getting events for offense {offense_id}')
                 search_results_response = client.search_results_get(search_id)
                 print_debug_msg(f'Http response: {search_results_response.get("http_response", "Not specified - ok")}')
@@ -1460,9 +1459,6 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
     Returns:
         (Dict): Enriched offense with events.
     """
-    if is_reset_triggered():
-        return offense
-
     failure_message = ''
     events: List[dict] = []
     min_events_size = min(offense.get('event_count', 0), events_limit)
@@ -1476,6 +1472,7 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
 
         offense_id = offense['id']
         events, failure_message = poll_offense_events_with_retry(client, search_response['search_id'], offense_id)
+        print_debug_msg(f"Polled events for offense ID {offense_id}")
         if len(events) >= min_events_size:
             print_debug_msg(f"Fetched {len(events)}/{min_events_size} for offense ID {offense_id}")
             break
@@ -1530,24 +1527,37 @@ def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int
     range_max = offenses_per_fetch - 1 if offenses_per_fetch else MAXIMUM_OFFENSES_PER_FETCH - 1
     range_ = f'items=0-{range_max}'
 
-    offenses = client.offenses_list(range_, filter_=filter_fetch_query, sort=ASCENDING_ID_ORDER)
-    new_highest_offense_id = offenses[-1].get('id') if offenses else offense_highest_id
+    raw_offenses = client.offenses_list(range_, filter_=filter_fetch_query, sort=ASCENDING_ID_ORDER)
+    if raw_offenses:
+        raw_offenses_len = len(raw_offenses)
+        print_debug_msg(f'raw_offenses size: {raw_offenses_len}')
+    else:
+        print_debug_msg('empty raw_offenses')
+
+    new_highest_offense_id = raw_offenses[-1].get('id') if raw_offenses else offense_highest_id
     print_debug_msg(f'New highest ID returned from QRadar offenses: {new_highest_offense_id}')
 
+    offenses = []
     if fetch_mode != FetchMode.no_events.value:
-        futures = []
-        for offense in offenses:
-            futures.append(EXECUTOR.submit(
-                enrich_offense_with_events,
-                client=client,
-                offense=offense,
-                fetch_mode=fetch_mode,
-                events_columns=events_columns,
-                events_limit=events_limit,
-            ))
-        offenses = [future.result() for future in futures]
-
-    if is_reset_triggered(handle_reset=True):
+        try:
+            futures = []
+            for offense in raw_offenses:
+                futures.append(EXECUTOR.submit(
+                    enrich_offense_with_events,
+                    client=client,
+                    offense=offense,
+                    fetch_mode=fetch_mode,
+                    events_columns=events_columns,
+                    events_limit=events_limit,
+                ))
+            offenses = [future.result(timeout=DEFAULT_EVENTS_TIMEOUT * 60) for future in futures]
+        except concurrent.futures.TimeoutError as e:
+            print_debug_msg(
+                f"Error while enriching mirrored offenses with events: {str(e)} \n {traceback.format_exc()}")
+            update_missing_offenses_from_raw_offenses(raw_offenses, offenses)
+    else:
+        offenses = raw_offenses
+    if is_reset_triggered():
         return None, None
     offenses_with_mirror = [
         dict(offense, mirror_direction=mirror_direction, mirror_instance=demisto.integrationInstance())
@@ -1556,6 +1566,19 @@ def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int
     final_offenses = sanitize_outputs(enriched_offenses)
     incidents = create_incidents_from_offenses(final_offenses, incident_type)
     return incidents, new_highest_offense_id
+
+
+def update_missing_offenses_from_raw_offenses(raw_offenses: list, offenses: list):
+    """
+    Populate offenses with missing offenses
+    """
+    offenses_ids = {offense['id'] for offense in raw_offenses} or set()
+    updated_offenses_ids = {offense['id'] for offense in offenses} or set()
+    missing_ids = offenses_ids - updated_offenses_ids
+    if missing_ids:
+        for offense in raw_offenses:
+            if offense['id'] in missing_ids:
+                offenses.append(offense)
 
 
 def exclude_lists(original: List[dict], exclude: List[dict], key: str):
@@ -1608,11 +1631,12 @@ def update_mirrored_events(client: Client,
                     events_limit=events_limit,
                 ))
 
-            updated_offenses += [future.result() for future in futures]
-        return updated_offenses
+            updated_offenses += [future.result(timeout=DEFAULT_EVENTS_TIMEOUT * 60) for future in futures]
 
     except Exception as e:
         print_debug_msg(f"Error while enriching mirrored offenses with events: {str(e)} \n {traceback.format_exc()}")
+        update_missing_offenses_from_raw_offenses(offenses, updated_offenses)
+    finally:
         return updated_offenses
 
 
@@ -1683,8 +1707,9 @@ def move_updated_offenses(context_data: dict, version: Any, include_context_data
     """
     new_context_data = include_context_data.copy()
     if updated_list:
-        all_updated_mirrored_offenses = merge_lists(original_list=context_data.get(UPDATED_MIRRORED_OFFENSES_CTX_KEY, []),
-                                                    updated_list=updated_list, key='id')
+        all_updated_mirrored_offenses = merge_lists(
+            original_list=context_data.get(UPDATED_MIRRORED_OFFENSES_CTX_KEY, []),
+            updated_list=updated_list, key='id')
         not_updated_list = exclude_lists(original=context_data.get(MIRRORED_OFFENSES_CTX_KEY, []),
                                          exclude=updated_list, key="id")
         new_context_data.update({UPDATED_MIRRORED_OFFENSES_CTX_KEY: all_updated_mirrored_offenses,
@@ -1692,10 +1717,11 @@ def move_updated_offenses(context_data: dict, version: Any, include_context_data
                                  RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY:
                                      context_data.get(RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY, [])})  # type: ignore
     else:
-        new_context_data.update({UPDATED_MIRRORED_OFFENSES_CTX_KEY: context_data.get(UPDATED_MIRRORED_OFFENSES_CTX_KEY, []),
-                                 MIRRORED_OFFENSES_CTX_KEY: context_data.get(MIRRORED_OFFENSES_CTX_KEY, []),
-                                 RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY:
-                                     context_data.get(RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY, [])})
+        new_context_data.update(
+            {UPDATED_MIRRORED_OFFENSES_CTX_KEY: context_data.get(UPDATED_MIRRORED_OFFENSES_CTX_KEY, []),
+             MIRRORED_OFFENSES_CTX_KEY: context_data.get(MIRRORED_OFFENSES_CTX_KEY, []),
+             RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY:
+                 context_data.get(RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY, [])})
 
     if not new_context_data.get('samples'):
         new_context_data.update({'samples': context_data.get('samples')})
@@ -1703,6 +1729,55 @@ def move_updated_offenses(context_data: dict, version: Any, include_context_data
         new_context_data.update({'last_mirror_update': str(context_data.get('last_mirror_update', 0))})
 
     return encode_context_data(new_context_data, include_id=True), version, new_context_data
+
+
+def perform_long_running_loop(client: Client, offenses_per_fetch: int, fetch_mode: str, mirror_options: str,
+                              user_query: str, events_columns: str, events_limit: int, ip_enrich: bool,
+                              asset_enrich: bool, incident_type: Optional[str], mirror_direction: Optional[str]):
+    is_reset_triggered()
+    ctx, ctx_version = get_integration_context_with_version()
+    print_debug_msg(f'Starting fetch loop. Fetch mode: {fetch_mode}, Mirror option: {mirror_options}.')
+    incidents, new_highest_id = get_incidents_long_running_execution(
+        client=client,
+        offenses_per_fetch=offenses_per_fetch,
+        user_query=user_query,
+        fetch_mode=fetch_mode,
+        events_columns=events_columns,
+        events_limit=events_limit,
+        ip_enrich=ip_enrich,
+        asset_enrich=asset_enrich,
+        last_highest_id=int(json.loads(ctx.get(LAST_FETCH_KEY, '0'))),
+        incident_type=incident_type,
+        mirror_direction=mirror_direction
+    )
+
+    orig_context_data = extract_context_data(ctx.copy(), include_id=True)
+    context_data = {LAST_FETCH_KEY: orig_context_data.get(LAST_FETCH_KEY, 0)}
+
+    updated_mirrored_offenses = None
+    ctx = extract_context_data(ctx)
+    if mirror_options == MIRROR_OFFENSE_AND_EVENTS:
+        print_mirror_events_stats(ctx, "Long Running Command - Before Update")
+        updated_mirrored_offenses = update_mirrored_events(client=client,
+                                                           fetch_mode=fetch_mode,
+                                                           events_columns=events_columns,
+                                                           events_limit=events_limit,
+                                                           context_data=ctx,
+                                                           offenses_per_fetch=offenses_per_fetch)
+
+    if incidents and new_highest_id:
+        incident_batch_for_sample = incidents[:SAMPLE_SIZE] if incidents else ctx.get('samples', [])
+        if incident_batch_for_sample:
+            print_debug_msg(f'Saving New Highest ID: {new_highest_id}')
+            context_data.update({'samples': incident_batch_for_sample, LAST_FETCH_KEY: int(new_highest_id)})
+
+        demisto.createIncidents(incidents)
+
+    new_context_data = move_updated_offenses(context_data=ctx, version=ctx_version,
+                                             include_context_data=context_data,
+                                             updated_list=updated_mirrored_offenses)
+
+    print_mirror_events_stats(new_context_data, "Long Running Command - After Update")
 
 
 def long_running_execution_command(client: Client, params: Dict):
@@ -1741,50 +1816,19 @@ def long_running_execution_command(client: Client, params: Dict):
 
     while True:
         try:
-            is_reset_triggered(handle_reset=True)
-            ctx, ctx_version = get_integration_context_with_version()
-            print_debug_msg(f'Starting fetch loop. Fetch mode: {fetch_mode}, Mirror option: {mirror_options}.')
-            incidents, new_highest_id = get_incidents_long_running_execution(
+            perform_long_running_loop(
                 client=client,
                 offenses_per_fetch=offenses_per_fetch,
-                user_query=user_query,
                 fetch_mode=fetch_mode,
+                mirror_options=mirror_options,
+                user_query=user_query,
                 events_columns=events_columns,
                 events_limit=events_limit,
                 ip_enrich=ip_enrich,
                 asset_enrich=asset_enrich,
-                last_highest_id=int(json.loads(ctx.get(LAST_FETCH_KEY, '0'))),
                 incident_type=incident_type,
                 mirror_direction=mirror_direction
             )
-
-            orig_context_data = extract_context_data(ctx.copy(), include_id=True)
-            context_data = {LAST_FETCH_KEY: orig_context_data.get(LAST_FETCH_KEY, 0)}
-
-            updated_mirrored_offenses = None
-            ctx = extract_context_data(ctx)
-            if mirror_options == MIRROR_OFFENSE_AND_EVENTS:
-                print_mirror_events_stats(ctx, "Long Running Command - Before Update")
-                updated_mirrored_offenses = update_mirrored_events(client=client,
-                                                                   fetch_mode=fetch_mode,
-                                                                   events_columns=events_columns,
-                                                                   events_limit=events_limit,
-                                                                   context_data=ctx,
-                                                                   offenses_per_fetch=offenses_per_fetch)
-
-            if incidents and new_highest_id:
-                incident_batch_for_sample = incidents[:SAMPLE_SIZE] if incidents else ctx.get('samples', [])
-                if incident_batch_for_sample:
-                    print_debug_msg(f'Saving New Highest ID: {new_highest_id}')
-                    context_data.update({'samples': incident_batch_for_sample, LAST_FETCH_KEY: int(new_highest_id)})
-
-                demisto.createIncidents(incidents)
-
-            new_context_data = move_updated_offenses(context_data=ctx, version=ctx_version,
-                                                     include_context_data=context_data,
-                                                     updated_list=updated_mirrored_offenses)
-
-            print_mirror_events_stats(new_context_data, "Long Running Command - After Update")
 
         except Exception:
             demisto.error('Error occurred during long running loop')
@@ -2858,7 +2902,7 @@ def qradar_reset_last_run_command() -> str:
     """
     ctx = get_integration_context()
     ctx[RESET_KEY] = True
-    set_integration_context(ctx)
+    set_to_integration_context_with_retries(ctx)
     return 'fetch-incidents was reset successfully.'
 
 
@@ -3468,6 +3512,7 @@ def main() -> None:
 
         elif command == 'long-running-execution':
             change_ctx_to_be_compatible_with_retry()
+            support_multithreading()
             long_running_execution_command(client, params)
 
         elif command == 'qradar-offenses-list' or command == 'qradar-offenses' or command == 'qradar-offense-by-id':

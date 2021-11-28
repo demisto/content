@@ -5,14 +5,15 @@ Validate no missing ids are found and that all packs have a non negative price.
 Validate commit hash is in master's history.
 """
 import argparse
-import logging
 import sys
 import os
+from typing import Tuple
 
 from Tests.Marketplace.marketplace_services import init_storage_client, load_json, get_content_git_client
 from Tests.Marketplace.upload_packs import download_and_extract_index
 from Tests.Marketplace.marketplace_constants import GCPConfig, CONTENT_ROOT_PATH
 from Tests.scripts.utils.log_util import install_logging
+from Tests.scripts.utils import logging_wrapper as logging
 from pprint import pformat
 
 MANDATORY_PREMIUM_PACKS_PATH = "Tests/Marketplace/mandatory_premium_packs.json"
@@ -121,7 +122,7 @@ def check_commit_in_branch_history(index_commit_hash: str, circle_branch: str) -
 
 
 def get_index_json_data(service_account: str, production_bucket_name: str, extract_path: str, storage_base_path: str) \
-        -> (dict, str):
+        -> Tuple[dict, str]:
     """Retrieve the index.json file from production bucket.
 
     Args:
@@ -147,7 +148,7 @@ def get_index_json_data(service_account: str, production_bucket_name: str, extra
 
 
 def main():
-    install_logging("Validate index.log")
+    install_logging("Validate index.log", logger=logging)
     options = options_handler()
     exit_code = 0
     index_data, index_file_path = get_index_json_data(
