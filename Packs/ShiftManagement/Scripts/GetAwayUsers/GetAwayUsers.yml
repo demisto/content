@@ -6,9 +6,24 @@ commonfields:
 enabled: false
 name: GetAwayUsers
 outputs:
-- contextPath: BaseScript.Output
-  description: '[Enter a description of the data returned in this output.]'
+- contextPath: CortexXSOAR.AwayUsers.id
+  description: Away user ID.
   type: String
+- contextPath: CortexXSOAR.AwayUsers.username
+  description: Away user username.
+  type: String
+- contextPath: CortexXSOAR.AwayUsers.name
+  description: Away user name.
+  type: String
+- contextPath: CortexXSOAR.AwayUsers.phone
+  description: Away user phone.
+  type: String
+- contextPath: CortexXSOAR.AwayUsers.roles
+  description: Away user roles.
+  type: Unknown
+- contextPath: CortexXSOAR.AwayUsers.email
+  description: Away user email.
+  type: Unknown
 script: '-'
 system: false
 tags: []
