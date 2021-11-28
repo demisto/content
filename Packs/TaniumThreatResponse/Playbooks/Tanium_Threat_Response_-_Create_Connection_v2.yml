@@ -1,0 +1,200 @@
+description: Creates a connection to a remote destination from Tanium Threat Response
+  v2 v2
+id: Tanium Threat Response - Create Connection v2
+inputs:
+- description: Client id. Use `tanium-tr-get-system-status` to get all possible client_ids.
+  key: client-id
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: Hostname of the computer to connect. Use `tanium-tr-get-system-status`
+    to get all possible hostnames.
+  key: hostname
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: IP address to connect. Use `tanium-tr-get-system-status` to get all
+    possible ips.
+  key: ip
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: Computers platform - "Windows", "Linux", etc.
+  key: platform
+  playbookInputQuery:
+  required: true
+  value: {}
+name: Tanium Threat Response - Create Connection v2
+outputs:
+- contextPath: Tanium.Connection.id
+  description: New connection id.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6830f039-0a55-4a81-8de1-f67410c84481
+      iscommand: false
+      name: ""
+      description: ""
+      version: -1
+    taskid: 6830f039-0a55-4a81-8de1-f67410c84481
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 60
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      client_id:
+        simple: ${inputs.client-id}
+      hostname:
+        simple: ${inputs.hostname}
+      ip:
+        simple: ${inputs.ip}
+      platform:
+        simple: ${inputs.platform}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Tanium Threat Response v2
+      description: Creates a local or remote connection.
+      id: 394a29a9-d0b1-48a6-83fe-d7f4d5fbfc56
+      iscommand: true
+      name: Create Connection
+      script: Tanium Threat Response v2|||tanium-tr-create-connection
+      type: regular
+      version: -1
+    taskid: 394a29a9-d0b1-48a6-83fe-d7f4d5fbfc56
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Ids:
+        simple: ${Tanium.Connection.id}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: id
+      PollingCommandName:
+        simple: tanium-tr-list-connections
+      Timeout:
+        simple: "10"
+      dt:
+        simple: Tanium.Connection(val.status != 'connected')
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      id: 8a1c38ea-01ff-4cc4-88f1-13c46c5c7f5c
+      iscommand: false
+      name: GenericPolling
+      playbookId: GenericPolling
+      type: playbook
+      version: -1
+    taskid: 8a1c38ea-01ff-4cc4-88f1-13c46c5c7f5c
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 327d8461-cbbf-4cfc-843f-d6f5eaf17734
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ""
+    taskid: 327d8461-cbbf-4cfc-843f-d6f5eaf17734
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 570
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 575,
+        "width": 380,
+        "x": 50,
+        "y": 60
+      }
+    }
+  }
+fromversion: 6.0.0
+tests:
+- Tanium Threat Response - Create Connection v2 - Test

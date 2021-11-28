@@ -1,9 +1,9 @@
 {
-    "description": "Maps incoming SafeNet Trusted Access alert fields.",
+    "description": "Deprecated - Please use SafeNet Trusted Access – Alert Mapper instead.",
     "feed": false,
     "id": "SafeNet Trusted Access – Push Reject Alert Mapper",
     "mapping": {
-        "SafeNet Trusted Access Alert": {
+        "SafeNet Trusted Access Push Reject Alert": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "SafeNet Trusted Access - Instance Name": {

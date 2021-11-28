@@ -83,12 +83,10 @@ script:
     arguments:
     - name: firmware_id
       required: true
-      description: ' ArcusTeam Firmware ID (as returned by the arcusteam-get-devices
-        command)'
+      description: 'ArcusTeam Firmware ID (as returned by the arcusteam-get-devices command)'
     - name: device_id
       required: true
-      description: ' ArcusTeam Device ID (as returned by the arcusteam-get-devices
-        command)'
+      description: 'ArcusTeam Device ID (as returned by the arcusteam-get-devices command)'
     - name: page_size
       description: Page size. Minimum page size is 1, maximum is 100.
       defaultValue: "10"
@@ -173,7 +171,7 @@ script:
       description: CVE url
       type: string
     description: ' Retrieve CVEs for an ArcusTeam device'
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   runonce: false
   subtype: python3
 fromversion: 6.0.0

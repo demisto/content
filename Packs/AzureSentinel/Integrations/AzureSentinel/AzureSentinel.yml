@@ -7,7 +7,7 @@ configuration:
   defaultvalue: https://management.azure.com
   hidden: false
   name: server_url
-  required: false
+  required: true
   type: 0
 - display: Tenant ID
   name: tenant_id
@@ -148,8 +148,8 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximum number of incidents to return. The default and maximum
-        value is 50.
+      description: The maximum number of incidents to return. The default value is 50 and maximum
+        value is 200.
       isArray: false
       name: limit
       required: false
@@ -343,16 +343,6 @@ script:
       isArray: false
       name: provider
       required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: 'The source of the watchlist. Possible values: "Local file" and "Remote storage".'
-      isArray: false
-      name: source
-      predefined:
-      - Local file
-      - Remote storage
-      required: true
       secret: false
     - default: false
       description: The labels of the watchlist.
@@ -699,6 +689,23 @@ script:
       required: true
       secret: false
     - default: false
+      description: The comment ID.
+      isArray: false
+      name: comment_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Deletes a comment from incident in Azure Sentinel.
+    execution: false
+    name: azure-sentinel-incident-delete-comment
+  - arguments:
+    - default: false
+      description: The incident ID.
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    - default: false
       defaultValue: '50'
       description: The maximum number of related entities to return.
       isArray: false
@@ -924,7 +931,7 @@ script:
     - contextPath: AzureSentinel.WatchlistItem.ItemsKeyValue
       description: Key-value pairs for a watchlist item.
       type: Unknown
-  dockerimage: demisto/crypto:1.0.0.24037
+  dockerimage: demisto/crypto:1.0.0.24380
   feed: false
   isfetch: true
   longRunning: false

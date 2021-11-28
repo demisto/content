@@ -3,8 +3,8 @@
   "ContentsFormat": "json",
   "Contents": {
     "kind": "admin#directory#user",
-    "id": "113088517730792434177",
-    "etag": "\"XVqXMfEoKXKeCEJHh6Z_d9s0pNqKA90jMskGKajpbM8/yoBzzK7UXygooDvmCaFYRntvr6Y\"",
+    "id": "testuser",
+    "etag": "\"SomeTag\"",
     "primaryEmail": "newuser@domain.io",
     "name": {
       "givenName": "new",
@@ -43,7 +43,7 @@
     "orgUnitPath": "/",
     "isMailboxSetup": false
   },
-  "HumanReadable": "### User Details\n|Id|Customer Id|Primary Email|First Name|Last Name|Gender|Suspended|Notes Value|Is Admin|Creation Time|Phone Details|Address Details|Ip Whitelisted|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| 113088517730792434177 | customer id | newuser@domain.io | new | user | male | false | hello word | false | creation time | Value: phone number<br>Primary: True<br>Type: mobile | Country: india<br>Type: home<br>Postal Code: 361001<br>Primary: false<br>Extended Address: near india<br>Street Address: near india | false |\n",
+  "HumanReadable": "### User Details\n|Id|Customer Id|Primary Email|First Name|Last Name|Gender|Suspended|Notes Value|Is Admin|Creation Time|Phone Details|Address Details|Ip Whitelisted|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| testuser | customer id | newuser@domain.io | new | user | male | false | hello word | false | creation time | Value: phone number<br>Primary: True<br>Type: mobile | Country: india<br>Type: home<br>Postal Code: 361001<br>Primary: false<br>Extended Address: near india<br>Street Address: near india | false |\n",
   "EntryContext": {
     "GSuite.User(val.id == obj.id)": {
       "firstName": "new",
@@ -51,8 +51,8 @@
       "gender": "male",
       "notesValue": "hello word",
       "kind": "admin#directory#user",
-      "id": "113088517730792434177",
-      "etag": "\"XVqXMfEoKXKeCEJHh6Z_d9s0pNqKA90jMskGKajpbM8/yoBzzK7UXygooDvmCaFYRntvr6Y\"",
+      "id": "testuser",
+      "etag": "\"SomeTag\"",
       "primaryEmail": "newuser@domain.io",
       "isAdmin": false,
       "isDelegatedAdmin": false,

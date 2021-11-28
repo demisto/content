@@ -1,13 +1,11 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
 # noqa: F401
 # noqa: F401
 # noqa: F401
 # noqa: F401
 
-
-import traceback
-import dateparser
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -17,7 +15,7 @@ requests.packages.urllib3.disable_warnings()
 BATCH_SIZE = 2000
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 DEPROVISIONED_STATUS = 'DEPROVISIONED'
-USER_IS_DISABLED_MSG = 'Action failed because the user is disabled.'
+USER_IS_DISABLED_MSG = 'User is already disabled.'
 USER_IS_DISABLED_ERROR = 'E0000007'
 ERROR_CODES_TO_SKIP = [
     'E0000016',  # user is already enabled
@@ -32,6 +30,7 @@ FETCH_QUERY_EXCEPTION_MSG = 'If you marked the "Query only application events co
                             'the IAM Configuration incident before fetching logs from Okta. ' \
                             'Alternatively, you can unmark this checkbox and provide a ' \
                             '"Fetch Query Filter" parameter instead.'
+GET_USER_ATTRIBUTES = ['id', 'login', 'email']
 
 '''CLIENT CLASS'''
 
@@ -45,10 +44,11 @@ class Client(BaseClient):
         uri = 'users/me'
         self._http_request(method='GET', url_suffix=uri)
 
-    def get_user(self, username):
+    def get_user(self, filter_name: str, filter_value: str):
+        filter_name = filter_name if filter_name == 'id' else f'profile.{filter_name}'
         uri = 'users'
         query_params = {
-            'filter': f'profile.login eq "{username}"'
+            'filter': f'{filter_name} eq "{filter_value}"'
         }
 
         res = self._http_request(
@@ -311,14 +311,14 @@ def get_all_user_profiles():
     query = 'type:"User Profile"'
     email_to_user_profile = {}
 
-    search_indicators = IndicatorsSearcher()
-    user_profiles = search_indicators.search_indicators_by_version(query=query, size=BATCH_SIZE).get('iocs', [])
-    while user_profiles:
-        for user_profile in user_profiles:
-            user_profile = user_profile.get('CustomFields', {})
-            email_to_user_profile[user_profile.get('email')] = user_profile
+    user_profiles: List[dict] = []
+    search_indicators = IndicatorsSearcher(query=query, size=BATCH_SIZE)
+    for user_profile_res in search_indicators:
+        user_profiles.extend(user_profile_res.get('iocs') or [])
 
-        user_profiles = search_indicators.search_indicators_by_version(query=query, size=BATCH_SIZE).get('iocs', [])
+    for user_profile in user_profiles:
+        user_profile = user_profile.get('CustomFields', {})
+        email_to_user_profile[user_profile.get('email')] = user_profile
 
     return email_to_user_profile
 
@@ -340,7 +340,11 @@ def should_drop_event(log_entry, email_to_user_profile):
         (bool) True iff the event should be dropped.
     """
     username = get_event_username(log_entry)
-    return username is not None and email_to_user_profile.get(username) is None
+    if username is not None and email_to_user_profile.get(username) is None:
+        demisto.info(f'Dropping incident for user with username {username} - '
+                     f'User Profile does not exist in XSOAR.')
+        return True
+    return False
 
 
 def add_user_profile_data_to_entry(log_entry, email_to_user_profile):
@@ -371,7 +375,7 @@ def is_rate_limit_error(e):
     return False
 
 
-def handle_exception(user_profile, e, action):
+def handle_exception(user_profile, e, action, okta_user=None):
     """ Handles failed responses from Okta API by setting the User Profile object with the results.
 
     Args:
@@ -392,9 +396,9 @@ def handle_exception(user_profile, e, action):
         error_message = str(e)
 
     if error_code == USER_IS_DISABLED_ERROR:
-        error_message = USER_IS_DISABLED_MSG
+        user_profile.set_user_is_already_disabled(okta_user)
 
-    if error_code in ERROR_CODES_TO_SKIP:
+    elif error_code in ERROR_CODES_TO_SKIP:
         user_profile.set_result(action=action,
                                 skip=True,
                                 skip_reason=error_message)
@@ -456,10 +460,12 @@ def get_mapping_fields_command(client):
     return GetMappingFieldsResponse([incident_type_scheme])
 
 
-def get_user_command(client, args, mapper_in):
-    user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
+def get_user_command(client, args, mapper_in, mapper_out):
+    user_profile = IAMUserProfile(user_profile=args.get('user-profile'), mapper=mapper_out,
+                                  incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
     try:
-        okta_user = client.get_user(user_profile.get_attribute('username'))
+        iam_attr, iam_attr_value = user_profile.get_first_available_iam_user_attr(GET_USER_ATTRIBUTES)
+        okta_user = client.get_user(iam_attr, iam_attr_value)
         if not okta_user:
             error_code, error_message = IAMErrors.USER_DOES_NOT_EXIST
             user_profile.set_result(action=IAMActions.GET_USER,
@@ -484,15 +490,18 @@ def get_user_command(client, args, mapper_in):
     return user_profile
 
 
-def disable_user_command(client, args, is_command_enabled):
-    user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
+def disable_user_command(client, args, is_command_enabled, mapper_out):
+    user_profile = IAMUserProfile(user_profile=args.get('user-profile'), mapper=mapper_out,
+                                  incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
+    okta_user = None
     if not is_command_enabled:
         user_profile.set_result(action=IAMActions.DISABLE_USER,
                                 skip=True,
                                 skip_reason='Command is disabled.')
     else:
         try:
-            okta_user = client.get_user(user_profile.get_attribute('username'))
+            iam_attr, iam_attr_value = user_profile.get_first_available_iam_user_attr(GET_USER_ATTRIBUTES)
+            okta_user = client.get_user(iam_attr, iam_attr_value)
             if not okta_user:
                 _, error_message = IAMErrors.USER_DOES_NOT_EXIST
                 user_profile.set_result(action=IAMActions.DISABLE_USER,
@@ -511,20 +520,22 @@ def disable_user_command(client, args, is_command_enabled):
                 )
 
         except Exception as e:
-            handle_exception(user_profile, e, IAMActions.DISABLE_USER)
+            handle_exception(user_profile, e, IAMActions.DISABLE_USER, okta_user)
 
     return user_profile
 
 
 def create_user_command(client, args, mapper_out, is_command_enabled, is_update_user_enabled, is_enable_enabled):
-    user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
+    user_profile = IAMUserProfile(user_profile=args.get('user-profile'), mapper=mapper_out,
+                                  incident_type=IAMUserProfile.CREATE_INCIDENT_TYPE)
     if not is_command_enabled:
         user_profile.set_result(action=IAMActions.CREATE_USER,
                                 skip=True,
                                 skip_reason='Command is disabled.')
     else:
         try:
-            okta_user = client.get_user(user_profile.get_attribute('username'))
+            iam_attr, iam_attr_value = user_profile.get_first_available_iam_user_attr(GET_USER_ATTRIBUTES)
+            okta_user = client.get_user(iam_attr, iam_attr_value)
             if okta_user:
                 # if user exists, update its data
                 return update_user_command(client, args, mapper_out, is_update_user_enabled, is_enable_enabled,
@@ -551,7 +562,8 @@ def create_user_command(client, args, mapper_out, is_command_enabled, is_update_
 
 def update_user_command(client, args, mapper_out, is_command_enabled, is_enable_enabled,
                         is_create_user_enabled, create_if_not_exists):
-    user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
+    user_profile = IAMUserProfile(user_profile=args.get('user-profile'), mapper=mapper_out,
+                                  incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
     allow_enable = args.get('allow-enable') == 'true'
     if not is_command_enabled:
         user_profile.set_result(action=IAMActions.UPDATE_USER,
@@ -559,7 +571,9 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_enable_
                                 skip_reason='Command is disabled.')
     else:
         try:
-            okta_user = client.get_user(user_profile.get_attribute('username', use_old_user_data=True))
+            iam_attr, iam_attr_value = user_profile.get_first_available_iam_user_attr(GET_USER_ATTRIBUTES,
+                                                                                      use_old_user_data=True)
+            okta_user = client.get_user(iam_attr, iam_attr_value)
             if okta_user:
                 user_id = okta_user.get('id')
 
@@ -918,7 +932,7 @@ def main():
 
     is_fetch = params.get('isFetch')
     first_fetch_str = params.get('first_fetch')
-    fetch_limit = int(params.get('max_fetch'))
+    fetch_limit = int(params.get('max_fetch', 1))
     auto_generate_query_filter = params.get('auto_generate_query_filter')
     fetch_query_filter = params.get('fetch_query_filter')
     context = demisto.getIntegrationContext()
@@ -940,7 +954,7 @@ def main():
     demisto.debug(f'Command being called is {command}')
 
     if command == 'iam-get-user':
-        user_profile = get_user_command(client, args, mapper_in)
+        user_profile = get_user_command(client, args, mapper_in, mapper_out)
 
     elif command == 'iam-create-user':
         user_profile = create_user_command(client, args, mapper_out, is_create_enabled,
@@ -951,7 +965,7 @@ def main():
                                            is_create_enabled, create_if_not_exists)
 
     elif command == 'iam-disable-user':
-        user_profile = disable_user_command(client, args, is_disable_enabled)
+        user_profile = disable_user_command(client, args, is_disable_enabled, mapper_out)
 
     if user_profile:
         return_results(user_profile)
