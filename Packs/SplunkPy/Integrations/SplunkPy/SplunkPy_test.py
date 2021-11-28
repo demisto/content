@@ -477,15 +477,14 @@ def test_get_kv_store_config(fields, expected_output, mocker):
 
 
 def test_fetch_incidents(mocker):
-    mock_last_run = {'time': '2018-10-24T14:13:20'}
-    mock_params = {'fetchQuery': "something"}
     mocker.patch.object(demisto, 'incidents')
     mocker.patch.object(demisto, 'setLastRun')
+    mock_last_run = {'time': '2018-10-24T14:13:20'}
+    mock_params = {'fetchQuery': "something"}
     mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
     mocker.patch('demistomock.params', return_value=mock_params)
-    mocker.patch('splunklib.results.ResultsReader', return_value=SAMPLE_RESPONSE)
-
     service = mocker.patch('splunklib.client.connect', return_value=None)
+    mocker.patch('splunklib.results.ResultsReader', return_value=SAMPLE_RESPONSE)
     splunk.fetch_incidents(service)
     incidents = demisto.incidents.call_args[0][0]
     assert demisto.incidents.call_count == 1
@@ -615,7 +614,6 @@ def test_is_enrichment_exceeding_timeout(mocker, drilldown_creation_time, asset_
     - Return the expected result
     """
     mocker.patch.object(splunk, 'ENABLED_ENRICHMENTS', return_value=[splunk.DRILLDOWN_ENRICHMENT, splunk.ASSET_ENRICHMENT])
-    # splunk.ENABLED_ENRICHMENTS = [splunk.DRILLDOWN_ENRICHMENT, splunk.ASSET_ENRICHMENT]
     notable = splunk.Notable({splunk.EVENT_ID: 'id'})
     notable.enrichments.append(splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, creation_time=drilldown_creation_time))
     notable.enrichments.append(splunk.Enrichment(splunk.ASSET_ENRICHMENT, creation_time=asset_creation_time))
