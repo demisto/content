@@ -239,9 +239,9 @@ def sync(client: Client):
         client.http_request(path, requests_kwargs)
     finally:
         os.remove(temp_file_path)
-    demisto.setIntegrationContext({'ts': int(datetime.now(timezone.utc).timestamp() * 1000),
-                                   'time': datetime.now(timezone.utc).strftime(DEMISTO_TIME_FORMAT),
-                                   'iocs_to_keep_time': create_iocs_to_keep_time()})
+    set_integration_context({'ts': int(datetime.now(timezone.utc).timestamp() * 1000),
+                             'time': datetime.now(timezone.utc).strftime(DEMISTO_TIME_FORMAT),
+                             'iocs_to_keep_time': create_iocs_to_keep_time()})
     return_outputs('sync with XDR completed.')
 
 
@@ -265,14 +265,14 @@ def create_last_iocs_query(from_date, to_date):
 
 def get_last_iocs(batch_size=200) -> List:
     current_run: str = datetime.utcnow().strftime(DEMISTO_TIME_FORMAT)
-    last_run: Dict = demisto.getIntegrationContext()
+    last_run: Dict = get_integration_context()
     query = create_last_iocs_query(from_date=last_run['time'], to_date=current_run)
     total_size = get_iocs_size(query)
     iocs: List = []
     for i in range(0, ceil(total_size / batch_size)):
         iocs.extend(get_iocs(query=query, page=i, size=batch_size))
     last_run['time'] = current_run
-    demisto.setIntegrationContext(last_run)
+    set_integration_context(last_run)
     return iocs
 
 
@@ -359,7 +359,7 @@ def xdr_ioc_to_demisto(ioc: Dict) -> Dict:
 
 
 def get_changes(client: Client):
-    from_time: Dict = demisto.getIntegrationContext()
+    from_time: Dict = get_integration_context()
     if not from_time:
         raise DemistoException('XDR is not synced.')
     path, requests_kwargs = prepare_get_changes(from_time['ts'])
@@ -367,7 +367,7 @@ def get_changes(client: Client):
     iocs: List = client.http_request(url_suffix=path, requests_kwargs=requests_kwargs).get('reply', [])
     if iocs:
         from_time['ts'] = iocs[-1].get('RULE_MODIFY_TIME', from_time) + 1
-        demisto.setIntegrationContext(from_time)
+        set_integration_context(from_time)
         demisto.createIndicators(list(map(xdr_ioc_to_demisto, iocs)))
 
 
@@ -380,7 +380,7 @@ def module_test(client: Client):
 
 
 def fetch_indicators(client: Client, auto_sync: bool = False):
-    if not demisto.getIntegrationContext() and auto_sync:
+    if not get_integration_context() and auto_sync:
         xdr_iocs_sync_command(client, first_time=True)
     else:
         get_changes(client)
@@ -392,14 +392,14 @@ def fetch_indicators(client: Client, auto_sync: bool = False):
 
 
 def xdr_iocs_sync_command(client: Client, first_time: bool = False):
-    if first_time or not demisto.getIntegrationContext():
+    if first_time or not get_integration_context():
         sync(client)
     else:
         iocs_to_keep(client)
 
 
 def iocs_to_keep_time():
-    hour, minute = demisto.getIntegrationContext().get('iocs_to_keep_time', (0, 0))
+    hour, minute = get_integration_context().get('iocs_to_keep_time', (0, 0))
     time_now = datetime.now(timezone.utc)
     return time_now.hour == hour and time_now.min == minute
 
@@ -445,9 +445,9 @@ def set_sync_time(time: str):
     date_time_obj = parse(time, settings={'TIMEZONE': 'UTC'})
     if not date_time_obj:
         raise ValueError('invalid time format.')
-    demisto.setIntegrationContext({'ts': int(date_time_obj.timestamp() * 1000),
-                                   'time': date_time_obj.strftime(DEMISTO_TIME_FORMAT),
-                                   'iocs_to_keep_time': create_iocs_to_keep_time()})
+    set_integration_context({'ts': int(date_time_obj.timestamp() * 1000),
+                             'time': date_time_obj.strftime(DEMISTO_TIME_FORMAT),
+                             'iocs_to_keep_time': create_iocs_to_keep_time()})
     return_results(f'set sync time to {time} seccedded.')
 
 
