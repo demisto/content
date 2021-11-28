@@ -142,7 +142,9 @@ def extensive_log(message):
 
 def remove_old_incident_ids(last_run_fetched_ids, start_time_query):
     """
-    Remove incident if their occurrence time is not in query time range
+    Remove incident if their occurrence time is not in query time range.
+    Pay attention, events saved by us with SPLUNK_TIME_FORMAT, that means the time comparison is with
+    occurrence of seconds.
     Args:
         last_run_fetched_ids (dict): All the event IDs that weren't out of date in the last run + all the new event IDs
         and their occurrence time
@@ -261,8 +263,8 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
     fetch_query = build_fetch_query(dem_params)
 
     oneshotsearch_results = service.jobs.oneshot(fetch_query, **kwargs_oneshot)  # type: ignore
-    reader = results.ResultsReader(oneshotsearch_results)
-
+    reader = list(results.ResultsReader(oneshotsearch_results))
+    reader_length = len(reader)
     last_run_fetched_ids = last_run_data.get('found_incidents_ids', {})
 
     incidents = []  # type: List[Dict]
@@ -310,26 +312,29 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
             # want to add data to the integration context (which will ruin the logic of the cache object)
             last_run_data.update({DUMMY: DUMMY})
 
-    if len(incidents) == 0 and len(reader) < batch_size:
+    if len(incidents) == 0 and reader_length < batch_size:
         next_run = get_next_start_time(last_run_time, now, False)
-        extensive_log('[SplunkPyPreRelease] SplunkPyPreRelease - Next run time with no incidents found: {}.'.format(next_run))
-        new_last_run = {
-            'time': next_run,
-            'found_incidents_ids': last_run_fetched_ids,
-            'batch_size': default_batch_size
-        }
+        batch_size = default_batch_size
+        extensive_log('[SplunkPyPreRelease] SplunkPyPreRelease - Next run time with no incidents found: {}. '
+                      'Batch size: {}'.format(next_run, batch_size))
+
+    elif len(incidents) == 0 and reader_length == batch_size:  # All events returned from the query was duplicates
+        next_run = occured_start_time
+        batch_size += default_batch_size
+        extensive_log('[SplunkPyPreRelease] SplunkPyPreRelease - Next run time with no new incidents found: {}. '
+                      'Batch size: {}'.format(next_run, batch_size))
     else:
-        if len(reader) == batch_size:
+        if reader_length == batch_size:
             batch_size += default_batch_size
         latest_incident_fetched_time = get_latest_incident_time(incidents)
         next_run = get_next_start_time(latest_incident_fetched_time, now, were_new_incidents_found=True)
         extensive_log('[SplunkPyPreRelease] SplunkPyPreRelease - '
                       'Next run time with too many incidents:  {}. Batch size: {}'.format(next_run, batch_size))
-        new_last_run = {
-            'time': next_run,
-            'found_incidents_ids': last_run_fetched_ids,
-            'batch_size': batch_size
-        }
+    new_last_run = {
+        'time': next_run,
+        'found_incidents_ids': last_run_fetched_ids,
+        'batch_size': batch_size
+    }
     last_run_data.update(new_last_run)
     demisto.setLastRun(last_run_data)
 
