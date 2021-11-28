@@ -1480,7 +1480,7 @@ def test_increase_batch_size(batch_size, expected_batch, expected_time, last_run
     mock_dt.utcnow.return_value = datetime(2020, 8, 24, 14, 01, 12, 703618)
     splunk.fetch_notables(service)
     next_run = demisto.setLastRun.call_args[0][0]
-    assert next_run.get('batch_size') == expected_batch
+    assert next_run.get('next_batch_size') == expected_batch
     assert next_run.get('time') == expected_time
 
 
@@ -1500,7 +1500,7 @@ def test_delayed_index_events(mocker):
     service, mock_dt = mock_fetch_notables(mocker, demisto_params={'fetchQuery': "something", 'enabled_enrichments': [],
                                                                    'occurrence_look_behind': 120})
     next_run = {'found_incidents_ids': {'4c9309cc618c50369f63a93587906393': '2020-08-24T13:30:17'},
-                'batch_size': 200, 'time': '2020-08-24T13:30:17'}
+                'next_batch_size': 200, 'time': '2020-08-24T13:30:17'}
     mocker.patch('demistomock.getLastRun', return_value=next_run)
     mocker.patch('splunklib.results.ResultsReader', return_value=response_two_events)
     mock_dt.utcnow.return_value = datetime(2020, 8, 24, 14, 01, 12, 703618)
@@ -1513,7 +1513,7 @@ def test_delayed_index_events(mocker):
     assert next_run_time == found_incident_time
     assert len(incidents) == 1
     assert len(next_run.get('found_incidents_ids')) == 2
-    assert next_run["batch_size"] == 200
+    assert next_run["next_batch_size"] == 200
 
 
 def test_no_incident_returned(mocker):
@@ -1528,7 +1528,7 @@ def test_no_incident_returned(mocker):
     service, mock_dt = mock_fetch_notables(mocker, demisto_params={'fetchQuery': "something", 'enabled_enrichments': [],
                                                                    'occurrence_look_behind': 15})
     next_run = {'found_incidents_ids': {'a74cabaebb6fae0db6e52e290574398d': '2020-08-24T13:30:17'},
-                'batch_size': 200, 'time': '2020-08-24T13:45:17'}
+                'next_batch_size': 200, 'time': '2020-08-24T13:45:17'}
     now = datetime(2020, 8, 24, 14, 00, 12, 703618)
     mock_dt.utcnow.return_value = now
     mocker.patch('demistomock.getLastRun', return_value=next_run)
@@ -1555,7 +1555,7 @@ def test_incident_exceeded_limit(mocker):
     service, mock_dt = mock_fetch_notables(mocker, demisto_params={'fetchQuery': "something", 'enabled_enrichments': [],
                                                                    'occurrence_look_behind': 15})
     next_run = {'found_incidents_ids': {'a74cabaebb6fae0db6e52e290574398d': '2020-08-24T13:30:17'},
-                'batch_size': 200, 'time': '2020-08-24T13:45:17'}
+                'next_batch_size': 200, 'time': '2020-08-24T13:45:17'}
     now = datetime(2020, 8, 24, 14, 00, 12, 703618)
     mock_dt.utcnow.return_value = now
     mocker.patch('demistomock.getLastRun', return_value=next_run)
@@ -1610,7 +1610,7 @@ def test_delayed_events_exceeded_limit(mocker):
     service, mock_dt = mock_fetch_notables(mocker, demisto_params={'fetchQuery': "something", 'enabled_enrichments': [],
                                                                    'occurrence_look_behind': 120})
     next_run = {'found_incidents_ids': {'a74cabaebb6fae0db6e52e290574398d': '2020-08-24T13:30:17'},
-                'batch_size': 200, 'time': '2020-08-24T13:45:17'}
+                'next_batch_size': 200, 'time': '2020-08-24T13:45:17'}
     minutes = 00
     now = datetime(2020, 8, 24, 14, minutes, 12, 703618)
     mock_dt.utcnow.return_value = now
