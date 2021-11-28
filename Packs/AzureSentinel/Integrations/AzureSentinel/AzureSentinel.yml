@@ -1705,7 +1705,7 @@ script:
     - contextPath: AzureSentinel.ThreatIndicator.Properties.ValidUntil
       description: The date which the indicator is valid until
       type: Date
-  dockerimage: demisto/crypto:1.0.0.24037
+  dockerimage: demisto/crypto:1.0.0.24380
   feed: false
   isfetch: false
   longRunning: false
