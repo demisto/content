@@ -185,7 +185,7 @@ def test_get_blacklist_filter(requests_mock):
         ],
     }
     requests_mock.get(
-        'http://cloud/api/v1/security/advanced', 
+        'http://cloud/api/v1/security/advanced',
         json=api_res,
     )
     args = {
@@ -215,7 +215,7 @@ def test_get_blacklist_query(requests_mock):
         ],
     }
     requests_mock.get(
-        'http://cloud/api/v1/security/advanced', 
+        'http://cloud/api/v1/security/advanced',
         json=api_res,
     )
     args = {
@@ -246,7 +246,7 @@ def test_get_blacklist_query_and_filter(requests_mock):
         ],
     }
     requests_mock.get(
-        'http://cloud/api/v1/security/advanced', 
+        'http://cloud/api/v1/security/advanced',
         json=api_res,
     )
     args = {
