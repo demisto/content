@@ -1574,6 +1574,7 @@ def test_get_fetch_start_time(mocker):
     Given:
     - last run time set to the last event seen at the previous fetch
     - occurred_look_behind is 120 minutes
+    - timezone is +120
     When:
     - occurred_look_behind is greater than the time past since the last event
     Then:
@@ -1582,11 +1583,11 @@ def test_get_fetch_start_time(mocker):
     from SplunkPyPreRelease import get_fetch_start_times
     mock_dt = mocker.patch('SplunkPyPreRelease.datetime', wraps=datetime)
     utc_now = datetime(2020, 8, 24, 14, 00, 12, 703618)
-    expected_start_time = datetime(2020, 8, 24, 12, 00, 12, 703618)
+    expected_start_time = datetime(2020, 8, 24, 14, 00, 12, 703618)
     mock_dt.utcnow.return_value = utc_now
-    dem_params = {'fetchQuery': "something", 'enabled_enrichments': [], 'occurrence_look_behind': 120}
+    dem_params = {'fetchQuery': "something", 'enabled_enrichments': [], 'occurrence_look_behind': 120, 'timezone': '+120'}
     service = mocker.patch('splunklib.client.connect', return_value=None)
-    last_run_time = '2020-08-24T13:45:17'
+    last_run_time = '2020-08-24T15:45:17'
     occurred_look_behind = 120
     occurred_start_time, now = get_fetch_start_times(dem_params, service, last_run_time, occurred_look_behind)
     assert occurred_start_time == datetime.strftime(expected_start_time, SPLUNK_TIME_FORMAT)
