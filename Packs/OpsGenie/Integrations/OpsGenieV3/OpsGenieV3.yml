@@ -93,20 +93,6 @@ script:
   commands:
   - arguments:
     - default: false
-      description: Interval in seconds between each poll.
-      isArray: false
-      name: interval_in_seconds
-      required: false
-      secret: false
-      defaultValue: '5'
-    - default: false
-      defaultValue: '30'
-      description: The number of results to return.
-      isArray: false
-      name: max_results
-      required: false
-      secret: false
-    - default: false
       description: Alert message.
       isArray: false
       name: message
@@ -118,9 +104,6 @@ script:
       name: alias
       required: false
       secret: false
-    - name: request_id
-      description: Id of request for polling. You don't need to enter here value.
-      required: false
     - default: false
       description: Description field of the alert that is generally used to provide
         a detailed information about the alert.
@@ -175,7 +158,6 @@ script:
     description: Create an Alert in opsgenie
     deprecated: false
     name: opsgenie-create-alert
-    polling: true
     outputs:
     - contextPath: OpsGenie.Alert.action
       description: Action of this Request
@@ -377,14 +359,10 @@ script:
       name: alert-id
       required: true
       secret: false
-    - name: request_id
-      description: Id of request for polling. You don't need to enter here value.
-      required: false
     deprecated: false
     description: Delete an Alert from OpsGenie
     execution: false
     name: opsgenie-delete-alert
-    polling: true
     outputs:
     - contextPath: OpsGenie.DeletedAlert.action
       description: Action of this Request
@@ -426,14 +404,10 @@ script:
       name: note
       required: false
       secret: false
-    - name: request_id
-      description: Id of request for polling. You don't need to enter here value.
-      required: false
     deprecated: false
     description: Acknowledge an alert in OpsGenie
     execution: false
     name: opsgenie-ack-alert
-    polling: true
     outputs:
     - contextPath: OpsGenie.AckedAlert.action
       description: Action of this Request
@@ -476,14 +450,10 @@ script:
       name: note
       required: false
       secret: false
-    - name: request_id
-      description: Id of request for polling. You don't need to enter here value.
-      required: false
     deprecated: false
     description: Close an alert in OpsGenie
     execution: false
     name: opsgenie-close-alert
-    polling: true
     outputs:
     - contextPath: OpsGenie.ClosedAlert.action
       description: Action of this Request
@@ -540,14 +510,10 @@ script:
       name: note
       required: false
       secret: false
-    - name: request_id
-      description: Id of request for polling. You don't need to enter here value.
-      required: false
     deprecated: false
     description: Assign an OpsGenie Alert
     execution: false
     name: opsgenie-assign-alert
-    polling: true
     outputs:
     - contextPath: OpsGenie.AssignAlert.action
       description: Action of this Request
@@ -612,14 +578,10 @@ script:
       name: note
       required: false
       secret: false
-    - name: request_id
-      description: Id of request for polling. You don't need to enter here value.
-      required: false
     deprecated: false
     description: Add responder to an OpsGenie Alert
     execution: false
     name: opsgenie-add-responder-alert
-    polling: true
     outputs:
     - contextPath: OpsGenie.AddResponderAlert.action
       description: Action of this Request
@@ -729,14 +691,10 @@ script:
       name: note
       required: false
       secret: false
-    - name: request_id
-      description: Id of request for polling. You don't need to enter here value.
-      required: false
     deprecated: false
     description: Escalate an OpsGenie Alert
     execution: false
     name: opsgenie-escalate-alert
-    polling: true
     outputs:
     - contextPath: OpsGenie.EscalateAlert.action
       description: Action of this Request
@@ -788,14 +746,10 @@ script:
       name: note
       required: false
       secret: false
-    - name: request_id
-      description: Id of request for polling. You don't need to enter here value.
-      required: false
     deprecated: false
     description: Add tag into OpsGenie Alert
     execution: false
     name: opsgenie-add-alert-tag
-    polling: true
     outputs:
     - contextPath: OpsGenie.AddTagAlert.action
       description: Action of this Request
@@ -844,14 +798,10 @@ script:
       name: note
       required: false
       secret: false
-    - name: request_id
-      description: Id of request for polling. You don't need to enter here value.
-      required: false
     deprecated: false
     description: Remove tag from OpsGenie Alert
     execution: false
     name: opsgenie-remove-alert-tag
-    polling: true
     outputs:
     - contextPath: OpsGenie.RemoveTagAlert.action
       description: Action of this Request
@@ -1107,13 +1057,9 @@ script:
       required: false
       secret: false
       defaultValue: P3
-    - name: request_id
-      description: Id of request for polling. You don't need to enter here value.
-      required: false
     description: Create an Incident in opsgenie
     deprecated: false
     name: opsgenie-create-incident
-    polling: true
     outputs:
     - contextPath: OpsGenie.Incident.action
       description: Action of this Request
@@ -1146,21 +1092,10 @@ script:
       name: incident_id
       required: true
       secret: false
-    - default: false
-      description: Interval in seconds between each poll.
-      isArray: false
-      name: interval_in_seconds
-      required: false
-      secret: false
-      defaultValue: '5'
-    - name: request_id
-      description: Id of request for polling. You don't need to enter here value.
-      required: false
     deprecated: false
     description: Delete an incident from OpsGenie
     execution: false
     name: opsgenie-delete-incident
-    polling: true
     outputs:
     - contextPath: OpsGenie.DeletedIncident.action
       description: Action of this Request
@@ -1312,26 +1247,15 @@ script:
       required: true
       secret: false
     - default: false
-      description: Interval in seconds between each poll.
-      isArray: false
-      name: interval_in_seconds
-      required: false
-      secret: false
-      defaultValue: '5'
-    - default: false
       description: Additional incident note to add.
       isArray: false
       name: note
       required: false
       secret: false
-    - name: request_id
-      description: Id of request for polling. You don't need to enter here value.
-      required: false
     deprecated: false
     description: Close an incident from OpsGenie
     execution: false
     name: opsgenie-close-incident
-    polling: true
     outputs:
     - contextPath: OpsGenie.ClosedIncident.action
       description: Action of this Request
@@ -1366,26 +1290,15 @@ script:
       required: true
       secret: false
     - default: false
-      description: Interval in seconds between each poll.
-      isArray: false
-      name: interval_in_seconds
-      required: false
-      secret: false
-      defaultValue: '5'
-    - default: false
       description: Additional incident note to add.
       isArray: false
       name: note
       required: false
       secret: false
-    - name: request_id
-      description: Id of request for polling. You don't need to enter here value.
-      required: false
     deprecated: false
     description: Resolve an incident from OpsGenie
     execution: false
     name: opsgenie-resolve-incident
-    polling: true
     outputs:
     - contextPath: OpsGenie.ResolvedIncident.action
       description: Action of this Request
@@ -1420,13 +1333,6 @@ script:
       required: true
       secret: false
     - default: false
-      description: Interval in seconds between each poll.
-      isArray: false
-      name: interval_in_seconds
-      required: false
-      secret: false
-      defaultValue: '5'
-    - default: false
       description: "Teams/users that the incident is routed to via notifications.\n\
         \ You need to insert it as List of triples - responder_type, value_type, value.\n\
         \ The responder_type can be: team or user.\n The value_type can be: id or\
@@ -1442,14 +1348,10 @@ script:
       name: note
       required: false
       secret: false
-    - name: request_id
-      description: Id of request for polling. You don't need to enter here value.
-      required: false
     deprecated: false
     description: Add responder to an OpsGenie Incident
     execution: false
     name: opsgenie-add-responder-incident
-    polling: true
     outputs:
     - contextPath: OpsGenie.AddResponderIncident.action
       description: Action of this Request
@@ -1484,13 +1386,6 @@ script:
       required: true
       secret: false
     - default: false
-      description: Interval in seconds between each poll.
-      isArray: false
-      name: interval_in_seconds
-      required: false
-      secret: false
-      defaultValue: '5'
-    - default: false
       description: Comma separated list of tags to add into incident.
       isArray: true
       name: tags
@@ -1502,14 +1397,10 @@ script:
       name: note
       required: false
       secret: false
-    - name: request_id
-      description: Id of request for polling. You don't need to enter here value.
-      required: false
     deprecated: false
     description: Add tag into OpsGenie Incident
     execution: false
     name: opsgenie-add-tag-incident
-    polling: true
     outputs:
     - contextPath: OpsGenie.AddTagIncident.action
       description: Action of this Request
@@ -1544,13 +1435,6 @@ script:
       required: true
       secret: false
     - default: false
-      description: Interval in seconds between each poll.
-      isArray: false
-      name: interval_in_seconds
-      required: false
-      secret: false
-      defaultValue: '5'
-    - default: false
       description: Comma separated list of tags to add into incident.
       isArray: true
       name: tags
@@ -1562,14 +1446,10 @@ script:
       name: note
       required: false
       secret: false
-    - name: request_id
-      description: Id of request for polling. You don't need to enter here value.
-      required: false
     deprecated: false
     description: Remove tag from OpsGenie Alert
     execution: false
     name: opsgenie-remove-tag-incident
-    polling: true
     outputs:
     - contextPath: OpsGenie.RemoveTagIncident.action
       description: Action of this Request

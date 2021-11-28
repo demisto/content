@@ -1,6 +1,7 @@
-id: OpsGenieV3TestPlaybook
-version: -1
-name: OpsGenieV3TestPlaybook
+id: OpsGenieV3
+version: 82
+vcShouldKeepItemLegacyProdMachine: false
+name: OpsGenieV3
 starttaskid: "0"
 tasks:
   "0":
@@ -13,7 +14,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -102,10 +102,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: e61f179f-45c6-42b4-855f-ea202cc4af1f
+    taskid: 5e868eed-0de4-40b2-89b0-1cb0c99ab470
     type: condition
     task:
-      id: e61f179f-45c6-42b4-855f-ea202cc4af1f
+      id: 5e868eed-0de4-40b2-89b0-1cb0c99ab470
       version: -1
       name: Verify Outputs
       type: condition
@@ -147,11 +147,6 @@ tasks:
           left:
             value:
               simple: OpsGenie.Alert.processedAt
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: OpsGenie.Alert.requestId
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -376,10 +371,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: c548ab9b-b991-4581-8719-4b7483ec9478
+    taskid: 43f5b593-10f0-4c46-8ea3-568accd83d91
     type: condition
     task:
-      id: c548ab9b-b991-4581-8719-4b7483ec9478
+      id: 43f5b593-10f0-4c46-8ea3-568accd83d91
       version: -1
       name: Verify Outputs
       type: condition
@@ -421,11 +416,6 @@ tasks:
           left:
             value:
               simple: OpsGenie.DeletedAlert.processedAt
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: OpsGenie.DeletedAlert.requestId
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -486,10 +476,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: dda099e4-6622-4c95-8ca2-8729c6cae798
+    taskid: 12131876-c144-4acd-8733-d363dbfad718
     type: condition
     task:
-      id: dda099e4-6622-4c95-8ca2-8729c6cae798
+      id: 12131876-c144-4acd-8733-d363dbfad718
       version: -1
       name: Verify Outputs
       type: condition
@@ -531,11 +521,6 @@ tasks:
           left:
             value:
               simple: OpsGenie.AckedAlert.processedAt
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: OpsGenie.AckedAlert.requestId
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -596,10 +581,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: ff7bc459-9bbb-4b41-8564-87cc5ced56fe
+    taskid: 01efdada-9431-4f5b-87c2-83b06f90a689
     type: condition
     task:
-      id: ff7bc459-9bbb-4b41-8564-87cc5ced56fe
+      id: 01efdada-9431-4f5b-87c2-83b06f90a689
       version: -1
       name: Verify Outputs
       type: condition
@@ -641,11 +626,6 @@ tasks:
           left:
             value:
               simple: OpsGenie.ClosedAlert.processedAt
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: OpsGenie.ClosedAlert.requestId
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -708,10 +688,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 7de5749a-779a-4d19-8dc5-a4f62d881629
+    taskid: 0480ec6b-a62a-43c3-8b4f-58ec6c4bcbf4
     type: condition
     task:
-      id: 7de5749a-779a-4d19-8dc5-a4f62d881629
+      id: 0480ec6b-a62a-43c3-8b4f-58ec6c4bcbf4
       version: -1
       name: Verify Outputs
       type: condition
@@ -746,11 +726,6 @@ tasks:
           left:
             value:
               simple: OpsGenie.AssignAlert.processedAt
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: OpsGenie.AssignAlert.requestId
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -1013,10 +988,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: eddb2620-b696-44ee-8b08-54dd7c33564c
+    taskid: dcbbc0eb-e6a1-469f-82c3-ba2a354921eb
     type: condition
     task:
-      id: eddb2620-b696-44ee-8b08-54dd7c33564c
+      id: dcbbc0eb-e6a1-469f-82c3-ba2a354921eb
       version: -1
       name: Verify Outputs
       type: condition
@@ -1058,11 +1033,6 @@ tasks:
           left:
             value:
               simple: OpsGenie.AddTagAlert.processedAt
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: OpsGenie.AddTagAlert.requestId
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -1125,10 +1095,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 37eb1bb0-ff59-4834-87b4-fe6c63fe4f7a
+    taskid: 5ae90aa7-67c6-4ce7-898c-fe0afca50793
     type: condition
     task:
-      id: 37eb1bb0-ff59-4834-87b4-fe6c63fe4f7a
+      id: 5ae90aa7-67c6-4ce7-898c-fe0afca50793
       version: -1
       name: Verify Outputs
       type: condition
@@ -1170,11 +1140,6 @@ tasks:
           left:
             value:
               simple: OpsGenie.RemoveTagAlert.processedAt
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: OpsGenie.RemoveTagAlert.requestId
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -1337,10 +1302,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 1fb9d282-fd6f-483b-8085-d9abfa476463
+    taskid: c62c62e6-a2d8-452a-88c5-f7c975f2fdca
     type: condition
     task:
-      id: 1fb9d282-fd6f-483b-8085-d9abfa476463
+      id: c62c62e6-a2d8-452a-88c5-f7c975f2fdca
       version: -1
       name: Verify Outputs
       type: condition
@@ -1372,11 +1337,6 @@ tasks:
           left:
             value:
               simple: OpsGenie.DeletedIncident.processedAt
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: OpsGenie.DeletedIncident.requestId
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -1542,10 +1502,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: 3d5835eb-c6ef-4852-8d0b-e359e917a233
+    taskid: c203cc60-5d4f-4209-8654-a557f855fd61
     type: condition
     task:
-      id: 3d5835eb-c6ef-4852-8d0b-e359e917a233
+      id: c203cc60-5d4f-4209-8654-a557f855fd61
       version: -1
       name: Verify Outputs
       type: condition
@@ -1577,11 +1537,6 @@ tasks:
           left:
             value:
               simple: OpsGenie.ClosedIncident.processedAt
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: OpsGenie.ClosedIncident.requestId
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -1642,10 +1597,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 29188b1f-991f-4e94-8cd4-f98def7fa3ee
+    taskid: 31401525-a74b-421c-8274-066b07cd20c7
     type: condition
     task:
-      id: 29188b1f-991f-4e94-8cd4-f98def7fa3ee
+      id: 31401525-a74b-421c-8274-066b07cd20c7
       version: -1
       name: Verify Outputs
       type: condition
@@ -1677,11 +1632,6 @@ tasks:
           left:
             value:
               simple: OpsGenie.ResolvedIncident.processedAt
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: OpsGenie.ResolvedIncident.requestId
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -1841,10 +1791,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: ca713a0d-355e-405d-8e21-0205212e44a2
+    taskid: 6b9a6268-9cff-4638-81f2-39a3436f3be4
     type: condition
     task:
-      id: ca713a0d-355e-405d-8e21-0205212e44a2
+      id: 6b9a6268-9cff-4638-81f2-39a3436f3be4
       version: -1
       name: Verify Outputs
       type: condition
@@ -1876,11 +1826,6 @@ tasks:
           left:
             value:
               simple: OpsGenie.AddTagIncident.processedAt
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: OpsGenie.AddTagIncident.requestId
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -1943,10 +1888,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: 3c7b9c6b-2b1b-4014-8010-cb83016f3a7b
+    taskid: bf418e43-b7fe-4b54-8e28-75c13efe54df
     type: condition
     task:
-      id: 3c7b9c6b-2b1b-4014-8010-cb83016f3a7b
+      id: bf418e43-b7fe-4b54-8e28-75c13efe54df
       version: -1
       name: Verify Outputs
       type: condition
@@ -1978,11 +1923,6 @@ tasks:
           left:
             value:
               simple: OpsGenie.RemoveTagIncident.processedAt
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: OpsGenie.RemoveTagIncident.requestId
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -2019,7 +1959,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
@@ -2049,5 +1988,3 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 6.2.0
-description: ''

@@ -501,16 +501,23 @@ def test_module(client: Client) -> str:
 
 
 def create_alert(client: Client, args: Dict[str, Any]) -> CommandResults:
-    polling_args = {
+    args = {
         'request_type_suffix': ALERTS_SUFFIX,
         'output_prefix': 'OpsGenie.Alert',
         **args
     }
-    polling_result = run_polling_command(args=polling_args,
-                                         cmd='opsgenie-create-alert',
-                                         action_function=client.create_alert,
-                                         results_function=client.get_request)
-    return polling_result
+    data = client.create_alert(args)
+    request_id = data.get("requestId")
+    if not request_id:
+        raise ConnectionError(f"Failed to send request - {data}")
+    args['request_id'] = request_id
+    results = client.get_request(args)
+    return CommandResults(
+        outputs_prefix=args.get("output_prefix", "OpsGenie"),
+        outputs=results.get("data"),
+        readable_output=tableToMarkdown("OpsGenie", results.get('data')),
+        raw_response=results
+    )
 
 
 def get_alerts(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -541,42 +548,63 @@ def list_alerts(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def delete_alert(client: Client, args: Dict[str, Any]) -> CommandResults:
-    polling_args = {
+    args = {
         'request_type_suffix': ALERTS_SUFFIX,
         'output_prefix': 'OpsGenie.DeletedAlert',
         **args
     }
-    polling_result = run_polling_command(args=polling_args,
-                                         cmd='opsgenie-delete-alert',
-                                         action_function=client.delete_alert,
-                                         results_function=client.get_request)
-    return polling_result
+    data = client.delete_alert(args)
+    request_id = data.get("requestId")
+    if not request_id:
+        raise ConnectionError(f"Failed to send request - {data}")
+    args['request_id'] = request_id
+    results = client.get_request(args)
+    return CommandResults(
+        outputs_prefix=args.get("output_prefix", "OpsGenie"),
+        outputs=results.get("data"),
+        readable_output=tableToMarkdown("OpsGenie", results.get('data')),
+        raw_response=results
+    )
 
 
 def ack_alert(client: Client, args: Dict[str, Any]) -> CommandResults:
-    polling_args = {
+    args = {
         'request_type_suffix': ALERTS_SUFFIX,
         'output_prefix': 'OpsGenie.AckedAlert',
         **args
     }
-    polling_result = run_polling_command(args=polling_args,
-                                         cmd='opsgenie-ack-alert',
-                                         action_function=client.ack_alert,
-                                         results_function=client.get_request)
-    return polling_result
+    data = client.ack_alert(args)
+    request_id = data.get("requestId")
+    if not request_id:
+        raise ConnectionError(f"Failed to send request - {data}")
+    args['request_id'] = request_id
+    results = client.get_request(args)
+    return CommandResults(
+        outputs_prefix=args.get("output_prefix", "OpsGenie"),
+        outputs=results.get("data"),
+        readable_output=tableToMarkdown("OpsGenie", results.get('data')),
+        raw_response=results
+    )
 
 
 def close_alert(client: Client, args: Dict[str, Any]) -> CommandResults:
-    polling_args = {
+    args = {
         'request_type_suffix': ALERTS_SUFFIX,
         'output_prefix': 'OpsGenie.ClosedAlert',
         **args
     }
-    polling_result = run_polling_command(args=polling_args,
-                                         cmd='opsgenie-close-alert',
-                                         action_function=client.close_alert,
-                                         results_function=client.get_request)
-    return polling_result
+    data = client.close_alert(args)
+    request_id = data.get("requestId")
+    if not request_id:
+        raise ConnectionError(f"Failed to send request - {data}")
+    args['request_id'] = request_id
+    results = client.get_request(args)
+    return CommandResults(
+        outputs_prefix=args.get("output_prefix", "OpsGenie"),
+        outputs=results.get("data"),
+        readable_output=tableToMarkdown("OpsGenie", results.get('data')),
+        raw_response=results
+    )
 
 
 def assign_alert(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -586,30 +614,44 @@ def assign_alert(client: Client, args: Dict[str, Any]) -> CommandResults:
         owner = {"username": args.get("owner_username")}
     else:   # not args.get("owner_id") and not args.get("owner_username")
         raise DemistoException("Either owner_id or owner_username should be provided.")
-    polling_args = {
+    args = {
         'request_type_suffix': ALERTS_SUFFIX,
         'owner': owner,
         'output_prefix': 'OpsGenie.AssignAlert',
         **args
     }
-    polling_result = run_polling_command(args=polling_args,
-                                         cmd='opsgenie-assign-alert',
-                                         action_function=client.assign_alert,
-                                         results_function=client.get_request)
-    return polling_result
+    data = client.assign_alert(args)
+    request_id = data.get("requestId")
+    if not request_id:
+        raise ConnectionError(f"Failed to send request - {data}")
+    args['request_id'] = request_id
+    results = client.get_request(args)
+    return CommandResults(
+        outputs_prefix=args.get("output_prefix", "OpsGenie"),
+        outputs=results.get("data"),
+        readable_output=tableToMarkdown("OpsGenie", results.get('data')),
+        raw_response=results
+    )
 
 
 def add_responder_alert(client: Client, args: Dict[str, Any]) -> CommandResults:
-    polling_args = {
+    args = {
         'request_type_suffix': ALERTS_SUFFIX,
         'output_prefix': 'OpsGenie.AddResponderAlert',
         **args
     }
-    polling_result = run_polling_command(args=polling_args,
-                                         cmd='opsgenie-add-responder-alert',
-                                         action_function=client.add_responder_alert,
-                                         results_function=client.get_request)
-    return polling_result
+    data = client.add_responder_alert(args)
+    request_id = data.get("requestId")
+    if not request_id:
+        raise ConnectionError(f"Failed to send request - {data}")
+    args['request_id'] = request_id
+    results = client.get_request(args)
+    return CommandResults(
+        outputs_prefix=args.get("output_prefix", "OpsGenie"),
+        outputs=results.get("data"),
+        readable_output=tableToMarkdown("OpsGenie", results.get('data')),
+        raw_response=results
+    )
 
 
 def get_escalations(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -630,43 +672,64 @@ def escalate_alert(client: Client, args: Dict[str, Any]) -> CommandResults:
         escalation = {"name": args.get("escalation_name")}
     else:  # not args.get("owner_id") and not args.get("owner_username")
         raise DemistoException("Either escalation_id or escalation_name should be provided.")
-    polling_args = {
+    args = {
         'request_type_suffix': ALERTS_SUFFIX,
         'escalation': escalation,
         'output_prefix': 'OpsGenie.EscalateAlert',
         **args
     }
-    polling_result = run_polling_command(args=polling_args,
-                                         cmd='opsgenie-escalate-alert',
-                                         action_function=client.escalate_alert,
-                                         results_function=client.get_request)
-    return polling_result
+    data = client.escalate_alert(args)
+    request_id = data.get("requestId")
+    if not request_id:
+        raise ConnectionError(f"Failed to send request - {data}")
+    args['request_id'] = request_id
+    results = client.get_request(args)
+    return CommandResults(
+        outputs_prefix=args.get("output_prefix", "OpsGenie"),
+        outputs=results.get("data"),
+        readable_output=tableToMarkdown("OpsGenie", results.get('data')),
+        raw_response=results
+    )
 
 
 def add_alert_tag(client: Client, args: Dict[str, Any]) -> CommandResults:
-    polling_args = {
+    args = {
         'request_type_suffix': ALERTS_SUFFIX,
         'output_prefix': 'OpsGenie.AddTagAlert',
         **args
     }
-    polling_result = run_polling_command(args=polling_args,
-                                         cmd='opsgenie-add-alert-tag',
-                                         action_function=client.add_alert_tag,
-                                         results_function=client.get_request)
-    return polling_result
+    data = client.add_alert_tag(args)
+    request_id = data.get("requestId")
+    if not request_id:
+        raise ConnectionError(f"Failed to send request - {data}")
+    args['request_id'] = request_id
+    results = client.get_request(args)
+    return CommandResults(
+        outputs_prefix=args.get("output_prefix", "OpsGenie"),
+        outputs=results.get("data"),
+        readable_output=tableToMarkdown("OpsGenie", results.get('data')),
+        raw_response=results
+    )
 
 
 def remove_alert_tag(client: Client, args: Dict[str, Any]) -> CommandResults:
-    polling_args = {
+    args = {
         'request_type_suffix': ALERTS_SUFFIX,
         'output_prefix': 'OpsGenie.RemoveTagAlert',
         **args
     }
-    polling_result = run_polling_command(args=polling_args,
-                                         cmd='opsgenie-remove-alert-tag',
-                                         action_function=client.remove_alert_tag,
-                                         results_function=client.get_request)
-    return polling_result
+    data = client.remove_alert_tag(args)
+    request_id = data.get("requestId")
+    if not request_id:
+        raise ConnectionError(f"Failed to send request - {data}")
+    args['request_id'] = request_id
+    results = client.get_request(args)
+    return CommandResults(
+        outputs_prefix=args.get("output_prefix", "OpsGenie"),
+        outputs=results.get("data"),
+        readable_output=tableToMarkdown("OpsGenie", results.get('data')),
+        raw_response=results
+    )
 
 
 def get_alert_attachments(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -729,29 +792,43 @@ def get_on_call(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def create_incident(client: Client, args: Dict[str, Any]) -> CommandResults:
-    polling_args = {
+    args = {
         'request_type_suffix': INCIDENTS_SUFFIX,
         'output_prefix': 'OpsGenie.Incident',
         **args
     }
-    polling_result = run_polling_command(args=polling_args,
-                                         cmd='opsgenie-create-incident',
-                                         action_function=client.create_incident,
-                                         results_function=client.get_request)
-    return polling_result
+    data = client.create_incident(args)
+    request_id = data.get("requestId")
+    if not request_id:
+        raise ConnectionError(f"Failed to send request - {data}")
+    args['request_id'] = request_id
+    results = client.get_request(args)
+    return CommandResults(
+        outputs_prefix=args.get("output_prefix", "OpsGenie"),
+        outputs=results.get("data"),
+        readable_output=tableToMarkdown("OpsGenie", results.get('data')),
+        raw_response=results
+    )
 
 
 def delete_incident(client: Client, args: Dict[str, Any]) -> CommandResults:
-    polling_args = {
+    args = {
         'request_type_suffix': INCIDENTS_SUFFIX,
         'output_prefix': 'OpsGenie.DeletedIncident',
         **args
     }
-    polling_result = run_polling_command(args=polling_args,
-                                         cmd='opsgenie-delete-incident',
-                                         action_function=client.delete_incident,
-                                         results_function=client.get_request)
-    return polling_result
+    data = client.delete_incident(args)
+    request_id = data.get("requestId")
+    if not request_id:
+        raise ConnectionError(f"Failed to send request - {data}")
+    args['request_id'] = request_id
+    results = client.get_request(args)
+    return CommandResults(
+        outputs_prefix=args.get("output_prefix", "OpsGenie"),
+        outputs=results.get("data"),
+        readable_output=tableToMarkdown("OpsGenie", results.get('data')),
+        raw_response=results
+    )
 
 
 def get_incidents(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -781,68 +858,103 @@ def list_incidents(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def close_incident(client: Client, args: Dict[str, Any]) -> CommandResults:
-    polling_args = {
+    args = {
         'request_type_suffix': INCIDENTS_SUFFIX,
         'output_prefix': 'OpsGenie.ClosedIncident',
         **args
     }
-    polling_result = run_polling_command(args=polling_args,
-                                         cmd='opsgenie-close-incident',
-                                         action_function=client.close_incident,
-                                         results_function=client.get_request)
-    return polling_result
+    data = client.close_incident(args)
+    request_id = data.get("requestId")
+    if not request_id:
+        raise ConnectionError(f"Failed to send request - {data}")
+    args['request_id'] = request_id
+    results = client.get_request(args)
+    return CommandResults(
+        outputs_prefix=args.get("output_prefix", "OpsGenie"),
+        outputs=results.get("data"),
+        readable_output=tableToMarkdown("OpsGenie", results.get('data')),
+        raw_response=results
+    )
 
 
 def resolve_incident(client: Client, args: Dict[str, Any]) -> CommandResults:
-    polling_args = {
+    args = {
         'request_type_suffix': INCIDENTS_SUFFIX,
         'output_prefix': 'OpsGenie.ResolvedIncident',
         **args
     }
-    polling_result = run_polling_command(args=polling_args,
-                                         cmd='opsgenie-resolve-incident',
-                                         action_function=client.resolve_incident,
-                                         results_function=client.get_request)
-    return polling_result
+    data = client.resolve_incident(args)
+    request_id = data.get("requestId")
+    if not request_id:
+        raise ConnectionError(f"Failed to send request - {data}")
+    args['request_id'] = request_id
+    results = client.get_request(args)
+    return CommandResults(
+        outputs_prefix=args.get("output_prefix", "OpsGenie"),
+        outputs=results.get("data"),
+        readable_output=tableToMarkdown("OpsGenie", results.get('data')),
+        raw_response=results
+    )
 
 
 def add_responder_incident(client: Client, args: Dict[str, Any]) -> CommandResults:
-    polling_args = {
+    args = {
         'request_type_suffix': INCIDENTS_SUFFIX,
         'output_prefix': 'OpsGenie.AddResponderIncident',
         **args
     }
-    polling_result = run_polling_command(args=polling_args,
-                                         cmd='opsgenie-add-responder-incident',
-                                         action_function=client.add_responder_incident,
-                                         results_function=client.get_request)
-    return polling_result
+    data = client.add_responder_incident(args)
+    request_id = data.get("requestId")
+    if not request_id:
+        raise ConnectionError(f"Failed to send request - {data}")
+    args['request_id'] = request_id
+    results = client.get_request(args)
+    return CommandResults(
+        outputs_prefix=args.get("output_prefix", "OpsGenie"),
+        outputs=results.get("data"),
+        readable_output=tableToMarkdown("OpsGenie", results.get('data')),
+        raw_response=results
+    )
 
 
 def add_tag_incident(client: Client, args: Dict[str, Any]) -> CommandResults:
-    polling_args = {
+    args = {
         'request_type_suffix': INCIDENTS_SUFFIX,
         'output_prefix': 'OpsGenie.AddTagIncident',
         **args
     }
-    polling_result = run_polling_command(args=polling_args,
-                                         cmd='opsgenie-add-tag-incident',
-                                         action_function=client.add_tag_incident,
-                                         results_function=client.get_request)
-    return polling_result
+    data = client.add_tag_incident(args)
+    request_id = data.get("requestId")
+    if not request_id:
+        raise ConnectionError(f"Failed to send request - {data}")
+    args['request_id'] = request_id
+    results = client.get_request(args)
+    return CommandResults(
+        outputs_prefix=args.get("output_prefix", "OpsGenie"),
+        outputs=results.get("data"),
+        readable_output=tableToMarkdown("OpsGenie", results.get('data')),
+        raw_response=results
+    )
 
 
 def remove_tag_incident(client: Client, args: Dict[str, Any]) -> CommandResults:
-    polling_args = {
+    args = {
         'request_type_suffix': INCIDENTS_SUFFIX,
         'output_prefix': 'OpsGenie.RemoveTagIncident',
         **args
     }
-    polling_result = run_polling_command(args=polling_args,
-                                         cmd='opsgenie-remove-tag-incident',
-                                         action_function=client.remove_tag_incident,
-                                         results_function=client.get_request)
-    return polling_result
+    data = client.remove_tag_incident(args)
+    request_id = data.get("requestId")
+    if not request_id:
+        raise ConnectionError(f"Failed to send request - {data}")
+    args['request_id'] = request_id
+    results = client.get_request(args)
+    return CommandResults(
+        outputs_prefix=args.get("output_prefix", "OpsGenie"),
+        outputs=results.get("data"),
+        readable_output=tableToMarkdown("OpsGenie", results.get('data')),
+        raw_response=results
+    )
 
 
 def get_teams(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -859,8 +971,7 @@ def fetch_incidents_by_type(client: Client,
                             params: Dict[str, Any],
                             incident_fetching_func: Callable,
                             now: datetime,
-                            last_run_dict: Optional[dict] = None) \
-        -> Tuple[List[Dict[str, str]], str, str]:
+                            last_run_dict: Optional[dict] = None):
     query = params.get('query')
     limit = int(params.get('max_fetch', 50))
     fetch_time = params.get('first_fetch', '3 days').strip()
