@@ -43,7 +43,7 @@ class Client:
         402: 'Unauthorized access. User does not have the required license type to run this API.',
         403: 'Unauthorized access. The provided API key does not have the required RBAC permissions to run this API.',
         404: 'XDR Not found: The provided URL may not be of an active XDR server.',
-        413: 'Requst entity too large please reach XDR support.'
+        413: 'Request entity too large. Please reach out to the XDR support team.'
     }
 
     def __init__(self, params: Dict):

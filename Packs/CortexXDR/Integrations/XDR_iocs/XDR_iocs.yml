@@ -178,7 +178,7 @@ script:
     execution: false
     name: xdr-iocs-set-sync-time
   - deprecated: false
-    description: Creates the sync file for the manual process.
+    description: Creates the sync file for the manual process. Run this command when instructed by the XDR support team.
     execution: false
     name: xdr-iocs-create-sync-file
   - arguments:
