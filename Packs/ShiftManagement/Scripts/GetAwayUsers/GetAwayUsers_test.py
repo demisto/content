@@ -55,7 +55,8 @@ def test_script_invalid(mocker):
     """
     from GetAwayUsers import main
     error_entry_type: int = 4
-    return_results_mock = mocker.patch.object(GetAwayUsers, 'return_error')
+    mocker.patch.object(GetAwayUsers, 'return_error')
+    mocker.patch.object(demisto, 'error')
     away_user = away_user_data
     not_away_user = deepcopy(away_user_data)
     not_away_user['isAway'] = False

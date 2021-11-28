@@ -30,8 +30,8 @@ def main():
     # Build list of users that we can assign to
     userinfo = userinfo[0]['Contents']
 
-    non_OOO_list = [x['username'] for x in userinfo if x['username'] not in list_info and
-                    x['username'] not in away_user_names]
+    non_OOO_list = [x['username'] for x in userinfo if
+                    x['username'] not in list_info and x['username'] not in away_user_names]
 
     # Assign user to the Incident, if there is anyone to assign
     if not non_OOO_list:

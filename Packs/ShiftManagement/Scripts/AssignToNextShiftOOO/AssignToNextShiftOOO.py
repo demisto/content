@@ -30,8 +30,8 @@ def main():
     away_user_names: List[str] = [away_user['username'] for away_user in away_users]
 
     # Build list of available users
-    non_OOO_list = [x['username'] for x in users_on_call if x['username'] not in list_info and
-                    x['username'] not in away_user_names]
+    non_OOO_list = [x['username'] for x in users_on_call if
+                    x['username'] not in list_info and x['username'] not in away_user_names]
 
     # Assign on call users to the Incidents, if there is anyone to assign
     if not non_OOO_list:
