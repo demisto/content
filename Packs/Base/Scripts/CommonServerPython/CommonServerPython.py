@@ -1829,10 +1829,8 @@ class JsonTransformer:
             return self.func(json_input)
         if isinstance(json_input, STRING_TYPES):
             return json_input
-        if isinstance(json_input, list):
-            return flattenCell(json_input, is_pretty)
         if not isinstance(json_input, dict):
-            return str(json_input)
+            return flattenCell(json_input, is_pretty)
         if self.flatten:
             return '\n'.join(
                 [u'{key}: {val}'.format(key=k, val=flattenCell(v, is_pretty)) for k, v in json_input.items()]) # for BC
