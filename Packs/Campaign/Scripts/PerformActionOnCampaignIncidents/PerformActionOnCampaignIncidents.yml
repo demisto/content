@@ -1,21 +1,25 @@
+args:
+- auto: PREDEFINED
+  defaultValue: High
+  description: The incident similarity parameter (High or Low) to take from the context.
+  name: similarity
+  predefined:
+  - High
+  - Low
+comment: |-
+  Perform user actions such as link, close, etc., on selected incidents from a campaign.
+
+  This automation runs using the default Limited User role, unless you explicitly change the permissions.
+  For more information, see the section about permissions here:
+  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
 commonfields:
   id: PerformActionOnCampaignIncidents
   version: -1
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.9.8.24399
 enabled: true
 name: PerformActionOnCampaignIncidents
 runonce: false
 script: ''
-comment: Perform user actions such as link, close, etc., on selected incidents from a
-  campaign.
-args:
-- name: similarity
-  auto: PREDEFINED
-  predefined:
-  - High
-  - Low
-  description: The incident similarity parameter (High or Low) to take from the context.
-  defaultValue: High
 scripttarget: 0
 subtype: python3
 tags: []
