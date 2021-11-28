@@ -1,15 +1,15 @@
-The Expanse v2 integration for Cortex XSOAR leverages the Expander API to create incidents from Expanse issues. It also leverages Expanse's unparalleled view of the Internet to enrich IPs, domains and certificates using information from assets discovered by Expanse Expander and risky flow detected by Expanse Behavior.
+The Cortex Xpanse (previously **Expanse v2**) integration for Cortex XSOAR leverages the Expander API to create incidents from Expanse issues. It also leverages Expanse's unparalleled view of the Internet to enrich IPs, domains and certificates using information from assets discovered by Expanse Expander and risky flow detected by Expanse Behavior.
 
 This integration was developed and tested with Expanse Expander and Behavior.
 
-Expanse is a Palo Alto Networks company.
+Cortex Xpanse is a Palo Alto Networks company.
 
 Supported Cortex XSOAR versions: 6.0.0 and later.
 
 ## Configure ExpanseV2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for ExpanseV2.
+2. Search for Cortex Xpanse.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |

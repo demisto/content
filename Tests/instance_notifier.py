@@ -1,6 +1,5 @@
 import argparse
 import json
-import logging
 import os
 
 import demisto_client
@@ -8,6 +7,7 @@ from slack import WebClient as SlackClient
 
 from Tests.configure_and_test_integration_instances import update_content_on_demisto_instance
 from Tests.scripts.utils.log_util import install_logging
+from Tests.scripts.utils import logging_wrapper as logging
 from Tests.test_integration import __create_integration_instance, __delete_integrations_instances
 from demisto_sdk.commands.common.tools import str2bool
 
@@ -154,7 +154,7 @@ def slack_notifier(slack_token, secret_conf_path, server, user, password, build_
 
 
 if __name__ == "__main__":
-    install_logging('Instance-Test.log')
+    install_logging('Instance-Test.log', logger=logging)
     options = options_handler()
     if options.instance_tests:
         env_results_path = os.path.join(os.getenv('ARTIFACTS_FOLDER', './artifacts'), 'env_results.json')

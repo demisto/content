@@ -1,0 +1,522 @@
+{
+    "detailsV2": {
+        "tabs": [
+            {
+                "hidden": false,
+                "id": "1vduzkpmlh",
+                "name": "Incident Info",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "1vduzkpmlh-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "type",
+                                "height": 22,
+                                "id": "1cc0c4a0-9bd7-11e9-ba23-8723b1f1df6b",
+                                "index": 0,
+                                "listId": "fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotsource",
+                                "height": 22,
+                                "id": "87e18ad0-9bd7-11e9-ba23-8723b1f1df6b",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "severity",
+                                "height": 22,
+                                "id": "20430d90-9bd7-11e9-ba23-8723b1f1df6b",
+                                "index": 2,
+                                "listId": "fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "owner",
+                                "height": 22,
+                                "id": "4fd2b640-a7d6-11e9-8433-9f52f2917950",
+                                "index": 3,
+                                "listId": "fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "playbookid",
+                                "height": 22,
+                                "id": "930bb7a0-a866-11e9-aeb8-c3448b5d692d",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourceinstance",
+                                "height": 22,
+                                "id": "43cfe2d0-9bee-11e9-9a3f-8b4b2158e260",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "sourcebrand",
+                                "height": 22,
+                                "id": "42f03130-9bee-11e9-9a3f-8b4b2158e260",
+                                "index": 6,
+                                "listId": "fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Case Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "1vduzkpmlh-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Notes",
+                        "readOnly": true,
+                        "static": false,
+                        "type": "notes",
+                        "w": 1,
+                        "x": 1,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "1vduzkpmlh-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Child Incidents",
+                        "readOnly": true,
+                        "static": false,
+                        "type": "childInv",
+                        "w": 1,
+                        "x": 2,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "1vduzkpmlh-4a31afa0-98ba-11e9-a519-93a53c759fe0",
+                        "isVisible": true,
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Evidence",
+                        "readOnly": true,
+                        "static": false,
+                        "type": "evidence",
+                        "w": 1,
+                        "x": 0,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "1vduzkpmlh-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+                        "isVisible": true,
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Team Members",
+                        "readOnly": true,
+                        "static": false,
+                        "type": "team",
+                        "w": 1,
+                        "x": 1,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "1vduzkpmlh-c9b7ded0-a863-11e9-aeb8-c3448b5d692d",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "dbotcreated",
+                                "height": 24,
+                                "id": "930bf0a0-a864-11e9-aeb8-c3448b5d692d",
+                                "index": 0,
+                                "listId": "c9b7ded0-a863-11e9-aeb8-c3448b5d692d",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "occurred",
+                                "height": 24,
+                                "id": "e92b52b0-a863-11e9-aeb8-c3448b5d692d",
+                                "index": 1,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotmodified",
+                                "height": 24,
+                                "id": "99cbd860-a864-11e9-aeb8-c3448b5d692d",
+                                "index": 2,
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "dbotclosed",
+                                "height": 24,
+                                "id": "a1a67ef0-a864-11e9-aeb8-c3448b5d692d",
+                                "index": 3,
+                                "listId": "c9b7ded0-a863-11e9-aeb8-c3448b5d692d",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "remediationsla",
+                                "height": 24,
+                                "id": "6cd9de10-9bee-11e9-9a3f-8b4b2158e260",
+                                "index": 4,
+                                "listId": "24257a20-98b1-11e9-97d7-ed26ef9e46c8",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "detectionsla",
+                                "height": 24,
+                                "id": "6b72acf0-9bee-11e9-9a3f-8b4b2158e260",
+                                "index": 5,
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "dbotduedate",
+                                "height": 24,
+                                "id": "551d6320-a7d6-11e9-8433-9f52f2917950",
+                                "index": 6,
+                                "listId": "c9b7ded0-a863-11e9-aeb8-c3448b5d692d",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Timeline Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "1vduzkpmlh-e462ffc0-a864-11e9-aeb8-c3448b5d692d",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "dbotclosed",
+                                "height": 24,
+                                "id": "427bf020-a866-11e9-aeb8-c3448b5d692d",
+                                "index": 0,
+                                "listId": "e462ffc0-a864-11e9-aeb8-c3448b5d692d",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "closereason",
+                                "height": 24,
+                                "id": "f23f6e30-a864-11e9-aeb8-c3448b5d692d",
+                                "index": 1,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "closinguserid",
+                                "height": 24,
+                                "id": "f387a5a0-a864-11e9-aeb8-c3448b5d692d",
+                                "index": 2,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "closenotes",
+                                "height": 48,
+                                "id": "f579ffc0-a864-11e9-aeb8-c3448b5d692d",
+                                "index": 3,
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Closing Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "1vduzkpmlh-d8316060-ac70-11e9-a30b-53d47e1ea7d7",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "incidentlink",
+                                "height": 22,
+                                "id": "21a4a950-4c65-11ec-9b4f-d370b97e00c8",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 1,
+                                "fieldId": "cybersixgillstatus",
+                                "height": 53,
+                                "id": "3bf8dc80-4617-11ec-a3e6-073e7f7f29fa",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 1,
+                                "fieldId": "cybersixgilltriggeredassets",
+                                "height": 53,
+                                "id": "96c217b0-46ff-11ec-a87f-9f90967a78ae",
+                                "index": 1,
+                                "listId": "1vduzkpmlh-d8316060-ac70-11e9-a30b-53d47e1ea7d7",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "cyberthreatlevel",
+                                "height": 53,
+                                "id": "a58f34a0-41a0-11ea-ab50-c5b3863b3e71",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "cybersixgillthreatlevel",
+                                "height": 53,
+                                "id": "3ec2aae0-4617-11ec-a3e6-073e7f7f29fa",
+                                "index": 0,
+                                "listId": "1vduzkpmlh-d8316060-ac70-11e9-a30b-53d47e1ea7d7",
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "cybersixgillthreattype",
+                                "height": 53,
+                                "id": "3fbe48f0-4617-11ec-a3e6-073e7f7f29fa",
+                                "index": 1,
+                                "listId": "1vduzkpmlh-d8316060-ac70-11e9-a30b-53d47e1ea7d7",
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Cybersixgill Alert Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 4,
+                        "hideName": false,
+                        "i": "1vduzkpmlh-a1d27840-4617-11ec-a3e6-073e7f7f29fa",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "cybersixgillsite",
+                                "height": 53,
+                                "id": "2abe92a0-46ff-11ec-a87f-9f90967a78ae",
+                                "index": 0,
+                                "listId": "1vduzkpmlh-a1d27840-4617-11ec-a3e6-073e7f7f29fa",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "cybersixgillactor",
+                                "height": 53,
+                                "id": "34185f20-46ff-11ec-a87f-9f90967a78ae",
+                                "index": 1,
+                                "listId": "1vduzkpmlh-a1d27840-4617-11ec-a3e6-073e7f7f29fa",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "details",
+                                "height": 106,
+                                "id": "bb70d990-4617-11ec-a3e6-073e7f7f29fa",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Investigation Data",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "h": 3,
+                        "i": "1vduzkpmlh-0905b090-4618-11ec-a3e6-073e7f7f29fa",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 3,
+                        "moved": false,
+                        "name": "Indicators",
+                        "query": "",
+                        "queryType": "input",
+                        "static": false,
+                        "type": "indicators",
+                        "w": 3,
+                        "x": 0,
+                        "y": 8
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 4,
+                        "hideName": false,
+                        "i": "1vduzkpmlh-43d0e090-46ff-11ec-a87f-9f90967a78ae",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "cybersixgillassessment",
+                                "height": 106,
+                                "id": "5ba50930-46ff-11ec-a87f-9f90967a78ae",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "cybersixgillrecommendations",
+                                "height": 22,
+                                "id": "5d864c50-46ff-11ec-a87f-9f90967a78ae",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Cybersixgill Assessment and Recommendations",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "warRoom",
+                "name": "War Room",
+                "type": "warRoom"
+            },
+            {
+                "id": "workPlan",
+                "name": "Work Plan",
+                "type": "workPlan"
+            },
+            {
+                "id": "evidenceBoard",
+                "name": "Evidence Board",
+                "type": "evidenceBoard"
+            },
+            {
+                "id": "relatedIncidents",
+                "name": "Related Incidents",
+                "type": "relatedIncidents"
+            },
+            {
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas"
+            }
+        ]
+    },
+    "id": "Cybersixgill Actionable Alerts",
+    "name": "Cybersixgill Actionable Alerts",
+    "version": -1,
+    "group": "incident",
+    "system": false,
+    "fromVersion": "6.0.0",
+    "description": ""
+}

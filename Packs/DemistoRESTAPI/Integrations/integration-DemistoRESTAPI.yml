@@ -15,17 +15,14 @@ configuration:
   required: true
 - display: Demisto Server API Key
   name: apikey
-  defaultvalue: ""
   type: 4
   required: true
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ""
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ''
   type: 8
   required: false
 script:
@@ -43,6 +40,12 @@ script:
             requestUrl += '/';
         }
         requestUrl += uri;
+        try {
+            body = JSON.parse(body);
+        } catch (ex) {
+            // do nothing, use the body as is in the request.
+            logDebug('could not parse body as a JSON object, passing as is. body: ' + JSON.stringify(body));
+        }
 
         var res = httpMultipart(
             requestUrl,
@@ -249,5 +252,5 @@ script:
     execution: true
   runonce: false
 tests:
-- No test
+- DemistoUploadFileV2 Test
 fromversion: 5.0.0

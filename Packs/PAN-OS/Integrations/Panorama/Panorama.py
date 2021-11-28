@@ -2694,23 +2694,23 @@ def prettify_rule(rule: dict):
         pretty_rule['DeviceGroup'] = DEVICE_GROUP
     if '@loc' in rule:
         pretty_rule['Location'] = rule['@loc']
-    if 'category' in rule and 'member' in rule['category']:
+    if isinstance(rule.get('category'), dict) and 'member' in rule['category']:
         pretty_rule['CustomUrlCategory'] = rule['category']['member']
-    if 'application' in rule and 'member' in rule['application']:
+    if isinstance(rule.get('application'), dict) and 'member' in rule['application']:
         pretty_rule['Application'] = rule['application']['member']
-    if 'destination' in rule and 'member' in rule['destination']:
+    if isinstance(rule.get('destination'), dict) and 'member' in rule['destination']:
         pretty_rule['Destination'] = rule['destination']['member']
-    if 'from' in rule and 'member' in rule['from']:
+    if isinstance(rule.get('from'), dict) and 'member' in rule['from']:
         pretty_rule['From'] = rule['from']['member']
-    if 'service' in rule and 'member' in rule['service']:
+    if isinstance(rule.get('service'), dict) and 'member' in rule['service']:
         pretty_rule['Service'] = rule['service']['member']
-    if 'to' in rule and 'member' in rule['to']:
+    if isinstance(rule.get('to'), dict) and 'member' in rule['to']:
         pretty_rule['To'] = rule['to']['member']
-    if 'source' in rule and 'member' in rule['source']:
+    if isinstance(rule.get('source'), dict) and 'member' in rule['source']:
         pretty_rule['Source'] = rule['source']['member']
-    if 'tag' in rule and 'member' in rule['tag']:
+    if isinstance(rule.get('tag'), dict) and 'member' in rule['tag']:
         pretty_rule['Tags'] = rule['tag']['member']
-    if 'log-setting' in rule and '#text' in rule['log-setting']:
+    if isinstance(rule.get('log-setting'), dict) and '#text' in rule['log-setting']:
         pretty_rule['LogForwardingProfile'] = rule['log-setting']['#text']
 
     return pretty_rule
@@ -2904,10 +2904,11 @@ def panorama_get_current_element(element_to_change: str, xpath: str) -> list:
         return []
 
     result = response.get('response').get('result')
-    if '@dirtyId' in result:
+    current_object = result.get(element_to_change, {})
+    if '@dirtyId' in result or '@dirtyId' in current_object:
         LOG(f'Found uncommitted item:\n{result}')
-        raise Exception('Please commit the instance prior to editing the Security rule.')
-    current_object = result.get(element_to_change)
+        raise DemistoException('Please commit the instance prior to editing the Security rule.')
+
     if 'list' in current_object:
         current_objects_items = argToList(current_object['list']['member'])
     elif 'member' in current_object:
@@ -5595,9 +5596,9 @@ def prettify_data_filtering_rule(rule: Dict) -> Dict:
     pretty_rule = {
         'Name': rule.get('@name')
     }
-    if 'application' in rule and 'member' in rule['application']:
+    if isinstance(rule.get('application'), dict) and 'member' in rule['application']:
         pretty_rule['Application'] = rule['application']['member']
-    if 'file-type' in rule and 'member' in rule['file-type']:
+    if isinstance(rule.get('file-type'), dict) and 'member' in rule['file-type']:
         pretty_rule['File-type'] = rule['file-type']['member']
     if 'direction' in rule:
         pretty_rule['Direction'] = rule['direction']
@@ -5943,19 +5944,19 @@ def prettify_profile_rule(rule: Dict) -> Dict:
         'Name': rule['@name'],
         'Action': rule['action']
     }
-    if 'application' in rule and 'member' in rule['application']:
+    if isinstance(rule.get('application'), dict) and 'member' in rule['application']:
         pretty_rule['Application'] = rule['application']['member']
-    if 'file-type' in rule and 'member' in rule['file-type']:
+    if isinstance(rule.get('file-type'), dict) and 'member' in rule['file-type']:
         pretty_rule['File-type'] = rule['file-type']['member']
     if 'wildfire-action' in rule:
         pretty_rule['WildFire-action'] = rule['wildfire-action']
-    if 'category' in rule and 'member' in rule['category']:
+    if isinstance(rule.get('category'), dict) and 'member' in rule['category']:
         pretty_rule['Category'] = rule['category']['member']
     elif 'category' in rule:
         pretty_rule['Category'] = rule['category']
-    if 'severity' in rule and 'member' in rule['severity']:
+    if isinstance(rule.get('severity'), dict) and 'member' in rule['severity']:
         pretty_rule['Severity'] = rule['severity']['member']
-    if 'threat-name' in rule and 'member' in rule['threat-name']:
+    if isinstance(rule.get('threat-name'), dict) and 'member' in rule['threat-name']:
         pretty_rule['Threat-name'] = rule['threat-name']['member']
     elif 'threat-name' in rule:
         pretty_rule['Threat-name'] = rule['threat-name']
@@ -5963,7 +5964,7 @@ def prettify_profile_rule(rule: Dict) -> Dict:
         pretty_rule['Packet-capture'] = rule['packet-capture']
     if '@maxver' in rule:
         pretty_rule['Max_version'] = rule['@maxver']
-    if 'sinkhole' in rule:
+    if isinstance(rule.get('sinkhole'), dict):
         pretty_rule['Sinkhole'] = {}
         if 'ipv4-address' in rule['sinkhole']:
             pretty_rule['Sinkhole']['IPV4'] = rule['sinkhole']['ipv4-address']
@@ -5971,9 +5972,9 @@ def prettify_profile_rule(rule: Dict) -> Dict:
             pretty_rule['Sinkhole']['IPV6'] = rule['sinkhole']['ipv6-address']
     if 'host' in rule:
         pretty_rule['Host'] = rule['host']
-    if 'cve' in rule and 'member' in rule['cve']:
+    if isinstance(rule.get('cve'), dict) and 'member' in rule['cve']:
         pretty_rule['CVE'] = rule['cve']['member']
-    if 'vendor-id' in rule and 'member' in rule['vendor-id']:
+    if isinstance(rule.get('vendor-id'), dict) and 'member' in rule['vendor-id']:
         pretty_rule['Vendor-id'] = rule['vendor-id']['member']
     if 'analysis' in rule:
         pretty_rule['Analysis'] = rule['analysis']
@@ -6186,9 +6187,9 @@ def prettify_wildfire_rule(rule: Dict) -> Dict:
     pretty_rule = {
         'Name': rule['@name'],
     }
-    if 'application' in rule and 'member' in rule['application']:
+    if isinstance(rule.get('application'), dict) and 'member' in rule['application']:
         pretty_rule['Application'] = rule['application']['member']
-    if 'file-type' in rule and 'member' in rule['file-type']:
+    if isinstance(rule.get('file-type'), dict) and 'member' in rule['file-type']:
         pretty_rule['File-type'] = rule['file-type']['member']
     if 'analysis' in rule:
         pretty_rule['Analysis'] = rule['analysis']
@@ -7126,8 +7127,8 @@ def main():
     try:
         args = demisto.args()
         params = demisto.params()
-        additional_malicious = argToList(demisto.params().get('additional_malicious'))
-        additional_suspicious = argToList(demisto.params().get('additional_suspicious'))
+        additional_malicious = argToList(params.get('additional_malicious'))
+        additional_suspicious = argToList(params.get('additional_suspicious'))
         initialize_instance(args=args, params=params)
         LOG(f'Command being called is: {demisto.command()}')
 
@@ -7492,7 +7493,7 @@ def main():
         else:
             raise NotImplementedError(f'Command {demisto.command()} was not implemented.')
     except Exception as err:
-        return_error(str(err))
+        return_error(str(err), error=traceback.format_exc())
 
     finally:
         LOG.print_log()
