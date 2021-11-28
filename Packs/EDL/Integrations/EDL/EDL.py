@@ -31,6 +31,7 @@ EDL_MISSING_REFRESH_ERR_MSG: str = 'Refresh Rate must be "number date_range_unit
 EDL_FILTER_FIELDS: Optional[str] = "name,type"
 EDL_ON_DEMAND_KEY: str = 'UpdateEDL'
 EDL_ON_DEMAND_CACHE_PATH: str = ''
+EDL_SEARCH_LOOP_LIMIT: int = 10
 
 ''' REFORMATTING REGEXES '''
 _PROTOCOL_REMOVAL = re.compile('^(?:[a-z]+:)*//')
@@ -131,17 +132,15 @@ def create_new_edl(request_args: RequestArguments) -> str:
         size=PAGE_SIZE,
         limit=limit
     )
-    iocs = []
+    iocs: List[dict] = []
     formatted_iocs: set = set()
-    while True:
-        current_limit = limit + (limit - len(formatted_iocs))
-        indicator_searcher.limit = current_limit
+    loop_counter = 0
+    while not indicator_searcher.is_search_done() and loop_counter < EDL_SEARCH_LOOP_LIMIT:
         new_iocs = find_indicators_to_limit(indicator_searcher)
         iocs.extend(new_iocs)
         formatted_iocs = format_indicators(iocs, request_args)
-        # continue searching iocs if 1) iocs was truncated or 2) got all available iocs
-        if len(formatted_iocs) >= len(iocs) or indicator_searcher.total <= current_limit:
-            break
+        indicator_searcher.limit += limit - len(formatted_iocs)
+        loop_counter += 1
     return iterable_to_str(list(formatted_iocs)[request_args.offset:limit])
 
 

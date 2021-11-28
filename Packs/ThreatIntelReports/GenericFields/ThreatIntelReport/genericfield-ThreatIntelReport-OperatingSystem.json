@@ -20,6 +20,11 @@
     "ownerOnly": false,
     "required": false,
     "sla": 0,
+    "selectValues": [
+        "Android",
+        "Linux",
+        "Windows"
+    ],
     "system": false,
     "threshold": 72,
     "type": "tagsSelect",
