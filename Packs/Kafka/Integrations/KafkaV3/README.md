@@ -1,177 +1,193 @@
-Use the Kafka integration to manage messages and partitions.
+The Open source distributed streaming platform
+This integration was integrated and tested with version xx of KafkaV3
 
-This integration was integrated and tested with version 2.7 of Kafka.
+Some changes have been made that might affect your existing content. 
+If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-kafka-v3).
 
-This integration is fully compatible with the Kafka v2 integration.
+## Configure Kafka v3 on Cortex XSOAR
 
-Configure Kafka v3 on Cortex XSOAR
-----------------------------------
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for Kafka v3.
+3. Click **Add instance** to create and configure a new integration instance.
 
-1.  Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2.  Search for Kafka v3.
-3.  Click **Add instance** to create and configure a new integration instance.  
-    *   **Name**: a meaningful name for the integration instance.
-    *   **Use proxy**
-    *   **CSV list of Kafka brokers to connect to**, e.g., `ip:port,ip2:port2`
-    *   **Do not validate server certificate (insecure)**
-    *   **CA certificate of Kafka server (.cer)**
-    *   **Client certificate (.cer)**
-    *   **Client certificate key (.key)**
-    *   **Additional password (if required)**
-    *   **Topic to fetch incidents from**
-    *   **Offset to fetch incidents from**
-    *   **Max number of messages to fetch**
-    *   **Incident type**
-    *   **Enable debug (will post Kafka connection logs to the War Room)**
-4.  Click **Test** to validate the URLs, token, and connection.
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | CSV list of Kafka brokers to connect to, e.g. 172.16.20.207:9092,172.16.20.234:9093 |  | True |
+    | Use TLS for connection |  | False |
+    | Trust any certificate (not secure) |  | False |
+    | CA certificate of Kafka server (.cer) |  | False |
+    | Client certificate (.cer) |  | False |
+    | Client certificate key (.key) |  | False |
+    | Client certificate key password (if required) |  | False |
+    | Password |  | False |
+    | Topic to fetch incidents from (Required for fetch incidents) |  | False |
+    | CSV list of partitions to fetch messages from |  | False |
+    | Offset to fetch messages from (Exclusive) | The initial offset to start fetching from, not including the value set \(e.g. if 3 is set, the first event that will be fetched will be with offset 4\). If you want to start from the earliest or latest, type in 'earliest' or 'latest' accordingly. | False |
+    | Max number of messages to fetch |  | False |
+    | Fetch incidents |  | False |
+    | Incident type |  | False |
+    | Max number of bytes per message | The max number of message bytes to retrieve in each attempted fetch request. Should be in multiples of 1024. If the fetching process is taking a long time, you should consider increasing this value. Default is '1048576'. | False |
 
-Commands
---------
-
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
-
-1.  Print all partitions for a topic: kafka-print-topics
-2.  Publish a message to Kafka: kafka-publish-msg
-3.  Consume a single Kafka message: kafka-consume-msg
-4.  Print all partitions for a topic: kafka-fetch-partitions
-
-### 1\. Print all partitions for a topic
-
-* * *
-
+4. Click **Test** to validate the URLs, token, and connection.
+## Commands
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
+### kafka-print-topics
+***
 Prints all partitions of a topic.
 
-##### Base Command
+
+#### Base Command
 
 `kafka-print-topics`
-
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| include_offsets | Whether to fetch topics available offsets or not, defaults to 'true' | Optional |
+| include_offsets | Whether to fetch topics available offsets or not. Possible values are: true, false. Default is true. | Optional | 
 
-##### Context Output
+
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Kafka.Topic.Name | string | Topic name |
-| Kafka.Topic.Partitions.ID | Number | Topic partition ID |
-| Kafka.Topic.Partitions.EarliestOffset | Number | Topic partition earliest offset |
-| Kafka.Topic.Partitions.LatestOffset | Number | Topic partition latest offset. |
+| Kafka.Topic.Name | String | Kafka topic name | 
+| Kafka.Topic.Partitions.ID | Number | Topic partition ID | 
+| Kafka.Topic.Partitions.EarliestOffset | Number | Topic partition earliest offset | 
+| Kafka.Topic.Partitions.LatestOffset | Number | Topic partition latest offset | 
 
 
-##### Command Example
+#### Command Example
+``` ```
 
-`!kafka-print-topics`
+#### Human Readable Output
 
-##### Context Example
 
-![](https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/Kafka_V2_mceclip2.png)
 
-##### Human Readable Output
+### kafka-publish-msg
+***
+Publishes a message to Kafka.
 
-![](https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/Kafka_V2_mceclip3.png)
 
-### 2\. Publish a message to Kafka
-
-* * *
-
-Publishes a message to Kafka. 
-
-##### Base Command
+#### Base Command
 
 `kafka-publish-msg`
-
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| topic | A topic to filter by | Required |
-| value | Message value (string) | Required |
-| partition | Message partition (number) | Optional |
+| topic | A topic to filter messages by. | Required | 
+| value | Message value (string). | Required | 
+| partitioning_key | Message partition (number). | Optional | 
 
-##### Context Output
+
+#### Context Output
 
 There is no context output for this command.
 
-##### Command Example
+#### Command Example
+``` ```
 
-`!kafka-publish-msg topic=test value="test message"`
+#### Human Readable Output
 
-##### Human Readable Output
 
-![](https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/Kafka_V2_mceclip4.png)
 
-### 3\. Consume a single Kafka message
-
-* * *
-
+### kafka-consume-msg
+***
 Consumes a single Kafka message.
 
-##### Base Command
+
+#### Base Command
 
 `kafka-consume-msg`
-
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| topic | A topic to filter by | Required |
-| offset | Message offset to filter by ("Earliest", "Latest", or any other offset number) | Optional |
-| partition | Partition (number) | Optional |
+| topic | A topic to filter by. | Required | 
+| offset | Message offset to filter by. Acceptable values are 'Earliest', 'Latest', or any other offest number. Default is Earliest. | Optional | 
+| partition | Partition (number). | Optional | 
 
-##### Context Output
+
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Kafka.Topic.Name | string | Topic name |
-| Kafka.Topic.Message.Value | string | Message value |
-| Kafka.Topic.Message.Offset | number | Offset of the value in the topic |
+| Kafka.Topic.Name | string | Name of the topic. | 
+| Kafka.Topic.Message.Value | string | Value of the message. | 
+| Kafka.Topic.Message.Offset | number | Offset of the value in the topic. | 
 
-##### Command Example
 
-`!kafka-consume-msg topic=test offset=latest`
+#### Command Example
+``` ```
 
-##### Context Example
+#### Human Readable Output
 
-![](https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/Kafka_V2_mceclip5.png)
 
-##### Human Readable Output
 
-![](https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/Kafka_V2_mceclip6.png)
+### kafka-fetch-partitions
+***
+Fetch partitions for a topic.
 
-### 4\. Print all partitions for a topic
 
-* * *
-
-Prints all partitions for a topic.
-
-##### Base Command
+#### Base Command
 
 `kafka-fetch-partitions`
-
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| topic | A topic to filter by | Required |
+| topic | A topic to filter by. | Required | 
 
-##### Context Output
+
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Kafka.Topic.Name | string | Topic name | 
-| Kafka.Topic.Partition | number | Number of partitions for the topic | 
+| Kafka.Topic.Name | string | Name of topic. | 
+| Kafka.Topic.Partition | number | Prints all partitions for a topic. | 
 
-##### Command Example
 
-`!kafka-fetch-partitions topic=test`
+#### Command Example
+``` ```
 
-##### Context Example
+#### Human Readable Output
 
-![](https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/Kafka_V2_mceclip7.png)
 
-##### Human Readable Output
 
-![](https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/Kafka_V2_mceclip8.png)
+## Breaking changes from the previous version of this integration - Kafka v3
+%%FILL HERE%%
+The following sections list the changes in this version.
+
+### Commands
+#### The following commands were removed in this version:
+* *commandName* - this command was replaced by XXX.
+* *commandName* - this command was replaced by XXX.
+
+### Arguments
+#### The following arguments were removed in this version:
+
+In the *commandName* command:
+* *argumentName* - this argument was replaced by XXX.
+* *argumentName* - this argument was replaced by XXX.
+
+#### The behavior of the following arguments was changed:
+
+In the *commandName* command:
+* *argumentName* - is now required.
+* *argumentName* - supports now comma separated values.
+
+### Outputs
+#### The following outputs were removed in this version:
+
+In the *commandName* command:
+* *outputPath* - this output was replaced by XXX.
+* *outputPath* - this output was replaced by XXX.
+
+In the *commandName* command:
+* *outputPath* - this output was replaced by XXX.
+* *outputPath* - this output was replaced by XXX.
+
+## Additional Considerations for this version
+%%FILL HERE%%
+* Insert any API changes, any behavioral changes, limitations, or restrictions that would be new to this version.

@@ -27,7 +27,8 @@ configuration:
   name: client_cert_key
   required: false
   type: 12
-- display: Client certificate key password (if required)
+- displaypassword: Client certificate key password (if required)
+  hiddenusername: true
   name: additional_password
   required: false
   type: 9
