@@ -1,4 +1,9 @@
-comment: Displays all the campaign incident owners and their quantity.
+comment: |-
+  Displays all the campaign incident owners and their quantity.
+
+  This automation runs using the default Limited User role, unless you explicitly change the permissions.
+  For more information, see the section about permissions here:
+  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
 commonfields:
   id: ShowCampaignIncidentsOwners
   version: -1
@@ -11,7 +16,7 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.9.8.24399
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)

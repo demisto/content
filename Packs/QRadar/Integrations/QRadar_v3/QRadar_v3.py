@@ -58,7 +58,6 @@ MAXIMUM_MIRROR_LIMIT = 100
 DEFAULT_EVENTS_LIMIT = 20
 MAXIMUM_OFFENSES_PER_FETCH = 50
 DEFAULT_OFFENSES_PER_FETCH = 20
-TERMINATING_SEARCH_STATUSES = {'CANCELED', 'ERROR', 'COMPLETED'}
 DEFAULT_MIRRORING_DIRECTION = 'No Mirroring'
 MIRROR_OFFENSE_AND_EVENTS = 'Mirror Offense and Events'
 MIRROR_DIRECTION: Dict[str, Optional[str]] = {
@@ -1348,10 +1347,22 @@ def create_search_with_retry(client: Client, fetch_mode: str, offense: Dict, eve
         f'SELECT {event_columns} FROM events WHERE INOFFENSE({offense_id}) {additional_where} limit {events_limit} '
         f'START {offense_start_time}'
     )
+    print_debug_msg(f'Trying to get events for offense ID: {offense_id}, '
+                    f'offense_start_time: {offense_start_time}, '
+                    f'additional_where: {additional_where}, '
+                    f'events_limit: {events_limit}.')
     num_of_failures = 0
     while num_of_failures <= max_retries:
         try:
-            return client.search_create(query_expression=query_expression)
+            print_debug_msg(f'Creating search for offense ID: {offense_id}, '
+                            f'query_expression: {query_expression}.')
+            ret_value = client.search_create(query_expression=query_expression)
+            print_debug_msg(f'Created search for offense ID: {offense_id}, '
+                            f'offense_start_time: {offense_start_time}, '
+                            f'additional_where: {additional_where}, '
+                            f'events_limit: {events_limit}, '
+                            f'ret_value: {ret_value}.')
+            return ret_value
         except Exception:
             print_debug_msg(f'Failed to create search for offense ID: {offense_id}. '
                             f'Retry number {num_of_failures}/{max_retries}.')
@@ -1361,13 +1372,14 @@ def create_search_with_retry(client: Client, fetch_mode: str, offense: Dict, eve
                 print_debug_msg(f'Max retries for creating search for offense: {offense_id}. Returning empty.')
                 break
             time.sleep(FAILURE_SLEEP)
+    print_debug_msg(f'Returning empty events for offense ID: {offense_id}.')
     return None
 
 
 def poll_offense_events_with_retry(client: Client, search_id: str, offense_id: int,
                                    max_retries: int = EVENTS_FAILURE_LIMIT) -> Tuple[List[Dict], str]:
     """
-    Polls QRadar service for search ID given until status returned is within 'TERMINATING_SEARCH_STATUSES'.
+    Polls QRadar service for search ID given until status returned is within '{'CANCELED', 'ERROR', 'COMPLETED'}'.
     Afterwards, performs a call to retrieve the events returned by the search.
     Has retry mechanism, because QRadar service tends to return random errors when
     it is loaded.
@@ -1388,11 +1400,20 @@ def poll_offense_events_with_retry(client: Client, search_id: str, offense_id: i
     failure_message = ''
     while num_of_failures <= max_retries:
         try:
+            print_debug_msg(f"Getting search status for {search_id}")
             search_status_response = client.search_status_get(search_id)
+            print_debug_msg(f"Got search status for {search_id}")
             query_status = search_status_response.get('status')
             # failures are relevant only when consecutive
             num_of_failures = 0
-            if query_status in TERMINATING_SEARCH_STATUSES:
+            print_debug_msg(f'Search query_status: {query_status}')
+            # Possible values for query_status: {'CANCELED', 'ERROR', 'COMPLETED'}
+            # Don't try to get events if CANCELLED or ERROR
+            if query_status in {'CANCELED', 'ERROR'}:
+                if failure_message == '':
+                    failure_message = f'query_status is {query_status}'
+                return [], failure_message
+            elif query_status == 'COMPLETED':
                 print_debug_msg(f'Getting events for offense {offense_id}')
                 search_results_response = client.search_results_get(search_id)
                 print_debug_msg(f'Http response: {search_results_response.get("http_response", "Not specified - ok")}')
@@ -1451,6 +1472,7 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
 
         offense_id = offense['id']
         events, failure_message = poll_offense_events_with_retry(client, search_response['search_id'], offense_id)
+        print_debug_msg(f"Polled events for offense ID {offense_id}")
         if len(events) >= min_events_size:
             print_debug_msg(f"Fetched {len(events)}/{min_events_size} for offense ID {offense_id}")
             break
@@ -1506,6 +1528,12 @@ def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int
     range_ = f'items=0-{range_max}'
 
     raw_offenses = client.offenses_list(range_, filter_=filter_fetch_query, sort=ASCENDING_ID_ORDER)
+    if raw_offenses:
+        raw_offenses_len = len(raw_offenses)
+        print_debug_msg(f'raw_offenses size: {raw_offenses_len}')
+    else:
+        print_debug_msg('empty raw_offenses')
+
     new_highest_offense_id = raw_offenses[-1].get('id') if raw_offenses else offense_highest_id
     print_debug_msg(f'New highest ID returned from QRadar offenses: {new_highest_offense_id}')
 
