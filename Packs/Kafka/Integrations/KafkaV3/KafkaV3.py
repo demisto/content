@@ -261,10 +261,10 @@ class KafkaCommunicator:
         if offset.lower() == 'earliest':
             return earliest_offset
         elif offset.lower() == 'latest':
-            return oldest_offset - 1  # type: ignore
+            return oldest_offset - 1
         else:
-            number_offset = int(offset)  # type: ignore
-            if number_offset < int(earliest_offset) or number_offset >= int(oldest_offset):  # type: ignore
+            number_offset = int(offset)
+            if number_offset < int(earliest_offset) or number_offset >= int(oldest_offset):
                 raise DemistoException(f'Offset {offset} for topic {topic} and partition {partition} is out of bounds '
                                        f'[{earliest_offset}, {oldest_offset})')
             return number_offset
@@ -282,16 +282,18 @@ class KafkaCommunicator:
         Return a list of TopicPartition objects, ready for consumer assign command.
         """
         topic_partitions = []
-        if partition != -1 and type(partition) is not list:
-            offset = self.get_offset_for_partition(topic, int(partition), offset)  # type: ignore
-            topic_partitions = [TopicPartition(topic=topic, partition=int(partition), offset=offset)]  # type: ignore
+        if partition != -1 and not isinstance(partition, list):
+            offset = self.get_offset_for_partition(topic, int(partition), offset)
+            topic_partitions = [TopicPartition(topic=topic, partition=int(partition), offset=offset)]
 
-        elif type(partition) is list:
-            for single_partition in partition:  # type: ignore
+        elif isinstance(partition, list):
+            for single_partition in partition:
                 try:
                     offset = self.get_offset_for_partition(topic, single_partition, offset)
                     topic_partitions += [TopicPartition(topic=topic, partition=int(single_partition), offset=offset)]
                 except KafkaException as e:
+                    # Sometimes listing topics can return uninitialized partitions.
+                    # If that's the case, ignore them and continue.
                     if 'Unknown partition' not in str(e):
                         raise e
 
@@ -303,6 +305,8 @@ class KafkaCommunicator:
                     offset = self.get_offset_for_partition(topic, metadata_partition.id, offset)
                     topic_partitions += [TopicPartition(topic=topic, partition=metadata_partition.id, offset=offset)]
                 except KafkaException as e:
+                    # Sometimes listing topics can return uninitialized partitions.
+                    # If that's the case, ignore them and continue.
                     if 'Unknown partition' not in str(e):
                         raise e
 
@@ -569,13 +573,14 @@ def check_params(kafka: KafkaCommunicator, topic: str, partitions: Optional[list
     Return True if everything is valid, raise relevant exception otherwise.
     """
     check_offset = False
+    numerical_offset = 0
     topics = kafka.get_topics(consumer=consumer)
     if topic not in topics.keys():
         raise DemistoException(f"Did not find topic {topic} in kafka topics.")
 
     if offset and str(offset).lower() not in SUPPORTED_GENERAL_OFFSETS:
         if offset.isdigit():
-            offset = int(offset)  # type: ignore
+            numerical_offset = int(offset)
             check_offset = True
         else:
             raise DemistoException(f'Offset {offset} is not in supported format.')
@@ -590,8 +595,8 @@ def check_params(kafka: KafkaCommunicator, topic: str, partitions: Optional[list
                                        f"{available_partitions_ids}.")
             if check_offset:
                 earliest_offset, oldest_offset = kafka.get_partition_offsets(topic=topic, partition=int(partition))
-                if offset < int(earliest_offset) or offset >= int(oldest_offset):  # type: ignore
-                    raise DemistoException(f'Offset {offset} for topic {topic} and partition {partition} '
+                if numerical_offset < int(earliest_offset) or numerical_offset >= int(oldest_offset):
+                    raise DemistoException(f'Offset {numerical_offset} for topic {topic} and partition {partition} '
                                            f'is out of bounds [{earliest_offset}, {oldest_offset})')
 
     return True
@@ -640,6 +645,8 @@ def fetch_incidents(kafka: KafkaCommunicator, demisto_params: dict) -> None:
                 continue
         topic_partitions += kafka.get_topic_partitions(topic=topic, partition=int(partition),
                                                        offset=specific_offset)
+    if not partitions:
+        topic_partitions = kafka.get_topic_partitions(topic=topic, partition=-1, offset=offset)
     try:
         if topic_partitions:
             kafka_consumer.assign(topic_partitions)
@@ -717,12 +724,12 @@ def main():  # pragma: no cover
         return_error(f'{str(e)}\n\n{debug_log}')
 
     finally:
-        if os.path.isfile('ca.cert'):
-            os.remove(os.path.abspath('ca.cert'))
-        if os.path.isfile('client.cert'):
-            os.remove(os.path.abspath('client.cert'))
-        if os.path.isfile('client_key.key'):
-            os.remove(os.path.abspath('client_key.key'))
+        if kafka.ca_path and os.path.isfile(kafka.ca_path):
+            os.remove(os.path.abspath(kafka.ca_path))
+        if kafka.client_cert_path and os.path.isfile(kafka.client_cert_path):
+            os.remove(os.path.abspath(kafka.client_cert_path))
+        if kafka.client_key_path and os.path.isfile(kafka.client_key_path):
+            os.remove(os.path.abspath(kafka.client_key_path))
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover

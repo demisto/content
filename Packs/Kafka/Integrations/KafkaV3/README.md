@@ -2,7 +2,7 @@ Use the Kafka integration to manage messages and partitions.
 
 This integration was integrated and tested with version 2.7 of Kafka.
 
-This integration is fully compatible with Kafka_V2 configurations.
+This integration is fully compatible with the Kafka v2 integration.
 
 Configure Kafka v3 on Cortex XSOAR
 ----------------------------------
