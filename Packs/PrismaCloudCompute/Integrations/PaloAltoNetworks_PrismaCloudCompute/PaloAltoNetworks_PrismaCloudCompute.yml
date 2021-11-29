@@ -216,20 +216,23 @@ script:
           type: String
         - contextPath: prismaCloudCompute.profileContainer.archived
           description: Archive indicates whether this profile is archived
-          type: Unknown
+          type: Boolean
         - contextPath: prismaCloudCompute.profileContainer.capabilities
           description: Capabilities are extended capabilities that are added to the
             profile based on static analysis
           type: Unknown
+        - contextPath: prismaCloudCompute.profileContainer.cluster
+          description: Cluster is the provided cluster name
+          type: String
         - contextPath: prismaCloudCompute.profileContainer.collections
           description: Collections are collections to which this profile applies
           type: String
         - contextPath: prismaCloudCompute.profileContainer.created
           description: Created is the profile creation time
-          type: Unknown
+          type: Date
         - contextPath: prismaCloudCompute.profileContainer.entrypoint
           description: Entrypoint is the image entrypoint
-          type: Unknown
+          type: String
         - contextPath: prismaCloudCompute.profileContainer.events
           description: Events are the last historical interactive process events for this
             profile, they are updated in a designated flow
@@ -243,13 +246,57 @@ script:
         - contextPath: prismaCloudCompute.profileContainer.hostNetwork
           description: HostNetwork whether the instance share the network namespace with
             the host
-          type: Unknown
+          type: Boolean
         - contextPath: prismaCloudCompute.profileContainer.hostPid
           description: HostPid indicates whether the instance share the pid namespace with
             the host
-          type: Unknown
-        - contextPath: image
+          type: Boolean
+        - contextPath: prismaCloudCompute.profileContainer.image
           description: description
+          type: Boolean
+        - contextPath: prismaCloudCompute.profileContainer.imageID
+          description: ImageID is the profile's image ID
+          type: String
+        - contextPath: prismaCloudCompute.profileContainer.infra
+          description: InfraContainer indicates this is an infrastructure container
+          type: Boolean
+        - contextPath: prismaCloudCompute.profileContainer.istio
+          description: Istio states whether it is an istio-monitored profile
+          type: Boolean
+        - contextPath: prismaCloudCompute.profileContainer.k8s
+          description: K8s holds Kubernetes related data
+          type: Unknown
+        - contextPath: prismaCloudCompute.profileContainer.label
+          description: Label is the profile's label
+          type: String
+        - contextPath: prismaCloudCompute.profileContainer.lastUpdate
+          description: Modified is the last time when this profile was modified
+          type: Date
+        - contextPath: prismaCloudCompute.profileContainer.learnedStartup
+          description: LearnedStartup indicates that startup events were learned
+          type: Boolean
+        - contextPath: prismaCloudCompute.profileContainer.namespace
+          description: Namespace is the k8s deployment namespace
+          type: String
+        - contextPath: prismaCloudCompute.profileContainer.network
+          description: Network is the profile networking metadata
+          type: Unknown
+        - contextPath: prismaCloudCompute.profileContainer.os
+          description: OS is the profile image OS
+          type: Strubg
+        - contextPath: prismaCloudCompute.profileContainer.processes
+          description: Processes is the profile processes metadata
+          type: Unknown
+        - contextPath: prismaCloudCompute.profileContainer.relearningCause
+          description: RelearningCause is a string that describes the reasoning
+                          for a profile to enter the learning mode afterbeing activated
+          type: String
+        - contextPath: prismaCloudCompute.profileContainer.remainingLearningDurationSec
+          description: RemainingLearningDurationSec represents the total time
+                          left that the system need to finish learning this image
+          type: Number
+        - contextPath: prismaCloudCompute.profileContainer.state
+          description: State is the current state of the profile.
           type: Unknown
 tests:
   - No test
