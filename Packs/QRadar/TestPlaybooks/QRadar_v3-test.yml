@@ -2181,11 +2181,14 @@ tasks:
       '#none#':
       - "61"
     scriptarguments:
-      element_type: {}
-      fields: {}
-      ref_name: {}
-      time_to_live: {}
-      timeout_type: {}
+      element_type:
+        simple: IP
+      ref_name:
+        simple: "# testing name"
+      time_to_live:
+        simple: 1 day
+      timeout_type:
+        simple: FIRST_SEEN
     separatecontext: false
     view: |-
       {
