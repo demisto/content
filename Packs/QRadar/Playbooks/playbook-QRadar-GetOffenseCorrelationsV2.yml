@@ -2,7 +2,9 @@ id: QRadar - Get offense correlations v2
 version: -1
 name: QRadar - Get offense correlations v2
 fromversion: 5.0.0
+deprecated: true
 description: |-
+ Deprecated. Use the "QRadar - Get Offense Logs" playbook instead.
   Run on a QRadar offense to get more information:
 
   * Get all correlations relevant to the offense
@@ -867,4 +869,4 @@ outputs:
 - contextPath: QRadar.Log.ProtocolName
   description: The log's protocol name
 tests:
-- test playbook - QRadarCorrelations For V2
+- No test

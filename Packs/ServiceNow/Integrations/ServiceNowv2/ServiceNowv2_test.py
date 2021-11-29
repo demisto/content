@@ -6,7 +6,7 @@ from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_re
     list_table_fields_command, query_computers_command, get_table_name_command, add_tag_command, query_items_command, \
     get_item_details_command, create_order_item_command, document_route_to_table, fetch_incidents, main, \
     get_mapping_fields_command, get_remote_data_command, update_remote_system_command, build_query_for_request_params, \
-    ServiceNowClient, oauth_test_module, login_command, get_modified_remote_data_command
+    ServiceNowClient, oauth_test_module, login_command, get_modified_remote_data_command, parse_build_query
 from ServiceNowv2 import test_module as module
 from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICKET, RESPONSE_UPDATE_TICKET, \
     RESPONSE_UPDATE_TICKET_SC_REQ, RESPONSE_CREATE_TICKET, RESPONSE_CREATE_TICKET_WITH_OUT_JSON, RESPONSE_QUERY_TICKETS, \
@@ -27,7 +27,8 @@ from test_data.result_constants import EXPECTED_TICKET_CONTEXT, EXPECTED_MULTIPL
     EXPECTED_QUERY_COMPUTERS, EXPECTED_GET_TABLE_NAME, EXPECTED_UPDATE_TICKET_ADDITIONAL, \
     EXPECTED_QUERY_TABLE_SYS_PARAMS, EXPECTED_ADD_TAG, EXPECTED_QUERY_ITEMS, EXPECTED_ITEM_DETAILS, \
     EXPECTED_CREATE_ITEM_ORDER, EXPECTED_DOCUMENT_ROUTE, EXPECTED_MAPPING, \
-    EXPECTED_TICKET_CONTEXT_WITH_ADDITIONAL_FIELDS, EXPECTED_QUERY_TICKETS_EXCLUDE_REFERENCE_LINK
+    EXPECTED_TICKET_CONTEXT_WITH_ADDITIONAL_FIELDS, EXPECTED_QUERY_TICKETS_EXCLUDE_REFERENCE_LINK, \
+    EXPECTED_TICKET_CONTEXT_WITH_NESTED_ADDITIONAL_FIELDS
 
 import demistomock as demisto
 from urllib.parse import urlencode
@@ -56,6 +57,20 @@ def test_get_ticket_context_additional_fields():
     """
     assert EXPECTED_TICKET_CONTEXT_WITH_ADDITIONAL_FIELDS == get_ticket_context(RESPONSE_TICKET,
                                                                                 ['Summary', 'sys_created_by'])
+
+
+def test_get_ticket_context_nested_additional_fields():
+    """Unit test
+    Given
+        - nested additional keys of a ticket (in the form of a.b), alongside regular keys.
+    When
+        - getting a ticket context
+    Then
+        - validate that all the details of the ticket were updated, and all the updated keys are shown in
+        the context with do duplicates.
+    """
+    assert EXPECTED_TICKET_CONTEXT_WITH_NESTED_ADDITIONAL_FIELDS == get_ticket_context(RESPONSE_TICKET,
+                                                                                       ['Summary', 'opened_by.link'])
 
 
 def test_get_ticket_human_readable():
@@ -118,6 +133,25 @@ def test_split_fields_with_special_delimiter():
         assert "must contain a '=' to specify the keys and values" in str(err)
         return
     assert False
+
+
+@pytest.mark.parametrize('query, parsed, result', [
+    ('&', False, '&'),
+    ('&', True, []),
+    ('noampersand', False, 'noampersand'),
+    ('noampersand', True, 'noampersand')
+])
+def test_parse_build_query(query, parsed, result):
+    """Unit test
+    Given
+    - an ampersand
+    When
+    - no parsing the ampersand
+    - when parsing the ampersand
+    Then
+    -  Validate the query field is parsed correctly.
+    """
+    assert parse_build_query(query, parse_amp=parsed) == result
 
 
 @pytest.mark.parametrize('command, args, response, expected_result, expected_auto_extract', [

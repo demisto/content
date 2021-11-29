@@ -14,6 +14,7 @@ import socket
 import sys
 import time
 import traceback
+import urllib
 from random import randint
 import xml.etree.cElementTree as ET
 from collections import OrderedDict
@@ -1413,6 +1414,11 @@ class IntegrationLogger(object):
                 if js.endswith('"'):
                     js = js[:-1]
                 to_add.append(js)
+                if IS_PY3:
+                    to_add.append(urllib.parse.quote_plus(a))  # type: ignore[attr-defined]
+                else:
+                    to_add.append(urllib.quote_plus(a))
+
         self.replace_strs.extend(to_add)
 
     def set_buffering(self, state):
@@ -2100,7 +2106,7 @@ def stringEscapeMD(st, minimal_escaping=False, escape_multiline=False):
         st = st.replace('\n', '<br>')  # Unix
 
     if minimal_escaping:
-        for c in '|':
+        for c in ('|', '`'):
             st = st.replace(c, '\\' + c)
     else:
         st = "".join(["\\" + str(c) if c in MARKDOWN_CHARS else str(c) for c in st])
@@ -5274,6 +5280,9 @@ def arg_to_number(arg, arg_name=None, required=False):
                 raise ValueError('Missing required argument')
 
         return None
+
+    arg = encode_string_results(arg)
+
     if isinstance(arg, str):
         if arg.isdigit():
             return int(arg)
@@ -7187,7 +7196,7 @@ if 'requests' in sys.modules:
                     if resp_type == 'content':
                         return res.content
                     if resp_type == 'xml':
-                        ET.parse(res.text)
+                        ET.fromstring(res.text)
                     if resp_type == 'response':
                         return res
                     return res
@@ -7929,7 +7938,7 @@ class TableOrListWidget(BaseWidget):
 class IndicatorsSearcher:
     """Used in order to search indicators by the paging or serachAfter param
     :type page: ``int``
-    :param page: the number of page from which we start search indicators from. (will be updated via iter)
+    :param page: the number of page from which we start search indicators from.
 
     :type filter_fields: ``Optional[str]``
     :param filter_fields: comma separated fields to filter (e.g. "value,type")
@@ -7940,21 +7949,20 @@ class IndicatorsSearcher:
     :type query: ``Optional[str]``
     :param query: indicator search query
 
-    :type size: ``int``
-    :param size: limit the number of returned results.
-
     :type to_date: ``Optional[str]``
     :param to_date: the end date to search until to.
 
     :type value: ``str``
     :param value: the indicator value to search.
 
-    :type limit ``Optional[int]``
-    :param limit the upper limit of the search (will be updated via iter)
+    :type limit: ``Optional[int]``
+    :param limit: the current upper limit of the search (can be updated after init)
 
     :return: No data returned
     :rtype: ``None``
     """
+    SEARCH_AFTER_TITLE = 'searchAfter'
+
     def __init__(self,
                  page=0,
                  filter_fields=None,
@@ -7968,9 +7976,7 @@ class IndicatorsSearcher:
         self._can_use_search_after = is_demisto_version_ge('6.1.0')
         # populateFields merged in https://github.com/demisto/server/pull/18398
         self._can_use_filter_fields = is_demisto_version_ge('6.1.0', build_number='1095800')
-        self._search_after_title = 'searchAfter'
         self._search_after_param = None
-        self._original_page = page
         self._page = page
         self._filter_fields = filter_fields
         self._total = None
@@ -7979,16 +7985,10 @@ class IndicatorsSearcher:
         self._size = size
         self._to_date = to_date
         self._value = value
-        self._original_limit = limit
-        self._next_limit = limit
-        self._search_is_done = False
+        self._limit = limit
+        self._total_iocs_fetched = 0
 
     def __iter__(self):
-        self._total = None
-        self._search_after_param = None
-        self._page = self._original_page
-        self._next_limit = self._original_limit
-        self._search_is_done = False
         return self
 
     # python2
@@ -7996,20 +7996,17 @@ class IndicatorsSearcher:
         return self.__next__()
 
     def __next__(self):
-        if self._search_is_done:
+        if self.is_search_done():
             raise StopIteration
-        size = min(self._size, self._next_limit or self._size)
         res = self.search_indicators_by_version(from_date=self._from_date,
                                                 query=self._query,
-                                                size=size,
+                                                size=self._size,
                                                 to_date=self._to_date,
                                                 value=self._value)
         fetched_len = len(res.get('iocs') or [])
         if fetched_len == 0:
             raise StopIteration
-        if self._next_limit:
-            self._next_limit -= fetched_len
-        self._search_is_done = self._is_search_done()
+        self._total_iocs_fetched += fetched_len
         return res
 
     @property
@@ -8022,33 +8019,34 @@ class IndicatorsSearcher:
 
     @property
     def limit(self):
-        return self._next_limit
+        return self._limit
 
     @limit.setter
     def limit(self, value):
-        self._next_limit = self._original_limit = value
+        self._limit = value
 
-    def _is_search_done(self):
+    def is_search_done(self):
         """
-        Checks one of these conditions:
-        1. self.limit is set, and it's updated to be less or equal to zero
+        Return True if one of these conditions is met (else False):
+        1. self.limit is set, and it's updated to be less or equal to zero - return True
         2. for search_after if self.total was populated by a previous search, but no self._search_after_param
         3. for page if self.total was populated by a previous search, but page is too large
         """
-        if self._search_is_done:
-            return True
-
-        reached_limit = isinstance(self._next_limit, int) and self._next_limit <= 0
+        reached_limit = self.limit is not None and self.limit <= self._total_iocs_fetched
         if reached_limit:
+            demisto.debug("IndicatorsSearcher has reached its limit: {}".format(self.limit))
+            # update limit to match _total_iocs_fetched value
+            if self._total_iocs_fetched > self.limit:
+                self.limit = self._total_iocs_fetched
             return True
-
-        if self.total is None:
-            return False
         else:
-            if self._can_use_search_after:
-                return self._search_after_param is None
-            else:
-                return self.total == self.page * self._size
+            if self.total is None:
+                return False
+            no_more_indicators = (self.total and self._search_after_param is None) if self._can_use_search_after \
+                else self.total <= self.page * self._size
+            if no_more_indicators:
+                demisto.debug("IndicatorsSearcher can not fetch anymore indicators")
+            return no_more_indicators
 
     def search_indicators_by_version(self, from_date=None, query='', size=100, to_date=None, value=''):
         """There are 2 cases depends on the sever version:
@@ -8073,28 +8071,22 @@ class IndicatorsSearcher:
         :return: object contains the search results
         :rtype: ``dict``
         """
-        # use paging as fallback when cannot use search_after
-        use_paging = not (self._search_after_param and self._can_use_search_after)
-        search_iocs_params = assign_params(
+        search_args = assign_params(
             fromDate=from_date,
             toDate=to_date,
             query=query,
             size=size,
             value=value,
-            searchAfter=self._search_after_param if not use_paging else None,
+            searchAfter=self._search_after_param if self._can_use_search_after else None,
             populateFields=self._filter_fields if self._can_use_filter_fields else None,
-            page=self.page if use_paging else None
+            # use paging as fallback when cannot use search_after
+            page=self.page if not self._can_use_search_after else None
         )
-        res = demisto.searchIndicators(**search_iocs_params)
-        if len(res.get('iocs') or []) > 0:
-            self._page += 1  # advance pages for search_after, as fallback
-        else:
-            self._search_is_done = True
-        self._search_after_param = res.get(self._search_after_title)
+        res = demisto.searchIndicators(**search_args)
+        if isinstance(self._page, int):
+            self._page += 1  # advance pages
+        self._search_after_param = res.get(self.SEARCH_AFTER_TITLE)
         self._total = res.get('total')
-        if self._search_after_title in res and self._search_after_param is None:
-            demisto.info('Elastic search using searchAfter returned all indicators')
-            self._search_is_done = True
         return res
 
 
@@ -8166,13 +8158,13 @@ def support_multithreading():
     demisto.lock = Lock()  # type: ignore[attr-defined]
 
     def locked_do(cmd):
-        try:
-            if demisto.lock.acquire(timeout=60):  # type: ignore[call-arg,attr-defined]
+        if demisto.lock.acquire(timeout=60):  # type: ignore[call-arg,attr-defined]
+            try:
                 return prev_do(cmd)  # type: ignore[call-arg]
-            else:
-                raise RuntimeError('Failed acquiring lock')
-        finally:
-            demisto.lock.release()  # type: ignore[attr-defined]
+            finally:
+                demisto.lock.release()  # type: ignore[attr-defined]
+        else:
+            raise RuntimeError('Failed acquiring lock')
 
     demisto._Demisto__do = locked_do  # type: ignore[attr-defined]
 
@@ -8192,3 +8184,32 @@ def get_tenant_account_name():
         account_name = "acc_{}".format(tenant_name) if tenant_name != "" else ""
 
     return account_name
+
+
+def indicators_value_to_clickable(indicators):
+    """
+    Function to get the indicator url link for indicators
+
+    :type indicators: ``dict`` + List[dict]
+    :param indicators: An indicator or a list of indicators
+
+    :rtype: ``dict``
+    :return: Key is the indicator, and the value is it's url in the server
+
+    """
+    if not isinstance(indicators, (list, dict)):
+        return {}
+    if not isinstance(indicators, list):
+        indicators = [indicators]
+    res = {}
+    query = ' or '.join(['value:{indicator}'.format(indicator=indicator) for indicator in indicators])
+    indicator_searcher = IndicatorsSearcher(query=query)
+    for ioc_res in indicator_searcher:
+        for inidicator_data in ioc_res.get('iocs', []):
+            indicator = inidicator_data.get('value')
+            indicator_id = inidicator_data.get('id')
+            if not indicator or not indicator_id:
+                raise DemistoException('The response of indicator searcher is invalid')
+            indicator_url = os.path.join('#', 'indicator', indicator_id)
+            res[indicator] = '[{indicator}]({indicator_url})'.format(indicator=indicator, indicator_url=indicator_url)
+    return res

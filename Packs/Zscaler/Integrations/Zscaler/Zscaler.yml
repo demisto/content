@@ -7,7 +7,7 @@ configuration:
   name: cloud
   required: true
   type: 0
-- display: Credentials
+- display: Username
   name: credentials
   required: true
   type: 9
@@ -534,7 +534,7 @@ script:
   runonce: false
   script: '-'
   subtype: python2
-  dockerimage: demisto/python:2.7.18.24066
+  dockerimage: demisto/python:2.7.18.24398
   type: python
 tests:
 - Zscaler Test

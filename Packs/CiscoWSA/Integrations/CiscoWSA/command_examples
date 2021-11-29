@@ -1,0 +1,6 @@
+!wsa-get-access-policies
+!wsa-get-identification-profiles
+!wsa-get-url-categories
+!wsa-get-domain-map
+!wsa-modify-access-policies policyname=policy1 profile_name=profile1 policy_order=2 policy_status=disable auth="No Authentication"
+!wsa-delete-access-policies policy_name=policy2
