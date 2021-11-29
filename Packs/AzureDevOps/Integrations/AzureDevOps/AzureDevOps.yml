@@ -152,37 +152,28 @@ script:
     polling: true
     name: azure-devops-pipeline-run
     outputs:
-    - contextPath: AzureDevOps.Project.name
+    - contextPath: AzureDevOps.PipelineRun.[1].project
       description: The name of the project.
       type: String
-    - contextPath: AzureDevOps.Project.Pipeline.id
+    - contextPath: AzureDevOps.PipelineRun.pipeline.id
       description: The ID of the pipeline.
       type: Number
-    - contextPath: AzureDevOps.Project.Pipeline.revision
-      description: Pipeline revision number
-      type: Number
-    - contextPath: AzureDevOps.Project.Pipeline.name
+    - contextPath: AzureDevOps.PipelineRun.pipeline.name
       description: Pipeline repository name
       type: String
-    - contextPath: AzureDevOps.Project.Pipeline.folder
-      description: Pipeline folder
-      type: String
-    - contextPath: AzureDevOps.Project.Pipeline.Run.state
+    - contextPath: AzureDevOps.PipelineRun.state
       description: The run state.
       type: String
-    - contextPath: AzureDevOps.Project.Pipeline.Run.createdDate
-      description: Run-pipeline creation date.
+    - contextPath: AzureDevOps.PipelineRun.createdDate
+      description: The run creation date.
       type: Date
-    - contextPath: AzureDevOps.Project.Pipeline.Run.url
-      description: The URL of the run.
-      type: String
-    - contextPath: AzureDevOps.Project.Pipeline.Run.run_id
+    - contextPath: AzureDevOps.PipelineRun.run_id
       description: The ID of the run.
       type: Number
-    - contextPath: AzureDevOps.Project.Pipeline.Run.name
+    - contextPath: AzureDevOps.PipelineRun.name
       description: The name of the run.
       type: String
-    - contextPath: AzureDevOps.Project.Pipeline.Run.name
+    - contextPath: AzureDevOps.PipelineRun.result
       description: The result of the pipeline running. If the run is in progress,
         the default value is 'unknown'.
       type: String
@@ -827,37 +818,28 @@ script:
     polling: true
     name: azure-devops-pipeline-run-get
     outputs:
-    - contextPath: AzureDevOps.Project.name
+    - contextPath: AzureDevOps.PipelineRun.project
       description: The name of the project.
       type: String
-    - contextPath: AzureDevOps.Project.Pipeline.id
+    - contextPath: AzureDevOps.PipelineRun.pipeline.id
       description: The ID of the pipeline.
       type: Number
-    - contextPath: AzureDevOps.Project.Pipeline.revision
-      description: Pipeline revision number
-      type: Number
-    - contextPath: AzureDevOps.Project.Pipeline.name
-      description: Pipeline repository name
+    - contextPath: AzureDevOps.PipelineRun.pipeline.name
+      description: Pipeline repository name.
       type: String
-    - contextPath: AzureDevOps.Project.Pipeline.folder
-      description: Pipeline folder
-      type: String
-    - contextPath: AzureDevOps.Project.Pipeline.Run.state
+    - contextPath: AzureDevOps.PipelineRun.state
       description: The run state.
       type: String
-    - contextPath: AzureDevOps.Project.Pipeline.Run.createdDate
-      description: Run-pipeline creation date.
+    - contextPath: AzureDevOps.PipelineRun.createdDate
+      description: The run creation date.
       type: Date
-    - contextPath: AzureDevOps.Project.Pipeline.Run.url
-      description: The URL of the run.
-      type: String
-    - contextPath: AzureDevOps.Project.Pipeline.Run.run_id
+    - contextPath: AzureDevOps.PipelineRun.run_id
       description: The ID of the run.
       type: Number
-    - contextPath: AzureDevOps.Project.Pipeline.Run.name
+    - contextPath: AzureDevOps.PipelineRun.name
       description: The name of the run.
       type: String
-    - contextPath: AzureDevOps.Project.Pipeline.Run.name
+    - contextPath: AzureDevOps.PipelineRun.result
       description: The result of the pipeline running. If the run is in progress,
         the default value is 'unknown'.
       type: String
@@ -894,37 +876,28 @@ script:
     execution: false
     name: azure-devops-pipeline-run-list
     outputs:
-    - contextPath: AzureDevOps.Project.name
+    - contextPath: AzureDevOps.PipelineRun.project
       description: The name of the project.
       type: String
-    - contextPath: AzureDevOps.Project.Pipeline.id
+    - contextPath: AzureDevOps.PipelineRun.pipeline.id
       description: The ID of the pipeline.
       type: Number
-    - contextPath: AzureDevOps.Project.Pipeline.revision
-      description: Pipeline revision number
-      type: Number
-    - contextPath: AzureDevOps.Project.Pipeline.name
+    - contextPath: AzureDevOps.PipelineRun.pipeline.name
       description: Pipeline repository name
       type: String
-    - contextPath: AzureDevOps.Project.Pipeline.folder
-      description: Pipeline folder
-      type: String
-    - contextPath: AzureDevOps.Project.Pipeline.Run.state
+    - contextPath: AzureDevOps.PipelineRun.state
       description: The run state.
       type: String
-    - contextPath: AzureDevOps.Project.Pipeline.Run.createdDate
-      description: Run-pipeline creation date.
+    - contextPath: AzureDevOps.PipelineRun.createdDate
+      description: The run creation date.
       type: Date
-    - contextPath: AzureDevOps.Project.Pipeline.Run.url
-      description: The URL of the run.
-      type: String
-    - contextPath: AzureDevOps.Project.Pipeline.Run.run_id
+    - contextPath: AzureDevOps.PipelineRun.run_id
       description: The ID of the run.
       type: Number
-    - contextPath: AzureDevOps.Project.Pipeline.Run.name
+    - contextPath: AzureDevOps.PipelineRun.name
       description: The name of the run.
       type: String
-    - contextPath: AzureDevOps.Project.Pipeline.Run.name
+    - contextPath: AzureDevOps.PipelineRun.result
       description: The result of the pipeline running. If the run is in progress,
         the default value is 'unknown'.
       type: String
@@ -954,20 +927,20 @@ script:
     execution: false
     name: azure-devops-pipeline-list
     outputs:
-    - contextPath: AzureDevOps.Project.name
+    - contextPath: AzureDevOps.Pipeline.project
       description: The name of the project.
       type: String
-    - contextPath: AzureDevOps.Project.Pipeline.id
+    - contextPath: AzureDevOps.Pipeline.id
       description: The ID of the pipeline.
       type: Number
-    - contextPath: AzureDevOps.Project.Pipeline.revision
-      description: Pipeline revision number
+    - contextPath: AzureDevOps.Pipeline.revision
+      description: Pipeline revision number.
       type: Number
-    - contextPath: AzureDevOps.Project.Pipeline.name
-      description: Pipeline repository name
+    - contextPath: AzureDevOps.Pipeline.name
+      description: Pipeline name.
       type: String
-    - contextPath: AzureDevOps.Project.Pipeline.folder
-      description: Pipeline folder
+    - contextPath: AzureDevOps.Pipeline.folder
+      description: Pipeline folder.
       type: String
   - arguments:
     - default: false

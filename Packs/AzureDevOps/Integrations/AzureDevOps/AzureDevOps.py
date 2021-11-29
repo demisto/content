@@ -421,24 +421,11 @@ def generate_pipeline_run_output(response: dict, project: str) -> dict:
         dict: XSOAR command outputs.
 
     """
-    creation_date = FormatIso8601(arg_to_datetime(response.get('createdDate')))
-
-    run_data = {"state": response.get('state'),
-                "createdDate": creation_date,
-                "url": response.get('url'),
-                "run_id": response.get('id'),
-                "name": response.get('name'),
-                "result": response.get('result', 'unknown')
-                }
-
-    pipeline_data = {"id": dict_safe_get(response, ['pipeline', 'id']),
-                     "name": dict_safe_get(response, ['pipeline', 'name']),
-                     "revision": dict_safe_get(response, ['pipeline', 'revision']),
-                     "folder": dict_safe_get(response, ['pipeline', 'folder']),
-                     "Run": run_data
-                     }
-
-    outputs = {"name": project, "Pipeline": pipeline_data}
+    outputs = copy.deepcopy(response)
+    outputs['createdDate'] = arg_to_datetime(outputs.get('createdDate')).isoformat()
+    outputs['run_id'] = outputs.pop('id')
+    outputs['project'] = project
+    outputs['result'] = outputs.get('result', 'unknown')
 
     return outputs
 
@@ -453,23 +440,22 @@ def filter_pipeline_run_table(run: dict) -> dict:
         dict: Filtered pipeline-run information.
 
     """
-    creation_date = FormatIso8601(arg_to_datetime(run.get('createdDate')))
 
     return {
         "pipeline_id": dict_safe_get(run, ['pipeline', 'id']),
         "run_state": run.get('state'),
-        "creation_date": creation_date,
-        "run_id": run.get('id'),
+        "creation_date": run.get('createdDate'),
+        "run_id": run.get('run_id'),
         "result": run.get('result', 'unknown')
     }
 
 
-def generate_pipeline_run_readable_information(response: Union[dict, list],
+def generate_pipeline_run_readable_information(outputs: Union[dict, list],
                                                message: str = "Pipeline Run Information:") -> str:
     """
     Create XSOAR readable output for retrieving pipe-line information.
     Args:
-        response (dict/list): API response from Azure.
+        outputs (dict/list): API response from Azure.
         message (str): XSOAR readable outputs table message.
 
     Returns:
@@ -477,11 +463,11 @@ def generate_pipeline_run_readable_information(response: Union[dict, list],
 
     """
 
-    if not isinstance(response, list):
-        response = [response]
+    if not isinstance(outputs, list):
+        outputs = [outputs]
 
     readable_table = []
-    for run in response:
+    for run in outputs:
         readable_table.append(filter_pipeline_run_table(run))
 
     readable_output = tableToMarkdown(
@@ -540,11 +526,12 @@ def pipeline_run_command(client: Client, args: Dict[str, Any]) -> CommandResults
     else:
 
         outputs = generate_pipeline_run_output(response, project)
-        readable_output = generate_pipeline_run_readable_information(response)
+        readable_output = generate_pipeline_run_readable_information(outputs)
+
         command_results = CommandResults(
             readable_output=readable_output,
-            outputs_prefix='AzureDevOps.Project',
-            outputs_key_field='name',
+            outputs_prefix='AzureDevOps.PipelineRun',
+            outputs_key_field='run_id',
             outputs=outputs,
             raw_response=response
         )
@@ -1118,11 +1105,12 @@ def pipeline_run_get_command(client: Client, args: Dict[str, Any]) -> CommandRes
 
     else:
         outputs = generate_pipeline_run_output(response, project)
-        readable_output = generate_pipeline_run_readable_information(response)
+        readable_output = generate_pipeline_run_readable_information(outputs)
+
         command_results = CommandResults(
             readable_output=readable_output,
-            outputs_prefix='AzureDevOps.Project',
-            outputs_key_field='name',
+            outputs_prefix='AzureDevOps.PipelineRun',
+            outputs_key_field='run_id',
             outputs=outputs,
             raw_response=response
         )
@@ -1157,20 +1145,19 @@ def pipeline_run_list_command(client: Client, args: Dict[str, Any]) -> CommandRe
     readable_output = readable_message
     response = client.pipeline_run_list_request(project, pipeline_id)
 
-    outputs = {"name": project, "Pipeline": []}
+    outputs = []
     if response.get('count') and response.get('count') >= start:
         min_index = min(response.get('count'), end)
         for run in response.get('value')[start:min_index]:
             data = generate_pipeline_run_output(run, project)
-            outputs["Pipeline"].append(data.get("Pipeline"))
+            outputs.append(data)
 
-        readable_output = generate_pipeline_run_readable_information(response.get('value')[start:min_index],
-                                                                     message=readable_message)
+        readable_output = generate_pipeline_run_readable_information(outputs, message=readable_message)
 
     command_results = CommandResults(
         readable_output=readable_output,
-        outputs_prefix='AzureDevOps.Project',
-        outputs_key_field='name',
+        outputs_prefix='AzureDevOps.PipelineRun',
+        outputs_key_field='run_id',
         outputs=outputs,
         raw_response=response
     )
@@ -1218,7 +1205,6 @@ def pipeline_list_command(client: Client, args: Dict[str, Any]) -> CommandResult
         raise Exception('Page and limit arguments must be greater than 1.')
 
     continuation_token = None
-    outputs = {"name": project, "Pipeline": []}
     if page > 1:
         continuation_token = get_pagination_continuation_token(limit=limit, page=page,
                                                                client_request=client.pipeline_list_request,
@@ -1227,33 +1213,28 @@ def pipeline_list_command(client: Client, args: Dict[str, Any]) -> CommandResult
         if not continuation_token:
             return CommandResults(
                 readable_output=readable_message,
-                outputs_prefix='AzureDevOps.Project',
-                outputs=outputs,
+                outputs_prefix='AzureDevOps.Pipeline',
+                outputs=[],
                 raw_response=[]
             )
 
     response = client.pipeline_list_request(project, limit, continuation_token).json()
 
-    for pipeline in response.get("value"):
-        pipeline_data = {"id": pipeline.get("id"),
-                         "name": pipeline.get("name"),
-                         "revision": pipeline.get("revision"),
-                         "folder": pipeline.get("folder"),
-                         }
-
-        outputs["Pipeline"].append(pipeline_data)
+    outputs = copy.deepcopy(response.get("value"))
+    for pipeline in outputs:
+        pipeline['project'] = project
 
     readable_output = tableToMarkdown(
         readable_message,
-        outputs.get("Pipeline"),
+        outputs,
         headers=['id', 'name', 'revision', 'folder'],
         headerTransform=string_to_table_header
     )
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='AzureDevOps.Project',
-        outputs_key_field='name',
+        outputs_prefix='AzureDevOps.Pipeline',
+        outputs_key_field='id',
         outputs=outputs,
         raw_response=response
     )

@@ -61,11 +61,12 @@ def test_azure_devops_pipeline_run_command(requests_mock):
                                            'pipeline_id': pipeline_id,
                                            'branch_name': 'my-branch'})
 
-    assert len(result.outputs) == 2
-    assert result.outputs_prefix == 'AzureDevOps.Project'
-    assert result.outputs.get('name') == 'test'
-    assert result.outputs.get('Pipeline').get('name') == 'xsoar'
-    assert result.outputs.get('Pipeline').get('id') == 1
+    assert len(result.outputs) == 10
+    assert result.outputs_prefix == 'AzureDevOps.PipelineRun'
+    assert result.outputs.get('project') == project
+    assert result.outputs.get('pipeline').get('name') == 'xsoar'
+    assert result.outputs.get('pipeline').get('id') == 1
+    assert result.outputs.get('run_id') == 12
 
 
 def test_azure_devops_user_add_command(requests_mock):
@@ -475,9 +476,12 @@ def test_azure_devops_pipeline_run_get_command(requests_mock):
                                                'pipeline_id': pipeline_id,
                                                'run_id': run_id})
 
-    assert len(result.outputs) == 2
-    assert result.outputs_prefix == 'AzureDevOps.Project'
-    assert result.outputs.get('Pipeline').get('name') == 'xsoar'
+    assert len(result.outputs) == 11
+    assert result.outputs_prefix == 'AzureDevOps.PipelineRun'
+    assert result.outputs.get('project') == project
+    assert result.outputs.get('pipeline').get('name') == 'xsoar'
+    assert result.outputs.get('pipeline').get('id') == 1
+    assert result.outputs.get('run_id') == 3
 
 
 def test_azure_devops_pipeline_run_list_command(requests_mock):
@@ -515,9 +519,12 @@ def test_azure_devops_pipeline_run_list_command(requests_mock):
                                                 'pipeline_id': pipeline_id})
 
     assert len(result.outputs) == 2
-    assert result.outputs_prefix == 'AzureDevOps.Project'
-    assert result.outputs.get('Pipeline')[0].get('name') == 'xsoar'
-    assert result.outputs.get('Pipeline')[0].get('Run').get('state') == 'completed'
+    assert result.outputs_prefix == 'AzureDevOps.PipelineRun'
+    assert result.outputs[0].get('project') == project
+    assert result.outputs[0].get('pipeline').get('name') == 'xsoar'
+    assert result.outputs[0].get('pipeline').get('id') == 1
+    assert result.outputs[0].get('run_id') == 42
+    assert result.outputs[0].get('state') == 'completed'
     with pytest.raises(Exception):
         pipeline_run_list_command(client, {"project": project,
                                            'pipeline_id': pipeline_id,
@@ -557,11 +564,12 @@ def test_azure_devops_pipeline_list_command(requests_mock):
     result = pipeline_list_command(client, {"project": project})
 
     assert len(result.outputs) == 2
-    assert result.outputs_prefix == 'AzureDevOps.Project'
-    assert result.outputs.get('Pipeline')[0].get('name') == 'xsoar (1)'
+    assert result.outputs_prefix == 'AzureDevOps.Pipeline'
+    assert result.outputs[0].get('name') == 'xsoar (1)'
+    assert result.outputs[0].get('project') == project
     with pytest.raises(Exception):
         pipeline_list_command(client, {"project": project,
-                                           'limit': '-1'})
+                                       'limit': '-1'})
 
 
 def test_azure_devops_branch_list_command(requests_mock):
