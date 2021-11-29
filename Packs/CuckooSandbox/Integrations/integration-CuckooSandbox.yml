@@ -23,6 +23,10 @@ configuration:
   name: proxy
   type: 8
   required: false
+- display: API Key
+  name: api_key
+  type: 0
+  required: false
 script:
   script: |-
     var entityMap = {
@@ -148,12 +152,12 @@ script:
         url = fixUrl(qParams['server']) + suffix;
         username = qParams['authentication'] ? qParams['authentication']['identifier'] : '';
         password = qParams['authentication'] ? qParams['authentication']['password'] : '';
+        api_key = qParams['api_key'] ? ['Bearer ' + qParams['api_key'] : '';
         res = http(
             url,
             {
                 Method: 'GET',
-                Username: username,
-                Password: password
+                Authorization: api_key
             },
             qParams['insecure'],
             qParams['proxy']
@@ -165,12 +169,12 @@ script:
         url = fixUrl(qParams['server']) + suffix;
         username = qParams['authentication'] ? qParams['authentication']['identifier'] : '';
         password = qParams['authentication'] ? qParams['authentication']['password'] : '';
+        api_key = qParams['api_key'] ? ['Bearer ' + qParams['api_key'] : '';
         res = http(
             url,
             {
                 Method: 'GET',
-                Username: username,
-                Password: password
+                Authorization: api_key
             },
             qParams['insecure'],
             qParams['proxy']
@@ -182,12 +186,12 @@ script:
         url = fixUrl(qParams['server']) + suffix;
         username = qParams['authentication'] ? qParams['authentication']['identifier'] : '';
         password = qParams['authentication'] ? qParams['authentication']['password'] : '';
+        api_key = qParams['api_key'] ? ['Bearer ' + qParams['api_key'] : '';
         res = http(
             url,
             {
                 Method: 'GET',
-                Username: username,
-                Password: password,
+                Authorization: api_key
                 SaveToFile: true
             },
             qParams.insecure,
@@ -212,13 +216,13 @@ script:
         url = fixUrl(qParams.server) + suffix;
         username = qParams['authentication'] ? qParams['authentication']['identifier'] : '';
         password = qParams['authentication'] ? qParams['authentication']['password'] : '';
+        api_key = qParams['api_key'] ? ['Bearer ' + qParams['api_key'] : '';
         res = httpMultipart(
             url, // URL
             '', // Optional - FilePath / EntryID
             { // HTTP Request Headers
                 Method: 'POST',
-                Username: username,
-                Password: password
+                Authorization: api_key
             },
             { // Multipart Contents
                 url: qArgs['url']
@@ -234,14 +238,14 @@ script:
         fileParam = qArgs['entryID'] ? qArgs['entryID'] : qArgs['fileID'];
         username = qParams['authentication'] ? qParams['authentication']['identifier'] : '';
         password = qParams['authentication'] ? qParams['authentication']['password'] : '';
+        api_key = qParams['api_key'] ? ['Bearer ' + qParams['api_key'] : '';
         delete qArgs.entryID;
         res = httpMultipart(
             url,
             fileParam,
             { // HTTP Request Headers
                 Method: 'POST',
-                Username: username,
-                Password: password
+                Authorization: api_key
             },
             qArgs,
             qParams['insecure'],
