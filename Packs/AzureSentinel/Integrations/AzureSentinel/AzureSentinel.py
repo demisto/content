@@ -1054,28 +1054,28 @@ def threat_indicators_data_to_xsoar_format(ind_data):
         'Description': properties.get('description', ''),
         'Types': properties.get('threatTypes', ''),
         'KillChainPhases': [{
-            "KillChainName": phase.get("killChainName"),
-            "PatternTypeValues": phase.get("phaseName")
+            'KillChainName': phase.get('killChainName'),
+            'PatternTypeValues': phase.get('phaseName')
         }
             for phase in properties.get('KillChainPhases', [])],
 
-        "ParsedPattern": [{
-            "patternTypeKey": pattern.get("patternTypeKey"),
-            "patternTypeValues": pattern.get("patternTypeValues")
+        'ParsedPattern': [{
+            'patternTypeKey': pattern.get('patternTypeKey'),
+            'patternTypeValues': pattern.get('patternTypeValues')
         }
-            for pattern in properties.get("parsedPattern", [])],
+            for pattern in properties.get('parsedPattern', [])],
 
         'Pattern': properties.get('pattern', ''),
-        "PatternType": properties.get("patternType", ''),
-        "ValidFrom": properties.get("validFrom", ''),
-        "ValidUntil": properties.get("validUntil", ''),
-        "Values": properties.get("parsedPattern")[0].get("patternTypeValues")[0].get("value")
+        'PatternType': properties.get('patternType', ''),
+        'ValidFrom': format_date(properties.get('validFrom', '')),
+        'ValidUntil': format_date(properties.get('validUntil', '')),
+        'Values': properties.get('parsedPattern')[0].get('patternTypeValues')[0].get('value')
     }
     remove_nulls_from_dictionary(formatted_data)
     return formatted_data
 
 
-def get_args_to_filter_ind_by(args):
+def build_query_filter(args):
     filtering_args = {
         'minConfidence': args.get('min_confidence', ''),
         'maxConfidence': args.get('max_confidence', ''),
@@ -1111,7 +1111,7 @@ def get_args_to_filter_ind_by(args):
     return filtering_args
 
 
-def get_data_for_new_ind(args):
+def build_threat_indicator_data(args):
     value = args.get('value')
 
     data = {
@@ -1121,11 +1121,11 @@ def get_data_for_new_ind(args):
         'revoked': args.get('revoked'),
         'confidence': arg_to_number(args.get('confidence')),
         'threatTypes': argToList(args.get('threat_types')),
-        'includeDisabled': args.get('includeDisabled', ''),
-        'source': args.get("source", "Azure Sentinel"),
+        'includeDisabled': args.get('include_disabled', ''),
+        'source': args.get('source', 'Azure Sentinel'),
         'threatIntelligenceTags': argToList(args.get('tags')),
-        'validFrom': args.get('valid_from', ''),
-        'validUntil': args.get('valid_until', ''),
+        'validFrom': datetime.strftime(dateparser.parse(args.get('valid_from', ''))),
+        'validUntil': datetime.strftime(dateparser.parse(args.get('valid_until', ''))),
         'createdByRef': args.get('created_by', ''),
     }
 
@@ -1160,9 +1160,9 @@ def get_data_for_new_ind(args):
     return data
 
 
-def update_data_of_indicator(new_ind_data, original_ind_data):
-    original_extracted_data = extract_original_data_from_indicator(original_ind_data.get("properties"))
-    new_data = get_data_for_new_ind(new_ind_data)
+def build_updated_indicator_data(new_ind_data, original_ind_data):
+    original_extracted_data = extract_original_data_from_indicator(original_ind_data.get('properties'))
+    new_data = build_threat_indicator_data(new_ind_data)
 
     original_extracted_data.update(new_data)
 
@@ -1177,14 +1177,14 @@ def extract_original_data_from_indicator(original_data):
         'confidence': arg_to_number(original_data.get('confidence')),
         'threatTypes': argToList(original_data.get('threatTypes')),
         'killChainPhases': argToList(original_data.get('killChainPhases')),
-        "threatIntelligenceTags": argToList(original_data.get("threatIntelligenceTags")),
-        "validFrom": original_data.get("validFrom", ''),
-        "validUntil": original_data.get("validUntil", ''),
-        "createdByRef": original_data.get("createdByRef", ''),
-        "created": original_data.get('created', ''),
-        "externalId": original_data.get("externalId"),
-        'displayName': original_data.get("displayName"),
-        'source': original_data.get("source")
+        'threatIntelligenceTags': argToList(original_data.get('threatIntelligenceTags')),
+        'validFrom': original_data.get('validFrom', ''),
+        'validUntil': original_data.get('validUntil', ''),
+        'createdByRef': original_data.get('createdByRef', ''),
+        'created': original_data.get('created', ''),
+        'externalId': original_data.get('externalId'),
+        'displayName': original_data.get('displayName'),
+        'source': original_data.get('source')
     }
 
     remove_nulls_from_dictionary(extracted_data)
@@ -1192,30 +1192,19 @@ def extract_original_data_from_indicator(original_data):
 
 
 def list_threat_indicator_command(client, args):
-    """
-    returns a list of threat indicators
-
-    Returns: a list of threat indicators
-    """
     url_suffix = 'threatIntelligence/main/indicators'
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))  # the default limit is 50
 
     next_link = args.get('next_link', '')
     if next_link:
-        next_link = next_link.replace(
-            '%20', ' '
-        )  # OData syntax can't handle '%' character
+        next_link = next_link.replace('%20', ' ')  # OData syntax can't handle '%' character
         result = client.http_request('GET', full_url=next_link)
     else:
-        params = {
-            '$top': limit,
-        }
-
         name = args.get('name')
         if name:
             url_suffix += f'/{name}'
 
-        result = client.http_request('GET', url_suffix, params=params)
+        result = client.http_request('GET', url_suffix, params={'$top': limit})
 
     num_of_threat_indicators = 0
     threat_indicators = []
@@ -1244,18 +1233,18 @@ def list_threat_indicator_command(client, args):
 
 
 def query_threat_indicators_command(client, args):
-    params = {
-        '$top': arg_to_number(args.get('limit', DEFAULT_LIMIT)),
-        '$skipToken': args.get('next_link', '')
-    }
-
-    remove_nulls_from_dictionary(params)
-
     url_suffix = 'threatIntelligence/main/queryIndicators'
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))  # the default limit is 50
 
-    data = get_args_to_filter_ind_by(args)
+    next_link = args.get('next_link', '')
+    if next_link:
+        next_link = next_link.replace('%20', ' ')  # OData syntax can't handle '%' character
+        result = client.http_request('GET', full_url=next_link)
+    else:
+        data = build_query_filter(args)
 
-    result = client.http_request('POST', url_suffix, params=params, data=data)
+        result = client.http_request('POST', url_suffix, params={'$top': limit}, data=data)
+
     num_of_threat_indicators = 0
     threat_indicators = []
 
@@ -1276,7 +1265,6 @@ def query_threat_indicators_command(client, args):
 
     return CommandResults(
         readable_output=readable_output,
-        # outputs_prefix='AzureSentinel.ThreatIndicator',
         outputs=outputs,
         outputs_key_field='ID',
         raw_response=result
@@ -1286,7 +1274,7 @@ def query_threat_indicators_command(client, args):
 def create_threat_indicator_command(client, args):
     url_suffix = 'threatIntelligence/main/createIndicator'
 
-    data = {'kind': 'indicator', 'properties': get_data_for_new_ind(args)}
+    data = {'kind': 'indicator', 'properties': build_threat_indicator_data(args)}
 
     result = client.http_request('POST', url_suffix, data=data)
 
@@ -1308,28 +1296,27 @@ def create_threat_indicator_command(client, args):
 
 def update_threat_indicator_command(client, args):
     name = args.get('name')
-    url_suffix = f'threatIntelligence/main/indicators/{name}'
+    get_indicator_url_suffix = f'threatIntelligence/main/indicators/{name}'
 
-    original_data = client.http_request('GET', url_suffix)
+    original_data = client.http_request('GET', get_indicator_url_suffix)
 
-    updated_data = update_data_of_indicator(args, original_data)
+    updated_data = build_updated_indicator_data(args, original_data)
 
     data = {
         "kind": "indicator",
         "properties": updated_data
     }
 
-    new_url_suffix = f'threatIntelligence/main/indicators/{name}'
+    update_indicator_url_suffix = f'threatIntelligence/main/indicators/{name}'
 
-    result = client.http_request('PUT', new_url_suffix, data=data)
+    result = client.http_request('PUT', update_indicator_url_suffix, data=data)
     threat_indicators = [threat_indicators_data_to_xsoar_format(result)]
 
-    readable_output = tableToMarkdown(f'Threat Indicator {name} was updated)',
+    readable_output = tableToMarkdown(f'Threat Indicator {name} was updated',
                                       threat_indicators,
                                       headers=THREAT_INDICATORS_HEADERS,
                                       headerTransform=pascalToSpace,
-                                      removeNull=True
-                                      )
+                                      removeNull=True)
 
     return CommandResults(
         readable_output=readable_output,
@@ -1441,7 +1428,7 @@ def main():
             'azure-sentinel-threat-indicator-update': update_threat_indicator_command,
             'azure-sentinel-threat-indicator-delete': delete_threat_indicator_command,
             'azure-sentinel-threat-indicator-tags-append': append_tags_threat_indicator_command,
-            'azure-sentinel-threat-indicator-tags-replace': replace_tags_threat_indicator_command
+            'azure-sentinel-threat-indicator-tags-replace': replace_tags_threat_indicator_command,
         }
 
         if demisto.command() == 'test-module':
@@ -1470,6 +1457,7 @@ def main():
             return_results(commands[demisto.command()](client, demisto.args()))  # type: ignore
 
     except Exception as e:
+        demisto.error(traceback.format_exc())
         return_error(
             f'Failed to execute {demisto.command()} command. Error: {str(e)}'
         )

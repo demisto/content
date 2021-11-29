@@ -145,7 +145,7 @@ script:
       description: The Etag of the incident.
       type: String
     - contextPath: AzureSentinel.Incident.IncidentUrl
-      description: The Url of the incident
+      description: The Url of the incident.
       type: String
   - arguments:
     - default: false
@@ -939,73 +939,75 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: The indicator name
+      description: The name of the indicator.
       isArray: false
       name: name
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: '50'
-      description: Limit the number of shown results on the screen
+      description: The maximum number of indicators to return.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: Link for the next page of entries
+      description: |-
+        A link that specifies a starting point to use for subsequent calls.
+        This argument overrides all of the other command arguments.
       isArray: false
       name: next_link
       required: false
       secret: false
     deprecated: false
-    description: list_threat_indicator_command returns a list of threat indicators
+    description: list_threat_indicator_command returns a list of threat indicators.
     execution: false
     name: azure-sentinel-threat-indicator-list
     outputs:
     - contextPath: AzureSentinel.ThreatIndicator.ID
-      description: The threat indicator ID
+      description: The threat indicator ID.
       type: String
     - contextPath: AzureSentinel.ThreatIndicator.Name
-      description: The threat indicator name
+      description: The threat indicator name.
       type: String
     - contextPath: AzureSentinel.ThreatIndicator.ETag
-      description: The threat indicator etag
+      description: The ETag of the threat indicator.
       type: String
     - contextPath: AzureSentinel.ThreatIndicator.Type
-      description: The threat indicator type
+      description: The type of the threat indicator.
       type: String
     - contextPath: AzureSentinel.ThreatIndicator.Kind
-      description: The threat indicator kind
+      description: The kind of the threat indicator.
       type: String
     - contextPath: AzureSentinel.ThreatIndicator.Properties.Confidence
-      description: The threat indicator confidence, A number between 0-100
+      description: The confidenc of the threat indicatore, A number between 0-100.
       type: Number
     - contextPath: AzureSentinel.ThreatIndicator.Properties.Created
-      description: When was the threat indicator created
+      description: When was the threat indicator created.
       type: Date
     - contextPath: AzureSentinel.ThreatIndicator.Properties.CreatedByRef
-      description: The threat indicator creator
+      description: The creator of the threat indicator.
       type: String
     - contextPath: AzureSentinel.ThreatIndicator.Properties.ExternalID
-      description: The threat indicator external id
+      description: The external id of the threat indicator.
       type: String
     - contextPath: AzureSentinel.ThreatIndicator.Properties.Revoked
-      description: Was the threat indicator revoked or not
+      description: Was the threat indicator revoked or not.
       type: Boolean
     - contextPath: AzureSentinel.ThreatIndicator.Properties.Source
-      description: The threat indicator source
+      description: The source of the threat indicator.
       type: String
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.ThreatIntelligenceTags
-      description: The threat indicator tags
+    - contextPath: AzureSentinel.ThreatIndicator.Properties.eTags
+      description: The tags of the threat indicator.
       type: Unknown
     - contextPath: AzureSentinel.ThreatIndicator.Properties.DisplayName
-      description: The threat indicator display name
+      description: The display name of the threat indicator.
       type: String
     - contextPath: AzureSentinel.ThreatIndicator.Properties.Description
-      description: The threat indicator description
+      description: The description of the threat indicator.
       type: String
     - contextPath: AzureSentinel.ThreatIndicator.Properties.ThreatTypes
-      description: The threat types of the threat indicator
+      description: The threat types of the threat indicator.
       type: Unknown
     - contextPath: AzureSentinel.ThreatIndicator.Properties.KillChainPhases
       description: The threat indicator killchains phases
@@ -1014,58 +1016,61 @@ script:
       description: The threat indicator parsed pattern
       type: Unknown
     - contextPath: AzureSentinel.ThreatIndicator.Properties.Pattern
-      description: The threat indicator pattern
+      description: The pattern of the threat indicator.
       type: String
     - contextPath: AzureSentinel.ThreatIndicator.Properties.PatternType
       description: The threat indicator pattern type
       type: String
     - contextPath: AzureSentinel.ThreatIndicator.Properties.ValidFrom
-      description: The date which the indicator is valid from
+      description: The date which the indicator is valid from.
       type: Date
     - contextPath: AzureSentinel.ThreatIndicator.Properties.ValidUntil
-      description: The date which the indicator is valid until
+      description: The date which the indicator is valid until.
       type: Date
   - arguments:
-    - default: true
+    - default: false
       defaultValue: '50'
-      description: Limit the number of shown results on the screen
+      description: The maximum number of indicators to return.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: Link for the next page of entries
+      description: |-
+        A link that specifies a starting point to use for subsequent calls.
+        This argument overrides all of the other command arguments.
       isArray: false
       name: next_link
       required: false
       secret: false
     - default: false
-      description: The minimum confidence number for a threat indicator
+      description: The minimum confidence number for a threat indicator.
       isArray: false
       name: min_confidence
       required: false
       secret: false
     - default: false
-      description: The maximum confidence number for a threat indicator
+      description: The maximum confidence number for a threat indicator.
       isArray: false
       name: max_confidence
       required: false
       secret: false
     - default: false
-      description: 'Should be in format: 2020-04-05T17:44:005Z OR by days/hours'
+      description: Minimum ValidUntil value of indicators to query.
       isArray: false
       name: min_valid_until
       required: false
       secret: false
     - default: false
-      description: 'Should be in format: 2020-04-05T17:44:005Z OR by days/hours'
+      description: Maximum ValidUntil value of indicators to query.
       isArray: false
       name: max_valid_until
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Should the query return disabled indicators or not
+      defaultValue: 'false'
+      description: If true, the query returns also disabled indicators.
       isArray: false
       name: include_disabled
       predefined:
@@ -1074,14 +1079,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: Threat indicator sources
+      description: The sources of the threat indicator.
       isArray: true
       name: sources
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The threat indicator types
+      description: The indicator types of the threat indicator.
       isArray: true
       name: indicator_types
       predefined:
@@ -1089,12 +1094,13 @@ script:
       - ipv6
       - file
       - url
-      - 'domain '
+      - domain
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Threat indicator types, a multi-select variable from the list
+      description: The threat types of the threat indicator, a comma seperated list
+        from the list options.
       isArray: true
       name: threat_types
       predefined:
@@ -1104,8 +1110,7 @@ script:
       - benign
       - malicious-activity
       - compromised
-      - |
-        unknown
+      - unknown
       required: false
       secret: false
     - default: false
@@ -1116,7 +1121,7 @@ script:
       secret: false
     deprecated: false
     description: query_threat_indicators_command returns a list of threat indicators
-      with specific entities
+      with specific entities.
     execution: false
     name: azure-sentinel-threat-indicator-query
     outputs:
@@ -1185,26 +1190,26 @@ script:
       type: Date
   - arguments:
     - default: false
-      description: The value of the threat indicator
+      description: The value of the threat indicator.
       isArray: false
       name: value
       required: true
       secret: false
     - default: false
-      description: The name to display of the new indicator
+      description: The display name of the new indicator.
       isArray: false
       name: display_name
       required: true
       secret: false
     - default: false
-      description: The description of the new indicator
+      description: The description of the new indicator.
       isArray: false
       name: description
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The type of the new indicator
+      description: The type of the new indicator.
       isArray: false
       name: indicator_type
       predefined:
@@ -1217,8 +1222,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The hash type of the new indicator.This argument is mendatory if
-        the indicator type is file
+      description: The hash type of the new indicator. This argument is mandatory
+        if the indicator type is file.
       isArray: false
       name: hash_type
       predefined:
@@ -1229,14 +1234,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: The confidence of the new threat indicator,a number between 0-100
+      description: The confidence of the new threat indicator,a number between 0-100.
       isArray: false
       name: confidence
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The threat types of the new indicator
+      description: The threat types of the threat indicator, a comma seperated list
+        from the list options.
       isArray: true
       name: threat_types
       predefined:
@@ -1250,40 +1256,38 @@ script:
       required: true
       secret: false
     - default: false
-      description: The indicator kill_chains phases
+      description: The  kill_chains phases of the indicator.
       isArray: true
       name: kill_chains
       required: false
       secret: false
     - default: false
-      description: The tags of the new threat indicator, seperated by commas
+      description: The tags of the new threat indicator, seperated by commas.
       isArray: true
       name: tags
       required: false
       secret: false
     - default: false
-      description: The date which the indicator is valid from, should be in 2020-04-05T17:44:00.114052Z
-        format
+      description: The date which the indicator is valid from.
       isArray: false
       name: valid_from
       required: false
       secret: false
     - default: false
-      description: The date which the indicator is valid until, should be in 2020-04-05T17:44:00.114052Z
-        format
+      description: The date which the indicator is valid until.
       isArray: false
       name: valid_until
       required: false
       secret: false
     - default: false
-      description: The creator of the new indicator
+      description: The creator of the new indicator.
       isArray: false
       name: created_by
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Is the indicator revoked or not
+      description: Is the indicator revoked or not.
       isArray: false
       name: revoked
       predefined:
@@ -1292,7 +1296,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: azure-sentinel-threat-indicator-create creates a new threat indicator
+    description: azure-sentinel-threat-indicator-create creates a new threat indicator.
     execution: false
     name: azure-sentinel-threat-indicator-create
     outputs:
@@ -1361,32 +1365,32 @@ script:
       type: Date
   - arguments:
     - default: false
-      description: The name of the indicator
+      description: The name of the indicator.
       isArray: false
       name: name
       required: true
       secret: false
     - default: false
-      description: The value of the indicator
+      description: The value of the indicator.
       isArray: false
       name: value
       required: true
       secret: false
     - default: false
-      description: The display name of the indicator
+      description: The display name of the indicator.
       isArray: false
       name: display_name
       required: true
       secret: false
     - default: false
-      description: The description of the threat indicator
+      description: The description of the threat indicator.
       isArray: false
       name: description
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The type of the indicator
+      description: The type of the indicator.
       isArray: false
       name: indicator_type
       predefined:
@@ -1398,26 +1402,27 @@ script:
       required: true
       secret: false
     - default: false
-      description: If indicator_type is file, this entry is mandatory
+      description: If indicator_type is a file, this entry is mandatory.
       isArray: false
       name: hash_type
       required: false
       secret: false
     - default: false
-      description: Is the indicator revoked or not
+      description: Is the indicator revoked or not.
       isArray: false
       name: revoked
       required: false
       secret: false
     - default: false
-      description: The confidence of the threat indicator, a number between 0-100
+      description: The confidence of the threat indicator, a number between 0-100.
       isArray: false
       name: confidence
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The threat types of the indicator
+      description: The threat types of the  threat indicator, a multi-select variable
+        from the list.
       isArray: true
       name: threat_types
       predefined:
@@ -1432,33 +1437,31 @@ script:
       required: false
       secret: false
     - default: false
-      description: The kill chains phases of the indicator, seperated by commas
+      description: The kill chains phases of the indicator, seperated by commas.
       isArray: true
       name: kill_chains
       required: false
       secret: false
     - default: false
-      description: Tha tags of the threat indicator, seperated by commas
+      description: Tha tags of the threat indicator, seperated by commas.
       isArray: true
       name: tags
       required: false
       secret: false
     - default: false
-      description: The date which the indicator is valid from, should be in 2020-04-05T17:44:00.114052Z
-        format
+      description: The date which the indicator is valid from.
       isArray: false
       name: valid_from
       required: false
       secret: false
     - default: false
-      description: The date which the indicator is valid until, should be in 2020-04-05T17:44:00.114052Z
-        format
+      description: The date which the indicator is valid until.
       isArray: false
       name: valid_until
       required: false
       secret: false
     - default: false
-      description: The creator of the indicator
+      description: The creator of the indicator.
       isArray: false
       name: created_by
       required: false
@@ -1534,32 +1537,32 @@ script:
       type: Date
   - arguments:
     - default: false
-      description: The name of the indicator to delete
+      description: The name of the indicator to delete.
       isArray: true
       name: name
       required: true
       secret: false
     deprecated: false
     description: azure-sentinel-threat-indicator-delete deletes an existing threat
-      indicator
+      indicator.
     execution: false
     name: azure-sentinel-threat-indicator-delete
   - arguments:
     - default: false
-      description: Tha name of the indicator
+      description: Tha name of the indicator.
       isArray: false
       name: name
       required: true
       secret: false
     - default: false
-      description: Tha tags you want to append, seperated by commas
+      description: Tha tags you want to append, seperated by commas.
       isArray: true
       name: tags
       required: true
       secret: false
     deprecated: false
     description: azure-sentinel-threat-indicator-tags-append appens new tags to an
-      existing indicator
+      existing indicator.
     execution: false
     name: azure-sentinel-threat-indicator-tags-append
     outputs:
@@ -1628,20 +1631,20 @@ script:
       type: Date
   - arguments:
     - default: false
-      description: The name of the treat indicator
+      description: The name of the treat indicator.
       isArray: false
       name: name
       required: true
       secret: false
     - default: false
-      description: Tags to append to an existing indicator, seperated by commas
+      description: Tags to append to an existing indicator, seperated by commas.
       isArray: true
       name: tags
       required: true
       secret: false
     deprecated: false
     description: azure-sentinel-threat-indicator-tags-replace replaces the tags of
-      a given indicator
+      a given indicator.
     execution: false
     name: azure-sentinel-threat-indicator-tags-replace
     outputs:

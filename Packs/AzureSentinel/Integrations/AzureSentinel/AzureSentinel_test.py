@@ -926,7 +926,7 @@ class TestHappyPath:
                 """
 
         # prepare
-        mocked_indicators = MOCKED_THREAT_INDICATOR_OUTPUT.copy()
+        mocked_indicators = MOCKED_THREAT_INDICATOR_OUTPUT
         mocker.patch.object(client, 'http_request', return_value=mocked_indicators)
         if expected_next_link:
             mocked_indicators['nextLink'] = expected_next_link
@@ -962,7 +962,7 @@ class TestHappyPath:
                     - Ensure next link returned as expected
         """
         # prepare
-        mocked_indicators = MOCKED_THREAT_INDICATOR_OUTPUT.copy()
+        mocked_indicators = MOCKED_THREAT_INDICATOR_OUTPUT
         mocker.patch.object(client, 'http_request', return_value=mocked_indicators)
         if expected_next_link:
             mocked_indicators['nextLink'] = expected_next_link
@@ -996,7 +996,7 @@ class TestHappyPath:
                 """
 
         # prepare
-        mocked_indicators = MOCKED_CREATE_THREAT_INDICATOR_OUTPUT.copy()
+        mocked_indicators = MOCKED_CREATE_THREAT_INDICATOR_OUTPUT
         mocker.patch.object(client, 'http_request', return_value=mocked_indicators)
 
         # execute
@@ -1010,7 +1010,7 @@ class TestHappyPath:
         assert context['Name'] == 'ind_name', 'Incident name in Azure Sentinel API is Incident ID in Cortex XSOAR'
         assert context['DisplayName'] == 'displayfortestmay'
 
-        assert context['Tags'][0] == 'wereplacedthetag'  # check why strip doesn't work
+        assert context['Tags'][0] == 'wereplacedthetag'
 
     @pytest.mark.parametrize('args, client', [  # disable-secrets-detection
         ({'name': 'ind_name'}, mock_client())])
@@ -1022,7 +1022,7 @@ class TestHappyPath:
                 When:
                     - Calling function delete_threat_indicator_command
                 Then:
-                    - Ensure the results holds the expected incidents list data
+                    - Ensure the results holds the expected readable output
                 """
         # prepare
         mocker.patch.object(client, 'http_request', return_value={})
@@ -1047,7 +1047,7 @@ class TestHappyPath:
                     - Ensure the results holds the expected incidents list data
                 """
         # prepare
-        mocked_indicators = MOCKED_CREATE_THREAT_INDICATOR_OUTPUT.copy()
+        mocked_indicators = MOCKED_CREATE_THREAT_INDICATOR_OUTPUT
         mocker.patch.object(client, 'http_request', return_value=mocked_indicators)
 
         # execute
@@ -1061,7 +1061,7 @@ class TestHappyPath:
         assert context['Name'] == 'ind_name'
         assert context['DisplayName'] == 'displayfortestmay'
 
-        assert context['Tags'][0] == 'wereplacedthetag'  # check why strip doesn't work
+        assert context['Tags'][0] == 'wereplacedthetag'
 
     @pytest.mark.parametrize('args, client', [  # disable-secrets-detection
         ({'name': 'ind_name', 'tags': 'wereplacedthetag'}, mock_client())])
@@ -1076,7 +1076,7 @@ class TestHappyPath:
                     - Ensure the results holds the expected incidents list data
                 """
         # prepare
-        mocked_indicators = MOCKED_CREATE_THREAT_INDICATOR_OUTPUT.copy()
+        mocked_indicators = MOCKED_CREATE_THREAT_INDICATOR_OUTPUT
         mocker.patch.object(client, 'http_request', return_value=mocked_indicators)
 
         # execute
@@ -1090,7 +1090,7 @@ class TestHappyPath:
         assert context['Name'] == 'ind_name'
         assert context['DisplayName'] == 'displayfortestmay'
 
-        assert context['Tags'][0] == 'wereplacedthetag'  # check why strip doesn't work
+        assert context['Tags'][0] == 'wereplacedthetag'
 
     @pytest.mark.parametrize('args, client', [  # disable-secrets-detection
         (ARGS_TO_UPDATE, mock_client())])
@@ -1106,9 +1106,9 @@ class TestHappyPath:
                 """
 
         # prepare
-        mocked_indicators = MOCKED_THREAT_INDICATOR_OUTPUT.copy()
+        mocked_indicators = MOCKED_THREAT_INDICATOR_OUTPUT
         mocker.patch.object(client, 'http_request', return_value=mocked_indicators)
-        mocked_updated_indicators = MOCKED_UPDATE_THREAT_INDICATOR.copy()
+        mocked_updated_indicators = MOCKED_UPDATE_THREAT_INDICATOR
         mocker.patch.object(client, 'http_request', return_value=mocked_updated_indicators)
 
         # execute
