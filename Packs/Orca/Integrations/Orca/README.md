@@ -14,7 +14,6 @@ This integration was integrated and tested with Orca
     | incidentType | Incident type | False |
     | isFetch | Fetch incidents | False |
     | max_fetch | Max fetch | False |
-    | fetch_limit | Limit number of fetched records. Default: `1000` | False |
     | insecure | Trust any certificate \(not secure\) | False |
     | proxy | Use system proxy settings | False |
 
