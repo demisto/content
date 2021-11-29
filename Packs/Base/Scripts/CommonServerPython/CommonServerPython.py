@@ -1833,7 +1833,7 @@ class JsonTransformer:
             return flattenCell(json_input, is_pretty)
         if self.flatten:
             return '\n'.join(
-                [u'{key}: {val}'.format(key=k, val=flattenCell(v, is_pretty)) for k, v in json_input.items()]) # for BC
+                [u'{key}: {val}'.format(key=k, val=flattenCell(v, is_pretty)) for k, v in json_input.items()])  # for BC
 
         str_lst = []
         prev_path = None
@@ -1867,7 +1867,7 @@ class JsonTransformer:
 
                 if is_in_path or k in self.keys:
                     if isinstance(v, dict):
-                        for res in self.json_to_path_generator(v, path + [k]): # this is yield from for python2 BC
+                        for res in self.json_to_path_generator(v, path + [k]):  # this is yield from for python2 BC
                             yield res
                     else:
                         yield path, k, v
