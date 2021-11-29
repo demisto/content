@@ -645,7 +645,7 @@ Retrieves the Zscaler default blacklist.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | filter | Filter results by URL or IP objects. Possible values are: ip, url. | Optional |
-| query | Query (Python regular expression) to match against, e.g. 8.*.*.8 | Optional | 
+| query | Query (Python regular expression) to match against. For example, 8.*.*.8 | Optional | 
 
 #### Context Output
 
