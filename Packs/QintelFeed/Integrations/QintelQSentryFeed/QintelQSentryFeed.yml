@@ -108,11 +108,6 @@ configuration:
     happens on the 3rd-party vendor's side, so only indicators that are new or modified
     are sent to Cortex XSOAR. Therefore, all indicators coming from these feeds are
     labeled new or modified.
-- name: feedTags
-  display: Tags
-  required: false
-  type: 0
-  additionalinfo: Supports CSV values.
 description: 'This feed of IPs are associated with infrastructure actively utilized
   or abused by cyber criminals, including VPN/Proxy services and malicious hosts.
   With this integration, users can fetch a daily list of newly compiled indicators
@@ -139,7 +134,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
