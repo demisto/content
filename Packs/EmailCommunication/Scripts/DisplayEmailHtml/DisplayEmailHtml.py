@@ -17,11 +17,10 @@ def create_email_html(email_html='', entry_id_list=None):
                                 email_html
                                 )
         else:
-            email_html = re.sub(f'src="[^>]+"(?=[^>]+)',
+            email_html = re.sub(f'src="[^>]+(?=[^>]+")',
                                 f'src={account_name}/entry/download/{entry_id[1]} ',
                                 email_html
                                 )
-
     return email_html
 
 
