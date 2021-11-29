@@ -35,6 +35,7 @@ class KafkaCommunicator:
     ca_path: Optional[str] = None
     client_cert_path: Optional[str] = None
     client_key_path: Optional[str] = None
+    logger: Optional[logging.Logger] = None
 
     SESSION_TIMEOUT: int = 10000
     REQUESTS_TIMEOUT: float = 10.0
@@ -45,7 +46,8 @@ class KafkaCommunicator:
                  message_max_bytes: Optional[int] = None,
                  ca_cert: Optional[str] = None,
                  client_cert: Optional[str] = None, client_cert_key: Optional[str] = None,
-                 ssl_password: Optional[str] = None, trust_any_cert: bool = False):
+                 ssl_password: Optional[str] = None, trust_any_cert: bool = False,
+                 logger: Optional[logging.Logger] = None):
         """Set configuration dicts for consumer and producer.
 
         Args:
@@ -69,6 +71,8 @@ class KafkaCommunicator:
                               'auto.offset.reset': offset,
                               'group.id': group_id,
                               'enable.auto.commit': False}
+
+        self.logger = logger
 
         if trust_any_cert:
             self.conf_consumer.update({'ssl.endpoint.identification.algorithm': 'none',
@@ -103,6 +107,18 @@ class KafkaCommunicator:
             self.conf_producer.update({'ssl.key.password': ssl_password})
             self.conf_consumer.update({'ssl.key.password': ssl_password})
 
+    def get_kafka_consumer(self) -> KConsumer:
+        if self.logger:
+            return KConsumer(self.conf_consumer, logger=self.logger)
+        else:
+            return KConsumer(self.conf_consumer)
+
+    def get_kafka_producer(self) -> KProducer:
+        if self.logger:
+            return KProducer(self.conf_producer, logger=self.logger)
+        else:
+            return KProducer(self.conf_producer)
+
     def update_conf_for_fetch(self, message_max_bytes: Optional[int] = None):
         """Update consumer configurations for fetching messages
 
@@ -118,18 +134,14 @@ class KafkaCommunicator:
         else:
             raise DemistoException('Kafka consumer was not yet initialized.')
 
-    def test_connection(self, kafka_logger: Optional[logging.Logger] = None,
-                        log_stream: Optional[StringIO] = None) -> str:
+    def test_connection(self, log_stream: Optional[StringIO] = None) -> str:
         """Test getting topics with the consumer and producer configurations."""
         error_msg = ''
         consumer: Optional[KConsumer] = None
         producer: Optional[KProducer] = None
-        try:
-            if kafka_logger:
-                consumer = KConsumer(self.conf_consumer, logger=kafka_logger)
-            else:
-                consumer = KConsumer(self.conf_consumer)
 
+        try:
+            consumer = self.get_kafka_consumer()
             consumer_topics = consumer.list_topics(timeout=self.REQUESTS_TIMEOUT)
             consumer_topics.topics
 
@@ -150,10 +162,7 @@ class KafkaCommunicator:
                     raise DemistoException(error_msg)
 
         try:
-            if kafka_logger:
-                producer = KProducer(self.conf_producer, logger=kafka_logger)
-            else:
-                producer = KProducer(self.conf_producer)
+            producer = self.get_kafka_producer()
 
             producer_topics = producer.list_topics(timeout=self.REQUESTS_TIMEOUT)
             producer_topics.topics
@@ -195,9 +204,9 @@ class KafkaCommunicator:
         Return topics metadata object as described in confluent-kafka API
         """
         if consumer:
-            client = KConsumer(self.conf_consumer)
+            client = self.get_kafka_consumer()
         else:
-            client = KProducer(self.conf_producer)
+            client = self.get_kafka_producer()
         cluster_metadata = client.list_topics(timeout=self.REQUESTS_TIMEOUT)
         return cluster_metadata.topics
 
@@ -206,7 +215,7 @@ class KafkaCommunicator:
 
         Return (earliest offset, latest offset)
         """
-        kafka_consumer = KConsumer(self.conf_consumer)
+        kafka_consumer = self.get_kafka_consumer()
         partition = TopicPartition(topic=topic, partition=partition)
         return kafka_consumer.get_watermark_offsets(partition=partition, timeout=self.REQUESTS_TIMEOUT)
 
@@ -220,7 +229,7 @@ class KafkaCommunicator:
 
         The delivery_report is called after production.
         """
-        kafka_producer = KProducer(self.conf_producer)
+        kafka_producer = self.get_kafka_producer()
         if partition is not None:
             kafka_producer.produce(topic=topic, value=value, partition=partition,
                                    on_delivery=self.delivery_report)
@@ -239,7 +248,7 @@ class KafkaCommunicator:
 
         Return the consumed kafka message in the confluent_kafka API's format.
         """
-        kafka_consumer = KConsumer(self.conf_consumer)
+        kafka_consumer = self.get_kafka_consumer()
         kafka_consumer.assign(self.get_topic_partitions(topic, partition, offset, True))
         polled_msg = kafka_consumer.poll(self.POLL_TIMEOUT)
         demisto.debug(f"polled {polled_msg}")
@@ -393,9 +402,7 @@ def create_incident(message: Message, topic: str) -> dict:
 ''' COMMANDS '''
 
 
-@capture_logs
-def command_test_module(kafka: KafkaCommunicator, demisto_params: dict, kafka_logger: Optional[logging.Logger] = None,
-                        log_stream: Optional[StringIO] = None) -> str:
+def command_test_module(kafka: KafkaCommunicator, demisto_params: dict, log_stream: Optional[StringIO] = None) -> str:
     """Test getting available topics using consumer and producer configurations.
     Validate the fetch parameters.
 
@@ -406,7 +413,7 @@ def command_test_module(kafka: KafkaCommunicator, demisto_params: dict, kafka_lo
 
     Return 'ok' if everything went well, raise relevant exception otherwise
     """
-    kafka.test_connection(kafka_logger=kafka_logger, log_stream=log_stream)
+    kafka.test_connection(log_stream=log_stream)
     if demisto_params.get('isFetch', False):
         check_params(kafka=kafka,
                      topic=demisto_params.get('topic', None),
@@ -625,7 +632,7 @@ def fetch_incidents(kafka: KafkaCommunicator, demisto_params: dict) -> None:
 
     kafka.update_conf_for_fetch(message_max_bytes=message_max_bytes)
 
-    kafka_consumer = KConsumer(kafka.conf_consumer)
+    kafka_consumer = kafka.get_kafka_consumer()
     check_params(kafka, topic, partitions, offset, True)
 
     if topic != last_topic:
@@ -644,9 +651,11 @@ def fetch_incidents(kafka: KafkaCommunicator, demisto_params: dict) -> None:
             if specific_offset >= latest_offset or specific_offset < earliest_offset:
                 continue
         topic_partitions += kafka.get_topic_partitions(topic=topic, partition=int(partition),
-                                                       offset=specific_offset)
+                                                       offset=specific_offset, consumer=True)
     if not partitions:
-        topic_partitions = kafka.get_topic_partitions(topic=topic, partition=-1, offset=offset)
+        if isinstance(offset, int):
+            offset += 1
+        topic_partitions = kafka.get_topic_partitions(topic=topic, partition=-1, offset=offset, consumer=True)
     try:
         if topic_partitions:
             kafka_consumer.assign(topic_partitions)
@@ -674,6 +683,43 @@ def fetch_incidents(kafka: KafkaCommunicator, demisto_params: dict) -> None:
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
+@capture_logs
+def commands_manager(kafka_kwargs: dict, demisto_params: dict, demisto_args: dict,  # pragma: no cover
+                     demisto_command: str, kafka_logger: Optional[logging.Logger] = None,
+                     log_stream: Optional[StringIO] = None) -> None:
+    """Start command function according to demisto command."""
+    kafka_kwargs['logger'] = kafka_logger
+    kafka = KafkaCommunicator(**kafka_kwargs)
+    exception = None
+
+    try:
+        if demisto_command == 'test-module':
+            return_results(command_test_module(kafka, demisto_params, log_stream))
+        elif demisto_command == 'kafka-print-topics':
+            return_results(print_topics(kafka, demisto_args))
+        elif demisto_command == 'kafka-publish-msg':
+            produce_message(kafka, demisto_args)
+        elif demisto_command == 'kafka-consume-msg':
+            return_results(consume_message(kafka, demisto_args))
+        elif demisto_command == 'kafka-fetch-partitions':
+            return_results(fetch_partitions(kafka, demisto_args))
+        elif demisto_command == 'fetch-incidents':
+            fetch_incidents(kafka, demisto_params)
+        else:
+            raise NotImplementedError(f'Command {demisto_command} not found in command list')
+    except Exception as e:
+        exception = e
+    finally:
+        if kafka.ca_path and os.path.isfile(kafka.ca_path):
+            os.remove(os.path.abspath(kafka.ca_path))
+        if kafka.client_cert_path and os.path.isfile(kafka.client_cert_path):
+            os.remove(os.path.abspath(kafka.client_cert_path))
+        if kafka.client_key_path and os.path.isfile(kafka.client_key_path):
+            os.remove(os.path.abspath(kafka.client_key_path))
+        if exception:
+            raise e
+
+
 def main():  # pragma: no cover
     demisto_command = demisto.command()
     demisto_params = demisto.params()
@@ -698,23 +744,8 @@ def main():  # pragma: no cover
     else:
         kafka_kwargs = {'brokers': brokers, 'offset': offset, 'trust_any_cert': trust_any_cert}
 
-    kafka = KafkaCommunicator(**kafka_kwargs)
-
     try:
-        if demisto_command == 'test-module':
-            return_results(command_test_module(kafka, demisto_params))
-        elif demisto_command == 'kafka-print-topics':
-            return_results(print_topics(kafka, demisto_args))
-        elif demisto_command == 'kafka-publish-msg':
-            produce_message(kafka, demisto_args)
-        elif demisto_command == 'kafka-consume-msg':
-            return_results(consume_message(kafka, demisto_args))
-        elif demisto_command == 'kafka-fetch-partitions':
-            return_results(fetch_partitions(kafka, demisto_args))
-        elif demisto_command == 'fetch-incidents':
-            fetch_incidents(kafka, demisto_params)
-        else:
-            raise NotImplementedError(f'Command {demisto_command} not found in command list')
+        commands_manager(kafka_kwargs, demisto_params, demisto_args, demisto_command)
 
     except Exception as e:
         debug_log = ''
@@ -722,14 +753,6 @@ def main():  # pragma: no cover
         if stacktrace:
             debug_log += f'Debug logs:\nFull stacktrace:\n\n{stacktrace}'
         return_error(f'{str(e)}\n\n{debug_log}')
-
-    finally:
-        if kafka.ca_path and os.path.isfile(kafka.ca_path):
-            os.remove(os.path.abspath(kafka.ca_path))
-        if kafka.client_cert_path and os.path.isfile(kafka.client_cert_path):
-            os.remove(os.path.abspath(kafka.client_cert_path))
-        if kafka.client_key_path and os.path.isfile(kafka.client_key_path):
-            os.remove(os.path.abspath(kafka.client_key_path))
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
