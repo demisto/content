@@ -22,7 +22,7 @@ configuration:
   required: false
   type: 8
 - defaultvalue: Elasticsearch
-  additionalinfo: In some hosted ElasticSearch environments, the standard ElasticSearch client is not supported. If you encounter any related client problems, please consider using the OpenSearch client type.
+  additionalinfo: In some hosted ElasticSearch environments, the standard ElasticSearch client is not supported. If you encounter any related client issues, please consider using the OpenSearch client type.
   display: Client type
   name: client_type
   options:
