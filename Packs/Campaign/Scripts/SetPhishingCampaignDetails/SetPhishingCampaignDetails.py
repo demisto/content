@@ -9,11 +9,10 @@ EMAIL_CAMPAIGN_KEY = 'EmailCampaign'
 
 class SetPhishingCampaignDetails:
 
-    def __init__(self, _demisto=demisto, execute_command=execute_command, is_error=is_error):
+    def __init__(self, _demisto=demisto, execute_command=execute_command):
         self.incident_context = _demisto.context()
         self.dt = _demisto.dt
         self.execute_command = execute_command
-        self.is_error = is_error
 
     def get_current_incident_campaign_data(self) -> dict:
         # Getting the context of the current incident under the campaign key.
@@ -24,12 +23,9 @@ class SetPhishingCampaignDetails:
     def get_campaign_context_from_incident(self, incident_id: str) -> dict:
         # Getting the campaign current context under the campaign key.
         incident_context = self.execute_command('getContext', {'id': incident_id})
-        if self.is_error(incident_context):
-            demisto.debug(f"Could not get context for campaign incident {id}")
-            return {}
 
         # If campaign context key is not found in the context, dt should return None.
-        campaign_context = self.dt(incident_context, f'Contents.context.{EMAIL_CAMPAIGN_KEY}')
+        campaign_context = self.dt(incident_context, f'context.{EMAIL_CAMPAIGN_KEY}')
         return campaign_context if campaign_context else {}
 
     def get_similarities_from_incident(self, incident_id: str) -> dict:
@@ -91,18 +87,9 @@ class SetPhishingCampaignDetails:
 
     def copy_campaign_data_to_incident(self, incident_id: str, merged_campaign: dict, append: bool) -> dict:
 
-        args = {'key': EMAIL_CAMPAIGN_KEY, 'value': merged_campaign, 'append': append}
+        args = {'key': EMAIL_CAMPAIGN_KEY, 'value': merged_campaign, 'append': append, "id": incident_id}
 
-        res = self.execute_command(
-            'executeCommandAt',
-            {
-                'incidents': incident_id,
-                'command': 'Set',
-                'arguments': args,
-            }
-        )
-        if self.is_error(res):
-            raise DemistoException(f"error in setting merged campaign data to incident id {incident_id}. Error: {res}")
+        res = self.execute_command('SetByIncidentId', args)
 
         return res
 

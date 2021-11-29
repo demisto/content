@@ -65,23 +65,26 @@ def get_campaign_context_from_incident(context_mock, expected_results):
 
 CONTEXT_COPY_CASES = [
     (CONTEXT_WITH_CAMPAIGN.get(EMAIL_CAMPAIGN_KEY),
-     {'incidents': 1, 'command': 'Set', 'arguments':
-         {'key': EMAIL_CAMPAIGN_KEY, 'value': {'field_example': 'field_example', 'field_example_2': 'field_example'},
-          'append': False}}),
+     {'key': EMAIL_CAMPAIGN_KEY, 'value': {'field_example': 'field_example', 'field_example_2': 'field_example'}})
 ]
 
 
 @pytest.mark.parametrize('context_mock, expected_results', CONTEXT_COPY_CASES)
-def test_copy_campaign_data_to_incident(mocker, context_mock, expected_results):
+def test_copy_campaign_data_to_incident(context_mock, expected_results):
     """
     Given:  context with only campaign data
     When:   adding context from the original incident to other incident
     Then:   Validate we call the set command with the correct arguments.
     """
+
+    def _validate_execute_command_set(cmd, args):
+        assert cmd == 'SetByIncidentId'
+        assert args.get('key') == expected_results.get('key')
+        assert args.get('value') == expected_results.get('value')
+
     test_obj = SetPhishingCampaignDetails()
-    execute_mock = mocker.patch.object(demisto, 'executeCommand')
+    test_obj.execute_command = _validate_execute_command_set
     test_obj.copy_campaign_data_to_incident(1, context_mock, False)
-    execute_mock.assert_called_once_with('executeCommandAt', expected_results)
 
 
 CONTEXT_MOCK_CASES = [
@@ -259,11 +262,17 @@ COMPLETE_FLOW_CASES = [
           'recipients': ['victim-test7@demistodev.onmicrosoft.com'], 'recipientsdomain': ['onmicrosoft.com'],
           'severity': 3, 'similarity': 0.85, 'status': 1}]  # expected, all incidents and similarity found in incident '5'
     )
+
 ]
 
 
 @pytest.mark.parametrize('campaign_id, incident_to_add_id, expected', COMPLETE_FLOW_CASES)
 def test_run_flow(mocker, campaign_id, incident_to_add_id, expected):
+    """
+    Given:  An existing/new campaign's data and a new incident date (the current incident we are running on)
+    When:   Adding the new incident to an existing/new campaign as part of the Phishing playbook
+    Then:   Validate the flow itself of the context merge of incident and campaign.
+    """
     test_obj = SetPhishingCampaignDetails(execute_command=lambda x, y: (x, y))
     mocker.patch.object(SetPhishingCampaignDetails, 'get_campaign_context_from_incident',
                         side_effect=lambda x: INCIDENTS_BY_ID[x].get(EMAIL_CAMPAIGN_KEY))
@@ -271,4 +280,6 @@ def test_run_flow(mocker, campaign_id, incident_to_add_id, expected):
                         return_value=INCIDENTS_BY_ID[incident_to_add_id].get(EMAIL_CAMPAIGN_KEY))
     mocker.patch.object(demisto, 'incident', return_value={'id': incident_to_add_id})
     res = test_obj.run(campaign_id, False)
-    assert res[1].get('arguments').get('value').get('incidents') == expected
+    assert res[0] == 'SetByIncidentId'
+    assert res[1]['key'] == EMAIL_CAMPAIGN_KEY
+    assert res[1]['value']['incidents'] == expected
