@@ -112,52 +112,149 @@ Get information about the hosts and their profile events.
 
 
 #### Command Example
-```prisma-cloud-compute-profile-host-list hostName=*249* namespace=prod```
+```!prisma-cloud-compute-profile-host-list hostName=*249* namespace=prod```
 
 #### Human Readable Output
 
 ### Apps
 |HostId|AppName|StartupProcess|User|LaunchTime|
 |---|---|---|---|---|
-| host249 | ssh | /usr/sbin/sshd | root | 2020-11-10T09:37:42.301Z |
-| host249 | docker | /usr/bin/dockerd | root | 2020-11-10T09:37:42.301Z |
-| host249 | atd | /usr/sbin/atd | root | 2020-11-10T09:37:42.302Z |
-| host249 | acpid | /usr/sbin/acpid | root | 2020-11-10T09:37:42.302Z |
-| host249 | cron | /usr/sbin/cron | root | 2020-11-10T09:37:42.302Z |
-| host249 | apt-daily | /bin/dash | root | 2020-11-10T11:41:34.631Z |
-| host249 | snapd | /usr/lib/snapd/snapd | root | 2021-02-11T06:23:47.57Z |
-| host249 | systemd | /lib/systemd/systemd | root | 2021-09-02T10:25:30.845Z |
+| host1 | ssh | /usr/sbin/sshd | root | November 10, 2020 09:37:42 AM |
+| host1 | docker | /usr/bin/dockerd | root | November 10, 2020 09:37:42 AM |
+| host1 | atd | /usr/sbin/atd | root | November 10, 2020 09:37:42 AM |
+| host1 | acpid | /usr/sbin/acpid | root | November 10, 2020 09:37:42 AM |
+| host1 | cron | /usr/sbin/cron | root | November 10, 2020 09:37:42 AM |
+| host1 | apt-daily | /bin/dash | root | November 10, 2020 11:41:34 AM |
+| host1 | snapd | /usr/lib/snapd/snapd | root | February 11, 2021 06:23:47 AM |
+| host1 | systemd | /lib/systemd/systemd | root | September 02, 2021 10:25:30 AM |
 ### SSH Events
 |HostId|User|Ip|ProcessPath|Command|Time|
 |---|---|---|---|---|---|
-| host249 | ubuntu | 1.1.1.1 | /usr/bin/clear_console | /usr/bin/clear_console -q | 2021-09-02T11:49:33.033Z |
-| host249 | ubuntu | 1.1.1.1 | /bin/ls | ls --color=auto -alF | 2021-09-02T11:04:01.486Z |
-| host249 | ubuntu | 1.1.1.1 | /bin/ls | ls --color=auto -alF | 2021-09-02T11:03:57.779Z |
-| host249 | ubuntu | 1.1.1.1 | /bin/ls | ls --color=auto -alF | 2021-09-02T11:03:53.468Z |
-| host249 | ubuntu | 1.1.1.1 | /usr/bin/dircolors | /usr/bin/dircolors | 2021-09-02T11:03:52.617Z |
-| host249 | ubuntu | 1.1.1.1 | /usr/bin/dirname | dirname /usr/bin/lesspipe | 2021-09-02T11:03:52.614Z |
-| host249 | ubuntu | 1.1.1.1 | /usr/bin/basename | basename /usr/bin/lesspipe | 2021-09-02T11:03:52.613Z |
-| host249 | ubuntu | 1.1.1.1 | /bin/dash | /bin/sh /usr/bin/lesspipe | 2021-09-02T11:03:52.612Z |
-| host249 | ubuntu | 1.1.1.1 | /usr/bin/groups | /usr/bin/groups | 2021-09-02T11:03:52.609Z |
-| host249 | ubuntu | 1.1.1.1 | /bin/bash | /bin/bash | 2021-09-02T11:03:52.605Z |
-| host249 | ubuntu | 1.1.1.1 | /bin/su | /bin/su | 2021-09-02T11:03:52.597Z |
-| host249 | ubuntu | 1.1.1.1 | /usr/bin/sudo | /usr/bin/sudo | 2021-09-02T11:03:52.573Z |
-| host249 | ubuntu | 1.1.1.1 | /bin/ls | ls --color=auto -lt | 2021-09-02T11:03:45.66Z |
-| host249 | ubuntu | 1.1.1.1 | /bin/ls | ls --color=auto -ltr | 2021-09-02T10:27:24.429Z |
-| host249 | ubuntu | 1.1.1.1 | /bin/ls | ls --color=auto -alF | 2021-09-02T10:27:22.841Z |
-| host249 | ubuntu | 1.1.1.1 | /bin/ls | ls --color=auto -alF | 2021-09-02T10:27:20.337Z |
-| host249 | ubuntu | 1.1.1.1 | /bin/ls | ls /etc/bash_completion.d | 2021-09-02T10:27:18.865Z |
-| host249 | ubuntu | 1.1.1.1 | /usr/bin/dircolors | /usr/bin/dircolors | 2021-09-02T10:27:18.848Z |
-| host249 | ubuntu | 1.1.1.1 | /usr/bin/dirname | dirname /usr/bin/lesspipe | 2021-09-02T10:27:18.844Z |
-| host249 | ubuntu | 1.1.1.1 | /usr/bin/basename | basename /usr/bin/lesspipe | 2021-09-02T10:27:18.843Z |
-| host249 | ubuntu | 1.1.1.1 | /bin/dash | /bin/sh /usr/bin/lesspipe | 2021-09-02T10:27:18.842Z |
-| host249 | ubuntu | 1.1.1.1 | /bin/ls | ls /etc/bash_completion.d | 2021-09-02T10:27:18.818Z |
-| host249 | ubuntu | 1.1.1.1 | /bin/bash | /bin/bash | 2021-09-02T10:27:18.8Z |
-| host249 | ubuntu | 2.2.2.2 | /usr/bin/scp | /usr/bin/scp | 2021-09-02T10:27:06.479Z |
-| host249 | ubuntu | 2.2.2.2 | /bin/bash | bash -c scp -t . | 2021-09-02T10:27:06.475Z |
-| host249 | root | 2.2.2.2 | /bin/sleep | /bin/sleep | 2021-09-02T10:26:52.758Z |
-| host249 | root | 2.2.2.2 | /bin/bash | bash -c echo 'Please login as the user "ubuntu" rather than the user "root".';echo;sleep 10 | 2021-09-02T10:26:52.754Z |
-| host249 | root | 1.1.1.1 | /bin/sleep | /bin/sleep | 2021-09-02T10:25:31.277Z |
-| host249 | root | 1.1.1.1 | /bin/bash | bash -c echo 'Please login as the user "ubuntu" rather than the user "root".';echo;sleep 10 | 2021-09-02T10:25:31.273Z |
+| host1 | ubuntu | 1.1.1.1 | /usr/bin/clear_console | /usr/bin/clear_console -q | September 02, 2021 11:49:33 AM |
+| host1 | ubuntu | 1.1.1.1 | /bin/ls | ls --color=auto -alF | September 02, 2021 11:04:01 AM |
+| host1 | ubuntu | 1.1.1.1 | /bin/ls | ls --color=auto -alF | September 02, 2021 11:03:57 AM |
+| host1 | ubuntu | 1.1.1.1 | /bin/ls | ls --color=auto -alF | September 02, 2021 11:03:53 AM |
+| host1 | ubuntu | 1.1.1.1 | /usr/bin/dircolors | /usr/bin/dircolors | September 02, 2021 11:03:52 AM |
+| host1 | ubuntu | 1.1.1.1 | /usr/bin/dirname | dirname /usr/bin/lesspipe | September 02, 2021 11:03:52 AM |
+| host1 | ubuntu | 1.1.1.1 | /usr/bin/basename | basename /usr/bin/lesspipe | September 02, 2021 11:03:52 AM |
+| host1 | ubuntu | 1.1.1.1 | /bin/dash | /bin/sh /usr/bin/lesspipe | September 02, 2021 11:03:52 AM |
+| host1 | ubuntu | 1.1.1.1 | /usr/bin/groups | /usr/bin/groups | September 02, 2021 11:03:52 AM |
+| host1 | ubuntu | 1.1.1.1 | /bin/bash | /bin/bash | September 02, 2021 11:03:52 AM |
+| host1 | ubuntu | 1.1.1.1 | /bin/su | /bin/su | September 02, 2021 11:03:52 AM |
+| host1 | ubuntu | 1.1.1.1 | /usr/bin/sudo | /usr/bin/sudo | September 02, 2021 11:03:52 AM |
+| host1 | ubuntu | 1.1.1.1 | /bin/ls | ls --color=auto -lt | September 02, 2021 11:03:45 AM |
+| host1 | ubuntu | 1.1.1.1 | /bin/ls | ls --color=auto -ltr | September 02, 2021 10:27:24 AM |
+| host1 | ubuntu | 1.1.1.1 | /bin/ls | ls --color=auto -alF | September 02, 2021 10:27:22 AM |
+| host1 | ubuntu | 1.1.1.1 | /bin/ls | ls --color=auto -alF | September 02, 2021 10:27:20 AM |
+| host1 | ubuntu | 1.1.1.1 | /bin/ls | ls /etc/bash_completion.d | September 02, 2021 10:27:18 AM |
+| host1 | ubuntu | 1.1.1.1 | /usr/bin/dircolors | /usr/bin/dircolors | September 02, 2021 10:27:18 AM |
+| host1 | ubuntu | 1.1.1.1 | /usr/bin/dirname | dirname /usr/bin/lesspipe | September 02, 2021 10:27:18 AM |
+| host1 | ubuntu | 1.1.1.1 | /usr/bin/basename | basename /usr/bin/lesspipe | September 02, 2021 10:27:18 AM |
+| host1 | ubuntu | 1.1.1.1 | /bin/dash | /bin/sh /usr/bin/lesspipe | September 02, 2021 10:27:18 AM |
+| host1 | ubuntu | 1.1.1.1 | /bin/ls | ls /etc/bash_completion.d | September 02, 2021 10:27:18 AM |
+| host1 | ubuntu | 1.1.1.1 | /bin/bash | /bin/bash | September 02, 2021 10:27:18 AM |
+| host1 | ubuntu | 2.2.2.2 | /usr/bin/scp | /usr/bin/scp | September 02, 2021 10:27:06 AM |
+| host1 | ubuntu | 2.2.2.2 | /bin/bash | bash -c scp -t . | September 02, 2021 10:27:06 AM |
+| host1 | root | 2.2.2.2 | /bin/sleep | /bin/sleep | September 02, 2021 10:26:52 AM |
+| host1 | root | 2.2.2.2 | /bin/bash | bash -c echo 'Please login as the user "ubuntu" rather than the user "root".';echo;sleep 10 | September 02, 2021 10:26:52 AM |
+| host1 | root | 1.1.1.1 | /bin/sleep | /bin/sleep | September 02, 2021 10:25:31 AM |
+| host1 | root | 1.1.1.1 | /bin/bash | bash -c echo 'Please login as the user "ubuntu" rather than the user "root".';echo;sleep 10 | September 02, 2021 10:25:31 AM |
+
+### prisma-cloud-compute-profile-container-list
+***
+Get information about the containers and their profile events.
 
 
+#### Base Command
+
+`prisma-cloud-compute-profile-container-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| cluster | Clusters is the runtime profile k8s cluster filter. | Optional | 
+| hostName | Hosts is the runtime profile hostname filter. | Optional | 
+| id | IDs is the runtime profile id filter. | Optional | 
+| image | Images is the runtime profile image filter. | Optional | 
+| imageID | ImageIDs is the runtime profile image id filter. | Optional | 
+| namespace | Namespaces is the runtime profile k8s namespace filter. | Optional | 
+| os | OS is the service runtime profile OS filter. | Optional | 
+| state | States is the runtime profile state filter. | Optional | 
+| limit | The maximum number of containers and their profile events. Default is 15. | Optional | 
+| offset | The offset number to begin listing containers and their profile events. Default is 0. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| prismaCloudCompute.profileContainer._id | Unknown | Id is the profile ID | 
+| prismaCloudCompute.profileContainer.accountsIDs | String | AccountIDs are the cloud account IDs associated with the container runtime profile | 
+| prismaCloudCompute.profileContainer.archived | Boolean | Archive indicates whether this profile is archived | 
+| prismaCloudCompute.profileContainer.capabilities | Unknown | Capabilities are extended capabilities that are added to the profile based on static analysis | 
+| prismaCloudCompute.profileContainer.cluster | String | Cluster is the provided cluster name | 
+| prismaCloudCompute.profileContainer.collections | String | Collections are collections to which this profile applies | 
+| prismaCloudCompute.profileContainer.created | Date | Created is the profile creation time | 
+| prismaCloudCompute.profileContainer.entrypoint | String | Entrypoint is the image entrypoint | 
+| prismaCloudCompute.profileContainer.events | Unknown | Events are the last historical interactive process events for this profile, they are updated in a designated flow | 
+| prismaCloudCompute.profileContainer.filesystem | Unknown | Filesystem is the profile filesystem metadata | 
+| prismaCloudCompute.profileContainer.hash | Unknown | Hash is an uint32 hash associated with the profile | 
+| prismaCloudCompute.profileContainer.hostNetwork | Boolean | HostNetwork whether the instance share the network namespace with the host | 
+| prismaCloudCompute.profileContainer.hostPid | Boolean | HostPid indicates whether the instance share the pid namespace with the host | 
+| prismaCloudCompute.profileContainer.image | Boolean | description | 
+| prismaCloudCompute.profileContainer.imageID | String | ImageID is the profile's image ID | 
+| prismaCloudCompute.profileContainer.infra | Boolean | InfraContainer indicates this is an infrastructure container | 
+| prismaCloudCompute.profileContainer.istio | Boolean | Istio states whether it is an istio-monitored profile | 
+| prismaCloudCompute.profileContainer.k8s | Unknown | K8s holds Kubernetes related data | 
+| prismaCloudCompute.profileContainer.label | String | Label is the profile's label | 
+| prismaCloudCompute.profileContainer.lastUpdate | Date | Modified is the last time when this profile was modified | 
+| prismaCloudCompute.profileContainer.learnedStartup | Boolean | LearnedStartup indicates that startup events were learned | 
+| prismaCloudCompute.profileContainer.namespace | String | Namespace is the k8s deployment namespace | 
+| prismaCloudCompute.profileContainer.network | Unknown | Network is the profile networking metadata | 
+| prismaCloudCompute.profileContainer.os | Strubg | OS is the profile image OS | 
+| prismaCloudCompute.profileContainer.processes | Unknown | Processes is the profile processes metadata | 
+| prismaCloudCompute.profileContainer.relearningCause | String | RelearningCause is a string that describes the reasoning for a profile to enter the learning mode afterbeing activated | 
+| prismaCloudCompute.profileContainer.remainingLearningDurationSec | Number | RemainingLearningDurationSec represents the total time left that the system need to finish learning this image | 
+| prismaCloudCompute.profileContainer.state | Unknown | State is the current state of the profile. | 
+
+
+#### Command Example
+```!prisma-cloud-compute-profile-container-list id=123 hostName=host1, state=active```
+
+#### Human Readable Output
+
+### Container information
+|ContainerID|Image|OS|State|Created|
+|---|---|---|---|---|
+| 1234 | twistlock/private:console_21_04_439 | Red Hat Enterprise Linux 8.4 (Ootpa) | active | September 02, 2021 11:05:08 AM |
+### Containers processes
+|ContainerID|Type|Path|DetectionTime|
+|---|---|---|---|
+| 1234 | static | /usr/bin/mongodump | January 01, 0001 00:00:00 AM |
+| 1234 | static | /usr/bin/mongorestore | January 01, 0001 00:00:00 AM |
+| 1234 | static | /usr/bin/rpm | January 01, 0001 00:00:00 AM |
+| 1234 | static | /usr/bin/gpgconf | January 01, 0001 00:00:00 AM |
+| 1234 | static | /usr/bin/gpg-connect-agent | January 01, 0001 00:00:00 AM |
+| 1234 | static | /usr/bin/apt-get | January 01, 0001 00:00:00 AM |
+| 1234 | static | /usr/bin/apt-config | January 01, 0001 00:00:00 AM |
+| 1234 | static | /usr/bin/touch | January 01, 0001 00:00:00 AM |
+| 1234 | static | /usr/bin/dpkg | January 01, 0001 00:00:00 AM |
+| 1234 | static | /usr/bin/cmp | January 01, 0001 00:00:00 AM |
+| 1234 | static | /bin/cat | January 01, 0001 00:00:00 AM |
+| 1234 | static | /bin/rm | January 01, 0001 00:00:00 AM |
+| 1234 | static | /bin/readlink | January 01, 0001 00:00:00 AM |
+| 1234 | static | /bin/sed | January 01, 0001 00:00:00 AM |
+| 1234 | static | /bin/cp | January 01, 0001 00:00:00 AM |
+| 1234 | static | /bin/mktemp | January 01, 0001 00:00:00 AM |
+| 1234 | static | /bin/chmod | January 01, 0001 00:00:00 AM |
+| 1234 | static | /usr/bin/sort | January 01, 0001 00:00:00 AM |
+| 1234 | static | /usr/bin/test | January 01, 0001 00:00:00 AM |
+| 1234 | static | /usr/bin/find | January 01, 0001 00:00:00 AM |
+| 1234 | static | /usr/bin/gpgv | January 01, 0001 00:00:00 AM |
+| 1234 | static | /usr/bin/dirname | January 01, 0001 00:00:00 AM |
+| 1234 | static | /bin/sh | January 01, 0001 00:00:00 AM |
+| 1234 | static | /bin/echo | January 01, 0001 00:00:00 AM |
+| 1234 | static | /usr/bin/tar | January 01, 0001 00:00:00 AM |
+| 1234 | static | /usr/bin/sed | January 01, 0001 00:00:00 AM |
+| 1234 | static | /app/server | January 01, 0001 00:00:00 AM |
+| 1234 | behavioral | /usr/bin/mongod | September 02, 2021 11:05:08 AM |

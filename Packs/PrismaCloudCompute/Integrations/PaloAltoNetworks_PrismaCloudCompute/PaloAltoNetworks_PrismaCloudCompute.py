@@ -267,25 +267,46 @@ def fetch_incidents(client):
 def validate_limit_and_offset(func):
     """
     Decorator to validate that the limit and offset in the command arguments are correct.
+    The maximum objects that can be returned is 50.
     """
     def wrapper(*args, **kwargs):
 
         api_limit_call = 50
 
-        command_args = kwargs.get('args')
-        offset = arg_to_number(arg=command_args.get('offset'), arg_name='offset')
-        if offset < 0:
-            offset = 0
-        command_args['offset'] = offset
+        try:
+            command_args = kwargs.get('args')
+            offset = arg_to_number(arg=command_args.get('offset', '0'), arg_name='offset')  # type:ignore
+            if offset < 0:  # type:ignore
+                offset = 0
+            command_args['offset'] = offset  # type:ignore
 
-        limit = arg_to_number(arg=command_args.get('limit'), arg_name='limit')
-        if limit - offset > api_limit_call:
-            limit = offset + api_limit_call
-        command_args['limit'] = limit
+            limit = arg_to_number(arg=command_args.get('limit', '10'), arg_name='limit')  # type:ignore
+            if limit - offset > api_limit_call:  # type:ignore
+                limit = offset + api_limit_call  # type:ignore
+            command_args['limit'] = limit  # type:ignore
+        except TypeError:
+            pass
 
         return func(*args, **kwargs)
 
     return wrapper
+
+
+def parse_date_string_format(
+    date_string, date_string_format='%Y-%m-%dT%H:%M:%S.%fZ', new_format="%B %d, %Y %H:%M:%S %p"
+):
+    """
+    Parses a date string format to a different date string format.
+
+    Args:
+        date_string (str): the date in string representation.
+        date_string_format (str): the current format of the string date.
+        new_format (str): the new requested format for the date string.
+
+    Returns:
+        str: date as a new format.
+    """
+    return parse_date_string(date_string=date_string, date_format=date_string_format).strftime(new_format)
 
 
 def get_api_info(
@@ -303,7 +324,7 @@ def get_api_info(
     Returns:
         list: api response.
     """
-    return client.api_request(method=method, url_suffix=url_suffix, params=assign_params(**args))
+    return client.api_request(method=method, url_suffix=url_suffix, params=assign_params(**args) if args else {})
 
 
 def build_profile_host_table_response(full_response: List[dict]) -> str:
@@ -317,6 +338,9 @@ def build_profile_host_table_response(full_response: List[dict]) -> str:
     Returns:
         str: markdown table output for the apps and ssh events of a host.
     """
+    if not full_response:
+        return tableToMarkdown(name="Hosts profile events", t=[])
+
     apps_table = []
     ssh_events_table = []
 
@@ -328,10 +352,11 @@ def build_profile_host_table_response(full_response: List[dict]) -> str:
                     'AppName': app.get('name'),
                     'StartupProcess': app.get('startupProcess').get('path'),
                     'User': app.get('startupProcess').get('user'),
-                    'LaunchTime': app.get('startupProcess').get('time'),
+                    'LaunchTime': parse_date_string_format(date_string=app.get('startupProcess').get('time'))
+
                 }
             )
-        for event in response.get('sshEvents'):
+        for event in response.get('sshEvents', []):
             ssh_events_table.append(
                 {
                     'HostId': response.get('_id'),
@@ -339,7 +364,7 @@ def build_profile_host_table_response(full_response: List[dict]) -> str:
                     'Ip': event.get('ip'),
                     'ProcessPath': event.get('path'),
                     'Command': event.get('command'),
-                    'Time': event.get('time'),
+                    'Time': parse_date_string_format(date_string=event.get('time'))
                 }
             )
 
@@ -372,7 +397,85 @@ def get_profile_host_list(client: PrismaCloudComputeClient, args: dict) -> Comma
         outputs_prefix='prismaCloudCompute.profileHost',
         outputs_key_field='_id',
         outputs=full_response,
-        readable_output=build_profile_host_table_response(full_response=full_response)
+        readable_output=build_profile_host_table_response(full_response=full_response),
+        raw_response=full_response
+    )
+
+
+def build_profile_container_table_response(full_response: List[dict]) -> str:
+    """
+    Build a table from the api response of the profile container
+    list for the command 'prisma-cloud-compute-profile-container-list'
+
+    Args:
+        full_response (list[dict]): the api raw response.
+
+    Returns:
+        str: markdown table output.
+    """
+    if not full_response:
+        return tableToMarkdown(name="Containers profile events", t=[])
+
+    container_details = []
+    processes = []
+
+    for response in full_response:
+        container_details.append(
+            {
+                "ContainerID": response.get("_id"),
+                "Image": response.get("image"),
+                "OS": response.get("os"),
+                "State": response.get("state"),
+                "Created": parse_date_string_format(date_string=response.get("created"))
+            }
+        )
+
+        for process_type in ["static", "behavioral"]:
+            for static_process in response.get("processes", {}).get(process_type):
+                processes.append(
+                    {
+                        "ContainerID": response.get("_id"),
+                        "Type": process_type,
+                        "Path": static_process.get("path"),
+                        "DetectionTime": parse_date_string_format(date_string=static_process.get("time"))
+                    }
+                )
+
+    container_details_table = tableToMarkdown(
+        name='Container information',
+        t=container_details,
+        headers=['ContainerID', 'Image', 'OS', 'State', 'Created']
+    )
+    processes_table = tableToMarkdown(
+        name='Containers processes',
+        t=processes,
+        headers=['ContainerID', 'Type', 'Path', 'DetectionTime']
+    )
+
+    return container_details_table + processes_table
+
+
+@validate_limit_and_offset
+def get_container_profile_list(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
+    """
+    Get information about the containers and their profile events.
+    Implement the command 'prisma-cloud-compute-profile-container-list'
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-profile-container-list command arguments.
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    full_response = get_api_info(client=client, args=args, url_suffix='/profiles/container')
+
+    return CommandResults(
+        outputs_prefix='prismaCloudCompute.profileContainer',
+        outputs_key_field='_id',
+        outputs=full_response,
+        readable_output=build_profile_container_table_response(full_response=full_response),
+        raw_response=full_response
     )
 
 
@@ -402,6 +505,7 @@ def main():
 
     available_commands = {
         'prisma-cloud-compute-profile-host-list': get_profile_host_list,
+        'prisma-cloud-compute-profile-container-list': get_container_profile_list
     }
 
     try:
