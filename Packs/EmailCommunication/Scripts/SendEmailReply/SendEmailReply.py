@@ -197,11 +197,11 @@ def get_email_recipients(email_to, email_from, service_mail, mailbox):
     email_to_set = email_to_set.union(set(email_to))
 
     recipient_to_remove = ''
+    address_to_remove = mailbox if mailbox else service_mail
     for recipient in email_to_set:
-        if mailbox:
-            recipient_to_remove = recipient if mailbox in recipient else None
-        elif service_mail:
-            recipient_to_remove = recipient if service_mail in recipient else None
+        if address_to_remove and address_to_remove in recipient:
+            recipient_to_remove = recipient
+            break
 
     if recipient_to_remove:
         email_to_set.remove(recipient_to_remove)
