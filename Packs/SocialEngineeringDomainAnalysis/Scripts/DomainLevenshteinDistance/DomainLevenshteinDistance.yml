@@ -1,0 +1,36 @@
+args:
+- default: true
+  description: The string(s) to compare with the input string. (could be multiple
+    strings with a comma separator)
+  name: compareString
+  required: true
+- description: The input string to compare
+  name: inputString
+  required: true
+- defaultValue: "3"
+  description: Distance that is considered close
+  name: distance
+  required: true
+comment: 'Non conditional version of "GetStringDistance" which gets the string distance
+  between inputString and compareString (could be a comma separated list) based on
+  Levenshtein Distance algorithm. '
+commonfields:
+  id: DomainLevenshteinDistance
+  version: -1
+dockerimage: demisto/python:2.7.18.24398
+enabled: true
+name: DomainLevenshteinDistance
+outputs:
+- contextPath: LevenshteinDistance
+  description: The closeness of the sender domain to our configured domains
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python2
+tags:
+- server
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

@@ -1,0 +1,28 @@
+{
+    "autorun": true,
+    "color": "#B0E22A",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {},
+        "mode": "Specific"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "Social Engineering Domain Investigation",
+    "layout": "03dd2d1e-7b7a-4d86-82ad-258f0121be2f",
+    "locked": false,
+    "name": "Social Engineering Domain Investigation",
+    "onChangeRepAlg": 1,
+    "playbookId": "972e4d3b-90a8-46cb-81f6-b931f2354f4c",
+    "readonly": false,
+    "reputationCalc": 1,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.0.0"
+}

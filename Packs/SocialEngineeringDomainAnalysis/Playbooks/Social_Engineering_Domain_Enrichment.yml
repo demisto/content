@@ -1,0 +1,664 @@
+description: Enrich a domain and compare against your registered domain for potential
+  social engineering against your organization.
+id: ade50b01-8eb1-4e92-8f13-4433c19ca889
+inputs:
+- description: Your company domain to use for checking if potential InputDomains are
+    potentially used for typosquatting and other similar domain attacks.
+  key: RegisteredDomain
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: paloaltonetworks.com
+- description: The potentially malicious domain to check
+  key: InputDomain
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: palonetworks.com
+- description: |-
+    The csv of known bad nameservers
+
+    Example:
+
+    nameserver
+    examplenameserver1
+    examplenameserver2
+    examplenameserver3
+  key: BadNameservers
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: BadNameservers
+- description: The Levenshtein distance to consider close. Lower scores mean strings
+    are more similar
+  key: LevenshteinDistance
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: "10"
+name: Social Engineering Domain Enrichment
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7cd6d378-9b93-4e5a-812e-66a21045135a
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 7cd6d378-9b93-4e5a-812e-66a21045135a
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      query:
+        simple: ${inputs.InputDomain}
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "15"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Provides data enrichment for domains.
+      id: 7a87ad4e-bf0a-4bf9-86ef-37a6dbd069ab
+      iscommand: true
+      name: Whois Lookup
+      script: '|||whois'
+      type: regular
+      version: -1
+    taskid: 7a87ad4e-bf0a-4bf9-86ef-37a6dbd069ab
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      domain:
+        simple: ${inputs.InputDomain}
+      qtype:
+        simple: NS,MX
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns DNS details for a domain
+      id: c904b4a6-0c1e-4389-8609-5fb820f2c8e5
+      iscommand: false
+      name: NS Lookup
+      script: GetDomainDNSDetails
+      type: regular
+      version: -1
+    taskid: c904b4a6-0c1e-4389-8609-5fb820f2c8e5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    reputationcalc: 1
+    scriptarguments:
+      indicatorsValues:
+        simple: ${inputs.InputDomain}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.enrich.indicators
+      id: 60775c2c-63c5-4370-80a5-d85758e3c6d0
+      iscommand: true
+      name: Enrich Domains
+      script: Builtin|||enrichIndicators
+      type: regular
+      version: -1
+    taskid: 60775c2c-63c5-4370-80a5-d85758e3c6d0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      compareString:
+        simple: ${inputs.InputDomain}
+      distance:
+        simple: ${inputs.LevenshteinDistance}
+      extend-context:
+        simple: LevenshteinDistance=.
+      inputString:
+        simple: ${inputs.RegisteredDomain}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Get the string distance between inputString and compareString (could
+        be a comma separated list) based on Levenshtein Distance algorithm.
+      id: db17f423-b007-4fcf-8faa-bcd32db8ebb0
+      iscommand: false
+      name: Check Levenshtein Distance (add to indicator field)
+      script: 824c9113-4d32-4846-80c5-26378a8fcb3a
+      type: regular
+      version: -1
+    taskid: db17f423-b007-4fcf-8faa-bcd32db8ebb0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      header:
+        simple: nameserver
+      list_name:
+        simple: ${inputs.BadNameservers}
+      value:
+        complex:
+          accessor: NameServers}
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ${Domain.Name}
+              operator: isEqualString
+              right:
+                iscontext: true
+                value:
+                  simple: inputs.InputDomain
+          root: ${Domain
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Parses a list by header and value.
+      id: 931cbeec-37db-47f1-8d9b-edfbd6f986e9
+      iscommand: false
+      name: Check Nameserver against "BadNameserver" List
+      script: GetListRow
+      type: regular
+      version: -1
+    taskid: 931cbeec-37db-47f1-8d9b-edfbd6f986e9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 1770
+        }
+      }
+  "6":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: GetListRow
+          operator: isExists
+      label: "yes"
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 484e4742-4ff8-49aa-8b96-2b166f155d84
+      iscommand: false
+      name: Bad Nameservers?
+      type: condition
+      version: -1
+    taskid: 484e4742-4ff8-49aa-8b96-2b166f155d84
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 1945
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      tags:
+        simple: BadNameserver
+      value:
+        simple: ${inputs.InputDomain}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.indicator
+      id: f22c5314-7ed3-4d55-8f15-2712a804307a
+      iscommand: true
+      name: Tag Indicator with "BadNameserver"
+      script: Builtin|||setIndicator
+      type: regular
+      version: -1
+    taskid: f22c5314-7ed3-4d55-8f15-2712a804307a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 2120
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f6694a92-1cd2-4030-89fd-573a6627a822
+      iscommand: false
+      name: Fin
+      type: title
+      version: -1
+    taskid: f6694a92-1cd2-4030-89fd-573a6627a822
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2470
+        }
+      }
+  "9":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.BadNameservers
+          operator: isNotEmpty
+      label: "yes"
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7b3c64de-f51b-4579-8b7e-5edacad622dc
+      iscommand: false
+      name: Does "BadNameservers" List exist?
+      type: condition
+      version: -1
+    taskid: 7b3c64de-f51b-4579-8b7e-5edacad622dc
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1595
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      tags:
+        simple: PotentialSocialEngineering
+      value:
+        simple: ${inputs.InputDomain}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.indicator
+      id: eb99cc34-3b07-45f3-886d-eb4bd626e71b
+      iscommand: true
+      name: Tag Domain as "PotentialSocialEngineering"
+      script: Builtin|||setIndicator
+      type: regular
+      version: -1
+    taskid: eb99cc34-3b07-45f3-886d-eb4bd626e71b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1245
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      type:
+        simple: Domain
+      value:
+        simple: ${inputs.InputDomain}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.new.indicator
+      id: 6383e4a6-e2cd-4c20-85f4-6d1ef1ebfb20
+      iscommand: true
+      name: Create Indicators
+      script: Builtin|||createNewIndicator
+      type: regular
+      version: -1
+    taskid: 6383e4a6-e2cd-4c20-85f4-6d1ef1ebfb20
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+  "12":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: LevenshteinDistance
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: LevenshteinDistance.Distances.StringB
+                    operator: isEqualString
+                    right:
+                      iscontext: true
+                      value:
+                        simple: inputs.InputDomain
+                root: LevenshteinDistance.Distances
+          operator: lessThanOrEqual
+          right:
+            iscontext: true
+            value:
+              simple: inputs.LevenshteinDistance
+      label: "yes"
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4613b003-c3d0-4186-8fd4-58a35bd4582f
+      iscommand: false
+      name: Are strings close?
+      type: condition
+      version: -1
+    taskid: 4613b003-c3d0-4186-8fd4-58a35bd4582f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      indicator:
+        simple: ${inputs.InputDomain}
+      indicatorType:
+        simple: Domain
+      reliability:
+        simple: B - Usually reliable
+      score:
+        simple: "2"
+      vendor:
+        simple: LevenshteinDistance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Add DBot score to context for indicators with custom vendor, score,
+        reliability, and type.
+      id: 1a1474d0-2f34-4488-874e-482d33503fa8
+      iscommand: false
+      name: Add Levenshtein as indicator score
+      script: AddDBotScoreToContext
+      type: regular
+      version: -1
+    taskid: 1a1474d0-2f34-4488-874e-482d33503fa8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1070
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: GetListRow
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Delete field from context
+      id: 9467f0d7-1096-4522-8ef0-b740d207b79d
+      iscommand: false
+      name: Delete Results from GetListRow
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 9467f0d7-1096-4522-8ef0-b740d207b79d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 2295
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      indicatorsValues:
+        simple: ${inputs.InputDomain}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.enrich.indicators
+      id: de3b659a-2477-468f-8685-364a18046e85
+      iscommand: true
+      name: Enrich to Get Updated DBot Score
+      script: Builtin|||enrichIndicators
+      type: regular
+      version: -1
+    taskid: de3b659a-2477-468f-8685-364a18046e85
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1420
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "9_5_yes": 0.64
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2485,
+        "width": 830,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

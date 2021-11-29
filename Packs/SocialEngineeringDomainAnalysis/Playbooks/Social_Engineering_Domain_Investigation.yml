@@ -1,0 +1,405 @@
+description: Enrich and Investigate domains which may present a social engineering
+  threat to your organization. Review before blocking potentially dangerous indicators.
+id: 972e4d3b-90a8-46cb-81f6-b931f2354f4c
+inputs:
+- description: The CSV list of domains to test or array of domains
+  key: SocialEngineeringDomainList
+  playbookInputQuery: null
+  required: false
+  value:
+    complex:
+      accessor: socialengineeringdomainlist}
+      root: ${incident
+      transformers:
+      - args:
+          delimiter:
+            value:
+              simple: ','
+        operator: split
+- description: Your company domain
+  key: SocialEngineeringRegisteredDomain
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: ${incident.socialengineeringregistereddomain}
+name: Social Engineering Domain Investigation
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 01d27bb1-4250-4be7-812d-d9f636a54466
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 01d27bb1-4250-4be7-812d-d9f636a54466
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+  "1":
+    fieldMapping:
+    - incidentfield: Social Engineering Domain List
+      output:
+        complex:
+          accessor: Domain
+          root: ExtractedIndicators
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ','
+            operator: join
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entryID:
+        simple: ${File.EntryID}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.extract.indicators
+      id: 5ff09220-fff4-4f62-8c46-e590604bb283
+      iscommand: true
+      name: Extract Domains (from incident details, csv, etc)
+      script: Builtin|||extractIndicators
+      type: regular
+      version: -1
+    taskid: 5ff09220-fff4-4f62-8c46-e590604bb283
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    form:
+      description: Identify Bad Domains
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Select domains to block
+        options: []
+        optionsarg:
+        - simple: ${Domain.Name}
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: multiSelect
+      sender: ""
+      title: BadDomains
+      totalanswers: 0
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1d38718f-b3d4-4078-81df-12aec8179860
+      iscommand: false
+      name: Select Bad Domains
+      type: collection
+      version: -1
+    taskid: 1d38718f-b3d4-4078-81df-12aec8179860
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 895
+        }
+      }
+  "4":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: BadDomains.Answers.0
+          operator: isExists
+      label: "yes"
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e99e059a-76c3-4a13-8186-a32490a93e21
+      iscommand: false
+      name: Are there domains to block?
+      type: condition
+      version: -1
+    taskid: e99e059a-76c3-4a13-8186-a32490a93e21
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1070
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      tags:
+        simple: block
+      value:
+        simple: ${BadDomains.Answers.0}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.indicator
+      id: 333bed3a-55bf-401a-81d1-9aac5a73e409
+      iscommand: true
+      name: Tag Bad Indicators with "block"
+      script: Builtin|||setIndicator
+      type: regular
+      version: -1
+    taskid: 333bed3a-55bf-401a-81d1-9aac5a73e409
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1245
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a154e1b3-5449-4398-8800-41e8ff0d71e7
+      iscommand: false
+      name: Fin
+      type: title
+      version: -1
+    taskid: a154e1b3-5449-4398-8800-41e8ff0d71e7
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1420
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      forEach: true
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      BadNameservers:
+        simple: BadNameservers
+      InputDomain:
+        simple: ${inputs.SocialEngineeringDomainList}
+      LevenshteinDistance:
+        simple: "10"
+      RegisteredDomain:
+        simple: ${inputs.SocialEngineeringRegisteredDomain}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 24900c3c-84e0-4cdf-8caf-222d5d9ed79e
+      iscommand: false
+      name: Social Engineering Domain Enrichment
+      playbookId: ade50b01-8eb1-4e92-8f13-4433c19ca889
+      type: playbook
+      version: -1
+    taskid: 24900c3c-84e0-4cdf-8caf-222d5d9ed79e
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 555
+        }
+      }
+  "8":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: File
+          operator: isExists
+      label: "yes"
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b7629d99-4c43-4093-890e-aa4c0f0bd15e
+      iscommand: false
+      name: Is there a File with domains attached?
+      type: condition
+      version: -1
+    taskid: b7629d99-4c43-4093-890e-aa4c0f0bd15e
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+  "9":
+    fieldMapping:
+    - incidentfield: Social Engineering Domain Summary
+      output:
+        simple: ${HTMLTable}
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      headers:
+        simple: Name,NameServers,Registrar
+      table:
+        simple: ${Domain}
+      title:
+        simple: Domain Summary
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Converts a given array to an HTML table
+      id: dadff6cd-7c0c-443b-892b-45357c7e6af3
+      iscommand: false
+      name: Create Domain HTML Table
+      script: ConvertTableToHTML
+      type: regular
+      version: -1
+    taskid: dadff6cd-7c0c-443b-892b-45357c7e6af3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1435,
+        "width": 605,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

@@ -1,0 +1,30 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Social Engineering Domain Investigation"
+    ],
+    "caseInsensitive": true,
+    "cliName": "socialengineeringdomaincsv",
+    "closeForm": false,
+    "content": true,
+    "description": "A csv file which contains potentially suspicious domains. Note they will have to be URL format in order to be extracted.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_socialengineeringdomaincsv",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Social Engineering Domain CSV",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "attachments",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
