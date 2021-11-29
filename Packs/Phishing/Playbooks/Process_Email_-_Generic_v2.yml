@@ -13,8 +13,9 @@ description: |
       * Gmail
       * FireEye EX and FireEye CM
       * Proofpoint Protection Server
-      * Agari Phishing Defense
+      * Agari Phishing Defense (EWS v2, MSGraph Mail, Gmail)
       * Mimecast
+
   This will assist with parsing the email artifacts in a more efficient way.
 starttaskid: "0"
 tasks:
@@ -1304,13 +1305,22 @@ tasks:
 
         The inputs in this version are not using any labels and also allow the user to supply an email brand.
 
-        You must have the necessary permissions in your email service to execute global search.
+        You must have the necessary permissions in your email service to execute a global search.
+
+        To retrieve the email files directly from the email service providers, please use one of the provided inputs below:
+        (Agari Phishing Defense customers should use the following as well)
 
         - EWS: eDiscovery
         - Gmail: Google Apps Domain-Wide Delegation of Authority
         - MSGraph: As described here:
             * https://docs.microsoft.com/en-us/graph/api/message-get
             * https://docs.microsoft.com/en-us/graph/api/user-list-messages
+
+        - EmailSecurityGateway: Will retrieve eml files from:
+            * FireEye EX
+            * FireEye CM
+            * Proofpoint Protection Server
+            * Mimecast
       playbookName: Get Original Email - Generic v2
       type: playbook
       iscommand: false
@@ -1953,12 +1963,17 @@ inputs:
   value: {}
   required: false
   description: |-
-    When this value is provided, only the relevant sub-playbook of "Get Original Email - Generic v2" will be executed.
+    When this value provided, only the relevant playbook will run.
     Possible values:
     - Gmail
     - EWS v2
     - MicrosoftGraphMail
     - EmailSecurityGateway
+
+    Choosing the EmailSecurityGateway will execute the following if enabled:
+        - FireEye EX (Email Security)
+        - Proofpoint TAP
+        - Mimecast
 
     If none of the above values will be provided, all of the sub-playbooks will be executed.
   playbookInputQuery:

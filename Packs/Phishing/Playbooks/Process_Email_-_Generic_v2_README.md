@@ -9,8 +9,9 @@ Added on this v2 playbook:
     * Gmail
     * FireEye EX and FireEye CM
     * Proofpoint Protection Server
-    * Agari Phishing Defense
+    * Agari Phishing Defense (EWS v2, MSGraph Mail, Gmail)
     * Mimecast
+
 This will assist with parsing the email artifacts in a more efficient way.
 
 
@@ -24,15 +25,15 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any integrations.
 
 ### Scripts
+* IdentifyAttachedEmail
+* ParseEmailFiles
+* SetGridField
 * SetAndHandleEmpty
 * Set
-* SetGridField
-* ParseEmailFiles
-* IdentifyAttachedEmail
 
 ### Commands
-* setIncident
 * rasterize-email
+* setIncident
 
 ## Playbook Inputs
 ---
@@ -52,7 +53,7 @@ This playbook does not use any integrations.
 | MessageID | The original email message id to retrieve. Holds the value of the "Message-ID" header of the original email. This value will be passed as an input to the playbook "Get Original Email - Generic v2" | incident.emailmessageid | Optional |
 | UserID | The user's email address for which to retrieve the original email. This value will be passed as an input to the playbook "Get Original Email - Generic v2". | incident.emailto | Optional |
 | Thread-Topic | The value of the "Thread-Topic" header which holds the original email subject. This is necessary for forwarded emails scenarios. It will be passed as an input to the "Get Original Email - Generic v2" playbook to be used in the relevant sub-playbooks. | incident.emailsubject | Optional |
-| EmailBrand | When this value is provided, only the relevant sub-playbook of "Get Original Email - Generic v2" will be executed.<br/>Possible values:<br/>- Gmail<br/>- EWS v2<br/>- MicrosoftGraphMail<br/>- EmailSecurityGateway<br/><br/>If none of the above values is provided, all of the sub-playbooks will be executed. |  | Optional |
+| EmailBrand | When this value provided, only the relevant playbook will run.<br/>Possible values:<br/>- Gmail<br/>- EWS v2<br/>- MicrosoftGraphMail<br/>- EmailSecurityGateway<br/><br/>Choosing the EmailSecurityGateway will execute the following if enabled:<br/>    - FireEye EX \(Email Security\)<br/>    - Proofpoint TAP<br/>    - Mimecast<br/><br/>If none of the above values will be provided, all of the sub-playbooks will be executed. |  | Optional |
 
 ## Playbook Outputs
 ---
@@ -73,4 +74,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![Process Email - Generic v2](https://raw.githubusercontent.com/demisto/content/5153dd815b5288877b560e3fdcc3d9ab28cda57e/Packs/Phishing/doc_files/Process_Email_-_Generic_v2.png)
+![Process Email - Generic v2](https://raw.githubusercontent.com/demisto/content/07a19d09dad3bfef74e03552446107a973752fe2/Packs/Phishing/doc_files/Process_Email_-_Generic_v2.png)
