@@ -2,7 +2,7 @@ import pytest
 import io
 from CommonServerPython import *
 import OpsGenieV3
-from unittest.mock import MagicMock
+from unittest import mock
 
 
 def util_load_json(path):
@@ -38,10 +38,10 @@ def test_get_alerts(mocker):
 
 def test_get_alerts_going_to_right_function():
     mock_client = OpsGenieV3.Client(base_url="")
-    mock_client.get_alert = MagicMock()
+    mock_client.get_alert = mock.MagicMock()
     OpsGenieV3.get_alerts(mock_client, {"alert-id": 1234})
     assert mock_client.get_alert.called
-    OpsGenieV3.list_alerts = MagicMock()
+    OpsGenieV3.list_alerts = mock.MagicMock()
     OpsGenieV3.get_alerts(mock_client, {})
     assert OpsGenieV3.list_alerts.called
 
@@ -144,10 +144,10 @@ def test_get_alert_attachments(mocker):
 
 def test_get_schedules():
     mock_client = OpsGenieV3.Client(base_url="")
-    mock_client.get_schedule = MagicMock()
+    mock_client.get_schedule = mock.MagicMock()
     OpsGenieV3.get_schedules(mock_client, {"schedule_id": 1234})
     assert mock_client.get_schedule.called
-    mock_client.list_schedules = MagicMock()
+    mock_client.list_schedules = mock.MagicMock()
     OpsGenieV3.get_schedules(mock_client, {})
     assert mock_client.list_schedules.called
 
@@ -192,10 +192,10 @@ def test_get_incidents(mocker):
 
 def test_get_incidents_going_to_right_function():
     mock_client = OpsGenieV3.Client(base_url="")
-    mock_client.get_incident = MagicMock()
+    mock_client.get_incident = mock.MagicMock()
     OpsGenieV3.get_incidents(mock_client, {"incident_id": 1234})
     assert mock_client.get_incident.called
-    OpsGenieV3.list_incidents = MagicMock()
+    OpsGenieV3.list_incidents = mock.MagicMock()
     OpsGenieV3.get_incidents(mock_client, {})
     assert OpsGenieV3.list_incidents.called
 
@@ -260,48 +260,80 @@ def test_get_teams(mocker):
 
 def test_get_teams_going_to_right_function():
     mock_client = OpsGenieV3.Client(base_url="")
-    mock_client.get_team = MagicMock()
+    mock_client.get_team = mock.MagicMock()
     OpsGenieV3.get_teams(mock_client, {"team_id": 1234})
     assert mock_client.get_team.called
-    mock_client.list_teams = MagicMock()
+    mock_client.list_teams = mock.MagicMock()
     OpsGenieV3.get_teams(mock_client, {})
     assert mock_client.list_teams.called
 
 
-# def test_get_polling_result_not_finished(mocker):
-#     mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
-#     mock_client = OpsGenieV3.Client(base_url="")
-#     mocker.patch.object(mock_client, 'get_request',
-#                         return_value=util_load_json('test_data/request.json'))
-#     res = OpsGenieV3.get_polling_result(mock_client, {'request_id': "3b078fd5-37d1-472e-823b-9f95b17aba8f"})
-#     assert isinstance(res, CommandResults)
-#     assert res.scheduled_command
-
-
-# def test_get_polling_result_finished(mocker):
-#     mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
-#     mock_client = OpsGenieV3.Client(base_url="")
-#     mocker.patch.object(mock_client, 'get_request',
-#                         return_value=util_load_json('test_data/get_request.json'))
-#     res = OpsGenieV3.get_polling_result(mock_client, {'request_id': "f04636e9-4863-4bee-b13b-9eef0e1f3165"})
-#     assert isinstance(res, CommandResults)
-#     assert not res.scheduled_command
-
-
-# def test_fetch_incidents_command(mocker):
-#     mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
-#     mock_client = OpsGenieV3.Client(base_url="")
-#     mocker.patch.object(mock_client, 'list_alerts',
-#                         return_value=util_load_json('test_data/get_alerts.json'))
-#     mocker.patch.object(mock_client, 'list_incidents',
-#                         return_value=util_load_json('test_data/get_incidents.json'))
-#     res, max_fetch = OpsGenieV3.fetch_incidents_command(mock_client, {"max_fetch": 1})
-#     assert len(res) == 2
+def test_fetch_incidents_command(mocker):
+    mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
+    mock_client = OpsGenieV3.Client(base_url="")
+    mocker.patch.object(mock_client, 'list_alerts',
+                        return_value=util_load_json('test_data/get_alerts.json'))
+    mocker.patch.object(mock_client, 'list_incidents',
+                        return_value=util_load_json('test_data/get_incidents.json'))
+    res, last_run = OpsGenieV3.fetch_incidents_command(mock_client, {"max_fetch": 1})
+    assert len(res) == 2
 
 
 def test_fetch_with_paging(mocker):
-    pass
+    mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
+    mock_client = OpsGenieV3.Client(base_url="")
+    mocker.patch.object(mock_client, 'list_alerts',
+                        return_value=util_load_json('test_data/get_alerts.json'))
+    mocker.patch.object(mock_client, 'get_paged',
+                        return_value=util_load_json('test_data/get_alerts_without_next.json'))
+    mocker.patch.object(OpsGenieV3, '_get_utc_now', return_value=datetime(2021, 11, 26))
+    mocker.patch.object(OpsGenieV3, '_parse_fetch_time', return_value='2021-11-23T12:19:48Z')
+    res, last_run = OpsGenieV3.fetch_incidents_command(mock_client, {"max_fetch": 2,
+                                                                     "event_types": OpsGenieV3.ALERT_TYPE})
+    assert (last_run == {'Alerts': {'lastRun': '2021-11-26T00:00:00Z',
+                                    'next_page': 'https://api.opsgenie.com/v2/alerts?limit=1&sort=createdAt&offset=1&order=desc'},
+                         'Incidents': {'lastRun': None, 'next_page': None}})
+    mocker.patch.object(demisto, 'getLastRun', return_value=last_run)
+    res, last_run = OpsGenieV3.fetch_incidents_command(mock_client,
+                                                       {"max_fetch": 2, "event_types": OpsGenieV3.ALERT_TYPE},
+                                                       last_run)
+    assert (last_run == {'Alerts': {'lastRun': '2021-11-26T00:00:00Z', 'next_page': None},
+                         'Incidents': {'lastRun': None, 'next_page': None}})
 
 
-def test_build_query(mocker):
-    pass
+def test_build_query_fetch(mocker):
+    args = {
+        "query": "createdAt < 147039484114",
+        "status": "Open",
+        "is_fetch_query": True,
+        "priority": "P1,P3",
+        "tags": "1,2"
+    }
+    mock_client = OpsGenieV3.Client(base_url="")
+    res = mock_client.build_query(args)
+    assert (res == "createdAt < 147039484114 AND status=open AND priority: (P1 OR P3) AND tag: (1 OR 2)")
+
+
+def test_build_query_not_fetch(mocker):
+    args = {
+        "query": "createdAt < 147039484114",
+        "status": "Open",
+        "is_fetch_query": False,
+        "priority": "P1,P3",
+        "tags": "1,2"
+    }
+    mock_client = OpsGenieV3.Client(base_url="")
+    res = mock_client.build_query(args)
+    assert (res == "createdAt < 147039484114")
+
+
+def test_build_query_not_fetch_without_query(mocker):
+    args = {
+        "status": "Open",
+        "is_fetch_query": False,
+        "priority": "P1,P3",
+        "tags": "1,2"
+    }
+    mock_client = OpsGenieV3.Client(base_url="")
+    res = mock_client.build_query(args)
+    assert (res == "status=open AND priority: (P1 OR P3) AND tag: (1 OR 2)")

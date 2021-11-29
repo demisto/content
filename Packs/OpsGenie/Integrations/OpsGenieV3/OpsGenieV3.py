@@ -266,16 +266,17 @@ class Client(BaseClient):
             status = args.get("status", ALL_TYPE)
             if status != ALL_TYPE:
                 query += ' AND ' if query else ''
-                query = f'status={status.lower()}'
+                query += f'status={status.lower()}'
             priority = argToList(args.get("priority", [ALL_TYPE]))
             if ALL_TYPE not in priority:
                 query += ' AND ' if query else ''
                 priority_parsed = ' OR '.join([p for p in priority])
                 query += f'priority: ({priority_parsed})'
-            tags = args.get("tags", [])
+            tags = argToList(args.get("tags", []))
             if tags:
                 query += ' AND ' if query else ''
-                query += f'tag={tags}'
+                tag_parsed = ' OR '.join([t for t in tags])
+                query += f'tag: ({tag_parsed})'
         return query
 
     def list_incidents(self, args: dict):
@@ -341,65 +342,6 @@ class Client(BaseClient):
 
 
 ''' COMMAND FUNCTIONS '''
-
-
-def run_polling_command(args: dict, cmd: str, results_function: Callable,
-                        action_function: Optional[Callable] = None) -> CommandResults:
-
-    ScheduledCommand.raise_error_if_not_supported()
-
-    if "request_id" not in args and action_function:
-        results = action_function(args)
-        request_id = results.get("requestId")
-        if not request_id:
-            raise ConnectionError(f"Failed to send request - {results}")
-        args['request_id'] = request_id
-        polling_args = {
-            'polling': True,
-            **args
-        }
-        scheduled_command = ScheduledCommand(
-            command=cmd,
-            next_run_in_seconds=int(args.get('interval_in_seconds', 5)),
-            args=polling_args,
-            timeout_in_seconds=int(args.get('timeout_in_seconds', 60)),
-        )
-
-        # result with scheduled_command only - no update to the war room
-        command_results = CommandResults(scheduled_command=scheduled_command,
-                                         readable_output=f"Waiting for request_id={request_id}",
-                                         outputs_prefix=args.get("output_prefix", "OpsGenie"),
-                                         outputs={"requestId": request_id})
-        return command_results
-
-    results = results_function(args)
-    status = results.get("data", {}).get("success")
-    if status is None:
-        # schedule next poll
-        polling_args = {
-            'polling': True,
-            **args
-        }
-        scheduled_command = ScheduledCommand(
-            command=cmd,
-            next_run_in_seconds=int(args.get('interval_in_seconds', 5)),
-            args=polling_args,
-            timeout_in_seconds=int(args.get('timeout_in_seconds', 60)),
-        )
-
-        # result with scheduled_command only - no update to the war room
-        command_results = CommandResults(scheduled_command=scheduled_command,
-                                         readable_output="Waiting for the polling answer come back",
-                                         outputs_prefix=args.get("output_prefix", "OpsGenie"),
-                                         outputs={"requestId": args.get("request_id")}
-                                         )
-        return command_results
-    return CommandResults(
-        outputs_prefix=args.get("output_prefix", "OpsGenie"),
-        outputs=results.get("data"),
-        readable_output=tableToMarkdown("OpsGenie", results.get('data')),
-        raw_response=results
-    )
 
 
 def run_polling_paging_command(args: dict, cmd: str, results_function: Callable,
@@ -614,10 +556,11 @@ def assign_alert(client: Client, args: Dict[str, Any]) -> CommandResults:
         owner = {"username": args.get("owner_username")}
     else:   # not args.get("owner_id") and not args.get("owner_username")
         raise DemistoException("Either owner_id or owner_username should be provided.")
+
     args = {
         'request_type_suffix': ALERTS_SUFFIX,
-        'owner': owner,
         'output_prefix': 'OpsGenie.AssignAlert',
+        'owner': owner,
         **args
     }
     data = client.assign_alert(args)
@@ -627,7 +570,7 @@ def assign_alert(client: Client, args: Dict[str, Any]) -> CommandResults:
     args['request_id'] = request_id
     results = client.get_request(args)
     return CommandResults(
-        outputs_prefix=args.get("output_prefix", "OpsGenie"),
+        outputs_prefix=args.get("output_prefix", "OpsGenie"),  # type: ignore[arg-type]
         outputs=results.get("data"),
         readable_output=tableToMarkdown("OpsGenie", results.get('data')),
         raw_response=results
@@ -685,7 +628,7 @@ def escalate_alert(client: Client, args: Dict[str, Any]) -> CommandResults:
     args['request_id'] = request_id
     results = client.get_request(args)
     return CommandResults(
-        outputs_prefix=args.get("output_prefix", "OpsGenie"),
+        outputs_prefix=args.get("output_prefix", "OpsGenie"),  # type: ignore[arg-type]
         outputs=results.get("data"),
         readable_output=tableToMarkdown("OpsGenie", results.get('data')),
         raw_response=results
@@ -967,6 +910,10 @@ def get_teams(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
+def _parse_fetch_time(fetch_time: str):
+    return dateparser.parse(date_string=f"{fetch_time} UTC").strftime(DATE_FORMAT)
+
+
 def fetch_incidents_by_type(client: Client,
                             params: Dict[str, Any],
                             incident_fetching_func: Callable,
@@ -977,7 +924,7 @@ def fetch_incidents_by_type(client: Client,
     fetch_time = params.get('first_fetch', '3 days').strip()
 
     if not last_run_dict:
-        new_last_run = dateparser.parse(date_string=f"{fetch_time} UTC").strftime(DATE_FORMAT)
+        new_last_run = _parse_fetch_time(fetch_time)
         last_run_dict = {'lastRun': new_last_run,
                          'next_page': None}
 
@@ -1009,6 +956,10 @@ def fetch_incidents_by_type(client: Client,
     return incidents, raw_response.get("paging", {}).get("next"), last_run_dict.get('lastRun')
 
 
+def _get_utc_now():
+    return datetime.utcnow()
+
+
 def fetch_incidents_command(client: Client,
                             params: Dict[str, Any],
                             last_run: Optional[dict] = None) -> Tuple[List[Dict[str, Any]], Dict]:
@@ -1026,7 +977,7 @@ def fetch_incidents_command(client: Client,
     demisto.debug(f"Got incidentType={params.get('event_types')}")
     event_type = params.get('event_types', [ALL_TYPE])
     demisto.debug(f"Got event_type={event_type}")
-    now = datetime.utcnow()
+    now = _get_utc_now()
     incidents = []
     alerts = []
     last_run_alerts = demisto.get(last_run, f"{ALERT_TYPE}.lastRun")
