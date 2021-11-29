@@ -23,7 +23,7 @@ def test_create_alert(mocker):
                         return_value=util_load_json('test_data/request.json'))
     mocker.patch.object(mock_client, 'get_request',
                         return_value=util_load_json('test_data/create_alert.json'))
-    res = OpsGenieV3.create_alert(mock_client, {'responders': []})
+    res = OpsGenieV3.create_alert(mock_client, {'responders': "team,id,123"})
     assert (res.raw_response == util_load_json('test_data/create_alert.json'))
 
 
@@ -85,10 +85,30 @@ def test_assign_alert_without_args():
         OpsGenieV3.assign_alert(mock_client, {})
 
 
+def test_assign_alert(mocker):
+    mock_client = OpsGenieV3.Client(base_url="")
+    mocker.patch.object(mock_client, 'assign_alert',
+                        return_value=util_load_json('test_data/request.json'))
+    mocker.patch.object(mock_client, 'get_request',
+                        return_value=util_load_json('test_data/assign_alert.json'))
+    res = OpsGenieV3.assign_alert(mock_client, {"alert-id": 1234, "owner_id": 123})
+    assert (res.raw_response == util_load_json('test_data/assign_alert.json'))
+
+
 def test_add_responder_alert_wrong_responders():
     mock_client = OpsGenieV3.Client(base_url="")
     with pytest.raises(DemistoException):
-        OpsGenieV3.assign_alert(mock_client, {'responders': ['team', 'id']})
+        OpsGenieV3.add_responder_alert(mock_client, {'responders': ['team', 'id']})
+
+
+def test_add_responder_alert(mocker):
+    mock_client = OpsGenieV3.Client(base_url="")
+    mocker.patch.object(mock_client, 'add_responder_alert',
+                        return_value=util_load_json('test_data/request.json'))
+    mocker.patch.object(mock_client, 'get_request',
+                        return_value=util_load_json('test_data/add_responder_alert.json'))
+    res = OpsGenieV3.add_responder_alert(mock_client, {"alert-id": 1234, "owner_id": 123})
+    assert (res.raw_response == util_load_json('test_data/add_responder_alert.json'))
 
 
 def test_get_escalations_without_args():
@@ -109,6 +129,16 @@ def test_escalate_alert_without_args():
     mock_client = OpsGenieV3.Client(base_url="")
     with pytest.raises(DemistoException):
         OpsGenieV3.escalate_alert(mock_client, {})
+
+
+def test_escalate_alert(mocker):
+    mock_client = OpsGenieV3.Client(base_url="")
+    mocker.patch.object(mock_client, 'escalate_alert',
+                        return_value=util_load_json('test_data/request.json'))
+    mocker.patch.object(mock_client, 'get_request',
+                        return_value=util_load_json('test_data/escalate_alert.json'))
+    res = OpsGenieV3.escalate_alert(mock_client, {"alert-id": 1234, "escalation_id": 123})
+    assert (res.raw_response == util_load_json('test_data/escalate_alert.json'))
 
 
 def test_add_alert_tag(mocker):
@@ -134,7 +164,6 @@ def test_remove_alert_tag(mocker):
 
 
 def test_get_alert_attachments(mocker):
-    mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
     mock_client = OpsGenieV3.Client(base_url="")
     mocker.patch.object(mock_client, 'get_alert_attachments',
                         return_value=util_load_json('test_data/get_alert_attachments.json'))
@@ -158,16 +187,45 @@ def test_get_schedule_overrides_without_args():
         OpsGenieV3.get_schedule_overrides(mock_client, {})
 
 
+def test_get_schedule_overrides():
+    mock_client = OpsGenieV3.Client(base_url="")
+    mock_client.get_schedule_override = mock.MagicMock()
+    OpsGenieV3.get_schedule_overrides(mock_client, {"schedule_id": 1234, "override_alias": 123})
+    assert mock_client.get_schedule_override.called
+    mock_client.list_schedule_overrides = mock.MagicMock()
+    OpsGenieV3.get_schedule_overrides(mock_client, {"schedule_id": 1234})
+    assert mock_client.list_schedule_overrides.called
+
+
 def test_get_on_call_without_args():
     mock_client = OpsGenieV3.Client(base_url="")
     with pytest.raises(DemistoException):
         OpsGenieV3.get_on_call(mock_client, {})
 
 
-def test_create_incident():
+def test_get_on_call(mocker):
+    mock_client = OpsGenieV3.Client(base_url="")
+    mocker.patch.object(mock_client, 'get_on_call',
+                        return_value=util_load_json('test_data/delete_incident.json'))
+    res = OpsGenieV3.get_on_call(mock_client, {"schedule_id": 1234})
+    assert (res.raw_response == util_load_json('test_data/delete_incident.json'))
+
+
+def test_create_incident_wrong_args():
     mock_client = OpsGenieV3.Client(base_url="")
     with pytest.raises(DemistoException):
         OpsGenieV3.create_incident(mock_client, {'responders': ['team', 'id']})
+
+
+def test_create_incident(mocker):
+    mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
+    mock_client = OpsGenieV3.Client(base_url="")
+    mocker.patch.object(mock_client, 'create_incident',
+                        return_value=util_load_json('test_data/request.json'))
+    mocker.patch.object(mock_client, 'get_request',
+                        return_value=util_load_json('test_data/create_incident.json'))
+    res = OpsGenieV3.create_incident(mock_client, {"incident_id": 1234})
+    assert (res.raw_response == util_load_json('test_data/create_incident.json'))
 
 
 def test_delete_incident(mocker):
@@ -222,10 +280,20 @@ def test_resolve_incident(mocker):
     assert (res.raw_response == util_load_json('test_data/resolve_incident.json'))
 
 
-def test_add_responder_incident():
+def test_add_responder_incident_wrong_args():
     mock_client = OpsGenieV3.Client(base_url="")
     with pytest.raises(DemistoException):
         OpsGenieV3.add_responder_incident(mock_client, {'responders': ['team', 'id']})
+
+
+def test_add_responder_incident(mocker):
+    mock_client = OpsGenieV3.Client(base_url="")
+    mocker.patch.object(mock_client, 'add_responder_incident',
+                        return_value=util_load_json('test_data/request.json'))
+    mocker.patch.object(mock_client, 'get_request',
+                        return_value=util_load_json('test_data/add_responder_incident.json'))
+    res = OpsGenieV3.add_responder_incident(mock_client, {"incident_id": 1234, "tags": [1, 2]})
+    assert (res.raw_response == util_load_json('test_data/add_responder_incident.json'))
 
 
 def test_add_tag_incident(mocker):
@@ -301,7 +369,7 @@ def test_fetch_with_paging(mocker):
                          'Incidents': {'lastRun': None, 'next_page': None}})
 
 
-def test_build_query_fetch(mocker):
+def test_build_query_fetch():
     args = {
         "query": "createdAt < 147039484114",
         "status": "Open",
@@ -314,7 +382,7 @@ def test_build_query_fetch(mocker):
     assert (res == "createdAt < 147039484114 AND status=open AND priority: (P1 OR P3) AND tag: (1 OR 2)")
 
 
-def test_build_query_not_fetch(mocker):
+def test_build_query_not_fetch():
     args = {
         "query": "createdAt < 147039484114",
         "status": "Open",
@@ -327,7 +395,7 @@ def test_build_query_not_fetch(mocker):
     assert (res == "createdAt < 147039484114")
 
 
-def test_build_query_not_fetch_without_query(mocker):
+def test_build_query_not_fetch_without_query():
     args = {
         "status": "Open",
         "is_fetch_query": False,

@@ -22,46 +22,18 @@ ALL_TYPE = 'All'
 ''' CLIENT CLASS '''
 
 
-class NotFinished(Exception):
-    pass
-
-
 class Client(BaseClient):
     """
     OpsGenieV3 Client
     """
 
-    @staticmethod
-    def error_handler(res: requests.Response):
-        """
-        :param res: the response of the http request
-        :return Exception: for 404-We want to try another polling so get_request had time for
-        getting valid answer. For other errors, we are raising like http_request does.
-        """
-        err_msg = 'Error in API call [{}] - {}' \
-            .format(res.status_code, res.reason)
-        if res.status_code == 404:
-            raise NotFinished(err_msg)
-        try:
-            # Try to parse json error response
-            error_entry = res.json()
-            err_msg += '\n{}'.format(json.dumps(error_entry))
-            raise DemistoException(err_msg, res=res)
-        except ValueError:
-            err_msg += '\n{}'.format(res.text)
-            raise DemistoException(err_msg, res=res)
-
     def get_request(self, args: dict) -> Dict:
         url_suffix = "/v1" if args.get('request_type_suffix') == INCIDENTS_SUFFIX else "/v2"
-        try:
-            data = self._http_request(
-                method='GET',
-                url_suffix=f"{url_suffix}/{args.get('request_type_suffix')}/{REQUESTS_SUFFIX}/"
-                           f"{args.get('request_id')}",
-                error_handler=Client.error_handler
-            )
-        except NotFinished:
-            return {}
+        data = self._http_request(
+            method='GET',
+            url_suffix=f"{url_suffix}/{args.get('request_type_suffix')}/{REQUESTS_SUFFIX}/"
+                       f"{args.get('request_id')}"
+        )
         return data
 
     def get_paged(self, args: dict):
@@ -728,7 +700,7 @@ def get_on_call(client: Client, args: Dict[str, Any]) -> CommandResults:
     command_result = CommandResults(
         outputs_prefix="OpsGenie.Schedule.OnCall",
         outputs=result,
-        readable_output=tableToMarkdown("OpsGenie Schedule OnCall", result['data']),
+        readable_output=tableToMarkdown("OpsGenie Schedule OnCall", result.get('data')),
         raw_response=result
     )
     return command_result
