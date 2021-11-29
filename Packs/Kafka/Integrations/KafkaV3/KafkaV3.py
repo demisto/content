@@ -567,7 +567,7 @@ def handle_empty(value: Any, default_value: Any) -> Any:
 
 
 def check_params(kafka: KafkaCommunicator, topic: str, partitions: Optional[list] = None,
-                 offset: Optional[str] = None, consumer: bool = False) -> bool:
+                 offset: Optional[str] = None, consumer: bool = False, check_offset: bool = True) -> bool:
     """Check that partitions exist in topic and that offset matches the available ones.
 
     Args:
@@ -579,7 +579,7 @@ def check_params(kafka: KafkaCommunicator, topic: str, partitions: Optional[list
 
     Return True if everything is valid, raise relevant exception otherwise.
     """
-    check_offset = False
+    checkable_offset = False
     numerical_offset = 0
     topics = kafka.get_topics(consumer=consumer)
     if topic not in topics.keys():
@@ -588,7 +588,7 @@ def check_params(kafka: KafkaCommunicator, topic: str, partitions: Optional[list
     if offset and str(offset).lower() not in SUPPORTED_GENERAL_OFFSETS:
         if offset.isdigit():
             numerical_offset = int(offset)
-            check_offset = True
+            checkable_offset = True
         else:
             raise DemistoException(f'Offset {offset} is not in supported format.')
 
@@ -600,7 +600,7 @@ def check_params(kafka: KafkaCommunicator, topic: str, partitions: Optional[list
             if int(partition) not in available_partitions_ids:
                 raise DemistoException(f"Partition {partition} is not assigned to kafka topic {topic} available "
                                        f"{available_partitions_ids}.")
-            if check_offset:
+            if check_offset and checkable_offset:
                 earliest_offset, oldest_offset = kafka.get_partition_offsets(topic=topic, partition=int(partition))
                 if numerical_offset < int(earliest_offset) or numerical_offset >= int(oldest_offset):
                     raise DemistoException(f'Offset {numerical_offset} for topic {topic} and partition {partition} '
@@ -633,9 +633,12 @@ def fetch_incidents(kafka: KafkaCommunicator, demisto_params: dict) -> None:
     kafka.update_conf_for_fetch(message_max_bytes=message_max_bytes)
 
     kafka_consumer = kafka.get_kafka_consumer()
-    check_params(kafka, topic, partitions, offset, True)
+    demisto.debug(f'Checking params')
+    check_params(kafka, topic, partitions, offset, True, False)
 
     if topic != last_topic:
+        demisto.debug(f'Topic changed from {last_topic} to {topic}, resetting last fetched offsets from '
+                      f'{last_fetched_offsets} to empty dict.')
         last_fetched_offsets = {}
 
     if offset.isdigit():
@@ -645,16 +648,23 @@ def fetch_incidents(kafka: KafkaCommunicator, demisto_params: dict) -> None:
     for partition in partitions:
         specific_offset = last_fetched_offsets.get(partition, offset) if partition in last_fetched_offsets else offset
         demisto.debug(f'Getting last offset for partition {partition}, specific offset is {specific_offset}\n')
+        add_topic_partition = True
         if isinstance(specific_offset, int):
             specific_offset += 1
             earliest_offset, latest_offset = kafka.get_partition_offsets(topic=topic, partition=int(partition))
+
             if specific_offset >= latest_offset or specific_offset < earliest_offset:
-                continue
-        topic_partitions += kafka.get_topic_partitions(topic=topic, partition=int(partition),
-                                                       offset=specific_offset, consumer=True)
+                add_topic_partition = False
+                demisto.debug(f'Skipping partition {partition}, due to specific offset mismatch: '
+                              f'{specific_offset} not in [{earliest_offset}, {latest_offset}) \n')
+
+        if add_topic_partition:
+            topic_partitions += kafka.get_topic_partitions(topic=topic, partition=int(partition),
+                                                           offset=specific_offset, consumer=True)
     if not partitions:
         if isinstance(offset, int):
             offset += 1
+        demisto.debug(f'No partitions were set, getting all available partitions for topic {topic}')
         topic_partitions = kafka.get_topic_partitions(topic=topic, partition=-1, offset=offset, consumer=True)
     try:
         if topic_partitions:

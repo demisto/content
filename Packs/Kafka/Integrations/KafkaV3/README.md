@@ -1,8 +1,8 @@
-The Open source distributed streaming platform
-This integration was integrated and tested with version xx of KafkaV3
+Use the Kafka integration to manage messages and partitions.
 
-Some changes have been made that might affect your existing content. 
-If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-kafka-v3).
+This integration was integrated and tested with version 2.7 of Kafka.
+
+This integration is fully compatible with the Kafka v2 integration.
 
 ## Configure Kafka v3 on Cortex XSOAR
 

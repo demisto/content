@@ -654,7 +654,20 @@ def test_produce_error_message(mocker):
             id="No partition in params, 2 partitions in kafka"),
         pytest.param(
             {'topic': 'some-topic',
-             'partition': '0',
+             'partition': '0,1',
+             'first_fetch': '1',
+             'max_fetch': '1'}, {}, {'some-topic': [0, 1]}, [TopicPartition(topic='some-topic', partition=1, offset=2)],
+            [{'name': 'Kafka some-topic partition:1 offset:2',
+              'details': 'polled_msg',
+              'rawJSON': '{"Topic": "some-topic", "Partition": 1, "Offset": 2, '
+                         '"Message": "polled_msg"}'}],
+            {'last_fetched_offsets': {'1': 2}, 'last_topic': 'some-topic'},
+            [MessageMock(message='polled_msg', partition=1, offset=2,
+                         timestamp=(TIMESTAMP_NOT_AVAILABLE, 0))], [(0, 2), (0, 3), (0, 3), (0, 3), (0, 3), (0, 3)],
+            id="2 partitions, one to skip due to offset out of bounds"),
+        pytest.param(
+            {'topic': 'some-topic',
+             'partition': '',
              'first_fetch': '0',
              'max_fetch': '1'}, {}, {'some-topic': [0]}, [TopicPartition(topic='some-topic', partition=0, offset=1)],
             [{'name': 'Kafka some-topic partition:0 offset:1',
