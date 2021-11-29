@@ -58,11 +58,11 @@ Prints all partitions of a topic.
 
 
 #### Command Example
-``` ```
+```!kafka-print-topics```
 
 #### Human Readable Output
 
-
+![](https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/Kafka_V2_mceclip3.png)
 
 ### kafka-publish-msg
 ***
@@ -86,11 +86,11 @@ Publishes a message to Kafka.
 There is no context output for this command.
 
 #### Command Example
-``` ```
+```!kafka-publish-msg topic=test value="test message"```
 
 #### Human Readable Output
 
-
+![](https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/Kafka_V2_mceclip4.png)
 
 ### kafka-consume-msg
 ***
@@ -119,11 +119,11 @@ Consumes a single Kafka message.
 
 
 #### Command Example
-``` ```
+```!kafka-consume-msg topic=test offset=latest```
 
 #### Human Readable Output
 
-
+![](https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/Kafka_V2_mceclip6.png)
 
 ### kafka-fetch-partitions
 ***
@@ -149,45 +149,8 @@ Fetch partitions for a topic.
 
 
 #### Command Example
-``` ```
+```!kafka-fetch-partitions topic=test```
 
 #### Human Readable Output
 
-
-
-## Breaking changes from the previous version of this integration - Kafka v3
-%%FILL HERE%%
-The following sections list the changes in this version.
-
-### Commands
-#### The following commands were removed in this version:
-* *commandName* - this command was replaced by XXX.
-* *commandName* - this command was replaced by XXX.
-
-### Arguments
-#### The following arguments were removed in this version:
-
-In the *commandName* command:
-* *argumentName* - this argument was replaced by XXX.
-* *argumentName* - this argument was replaced by XXX.
-
-#### The behavior of the following arguments was changed:
-
-In the *commandName* command:
-* *argumentName* - is now required.
-* *argumentName* - supports now comma separated values.
-
-### Outputs
-#### The following outputs were removed in this version:
-
-In the *commandName* command:
-* *outputPath* - this output was replaced by XXX.
-* *outputPath* - this output was replaced by XXX.
-
-In the *commandName* command:
-* *outputPath* - this output was replaced by XXX.
-* *outputPath* - this output was replaced by XXX.
-
-## Additional Considerations for this version
-%%FILL HERE%%
-* Insert any API changes, any behavioral changes, limitations, or restrictions that would be new to this version.
+![](https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/Kafka_V2_mceclip8.png)
