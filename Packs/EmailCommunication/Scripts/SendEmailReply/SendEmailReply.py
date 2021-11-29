@@ -228,9 +228,10 @@ def main():
     args = demisto.args()
     incident = demisto.incident()
     incident_id = incident.get('id')
-    labels = incident.get('labels', [])
-    mailbox = get_mailbox_from_incident_labels(labels)
     custom_fields = incident.get('CustomFields')
+    labels = incident.get('labels', [])
+    # The mailbox configured in the relevant integration
+    mailbox = custom_fields.get('emailreceived') or get_mailbox_from_incident_labels(labels)
     email_subject = custom_fields.get('emailsubject')
     email_cc = custom_fields.get('emailcc', '')
     add_cc = custom_fields.get('addcctoemail', '')
