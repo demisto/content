@@ -1663,7 +1663,7 @@ class Pack(object):
                         folder_collected_items.append({
                             # note that `name` may technically be blank, but shouldn't pass validations
                             'name': content_item.get('name', ""),
-                            'description': content_item.get('description', ""),
+                            'details': content_item.get('details', ""),
                         })
 
                 if current_directory in PackFolders.pack_displayed_items():
