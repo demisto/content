@@ -27,7 +27,7 @@ INVESTIGATION_UPDATE_FIELDS = set(("key_findings", "priority", "status", "servic
 
 class Client(BaseClient):
     """
-    Secureworks Taegis XDR Client class for implementing API logic with Taegis
+    Secureworks Taegis XDR Client class for implementing API logic with Taegis test
     """
     _auth_header = {"access_token": "None"}
 
