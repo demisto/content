@@ -327,11 +327,11 @@
 				"description": "",
 				"fields": [
 					{
-						"fieldId": "generic_ThreatIntelReport_type",
+						"fieldId": "generic_ThreatIntelReport_name",
 						"isVisible": true
 					},
 					{
-						"fieldId": "generic_ThreatIntelReport_name",
+						"fieldId": "generic_ThreatIntelReport_type",
 						"isVisible": true
 					},
 					{

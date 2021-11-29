@@ -61,7 +61,9 @@ script: >
   var total = (countSuccess + countFailed).toString();
 
   // When no failed instances were found, the script returns a list with an empty dict because several scripts
+
   // expect the output to be [{}].
+
   if (countFailed === 0) {
       failedInstances.push({})
       hr = '### All active instances are available! ✅';
