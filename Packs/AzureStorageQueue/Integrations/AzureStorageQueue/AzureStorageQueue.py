@@ -38,7 +38,7 @@ class Client:
 
         response = self.ms_client.http_request(method="GET", url_suffix='', params=params, resp_type="text")
 
-        return response.replace('ď»ż', '')
+        return response
 
     def create_queue_request(self, queue_name: str) -> Response:
         """
