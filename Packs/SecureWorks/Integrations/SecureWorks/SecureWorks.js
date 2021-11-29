@@ -29,7 +29,7 @@ function sendRequest(path, method, queryParams, body){
         params.proxy
     );
     if (res.StatusCode < 200 || res.StatusCode >= 300) {
-        throw 'Failed on request ' + url + ' , request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
+        throw 'Failed on request test ' + url + ' , request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
     }
     return JSON.parse(res.Body);
 }

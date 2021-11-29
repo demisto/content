@@ -1,169 +1,168 @@
+category: Case Management
 commonfields:
   id: Dell Secureworks
   version: -1
-name: Dell Secureworks
-display: Dell Secureworks
-category: Case Management
-description: Provides access to the Secureworks CTP ticketing system
 configuration:
-- display: Server URL (e.g. https://api.secureworks.com)
+- defaultvalue: https://api.secureworks.com
+  display: Server URL (e.g. https://api.secureworks.com)
   name: server
-  defaultvalue: https://api.secureworks.com
-  type: 0
   required: true
+  type: 0
 - display: Username
   name: credentials
-  defaultvalue: ""
-  type: 9
   required: true
+  type: 9
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ""
-  type: 8
   required: false
+  type: 8
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
-  type: 8
   required: false
+  type: 8
 - display: Fetch incidents
   name: isFetch
-  type: 8
   required: false
+  type: 8
 - display: Fetch tickets of this ticket type
   name: ticketType
-  defaultvalue: ""
-  type: 0
   required: false
+  type: 0
 - display: Limit tickets to one of REQUEST, CHANGE, HEALTH or SECURITY
   name: groupingType
-  defaultvalue: ""
-  type: 0
   required: false
-- display: 'Fetch tickets by status(comma separated): New,Active,Queued,Pending,Resolved'
+  type: 0
+- defaultvalue: New
+  display: 'Fetch tickets by status(comma separated): New,Active,Queued,Pending,Resolved'
   name: status
-  defaultvalue: New
-  type: 0
   required: false
-- display: Whether to return worklogs - If "ALL," all worklogs are returned for each
+  type: 0
+- defaultvalue: ALL
+  display: Whether to return worklogs - If "ALL," all worklogs are returned for each
     ticket. If "UPDATED", all worklogs added since last acknowledgement are returned.
     If "NONE," the path returns no worklogs. Default is "ALL."
   name: worklogs
-  defaultvalue: ALL
-  type: 0
   required: false
+  type: 0
 - display: Incident type
   name: incidentType
+  required: false
   type: 13
-  required: false
-- display: Whether to get attachments for the fetched tickets
+- defaultvalue: 'false'
+  display: Whether to get attachments for the fetched tickets
   name: attachments
-  defaultvalue: "false"
-  type: 0
   required: false
+  type: 0
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+description: Provides access to the Secureworks CTP ticketing system
+display: Dell Secureworks
+name: Dell Secureworks
 script:
-  script: ''
-  type: javascript
   commands:
-  - name: secure-works-create-ticket
-    arguments:
-    - name: clientRef
+  - arguments:
+    - description: Client reference
+      name: clientRef
       required: true
-      description: Client reference
-    - name: clientLocationRef
-      description: Client location reference
-    - name: requestType
+    - description: Client location reference
+      name: clientLocationRef
+    - description: Request type
+      name: requestType
       required: true
-      description: Request type
-    - name: title
+    - description: Ticket title
+      name: title
       required: true
-      description: Ticket title
-    - name: externalTicket
-      description: External ticket
-    - name: deviceRef
-      description: Device reference
-    - name: detail
+    - description: External ticket
+      name: externalTicket
+    - description: Device reference
+      name: deviceRef
+    - description: Ticket details
+      name: detail
       required: true
-      description: Ticket details
-    - name: pocContactRef
+    - description: Ticket POC contact reference
+      name: pocContactRef
       required: true
-      description: Ticket POC contact reference
-    - name: watchers
-      description: Ticket watchers
-    - name: attachments
-      description: Ticket attachments
-    - name: source
-      description: Ticket source
-    - name: assignedGroupId
-      description: Ticket assigned group dd
-    - name: assignedTicket2
-      description: Ticket assigned ticket 2
-    - name: partner
-      description: Ticket partner
-    - name: vendor
-      description: Ticket vendor
-    - name: riskAssessment
-      auto: PREDEFINED
+    - description: Ticket watchers
+      name: watchers
+    - description: Ticket attachments
+      name: attachments
+    - description: Ticket source
+      name: source
+    - description: Ticket assigned group dd
+      name: assignedGroupId
+    - description: Ticket assigned ticket 2
+      name: assignedTicket2
+    - description: Ticket partner
+      name: partner
+    - description: Ticket vendor
+      name: vendor
+    - auto: PREDEFINED
+      description: Ticket risk assessment
+      name: riskAssessment
       predefined:
       - UNDEFINED
       - NON
       - LOW
       - MEDIUM
       - HIGH
-      description: Ticket risk assessment
-    - name: changeSlo
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: Ticket change slo
+      name: changeSlo
       predefined:
       - STANDARD
       - SHARP
       - EXPEDITE
       - EMERGENCY
       - SHARP_EXPEDITE
-      description: Ticket change slo
-    - name: changeWindowStart
-      description: Ticket change window start
-    - name: changeWindowEnd
-      description: Ticket change window end
-    - name: impact
-      auto: PREDEFINED
-      predefined:
-      - LOW
-      - MEDIUM
-      - HIGH
-      - CRITICAL
+    - description: Ticket change window start
+      name: changeWindowStart
+    - description: Ticket change window end
+      name: changeWindowEnd
+    - auto: PREDEFINED
       description: Ticket impact
-    - name: urgency
-      auto: PREDEFINED
+      name: impact
       predefined:
       - LOW
       - MEDIUM
       - HIGH
       - CRITICAL
+    - auto: PREDEFINED
       description: Ticket urgency
-    - name: priority
-      auto: PREDEFINED
+      name: urgency
+      predefined:
+      - LOW
+      - MEDIUM
+      - HIGH
+      - CRITICAL
+    - auto: PREDEFINED
+      description: Ticket priority
+      name: priority
       predefined:
       - LOW
       - MEDIUM
       - HIGH
       - UNKNOWN
-      description: Ticket priority
-    - name: customerMiscellaneous1
-      description: Ticket custom field No.1
-    - name: customerMiscellaneous2
-      description: Ticket custom field No.2
-    - name: customerMiscellaneous3
-      description: Ticket custom field No.3
-    - name: customerMiscellaneous4
-      description: Ticket custom field No.4
-    - name: categorizationClass
-      description: Ticket categorization class
-    - name: categorizationCategory
-      description: Ticket categorization category
-    - name: categorizationType
-      description: Ticket categorization type
-    - name: categorizationItem
-      description: Ticket categorization item
+    - description: Ticket custom field No.1
+      name: customerMiscellaneous1
+    - description: Ticket custom field No.2
+      name: customerMiscellaneous2
+    - description: Ticket custom field No.3
+      name: customerMiscellaneous3
+    - description: Ticket custom field No.4
+      name: customerMiscellaneous4
+    - description: Ticket categorization class
+      name: categorizationClass
+    - description: Ticket categorization category
+      name: categorizationCategory
+    - description: Ticket categorization type
+      name: categorizationType
+    - description: Ticket categorization item
+      name: categorizationItem
+    description: Create a new ticket
+    name: secure-works-create-ticket
     outputs:
     - contextPath: SecureWorks.Ticket.ticketId
       description: Ticket ID in SecureWorks
@@ -171,30 +170,30 @@ script:
     - contextPath: SecureWorks.Ticket.CreationStatusCode
       description: Ticket creation status code
       type: string
-    description: Create a new ticket
-  - name: secure-works-update-ticket
-    arguments:
-    - name: id
+  - arguments:
+    - description: ID of the ticket to update
+      name: id
       required: true
-      description: ID of the ticket to update
-    - name: externalTicketNum
-      description: External ticket number
-    - name: externalTicketNum2
-      description: External ticket number 2
-    - name: externalGroupName
-      description: External group name
-    - name: watchers
-      description: ticket watchers
-    - name: vendor
-      description: ticket vendor
-    - name: customerMiscellaneous1
-      description: Ticket custom field No.1
-    - name: customerMiscellaneous2
-      description: Ticket custom field No.2
-    - name: customerMiscellaneous3
-      description: Ticket custom field No.3
-    - name: customerMiscellaneous4
-      description: Ticket custom field No.4
+    - description: External ticket number
+      name: externalTicketNum
+    - description: External ticket number 2
+      name: externalTicketNum2
+    - description: External group name
+      name: externalGroupName
+    - description: ticket watchers
+      name: watchers
+    - description: ticket vendor
+      name: vendor
+    - description: Ticket custom field No.1
+      name: customerMiscellaneous1
+    - description: Ticket custom field No.2
+      name: customerMiscellaneous2
+    - description: Ticket custom field No.3
+      name: customerMiscellaneous3
+    - description: Ticket custom field No.4
+      name: customerMiscellaneous4
+    description: Update an existing ticket
+    name: secure-works-update-ticket
     outputs:
     - contextPath: SecureWorks.Ticket.ticketId
       description: Ticket ID in SecureWorks
@@ -202,17 +201,15 @@ script:
     - contextPath: SecureWorks.Ticket.UpdateStatusCode
       description: Ticket update status code
       type: string
-    description: Update an existing ticket
-  - name: secure-works-close-ticket
-    arguments:
-    - name: id
+  - arguments:
+    - description: The Ticket ID of the ticket that you want the details for.
+      name: id
       required: true
-      description: The Ticket ID of the ticket that you want the details for.
-    - name: worklogContent
-      description: The work log message describing why you are closing the ticket
-    - name: closeCode
-      required: true
-      auto: PREDEFINED
+    - description: The work log message describing why you are closing the ticket
+      name: worklogContent
+    - auto: PREDEFINED
+      description: The reason code to use when closing the ticket
+      name: closeCode
       predefined:
       - Mitigated by Security Controls
       - Authorized/Expected
@@ -222,7 +219,9 @@ script:
       - Not Relevant
       - Duplicate - Previously Escalated
       - Work Completed
-      description: The reason code to use when closing the ticket
+      required: true
+    description: Close a ticket
+    name: secure-works-close-ticket
     outputs:
     - contextPath: SecureWorks.Ticket.ticketId
       description: Ticket ID in SecureWorks
@@ -230,15 +229,15 @@ script:
     - contextPath: SecureWorks.Ticket.ClosureStatusCode
       description: Ticket closure status code
       type: string
-    description: Close a ticket
-  - name: secure-works-add-worklogs-ticket
-    arguments:
-    - name: content
+  - arguments:
+    - description: The work log message
+      name: content
       required: true
-      description: The work log message
-    - name: id
+    - description: ID of the ticket to add worklogs to
+      name: id
       required: true
-      description: ID of the ticket to add worklogs to
+    description: Add worklog to a ticket
+    name: secure-works-add-worklogs-ticket
     outputs:
     - contextPath: SecureWorks.Ticket.ticketId
       description: Ticket ID in SecureWorks
@@ -246,20 +245,20 @@ script:
     - contextPath: SecureWorks.Ticket.WorklogAdditionStatusCode
       description: Ticket worklog addition status code
       type: string
-    description: Add worklog to a ticket
-  - name: secure-works-get-ticket
-    arguments:
-    - name: id
+  - arguments:
+    - description: The Ticket ID of the ticket that you want the details for.
+      name: id
       required: true
-      description: The Ticket ID of the ticket that you want the details for.
-    - name: includeWorklogs
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+    - auto: PREDEFINED
       description: Whether or not to include ticket worklogs, default is true
-    - name: getAttachments
-      description: Whether or not to get ticket attachments
+      name: includeWorklogs
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Whether or not to get ticket attachments
+      name: getAttachments
+    description: Get the details of a specific ticket, by ID
+    name: secure-works-get-ticket
     outputs:
     - contextPath: SecureWorks.Ticket.changeApproval
       description: Ticket change approval
@@ -405,26 +404,25 @@ script:
     - contextPath: File.MD5
       description: Attachment file MD5
       type: string
-    description: Get the details of a specific ticket, by ID
-  - name: secure-works-assign-ticket
-    arguments:
-    - name: id
+  - arguments:
+    - description: The id of the ticket that you want to assign to the SOC
+      name: id
       required: true
-      description: The id of the ticket that you want to assign to the SOC
-    - name: worklog
+    - description: Ticket worklog
+      name: worklog
       required: true
-      description: Ticket worklog
-    - name: riskAssessment
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: Valid for Change tickets only
+      name: riskAssessment
       predefined:
       - UNDEFINED
       - NONE
       - LOW
       - MEDIUM
       - HIGH
+    - auto: PREDEFINED
       description: Valid for Change tickets only
-    - name: changeApproval
-      auto: PREDEFINED
+      name: changeApproval
       predefined:
       - PM_FULLY_APPROVED
       - PM_RFC
@@ -434,51 +432,59 @@ script:
       - PM_COST
       - PM_PEND_RFC
       - PM_PEND_RFC_AND_COST
-      description: Valid for Change tickets only
+    description: Assign a ticket to the Secureworks Security Operations Center (SOC)
+    name: secure-works-assign-ticket
     outputs:
     - contextPath: SecureWorks.Ticket.ticketId
       description: Ticket ID in SecureWorks
     - contextPath: SecureWorks.Ticket.AssignStatusCode
       description: Ticket assign status code
-    description: Assign a ticket to the Secureworks Security Operations Center (SOC)
-  - name: secure-works-get-tickets-updates
-    arguments:
-    - name: limit
-      description: A maximum number of tickets to be returned (default 10), between
+  - arguments:
+    - description: A maximum number of tickets to be returned (default 10), between
         1 and 500
-    - name: ticketType
-      auto: PREDEFINED
+      name: limit
+    - auto: PREDEFINED
+      description: Tickets matching the ticketType. If not specified, the path returns
+        all ticket types
+      name: ticketType
       predefined:
       - SERVICE_REQUEST
       - INCIDENT
       - CHANGE
-      description: Tickets matching the ticketType. If not specified, the path returns
-        all ticket types
-    - name: worklogs
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: If "ALL," all worklogs are returned for each ticket. If "UPDATED",
+        all worklogs added since last acknowledgement are returned. If "NONE," the
+        path returns no worklogs. Default is "ALL."
+      name: worklogs
       predefined:
       - ALL
       - NONE
       - UPDATED
-      description: If "ALL," all worklogs are returned for each ticket. If "UPDATED",
-        all worklogs added since last acknowledgement are returned. If "NONE," the
-        path returns no worklogs. Default is "ALL."
-    - name: groupingType
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: If provided, limit response to tickets matching the grouping type(s)
+        identified
+      name: groupingType
       predefined:
       - REQUEST
       - CHANGE
       - HEALTH
       - SECURITY
-      description: If provided, limit response to tickets matching the grouping type(s)
-        identified
-    - name: acknowledge
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+    - auto: PREDEFINED
+      defaultValue: 'false'
       description: Whether to acknowledge the received tickets, default false
-      defaultValue: "false"
+      name: acknowledge
+      predefined:
+      - 'true'
+      - 'false'
+    description: Retrieves tickets from 24 hours prior to when the updates command
+      is executed. If a limit is specified, it will retrieve up to that many tickets
+      (max is 500 tickets). Tickets must be updated within the last 24 hours to be
+      visible in the command results. When executing this command you also receive
+      the ticket worklogs. In order to view the attachment information of a specific
+      ticket, you must use the get-ticket command. This command will return the list
+      of attachments available for that particular ticket. Use acknowledge to confirm
+      the updates.
+    name: secure-works-get-tickets-updates
     outputs:
     - contextPath: SecureWorks.Ticket.changeApproval
       description: Ticket change approval
@@ -560,19 +566,12 @@ script:
       description: Ticket worklog type
     - contextPath: SecureWorks.Ticket.closeCodes
       description: Ticket close codes
-    description: Retrieves tickets from 24 hours prior to when the updates command
-      is executed. If a limit is specified, it will retrieve up to that many tickets
-      (max is 500 tickets). Tickets must be updated within the last 24 hours to be
-      visible in the command results. When executing this command you also receive
-      the ticket worklogs. In order to view the attachment information of a specific
-      ticket, you must use the get-ticket command. This command will return the list
-      of attachments available for that particular ticket. Use acknowledge to confirm
-      the updates.
-  - name: secure-works-get-close-codes
-    arguments:
-    - name: id
+  - arguments:
+    - description: The ID of the ticket
+      name: id
       required: true
-      description: The ID of the ticket
+    description: Returns a list of close codes for a ticket
+    name: secure-works-get-close-codes
     outputs:
     - contextPath: SecureWorks.Ticket.ticketID
       description: Ticket ID
@@ -580,50 +579,51 @@ script:
     - contextPath: SecureWorks.Ticket.closeCodes
       description: Ticket close codes
       type: unknown
-    description: Returns a list of close codes for a ticket
-  - name: secure-works-get-tickets-ids
-    arguments:
-    - name: ticketType
-      auto: PREDEFINED
+  - arguments:
+    - auto: PREDEFINED
+      description: Tickets matching the ticketType. If not specified, the path returns
+        all ticket types
+      name: ticketType
       predefined:
       - SERVICE_REQUEST
       - INCIDENT
       - CHANGE
-      description: Tickets matching the ticketType. If not specified, the path returns
-        all ticket types
-    - name: limit
-      description: If provided, limit response to that number of tickets. If not provided,
+    - description: If provided, limit response to that number of tickets. If not provided,
         a maximum of 10 tickets are returned
-    - name: groupingType
-      auto: PREDEFINED
+      name: limit
+    - auto: PREDEFINED
+      description: If provided, limit response to tickets matching the grouping type(s)
+        identified
+      name: groupingType
       predefined:
       - REQUEST
       - CHANGE
       - HEALTH
       - SECURITY
-      description: If provided, limit response to tickets matching the grouping type(s)
-        identified
+    description: Get a list of ticket IDs in the same order as the tickets returned
+      by the GET /tickets/updates command.
+    name: secure-works-get-tickets-ids
     outputs:
     - contextPath: SecureWorks.IDs
       description: The ticket IDs
-    description: Get a list of ticket IDs in the same order as the tickets returned
-      by the GET /tickets/updates command.
-  - name: secure-works-get-ticket-count
-    arguments:
-    - name: ticketType
-      auto: PREDEFINED
+  - arguments:
+    - auto: PREDEFINED
+      description: The ticket type to filter
+      name: ticketType
       predefined:
       - SERVICE_REQUEST
       - INCIDENT
       - CHANGE
-      description: The ticket type to filter
+    description: Retrieve a count of tickets that have been updated and not yet acknowledged
+    name: secure-works-get-ticket-count
     outputs:
     - contextPath: SecureWorks.TicketCount
       description: The ticket count
       type: number
-    description: Retrieve a count of tickets that have been updated and not yet acknowledged
   isfetch: true
   runonce: false
+  script: ''
+  type: javascript
 fromversion: 5.0.0
 tests:
 - secureworks_test
