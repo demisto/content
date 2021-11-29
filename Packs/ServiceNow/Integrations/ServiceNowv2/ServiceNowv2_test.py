@@ -27,7 +27,8 @@ from test_data.result_constants import EXPECTED_TICKET_CONTEXT, EXPECTED_MULTIPL
     EXPECTED_QUERY_COMPUTERS, EXPECTED_GET_TABLE_NAME, EXPECTED_UPDATE_TICKET_ADDITIONAL, \
     EXPECTED_QUERY_TABLE_SYS_PARAMS, EXPECTED_ADD_TAG, EXPECTED_QUERY_ITEMS, EXPECTED_ITEM_DETAILS, \
     EXPECTED_CREATE_ITEM_ORDER, EXPECTED_DOCUMENT_ROUTE, EXPECTED_MAPPING, \
-    EXPECTED_TICKET_CONTEXT_WITH_ADDITIONAL_FIELDS, EXPECTED_QUERY_TICKETS_EXCLUDE_REFERENCE_LINK
+    EXPECTED_TICKET_CONTEXT_WITH_ADDITIONAL_FIELDS, EXPECTED_QUERY_TICKETS_EXCLUDE_REFERENCE_LINK, \
+    EXPECTED_TICKET_CONTEXT_WITH_NESTED_ADDITIONAL_FIELDS
 
 import demistomock as demisto
 from urllib.parse import urlencode
@@ -56,6 +57,20 @@ def test_get_ticket_context_additional_fields():
     """
     assert EXPECTED_TICKET_CONTEXT_WITH_ADDITIONAL_FIELDS == get_ticket_context(RESPONSE_TICKET,
                                                                                 ['Summary', 'sys_created_by'])
+
+
+def test_get_ticket_context_nested_additional_fields():
+    """Unit test
+    Given
+        - nested additional keys of a ticket (in the form of a.b), alongside regular keys.
+    When
+        - getting a ticket context
+    Then
+        - validate that all the details of the ticket were updated, and all the updated keys are shown in
+        the context with do duplicates.
+    """
+    assert EXPECTED_TICKET_CONTEXT_WITH_NESTED_ADDITIONAL_FIELDS == get_ticket_context(RESPONSE_TICKET,
+                                                                                       ['Summary', 'opened_by.link'])
 
 
 def test_get_ticket_human_readable():

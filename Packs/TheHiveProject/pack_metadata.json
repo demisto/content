@@ -7,7 +7,9 @@
     "url": "",
     "email": "",
     "created": "2020-08-26T09:03:28Z",
-    "categories": [],
+    "categories": [
+        "Case Management"
+    ],
     "tags": [
         "Threat Intelligence"
     ],

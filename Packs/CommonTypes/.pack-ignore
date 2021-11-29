@@ -278,3 +278,6 @@ ignore=IF100
 
 [file:indicatorfield-Community_Notes.json]
 ignore=BA111
+
+[file:incidentfield-Detected_Endpoints.json]
+ignore=IF115
