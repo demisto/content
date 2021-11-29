@@ -714,10 +714,17 @@ class TestTableToMarkdown:
         table = tableToMarkdown("tableToMarkdown test", nested_data_example,
                                 headers=['name', 'changelog', 'nested'],
                                 is_auto_json_transform=True)
-        expected_table = """### tableToMarkdown test
+        if IS_PY3:
+            expected_table = """### tableToMarkdown test
 |name|changelog|nested|
 |---|---|---|
 | Active Directory Query | **1.0.4**:<br>	***path***: <br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>Fixed an issue where the ***ad-get-user*** command caused performance issues because the *limit* argument was not defined.<br><br>	***displayName***: 1.0.4 - R124496<br>	***released***: 2020-09-23T17:43:26Z<br>**1.0.5**:<br>	***path***: <br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed several typos.<br>- Updated the Docker image to: *demisto/ldap:1.0.0.11282*.<br><br>	***displayName***: 1.0.5 - 132259<br>	***released***: 2020-10-01T17:48:31Z<br>**1.0.6**:<br>	***path***: <br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed an issue where the DN parameter within query in the ***search-computer*** command was incorrect.<br>- Updated the Docker image to *demisto/ldap:1.0.0.12410*.<br><br>	***displayName***: 1.0.6 - 151676<br>	***released***: 2020-10-19T14:35:15Z | **item1**:<br>	***a***: 1<br>	***b***: 2<br>	***c***: 3<br>	***d***: 4 |
+"""
+        else:
+            expected_table = u"""### tableToMarkdown test
+|name|changelog|nested|
+|---|---|---|
+| Active Directory Query | **1.0.4**:<br>	***path***: <br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>Fixed an issue where the ***ad-get-user*** command caused performance issues because the *limit* argument was not defined.<br><br>	***displayName***: 1.0.4 - R124496<br>	***released***: 2020-09-23T17:43:26Z<br>**1.0.5**:<br>	***path***: <br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed several typos.<br>- Updated the Docker image to: *demisto/ldap:1.0.0.11282*.<br><br>	***displayName***: 1.0.5 - 132259<br>	***released***: 2020-10-01T17:48:31Z<br>**1.0.6**:<br>	***path***: <br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed an issue where the DN parameter within query in the ***search-computer*** command was incorrect.<br>- Updated the Docker image to *demisto/ldap:1.0.0.12410*.<br><br>	***displayName***: 1.0.6 - 151676<br>	***released***: 2020-10-19T14:35:15Z | **item1**:<br>	***a***: 1<br>	***c***: 3<br>	***b***: 2<br>	***d***: 4 |
 """
         assert table == expected_table
 
@@ -729,11 +736,19 @@ class TestTableToMarkdown:
         json_transformer_mapping = {'name': name_transformer}
         table = tableToMarkdown("tableToMarkdown test", simple_data_example,
                                 json_transform_mapping=json_transformer_mapping)
-        expected_table = """### tableToMarkdown test
+        if IS_PY3:
+            expected_table = """### tableToMarkdown test
 |name|value|
 |---|---|
 | **first**:<br>	***a***: val<br><br>***second***: b | val1 |
 | **first**:<br>	***a***: val2<br><br>***second***: d | val2 |
+"""
+        else:
+            expected_table = u"""### tableToMarkdown test
+|name|value|
+|---|---|
+| <br>***second***: b<br>**first**:<br>	***a***: val | val1 |
+| <br>***second***: d<br>**first**:<br>	***a***: val2 | val2 |
 """
         assert expected_table == table
 
