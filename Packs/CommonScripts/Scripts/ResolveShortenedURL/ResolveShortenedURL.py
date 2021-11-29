@@ -14,7 +14,7 @@ HEADERS_FOR_UNSHORTEN_ME = {
 }
 
 
-def get_requests(client: BaseClient, url: str, count=0):
+def get_requests(client: BaseClient, url: str, count=0) -> str:
     count += 1
     while count <= RECURSION_LIMIT:
         try:
@@ -35,7 +35,7 @@ def get_requests(client: BaseClient, url: str, count=0):
         return url
 
 
-def unshorten_using_requests(client: BaseClient, url: str):
+def unshorten_using_requests(client: BaseClient, url: str) -> CommandResults:
     resolved_url = get_requests(client, url)
 
     return CommandResults(
