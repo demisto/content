@@ -7,7 +7,9 @@
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-11-10T09:28:10Z",
-    "categories": [],
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": []
