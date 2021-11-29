@@ -611,7 +611,7 @@ script:
       description: Project last update time.
       type: Date
     - contextPath: AzureDevOps.Project.id
-      description: The ID of the Project
+      description: The ID of the Project.
       type: String
   - arguments:
     - default: false

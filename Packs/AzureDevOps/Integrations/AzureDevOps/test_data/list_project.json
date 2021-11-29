@@ -5,21 +5,10 @@
       "id": "xsoar-project",
       "name": "xsoar",
       "url": "https://dev.azure.com/xsoar/_apis/projects/xsoar-project",
-      "collection": {
-        "id": "0c3a34e6-e5e0-478e-86f4-8ecefed27660",
-        "name": "xsoar",
-        "url": "https://dev.azure.com/xsoar/_apis/projectCollections/0c3a34e6-e5e0-478e-86f4-8ecefed27660",
-        "collectionUrl": "https://dev.azure.com/xsoar/"
-      },
       "state": "wellFormed",
-      "defaultTeam": {
-        "id": "ce457db1-f5a7-4735-9d03-3fa4dee36f1d",
-        "name": "xsoar Team",
-        "url": "https://dev.azure.com/xsoar/_apis/projects/xsoar-project/teams/ce457db1-f5a7-4735-9d03-3fa4dee36f1d"
-      },
       "revision": 11,
       "visibility": "private",
-      "lastUpdateTime": "0001-01-01T00:00:00"
+      "lastUpdateTime": "2021-10-27T08:38:28.187Z"
     }
   ]
 }

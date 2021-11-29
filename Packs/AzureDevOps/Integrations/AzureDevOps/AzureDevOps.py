@@ -944,14 +944,11 @@ def project_list_command(client: Client, args: Dict[str, Any]) -> CommandResults
     response = client.project_list_request(offset, limit)
     readable_message = f'Project List:\n Current page size: {limit}\n Showing page {page} out others that may exist.'
 
-    outputs = []
+    outputs = copy.deepcopy(response.get('value', []))
     output_headers = ['name', 'id', 'state', 'revision', 'visibility', 'lastUpdateTime']
 
-    for project in response.get('value', []):
-        data = {key: project.get(key) for key in output_headers}
-        data['lastUpdateTime'] = FormatIso8601(arg_to_datetime(data.get('lastUpdateTime')))
-
-        outputs.append(data)
+    for project in outputs:
+        project['lastUpdateTime'] = arg_to_datetime(project.get('lastUpdateTime')).isoformat()
 
     readable_output = tableToMarkdown(
         readable_message,
@@ -963,7 +960,7 @@ def project_list_command(client: Client, args: Dict[str, Any]) -> CommandResults
     command_results = CommandResults(
         readable_output=readable_output,
         outputs_prefix='AzureDevOps.Project',
-        outputs_key_field='name',
+        outputs_key_field='id',
         outputs=outputs,
         raw_response=response
     )
