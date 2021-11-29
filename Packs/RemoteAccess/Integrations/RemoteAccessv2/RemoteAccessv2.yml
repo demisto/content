@@ -29,13 +29,6 @@ configuration:
   name: key_algorithms
   required: false
   type: 0
-- additionalinfo: TODO
-  defaultvalue: 'false'
-  display: Interactive Terminal Mode
-  hidden: false
-  name: interactive_terminal_mode
-  required: false
-  type: 8
 description: File transfer between Cortex XSOAR to remote machine, and execution of commands on remote machine
 display: RemoteAccess v2
 name: RemoteAccess v2

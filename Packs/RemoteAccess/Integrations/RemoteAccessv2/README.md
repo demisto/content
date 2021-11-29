@@ -17,7 +17,6 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
     | Additional Password | Will require additional password as an argument to run any command of this module. | False |
     | Ciphers | Comma separated list of ciphers to be used. Will return error with the supported ciphers by server if none of given ciphers were agreed by server. | False |
     | Key Algorithms | Comma separated list of key algorithms to be used. Will return error with the supported key algorithms by server if none of given key algorithms were agreed by server. | False |
-    | Interactive Terminal Mode | TODO | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
