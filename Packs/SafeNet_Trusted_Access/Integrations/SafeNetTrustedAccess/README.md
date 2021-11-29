@@ -4,7 +4,7 @@ This integration enables you to process alerts from SafeNet Trusted Access (STA)
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-> **_NOTE :_**  Perform create, update and delete operations only for internal users or groups using commands. Such operations aren't recommended for synced users or groups using commands.
+> **_NOTE :_**  Perform create, update and delete operations  using commands only for internal users or groups. Such operations aren't recommended for synchronized users or groups.
 
 ### sta-get-user-list
 ***
@@ -155,7 +155,7 @@ Get the profile information for a specific user.
 
 ### sta-create-user
 ***
-Create new user in the tenant
+Create a new user in the tenant.
 
 
 #### Base Command
@@ -316,7 +316,7 @@ Update the profile for a specific user.
 
 ### sta-delete-user
 ***
-Delete user from the tenant.
+Delete a user from the tenant.
 
 
 #### Base Command
@@ -335,7 +335,7 @@ Delete user from the tenant.
 | --- | --- | --- |
 | STA.USER.ID | string | User ID of the user to be deleted from the tenant. | 
 | STA.USER.USERNAME | string | Username of the user to be deleted from the tenant. | 
-| STA.USER.DELETED | boolean | Returns true, if the user deleted from the tenant. | 
+| STA.USER.DELETED | boolean | Returns true, if the user is deleted from the tenant. | 
 
 
 #### Command Example
@@ -444,7 +444,7 @@ Return all the groups associated with a specific user.
 >### Groups associated with user - hellouser : 
 >|Id|Schema Version Number|Name|Description|Is Synchronized|
 >|---|---|---|---|---|
->| 50331650 | 1.0 | TestUnusualActivityGroup | User would be added to unusual activity group on denying Push Notification. | false |
+>| 50331650 | 1.0 | TestUnusualActivityGroup | Group for testing. | false |
 >| 50331652 | 1.0 | TestGroup0 | Group for testing. | false |
 
 
@@ -721,7 +721,7 @@ Delete group from the tenant.
 | --- | --- | --- |
 | STA.GROUP.ID | string | Group ID of the group to be deleted. | 
 | STA.GROUP.GROUPNAME | string | Name of the group to be deleted. | 
-| STA.GROUP.DELETED | boolean | Returns true, if the group deleted from the tenant. | 
+| STA.GROUP.DELETED | boolean | Returns true, if the group is deleted from the tenant. | 
 
 
 #### Command Example
@@ -1098,3 +1098,338 @@ Checks if you have permission to access the requested tenant.
 #### Human Readable Output
 
 >## The requested tenant is accessible.
+
+### sta-get-application-list
+***
+Get the list of the applications in the tenant.
+
+
+#### Base Command
+
+`sta-get-application-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | The maximum number of results to return. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| STA.APPLICATION.ID | string | ID of the application. | 
+| STA.APPLICATION.NAME | string | Name of the application. | 
+| STA.APPLICATION.STATUS | string | Status of the application. | 
+
+
+#### Command Example
+```!sta-get-application-list```
+
+#### Context Example
+```json
+{
+    "STA": {
+        "APPLICATION": [
+            {
+                "id": "g444faf1-6d7a-44t2-98c1-43572422b409",
+                "name": "Application1",
+                "status": "Active"
+            },
+            {
+                "id": "k0de1afc-59ef-66bc-9abd-dacca890a390",
+                "name": "Application2",
+                "status": "Active"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### List of applications in the tenant :
+>|Id|Name|Status|
+>|---|---|---|
+>| g444faf1-6d7a-44t2-98c1-43572422b409 | Application1 | Active |
+>| k0de1afc-59ef-66bc-9abd-dacca890a390 | Application2 | Active |
+
+
+### sta-get-application-info
+***
+Get the information for a specific application in the tenant.
+
+
+#### Base Command
+
+`sta-get-application-info`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| applicationName | Name of the application. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| STA.APPLICATION.ID | string | ID of the application. | 
+| STA.APPLICATION.NAME | string | Name of the application. | 
+| STA.APPLICATION.STATUS | string | Status of the application. | 
+| STA.APPLICATION.TYPE | string | Status of the application. | 
+| STA.APPLICATION.TEMPLATE | string | Name of the template. | 
+| STA.APPICATION.ASSIGNMENT | string | Groups or users authorized to access an application. | 
+| STA.APPICATION.SCHEMA | string | Schema version number. | 
+| STA.APPICATION.LASTMODIFIED | string | Last modified date and time of application. | 
+
+
+#### Command Example
+```!sta-get-application-info applicationName="Application1"```
+
+#### Context Example
+```json
+{
+    "STA": {
+        "APPLICATION": {
+            "applicationType": "Saml",
+            "assignment": {
+                "everyone": true
+            },
+            "id": "9ccbad94-06c2-4af2-bb9b-af9f811ccfdb",
+            "lastModified": "2021-08-27T12:25:47.998Z",
+            "name": "Application1",
+            "schemaVersionNumber": "1.0",
+            "status": "Active",
+            "templateName": "Template1"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Information of application - Application1 :
+>|Id|Name|Status|Application Type|Template Name|Assignment|Schema Version Number|Last Modified|
+>|---|---|---|---|---|---|---|---|
+>| 9ccbad94-06c2-4af2-bb9b-af9f811ccfdb | Application1 | Active | Saml | Template1 | All | 1.0 | 2021-08-27T12:25:47.998Z |
+
+
+### sta-get-user-applications
+***
+Get the list of the applications assigned to a specific user.
+
+
+#### Base Command
+
+`sta-get-user-applications`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| userName | Username of the user. | Required | 
+| limit | The maximum number of results to return. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| STA.USER.ID | string | User ID of the user. | 
+| STA.USER.SCHEMA | string | Schema version number. | 
+| STA.USER.USERNAME | string | Username of the user. | 
+| STA.USER.FIRSTNAME | string | First name of the user. | 
+| STA.USER.LASTNAME | string | Last name of the user. | 
+| STA.USER.EMAIL | string | Email ID of the user. | 
+| STA.USER.MOBILENUMBER | number | Mobile number for the user. | 
+| STA.USER.ALIAS1 | string | Alias for the user. | 
+| STA.USER.ALIAS2 | string | Additional alias for the user. | 
+| STA.USER.CUSTOM1 | string | Custom value for the user. | 
+| STA.USER.CUSTOM2 | string | Additional custom value for the user. | 
+| STA.USER.CUSTOM3 | string | Additional custom value for the user. | 
+| STA.USER.ADDRESS | string | Address of the user. | 
+| STA.USER.CITY | string | City of the user. | 
+| STA.USER.STATE | string | State of the user. | 
+| STA.USER.COUNTRY | string | Country of the user. | 
+| STA.USER.POSTALCODE | number | Postal Code of the user. | 
+| STA.USER.SYNCHRONIZED | boolean | Is user synchronized. | 
+| STA.USER.APPLICATION.ID | string | ID of the application. | 
+| STA.USER.APPLICATION.NAME | string | Name of the application. | 
+| STA.USER.APPLICATION.STATUS | string | Status of the application. | 
+
+
+#### Command Example
+```!sta-get-user-applications userName="hellouser"```
+
+#### Context Example
+```json
+{
+    "STA": {
+        "USER": {
+            "applications": [
+                {
+                    "id": "9570b825-961e-4ed3-aa51-e53b732b16ec",
+                    "name": "Application1",
+                    "status": "Active"
+                },
+                {
+                    "id": "66df07af-7c95-42e7-b0cd-2e97b6827d59",
+                    "name": "Application2",
+                    "status": "Active"
+                }
+            ],
+            "email": "test.user@demisto.com",
+            "firstName": "Hello",
+            "id": "ONksETu5i8cDs0k67bQAAAD9",
+            "isSynchronized": false,
+            "lastName": "User",
+            "schemaVersionNumber": "1.0",
+            "userName": "hellouser"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Applications associated with user - hellouser : 
+>|Id|Name|Status|
+>|---|---|---|
+>| 9570b825-961e-4ed3-aa51-e53b732b16ec | Application1 | Active |
+>| 66df07af-7c95-42e7-b0cd-2e97b6827d59 | Application2 | Active |
+
+
+### sta-get-user-sessions
+***
+Get sessions for a specific user.
+
+
+#### Base Command
+
+`sta-get-user-sessions`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| userName | Username of the user. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| STA.USER.ID | string | User ID of the user. | 
+| STA.USER.SCHEMA | string | Schema version number. | 
+| STA.USER.USERNAME | string | Username of the user. | 
+| STA.USER.FIRSTNAME | string | First name of the user. | 
+| STA.USER.LASTNAME | string | Last name of the user. | 
+| STA.USER.EMAIL | string | Email ID of the user. | 
+| STA.USER.MOBILENUMBER | number | Mobile number for the user. | 
+| STA.USER.ALIAS1 | string | Alias for the user. | 
+| STA.USER.ALIAS2 | string | Additional alias for the user. | 
+| STA.USER.CUSTOM1 | string | Custom value for the user. | 
+| STA.USER.CUSTOM2 | string | Additional custom value for the user. | 
+| STA.USER.CUSTOM3 | string | Additional custom value for the user. | 
+| STA.USER.ADDRESS | string | Address of the user. | 
+| STA.USER.CITY | string | City of the user. | 
+| STA.USER.STATE | string | State of the user. | 
+| STA.USER.COUNTRY | string | Country of the user. | 
+| STA.USER.POSTALCODE | number | Postal Code of the user. | 
+| STA.USER.SYNCHRONIZED | boolean | Is user synchronized. | 
+| STA.USER.SESSION.ID | string | Session ID for the user. | 
+| STA.USER.SESSION.START | string | Session start timestamp. | 
+| STA.USER.SESSION.EXPIRY | string | Session end timestamp. | 
+| STA.USER.SESSION.APPLICATION.ID | string | Name of the application. | 
+| STA.USER.SESSION.APPLICATION.NAME | boolean | Returns true, if the user session is deleted for an application. | 
+
+
+#### Command Example
+```!sta-get-user-sessions userName="hellouser"```
+
+#### Context Example
+```json
+{
+    "STA": {
+        "USER": {
+            "email": "test.user@demisto.com",
+            "firstName": "Hello",
+            "id": "ONksETu5i8cDs0k67bQAAAD9",
+            "isSynchronized": false,
+            "lastName": "User",
+            "schemaVersionNumber": "1.0",
+            "sessions": [
+                {
+                    "applications": [
+                        {
+                            "id": "entity-id1",
+                            "name": "Application1"
+                        },
+                        {
+                            "id": "entity-id2",
+                            "name": "Application2"
+                        }
+                    ],
+                    "expiry": 1633086960,
+                    "id": "86f4593d-fb8a-4f62-byd9-ceb833a8090b",
+                    "start": 1633079752
+                }
+            ],
+            "userName": "hellouser"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Sessions associated with user - hellouser : 
+>|Id|Start|Expiry|Applications|
+>|---|---|---|---|
+>| 86f4593d-fb8a-4f62-byd9-ceb833a8090b | 1633079752 | 1633086960 | Application1, Application2 |
+
+
+### sta-delete-user-sessions
+***
+Delete all the active SSO sessions for a specific user from STA.
+
+
+#### Base Command
+
+`sta-delete-user-sessions`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| userName | Username of the user. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| STA.USER.ID | string | User ID of the user. | 
+| STA.USER.USERNAME | string | Username of the user. | 
+| STA.USER.SESSION.DELETED | boolean | Returns true, if all the user SSO sessions are deleted successfully. | 
+
+
+#### Command Example
+```!sta-delete-user-sessions userName="hellouser"```
+
+#### Context Example
+```json
+{
+    "STA": {
+        "USER": {
+            "id": "",
+            "sessions": {
+                "Deleted": true
+            },
+            "userName": "hellouser"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>## IDP Sessions for the user - hellouser successfully deleted.

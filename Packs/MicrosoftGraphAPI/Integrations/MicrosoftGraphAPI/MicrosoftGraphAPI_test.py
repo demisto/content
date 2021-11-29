@@ -27,7 +27,7 @@ def client(requests_mock):
     )
 
 
-def test_generic_command_positive(requests_mock, client):
+def test_generic_command_positive_value_key(requests_mock, client):
     """
     Given:
         - API resource /applications
@@ -50,6 +50,33 @@ def test_generic_command_positive(requests_mock, client):
     assert res.outputs == applications_res.get('value')
 
 
+def test_generic_command_positive_other_key(requests_mock, client):
+    """
+    Given:
+        - API resource /applications
+        - API returns data under other key than value
+    When:
+        - Running the generic command
+    Then:
+        - Ensure outputs are as expected
+    """
+    applications_res = load_test_data('applications.json')
+    value = applications_res['value']
+    applications_res['not_value'] = value
+    applications_res.pop('value', None)
+    requests_mock.get(
+        'https://graph.microsoft.com/v1.0/applications?$top=10',
+        json=applications_res,
+    )
+    args = {
+        'resource': '/applications',
+        'odata': '$top=10',
+
+    }
+    res = generic_command(client, args)
+    assert res.outputs['not_value'][0] == value[0]
+
+
 def test_generic_command_no_content(requests_mock, client):
     """
     Given:
@@ -70,4 +97,5 @@ def test_generic_command_no_content(requests_mock, client):
         'no_content': 'true',
         'populate_context': 'false',
     }
-    generic_command(client, args)
+    res = generic_command(client, args)
+    assert res

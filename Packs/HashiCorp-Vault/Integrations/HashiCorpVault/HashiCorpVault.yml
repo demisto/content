@@ -11,7 +11,12 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: Username
+- display: Use AppRole Auth Method
+  name: use_approle
+  type: 8
+  required: false
+- display: Username / Role ID
+  displaypassword: Password / Secret ID
   name: credentials
   defaultvalue: ""
   type: 9

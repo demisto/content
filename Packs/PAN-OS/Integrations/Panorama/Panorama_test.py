@@ -1,3 +1,5 @@
+import json
+
 import pytest
 
 import demistomock as demisto
@@ -683,3 +685,16 @@ def test_prettify_configured_user_id_agents__single_result():
                 'CollectorName': 'demisto', 'Secret': 'secret', 'EnableHipCollection': 'no', 'SerialNumber': None,
                 'IpUserMapping': 'yes', 'Disabled': 'no'}
     assert response == expected
+
+
+def test_prettify_rule():
+    from Panorama import prettify_rule
+    with open("test_data/rule.json") as f:
+        rule = json.load(f)
+
+    with open("test_data/prettify_rule.json") as f:
+        expected_prettify_rule = json.load(f)
+
+    prettify_rule = prettify_rule(rule)
+
+    assert prettify_rule == expected_prettify_rule

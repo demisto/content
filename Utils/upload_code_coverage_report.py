@@ -16,7 +16,7 @@ TIMESTAMP_FORMAT_MICROSECONDS = '%Y-%m-%dT%H:%M:%S.%f'
 def create_minimal_report(source_file: str, destination_file: str) -> Tuple[bool, str]:
     if not os.path.isfile(source_file):
         print(f'File {source_file} does not exist.')
-        return False, {}
+        return False, ''
 
     with open(source_file, 'r') as cov_util_output:
         data = json.load(cov_util_output)
@@ -24,7 +24,7 @@ def create_minimal_report(source_file: str, destination_file: str) -> Tuple[bool
     # Check that we were able to read the json report correctly
     if not data or 'files' not in data:
         print(f'Empty file, or unable to read contents of {source_file}.')
-        return False, {}
+        return False, ''
 
     minimal_coverage_contents_files: Dict[str, float] = {}
     files = data['files']

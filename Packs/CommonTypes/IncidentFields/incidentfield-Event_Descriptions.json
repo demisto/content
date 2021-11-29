@@ -32,9 +32,7 @@
     ],
     "required": false,
     "script": "",
-    "selectValues": [
-        ""
-    ],
+    "selectValues": [],
     "sla": 0,
     "system": false,
     "systemAssociatedTypes": null,

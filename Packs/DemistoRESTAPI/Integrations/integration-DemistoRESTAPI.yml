@@ -54,7 +54,7 @@ script:
                     'Accept': ['application/json']
                 },
             },
-            body,
+            JSON.parse(body),
             params.insecure,
             params.proxy,
             undefined,

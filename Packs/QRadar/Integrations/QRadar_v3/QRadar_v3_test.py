@@ -1,18 +1,15 @@
 """
     QRadar v3 integration for Cortex XSOAR - Unit Tests file
 """
+import concurrent.futures
 import io
 import json
-import concurrent.futures
 from datetime import datetime
 from typing import Dict, Callable
 
+import QRadar_v3  # import module separately for mocker
 import pytest
 import pytz
-
-import QRadar_v3  # import module separately for mocker
-from CommonServerPython import DemistoException, set_to_integration_context_with_retries, CommandResults, \
-    GetModifiedRemoteDataResponse, GetRemoteDataResponse
 from QRadar_v3 import USECS_ENTRIES, OFFENSE_OLD_NEW_NAMES_MAP, MINIMUM_API_VERSION, REFERENCE_SETS_OLD_NEW_MAP, \
     Client, ASSET_PROPERTIES_NAME_MAP, FetchMode, \
     FULL_ASSET_PROPERTIES_NAMES_MAP, EntryType, EntryFormat, MIRROR_OFFENSE_AND_EVENTS, LAST_FETCH_KEY, \
@@ -32,11 +29,15 @@ from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_o
     qradar_log_sources_list_command, qradar_get_custom_properties_command, enrich_asset_properties, \
     flatten_nested_geolocation_values, get_modified_remote_data_command, get_remote_data_command, is_valid_ip, \
     qradar_ips_source_get_command, qradar_ips_local_destination_get_command, update_mirrored_events, \
-    encode_context_data, extract_context_data, change_ctx_to_be_compatible_with_retry, clear_integration_ctx
+    encode_context_data, extract_context_data, change_ctx_to_be_compatible_with_retry, clear_integration_ctx, \
+    reset_mirroring_events_variables, perform_long_running_loop
+
+from CommonServerPython import DemistoException, set_integration_context, CommandResults, \
+    GetModifiedRemoteDataResponse, GetRemoteDataResponse, get_integration_context
+from CommonServerPython import set_to_integration_context_with_retries
 
 QRadar_v3.FAILURE_SLEEP = 0
 QRadar_v3.SLEEP_FETCH_EVENT_RETIRES = 0
-
 
 client = Client(
     server='https://192.168.0.1',
@@ -59,6 +60,7 @@ asset_enrich_data = util_load_json("./test_data/asset_enrich_test.json")
 
 command_test_data = util_load_json('./test_data/command_test_data.json')
 ip_command_test_data = util_load_json('./test_data/ips_commands_data.json')
+ctx_test_data = util_load_json('./test_data/integration_context_tests.json')
 
 event_columns_default_value = \
     'QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), ' \
@@ -1103,14 +1105,14 @@ class MockResults:
                                                   MIRRORED_OFFENSES_CTX_KEY: [{'id': '1',
                                                                                'last_persisted_time': 2}]},
                             'with_events': [{'samples': [], 'last_mirror_update': '2', LAST_FETCH_KEY: 0,
-                                            UPDATED_MIRRORED_OFFENSES_CTX_KEY: [{'id': '1',
-                                                                                 'last_persisted_time': 2,
-                                                                                 'events': [{'event_id': '2'}]}],
-                                            MIRRORED_OFFENSES_CTX_KEY: []}],
+                                             UPDATED_MIRRORED_OFFENSES_CTX_KEY: [{'id': '1',
+                                                                                  'last_persisted_time': 2,
+                                                                                  'events': [{'event_id': '2'}]}],
+                                             MIRRORED_OFFENSES_CTX_KEY: []}],
                             'with_updated_removed': [{'samples': [], 'last_mirror_update': '2',
-                                                     LAST_FETCH_KEY: 0,
-                                                     UPDATED_MIRRORED_OFFENSES_CTX_KEY: [],
-                                                     MIRRORED_OFFENSES_CTX_KEY: []}]}),
+                                                      LAST_FETCH_KEY: 0,
+                                                      UPDATED_MIRRORED_OFFENSES_CTX_KEY: [],
+                                                      MIRRORED_OFFENSES_CTX_KEY: []}]}),
                           # One offense with two events.
                           ({'ids': [{'id': '1', 'last_persisted_time': 2}],
                             'as_results': [MockResults({'id': '1', 'last_persisted_time': 2,
@@ -1122,15 +1124,15 @@ class MockResults:
                                                   MIRRORED_OFFENSES_CTX_KEY: [{'id': '1',
                                                                                'last_persisted_time': 2}]},
                             'with_events': [{'samples': [], 'last_mirror_update': '2', LAST_FETCH_KEY: 0,
-                                            UPDATED_MIRRORED_OFFENSES_CTX_KEY: [{'id': '1',
-                                                                                 'last_persisted_time': 2,
-                                                                                 'events': [{'event_id': '2'},
-                                                                                            {'event_id': '3'}]}],
-                                            MIRRORED_OFFENSES_CTX_KEY: []}],
+                                             UPDATED_MIRRORED_OFFENSES_CTX_KEY: [{'id': '1',
+                                                                                  'last_persisted_time': 2,
+                                                                                  'events': [{'event_id': '2'},
+                                                                                             {'event_id': '3'}]}],
+                                             MIRRORED_OFFENSES_CTX_KEY: []}],
                             'with_updated_removed': [{'samples': [], 'last_mirror_update': '2',
-                                                     LAST_FETCH_KEY: 0,
-                                                     UPDATED_MIRRORED_OFFENSES_CTX_KEY: [],
-                                                     MIRRORED_OFFENSES_CTX_KEY: []}]}),
+                                                      LAST_FETCH_KEY: 0,
+                                                      UPDATED_MIRRORED_OFFENSES_CTX_KEY: [],
+                                                      MIRRORED_OFFENSES_CTX_KEY: []}]}),
                           # Two offenses with one event.
                           ({'ids': [{'id': '1', 'last_persisted_time': 2},
                                     {'id': '11', 'last_persisted_time': 3}],
@@ -1149,13 +1151,13 @@ class MockResults:
                                                                               {'id': '11',
                                                                                'last_persisted_time': 3}]},
                             'with_events': [{'samples': [], 'last_mirror_update': '2', LAST_FETCH_KEY: 0,
-                                            UPDATED_MIRRORED_OFFENSES_CTX_KEY: [{'id': '1', 'last_persisted_time': 2,
-                                                                                 'events': [{'event_id': '2'},
-                                                                                            {'event_id': '3'}]},
-                                                                                {'id': '11', 'last_persisted_time': 3,
-                                                                                 'events': [{'event_id': '22'},
-                                                                                            {'event_id': '33'}]}],
-                                            MIRRORED_OFFENSES_CTX_KEY: []},
+                                             UPDATED_MIRRORED_OFFENSES_CTX_KEY: [{'id': '1', 'last_persisted_time': 2,
+                                                                                  'events': [{'event_id': '2'},
+                                                                                             {'event_id': '3'}]},
+                                                                                 {'id': '11', 'last_persisted_time': 3,
+                                                                                  'events': [{'event_id': '22'},
+                                                                                             {'event_id': '33'}]}],
+                                             MIRRORED_OFFENSES_CTX_KEY: []},
                                             {'samples': [], 'last_mirror_update': '2',
                                              LAST_FETCH_KEY: 0,
                                              UPDATED_MIRRORED_OFFENSES_CTX_KEY: [{'id': '11',
@@ -1165,17 +1167,18 @@ class MockResults:
                                                                                   }],
                                              MIRRORED_OFFENSES_CTX_KEY: []}],
                             'with_updated_removed': [{'samples': [], 'last_mirror_update': '2',
-                                                     LAST_FETCH_KEY: 0,
-                                                     UPDATED_MIRRORED_OFFENSES_CTX_KEY: [{'id': '11',
-                                                                                          'last_persisted_time': 3,
-                                                                                          'events': [{'event_id': '22'},
-                                                                                                     {'event_id': '33'}]
-                                                                                          }],
-                                                     MIRRORED_OFFENSES_CTX_KEY: []},
+                                                      LAST_FETCH_KEY: 0,
+                                                      UPDATED_MIRRORED_OFFENSES_CTX_KEY: [{'id': '11',
+                                                                                           'last_persisted_time': 3,
+                                                                                           'events': [
+                                                                                               {'event_id': '22'},
+                                                                                               {'event_id': '33'}]
+                                                                                           }],
+                                                      MIRRORED_OFFENSES_CTX_KEY: []},
                                                      {'samples': [], 'last_mirror_update': '2',
-                                                     LAST_FETCH_KEY: 0,
-                                                     UPDATED_MIRRORED_OFFENSES_CTX_KEY: [],
-                                                     MIRRORED_OFFENSES_CTX_KEY: []}]})
+                                                      LAST_FETCH_KEY: 0,
+                                                      UPDATED_MIRRORED_OFFENSES_CTX_KEY: [],
+                                                      MIRRORED_OFFENSES_CTX_KEY: []}]})
                           ])
 def test_mirroring_offenses_with_events(mocker, offenses, context_data):
     """Test mirroring with events: happy flow
@@ -1253,14 +1256,15 @@ def set_context_data_as_json(context_data, include_id=False):
                                                     UPDATED_MIRRORED_OFFENSES_CTX_KEY: [{'id': '1',
                                                                                          'last_persisted_time': 2,
                                                                                          'events': [{'event_id': '2'},
-                                                                                                    {'event_id': '3'}]}],
+                                                                                                    {
+                                                                                                        'event_id': '3'}]}],
                                                     MIRRORED_OFFENSES_CTX_KEY: [],
                                                     RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: ['1']},
                             'after_get_remote_data': [{'samples': [], 'last_mirror_update': '0',
-                                                      LAST_FETCH_KEY: 0,
-                                                      UPDATED_MIRRORED_OFFENSES_CTX_KEY: [],
-                                                      MIRRORED_OFFENSES_CTX_KEY: [],
-                                                      RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: []}]}),
+                                                       LAST_FETCH_KEY: 0,
+                                                       UPDATED_MIRRORED_OFFENSES_CTX_KEY: [],
+                                                       MIRRORED_OFFENSES_CTX_KEY: [],
+                                                       RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: []}]}),
                           # No new offenses, 2 exhausted offenses
                           ({'new_offenses': [], 'to_update': ['1', '11']},
                            {'get_modified_input': {LAST_FETCH_KEY: 0,
@@ -1274,28 +1278,28 @@ def set_context_data_as_json(context_data, include_id=False):
                                                                                                    {'event_id': '33'}]}
                                                                                        ],
                                                    MIRRORED_OFFENSES_CTX_KEY: []},
-                           'get_modified_output': {'samples': [], 'last_mirror_update': '0',
-                                                   LAST_FETCH_KEY: 0,
-                                                   UPDATED_MIRRORED_OFFENSES_CTX_KEY: [{'id': '1',
-                                                                                        'last_persisted_time': 2,
-                                                                                        'events': [{'event_id': '2'},
-                                                                                                   {'event_id': '3'}]},
-                                                                                       {'id': '11',
-                                                                                        'last_persisted_time': 3,
-                                                                                        'events': [{'event_id': '22'},
-                                                                                                   {'event_id': '33'}]}
-                                                                                       ],
-                                                   MIRRORED_OFFENSES_CTX_KEY: [],
-                                                   RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: ['1', '11']},
+                            'get_modified_output': {'samples': [], 'last_mirror_update': '0',
+                                                    LAST_FETCH_KEY: 0,
+                                                    UPDATED_MIRRORED_OFFENSES_CTX_KEY: [{'id': '1',
+                                                                                         'last_persisted_time': 2,
+                                                                                         'events': [{'event_id': '2'},
+                                                                                                    {'event_id': '3'}]},
+                                                                                        {'id': '11',
+                                                                                         'last_persisted_time': 3,
+                                                                                         'events': [{'event_id': '22'},
+                                                                                                    {'event_id': '33'}]}
+                                                                                        ],
+                                                    MIRRORED_OFFENSES_CTX_KEY: [],
+                                                    RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: ['1', '11']},
                             'after_get_remote_data': [{'samples': [], 'last_mirror_update': '0',
-                                                      LAST_FETCH_KEY: 0,
-                                                      UPDATED_MIRRORED_OFFENSES_CTX_KEY: [{'id': '11',
-                                                                                           'last_persisted_time': 3,
-                                                                                           'events': [
-                                                                                               {'event_id': '22'},
-                                                                                               {'event_id': '33'}]}],
-                                                      MIRRORED_OFFENSES_CTX_KEY: [],
-                                                      RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: ['11']},
+                                                       LAST_FETCH_KEY: 0,
+                                                       UPDATED_MIRRORED_OFFENSES_CTX_KEY: [{'id': '11',
+                                                                                            'last_persisted_time': 3,
+                                                                                            'events': [
+                                                                                                {'event_id': '22'},
+                                                                                                {'event_id': '33'}]}],
+                                                       MIRRORED_OFFENSES_CTX_KEY: [],
+                                                       RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: ['11']},
                                                       {'samples': [], 'last_mirror_update': '0',
                                                        LAST_FETCH_KEY: 0,
                                                        UPDATED_MIRRORED_OFFENSES_CTX_KEY: [],
@@ -1317,31 +1321,32 @@ def set_context_data_as_json(context_data, include_id=False):
                                                                                                    {'event_id': '33'}]}
                                                                                        ],
                                                    MIRRORED_OFFENSES_CTX_KEY: []},
-                           'get_modified_output': {'samples': [], 'last_mirror_update': '3',
-                                                   LAST_FETCH_KEY: 0,
-                                                   UPDATED_MIRRORED_OFFENSES_CTX_KEY: [{'id': '1',
-                                                                                        'last_persisted_time': 2,
-                                                                                        'events': [{'event_id': '2'},
-                                                                                                   {'event_id': '3'}]},
-                                                                                       {'id': '11',
-                                                                                        'last_persisted_time': 3,
-                                                                                        'events': [{'event_id': '22'},
-                                                                                                   {'event_id': '33'}]}
-                                                                                       ],
-                                                   MIRRORED_OFFENSES_CTX_KEY: [{'id': '100', 'last_persisted_time': 2},
-                                                                               {'id': '200', 'last_persisted_time': 3}],
-                                                   RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: ['1', '11']},
+                            'get_modified_output': {'samples': [], 'last_mirror_update': '3',
+                                                    LAST_FETCH_KEY: 0,
+                                                    UPDATED_MIRRORED_OFFENSES_CTX_KEY: [{'id': '1',
+                                                                                         'last_persisted_time': 2,
+                                                                                         'events': [{'event_id': '2'},
+                                                                                                    {'event_id': '3'}]},
+                                                                                        {'id': '11',
+                                                                                         'last_persisted_time': 3,
+                                                                                         'events': [{'event_id': '22'},
+                                                                                                    {'event_id': '33'}]}
+                                                                                        ],
+                                                    MIRRORED_OFFENSES_CTX_KEY: [{'id': '100', 'last_persisted_time': 2},
+                                                                                {'id': '200',
+                                                                                 'last_persisted_time': 3}],
+                                                    RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: ['1', '11']},
                             'after_get_remote_data': [{'samples': [], 'last_mirror_update': '3',
-                                                      LAST_FETCH_KEY: 0,
-                                                      UPDATED_MIRRORED_OFFENSES_CTX_KEY: [{'id': '11',
-                                                                                           'last_persisted_time': 3,
-                                                                                           'events': [
-                                                                                               {'event_id': '22'},
-                                                                                               {'event_id': '33'}]}],
+                                                       LAST_FETCH_KEY: 0,
+                                                       UPDATED_MIRRORED_OFFENSES_CTX_KEY: [{'id': '11',
+                                                                                            'last_persisted_time': 3,
+                                                                                            'events': [
+                                                                                                {'event_id': '22'},
+                                                                                                {'event_id': '33'}]}],
                                                        MIRRORED_OFFENSES_CTX_KEY: [
                                                            {'id': '100', 'last_persisted_time': 2},
                                                            {'id': '200', 'last_persisted_time': 3}],
-                                                      RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: ['11']},
+                                                       RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: ['11']},
                                                       {'samples': [], 'last_mirror_update': '3',
                                                        LAST_FETCH_KEY: 0,
                                                        UPDATED_MIRRORED_OFFENSES_CTX_KEY: [],
@@ -1556,18 +1561,18 @@ def test_extract_decode_encode(context_data):
     ({'samples': [{'id': '1', 'last_persisted_time': 2,
                    'events': [{'event_id': '2'}, {'event_id': '3'}]}],
       'last_mirror_update': '10',
-     LAST_FETCH_KEY: 5,
-     UPDATED_MIRRORED_OFFENSES_CTX_KEY: [{'id': '1',
-                                          'last_persisted_time': 2,
-                                          'events': [{'event_id': '2'},
-                                                     {'event_id': '3'}]},
-                                         {'id': '11',
-                                          'last_persisted_time': 3,
-                                          'events': [{'event_id': '22'},
-                                                     {'event_id': '33'}]}],
-     MIRRORED_OFFENSES_CTX_KEY: [],
-     RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: ['1', '11'],
-     'retry_compatible': False},
+      LAST_FETCH_KEY: 5,
+      UPDATED_MIRRORED_OFFENSES_CTX_KEY: [{'id': '1',
+                                           'last_persisted_time': 2,
+                                           'events': [{'event_id': '2'},
+                                                      {'event_id': '3'}]},
+                                          {'id': '11',
+                                           'last_persisted_time': 3,
+                                           'events': [{'event_id': '22'},
+                                                      {'event_id': '33'}]}],
+      MIRRORED_OFFENSES_CTX_KEY: [],
+      RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: ['1', '11'],
+      'retry_compatible': False},
      False),
     # Happy flow: configuration matches retry_compatible
     ({'samples': '["{\\"id\\": \\"1\\", '
@@ -1622,18 +1627,18 @@ def test_extract_decode_encode(context_data):
     ({'samples': [{'id': '1', 'last_persisted_time': 2,
                    'events': [{'event_id': '2'}, {'event_id': '3'}]}],
       'last_mirror_update': '10',
-     LAST_FETCH_KEY: 5,
-     UPDATED_MIRRORED_OFFENSES_CTX_KEY: [{'id': '1',
-                                          'last_persisted_time': 2,
-                                          'events': [{'event_id': '2'},
-                                                     {'event_id': '3'}]},
-                                         {'id': '11',
-                                          'last_persisted_time': 3,
-                                          'events': [{'event_id': '22'},
-                                                     {'event_id': '33'}]}],
-     MIRRORED_OFFENSES_CTX_KEY: [],
-     RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: ['1', '11'],
-     'retry_compatible': False},
+      LAST_FETCH_KEY: 5,
+      UPDATED_MIRRORED_OFFENSES_CTX_KEY: [{'id': '1',
+                                           'last_persisted_time': 2,
+                                           'events': [{'event_id': '2'},
+                                                      {'event_id': '3'}]},
+                                          {'id': '11',
+                                           'last_persisted_time': 3,
+                                           'events': [{'event_id': '22'},
+                                                      {'event_id': '33'}]}],
+      MIRRORED_OFFENSES_CTX_KEY: [],
+      RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: ['1', '11'],
+      'retry_compatible': False},
      False),
     ({'samples': [{'id': '1', 'last_persisted_time': 2,
                    'events': [{'event_id': '2'}, {'event_id': '3'}]}],
@@ -1716,16 +1721,16 @@ def test_change_ctx_to_be_compatible(mocker, context_data, retry_compatible):
         Ensure the context_data is transformed to the new format if needed.
     """
     mocker.patch.object(QRadar_v3, 'get_integration_context', return_value=context_data)
-    mocker.patch.object(QRadar_v3, 'set_to_integration_context_with_retries')
+    mocker.patch.object(QRadar_v3, 'set_integration_context')
 
     change_ctx_to_be_compatible_with_retry()
 
     extracted_ctx = {'last_mirror_update': '10', LAST_FETCH_KEY: 5}
 
     if not retry_compatible:
-        QRadar_v3.set_to_integration_context_with_retries.assert_called_once_with(clear_integration_ctx(extracted_ctx))
+        QRadar_v3.set_integration_context.assert_called_once_with(clear_integration_ctx(extracted_ctx))
     else:
-        assert not QRadar_v3.set_to_integration_context_with_retries.called
+        assert not QRadar_v3.set_integration_context.called
 
 
 @pytest.mark.parametrize('context_data', [
@@ -1788,6 +1793,153 @@ def test_cleared_ctx_is_compatible_with_retries():
     cleared_ctx = clear_integration_ctx({'id': 5, 'last_mirror_update': '1000'})
     QRadar_v3.set_to_integration_context_with_retries(cleared_ctx)
     QRadar_v3.set_to_integration_context_with_retries({'id': 7})
+
+
+@pytest.mark.parametrize('test_case_data',
+                         [(ctx_test_data['ctx_compatible']['empty_ctx_no_mirroring_two_loops_offenses']),
+                          (ctx_test_data['ctx_compatible']['empty_ctx_mirror_offense_two_loops_offenses']),
+                          (ctx_test_data['ctx_compatible']['empty_ctx_mirror_offense_and_events_two_loops_offenses']),
+                          (ctx_test_data['ctx_compatible']['no_mirroring_two_offenses_loop']),
+                          (ctx_test_data['ctx_compatible']['mirror_offense_two_offenses_loop']),
+                          (ctx_test_data['ctx_compatible']['mirror_offense_and_events_two_offenses_loop']),
+                          (ctx_test_data['ctx_compatible']['empty_ctx_no_mirroring_first_loop_offenses']),
+                          (ctx_test_data['ctx_compatible']['empty_ctx_mirror_offense_first_loop_offenses']),
+                          (ctx_test_data['ctx_compatible']['empty_ctx_mirror_offense_and_events_first_loop_offenses']),
+                          (ctx_test_data['ctx_compatible']['no_mirroring_first_offenses_loop']),
+                          (ctx_test_data['ctx_compatible']['mirror_offense_first_offenses_loop']),
+                          (ctx_test_data['ctx_compatible']['mirror_offense_and_events_first_offenses_loop']),
+                          (ctx_test_data['ctx_compatible']['empty_ctx_no_mirroring_second_loop_offenses']),
+                          (ctx_test_data['ctx_compatible']['empty_ctx_mirror_offenses_second_loop_offenses']),
+                          (
+                          ctx_test_data['ctx_compatible']['empty_ctx_mirror_offenses_and_events_second_loop_offenses']),
+                          (ctx_test_data['ctx_compatible']['no_mirroring_second_loop_offenses']),
+                          (ctx_test_data['ctx_compatible']['mirror_offenses_second_loop_offenses']),
+                          (ctx_test_data['ctx_compatible']['mirror_offenses_and_events_second_loop_offenses']),
+                          (ctx_test_data['ctx_compatible']['empty_ctx_no_mirroring_no_loop_offenses']),
+                          (ctx_test_data['ctx_compatible']['empty_ctx_mirror_offenses_no_loop_offenses']),
+                          (ctx_test_data['ctx_compatible']['empty_ctx_mirror_offenses_and_events_no_loop_offenses']),
+                          (ctx_test_data['ctx_compatible']['no_mirroring_no_loop_offenses']),
+                          (ctx_test_data['ctx_compatible']['mirror_offense_no_loop_offenses']),
+                          (ctx_test_data['ctx_compatible']['mirror_offense_and_events_no_loop_offenses']),
+
+                          (ctx_test_data['ctx_not_compatible']['no_mirroring_two_loops_offenses']),
+                          (ctx_test_data['ctx_not_compatible']['mirror_offense_two_loops_offenses']),
+                          (ctx_test_data['ctx_not_compatible']['mirror_offense_and_events_two_loops_offenses']),
+                          (ctx_test_data['ctx_not_compatible']['no_mirroring_first_loop_offenses']),
+                          (ctx_test_data['ctx_not_compatible']['mirror_offense_first_loop_offenses']),
+                          (ctx_test_data['ctx_not_compatible']['mirror_offense_and_events_first_loop_offenses']),
+                          (ctx_test_data['ctx_not_compatible']['no_mirroring_second_loop_offenses']),
+                          (ctx_test_data['ctx_not_compatible']['mirror_offense_second_loop_offenses']),
+                          (ctx_test_data['ctx_not_compatible']['mirror_offense_and_events_second_loop_offenses']),
+                          (ctx_test_data['ctx_not_compatible']['no_mirroring_no_loop_offenses']),
+                          (ctx_test_data['ctx_not_compatible']['mirror_offense_no_loop_offenses']),
+                          (ctx_test_data['ctx_not_compatible']['mirror_offense_and_events_no_loop_offenses'])
+                          ])
+def test_integration_context_during_run(test_case_data, mocker):
+    """
+    Given:
+    - Cortex XSOAR parameters.
+
+    When:
+    - Performing `long-running-execution` command
+
+    Then:
+    - Assure the whole flow of managing the context is as expected.
+    1) Call to change_ctx_to_be_compatible_with_retry is performed.
+    2) Resetting the mirroring events variables.
+    3) Performing long-running loop.
+    4) Assuring context is as expected after first loop.
+    5) Performing another long-running loop.
+    6) Assure context is as expected after the second loop.
+
+    Cases:
+    a) Integration ctx is empty (first instance run), no mirroring.
+    b) Integration ctx is empty (first instance run), mirroring of offense only.
+    c) Integration ctx is empty (first instance run), mirroring offense with events.
+    a, b, c are only relevant for cases where the integration context is compatible with retries, as empty integration
+    context is always compatible with retries.
+    d) Integration context is not empty, no mirroring.
+    e) Integration context is not empty, mirroring of offense only.
+    f) Integration context is not empty, mirroring offense with events.
+
+    All those cases will be tested where:
+    A) With init integration context not compatible with retry.
+    B) With init integration context compatible with retry.
+    And for one of A, B, checks the following:
+        1) In both loop runs, offenses were fetched.
+        2) Only in first loop run offenses were fetched.
+        3) Only in second loop run offenses were fetched.
+        4) In both loop runs no offenses were fetched.
+    """
+    mirror_options = test_case_data['mirror_options']
+    mirror_direction = test_case_data['mirror_direction']
+
+    init_context = test_case_data['init_context']
+    set_integration_context(init_context)
+    if test_case_data['offenses_first_loop']:
+        first_loop_offenses = ctx_test_data['offenses_first_loop']
+        first_loop_offenses_with_events = [dict(offense, events=ctx_test_data['events']) for offense in
+                                           first_loop_offenses]
+        mocker.patch.object(client, 'offenses_list', return_value=first_loop_offenses)
+        mocker.patch.object(QRadar_v3, 'enrich_offenses_result', return_value=first_loop_offenses)
+        enrich_mock = mocker.patch.object(QRadar_v3, 'enrich_offense_with_events')
+        enrich_mock.side_effect = first_loop_offenses_with_events
+        expected_ctx_first_loop = ctx_test_data['context_data_first_loop_default'].copy()
+    else:
+        mocker.patch.object(client, 'offenses_list', return_value=[])
+        expected_ctx_first_loop = ctx_test_data['context_data_after_retry_compatible'].copy()
+
+    first_loop_ctx_not_default_values = test_case_data.get('first_loop_ctx_not_default_values', {})
+    for k, v in first_loop_ctx_not_default_values.items():
+        expected_ctx_first_loop[k] = v
+
+    change_ctx_to_be_compatible_with_retry()
+    reset_mirroring_events_variables(mirror_options)
+    perform_long_running_loop(
+        client=client,
+        offenses_per_fetch=2,
+        fetch_mode='Fetch With All Events',
+        mirror_options=mirror_options,
+        user_query='id > 5',
+        events_columns='QIDNAME(qid), LOGSOURCENAME(logsourceid)',
+        events_limit=3,
+        ip_enrich=False,
+        asset_enrich=False,
+        incident_type=None,
+        mirror_direction=mirror_direction
+    )
+    assert get_integration_context() == expected_ctx_first_loop
+
+    if test_case_data['offenses_second_loop']:
+        second_loop_offenses = ctx_test_data['offenses_second_loop']
+        second_loop_offenses_with_events = [dict(offense, events=ctx_test_data['events']) for offense in
+                                            second_loop_offenses]
+        mocker.patch.object(client, 'offenses_list', return_value=second_loop_offenses)
+        mocker.patch.object(QRadar_v3, 'enrich_offenses_result', return_value=second_loop_offenses)
+        enrich_mock = mocker.patch.object(QRadar_v3, 'enrich_offense_with_events')
+        enrich_mock.side_effect = second_loop_offenses_with_events
+        expected_ctx_second_loop = ctx_test_data['context_data_second_loop_default'].copy()
+    else:
+        mocker.patch.object(client, 'offenses_list', return_value=[])
+        expected_ctx_second_loop = expected_ctx_first_loop
+    perform_long_running_loop(
+        client=client,
+        offenses_per_fetch=2,
+        fetch_mode='Fetch With All Events',
+        mirror_options=mirror_options,
+        user_query='id > 15',
+        events_columns='QIDNAME(qid), LOGSOURCENAME(logsourceid)',
+        events_limit=3,
+        ip_enrich=False,
+        asset_enrich=False,
+        incident_type=None,
+        mirror_direction=mirror_direction
+    )
+    second_loop_ctx_not_default_values = test_case_data.get('second_loop_ctx_not_default_values', {})
+    for k, v in second_loop_ctx_not_default_values.items():
+        expected_ctx_second_loop[k] = v
+    assert get_integration_context() == expected_ctx_second_loop
+    set_integration_context({})
 
 
 def test_update_missing_offenses_from_raw_offenses():

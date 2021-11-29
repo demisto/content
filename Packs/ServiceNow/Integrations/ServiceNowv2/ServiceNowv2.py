@@ -204,8 +204,11 @@ def create_ticket_context(data: dict, additional_fields: list = None) -> Any:
     }
     if additional_fields:
         for additional_field in additional_fields:
-            if additional_field in data.keys() and camelize_string(additional_field) not in context.keys():
-                context[additional_field] = data.get(additional_field)
+            if camelize_string(additional_field) not in context.keys():
+                # in case of a nested additional field (in the form of field1.field2)
+                nested_additional_field_list = additional_field.split('.')
+                if value := dict_safe_get(data, nested_additional_field_list):
+                    context[additional_field] = value
 
     # These fields refer to records in the database, the value is their system ID.
     closed_by = data.get('closed_by')
@@ -331,7 +334,9 @@ def get_ticket_human_readable(tickets, ticket_type: str, additional_fields: list
 
         if additional_fields:
             for additional_field in additional_fields:
-                hr[additional_field] = ticket.get(additional_field)
+                # in case of a nested additional field (in the form of field1.field2)
+                nested_additional_field_list = additional_field.split('.')
+                hr[additional_field] = dict_safe_get(ticket, nested_additional_field_list)
         result.append(hr)
 
     return result
