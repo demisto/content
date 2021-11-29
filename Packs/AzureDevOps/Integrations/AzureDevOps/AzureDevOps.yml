@@ -1001,17 +1001,14 @@ script:
     execution: false
     name: azure-devops-branch-list
     outputs:
-    - contextPath: AzureDevOps.Project.name
+    - contextPath: AzureDevOps.Branch.project
       description: The name of the project.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.name
+    - contextPath: AzureDevOps.Branch.repository
       description: The name of the repository.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.Branch.name
-      description: The name of the branch
-      type: String
-    - contextPath: AzureDevOps.Project.Repository.Branch.creator
-      description: Thr creator of the branch.
+    - contextPath: AzureDevOps.Branch.name
+      description: The name of the branch.
       type: String
   dockerimage: demisto/crypto:1.0.0.24380
   isremotesyncin: true

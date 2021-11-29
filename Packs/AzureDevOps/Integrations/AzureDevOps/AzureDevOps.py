@@ -142,8 +142,8 @@ class Client:
         """
         params = {'api-version': '6.1-preview.1'}
         data = {
-            "sourceRefName": f'refs/heads/{source_branch}',
-            "targetRefName": f'refs/heads/{target_branch}',
+            "sourceRefName": source_branch,
+            "targetRefName": target_branch,
             "description": description,
             "reviewers": reviewers,
             "title": title
@@ -784,6 +784,9 @@ def pull_request_create_command(client: Client, args: Dict[str, Any]) -> Command
 
     reviewers = [{"id": reviewer} for reviewer in reviewers_ids]
 
+    source_branch = source_branch if source_branch.startswith('refs/') else f'refs/heads/{source_branch}'
+    target_branch = target_branch if target_branch.startswith('refs/') else f'refs/heads/{target_branch}'
+
     response = client.pull_request_create_request(
         project, repository_id, source_branch, target_branch, title, description, reviewers)
 
@@ -1277,7 +1280,6 @@ def branch_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     if page < 1 or limit < 1:
         raise Exception('Page and limit arguments must be greater than 1.')
 
-    outputs = {"name": project, "Repository": {"name": repository, "Branch": []}}
     continuation_token = None
     if page > 1:
         continuation_token = get_pagination_continuation_token(limit=limit, page=page,
@@ -1287,30 +1289,29 @@ def branch_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         if not continuation_token:
             return CommandResults(
                 readable_output=readable_message,
-                outputs_prefix='AzureDevOps.Project',
+                outputs_prefix='AzureDevOps.Branch',
                 outputs_key_field='name',
-                outputs=outputs,
+                outputs=[],
                 raw_response=[]
             )
 
     response = client.branch_list_request(project, repository, limit, continuation_token).json()
+    outputs = copy.deepcopy(response.get("value", []))
 
-    for branch in response.get("value"):
-        branch_data = {"name": branch.get("name").replace("refs/heads/", ""),
-                       "creator": dict_safe_get(branch, ['creator', 'displayName'])}
-
-        outputs["Repository"]["Branch"].append(branch_data)
+    for branch in outputs:
+        branch['project'] = project
+        branch['repository'] = repository
 
     readable_output = tableToMarkdown(
         readable_message,
-        dict_safe_get(outputs, ["Repository", "Branch"]),
-        headers=['name', 'creator'],
+        outputs,
+        headers=['name'],
         headerTransform=string_to_table_header
     )
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='AzureDevOps.Project',
+        outputs_prefix='AzureDevOps.Branch',
         outputs_key_field='name',
         outputs=outputs,
         raw_response=response

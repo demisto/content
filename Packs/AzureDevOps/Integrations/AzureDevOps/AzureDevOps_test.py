@@ -106,10 +106,10 @@ def test_azure_devops_user_add_command(requests_mock):
                                        'group_type': group_type,
                                        'project_id': project_id})
 
-    assert len(result.outputs) == 3
+    assert len(result.outputs) == 8
     assert result.outputs_prefix == 'AzureDevOps.User'
     assert result.outputs.get('id') == 'XXX'
-    assert result.outputs.get('accountLicenseType') == 'express'
+    assert dict_safe_get(result.outputs, ['accessLevel', 'accountLicenseType']) == 'express'
     assert result.outputs.get('lastAccessedDate') == '0001-01-01T00:00:00Z'
 
 
@@ -317,7 +317,7 @@ def test_azure_devops_pull_request_list_command(requests_mock):
 
     assert len(result.outputs) == 2
     assert result.outputs_prefix == 'AzureDevOps.PullRequest'
-    assert result.outputs[0].get('repository').get('name') == 'xsoar'
+    assert dict_safe_get(result.outputs[0], ['repository', 'name']) == 'xsoar'
 
     with pytest.raises(Exception):
         pull_requests_list_command(client, {'project': project,
@@ -396,9 +396,8 @@ def test_azure_devops_repository_list_command(requests_mock):
     result = repository_list_command(client, {"project": project})
 
     assert len(result.outputs) == 2
-    assert result.outputs_prefix == 'AzureDevOps.Project'
-    assert result.outputs.get('name') == 'xsoar'
-    assert result.outputs.get('Repository')[0].get('name') == 'xsoar'
+    assert result.outputs_prefix == 'AzureDevOps.Repository'
+    assert result.outputs[0].get('name') == 'xsoar'
     with pytest.raises(Exception):
         repository_list_command(client, {"project": project, 'limit': '-1'})
 
@@ -436,7 +435,7 @@ def test_azure_devops_users_query_command(requests_mock):
 
     assert len(result.outputs) == 1
     assert result.outputs_prefix == 'AzureDevOps.User'
-    assert result.outputs[0].get('email') == 'xsoar@xsoar.com'
+    assert result.outputs[0].get('signInAddress') == 'xsoar@xsoar.com'
     with pytest.raises(Exception):
         users_query_command(client, {"query": query, 'limit': '-1'})
 
@@ -561,7 +560,7 @@ def test_azure_devops_pipeline_list_command(requests_mock):
     assert result.outputs_prefix == 'AzureDevOps.Project'
     assert result.outputs.get('Pipeline')[0].get('name') == 'xsoar (1)'
     with pytest.raises(Exception):
-        pipeline_run_list_command(client, {"project": project,
+        pipeline_list_command(client, {"project": project,
                                            'limit': '-1'})
 
 
@@ -599,9 +598,9 @@ def test_azure_devops_branch_list_command(requests_mock):
     result = branch_list_command(client, {"project": project, "repository": repository})
 
     assert len(result.outputs) == 2
-    assert result.outputs_prefix == 'AzureDevOps.Project'
-    assert result.outputs.get('Repository').get('name') == repository
-    assert result.outputs.get('Repository').get('Branch')[0].get('name') == 'main'
+    assert result.outputs_prefix == 'AzureDevOps.Branch'
+    assert result.outputs[0].get('repository') == repository
+    assert result.outputs[0].get('name') == 'refs/heads/main'
     with pytest.raises(Exception):
         branch_list_command(client, {"project": project,
                                      "repository": repository,
