@@ -17,7 +17,7 @@ args:
   description: URL to resolve
 - auto: PREDEFINED
   defaultValue: "true"
-  description: Whether to use the Unshorten.me API or use the request python package.
+  description: Whether to use the Unshorten.me API or use the requests python package.
   name: use_unshorten_me
   predefined:
   - "true"
