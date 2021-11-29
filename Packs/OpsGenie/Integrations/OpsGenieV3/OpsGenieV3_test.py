@@ -125,6 +125,14 @@ def test_get_escalations(mocker):
     assert len(res.outputs) == 2
 
 
+def test_get_escalation(mocker):
+    mock_client = OpsGenieV3.Client(base_url="")
+    mocker.patch.object(mock_client, 'get_escalation',
+                        return_value=util_load_json('test_data/get_escalations.json'))
+    res = OpsGenieV3.get_escalations(mock_client, {"escalation_id": 123})
+    assert len(res.outputs) == 2
+
+
 def test_escalate_alert_without_args():
     mock_client = OpsGenieV3.Client(base_url="")
     with pytest.raises(DemistoException):
@@ -246,6 +254,13 @@ def test_get_incidents(mocker):
                         return_value=util_load_json('test_data/get_incidents.json'))
     res = OpsGenieV3.get_incidents(mock_client, {"limit": 1})
     assert (len(res.outputs) == 1)
+
+
+def test_responders_to_json():
+    mock_client = OpsGenieV3.Client(base_url="")
+    res = mock_client.responders_to_json(responders=["team", "id", 1, "schedule", "name", "a"],
+                                         responder_key='responders')
+    assert (res == {'responders': [{'id': 1, 'type': 'team'}, {'name': 'a', 'type': 'schedule'}]})
 
 
 def test_get_incidents_going_to_right_function():

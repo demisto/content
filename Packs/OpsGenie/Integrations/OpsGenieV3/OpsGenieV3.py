@@ -338,7 +338,10 @@ def run_polling_paging_command(args: dict, cmd: str, results_function: Callable,
             return CommandResults(
                 outputs_prefix=args.get("output_prefix", "OpsGenie"),
                 outputs=results.get("data"),
-                readable_output=tableToMarkdown("OpsGenie", results.get('data')),
+                readable_output=tableToMarkdown("OpsGenie", results.get('data'),
+                                                headers=['id', 'createdAt', 'acknowledged', 'count', 'status', 'tags'],
+                                                removeNull=True
+                                                ),
                 raw_response=results
             )
         else:
@@ -371,7 +374,10 @@ def run_polling_paging_command(args: dict, cmd: str, results_function: Callable,
         return CommandResults(
             outputs_prefix=args.get("output_prefix", "OpsGenie"),
             outputs=results.get("data"),
-            readable_output=tableToMarkdown("OpsGenie", results.get('data')),
+            readable_output=tableToMarkdown("OpsGenie", results.get('data'),
+                                            headers=['id', 'createdAt', 'acknowledged', 'count', 'status', 'tags'],
+                                            removeNull=True
+                                            ),
             raw_response=results
         )
 
@@ -399,7 +405,10 @@ def run_polling_paging_command(args: dict, cmd: str, results_function: Callable,
         return command_results
     return CommandResults(outputs_prefix=args.get("output_prefix", "OpsGenie"),
                           outputs=results.get("data"),
-                          readable_output=tableToMarkdown("OpsGenie", results.get('data')),
+                          readable_output=tableToMarkdown("OpsGenie", results.get('data'),
+                                                          headers=['id', 'createdAt', 'acknowledged', 'count', 'status', 'tags'],
+                                                          removeNull=True
+                                                          ),
                           raw_response=results
                           )
 
@@ -442,7 +451,11 @@ def get_alerts(client: Client, args: Dict[str, Any]) -> CommandResults:
     return CommandResults(
         outputs_prefix="OpsGenie.Alert",
         outputs=result.get("data"),
-        readable_output=tableToMarkdown("OpsGenie Alert", result.get("data")),
+        readable_output=tableToMarkdown("OpsGenie Alert",
+                                        result.get("data"),
+                                        headers=['id', 'createdAt', 'acknowledged', 'count', 'status', 'tags'],
+                                        removeNull=True
+                                        ),
         raw_response=result
     )
 
@@ -754,7 +767,11 @@ def get_incidents(client: Client, args: Dict[str, Any]) -> CommandResults:
     return CommandResults(
         outputs_prefix="OpsGenie.Incident",
         outputs=result.get("data"),
-        readable_output=tableToMarkdown("OpsGenie Incident", result.get("data")),
+        readable_output=tableToMarkdown("OpsGenie Incident",
+                                        result.get("data"),
+                                        headers=['id', 'createdAt', 'acknowledged', 'count', 'status', 'tags'],
+                                        removeNull=True
+                                        ),
         raw_response=result
     )
 
