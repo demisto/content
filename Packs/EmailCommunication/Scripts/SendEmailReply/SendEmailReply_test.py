@@ -35,7 +35,7 @@ GET_EMAIL_RECIPIENTS = [
      "test123@gmail.com",
      "avishai@demistodev.onmicrosoft.com",
      "test@test.com",
-     {"test123@gmail.com"}),
+     {"test123@gmail.com", "avishai@demistodev.onmicrosoft.com"}),
     ('["avishai@demistodev.onmicrosoft.com", "test test <\'test@test.com\'>"]',
      "test123@gmail.com",
      "",
