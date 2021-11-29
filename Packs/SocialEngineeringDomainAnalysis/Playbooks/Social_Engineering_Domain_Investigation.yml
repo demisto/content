@@ -1,6 +1,7 @@
 description: Enrich and Investigate domains which may present a social engineering
   threat to your organization. Review before blocking potentially dangerous indicators.
-id: 972e4d3b-90a8-46cb-81f6-b931f2354f4c
+id: Social Engineering Domain Investigation
+fromversion: 6.2.0
 inputs:
 - description: The CSV list of domains to test or array of domains
   key: SocialEngineeringDomainList
@@ -40,6 +41,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: "start"
       id: 01d27bb1-4250-4be7-812d-d9f636a54466
       iscommand: false
       name: ""
@@ -56,7 +58,7 @@ tasks:
       }
   "1":
     fieldMapping:
-    - incidentfield: Social Engineering Domain List
+    - incidentfield: Social Engineering Domain Analysis List
       output:
         complex:
           accessor: Domain
@@ -150,6 +152,7 @@ tasks:
       brand: ""
       id: 1d38718f-b3d4-4078-81df-12aec8179860
       iscommand: false
+      description: "Data collection for analyst to specify bad domains"
       name: Select Bad Domains
       type: collection
       version: -1
@@ -189,6 +192,7 @@ tasks:
       brand: ""
       id: e99e059a-76c3-4a13-8186-a32490a93e21
       iscommand: false
+      description: "Condition to check for bad domains to block"
       name: Are there domains to block?
       type: condition
       version: -1
@@ -251,6 +255,7 @@ tasks:
       brand: ""
       id: a154e1b3-5449-4398-8800-41e8ff0d71e7
       iscommand: false
+      description: "End of playbook"
       name: Fin
       type: title
       version: -1
@@ -297,6 +302,7 @@ tasks:
       iscommand: false
       name: Social Engineering Domain Enrichment
       playbookId: ade50b01-8eb1-4e92-8f13-4433c19ca889
+      description: "Enrichment of the specified domain for potential social engineering"
       type: playbook
       version: -1
     taskid: 24900c3c-84e0-4cdf-8caf-222d5d9ed79e
@@ -336,6 +342,7 @@ tasks:
       id: b7629d99-4c43-4093-890e-aa4c0f0bd15e
       iscommand: false
       name: Is there a File with domains attached?
+      description: "Check for file of domains"
       type: condition
       version: -1
     taskid: b7629d99-4c43-4093-890e-aa4c0f0bd15e
@@ -350,7 +357,7 @@ tasks:
       }
   "9":
     fieldMapping:
-    - incidentfield: Social Engineering Domain Summary
+    - incidentfield: Social Engineering Domain Analysis Summary
       output:
         simple: ${HTMLTable}
     id: "9"

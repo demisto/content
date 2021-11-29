@@ -1,6 +1,7 @@
 description: Enrich a domain and compare against your registered domain for potential
   social engineering against your organization.
-id: ade50b01-8eb1-4e92-8f13-4433c19ca889
+id: Social Engineering Domain Enrichment
+fromversion: 6.2.0
 inputs:
 - description: Your company domain to use for checking if potential InputDomains are
     potentially used for typosquatting and other similar domain attacks.
@@ -56,6 +57,7 @@ tasks:
       brand: ""
       id: 7cd6d378-9b93-4e5a-812e-66a21045135a
       iscommand: false
+      description: ""
       name: ""
       version: -1
     taskid: 7cd6d378-9b93-4e5a-812e-66a21045135a
@@ -64,7 +66,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 275,
           "y": 50
         }
       }
@@ -102,7 +104,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 60,
           "y": 370
         }
       }
@@ -138,7 +140,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 490,
           "y": 370
         }
       }
@@ -173,7 +175,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 275,
           "y": 545
         }
       }
@@ -214,7 +216,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 275,
           "y": 720
         }
       }
@@ -264,8 +266,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 1770
+          "x": 162.5,
+          "y": 1595
         }
       }
   "6":
@@ -283,7 +285,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#default#':
-      - "8"
+      - "15"
       "yes":
       - "7"
     note: false
@@ -295,6 +297,7 @@ tasks:
       id: 484e4742-4ff8-49aa-8b96-2b166f155d84
       iscommand: false
       name: Bad Nameservers?
+      description: "Check if any domains are on bad nameserver list"
       type: condition
       version: -1
     taskid: 484e4742-4ff8-49aa-8b96-2b166f155d84
@@ -303,8 +306,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 1945
+          "x": 162.5,
+          "y": 1770
         }
       }
   "7":
@@ -314,7 +317,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - "14"
+      - "16"
     note: false
     quietmode: 0
     scriptarguments:
@@ -339,8 +342,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 490,
-          "y": 2120
+          "x": 50,
+          "y": 1945
         }
       }
   "8":
@@ -356,6 +359,7 @@ tasks:
       brand: ""
       id: f6694a92-1cd2-4030-89fd-573a6627a822
       iscommand: false
+      description: "Playbook end"
       name: Fin
       type: title
       version: -1
@@ -365,8 +369,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 2470
+          "x": 275,
+          "y": 2645
         }
       }
   "9":
@@ -384,7 +388,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#default#':
-      - "8"
+      - "15"
       "yes":
       - "5"
     note: false
@@ -396,6 +400,7 @@ tasks:
       id: 7b3c64de-f51b-4579-8b7e-5edacad622dc
       iscommand: false
       name: Does "BadNameservers" List exist?
+      description: "Check for existence of BadNameservers list"
       type: condition
       version: -1
     taskid: 7b3c64de-f51b-4579-8b7e-5edacad622dc
@@ -404,8 +409,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1595
+          "x": 275,
+          "y": 1420
         }
       }
   "10":
@@ -415,7 +420,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - "15"
+      - "9"
     note: false
     quietmode: 0
     scriptarguments:
@@ -440,8 +445,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 500,
-          "y": 1245
+          "x": 490,
+          "y": 1235
         }
       }
   "11":
@@ -477,7 +482,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 275,
           "y": 195
         }
       }
@@ -523,6 +528,7 @@ tasks:
       brand: ""
       id: 4613b003-c3d0-4186-8fd4-58a35bd4582f
       iscommand: false
+      description: "Check if strings are close"
       name: Are strings close?
       type: condition
       version: -1
@@ -532,7 +538,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 275,
           "y": 895
         }
       }
@@ -575,7 +581,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 500,
+          "x": 490,
           "y": 1070
         }
       }
@@ -586,7 +592,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - "8"
+      - "15"
     note: false
     quietmode: 0
     scriptarguments:
@@ -609,7 +615,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 490,
+          "x": 50,
           "y": 2295
         }
       }
@@ -620,7 +626,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - "9"
+      - "8"
     note: false
     quietmode: 0
     scriptarguments:
@@ -643,20 +649,64 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 500,
-          "y": 1420
+          "x": 275,
+          "y": 2470
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      indicator:
+        simple: ${inputs.InputDomain}
+      indicatorType:
+        simple: Domain
+      reliability:
+        simple: B - Usually reliable
+      score:
+        simple: "2"
+      vendor:
+        simple: BadRegistrarList
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Add DBot score to context for indicators with custom vendor, score,
+        reliability, and type.
+      id: eeac81e6-f6db-4aa5-8783-332c9f2164c5
+      iscommand: false
+      name: Add Known Bad Registrar as indicator score
+      script: AddDBotScoreToContext
+      type: regular
+      version: -1
+    taskid: eeac81e6-f6db-4aa5-8783-332c9f2164c5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
         }
       }
 version: -1
 view: |-
   {
     "linkLabelsPosition": {
+      "6_15_#default#": 0.89,
       "9_5_yes": 0.64
     },
     "paper": {
       "dimensions": {
-        "height": 2485,
-        "width": 830,
+        "height": 2660,
+        "width": 820,
         "x": 50,
         "y": 50
       }
