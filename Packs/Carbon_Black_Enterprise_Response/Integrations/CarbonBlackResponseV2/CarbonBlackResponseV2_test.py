@@ -353,3 +353,20 @@ def test_quarantine_device_command_not_have_id(mocker):
     mocker.patch.object(Client, 'get_sensors', return_value=(1, [{"id": "some_id", "some_other_stuff": "some"}]))
     sensor_data = _get_sensor_isolation_change_body(client, 5, False)
     assert "id" not in sensor_data
+
+
+def test_get_sensor_isolation_change_body_compatible(mocker):
+    """
+        Given:
+            A sensor id
+        When:
+           Running _get_sensor_isolation_change_body in a quarantine_device_command and unquarantine_device_command
+        Then:
+            Assert the the request body is in the compatible format for version 7.5 and 6.2.
+    """
+    from CarbonBlackResponseV2 import _get_sensor_isolation_change_body, Client
+    client = Client(base_url="url", apitoken="api_key", use_ssl=True, use_proxy=False)
+    mocker.patch.object(Client, 'get_sensors', return_value=(1, [{"id": "some_id", "group_id": "some_group_id",
+                                                                  "some_other_stuff": "some"}]))
+    sensor_data = _get_sensor_isolation_change_body(client, 5, False)
+    assert sensor_data == {'group_id': 'some_group_id', 'network_isolation_enabled': False}
