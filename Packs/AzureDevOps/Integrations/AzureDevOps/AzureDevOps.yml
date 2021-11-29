@@ -237,12 +237,6 @@ script:
     - contextPath: AzureDevOps.User.id
       description: The ID of the user.
       type: String
-    - contextPath: AzureDevOps.User.accountLicenseType
-      description: The type of account license.
-      type: String
-    - contextPath: AzureDevOps.User.lastAccessedDate
-      description: Date the user last accessed the collection.
-      type: Date
   - arguments:
     - default: false
       description: The ID of the user to remove from the organization. A user ID can be obtained by running the 'azure-devops-user-list' command.
@@ -642,17 +636,17 @@ script:
     - contextPath: AzureDevOps.Project.name
       description: The name of the project.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.id
+    - contextPath: AzureDevOps.Repository.id
       description: The ID of the repository.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.name
+    - contextPath: AzureDevOps.Repository.name
       description: The name of the repository.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.url
-      description: The URL of the repository.
+    - contextPath: AzureDevOps.Repository.webUrl
+      description: The web URL of the repository.
       type: String
-    - contextPath: AzureDevOps.Project.Repository.size
-      description: The size of the repository.
+    - contextPath: AzureDevOps.Repository.size
+      description: The size of the repository (in bytes).
       type: Number
   - arguments:
     - default: false
@@ -687,10 +681,10 @@ script:
     - contextPath: AzureDevOps.User.entityType
       description: The type of the entity.
       type: String
-    - contextPath: AzureDevOps.User.id
+    - contextPath: AzureDevOps.User.localId
       description: The ID of the identity.
       type: String
-    - contextPath: AzureDevOps.User.email
+    - contextPath: AzureDevOps.User.signInAddress
       description: The email address of the user.
       type: String
   - arguments:

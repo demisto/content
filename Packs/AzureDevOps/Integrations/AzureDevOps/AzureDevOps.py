@@ -572,22 +572,22 @@ def user_add_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     if not dict_safe_get(response, ['operationResult', 'isSuccess']):
         error = dict_safe_get(response, ['operationResult', 'errors'])
-        if not isinstance(error, list) or not error:
+        if not isinstance(error, list) or not error or len(error) == 0:
             raise ValueError('Error occurred. API response is not in the appropriate format.')
 
         error_message = error[0].get('value')
         raise ValueError(error_message)
 
-    outputs = {
-        "id": dict_safe_get(response, ['operationResult', 'userId']),
+    user_information = {
+        "id": dict_safe_get(response, ['userEntitlement', 'id']),
         "accountLicenseType": dict_safe_get(response,
-                                            ['operationResult', 'result', 'accessLevel', 'accountLicenseType']),
-        "lastAccessedDate": dict_safe_get(response, ['operationResult', 'result', 'lastAccessedDate']),
+                                            ['userEntitlement', 'accessLevel', 'accountLicenseType']),
+        "lastAccessedDate": dict_safe_get(response, ['userEntitlement', 'lastAccessedDate']),
     }
 
     readable_output = tableToMarkdown(
         "User Information:",
-        outputs,
+        user_information,
         headers=['id', 'accountLicenseType', 'lastAccessedDate'],
         headerTransform=pascalToSpace
     )
@@ -596,7 +596,7 @@ def user_add_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         readable_output=readable_output,
         outputs_prefix='AzureDevOps.User',
         outputs_key_field='id',
-        outputs=outputs,
+        outputs=response.get('userEntitlement'),
         raw_response=response
     )
 
@@ -994,34 +994,28 @@ def repository_list_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
     response = client.repository_list_request(project)
 
-    repository_data = []
-
-    outputs = {}
+    outputs = []
 
     if response.get('count') and response.get('count') >= start:
         min_index = min(response.get('count'), end)
         for repo in response.get('value')[start:min_index]:
-            data = {"id": repo.get('id'), "name": repo.get("name"), "url": repo.get("url"), "size": repo.get("size")}
-            repository_data.append(data)
+            outputs.append(repo)
 
-        outputs = {"name": dict_safe_get(response.get('value')[start], ['project', 'name']),
-                   "Repository": repository_data}
-
-    readable_data = copy.deepcopy(repository_data)
+    readable_data = copy.deepcopy(outputs)
     for repo in readable_data:
         repo["size (Bytes)"] = repo.pop("size")
 
     readable_output = tableToMarkdown(
         readable_message,
         readable_data,
-        headers=['id', 'name', 'size (Bytes)'],
+        headers=['id', 'name', 'webUrl', 'size (Bytes)'],
         headerTransform=pascalToSpace
     )
 
     command_results = CommandResults(
         readable_output=readable_output,
-        outputs_prefix='AzureDevOps.Project',
-        outputs_key_field='name',
+        outputs_prefix='AzureDevOps.Repository',
+        outputs_key_field='id',
         outputs=outputs,
         raw_response=response
     )
@@ -1056,18 +1050,21 @@ def users_query_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     outputs = []
     results = response.get('results')
+    readable_user_information = []
     if results and len(results) > 0:
         identities = results[0].get('identities')
         if len(identities) >= start:
             min_index = min(len(identities), end)
             for identity in identities[start:min_index]:
+                outputs.append(identity)
                 if identity.get("localDirectory") == "vsd":
-                    outputs.append({"entityType": identity.get("entityType"), "id": identity.get("localId"),
-                                    "email": identity.get("signInAddress")})
+                    readable_user_information.append(
+                        {"entityType": identity.get("entityType"), "id": identity.get("localId"),
+                         "email": identity.get("signInAddress")})
 
     readable_output = tableToMarkdown(
         readable_message,
-        outputs,
+        readable_user_information,
         headers=['email', 'entityType', 'id'],
         headerTransform=pascalToSpace
     )
@@ -1075,7 +1072,7 @@ def users_query_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     command_results = CommandResults(
         readable_output=readable_output,
         outputs_prefix='AzureDevOps.User',
-        outputs_key_field='id',
+        outputs_key_field='originId',
         outputs=outputs,
         raw_response=response
     )
