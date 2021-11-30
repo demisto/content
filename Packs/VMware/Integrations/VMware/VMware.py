@@ -112,6 +112,19 @@ def create_rellocation_locator_spec(vm, datastore):
     return disk_locators
 
 
+def apply_get_vms_filters(args, vm_summery):
+    ips = argToList(args.get('ip'))
+    names = argToList(args.get('name'))
+    uuids = argToList(args.get('uuid'))
+
+    ip = not vm_summery.guest.ipAddress or not args.get('ip') or vm_summery.guest.ipAddress in ips
+    hostname = not vm_summery.guest.hostName or not args.get('hostname') or vm_summery.guest.ipAddress == args.get('hostName')
+    name = not args.get('name') or vm_summery.config.name in names
+    uuid = not args.get('uuid') or vm_summery.config.instanceUuid in uuids
+
+    return ip and hostname and name and uuid
+
+
 def get_vms(args):
     data = []
     content = si.RetrieveContent()  # type: ignore
@@ -123,28 +136,28 @@ def get_vms(args):
     
     for child in children:
         summary = child.summary
-
-        mac_address = ''
-        try:
-            for dev in child.config.hardware.device:
-                if isinstance(dev, vim.vm.device.VirtualEthernetCard):  # type: ignore
-                    mac_address = dev.macAddress
-                    break
-        except Exception:  # noqa
-            pass
-
-        data.append({
-            'Name': summary.config.name,
-            'Template': summary.config.template,
-            'Path': summary.config.vmPathName,
-            'Guest': summary.config.guestFullName,
-            'UUID': summary.config.instanceUuid,
-            'IP': summary.guest.ipAddress if summary.guest.ipAddress else ' ',
-            'State': summary.runtime.powerState,
-            'HostName': summary.guest.hostName if summary.guest.hostName else ' ',
-            'MACAddress': mac_address,
-            'Deleted': 'False'
-        })
+        if apply_get_vms_filters(args, summary):
+            mac_address = ''
+            try:
+                for dev in child.config.hardware.device:
+                    if isinstance(dev, vim.vm.device.VirtualEthernetCard):  # type: ignore
+                        mac_address = dev.macAddress
+                        break
+            except Exception:  # noqa
+                pass
+            
+            data.append({
+                'Name': summary.config.name,
+                'Template': summary.config.template,
+                'Path': summary.config.vmPathName,
+                'Guest': summary.config.guestFullName,
+                'UUID': summary.config.instanceUuid,
+                'IP': summary.guest.ipAddress if summary.guest.ipAddress else ' ',
+                'State': summary.runtime.powerState,
+                'HostName': summary.guest.hostName if summary.guest.hostName else ' ',
+                'MACAddress': mac_address,
+                'Deleted': 'False'
+            })
     ec = {
         'VMWare(val.UUID && val.UUID === obj.UUID)': data
     }
@@ -650,7 +663,7 @@ try:
     if demisto.command() == 'test-module':
         result = 'ok'
     if demisto.command() == 'vmware-get-vms':
-        result = get_vms()
+        result = get_vms(demisto.args())
     if demisto.command() == 'vmware-poweron':
         result = power_on(demisto.args()['vm-uuid'])
     if demisto.command() == 'vmware-poweroff':
