@@ -496,6 +496,31 @@ class TestArcherV2:
         assert field_key == 'Value'
         assert field_value == {'ValuesListIds': [471]}
 
+    def test_generate_field_value_no_value_found(self, requests_mock):
+        """
+        Given
+        - generate_field_value on Values List type
+        When
+        - the source is not a list
+        Then
+        - ensure generate_field_value will handle it
+        """
+        cache = demisto.getIntegrationContext()
+        cache['fieldValueList'] = {}
+        demisto.setIntegrationContext(cache)
+
+        requests_mock.get(BASE_URL + 'api/core/system/fielddefinition/16172', json=GET_FIElD_DEFINITION_RES)
+        requests_mock.post(BASE_URL + 'api/core/security/login',
+                           json={'RequestedObject': {'SessionToken': 'session-id'}, 'IsSuccessful': 'yes'})
+        requests_mock.get(BASE_URL + 'api/core/system/valueslistvalue/valueslist/62', json=VALUE_LIST_RES_FOR_SOURCE)
+
+        client = Client(BASE_URL, '', '', '', '')
+        field_key, field_value = generate_field_value(client, "Source",
+                                                      {'FieldId': '16172', 'IsRequired': False, 'Name':
+                                                          'Source', 'RelatedValuesListId': 2092, 'Type': 4}, 'NonExist')
+        assert field_key == 'Value'
+        assert field_value == {'ValuesListIds': [471]}
+
     def test_record_to_incident_europe_time(self):
         """
         Given:
