@@ -48,7 +48,7 @@ class Client(BaseClient):
 
     def list_notifications_files(
             self,
-            limit: Optional[int] = None,
+            limit: Optional[int] = 10,
             filter_: Optional[str] = None
     ) -> dict:
         """Retrieve VT Hunting Livehunt notifications files.
