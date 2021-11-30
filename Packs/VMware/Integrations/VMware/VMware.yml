@@ -518,7 +518,9 @@ script:
           isArray: false
           defaultValue: ""
           predefined:
-            - ""
+            - defaultPriority
+            - highPriority
+            - lowPriority
       outputs: []
     - name: vmware-delete-vm
       description: Destroys this object, deleting its contents and removing it from
@@ -569,6 +571,13 @@ script:
           description: Flag to specify whether or not the virtual machine should be marked
             as a template.
           required: false
+          isArray: false
+          defaultValue: ""
+          predefined:
+            - ""
+        - name: folder
+          description: Folder to register the VM to.
+          required: true
           isArray: false
           defaultValue: ""
           predefined:
