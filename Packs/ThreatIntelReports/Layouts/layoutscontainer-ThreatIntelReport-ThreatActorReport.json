@@ -265,6 +265,17 @@
 								"startCol": 0
 							},
 							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "roles",
+								"height": 22,
+								"id": "a04f91f0-51c1-11ec-8296-e53bcff8ec1e",
+								"index": 2,
+								"listId": "vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-feaf2490-30ce-11ec-b47a-c9c7aa670747",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
 								"args": {},
 								"buttonClass": "primary",
 								"endCol": 1,
@@ -525,6 +536,10 @@
 					},
 					{
 						"fieldId": "generic_ThreatIntelReport_type",
+						"isVisible": true
+					},
+					{
+						"fieldId": "generic_ThreatIntelReport_roles",
 						"isVisible": true
 					},
 					{
