@@ -273,6 +273,7 @@ tasks:
       id: 9a63beaa-ee45-413f-8709-b6ea855a0a1a
       version: -1
       name: Check Microsoft's Headers?
+      description: 'Whether to check for Microsoft headers or not'
       type: condition
       iscommand: false
       brand: ""
