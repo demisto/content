@@ -613,84 +613,6 @@ def user_remove_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     return command_results
 
 
-def generate_pull_request_output(raw_response: Union[dict, list]) -> dict:
-    """
-    Create XSOAR context output for retrieving pull-request information.
-    Args:
-        raw_response (dict/list): API response from Azure.
-
-    Returns:
-        dict: XSOAR command outputs.
-
-    """
-
-    if not isinstance(raw_response, list):
-        raw_response = [raw_response]
-
-    if not raw_response:
-        return []
-
-    project = {"name": dict_safe_get(raw_response[0], ['repository', 'project', 'name'])}
-
-    repository_id = dict_safe_get(raw_response[0], ['repository', 'id'])
-    name = dict_safe_get(raw_response[0], ['repository', 'name'])
-    url = dict_safe_get(raw_response[0], ['repository', 'url'])
-    size = dict_safe_get(raw_response[0], ['repository', 'size'])
-
-    repository_data = {"id": repository_id, "name": name, "url": url, "size": size, "PullRequest": []}
-
-    for response in raw_response:
-        pr_id = response.get('pullRequestId')
-        status = response.get('status')
-
-        creation_date = FormatIso8601(arg_to_datetime(response.get('creationDate')))
-        title = response.get('title')
-        description = response.get('description')
-        source = response.get('sourceRefName')
-        target = response.get('targetRefName')
-        merge_status = response.get('mergeStatus')
-        is_draft = response.get('isDraft')
-
-        pr_data = {"Id": pr_id, "status": status, "creationDate": creation_date, "title": title,
-                   "description": description, "sourceRefName": source, "targetRefName": target,
-                   "mergeStatus": merge_status, "isDraft": is_draft}
-
-        creator_display = dict_safe_get(response, ['createdBy', 'displayName'])
-        creator_id = dict_safe_get(response, ['createdBy', 'id'])
-        creator_unique_name = dict_safe_get(response, ['createdBy', 'uniqueName'])
-
-        created_by = {"displayName": creator_display, "id": creator_id, "uniqueName": creator_unique_name}
-        pr_data["CreatedBy"] = created_by
-
-        source_commit_id = dict_safe_get(response, ['lastMergeSourceCommit', 'commitId'])
-        source_commit_url = dict_safe_get(response, ['lastMergeSourceCommit', 'url'])
-        source_data = {"commitId": source_commit_id, "url": source_commit_url}
-        pr_data["LastMergeSourceCommit"] = source_data
-
-        target_commit_id = dict_safe_get(response, ['lastMergeTargetCommit', 'commitId'])
-        target_commit_url = dict_safe_get(response, ['lastMergeTargetCommit', 'url'])
-        target_data = {"commitId": target_commit_id, "url": target_commit_url}
-        pr_data["LastMergeTargetCommit"] = target_data
-
-        reviewers = []
-
-        for reviewer in response.get("reviewers", []):
-            data = {"reviewerUrl": reviewer.get('reviewerUrl'), "vote": reviewer.get('vote'),
-                    "hasDeclined": reviewer.get('hasDeclined'), "isFlagged": reviewer.get('isFlagged'),
-                    "displayName": reviewer.get('displayName'), "id": reviewer.get('id'),
-                    "uniqueName": reviewer.get('uniqueName')}
-
-            reviewers.append(data)
-
-        pr_data["Reviewers"] = reviewers
-
-        repository_data["PullRequest"].append(pr_data)
-
-    project["Repository"] = repository_data
-
-    return project
-
-
 def filter_pull_request_table(pull_request: dict) -> dict:
     """
     Filter pull-request required information for representing to the user.
@@ -702,8 +624,6 @@ def filter_pull_request_table(pull_request: dict) -> dict:
 
     """
 
-    creation_date = FormatIso8601(arg_to_datetime(pull_request.get('creationDate')))
-
     return {
         "repository_id": dict_safe_get(pull_request, ['repository', 'id']),
         "repository_name": dict_safe_get(pull_request, ['repository', 'name']),
@@ -714,7 +634,7 @@ def filter_pull_request_table(pull_request: dict) -> dict:
         "title": pull_request.get('title'),
         "description": pull_request.get('description'),
         "created_by": dict_safe_get(pull_request, ['createdBy', 'displayName']),
-        "creation_date": creation_date
+        "creation_date": pull_request.get('creationDate')
     }
 
 
@@ -780,7 +700,7 @@ def pull_request_create_command(client: Client, args: Dict[str, Any]) -> Command
     outputs = copy.deepcopy(response)
     outputs['creationDate'] = arg_to_datetime(response.get('creationDate')).isoformat()
 
-    readable_output = generate_pull_request_readable_information(response)
+    readable_output = generate_pull_request_readable_information(outputs)
 
     command_results = CommandResults(
         readable_output=readable_output,
@@ -825,7 +745,7 @@ def pull_request_update_command(client: Client, args: Dict[str, Any]) -> Command
     outputs = copy.deepcopy(response)
     outputs['creationDate'] = arg_to_datetime(response.get('creationDate')).isoformat()
 
-    readable_output = generate_pull_request_readable_information(response)
+    readable_output = generate_pull_request_readable_information(outputs)
 
     command_results = CommandResults(
         readable_output=readable_output,
@@ -858,7 +778,7 @@ def pull_request_get_command(client: Client, args: Dict[str, Any]) -> CommandRes
     outputs = copy.deepcopy(response)
     outputs['creationDate'] = arg_to_datetime(response.get('creationDate')).isoformat()
 
-    readable_output = generate_pull_request_readable_information(response)
+    readable_output = generate_pull_request_readable_information(outputs)
 
     command_results = CommandResults(
         readable_output=readable_output,
@@ -900,7 +820,7 @@ def pull_requests_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     for pr in outputs:
         pr['creationDate'] = arg_to_datetime(pr.get('creationDate')).isoformat()
 
-    readable_output = generate_pull_request_readable_information(response.get('value'), message=readable_message)
+    readable_output = generate_pull_request_readable_information(outputs, message=readable_message)
 
     command_results = CommandResults(
         readable_output=readable_output,

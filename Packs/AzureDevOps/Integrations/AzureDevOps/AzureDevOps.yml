@@ -984,7 +984,6 @@ script:
       description: The name of the branch.
       type: String
   dockerimage: demisto/crypto:1.0.0.24380
-  isremotesyncin: true
   isremotesyncout: true
   ismappable: true
   feed: false

@@ -1,11 +1,16 @@
 id: Azure_DevOps - Pipeline Run
 version: -1
 contentitemexportablefields:
-  contentitemfields: {}
+  contentitemfields:
+    packID: ""
+    itemVersion: 1.2.1
+    fromServerVersion: ""
+    toServerVersion: ""
+vcShouldKeepItemLegacyProdMachine: false
 name: Azure_DevOps - Pipeline Run
 description: This playbook runs a pipeline on Azure DevOps Environment
 starttaskid: "0"
-tasks:
+tasks:demisto-sdk
   "0":
     id: "0"
     taskid: 230a5fa5-ffb2-4d27-857f-647083ec27dc
@@ -33,6 +38,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
     taskid: c8c1d796-08f6-428d-8c85-71634d0db775
@@ -72,12 +79,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: e1643cd7-f017-4bec-8c1c-f3c0349df774
+    taskid: 30368ad5-36da-4472-8a60-527a45685005
     type: regular
     task:
-      id: e1643cd7-f017-4bec-8c1c-f3c0349df774
+      id: 30368ad5-36da-4472-8a60-527a45685005
       version: -1
       name: Azure DevOps Pipeline Run Get
       description: Retrieve pipeline run information.
@@ -97,7 +106,7 @@ tasks:
           root: inputs.Project Name
       run_id:
         complex:
-          root: AzureDevOps.Project.Pipeline.Run
+          root: AzureDevOps.PipelineRun
           accessor: run_id
     separatecontext: false
     view: |-
@@ -112,12 +121,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 91e5d777-31ad-499b-86ac-e54fdfe65036
+    taskid: c2ca1354-c0f9-43be-8316-a97e90103594
     type: playbook
     task:
-      id: 91e5d777-31ad-499b-86ac-e54fdfe65036
+      id: c2ca1354-c0f9-43be-8316-a97e90103594
       version: -1
       name: GenericPolling
       description: |-
@@ -142,7 +153,7 @@ tasks:
         simple: ${inputs.Project Name},${inputs.Pipeline ID}
       Ids:
         complex:
-          root: AzureDevOps.Project.Pipeline.Run
+          root: AzureDevOps.PipelineRun
           accessor: run_id
       Interval:
         complex:
@@ -155,7 +166,7 @@ tasks:
         complex:
           root: inputs.Timeout
       dt:
-        simple: AzureDevOps.Project.Pipeline.Run(val.state!=='completed' ).run_id
+        simple: AzureDevOps.PipelineRun(val.state!=='completed').run_id
     separatecontext: true
     loop:
       iscommand: false
@@ -174,12 +185,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: a6f4c5de-a79e-4fea-8c35-635111ac460b
+    taskid: 28edb4ce-1718-4e2f-80fa-0fbac12fec8d
     type: regular
     task:
-      id: a6f4c5de-a79e-4fea-8c35-635111ac460b
+      id: 28edb4ce-1718-4e2f-80fa-0fbac12fec8d
       version: -1
       name: Azure DevOps pipeline run get
       description: Retrieve pipeline run information.
@@ -199,7 +212,7 @@ tasks:
           root: inputs.Project Name
       run_id:
         complex:
-          root: AzureDevOps.Project.Pipeline.Run
+          root: AzureDevOps.PipelineRun
           accessor: run_id
     separatecontext: false
     view: |-
@@ -214,6 +227,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: 172877e1-d636-4b2a-8b3e-70dddf7ea585
@@ -239,12 +254,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: dd650110-2927-40cf-8380-597c91fdb582
+    taskid: df1cb9bf-f569-40c6-8bda-fc4ec11ebe26
     type: condition
     task:
-      id: dd650110-2927-40cf-8380-597c91fdb582
+      id: df1cb9bf-f569-40c6-8bda-fc4ec11ebe26
       version: -1
       name: Is search completed?
       description: Checks whether the search is completed
@@ -264,7 +281,7 @@ tasks:
           left:
             value:
               complex:
-                root: AzureDevOps.Project.Pipeline.Run
+                root: AzureDevOps.PipelineRun
                 accessor: state
             iscontext: true
           right:
@@ -274,7 +291,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 170,
+          "x": 162.5,
           "y": 550
         }
       }
@@ -283,13 +300,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 1085,
-        "width": 500,
+        "width": 492.5,
         "x": 50,
         "y": 50
       }
@@ -297,26 +316,29 @@ view: |-
   }
 inputs:
 - key: Project Name
-  value: {}
+  value:
+    simple: xsoar
   required: true
   description: The name of the pipeline project.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Pipeline ID
-  value: {}
+  value:
+    simple: "1"
   required: true
   description: The ID of the pipeline.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Branch Name
-  value: {}
+  value:
+    simple: main
   required: true
   description: The name of the repository branch which runs the pipeline.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: interval
   value:
-    simple: "10"
+    simple: "1"
   required: true
   description: Indicates how long to wait between each poll.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Timeout
   value:
     simple: "60"
@@ -324,7 +346,7 @@ inputs:
   description: The amount of time until the playbook stops waiting for the process
     to finish. After this time has passed, the playbook finishes its run, even if
     it didn't receive confirmation that the remote process completed.
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs:
 - contextPath: AzureDevOps.Project
   description: The result of the search
@@ -334,6 +356,3 @@ outputs:
 - contextPath: AzureDevOps.Project.Pipeline.Run
   description: AzureDevOps Pipeling Run
   type: unknown
-tests:
-- No tests (auto formatted)
-fromversion: 6.0.0

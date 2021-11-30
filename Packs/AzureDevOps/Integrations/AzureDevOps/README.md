@@ -170,7 +170,7 @@ Run a pipeline. A DevOps pipeline is a set of automated processes and tools that
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureDevOps.PipelineRun.[1].project | String | The name of the project. | 
+| AzureDevOps.PipelineRun.project | String | The name of the project. | 
 | AzureDevOps.PipelineRun.pipeline.id | Number | The ID of the pipeline. | 
 | AzureDevOps.PipelineRun.pipeline.name | String | Pipeline repository name | 
 | AzureDevOps.PipelineRun.state | String | The run state. | 
