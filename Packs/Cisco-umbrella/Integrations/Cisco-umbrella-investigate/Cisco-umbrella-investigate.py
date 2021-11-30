@@ -856,7 +856,8 @@ def get_domain_command():
                     + tableToMarkdown('Domain Categorization:', domain_categorization_table, headers),
                 'EntryContext': context
             })
-        except Exception:
+        except Exception as k:
+            print(k)
             failed_domains += 1
     if failed_domains == len(domains_list):
         raise Exception("Command failed to get any of the requested domains")
