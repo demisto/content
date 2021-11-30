@@ -95,7 +95,7 @@ def test_get_remediation_action(requests_mock):
         }
     )
     response = get_remediation_action(client, "3875")
-    assert response is None
+    assert response.outputs['remediation_actions'] == 'ALERT'
 
 
 def test_get_incidents_list(requests_mock):

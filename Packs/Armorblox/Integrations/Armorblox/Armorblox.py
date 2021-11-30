@@ -136,28 +136,15 @@ def get_remediation_action(client, incident_id):
     remediation_actions = None
     if 'remediation_actions' in detail_response.keys():
         remediation_actions = detail_response['remediation_actions'][0]
-        # if ('NEEDS REVIEW' in detail_response['remediation_actions']) or ('ALERT' in detail_response['remediation_actions']):
-        #     remediation_actions = 'NEEDS REVIEW'
-        # else:
-        #     remediation_actions = None
     else:
         remediation_actions = None
-
     contxt = makehash()
     human_readable = makehash()
     human_readable['incident_id'] = incident_id
     human_readable['remediation_actions'] = remediation_actions
     contxt['incident_id'] = incident_id
     contxt['remediation_actions'] = remediation_actions
-    ec = {'Armorblox.Threat(val.incident_id && val.incident_id == obj.incident_id)': contxt}
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['markdown'],
-        'Contents': detail_response,
-        'HumanReadable': tableToMarkdown('Remediation Action is: ', human_readable),
-        'EntryContext': ec,
-
-    })
+    return CommandResults(outputs_prefix='Armorblox.Threat', outputs=contxt)
 
 
 def fetch_incidents_command(client):
@@ -198,7 +185,6 @@ def fetch_incidents_command(client):
             curr_incident = {'rawJSON': json.dumps(incident), 'details': json.dumps(incident)}
             last_time = dt
             incidents.append(curr_incident)
-    demisto.debug(str(len(incidents)))
     # Save the next_run as a dict with the start_time key to be stored
     demisto.setLastRun({'start_time': str(last_time), 'pageToken': pageToken})
     return incidents
@@ -222,7 +208,7 @@ def main():
             # return_results(fetch_incidents_command(client))
         if demisto.command() == "armorblox-check-remediation-action":
             incident_id = demisto.args().get('incident_id')
-            get_remediation_action(client, incident_id)
+            return_results(get_remediation_action(client, incident_id))
 
         elif demisto.command() == 'test-module':
             result = test_module(client)
