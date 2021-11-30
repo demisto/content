@@ -606,6 +606,53 @@ def get_profile_container_forensic_list(client: PrismaCloudComputeClient, args: 
     )
 
 
+def build_host_forensic_response(
+    client: PrismaCloudComputeClient, host_id: str, args: dict
+) -> Tuple[List[dict], str]:
+    """
+    Build a table and a context response for the 'prisma-cloud-compute-host-forensic-list' command.
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        host_id (str): host ID.
+        args (dict): prisma-cloud-compute-profile-container-forensic-list command arguments.
+
+    Returns:
+        Tuple[list, str]: Context and table response.
+    """
+    host_forensics = get_api_info(client=client, url_suffix=f"/profiles/host/{host_id}/forensic", args=args)
+
+    if not host_forensics:
+        return [], tableToMarkdown(name="Host forensics report", t=[])
+
+    return host_forensics, tableToMarkdown(
+        name="Host forensics report", t=host_forensics, headers=["type", "app", "path", "command"], removeNull=True
+    )
+
+
+@validate_limit_and_offset
+def get_profile_host_forensic_list(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
+    """
+    Returns runtime forensics data for a specific host.
+    Implement the command 'prisma-cloud-compute-host-forensic-list'
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-host-forensic-list command arguments.
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    host_id = args.pop("id")
+    context, table = build_host_forensic_response(client=client, host_id=host_id, args=args)
+
+    return CommandResults(
+        outputs_prefix='prismaCloudCompute.hostForensic',
+        outputs=context,
+        readable_output=table
+    )
+
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -634,7 +681,8 @@ def main():
         'prisma-cloud-compute-profile-host-list': get_profile_host_list,
         'prisma-cloud-compute-profile-container-list': get_container_profile_list,
         'prisma-cloud-compute-profile-container-hosts-list': get_container_hosts_list,
-        'prisma-cloud-compute-profile-container-forensic-list': get_profile_container_forensic_list
+        'prisma-cloud-compute-profile-container-forensic-list': get_profile_container_forensic_list,
+        'prisma-cloud-compute-host-forensic-list': get_profile_host_forensic_list
     }
 
     try:

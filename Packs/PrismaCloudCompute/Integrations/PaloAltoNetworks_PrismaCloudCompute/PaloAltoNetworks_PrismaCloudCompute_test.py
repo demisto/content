@@ -3,7 +3,7 @@ from collections import OrderedDict
 from PaloAltoNetworks_PrismaCloudCompute import (
     PrismaCloudComputeClient, camel_case_transformer, fetch_incidents, get_headers,
     HEADERS_BY_NAME, get_profile_host_list, get_container_profile_list, get_container_hosts_list,
-    get_profile_container_forensic_list
+    get_profile_container_forensic_list, get_profile_host_forensic_list
 )
 
 from CommonServerPython import DemistoException
@@ -489,6 +489,20 @@ PROFILE_HOST_LIST_COMMAND_ARGS = [
         ),
         get_profile_container_forensic_list,
         "/profiles/container/123/forensic"
+    ),
+    (
+        OrderedDict(
+            collections="collections", format="format", hostname="hostname", limit="10", offset="0", id="123"
+        ),
+        get_profile_host_forensic_list,
+        "/profiles/host/123/forensic"
+    ),
+    (
+        OrderedDict(
+            collections="collections", format="format", hostname="hostname", limit="100", offset="0", id="123"
+        ),
+        get_profile_host_forensic_list,
+        "/profiles/host/123/forensic"
     )
 ]
 
