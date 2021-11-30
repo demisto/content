@@ -4,8 +4,14 @@ commonfields:
 name: SplitCampaignContext
 script: ''
 type: python
-comment: Splits incidents in the context data to below and above a similarity threshold. If a low similarity
-  incident was already added to the campaign, then it will also be considered in the higher similarity incidents list.
+comment: |-
+  Splits incidents in the context data to below and above a similarity threshold.
+  If a low similarity incident was already added to the campaign,
+  then it will also be considered in the higher similarity incidents list.
+
+  This automation runs using the default Limited User role, unless you explicitly change the permissions.
+  For more information, see the section about permissions here:
+  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
 tags: []
 enabled: true
 args:
@@ -59,7 +65,7 @@ outputs:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.9.8.24399
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)
