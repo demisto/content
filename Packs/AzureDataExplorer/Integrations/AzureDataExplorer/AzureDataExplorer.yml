@@ -8,7 +8,8 @@ configuration:
   name: cluster_url
   required: true
   type: 0
-- display: Application ID
+- defaultvalue: a9ce8db2-847a-46af-9bfb-725d8a8d3c53
+  display: Application ID
   hidden: false
   name: client_id
   required: true
