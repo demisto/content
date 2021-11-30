@@ -286,8 +286,8 @@ Get the hosts where a specific container is running.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| prismaCloudCompute.profileContainerHost.ContainerHosts | Unknown | Container ID and its Hosts | 
-
+| prismaCloudCompute.profileContainerHost.ContainerID | String | Container ID | 
+| prismaCloudCompute.profileContainerHost.HostsIDs | Unknown | The container's host IDs. | 
 
 #### Command Example
 ```!prisma-cloud-compute-profile-container-hosts-list id=123```

@@ -497,28 +497,20 @@ def build_container_hosts_response(
     context_output = []
 
     for container_id in container_ids:
-        response = get_api_info(client=client, url_suffix=f"profiles/container/{container_id}/hosts", args=args)
-        if response:
+        hosts_ids = get_api_info(client=client, url_suffix=f"profiles/container/{container_id}/hosts", args=args)
+        if hosts_ids:
             context_output.append(
                 {
-                    "ContainerHosts": {
-                        container_id: response
-                    }
+                    "ContainerID": container_id,
+                    "HostsIDs": hosts_ids
                 }
             )
 
     if not context_output:
         return [], tableToMarkdown(name="Containers hosts list", t=[])
 
-    table = [
-        {
-            "ContainerID": container_id,
-            "HostsIDs": hostsIDs
-        } for response in context_output for container_id, hostsIDs in response["ContainerHosts"].items()
-    ]
-
     return context_output, tableToMarkdown(
-        name="Containers hosts list", t=table, headers=["ContainerID", "HostsIDs"]
+        name="Containers hosts list", t=context_output, headers=["ContainerID", "HostsIDs"]
     )
 
 
