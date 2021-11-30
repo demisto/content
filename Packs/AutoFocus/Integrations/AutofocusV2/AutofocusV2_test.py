@@ -436,3 +436,11 @@ def test_search_url_command(requests_mock):
 
     assert result[0].indicator.url == "www.こんにちは.com"
     assert result[0].raw_response["indicator"]["indicatorValue"] == mock_response["indicator"]["indicatorValue"]
+
+
+def test_search_file_command(mocker):
+    from AutofocusV2 import search_file_command
+
+    search_file_command('0cc175b9c0f1b6a831c399e269772661', None, False)
+
+    assert True
