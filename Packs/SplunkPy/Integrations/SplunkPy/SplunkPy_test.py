@@ -1123,6 +1123,17 @@ def test_build_search_human_readable(mocker):
 
 
 def test_build_search_kwargs():
+    """
+    Given:
+        The commad args.
+
+    When:
+        Running the build_search_kwargs to build the search query kwargs.
+
+    Then:
+        Ensure the query kwargs as expected.
+
+    """
     args = {'earliest_time': '2021-11-23T10:10:10', 'latest_time': '2021-11-23T10:10:20', 'app': 'test_app', 'polling': False}
     kwargs_normalsearch = splunk.build_search_kwargs(args)
     for field in args:
@@ -1136,7 +1147,17 @@ def test_build_search_kwargs():
     (False, 'DONE'), (True, 'DONE'), (True, 'RUNNING')
 ])
 def test_splunk_search_command(mocker, polling, status):
+    """
+    Given:
+        A search query with args.
 
+    When:
+        Running the splunk_search_command with and without polling.
+
+    Then:
+        Ensure the result as expected in polling and in regular search.
+
+    """
     class Jobs:
         def __init__(self):
             self.oneshot = None
