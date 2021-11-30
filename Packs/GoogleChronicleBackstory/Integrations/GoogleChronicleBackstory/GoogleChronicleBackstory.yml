@@ -1872,7 +1872,7 @@ script:
       secret: false
     - default: false
       description: |-
-        (Deprecated)Time to begin returning detections, filtering on a detection's "detectionTime". If not specified, the start time is treated as open-ended.
+        (Deprecated: use `start_time` instead) Time to begin returning detections, filtering on a detection's "detectionTime". If not specified, the start time is treated as open-ended.
         Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.
         Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours.
       isArray: false
@@ -1881,7 +1881,7 @@ script:
       secret: false
     - default: false
       description: |-
-        (Deprecated)Time to stop returning detections, filtering on a detection's "detectionTime". If not specified, the end time is treated as open-ended.
+        (Deprecated: use `end_time` instead) Time to stop returning detections, filtering on a detection's "detectionTime". If not specified, the end time is treated as open-ended.
         Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.
         Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours.
       isArray: false
