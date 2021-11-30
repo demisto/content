@@ -1,4 +1,3 @@
-from typing import *  # noqa: F401
 from splunklib.binding import HTTPError, namespace, AuthenticationError
 
 import demistomock as demisto
@@ -1673,7 +1672,7 @@ def requests_handler(url, message, **kwargs):
     }
 
 
-def build_search_kwargs(args):
+def build_search_kwargs(args, polling=False):
     t = datetime.utcnow() - timedelta(days=7)
     time_str = t.strftime(SPLUNK_TIME_FORMAT)
 
@@ -1686,10 +1685,10 @@ def build_search_kwargs(args):
         kwargs_normalsearch['latest_time'] = args['latest_time']
     if demisto.get(args, 'app'):
         kwargs_normalsearch['app'] = args['app']
-    if not demisto.get(args, 'polling'):
+    if polling:
         # A blocking search runs synchronously, and returns a job when it's finished.
         # It will be added just if it's not a polling command.
-        kwargs_normalsearch['exec_mode'] = "blocking"
+        kwargs_normalsearch['exec_mode'] = "normal"
     else:
         kwargs_normalsearch['exec_mode'] = "blocking"
     return kwargs_normalsearch
@@ -1713,6 +1712,18 @@ def create_entry_context(args, parsed_search_results, dbot_scores, status_res):
         if status_res:
             ec['Splunk.JobStatus(val.SID && val.SID === obj.SID)'] = status_res.outputs
     return ec
+
+
+def schedule_polling_command(command, args, interval_in_secs):
+    """
+    Returns a ScheduledCommand object which contain the needed arguments for schedule the polling command.
+    """
+    return ScheduledCommand(
+        command=command,
+        next_run_in_seconds=interval_in_secs,
+        args=args,
+        timeout_in_seconds=600
+    )
 
 
 def build_search_human_readable(args, parsed_search_results):
@@ -1790,10 +1801,10 @@ def splunk_search_command(service):
     args = demisto.args()
 
     query = build_search_query(args)
-    search_kwargs = build_search_kwargs(args)
-    job_sid = args.get("sid", None)
-    search_job = None
     polling = argToBoolean(args.get("polling", False))
+    search_kwargs = build_search_kwargs(args, polling)
+    job_sid = args.get("sid")
+    search_job = None
     interval_in_secs = int(args.get('interval_in_seconds', 30))
 
     if not job_sid or not polling:
@@ -1806,14 +1817,7 @@ def splunk_search_command(service):
     status = status_cmd_result.outputs['Status']
     if status.lower() != 'done':
         # Job is still running, schedule the next run of the command.
-        if 'sid' not in args:
-            args['sid'] = job_sid
-        scheduled_command = ScheduledCommand(
-            command="splunk-search",
-            next_run_in_seconds=interval_in_secs,
-            args=args,
-            timeout_in_seconds=600
-        )
+        scheduled_command = schedule_polling_command("splunk-search", args, interval_in_secs)
         status_cmd_result.scheduled_command = scheduled_command
         status_cmd_result.readable_output = 'Job is still running, it may take a little while...'
         return status_cmd_result
