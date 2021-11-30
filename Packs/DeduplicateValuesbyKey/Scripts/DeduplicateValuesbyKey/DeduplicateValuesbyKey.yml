@@ -1,8 +1,10 @@
 args:
-- isArray: true
+- description: List of objects (dictionaries).
+  isArray: true
   name: object_list
   required: true
-- name: key_of_interest
+- description: String representing key used to generate unique value list
+  name: key_of_interest
   required: true
 comment: Given a list of objects and a key found in each of those objects, return
   a unique list of values associated with that key.
@@ -23,6 +25,7 @@ engineinfo: {}
 name: DeduplicateValuesbyKey
 outputs:
 - contextPath: DeduplicatedValues
+  description: List of unique data elements
 pswd: ""
 runas: DBotWeakRole
 runonce: false

@@ -13,12 +13,12 @@ Given a list of objects and a key found in each of those objects, return a uniqu
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| object_list |  |
-| key_of_interest |  |
+| object_list | List of objects \(dictionaries\). |
+| key_of_interest | String representing key used to generate unique value list |
 
 ## Outputs
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| DeduplicatedValues |  | Unknown |
+| DeduplicatedValues | List of unique data elements | Unknown |
