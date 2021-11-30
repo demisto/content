@@ -23,6 +23,12 @@ configuration:
   name: longRunningPort
   required: true
   type: 0
+- defaultvalue: 'true'
+  display: Long Running Instance
+  name: longRunning
+  required: false
+  type: 8
+  hidden: true
 description: A Syslog server provides the ability to automatically open incidents from Syslog clients. This integration provides the ability to filter which logs are to be converted to incidents (or choose to convert all logs).
 display: Syslog v2
 name: Syslog v2
