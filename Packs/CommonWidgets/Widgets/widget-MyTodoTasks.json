@@ -8,5 +8,5 @@
   "isPredefined": true,
   "version": -1,
   "id": "My ToDo Tasks",
-  "description": "A table widget showing all the ToDo tasks assigned to the current user."
+  "description": "A widget that presents a table of all the ToDo tasks assigned to the current user."
 }

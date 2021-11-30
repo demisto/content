@@ -1,4 +1,4 @@
-comment: A table widget showing all the ToDo tasks assigned to the current user.
+comment: A script that creates a table of all the ToDo tasks assigned to the current user.
 commonfields:
   id: MyToDoTasksWidget
   version: -1
