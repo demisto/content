@@ -14,10 +14,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: d4f8035a-a3cb-4f25-8db8-07531da13c95
+    taskid: 45b6b245-84e4-44a0-8a05-7b3f54e61fc7
     type: start
     task:
-      id: d4f8035a-a3cb-4f25-8db8-07531da13c95
+      id: 45b6b245-84e4-44a0-8a05-7b3f54e61fc7
       version: -1
       name: ""
       iscommand: false
@@ -43,10 +43,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: e1ada877-c9e9-4cb2-8471-b261e80e547c
+    taskid: ffa1f9d3-e869-4a6b-8e5e-b5d66fe60bb3
     type: regular
     task:
-      id: e1ada877-c9e9-4cb2-8471-b261e80e547c
+      id: ffa1f9d3-e869-4a6b-8e5e-b5d66fe60bb3
       version: -1
       name: Assign to analyst
       description: Assign the incident to an analyst based on the analyst's organizational
@@ -57,7 +57,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
+      - "10"
     scriptarguments:
       onCall:
         complex:
@@ -70,8 +70,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 850,
-          "y": 390
+          "x": -20,
+          "y": 1420
         }
       }
     note: false
@@ -83,10 +83,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 3263812e-eff6-4715-88b1-24b07dab62ab
+    taskid: 223a84ed-01d8-4b66-8618-bc01e69ed803
     type: playbook
     task:
-      id: 3263812e-eff6-4715-88b1-24b07dab62ab
+      id: 223a84ed-01d8-4b66-8618-bc01e69ed803
       version: -1
       name: Calculate Severity - Generic v2
       description: |-
@@ -102,7 +102,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
+      - "6"
     scriptarguments:
       Account:
         complex:
@@ -168,7 +168,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -17.5,
+          "x": -20,
           "y": 420
         }
       }
@@ -181,10 +181,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 6fd28512-0f21-42e9-8007-2c55feb4d231
+    taskid: 623fb688-3b61-4f36-8ad5-03e3c85edce9
     type: regular
     task:
-      id: 6fd28512-0f21-42e9-8007-2c55feb4d231
+      id: 623fb688-3b61-4f36-8ad5-03e3c85edce9
       version: -1
       name: Set incident severity to "High"
       description: Sets the incident severity to "Critical".
@@ -194,7 +194,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "11"
+      - "6"
     scriptarguments:
       severity:
         simple: critical
@@ -203,7 +203,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 460,
           "y": 420
         }
       }
@@ -216,10 +216,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: abfc4858-a19a-48a5-852d-8d0d4ab19cfa
+    taskid: 3de5797d-a90e-4633-8d28-b39500c99ee3
     type: condition
     task:
-      id: abfc4858-a19a-48a5-852d-8d0d4ab19cfa
+      id: 3de5797d-a90e-4633-8d28-b39500c99ee3
       version: -1
       name: Determine incident severity
       description: Determines the severity level based on the highest result of all
@@ -230,10 +230,8 @@ tasks:
     nexttasks:
       '#default#':
       - "2"
-      - "5"
       High:
       - "3"
-      - "1"
     separatecontext: false
     conditions:
     - label: High
@@ -322,10 +320,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 9c84f851-6b87-4ef9-83cc-c12ff35780d5
+    taskid: cc5976de-b560-4a54-8e07-0d781a9b8b0a
     type: regular
     task:
-      id: 9c84f851-6b87-4ef9-83cc-c12ff35780d5
+      id: cc5976de-b560-4a54-8e07-0d781a9b8b0a
       version: -1
       name: Assign to analyst
       description: Assign the incident to an analyst based on the analyst's organizational
@@ -336,7 +334,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
+      - "10"
     scriptarguments:
       onCall:
         complex:
@@ -349,8 +347,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -420,
-          "y": 390
+          "x": 460,
+          "y": 1420
         }
       }
     note: false
@@ -360,43 +358,40 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
-    taskid: d88d7bb0-bb26-4c54-8882-363f5b07d59b
-    type: regular
+  "6":
+    id: "6"
+    taskid: 94fac0a3-110e-4a84-88f4-86e5430dcf74
+    type: condition
     task:
-      id: d88d7bb0-bb26-4c54-8882-363f5b07d59b
+      id: 94fac0a3-110e-4a84-88f4-86e5430dcf74
       version: -1
-      name: Assign to analyst
-      description: |-
-        Assign analyst to incident.
-        By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
-        Otherwise, the analyst will be picked according to the 'assignBy' arguments.
-        machine-learning: DBot will calculated and decide who is the best analyst for the job.
-        top-user: The user that is most commonly owns this type of incident
-        less-busy-user: The less busy analyst will be picked to be the incident owner.
-        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
-        current: The user that executed the command
-      scriptName: AssignAnalystToIncident
-      type: regular
+      name: Check if recipient is in sensitive mailboxes list
+      description: Check whether the email recipient is part of the organization's
+        critical assets.
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      '#default#':
+      - "11"
+      Sensitive Mailbox:
       - "8"
-    scriptarguments:
-      onCall:
-        complex:
-          root: inputs.OnCall
-      roles:
-        complex:
-          root: inputs.escalationRole
     separatecontext: false
+    conditions:
+    - label: Sensitive Mailbox
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: CriticalAssets
+                accessor: CriticalUsers
+            iscontext: true
     view: |-
       {
         "position": {
           "x": 220,
-          "y": 820
+          "y": 620
         }
       }
     note: false
@@ -408,10 +403,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 3e5ca5e9-9526-496f-8872-df76f93280fc
+    taskid: 85dc6008-922c-4f8b-89f9-9794bfd6a728
     type: regular
     task:
-      id: 3e5ca5e9-9526-496f-8872-df76f93280fc
+      id: 85dc6008-922c-4f8b-89f9-9794bfd6a728
       version: -1
       name: Set incident severity to "Critical"
       description: Optionally increases the incident severity to the new value if
@@ -431,7 +426,7 @@ tasks:
       {
         "position": {
           "x": 220,
-          "y": 1000
+          "y": 810
         }
       }
     note: false
@@ -443,10 +438,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: b9214825-23f8-4842-8793-bc8db97b30ec
+    taskid: cc6de510-eceb-41c0-8a8b-ea5b669ca19a
     type: regular
     task:
-      id: b9214825-23f8-4842-8793-bc8db97b30ec
+      id: cc6de510-eceb-41c0-8a8b-ea5b669ca19a
       version: -1
       name: Sensitive mailbox phishing attempt notification
       description: Sends an email regarding the findings of the sensitive mailboxes
@@ -457,7 +452,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
+      - "11"
     scriptarguments:
       body:
         simple: |
@@ -481,7 +476,7 @@ tasks:
       {
         "position": {
           "x": 220,
-          "y": 1170
+          "y": 960
         }
       }
     note: false
@@ -493,10 +488,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 3eb8b996-4f13-41c5-8a5b-940a4eafaa97
+    taskid: af69c30a-003b-4a5a-813d-9d68f53a9e62
     type: title
     task:
-      id: 3eb8b996-4f13-41c5-8a5b-940a4eafaa97
+      id: af69c30a-003b-4a5a-813d-9d68f53a9e62
       version: -1
       name: Done
       type: title
@@ -508,7 +503,7 @@ tasks:
       {
         "position": {
           "x": 220,
-          "y": 1340
+          "y": 1590
         }
       }
     note: false
@@ -520,48 +515,82 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: ffef0224-3867-4770-8887-228a30918aa3
+    taskid: 252e150b-d455-4239-8509-eb20c4c24472
+    type: title
+    task:
+      id: 252e150b-d455-4239-8509-eb20c4c24472
+      version: -1
+      name: Assign Analyst
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 1120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 1344e8dd-b592-406a-844e-bdaafaf606ae
     type: condition
     task:
-      id: ffef0224-3867-4770-8887-228a30918aa3
-      description: This task checks if the recipient was found under CriticalAssets
-        or in a provided list.
+      id: 1344e8dd-b592-406a-844e-bdaafaf606ae
       version: -1
-      name: Check if the recipient is in the sensitive mailboxes list
+      name: Check incident severity
+      description: Check the incident severity in order to assign the relevant analyst.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "10"
-      SensitiveMailbox:
-      - "7"
+      - "5"
+      Escalate:
+      - "1"
     separatecontext: false
     conditions:
-    - label: SensitiveMailbox
+    - label: Escalate
       condition:
-      - - operator: isNotEmpty
+      - - operator: isEqualString
           left:
             value:
               complex:
-                root: CriticalAssets
-            iscontext: true
-        - operator: inList
-          left:
-            value:
-              complex:
-                root: inputs.EmailTo
+                root: incident
+                accessor: severity
             iscontext: true
           right:
             value:
+              simple: High
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
               complex:
-                root: inputs.SensitiveMailboxesList
+                root: incident
+                accessor: severity
             iscontext: true
+          right:
+            value:
+              simple: Critical
+          ignorecase: true
     view: |-
       {
         "position": {
           "x": 220,
-          "y": 630
+          "y": 1240
         }
       }
     note: false
@@ -574,14 +603,16 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "11_7_SensitiveMailbox": 0.52,
-      "4_3_High": 0.66
+      "12_1_Escalate": 0.42,
+      "12_5_#default#": 0.37,
+      "4_3_High": 0.66,
+      "6_8_Sensitive Mailbox": 0.48
     },
     "paper": {
       "dimensions": {
-        "height": 1345,
-        "width": 1650,
-        "x": -420,
+        "height": 1595,
+        "width": 860,
+        "x": -20,
         "y": 60
       }
     }
@@ -595,12 +626,12 @@ inputs:
 - key: escalationRole
   value: {}
   required: false
-  description: A higher tier role to assign the incident to.
+  description: "Higher Tier role to assign the incident to."
   playbookInputQuery:
 - key: OnCall
   value: {}
   required: false
-  description: Set to true to assign only a user that is currently on shift. Requires.
+  description: "Use to assign only for analysts who're on current shift."
   playbookInputQuery:
 - key: AuthenticityCheck
   value: {}
@@ -631,11 +662,6 @@ inputs:
   required: false
   description: List of optional values the email security device returns for blocked\denied\etc.
     emails.
-  playbookInputQuery:
-- key: SensitiveMailboxesList
-  value: {}
-  required: false
-  description: A list that contains the organization sensitive mailboxes.
   playbookInputQuery:
 outputs: []
 tests:

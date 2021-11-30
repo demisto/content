@@ -1275,7 +1275,7 @@ tasks:
         Added on this v2 playbook:
         - Uses incident fields and not incident labels.
         - Provides separate paths to "Phishing Alerts".
-        - Uses the new "Get Original Email - Generic v2" playbook to retrieve original emails as eml files for both EWS v2 and Microsoft Graph Mail integration. This will assist with parsing the email artifacts in a more efficient way.
+        - Uses the new "Get Original Email - Generic v2" playbook to retrieve original emails as eml files from EWS v2, Microsoft Graph Mail and multiple email security gateway integrations. This will assist with parsing the email artifacts in a more efficient way.
       playbookName: Process Email - Generic v2
       type: playbook
       iscommand: false
@@ -1574,7 +1574,7 @@ tasks:
                   simple: 7 days ago
       query:
         simple: '`emailfrom:${incident.emailfrom} AND emailsubject:${incident.emailsubject}
-          AND  type:"Phishing Alerts"`'
+          AND (type:"Phishing Alerts" or type:"Phishing")`'
     continueonerror: true
     separatecontext: false
     view: |-
