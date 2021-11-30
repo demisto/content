@@ -3,7 +3,7 @@ from collections import OrderedDict
 from PaloAltoNetworks_PrismaCloudCompute import (
     PrismaCloudComputeClient, camel_case_transformer, fetch_incidents, get_headers,
     HEADERS_BY_NAME, get_profile_host_list, get_container_profile_list, get_container_hosts_list,
-    get_profile_container_forensic_list, get_profile_host_forensic_list
+    get_profile_container_forensic_list, get_profile_host_forensic_list, get_console_version
 )
 
 from CommonServerPython import DemistoException
@@ -427,7 +427,7 @@ def test_get_headers():
     assert get_headers('unknownType', data) == list(data[0].keys())
 
 
-PROFILE_HOST_LIST_COMMAND_ARGS = [
+HTTP_REQUEST_URL_WITH_QUERY_PARAMS = [
     (
         OrderedDict(
             cluster="cluster", hostname="hostname", id="1", image="image", namespace="namespace", os="os",
@@ -507,7 +507,7 @@ PROFILE_HOST_LIST_COMMAND_ARGS = [
 ]
 
 
-def query_params_to_str(params: dict) -> str:
+def query_params_to_str(params: OrderedDict) -> str:
     """
     Transform params dict to a string http request query.
 
@@ -519,7 +519,13 @@ def query_params_to_str(params: dict) -> str:
         'limit': "10",
         'offset': '0'
     } ---> '?limit=10&offset=0'
+
+    Returns:
+        str: query URL params.
     """
+    if not params:
+        return ""
+
     query_params = '?'
 
     if int(params.get('limit')) > 50:
@@ -531,8 +537,8 @@ def query_params_to_str(params: dict) -> str:
     return query_params[:len(query_params) - 1]
 
 
-@pytest.mark.parametrize("args, func, url_suffix", PROFILE_HOST_LIST_COMMAND_ARGS)
-def test_http_request_url_is_valid(requests_mock, args, func, url_suffix, client):
+@pytest.mark.parametrize("args, func, url_suffix", HTTP_REQUEST_URL_WITH_QUERY_PARAMS)
+def test_http_request_url_with_query_params_is_valid(requests_mock, args, func, url_suffix, client):
     """
     Given:
         - query command arguments.
@@ -549,3 +555,30 @@ def test_http_request_url_is_valid(requests_mock, args, func, url_suffix, client
     func(client=client, args=args)
 
     assert full_url + query_params_to_str(params=args) == mocker.last_request._url_parts.geturl()
+
+
+HTTP_REQUEST_URL = [
+    (
+        get_console_version,
+        "/version"
+    )
+]
+
+
+@pytest.mark.parametrize("func, url_suffix", HTTP_REQUEST_URL)
+def test_http_request_url_is_valid(requests_mock, func, url_suffix, client):
+    """
+    Given:
+        - url endpoint.
+
+    When:
+        - Calling the http-request for the command endpoint.
+
+    Then:
+        - Verify that the full URL of the http request is sent correctly.
+    """
+    full_url = BASE_URL + url_suffix
+    mocker = requests_mock.get(url=full_url, json={})
+    func(client=client)
+
+    assert full_url == mocker.last_request._url_parts.geturl()

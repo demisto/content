@@ -353,8 +353,11 @@ script:
           isArray: false
           defaultValue: "0"
       outputs:
-        - contextPath: prismaCloudCompute.profileContainerHost.ContainerHosts
-          description: Container ID and its Hosts
+        - contextPath: prismaCloudCompute.profileContainerHost.ContainerID
+          description: Container ID
+          type: String
+        - contextPath: prismaCloudCompute.profileContainerHost.HostsIDs
+          description: The container's host IDs.
           type: Unknown
     - name: prisma-cloud-compute-profile-container-forensic-list
       description: Get runtime forensics data for a specific container on a specific host
@@ -402,77 +405,77 @@ script:
           isArray: false
           defaultValue: "0"
       outputs:
-        - contextPath: prismaCloudCompute.containerForensic.allPorts
+        - contextPath: prismaCloudCompute.containerForensic.Forensics.allPorts
           description: AllPorts indicates all listening ports are allowed
           type: Boolean
-        - contextPath: prismaCloudCompute.containerForensic.attack
+        - contextPath: prismaCloudCompute.containerForensic.Forensics.attack
           description: Attack is the event attack type.
           type: Unknown
-        - contextPath: prismaCloudCompute.containerForensic.category
+        - contextPath: prismaCloudCompute.containerForensic.Forensics.category
           description: Category is the incident category.
           type: Unknown
-        - contextPath: prismaCloudCompute.containerForensic.command
+        - contextPath: prismaCloudCompute.containerForensic.Forensics.command
           description: Command is the event command
           type: String
-        - contextPath: prismaCloudCompute.containerForensic.containerId
+        - contextPath: prismaCloudCompute.containerForensic.Forensics.containerId
           description: ContainerID is the event container id
           type: Unknown
-        - contextPath: prismaCloudCompute.containerForensic.dstIP
+        - contextPath: prismaCloudCompute.containerForensic.Forensics.dstIP
           description: DstIP is the destination IP of the connection
           type: String
-        - contextPath: prismaCloudCompute.containerForensic.dstPort
+        - contextPath: prismaCloudCompute.containerForensic.Forensics.dstPort
           description: DstPort is the destination port
           type: Unknown
-        - contextPath: prismaCloudCompute.containerForensic.dstProfileID
+        - contextPath: prismaCloudCompute.containerForensic.Forensics.dstProfileID
           description: DstProfileID is the profile ID of the connection destination
           type: String
-        - contextPath: prismaCloudCompute.containerForensic.effect
+        - contextPath: prismaCloudCompute.containerForensic.Forensics.effect
           description: Effect is the runtime audit effect
           type: String
-        - contextPath: prismaCloudCompute.containerForensic.listeningStartTime
+        - contextPath: prismaCloudCompute.containerForensic.Forensics.listeningStartTime
           description: listeningStartTime is the port listening start time
           type: Date
-        - contextPath: prismaCloudCompute.containerForensic.message
+        - contextPath: prismaCloudCompute.containerForensic.Forensics.message
           description: Message is the runtime audit message
           type: String
-        - contextPath: prismaCloudCompute.containerForensic.networkCollectionType
+        - contextPath: prismaCloudCompute.containerForensic.Forensics.networkCollectionType
           description: NetworkCollectionType is the type of the network collection method
           type: Unknown
-        - contextPath: prismaCloudCompute.containerForensic.outbound
+        - contextPath: prismaCloudCompute.containerForensic.Forensics.outbound
           description: Outbound indicates if the port is outbound
           type: Boolean
-        - contextPath: prismaCloudCompute.containerForensic.path
+        - contextPath: prismaCloudCompute.containerForensic.Forensics.path
           description: Path is the event path
           type: String
-        - contextPath: prismaCloudCompute.containerForensic.pid
+        - contextPath: prismaCloudCompute.containerForensic.Forensics.pid
           description: Pid is the event process id
           type: Number
-        - contextPath: prismaCloudCompute.containerForensic.port
+        - contextPath: prismaCloudCompute.containerForensic.Forensics.port
           description: Port is the listening port
           type: Number
-        - contextPath: prismaCloudCompute.containerForensic.ppid
+        - contextPath: prismaCloudCompute.containerForensic.Forensics.ppid
           description: PPid is the event parent process id
           type: Number
-        - contextPath: prismaCloudCompute.containerForensic.process
+        - contextPath: prismaCloudCompute.containerForensic.Forensics.process
           description: Process is the event processdescription
           type: String
-        - contextPath: prismaCloudCompute.containerForensic.srcIP
+        - contextPath: prismaCloudCompute.containerForensic.Forensics.srcIP
           description: SrcIP is the source IP of the connection
           type: String
-        - contextPath: prismaCloudCompute.containerForensic.srcProfileID
+        - contextPath: prismaCloudCompute.containerForensic.Forensics.srcProfileID
           description: SrcProfileID is the profile ID of the connection source
           type: String
-        - contextPath: prismaCloudCompute.containerForensic.static
+        - contextPath: prismaCloudCompute.containerForensic.Forensics.static
           description: Static indicates the event was added to the profile without
             behavioral indication
           type: Boolean
-        - contextPath: prismaCloudCompute.containerForensic.type
+        - contextPath: prismaCloudCompute.containerForensic.Forensics.type
           description: Type is the event type.
           type: Unknown
-        - contextPath: prismaCloudCompute.containerForensic.timestamp
+        - contextPath: prismaCloudCompute.containerForensic.Forensics.timestamp
           description: Timestamp is the event timestamp
           type: Boolean
-        - contextPath: prismaCloudCompute.containerForensic.user
+        - contextPath: prismaCloudCompute.containerForensic.Forensics.user
           description: User is the event user
           type: Unknown
     - name: prisma-cloud-compute-host-forensic-list
@@ -578,6 +581,14 @@ script:
         - contextPath: prismaCloudCompute.hostForensic.user
           description: User is the event user
           type: Unknown
+    - name: prisma-cloud-compute-console-version-info
+      description: "Get the console version. "
+      deprecated: false
+      arguments: []
+      outputs:
+        - contextPath: prismaCloudCompute.console.version
+          description: The console version
+          type: String
 tests:
   - No test
 fromversion: 5.0.0

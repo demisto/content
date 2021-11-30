@@ -653,6 +653,26 @@ def get_profile_host_forensic_list(client: PrismaCloudComputeClient, args: dict)
     )
 
 
+def get_console_version(client: PrismaCloudComputeClient) -> CommandResults:
+    """
+    Returns the version of the prisma cloud compute console.
+    Implement the command 'prisma-cloud-compute-console-version-info'.
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    version = get_api_info(client=client, url_suffix="/version")
+
+    return CommandResults(
+        outputs_prefix="prismaCloudCompute.console.version",
+        outputs=version,
+        readable_output=tableToMarkdown(name="Console version", t={"version": version}, headers=["version"])
+    )
+
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -677,12 +697,16 @@ def main():
         # Save boolean as a string
         verify = str(verify_certificate)
 
-    available_commands = {
+    available_commands_with_args = {
         'prisma-cloud-compute-profile-host-list': get_profile_host_list,
         'prisma-cloud-compute-profile-container-list': get_container_profile_list,
         'prisma-cloud-compute-profile-container-hosts-list': get_container_hosts_list,
         'prisma-cloud-compute-profile-container-forensic-list': get_profile_container_forensic_list,
         'prisma-cloud-compute-host-forensic-list': get_profile_host_forensic_list
+    }
+
+    available_commands_without_args = {
+        'prisma-cloud-compute-console-version-info': get_console_version
     }
 
     try:
@@ -708,8 +732,10 @@ def main():
             # this method is called periodically when 'fetch incidents' is checked
             incidents = fetch_incidents(client)
             demisto.incidents(incidents)
-        elif requested_command in available_commands:
-            return_results(results=available_commands[requested_command](client=client, args=demisto.args()))
+        elif requested_command in available_commands_with_args:
+            return_results(results=available_commands_with_args[requested_command](client=client, args=demisto.args()))
+        elif requested_command in available_commands_without_args:
+            return_results(results=available_commands_without_args[requested_command](client=client))
 
     # Log exceptions
     except Exception as e:

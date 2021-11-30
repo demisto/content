@@ -1249,3 +1249,28 @@ Get forensics on a specific host
 | Process spawned | cron | /usr/bin/gawk | awk {gsub("%", "%%", $0);printf  $1 "\|" $2 "\|" $3 "\|" $4 "\|" $5 "\|" $6 "\|" $11 ":::"} |
 | Process spawned | cron | /bin/ps | ps aux |
 
+### prisma-cloud-compute-console-version-info
+***
+Get the console version. 
+
+
+#### Base Command
+
+`prisma-cloud-compute-console-version-info`
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| prismaCloudCompute.console.version | String | The console version | 
+
+
+#### Command Example
+```!prisma-cloud-compute-console-version-info```
+
+#### Human Readable Output
+### Console version
+|version|
+|---|
+| 21.04.439 |
+
