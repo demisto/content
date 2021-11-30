@@ -353,8 +353,11 @@ script:
           isArray: false
           defaultValue: "0"
       outputs:
-        - contextPath: prismaCloudCompute.profileContainerHost.ContainerHosts
-          description: Container ID and its Hosts
+        - contextPath: prismaCloudCompute.profileContainerHost.ContainerID
+          description: Container ID.
+          type: String
+        - contextPath: prismaCloudCompute.profileContainerHost.HostsIDs
+          description: The container's host IDs.
           type: Unknown
     - name: prisma-cloud-compute-profile-container-forensic-list
       description: Get runtime forensics data for a specific container on a specific host
