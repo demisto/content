@@ -192,8 +192,8 @@ def get_attachments_using_instance(email_related_incident, labels):
 
     elif integration_name == 'MicrosoftGraphMail':
         demisto.executeCommand("executeCommandAt",
-                               {'command': 'msgraph-mail-get-attachment', 'incidents': email_related_incident,
-                                'arguments': {'user-id': mailbox, 'message-id': str(message_id),
+                               {'command': 'msgraph-mail-list-attachments', 'incidents': email_related_incident,
+                                'arguments': {'user_id': mailbox, 'message_id': str(message_id),
                                               'using': instance_name}})
 
     else:
