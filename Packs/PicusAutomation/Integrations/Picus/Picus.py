@@ -510,7 +510,7 @@ def main() -> None:
         elif demisto.command()=='picus-set-paramPB':
             result = setParamPB()
             return_results(result)
-        elif demisto.command()=='filter-insecure-attacks':
+        elif demisto.command()=='picus-filter-insecure-attacks':
             result = filterInsecureAttacks()
             return_results(result)
         elif demisto.command()=='picus-get-mitigation-list':
