@@ -1,6 +1,7 @@
 # pylint: disable=no-member
 # pylint: disable=no-name-in-module
 
+import enum
 import ssl
 from cStringIO import StringIO
 import urllib3
@@ -73,10 +74,11 @@ def search_for_obj(content, vim_type, name, folder=None, recurse=True):
         raise RuntimeError("Managed Object " + name + " not found.")
     return obj
 
+
 def create_vm_config_creator(host, args):
     spec = vim.vm.ConfigSpec()
     files = vim.vm.FileInfo()
-    files.vmPathName = "["+host.datastore[0].name+"]"
+    files.vmPathName = "["+host.datastore[0].name+"]" + args.get('name')
     resource_allocation_spec = vim.ResourceAllocationInfo()
     resource_allocation_info = vim.ResourceAllocationInfo()
     resource_allocation_spec.limit = arg_to_number(args.get('cpu-allocation'))
@@ -91,7 +93,26 @@ def create_vm_config_creator(host, args):
     return spec
 
 
-def get_vms():
+def create_rellocation_locator_spec(vm, datastore):
+    template_disks = []
+    disk_locators = []
+    # collect template disks
+    for device in vm.config.hardware.device:
+        if type(device).__name__ == "vim.vm.device.VirtualDisk" and hasattr(device.backing, 'fileName'):
+            template_disks.append(device)
+    
+    # construct locator for the disks
+    for disk in template_disks:
+        locator = vim.vm.RelocateSpec.DiskLocator()
+        locator.diskBackingInfo = disk.backing  # Backing information for the virtual disk at the destination
+        locator.diskId = int(disk.key)
+        locator.datastore = datastore # Destination datastore
+        disk_locators.append(locator)
+
+    return disk_locators
+
+
+def get_vms(args):
     data = []
     content = si.RetrieveContent()  # type: ignore
     container = content.rootFolder
@@ -99,6 +120,7 @@ def get_vms():
     recursive = True
     container_view = content.viewManager.CreateContainerView(container, view_type, recursive)
     children = container_view.view
+    
     for child in children:
         summary = child.summary
 
@@ -121,6 +143,7 @@ def get_vms():
             'State': summary.runtime.powerState,
             'HostName': summary.guest.hostName if summary.guest.hostName else ' ',
             'MACAddress': mac_address,
+            'Deleted': 'False'
         })
     ec = {
         'VMWare(val.UUID && val.UUID === obj.UUID)': data
@@ -475,8 +498,6 @@ def create_vm(args):
         raise SystemExit('Error occurred while trying to create a VM.')
 
 
-# def add_tag(uuid, category, tag):
-
 def clone_vm(args):
     vm = get_vm(args.get('uuid'))
     content = si.RetrieveContent()
@@ -539,13 +560,19 @@ def relocate_vm(args):
     service.sslThumbprint = args.get('service')
     spec = vim.vm.RelocateSpec()
     spec.folder = search_for_obj(content, [vim.Folder], args.get('folder'))
-    spec.datastore = search_for_obj(content, [vim.Datastore], args.get('datastore'))
     spec.host = search_for_obj(content, [vim.HostSystem], args.get('host'))
     spec.pool = search_for_obj(content, [vim.ResourcePool], args.get('pool'))
     spec.service = service
+    datastore =  search_for_obj(content, [vim.Datastore], args.get('datastore'))
+    if datastore:
+        spec.datastore = datastore
+        spec.disks = create_rellocation_locator_spec(vm, datastore)
+
     # spec.profile = args.get('profile')  todo
+
     task = vm.RelocateVM_Task(spec, priority.args.get('priority'))
     wait_for_tasks(si, [task])
+
     if task.info.state == 'success':
         return {
             'ContentsFormat': formats['json'],
@@ -581,6 +608,7 @@ def register_vm(args):
     folder = search_for_obj(content, [vim.Folder], args.get('folder'))
     host = search_for_obj(content, [vim.HostSystem], args.get('host'))
     pool = search_for_obj(content, [vim.ResourcePool], args.get('pool'))
+
     task = folder.RegisterVM_Task(path=args.get('path'), name=args.get('name'),
                                   asTemplate=args.get('asTemplaet', False), pool=pool, host=host)
     wait_for_tasks(si, [task])
