@@ -1216,7 +1216,9 @@ response_two_events = [{
     "_bkt": "notable~668~66D21DF4-F4FD-4886-A986-82E72ADCBFE9",
     "_cd": "668:17198",
     "_indextime": "1596545116",
-    "_raw": "1596545116, search_name='Endpoint - Recurring Malware Infection - Rule', count='17', day_count='8', dest='ACME-workstation-012', info_max_time='1596545100.000000000',info_min_time='1595939700.000000000', info_search_time='1596545113.965466000', 'signature='Trojan.Gen.2'",
+    "_raw": "1596545116, search_name='Endpoint - Recurring Malware Infection - Rule', count='17', day_count='8', "
+            "dest='ACME-workstation-012', info_max_time='1596545100.000000000',info_min_time='1595939700.000000000', "
+            "info_search_time='1596545113.965466000', 'signature='Trojan.Gen.2'",
     "_serial": "50",
     "_si": ["ip-172-31-44-193", "notable"],
     "_sourcetype": "stash",
@@ -1262,7 +1264,9 @@ response_two_events = [{
     "_bkt": "notable~668~66D21DF4-F4FD-4886-A986-82E72ADCBFE9",
     "_cd": "668:17198",
     "_indextime": "1596545116",
-    "_raw": "1596545116, search_name='Endpoint - Recurring Malware Infection - Rule', count='17', day_count='8', dest='ACME-workstation-012', info_max_time='1596545100.000000000', info_min_time='1595939700.000000000', info_search_time='1596545113.965466000', signature='Trojan.Gen.2'",
+    "_raw": "1596545116, search_name='Endpoint - Recurring Malware Infection - Rule', count='17', day_count='8', "
+            "dest='ACME-workstation-012', info_max_time='1596545100.000000000', info_min_time='1595939700.000000000', "
+            "info_search_time='1596545113.965466000', signature='Trojan.Gen.2'",
     "_serial": "50",
     "_si": ["ip-172-31-44-193", "notable"],
     "_sourcetype": "stash",
@@ -1329,7 +1333,6 @@ def test_incident_exceeded_limit(mocker):
     Then:
     - Number of incidents returned are as the FETCH_LIMIT and next run time will be the time of the last returned event
     """
-    from SplunkPy import SPLUNK_TIME_FORMAT
     splunk.FETCH_LIMIT = 2
     service, mock_dt = mock_fetch_notables(mocker, demisto_params={'fetchQuery': "something", 'enabled_enrichments': [],
                                                                    'occurrence_look_behind': 15})
