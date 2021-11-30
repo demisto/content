@@ -299,29 +299,34 @@ def generate_search_query(time_to_fetch_from: Optional[datetime],
     """
     Generates a search query for the IMAP client 'search' method. with the permitted domains, email addresses and the
     starting date from which mail should be fetched.
-    Input example:
-    time_to_fetch_from: datetime.datetime(2020, 8, 7, 12, 14, 32, 918634, tzinfo=datetime.timezone.utc)
-    mail_service: 'Office365'
-    permitted_from_addresses: ['test1@mail.com', 'test2@mail.com']
-    permitted_from_domains: ['test1.com', 'domain2.com']
-    output example:
-    ['OR',
-     'OR',
-     'OR',
-     'HEADER', # For Office365 mail service only
-     'FROM',
-     'test1@mail.com',
-     'HEADER', # For Office365 mail service only
-     'FROM',
-     'test2@mail.com',
-     'HEADER', # For Office365 mail service only
-     'FROM',
-     'test1.com',
-     'HEADER', # For Office365 mail service only
-     'FROM',
-     'domain2.com',
-     'SINCE',
-     datetime.datetime(2020, 8, 7, 12, 14, 32, 918634, tzinfo=datetime.timezone.utc)]
+    Input example #1:
+        time_to_fetch_from: datetime.datetime(2020, 8, 7, 12, 14, 32, 918634, tzinfo=datetime.timezone.utc)
+        mail_service: 'Office365'
+        permitted_from_addresses: ['test1@mail.com']
+        permitted_from_domains: ['test1.com']
+    output example #1:
+        ['OR',
+         'HEADER',
+         'FROM',
+         'test1@mail.com',
+         'HEADER',
+         'FROM',
+         'test1.com',
+         'SINCE',
+         datetime.datetime(2020, 8, 7, 12, 14, 32, 918634, tzinfo=datetime.timezone.utc)]
+    Input example #2:
+        time_to_fetch_from: datetime.datetime(2020, 8, 7, 12, 14, 32, 918634, tzinfo=datetime.timezone.utc)
+        mail_service: 'Gmail'
+        permitted_from_addresses: ['test1@mail.com']
+        permitted_from_domains: ['test1.com']
+    output example #2:
+        ['OR',
+         'FROM',
+         'test1@mail.com',
+         'FROM',
+         'test1.com',
+         'SINCE',
+         datetime.datetime(2020, 8, 7, 12, 14, 32, 918634, tzinfo=datetime.timezone.utc)]
     Args:
         time_to_fetch_from: The greatest incident created_time we fetched from last fetch
         mail_service: The type of the mail service required for filtering with the senders email address
