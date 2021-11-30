@@ -1288,7 +1288,9 @@ def main():
     global IS_VERSION_2_1
 
     params = demisto.params()
-    token = params.get('token')
+    token = params.get('token') or params.get('credentials', {}).get('password')
+    if not token:
+        raise ValueError('The API Token parameter is required.')
     api_version = params.get('api_version', '2.1')
     server = params.get('url').rstrip('/')
     base_url = urljoin(server, f'/web/api/v{api_version}/')
