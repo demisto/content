@@ -7,7 +7,9 @@
     "url": "https://www.ilert.com/",
     "email": "support@ilert.com",
     "created": "2021-04-06T17:54:48Z",
-    "categories": [],
+    "categories": [
+        "Messaging"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],

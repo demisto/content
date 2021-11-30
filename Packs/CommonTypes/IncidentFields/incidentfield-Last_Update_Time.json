@@ -7,7 +7,10 @@
         "Azure Active Directory Identity and Access",
         "Saas Security Incident",
         "Tanium TR Incident",
-        "Logrhythm Case"
+        "Logrhythm Case",
+        "CrowdStrike Falcon Detection",
+        "CrowdStrike Falcon Incident",
+        "Microsoft Defender For Endpoint"
     ],
     "breachScript": "",
     "caseInsensitive": true,
