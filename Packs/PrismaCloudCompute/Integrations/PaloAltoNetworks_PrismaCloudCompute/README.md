@@ -379,3 +379,63 @@ Get runtime forensics data for a specific container on a specific host
 | 123 | Process spawned | /usr/local/bin/defender |
 | 123 | Process spawned | /usr/local/bin/defender |
 | 123 | Process spawned | /usr/local/bin/defender |
+### prisma-cloud-compute-host-forensic-list
+***
+Get forensics on a specific host
+
+
+#### Base Command
+
+`prisma-cloud-compute-host-forensic-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | host ID. | Required | 
+| collections | Collections are collections scoping the query. | Optional | 
+| hostname | Hostname is the hostname for which data should be fetched. | Optional | 
+| incidentID | IncidentID is the incident ID in case the request kind is an incident. | Optional | 
+| eventTime | EventTime is the forensic event pivot time in milliseconds (used to fetch events). | Optional | 
+| format | Format is the forensic data format. | Optional | 
+| limit | maximum of forensics data records to return. Default is 20. | Optional | 
+| offset | The offset number to begin listing host forensics from . Default is 0. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| prismaCloudCompute.hostForensic.app | String | App is the application associated with the event | 
+| prismaCloudCompute.hostForensic.attack | Unknown | Attack is the event attack type | 
+| prismaCloudCompute.hostForensic.category | Unknown | Category is the incident category. | 
+| prismaCloudCompute.hostForensic command | String | Command is the event command | 
+| prismaCloudCompute.hostForensic.country | String | Country is the country associated with the event | 
+| prismaCloudCompute.hostForensic.effect | String | Effect is the runtime audit effect | 
+| prismaCloudCompute.hostForensic.interactive | Boolean | Interactive indicates if the event is interactive | 
+| prismaCloudCompute.hostForensic.ip | String | IP is the IP address associated with the event | 
+| prismaCloudCompute.hostForensic.listeningStartTime | Date | ListeningStartTime is the listening port start time | 
+| prismaCloudCompute.hostForensic.message | String | Message is the runtime audit message | 
+| prismaCloudCompute.hostForensic.path | String | Path is the event path | 
+| prismaCloudCompute.hostForensic.pid | Number | Pid is the event process id | 
+| prismaCloudCompute.hostForensic.port | Number | Port is the listening port | 
+| prismaCloudCompute.hostForensic.ppath | String | P-path is the event parent path | 
+| prismaCloudCompute.hostForensic.ppid | Number | PPid is the event parent process id | 
+| prismaCloudCompute.hostForensic.process | String | Process is the event process | 
+| prismaCloudCompute.hostForensic.timestamp | Date | Timestamp is the event timestamp | 
+| prismaCloudCompute.hostForensic.type | Unknown | Type is the event type. | 
+| prismaCloudCompute.hostForensic.user | Unknown | User is the event user | 
+
+
+#### Command Example
+```!prisma-cloud-compute-host-forensic-list id=hostID limit=5```
+
+#### Human Readable Output
+### Host forensics report
+|type|app|path|command|
+|---|---|---|---|
+| Process spawned | demisto | /usr/bin/docker | docker ps -a |
+| Process spawned | demisto | /usr/bin/docker | docker ps -a |
+| Process spawned | cron | /usr/bin/wget | wget -q -o /dev/null -O /etc/cakeagent/cakelog.log -T 30 --post-data user=devopsdemistocom&secret=dT |
+| Process spawned | cron | /usr/bin/gawk | awk {gsub("%", "%%", $0);printf  $1 "\|" $2 "\|" $3 "\|" $4 "\|" $5 "\|" $6 "\|" $11 ":::"} |
+| Process spawned | cron | /bin/ps | ps aux |
+
