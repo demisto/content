@@ -30,15 +30,58 @@ CROWDSTRIKE_TO_XSOAR_TYPES = {
     'hash_sha256': FeedIndicatorType.File,
     'registry': FeedIndicatorType.Registry,
     'url': FeedIndicatorType.URL,
-    "ip_address": FeedIndicatorType.IP
+    'ip_address': FeedIndicatorType.IP,
+    'reports': ThreatIntel.ObjectsNames.REPORT,
+    'actors': ThreatIntel.ObjectsNames.THREAT_ACTOR,
+    'malware_families': ThreatIntel.ObjectsNames.MALWARE,
+    'vulnerabilities': FeedIndicatorType.CVE
 }
+INDICATOR_TO_CROWDSTRIKE_RELATION_DICT: Dict[str, Any] = {
+    ThreatIntel.ObjectsNames.REPORT: {
+        FeedIndicatorType.File: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.IP: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.Domain: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.URL: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.Email: EntityRelationship.Relationships.RELATED_TO,
+        FeedIndicatorType.Registry: EntityRelationship.Relationships.RELATED_TO,
+        FeedIndicatorType.Account: EntityRelationship.Relationships.RELATED_TO
+    },
+    ThreatIntel.ObjectsNames.THREAT_ACTOR: {
+        FeedIndicatorType.File: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.IP: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.Domain: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.URL: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.Email: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.Registry: EntityRelationship.Relationships.RELATED_TO,
+        FeedIndicatorType.Account: EntityRelationship.Relationships.RELATED_TO
+    },
+    ThreatIntel.ObjectsNames.MALWARE: {
+        FeedIndicatorType.File: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.IP: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.Domain: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.URL: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.Email: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.Registry: EntityRelationship.Relationships.RELATED_TO,
+        FeedIndicatorType.Account: EntityRelationship.Relationships.RELATED_TO
+    },
+    FeedIndicatorType.CVE: {
+        FeedIndicatorType.File: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.IP: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.Domain: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.URL: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.Email: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.Registry: EntityRelationship.Relationships.RELATED_TO,
+        FeedIndicatorType.Account: EntityRelationship.Relationships.RELATED_TO
+    }
+}
+CROWDSTRIKE_INDICATOR_RELATION_FIELDS = ['reports', 'actors', 'malware_families', 'vulnerabilities', 'relations']
 
 
 class Client(CrowdStrikeClient):
 
     def __init__(self, credentials, base_url, include_deleted, type, limit, tlp_color=None, feed_tags=None,
                  malicious_confidence=None, filter=None, generic_phrase=None, insecure=True, proxy=False,
-                 first_fetch=None):
+                 first_fetch=None, create_relationships=True):
         params = assign_params(credentials=credentials,
                                server_url=base_url,
                                insecure=insecure,
@@ -54,6 +97,7 @@ class Client(CrowdStrikeClient):
         self.feed_tags = feed_tags
         self.limit = limit
         self.first_fetch = first_fetch
+        self.create_relationships = create_relationships
 
     def get_indicators(self, params):
         response = super().http_request(
@@ -141,8 +185,7 @@ class Client(CrowdStrikeClient):
             params = ''
         return params
 
-    @staticmethod
-    def create_indicators_from_response(raw_response, tlp_color=None, feed_tags=None) -> list:
+    def create_indicators_from_response(self, raw_response, tlp_color=None, feed_tags=None) -> list:
         """ Builds indicators from API raw response
 
             Args:
@@ -181,6 +224,9 @@ class Client(CrowdStrikeClient):
                 indicator['fields']['trafficlightprotocol'] = tlp_color
             if feed_tags:
                 indicator['fields']['tags'].extend(feed_tags)
+            if self.create_relationships:
+                relationships = self.create_and_add_relationships(indicator, resource)
+                indicator['relationships'] = relationships
             parsed_indicators.append(indicator)
 
         return parsed_indicators
@@ -205,6 +251,41 @@ class Client(CrowdStrikeClient):
 
         result = ','.join(crowdstrike_types)
         return result
+
+    @staticmethod
+    def create_and_add_relationships(indicator: dict, resource: dict) -> list:
+
+        relationships = []
+
+        for field in CROWDSTRIKE_INDICATOR_RELATION_FIELDS:
+            if field in resource and resource[field]:
+                relationships.extend(create_relationship(field, indicator, resource))
+
+        return relationships
+
+
+def create_relationship(field: str, indicator: dict, resource: dict) -> list:
+
+    relationships = []
+
+    for relation in resource[field]:
+        related_indicator_type = CROWDSTRIKE_TO_XSOAR_TYPES[field] if field != 'relations' else \
+            CROWDSTRIKE_TO_XSOAR_TYPES[relation['type']]
+        relation_name = INDICATOR_TO_CROWDSTRIKE_RELATION_DICT[related_indicator_type].get(indicator['type'], indicator['type']) \
+            if field != 'relations' else EntityRelationship.Relationships.RELATED_TO
+
+        indicator_relation = EntityRelationship(
+            name=relation_name,
+            entity_a=indicator['value'],
+            entity_a_type=indicator['type'],
+            entity_b=relation['indicator'] if field == 'relations' else relation,
+            entity_b_type=related_indicator_type,
+            reverse_name=EntityRelationship.Relationships.RELATIONSHIPS_NAMES[relation_name]
+        )
+
+        relationships.append(indicator_relation)
+
+    return relationships
 
 
 def fetch_indicators_command(client: Client):
@@ -304,6 +385,7 @@ def main() -> None:
     max_fetch = arg_to_number(params.get('max_indicator_to_fetch')) if params.get('max_indicator_to_fetch') else 10000
     max_fetch = min(max_fetch, 10000)
     feed_tags = argToList(params.get('feedTags'))
+    create_relationships = argToBoolean(params.get('create_relationships', True))
 
     args = demisto.args()
 
@@ -324,7 +406,8 @@ def main() -> None:
             filter=filter,
             generic_phrase=generic_phrase,
             limit=max_fetch,
-            first_fetch=first_fetch
+            first_fetch=first_fetch,
+            create_relationships=create_relationships
         )
 
         if command == 'test-module':
