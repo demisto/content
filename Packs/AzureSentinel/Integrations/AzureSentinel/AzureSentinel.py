@@ -406,9 +406,7 @@ def get_incident_by_id_command(client, args):
 
     result = client.http_request('GET', url_suffix)
     incident = incident_data_to_xsoar_format(result)
-    content = incident.copy()
-    content['IncidentUrl'] = create_clickable_url(content.get('IncidentUrl'))
-    readable_output = tableToMarkdown(f'Incident {inc_id} details', content,
+    readable_output = tableToMarkdown(f'Incident {inc_id} details', incident, url_keys=['IncidentUrl'],
                                       headers=INCIDENT_HEADERS,
                                       headerTransform=pascalToSpace,
                                       removeNull=True)
