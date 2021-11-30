@@ -301,7 +301,7 @@ Filter insecure attacks on the playbook. (This command is only used on playbook)
 
 #### Base Command
 
-`filter-insecure-attacks`
+`picus-filter-insecure-attacks`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

@@ -15,7 +15,7 @@ This playbook does not use any scripts.
 ### Commands
 * picus-get-vector-list
 * picus-get-attack-results
-* filter-insecure-attacks
+* picus-filter-insecure-attacks
 * picus-run-attacks
 * picus-set-paramPB
 * picus-get-threat-results
