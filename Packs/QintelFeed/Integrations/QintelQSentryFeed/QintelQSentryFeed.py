@@ -141,7 +141,8 @@ def fetch_command(client, args, params):
     )
 
     return CommandResults(
-        readable_output=hr
+        readable_output=hr,
+        raw_response=indicators
     )
 
 

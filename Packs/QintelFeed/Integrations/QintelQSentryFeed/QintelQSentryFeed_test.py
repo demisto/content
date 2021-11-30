@@ -8,13 +8,11 @@ MOCK_TOKEN = 'my-token'
 
 
 def util_load_json(path):
-
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.load(f)
 
 
 def test_make_timestamp():
-
     from QintelQSentryFeed import _make_timestamp
     from datetime import datetime
 
@@ -144,3 +142,32 @@ def test_fetch_indicators_mal_hosting(mocker):
     assert i['fields']['description'] == 'This IP address belongs to a network block that has been abused by nation state actors'
     assert i['score'] == 3
     assert i['rawJSON'] == mock_response[0]
+
+
+def test_fetch_command(mocker):
+    from QintelQSentryFeed import Client, fetch_command
+
+    client = Client(base_url=MOCK_URL, verify=False, token=MOCK_TOKEN)
+    mock_response = util_load_json('test_data/mal_hosting.json')
+    mocker.patch.object(Client, 'fetch', return_value=mock_response)
+
+    params = {
+        'feeds': ['Malicious Hosting'],
+        'tlp_color': 'AMBER'
+    }
+    args = {}
+
+    res = fetch_command(client, args, params)
+    assert res.readable_output == """### Indicators from QSentry Feed:
+|Indicator|Service Name|Service Type|Criminal|Cdn|Comment|
+|---|---|---|---|---|---|
+| 192.168.1.0/29 |  |  |  |  | This IP address belongs to a network block that has been abused by nation state actors |
+| 192.168.2.0/24 |  |  |  |  | This IP address belongs to an identified bullet proof hoster. |
+"""
+    assert res.raw_response == [{'asn': 12345, 'ip_type': 'ipv4',
+                                 'comment': 'This IP address belongs to a network block that has been abused by '
+                                            'nation state actors',
+                                 'indicator': '192.168.1.0/29'}, {'asn': 12345, 'ip_type': 'ipv4',
+                                                                  'comment': 'This IP address belongs to an '
+                                                                             'identified bullet proof hoster.',
+                                                                  'indicator': '192.168.2.0/24'}]

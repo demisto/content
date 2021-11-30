@@ -108,6 +108,11 @@ configuration:
     happens on the 3rd-party vendor's side, so only indicators that are new or modified
     are sent to Cortex XSOAR. Therefore, all indicators coming from these feeds are
     labeled new or modified.
+- name: feedTags
+  display: Tags
+  required: false
+  type: 0
+  additionalinfo: Supports CSV values.
 description: 'This feed of IPs are associated with infrastructure actively utilized
   or abused by cyber criminals, including VPN/Proxy services and malicious hosts.
   With this integration, users can fetch a daily list of newly compiled indicators
