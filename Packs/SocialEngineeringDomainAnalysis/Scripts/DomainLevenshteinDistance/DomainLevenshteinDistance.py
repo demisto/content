@@ -1,7 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import re
-
 
 def levenshtein(s1, s2):
     l1 = len(s1)
