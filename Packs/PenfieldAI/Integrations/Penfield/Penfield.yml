@@ -21,10 +21,10 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: "The penfield-get-assignee command takes in necessary context data, and returns\
-  \ the analyst that Penfield believes the incident should be assigned to based on\
-  \ Penfield's models of skill and process. The test command verfies that the endpoint\
-  \ is reachable."
+description: "The penfield-get-assignee command takes in necessary context data, and\
+  \ returns the analyst that Penfield believes the incident should be assigned to\
+  \ based on Penfield's models of skill and process. The test command verfies that\
+  \ the endpoint is reachable."
 display: 'Penfield'
 name: Penfield
 script:
@@ -34,9 +34,9 @@ script:
       assigning the incident to. This information is saved in the output, but the
       incident will not be automatically assigned.'
     outputs:
-      - contextPath: Penfield.Recommended.Analyst
-        description: The XSOAR analyst Penfield recommends assigning the incident to.
-        type: String
+    - contextPath: Penfield.Recommended.Analyst
+      description: The XSOAR analyst Penfield recommends assigning the incident to.
+      type: String
     arguments:
     - name: analyst_ids
       description: 'An array of XSOAR analyst IDs for Penfield to choose from when
