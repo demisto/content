@@ -26,7 +26,7 @@ XSOAR_USER_AGENT = 'SentinelPartner-PaloAltoNetworks-CortexXsoar/1.0.0'
 AUTHORIZATION_ERROR_MSG = 'There was a problem in retrieving an updated access token.\n'\
                           'The response from the server did not contain the expected content.'
 
-INCIDENT_HEADERS = ['ID', 'IncidentNumber', 'Title', 'Description', 'Severity', 'Status', 'AssigneeName',
+INCIDENT_HEADERS = ['ID', 'IncidentNumber', 'Title', 'Description', 'Severity', 'Status', 'IncidentUrl', 'AssigneeName',
                     'AssigneeEmail', 'Label', 'FirstActivityTimeUTC', 'LastActivityTimeUTC', 'LastModifiedTimeUTC',
                     'CreatedTimeUTC', 'AlertsCount', 'BookmarksCount', 'CommentsCount', 'AlertProductNames',
                     'Tactics', 'FirstActivityTimeGenerated', 'LastActivityTimeGenerated']
@@ -146,6 +146,7 @@ def incident_data_to_xsoar_format(inc_data):
     formatted_data = {
         'ID': inc_data.get('name'),
         'IncidentNumber': properties.get('incidentNumber'),
+        'IncidentUrl': properties.get('incidentUrl'),
         'Title': properties.get('title'),
         'Description': properties.get('description'),
         'Severity': properties.get('severity'),
