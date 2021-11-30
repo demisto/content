@@ -60,7 +60,7 @@ script:
       description: The IP address to check (CSV supported).
       isArray: true
       name: ip
-      required: false
+      required: true
     - defaultValue: '30'
       description: The time range to return reports (in days). Default is 30.
       name: days
@@ -253,11 +253,11 @@ script:
     - contextPath: AbuseIPDB.Categories
       description: The list of AbuseIPDB categories.
       type: string
+  dockerimage: demisto/python:2.7.18.24398
   runonce: false
   script: ''
   subtype: python2
   type: python
-  dockerimage: demisto/python:2.7.18.24398
 fromversion: 5.0.0
 tests:
 - AbuseIPDB Test
