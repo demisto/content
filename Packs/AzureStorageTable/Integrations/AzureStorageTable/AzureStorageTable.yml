@@ -4,13 +4,10 @@ commonfields:
   version: -1
 configuration:
 - display: Storage account name
-  name: storage_account_name
+  displaypassword: Account SAS Token
+  name: credentials
   required: true
-  type: 0
-- display: Account SAS Token
-  name: account_sas_token
-  required: true
-  type: 4
+  type: 9
 - display: Use system proxy settings
   name: proxy
   required: false

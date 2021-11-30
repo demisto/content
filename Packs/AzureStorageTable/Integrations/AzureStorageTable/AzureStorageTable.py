@@ -596,8 +596,8 @@ def main() -> None:
 
     global account_sas_token
     global storage_account_name
-    account_sas_token = params['account_sas_token']
-    storage_account_name = params['storage_account_name']
+    account_sas_token = params['credentials']['password']
+    storage_account_name = params['credentials']['identifier']
     api_version = "2020-10-02"
     base_url = f'https://{storage_account_name}.table.core.windows.net/'
 
