@@ -4,3 +4,4 @@
 !prisma-cloud-compute-profile-container-forensic-list id=123,456 hostname=hostname1
 !prisma-cloud-compute-host-forensic-list id=hostID limit=5
 !prisma-cloud-compute-console-version-info
+!prisma-cloud-compute-custom-feeds-ip-list

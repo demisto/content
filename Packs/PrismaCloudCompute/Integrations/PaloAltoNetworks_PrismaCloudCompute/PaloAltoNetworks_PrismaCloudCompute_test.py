@@ -3,7 +3,7 @@ from collections import OrderedDict
 from PaloAltoNetworks_PrismaCloudCompute import (
     PrismaCloudComputeClient, camel_case_transformer, fetch_incidents, get_headers,
     HEADERS_BY_NAME, get_profile_host_list, get_container_profile_list, get_container_hosts_list,
-    get_profile_container_forensic_list, get_profile_host_forensic_list, get_console_version
+    get_profile_container_forensic_list, get_profile_host_forensic_list, get_console_version, get_custom_feeds_ip_list
 )
 
 from CommonServerPython import DemistoException
@@ -561,6 +561,10 @@ HTTP_REQUEST_URL = [
     (
         get_console_version,
         "/version"
+    ),
+    (
+        get_custom_feeds_ip_list,
+        "/feeds/custom/ips"
     )
 ]
 

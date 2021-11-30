@@ -673,6 +673,29 @@ def get_console_version(client: PrismaCloudComputeClient) -> CommandResults:
     )
 
 
+def get_custom_feeds_ip_list(client: PrismaCloudComputeClient) -> CommandResults:
+    """
+    Get all the BlackListed IP addresses in the system.
+    Implement the command 'prisma-cloud-compute-custom-feeds-ip-list'
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    feeds = get_api_info(client=client, url_suffix="/feeds/custom/ips")
+
+    if feeds and "modified" in feeds:
+        feeds["modified"] = parse_date_string_format(date_string=feeds["modified"])
+
+    return CommandResults(
+        outputs_prefix="prismaCloudCompute.customFeedIP",
+        outputs=feeds,
+        readable_output=tableToMarkdown(name="IP Feeds", t=feeds, headers=["modified", "feed"])
+    )
+
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -706,7 +729,8 @@ def main():
     }
 
     available_commands_without_args = {
-        'prisma-cloud-compute-console-version-info': get_console_version
+        'prisma-cloud-compute-console-version-info': get_console_version,
+        'prisma-cloud-compute-custom-feeds-ip-list': get_custom_feeds_ip_list
     }
 
     try:
