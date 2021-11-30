@@ -37,7 +37,7 @@
                     {
                         "displayType": "ROW",
                         "h": 3,
-                        "i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                        "i": "caseinfoid-kkq7tnozrg-caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
                         "items": [
                             {
@@ -103,10 +103,32 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
+                                "fieldId": "dbotmodified",
+                                "height": 22,
+                                "id": "incident-modified-field",
+                                "index": 6,
+                                "listId": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "dbotclosed",
+                                "height": 22,
+                                "id": "eda146a0-a1ba-11ea-8efe-d92f013a0581",
+                                "index": 7,
+                                "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
                                 "fieldId": "dbottotaltime",
                                 "height": 22,
                                 "id": "c57778a0-a5e0-11ea-beb5-2996637e1d9e",
-                                "index": 6,
+                                "index": 8,
                                 "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -117,14 +139,13 @@
                                 "fieldId": "dbotduedate",
                                 "height": 22,
                                 "id": "incident-dueDate-field",
-                                "index": 7,
+                                "index": 9,
                                 "listId": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
-                        "maxW": 1,
+                        "maxW": 3,
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
@@ -137,9 +158,8 @@
                     {
                         "displayType": "ROW",
                         "h": 2,
-                        "i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
-                        "maxH": null,
-                        "maxW": 1,
+                        "i": "caseinfoid-kkq7tnozrg-caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxW": 3,
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
@@ -154,9 +174,8 @@
                         "displayType": "ROW",
                         "h": 2,
                         "hideName": false,
-                        "i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
-                        "maxH": null,
-                        "maxW": 1,
+                        "i": "caseinfoid-kkq7tnozrg-caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+                        "maxW": 3,
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
@@ -170,7 +189,7 @@
                     {
                         "displayType": "ROW",
                         "h": 2,
-                        "i": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
+                        "i": "caseinfoid-kkq7tnozrg-caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
                         "isVisible": true,
                         "items": [
                             {
@@ -210,8 +229,7 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
-                        "maxW": 1,
+                        "maxW": 3,
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
@@ -219,43 +237,23 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 5
+                        "y": 4
                     },
                     {
                         "description": "",
                         "displayType": "CARD",
-                        "h": 3,
-                        "i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+                        "h": 2,
+                        "i": "caseinfoid-kkq7tnozrg-caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
                         "isVisible": true,
                         "items": [
                             {
                                 "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "azuredevopsdescription",
-                                "height": 53,
-                                "id": "ac0b9a50-3265-11ec-84d6-5f4988896723",
-                                "index": 0,
-                                "listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
+                                "endCol": 1,
                                 "fieldId": "azuredevopsstatus",
                                 "height": 53,
-                                "id": "86b67c20-3fcb-11ec-96fd-11c836f67ccc",
+                                "id": "a997db30-3265-11ec-84d6-5f4988896723",
                                 "index": 0,
                                 "listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "title",
-                                "height": 53,
-                                "id": "28f52c30-3fcb-11ec-96fd-11c836f67ccc",
-                                "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -263,34 +261,22 @@
                                 "endCol": 2,
                                 "fieldId": "description",
                                 "height": 53,
-                                "id": "2d4a0760-3fcb-11ec-96fd-11c836f67ccc",
+                                "id": "112d7940-51eb-11ec-a732-11ffdecee7de",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "title",
+                                "height": 53,
+                                "id": "06d77270-51eb-11ec-a732-11ffdecee7de",
                                 "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "dbotcreatedby",
-                                "height": 53,
-                                "id": "350454b0-3fcb-11ec-96fd-11c836f67ccc",
-                                "index": 3,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "azuredevopstitle",
-                                "height": 53,
-                                "id": "a8788880-3265-11ec-84d6-5f4988896723",
-                                "index": -1,
-                                "listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
-                                "sectionItemType": "field",
-                                "startCol": 1
                             }
                         ],
-                        "maxH": null,
-                        "maxW": 1,
+                        "maxW": 3,
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
@@ -304,7 +290,7 @@
                         "description": "",
                         "displayType": "ROW",
                         "h": 2,
-                        "i": "caseinfoid-2bef1500-a0f2-11ea-a9ea-3d6524d9ea90",
+                        "i": "caseinfoid-kkq7tnozrg-caseinfoid-2bef1500-a0f2-11ea-a9ea-3d6524d9ea90",
                         "items": [
                             {
                                 "endCol": 2,
@@ -317,8 +303,7 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
-                        "maxW": 1,
+                        "maxW": 3,
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
@@ -327,13 +312,13 @@
                         "type": "labels",
                         "w": 1,
                         "x": 2,
-                        "y": 3
+                        "y": 2
                     },
                     {
                         "displayType": "ROW",
                         "h": 2,
                         "hideName": false,
-                        "i": "caseinfoid-192828c0-a1bb-11ea-8efe-d92f013a0581",
+                        "i": "caseinfoid-kkq7tnozrg-caseinfoid-192828c0-a1bb-11ea-8efe-d92f013a0581",
                         "items": [
                             {
                                 "args": {},
@@ -358,7 +343,7 @@
                                 "fieldId": "",
                                 "height": 44,
                                 "id": "4d83eff0-a1bb-11ea-8efe-d92f013a0581",
-                                "index": 1,
+                                "index": 2,
                                 "listId": "caseinfoid-192828c0-a1bb-11ea-8efe-d92f013a0581",
                                 "name": "Close as Duplicate",
                                 "scriptId": "CloseInvestigationAsDuplicate",
@@ -372,7 +357,7 @@
                                 "fieldId": "",
                                 "height": 44,
                                 "id": "1e97e9d0-a1bb-11ea-8efe-d92f013a0581",
-                                "index": 2,
+                                "index": 3,
                                 "name": "Link Incidents",
                                 "scriptId": "LinkIncidentsButton",
                                 "sectionItemType": "button",
@@ -392,8 +377,7 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
-                        "maxW": 1,
+                        "maxW": 3,
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
@@ -407,7 +391,7 @@
                         "displayType": "CARD",
                         "h": 4,
                         "hideName": false,
-                        "i": "caseinfoid-3a3bb870-3269-11ec-861a-d1f08a1c9041",
+                        "i": "caseinfoid-kkq7tnozrg-caseinfoid-3a3bb870-3269-11ec-861a-d1f08a1c9041",
                         "items": [
                             {
                                 "endCol": 2,
@@ -419,13 +403,29 @@
                                 "startCol": 0
                             },
                             {
-                                "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "azuredevopscreatedby",
+                                "fieldId": "azuredevopsrepositoryid",
                                 "height": 53,
-                                "id": "5bbc8880-3269-11ec-861a-d1f08a1c9041",
-                                "index": 0,
-                                "listId": "caseinfoid-3a3bb870-3269-11ec-861a-d1f08a1c9041",
+                                "id": "4a1e7e30-3269-11ec-861a-d1f08a1c9041",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "azuredevopsrepositoryname",
+                                "height": 53,
+                                "id": "4bc99620-3269-11ec-861a-d1f08a1c9041",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "azuredevopsprojectid",
+                                "height": 53,
+                                "id": "4f48f8e0-3269-11ec-861a-d1f08a1c9041",
+                                "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -434,36 +434,7 @@
                                 "fieldId": "azuredevopsprojectname",
                                 "height": 53,
                                 "id": "50937a40-3269-11ec-861a-d1f08a1c9041",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "azuredevopsprojectid",
-                                "height": 53,
-                                "id": "0e33ceb0-3fcb-11ec-96fd-11c836f67ccc",
-                                "index": 1,
-                                "listId": "caseinfoid-3a3bb870-3269-11ec-861a-d1f08a1c9041",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "azuredevopsrepositoryid",
-                                "height": 53,
-                                "id": "0af76860-3fcb-11ec-96fd-11c836f67ccc",
-                                "index": 2,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "azuredevopsrepositoryname",
-                                "height": 53,
-                                "id": "0c4ee210-3fcb-11ec-96fd-11c836f67ccc",
-                                "index": 3,
+                                "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -471,14 +442,24 @@
                                 "endCol": 2,
                                 "fieldId": "azuredevopspullrequestid",
                                 "height": 53,
-                                "id": "14095670-3fcb-11ec-96fd-11c836f67ccc",
-                                "index": 4,
+                                "id": "51b2a5e0-3269-11ec-861a-d1f08a1c9041",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "azuredevopscreatedby",
+                                "height": 53,
+                                "id": "5bbc8880-3269-11ec-861a-d1f08a1c9041",
+                                "index": 6,
+                                "listId": "caseinfoid-3a3bb870-3269-11ec-861a-d1f08a1c9041",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
-                        "maxW": 1,
+                        "maxW": 3,
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
@@ -500,7 +481,7 @@
                         "displayType": "ROW",
                         "h": 2,
                         "hideItemTitleOnlyOne": true,
-                        "i": "kkq7tnozrg-c504da40-a1ba-11ea-8efe-d92f013a0581",
+                        "i": "kkq7tnozrg-caseinfoid-kkq7tnozrg-c504da40-a1ba-11ea-8efe-d92f013a0581",
                         "items": [
                             {
                                 "endCol": 2,
@@ -527,7 +508,7 @@
                     },
                     {
                         "h": 3,
-                        "i": "kkq7tnozrg-a8f75840-a1bb-11ea-8efe-d92f013a0581",
+                        "i": "kkq7tnozrg-caseinfoid-kkq7tnozrg-a8f75840-a1bb-11ea-8efe-d92f013a0581",
                         "items": [],
                         "maxH": null,
                         "maxW": 2,
@@ -545,7 +526,7 @@
                         "displayType": "CARD",
                         "h": 2,
                         "hideItemTitleOnlyOne": true,
-                        "i": "kkq7tnozrg-fe4c0ff0-a1bd-11ea-8efe-d92f013a0581",
+                        "i": "kkq7tnozrg-caseinfoid-kkq7tnozrg-fe4c0ff0-a1bd-11ea-8efe-d92f013a0581",
                         "items": [
                             {
                                 "endCol": 2,
@@ -574,7 +555,7 @@
                         "displayType": "ROW",
                         "h": 2,
                         "hideName": false,
-                        "i": "kkq7tnozrg-454e29b0-a1be-11ea-8efe-d92f013a0581",
+                        "i": "kkq7tnozrg-caseinfoid-kkq7tnozrg-454e29b0-a1be-11ea-8efe-d92f013a0581",
                         "items": [
                             {
                                 "endCol": 2,
@@ -655,7 +636,7 @@
                     },
                     {
                         "h": 2,
-                        "i": "kkq7tnozrg-c4515bf0-a4df-11ea-8c29-db553c036fb9",
+                        "i": "kkq7tnozrg-caseinfoid-kkq7tnozrg-c4515bf0-a4df-11ea-8c29-db553c036fb9",
                         "items": [],
                         "maxH": null,
                         "maxW": 2,
@@ -673,7 +654,7 @@
                     },
                     {
                         "h": 3,
-                        "i": "kkq7tnozrg-68a06320-b0cc-11ea-b214-43cd85c54102",
+                        "i": "kkq7tnozrg-caseinfoid-kkq7tnozrg-68a06320-b0cc-11ea-b214-43cd85c54102",
                         "items": [],
                         "maxH": null,
                         "maxW": 1,
