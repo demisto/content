@@ -246,7 +246,7 @@ Searches Splunk for events.
 | update_context | Determines whether the results will be entered into the context. | Optional |
 | polling | Use XSOAR built-in polling to retrieve the result when it's ready. | Optional |
 | interval_in_seconds | Interval in seconds between each poll. | Optional |
-| update_context | The job sid. | Optional |
+| sid | The job sid. | Optional |
 
 ##### Context Output
 
