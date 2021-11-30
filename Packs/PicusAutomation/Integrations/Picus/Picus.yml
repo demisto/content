@@ -358,7 +358,7 @@ script:
     description: Filter insecure attacks on playbook. (This command is only used on
       playbook)
     execution: false
-    name: filter-insecure-attacks
+    name: picus-filter-insecure-attacks
     outputs:
     - contextPath: Picus.filterinsecure
       description: Insecure Attack List
