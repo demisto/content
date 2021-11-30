@@ -1686,10 +1686,10 @@ def build_search_kwargs(args, polling=False):
     if demisto.get(args, 'app'):
         kwargs_normalsearch['app'] = args['app']
     if polling:
-        # A blocking search runs synchronously, and returns a job when it's finished.
-        # It will be added just if it's not a polling command.
         kwargs_normalsearch['exec_mode'] = "normal"
     else:
+        # A blocking search runs synchronously, and returns a job when it's finished.
+        # It will be added just if it's not a polling command.
         kwargs_normalsearch['exec_mode'] = "blocking"
     return kwargs_normalsearch
 
