@@ -298,3 +298,84 @@ Get the hosts where a specific container is running.
 |---|---|
 | container_id_1 | host_id-1,<br>host_id-2 |
 
+
+### prisma-cloud-compute-profile-container-forensic-list
+***
+Get runtime forensics data for a specific container on a specific host
+
+
+#### Base Command
+
+`prisma-cloud-compute-profile-container-forensic-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The container ID. | Required | 
+| collections | Collections are collections scoping the query. | Optional | 
+| hostname | Hostname is the hostname for which data should be fetched. | Required | 
+| incidentID | IncidentID is the incident ID in case the request kind is an incident. | Optional | 
+| eventTime | EventTime is the forensic event pivot time in milliseconds (used to fetch events). | Optional | 
+| format | Format is the forensic data format. | Optional | 
+| limit | maximum of forensics data records to return. Default is 20. | Optional | 
+| offset | The offset number to begin listing records from . Default is 0. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| prismaCloudCompute.containerForensic.Forensics.allPorts | Boolean | AllPorts indicates all listening ports are allowed | 
+| prismaCloudCompute.containerForensic.Forensics.attack | Unknown | Attack is the event attack type. | 
+| prismaCloudCompute.containerForensic.Forensics.category | Unknown | Category is the incident category. | 
+| prismaCloudCompute.containerForensic.Forensics.command | String | Command is the event command | 
+| prismaCloudCompute.containerForensic.Forensics.containerId | Unknown | ContainerID is the event container id | 
+| prismaCloudCompute.containerForensic.Forensics.dstIP | String | DstIP is the destination IP of the connection | 
+| prismaCloudCompute.containerForensic.Forensics.dstPort | Unknown | DstPort is the destination port | 
+| prismaCloudCompute.containerForensic.Forensics.dstProfileID | String | DstProfileID is the profile ID of the connection destination | 
+| prismaCloudCompute.containerForensic.Forensics.effect | String | Effect is the runtime audit effect | 
+| prismaCloudCompute.containerForensic.Forensics.listeningStartTime | Date | listeningStartTime is the port listening start time | 
+| prismaCloudCompute.containerForensic.Forensics.message | String | Message is the runtime audit message | 
+| prismaCloudCompute.containerForensic.Forensics.networkCollectionType | Unknown | NetworkCollectionType is the type of the network collection method | 
+| prismaCloudCompute.containerForensic.Forensics.outbound | Boolean | Outbound indicates if the port is outbound | 
+| prismaCloudCompute.containerForensic.Forensics.path | String | Path is the event path | 
+| prismaCloudCompute.containerForensic.Forensics.pid | Number | Pid is the event process id | 
+| prismaCloudCompute.containerForensic.Forensics.port | Number | Port is the listening port | 
+| prismaCloudCompute.containerForensic.Forensics.ppid | Number | PPid is the event parent process id | 
+| prismaCloudCompute.containerForensic.Forensics.process | String | Process is the event processdescription | 
+| prismaCloudCompute.containerForensic.Forensics.srcIP | String | SrcIP is the source IP of the connection | 
+| prismaCloudCompute.containerForensic.Forensics.srcProfileID | String | SrcProfileID is the profile ID of the connection source | 
+| prismaCloudCompute.containerForensic.Forensics.static | Boolean | Static indicates the event was added to the profile without behavioral indication | 
+| prismaCloudCompute.containerForensic.Forensics.type | Unknown | Type is the event type. | 
+| prismaCloudCompute.containerForensic.Forensics.timestamp | Boolean | Timestamp is the event timestamp | 
+| prismaCloudCompute.containerForensic.Forensics.user | String | User is the event user | 
+| prismaCloudCompute.containerForensic.ContainerID | String | Container ID of the forensic. | 
+
+
+#### Command Example
+```!prisma-cloud-compute-profile-container-forensic-list id=123,456 hostname=hostname1```
+
+#### Human Readable Output
+### Containers forensic report
+|ContainerID|Type|Path|
+|---|---|---|
+| 123 | Process spawned | /usr/local/bin/defender |
+| 123 | Process spawned | /usr/local/bin/defender |
+| 123 | Process spawned | /bin/sed |
+| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/solvers/dump |
+| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/solvers/apt |
+| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/methods/store |
+| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/methods/rsh |
+| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/methods/rred |
+| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/methods/mirror |
+| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/methods/https |
+| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/methods/http |
+| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/methods/gpgv |
+| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/methods/ftp |
+| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/methods/file |
+| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/methods/copy |
+| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/methods/cdrom |
+| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/apt-helper |
+| 123 | Process spawned | /usr/local/bin/defender |
+| 123 | Process spawned | /usr/local/bin/defender |
+| 123 | Process spawned | /usr/local/bin/defender |
