@@ -857,8 +857,8 @@ def get_domain_command():
                 'EntryContext': context
             })
         except Exception as k:
-            print(k)
-            failed_domains += 1
+            raise Exception(k)
+            # failed_domains += 1
     if failed_domains == len(domains_list):
         raise Exception("Command failed to get any of the requested domains")
     return results
