@@ -28,3 +28,7 @@ Follow the next steps to create an instance:
 Filters should be in the format "{field':<field_name>, 'condition':<condition>, 'values':'val_1,val_2', 'logical_operator':<op>}".
 Supports comma-separated values, for example:
 {"field":"technician.name", "condition":"is", "values":"tech1,tech2", "logical_operator":"AND"}, {"field":"due_by_time", "condition":"greater than", "values":"1592946000000", "logical_operator":"AND"}.
+
+
+---
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/service-desk-plus)
