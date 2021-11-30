@@ -4747,6 +4747,10 @@
         {
             "playbookID": "test_AssignToNextShiftOOO",
             "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "JsonToTable - Test Playbook",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
@@ -4840,6 +4844,7 @@
         "VerifyOOBV2Predictions-Test": "Issue 37947",
         "HybridAnalysis-Test": "Issue 26599",
         "Infoblox Test": "Issue 25651",
+        "AutoFocusTagsFeed-test": "shares API quota with the other test",
         "Carbon Black Edr - Test": "Issue 40132",
         "Phishing v2 - Test - Actual Incident": "Issue 41322",
         "Kaspersky Security Center - Test": "Issue 36487",
