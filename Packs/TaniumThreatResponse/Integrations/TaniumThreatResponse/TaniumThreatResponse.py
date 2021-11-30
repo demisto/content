@@ -1331,6 +1331,15 @@ def start_quick_scan(client, data_args):
     return human_readable, outputs, raw_response
 
 
+def intel_doc_delete(client, data_args):
+    params = {
+        'id': data_args.get('intel_doc_id')
+    }
+    raw_response = client.do_request('DELETE', '/plugin/products/detect3/api/v1/intels/', params=params)
+
+    return 'Intel Doc deleted', {}, raw_response
+
+
 def fetch_incidents(client, alerts_states_to_retrieve):
     """
     Fetch events from this integration and return them as Demisto incidents
@@ -1430,7 +1439,8 @@ def main():
         'tanium-tr-delete-file-from-endpoint': delete_file_from_endpoint,
         'tanium-tr-get-process-timeline': get_process_timeline,
         'tanium-tr-intel-doc-create': intel_doc_create,
-        'tanium-tr-start-quick-scan': start_quick_scan
+        'tanium-tr-start-quick-scan': start_quick_scan,
+        'tanium-tr-intel-doc-delete': intel_doc_delete,
     }
 
     try:
