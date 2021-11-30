@@ -11,6 +11,8 @@ from _collections import defaultdict
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
+# comment for contrib
+
 ''' CONSTANTS '''
 SERVER_URL = 'https://api.maltiverse.com'
 DBOT_SCORE_KEY = 'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)'
@@ -511,8 +513,6 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
 
 
 def main():
-    print('testing contributions')
-    print('test resubmission')
     params = demisto.params()
     server_url = params.get('server_url') if params.get('server_url') else SERVER_URL
 
