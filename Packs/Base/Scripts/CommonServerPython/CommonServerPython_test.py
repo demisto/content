@@ -17,7 +17,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
-    url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict
+    url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer
 import CommonServerPython
 
 try:
@@ -698,6 +698,126 @@ class TestTableToMarkdown:
 | demisto/python2 | 2021-09-13 08:25:21 |
 '''
         assert table == expected_md_table
+
+    @staticmethod
+    def test_with_json_transformers_default():
+        """
+        Given:
+          - Nested json table.
+        When:
+          - Calling tableToMarkdown with `is_auto_transform_json` set to True.
+        Then:
+          - Parse the json table to the default format which supports nesting.
+        """
+        with open('test_data/nested_data_example.json') as f:
+            nested_data_example = json.load(f)
+        table = tableToMarkdown("tableToMarkdown test", nested_data_example,
+                                headers=['name', 'changelog', 'nested'],
+                                is_auto_json_transform=True)
+        if IS_PY3:
+            expected_table = """### tableToMarkdown test
+|name|changelog|nested|
+|---|---|---|
+| Active Directory Query | **1.0.4**:<br>	***path***: <br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>Fixed an issue where the ***ad-get-user*** command caused performance issues because the *limit* argument was not defined.<br><br>	***displayName***: 1.0.4 - R124496<br>	***released***: 2020-09-23T17:43:26Z<br>**1.0.5**:<br>	***path***: <br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed several typos.<br>- Updated the Docker image to: *demisto/ldap:1.0.0.11282*.<br><br>	***displayName***: 1.0.5 - 132259<br>	***released***: 2020-10-01T17:48:31Z<br>**1.0.6**:<br>	***path***: <br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed an issue where the DN parameter within query in the ***search-computer*** command was incorrect.<br>- Updated the Docker image to *demisto/ldap:1.0.0.12410*.<br><br>	***displayName***: 1.0.6 - 151676<br>	***released***: 2020-10-19T14:35:15Z | **item1**:<br>	***a***: 1<br>	***b***: 2<br>	***c***: 3<br>	***d***: 4 |
+"""
+        else:
+            expected_table = u"""### tableToMarkdown test
+|name|changelog|nested|
+|---|---|---|
+| Active Directory Query | **1.0.4**:<br>	***path***: <br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>Fixed an issue where the ***ad-get-user*** command caused performance issues because the *limit* argument was not defined.<br><br>	***displayName***: 1.0.4 - R124496<br>	***released***: 2020-09-23T17:43:26Z<br>**1.0.5**:<br>	***path***: <br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed several typos.<br>- Updated the Docker image to: *demisto/ldap:1.0.0.11282*.<br><br>	***displayName***: 1.0.5 - 132259<br>	***released***: 2020-10-01T17:48:31Z<br>**1.0.6**:<br>	***path***: <br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed an issue where the DN parameter within query in the ***search-computer*** command was incorrect.<br>- Updated the Docker image to *demisto/ldap:1.0.0.12410*.<br><br>	***displayName***: 1.0.6 - 151676<br>	***released***: 2020-10-19T14:35:15Z | **item1**:<br>	***a***: 1<br>	***c***: 3<br>	***b***: 2<br>	***d***: 4 |
+"""
+        assert table == expected_table
+
+    @staticmethod
+    def test_with_json_transformer_simple():
+        with open('test_data/simple_data_example.json') as f:
+            simple_data_example = json.load(f)
+        name_transformer = JsonTransformer(keys=['first', 'second'])
+        json_transformer_mapping = {'name': name_transformer}
+        table = tableToMarkdown("tableToMarkdown test", simple_data_example,
+                                json_transform_mapping=json_transformer_mapping)
+        if IS_PY3:
+            expected_table = """### tableToMarkdown test
+|name|value|
+|---|---|
+| **first**:<br>	***a***: val<br><br>***second***: b | val1 |
+| **first**:<br>	***a***: val2<br><br>***second***: d | val2 |
+"""
+        else:
+            expected_table = u"""### tableToMarkdown test
+|name|value|
+|---|---|
+| <br>***second***: b<br>**first**:<br>	***a***: val | val1 |
+| <br>***second***: d<br>**first**:<br>	***a***: val2 | val2 |
+"""
+        assert expected_table == table
+
+    @staticmethod
+    def test_with_json_transformer_nested():
+        """
+        Given:
+          - Nested json table.
+        When:
+          - Calling tableToMarkdown with JsonTransformer with only `keys` given.
+        Then:
+          - The header key which is transformed will parsed with the relevant keys.
+        """
+
+        with open('test_data/nested_data_example.json') as f:
+            nested_data_example = json.load(f)
+        changelog_transformer = JsonTransformer(keys=['releaseNotes', 'released'], is_nested=True)
+        table_json_transformer = {'changelog': changelog_transformer}
+        table = tableToMarkdown("tableToMarkdown test", nested_data_example, headers=['name', 'changelog'],
+                                json_transform_mapping=table_json_transformer)
+        expected_table = """### tableToMarkdown test
+|name|changelog|
+|---|---|
+| Active Directory Query | **1.0.4**:<br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>Fixed an issue where the ***ad-get-user*** command caused performance issues because the *limit* argument was not defined.<br><br>	***released***: 2020-09-23T17:43:26Z<br>**1.0.5**:<br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed several typos.<br>- Updated the Docker image to: *demisto/ldap:1.0.0.11282*.<br><br>	***released***: 2020-10-01T17:48:31Z<br>**1.0.6**:<br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed an issue where the DN parameter within query in the ***search-computer*** command was incorrect.<br>- Updated the Docker image to *demisto/ldap:1.0.0.12410*.<br><br>	***released***: 2020-10-19T14:35:15Z |
+"""
+        assert expected_table == table
+
+    @staticmethod
+    def test_with_json_transformer_nested_complex():
+        """
+        Given:
+          - Double nested json table.
+        When:
+          - Calling tableToMarkdown with JsonTransformer with only `keys_lst` given and `is_nested` set to True.
+        Then:
+          - The header key which is transformed will parsed with the relevant keys.
+        """
+        with open('test_data/complex_nested_data_example.json') as f:
+            complex_nested_data_example = json.load(f)
+        changelog_transformer = JsonTransformer(keys=['releaseNotes', 'c'], is_nested=True)
+        table_json_transformer = {'changelog': changelog_transformer}
+        table = tableToMarkdown('tableToMarkdown test', complex_nested_data_example, headers=['name', 'changelog'],
+                                json_transform_mapping=table_json_transformer)
+        expected_table = """### tableToMarkdown test
+|name|changelog|
+|---|---|
+| Active Directory Query | **1.0.4**:<br>	**path**:<br>		**a**:<br>			**b**:<br>				***c***: we should see this value<br>**1.0.4**:<br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>Fixed an issue where the ***ad-get-user*** command caused performance issues because the *limit* argument was not defined.<br><br>**1.0.5**:<br>	**path**:<br>		**a**:<br>			**b**:<br>				***c***: we should see this value<br>**1.0.5**:<br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed several typos.<br>- Updated the Docker image to: *demisto/ldap:1.0.0.11282*.<br><br>**1.0.6**:<br>	**path**:<br>		**a**:<br>			**b**:<br>				***c***: we should see this value<br>**1.0.6**:<br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed an issue where the DN parameter within query in the ***search-computer*** command was incorrect.<br>- Updated the Docker image to *demisto/ldap:1.0.0.12410*.<br> |
+"""
+
+        assert expected_table == table
+
+    @staticmethod
+    def test_with_json_transformer_func():
+
+        def changelog_to_str(json_input):
+            return ', '.join(json_input.keys())
+
+        with open('test_data/nested_data_example.json') as f:
+            nested_data_example = json.load(f)
+        changelog_transformer = JsonTransformer(func=changelog_to_str)
+        table_json_transformer = {'changelog': changelog_transformer}
+        table = tableToMarkdown("tableToMarkdown test", nested_data_example, headers=['name', 'changelog'],
+                                json_transform_mapping=table_json_transformer)
+        expected_table = """### tableToMarkdown test
+|name|changelog|
+|---|---|
+| Active Directory Query | 1.0.4, 1.0.5, 1.0.6 |
+"""
+        assert expected_table == table
 
 
 @pytest.mark.parametrize('data, expected_data', COMPLEX_DATA_WITH_URLS)
@@ -4853,12 +4973,33 @@ class TestIndicatorsSearcher:
             # mock the end of indicators
             searchAfter = None
 
-        if page >= 17:
+        if page and page >= 17:
             # checking a unique case when trying to reach a certain page and not all the indicators
             iocs = []
             searchAfter = None
 
         return {'searchAfter': searchAfter, 'iocs': iocs, 'total': 7}
+
+    def mock_search_indicators_search_after(self, fromDate='', toDate='', query='', size=0, value='', page=0,
+                                            searchAfter=None, populateFields=None):
+        """
+        Mocks search indicators returning different results for searchAfter value:
+          - None: {searchAfter: 0, iocs: [...]}
+          - 0-2: {searchAfter: i+1, iocs: [...]}
+          - 3+: {searchAfter: None, iocs: []}
+
+        total of 4 iocs available
+        """
+        search_after_options = (0, 1, 2)
+        if searchAfter is None:
+            search_after_value = search_after_options[0]
+        else:
+            if searchAfter in search_after_options:
+                search_after_value = searchAfter + 1
+            else:
+                return {'searchAfter': None, 'iocs': []}
+        iocs = [{'value': 'mock{}'.format(search_after_value)}]
+        return {'searchAfter': search_after_value, 'iocs': iocs, 'total': 4}
 
     def test_search_indicators_by_page(self, mocker):
         """
@@ -4932,7 +5073,7 @@ class TestIndicatorsSearcher:
         """
         Given:
           - Searching indicators in a specific page that is not 0
-          - Server version in equal or higher than 6.1.0
+          - Server version in less than 6.1.0
         When:
           - Mocking search indicators in this specific page
           so search_after is None
@@ -4944,45 +5085,56 @@ class TestIndicatorsSearcher:
         mocker.patch.object(demisto, 'searchIndicators', side_effect=self.mock_search_after_output)
 
         search_indicators_obj_search_after = IndicatorsSearcher(page=17)
-        search_indicators_obj_search_after._can_use_search_after = True
+        search_indicators_obj_search_after._can_use_search_after = False
         search_indicators_obj_search_after.search_indicators_by_version()
 
         assert search_indicators_obj_search_after._search_after_param is None
-        assert search_indicators_obj_search_after._page == 17
+        assert search_indicators_obj_search_after._page == 18
 
-    def test_iterator(self, mocker):
+    def test_iterator__pages(self, mocker):
         """
         Given:
-          - Searching indicators from page 10
-          - Total available indicators == 7
+          - Searching indicators from page 1
+          - Total available indicators == 6
         When:
-          - Searching indicators using iterator (whether search_after is supported or not)
-          - Searching indicators a 2nd time using the same search object
+          - Searching indicators using iterator
         Then:
-          - Get 7 indicators
-          - Advance page to 17
-          - _is_search_done returns True when search_after is supported
-          - _is_search_done returns False when search_after is not supported
+          - Get 6 indicators
+          - Advance page to 7
+          - is_search_done returns True
         """
         from CommonServerPython import IndicatorsSearcher
         mocker.patch.object(demisto, 'searchIndicators', side_effect=self.mock_search_after_output)
 
-        search_indicators = IndicatorsSearcher(page=10)
-        search_indicators._can_use_search_after = True
-        results = []
-        for res in search_indicators:
-            results.append(res)
-        assert len(results) == 7
-        assert search_indicators.page == 17
-        assert search_indicators._is_search_done() is True
-
+        search_indicators = IndicatorsSearcher(page=1, size=1)
         search_indicators._can_use_search_after = False
         results = []
         for res in search_indicators:
             results.append(res)
-        assert len(results) == 7
-        assert search_indicators.page == 17
-        assert search_indicators._is_search_done() is True
+        assert len(results) == 6
+        assert search_indicators.page == 7
+        assert search_indicators.is_search_done() is True
+
+    def test_iterator__search_after(self, mocker):
+        """
+        Given:
+          - Searching indicators from first page
+          - Total available indicators == 7
+          - Limit is set to 10
+        When:
+          - Searching indicators using iterator
+          - search_after is supported
+        Then:
+          - Get 7 indicators
+        """
+        from CommonServerPython import IndicatorsSearcher
+        mocker.patch.object(demisto, 'searchIndicators', side_effect=self.mock_search_indicators_search_after)
+        search_indicators = IndicatorsSearcher(limit=10)
+        search_indicators._can_use_search_after = True
+        results = []
+        for res in search_indicators:
+            results.append(res)
+        assert len(results) == 4
 
     def test_iterator__empty_page(self, mocker):
         """
@@ -5004,39 +5156,24 @@ class TestIndicatorsSearcher:
         for res in search_indicators:
             results.append(res)
         assert len(results) == 0
-        assert search_indicators.page == 18
+        assert search_indicators.page == 19
 
-    def test_iterator__limit(self, mocker):
-        """
-        Given:
-          - Searching indicators from page 10
-          - Total available indicators == 7
-          - Limit is set to 5
-        When:
-          - Searching indicators using iterator (whether search_after is supported or not)
-          - Searching indicators a 2nd time using the same search object
-        Then:
-          - Get 5 indicators
-          - Advance page to 15 when search_after is supported (is_search_done is supported)
-          - Advance page to 15 when search_after is not supported (is_search done is not supported)
-        """
+    def test_iterator__research_flow(self, mocker):
         from CommonServerPython import IndicatorsSearcher
-        mocker.patch.object(demisto, 'searchIndicators', side_effect=self.mock_search_after_output)
-
-        search_indicators = IndicatorsSearcher(page=10, limit=5)
+        mocker.patch.object(demisto, 'searchIndicators', side_effect=self.mock_search_indicators_search_after)
+        # fetch first 3
+        search_indicators = IndicatorsSearcher(limit=3)
         search_indicators._can_use_search_after = True
         results = []
         for res in search_indicators:
             results.append(res)
-        assert len(results) == 5
-        assert search_indicators.page == 15
-
-        search_indicators._can_use_search_after = False
+        assert len(results) == 3
+        # fetch 1 more (limit set to 2, but only 1 available)
+        search_indicators.limit += 2
         results = []
         for res in search_indicators:
             results.append(res)
-        assert len(results) == 5
-        assert search_indicators.page == 15
+        assert len(results) == 1
 
 
 class TestAutoFocusKeyRetriever:
@@ -5712,3 +5849,10 @@ def test_indicators_value_to_clickable_invalid(mocker):
     assert not result
 
 
+def test_arg_to_number():
+    """
+    Test if arg_to_number handles unicode object without failing.
+    """
+    from CommonServerPython import arg_to_number
+    result = arg_to_number(u'1')
+    assert result == 1

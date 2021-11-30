@@ -3,7 +3,7 @@
     "layout": "Threat Actor Report",
     "locked": false,
     "name": "Threat Actor",
-    "color": "#8052f4",
+    "color": "#9D2B26",
     "definitionId": "ThreatIntelReport",
     "genericModuleId": "threatIntel",
     "system": false,
