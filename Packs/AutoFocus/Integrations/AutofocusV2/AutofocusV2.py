@@ -1140,6 +1140,27 @@ def convert_url_to_ascii_character(url_name):
     return re.sub('([^a-zA-Z\W]+)', convert_non_ascii_chars, url_name)
 
 
+def find_hash_type(file_hash: str = ""):
+    """Find the type of a file hash by its length.
+
+    Args:
+        file_hash: The hash that represents the file.
+
+    Returns:
+        4 variables that represent the sha of the file respectively [md5, sha1, sha256, sha512],
+        only one is with the hash value the others are None.
+
+    """
+    if len(file_hash) == 32:  # md5
+        return file_hash, None, None, None
+    if len(file_hash) == 40:  # sha1
+        return None, file_hash, None, None
+    if len(file_hash) == 64:  # sha256
+        return None, None, file_hash, None
+    if len(file_hash) == 128:  # sha512
+        return None, None, None, file_hash
+
+
 ''' COMMANDS'''
 
 
@@ -1588,8 +1609,8 @@ def search_file_command(file, reliability, create_relationships):
     command_results = []
     relationships = []
 
-    for sha256 in file_list:
-        raw_res = search_indicator('filehash', sha256.lower())
+    for file_hash in file_list:
+        raw_res = search_indicator('filehash', file_hash.lower())
         if not raw_res.get('indicator'):
             raise ValueError('Invalid response for indicator')
 
@@ -1598,20 +1619,20 @@ def search_file_command(file, reliability, create_relationships):
 
         score = calculate_dbot_score(indicator, indicator_type)
         dbot_score = Common.DBotScore(
-            indicator=sha256,
+            indicator=file_hash,
             indicator_type=DBotScoreType.FILE,
             integration_name=VENDOR_NAME,
             score=score,
             reliability=reliability
         )
         if create_relationships:
-            relationships = create_relationships_list(entity_a=sha256, entity_a_type=indicator_type,
+            relationships = create_relationships_list(entity_a=file_hash, entity_a_type=indicator_type,
                                                       tags=raw_tags,
                                                       reliability=reliability)
         autofocus_file_output = parse_indicator_response(indicator, raw_tags, indicator_type)
 
         tags = autofocus_file_output.get('Tags')
-        table_name = f'{VENDOR_NAME} {indicator_type} reputation for: {sha256}'
+        table_name = f'{VENDOR_NAME} {indicator_type} reputation for: {file_hash}'
         if tags:
             indicators_data = autofocus_file_output.copy()
             del indicators_data['Tags']
@@ -1620,8 +1641,13 @@ def search_file_command(file, reliability, create_relationships):
         else:
             md = tableToMarkdown(table_name, autofocus_file_output)
 
+        md5, sha1, sha256, sha512 = find_hash_type(file_hash)
+
         file = Common.File(
+            md5=md5,
+            sha1=sha1,
             sha256=sha256,
+            sha512=sha512,
             dbot_score=dbot_score,
             malware_family=get_tags_for_tags_and_malware_family_fields(raw_tags, True),
             tags=get_tags_for_tags_and_malware_family_fields(raw_tags),
