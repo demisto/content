@@ -92,7 +92,7 @@ Gets a single incident from Azure Sentinel.
 | AzureSentinel.Incident.FirstActivityTimeGenerated | Date | The incident's generated first activity time. | 
 | AzureSentinel.Incident.LastActivityTimeGenerated | Date | The incident's generated last activity time. | 
 | AzureSentinel.Incident.Etag | String | The Etag of the incident. | 
-| AzureSentinel.Incident.IncidentUrl | String | The link url to the incident in Azure portal. |
+| AzureSentinel.Incident.IncidentUrl | String | The deep-link url to the incident in Azure portal. |
 
 
 #### Command Example

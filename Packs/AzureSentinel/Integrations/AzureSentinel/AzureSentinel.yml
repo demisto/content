@@ -145,7 +145,7 @@ script:
       description: The Etag of the incident.
       type: String
     - contextPath: AzureSentinel.Incident.IncidentUrl
-      description: The link url to the incident in Azure portal.
+      description: The deep-link url to the incident in Azure portal.
       type: String
   - arguments:
     - default: false
