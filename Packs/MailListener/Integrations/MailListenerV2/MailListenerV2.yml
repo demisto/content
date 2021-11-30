@@ -38,8 +38,8 @@ configuration:
   required: false
   type: 0
 - display: Mail service
-  additionalinfo: There are changes between email services regarding how to set the query with filters (such as the sender's email address) to fetch emails
-    So if you are having anhy issues with the fetch emails when you add filters consider using the Office365 email service
+  additionalinfo: There are differences between email services regarding the format of the query with filters while fetching emails (such as a sender's email).
+    If you are experiencing any issues fetching emails when you add filters, consider using the Office365 email service.
   name: mail_service
   defaultvalue: Gmail
   type: 15
