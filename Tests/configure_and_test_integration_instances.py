@@ -3,7 +3,6 @@ from __future__ import print_function
 import argparse
 import ast
 import json
-import logging
 import os
 import subprocess
 import sys
@@ -15,8 +14,9 @@ from enum import IntEnum
 from pprint import pformat
 from threading import Thread
 from time import sleep
-from typing import List, Tuple
+from typing import List, Tuple, Union
 
+from urllib.parse import quote_plus
 import demisto_client
 from demisto_sdk.commands.test_content.constants import SSH_USER
 from ruamel import yaml
@@ -24,6 +24,7 @@ from ruamel import yaml
 from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies, \
     upload_zipped_packs, install_all_content_packs_for_nightly
 from Tests.scripts.utils.log_util import install_logging
+from Tests.scripts.utils import logging_wrapper as logging
 from Tests.test_content import extract_filtered_tests, get_server_numeric_version
 from Tests.test_integration import __get_integration_config, __test_integration_instance, disable_all_integrations
 from Tests.tools import run_with_proxy_configured
@@ -107,7 +108,7 @@ class Server:
                                 stderr=subprocess.STDOUT)
 
 
-def get_id_set(id_set_path) -> dict:
+def get_id_set(id_set_path) -> Union[dict, None]:
     """
     Used to collect the ID set so it can be passed to the Build class on init.
 
@@ -115,6 +116,7 @@ def get_id_set(id_set_path) -> dict:
     """
     if os.path.isfile(id_set_path):
         return get_json_file(id_set_path)
+    return None
 
 
 class Build:
@@ -267,7 +269,7 @@ def check_test_version_compatible_with_server(test, server_version):
     test_to_version = format_version(test.get('toversion', '99.99.99'))
     server_version = format_version(server_version)
 
-    if not (LooseVersion(test_from_version) <= LooseVersion(server_version) <= LooseVersion(test_to_version)):
+    if not LooseVersion(test_from_version) <= LooseVersion(server_version) <= LooseVersion(test_to_version):
         playbook_id = test.get('playbookID')
         logging.debug(
             f'Test Playbook: {playbook_id} was ignored in the content installation test due to version mismatch '
@@ -575,7 +577,7 @@ def __set_server_keys(client, integration_params, integration_name):
 
     logging.info(f'Setting server keys for integration: {integration_name}')
 
-    data = {
+    data: dict = {
         'data': {},
         'version': -1
     }
@@ -851,6 +853,7 @@ def get_env_conf():
             "Role": "DEMISTO EVN"  # e.g. 'Server Master'
         }]
     #  END CHANGE ON LOCAL RUN  #
+    return None
 
 
 def map_server_to_port(env_results, instance_role):
@@ -900,7 +903,7 @@ def configure_servers_and_restart(build):
         sleep(60)
 
 
-def get_tests(build: Build) -> List[str]:
+def get_tests(build: Build) -> List[dict]:
     """
     Selects the tests from that should be run in this execution and filters those that cannot run in this server version
     Args:
@@ -917,10 +920,9 @@ def get_tests(build: Build) -> List[str]:
             # skip test button testing
             logging.debug('Not running instance tests in nightly flow')
             tests_for_iteration = []
-        elif filtered_tests:
-            tests_for_iteration = [test for test in tests if test.get('playbookID', '') in filtered_tests]
         else:
-            tests_for_iteration = tests
+            tests_for_iteration = [test for test in tests
+                                   if not filtered_tests or test.get('playbookID', '') in filtered_tests]
 
         tests_for_iteration = filter_tests_with_incompatible_version(tests_for_iteration, server_numeric_version)
         return tests_for_iteration
@@ -1302,7 +1304,7 @@ def get_non_added_packs_ids(build: Build):
 
 
 def set_marketplace_url(servers, branch_name, ci_build_number):
-    url_suffix = f'{branch_name}/{ci_build_number}'
+    url_suffix = quote_plus(f'{branch_name}/{ci_build_number}')
     config_path = 'marketplace.bootstrap.bypass.url'
     config = {config_path: f'https://storage.googleapis.com/marketplace-ci-build/content/builds/{url_suffix}'}
     for server in servers:
@@ -1401,7 +1403,7 @@ def install_packs_pre_update(build: Build) -> bool:
 
 
 def main():
-    install_logging('Install_Content_And_Configure_Integrations_On_Server.log')
+    install_logging('Install_Content_And_Configure_Integrations_On_Server.log', logger=logging)
     build = Build(options_handler())
     logging.info(f"Build Number: {build.ci_build_number}")
 

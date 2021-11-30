@@ -2,7 +2,7 @@ import os
 import json
 import demistomock as demisto
 from tempfile import mkdtemp
-from Anomali_ThreatStream_v2 import main, file_name_to_valid_string, get_file_reputation, Client
+from Anomali_ThreatStream_v2 import main, file_name_to_valid_string, get_file_reputation, Client, get_indicators
 import emoji
 import pytest
 
@@ -68,6 +68,13 @@ mock_objects = {"objects": [{"srcip": "8.8.8.8", "itype": "mal_ip", "confidence"
 expected_import_json = {'objects': [{'srcip': '8.8.8.8', 'itype': 'mal_ip', 'confidence': 50},
                                     {'srcip': '1.1.1.1', 'itype': 'apt_ip'}],
                         'meta': {'classification': 'private', 'confidence': 30, 'allow_unresolved': False}}
+
+INDICATOR = [{
+    "resource_uri": "/api/v2/intelligence/123456789/",
+    "status": "active",
+    "uuid": "12345678-dead-beef-a6cc-eeece19516f6",
+    "value": "www.demisto.com",
+}]
 
 
 def test_ioc_approval_500_error(mocker):
@@ -144,3 +151,62 @@ def test_get_file_reputation(mocker, file_hash, expected_result_file_path, raw_r
     context = demisto.results.call_args_list[0][0][0].get('EntryContext')
 
     assert context == expected_result
+
+
+class TestGetIndicators:
+    @staticmethod
+    def test_sanity(mocker):
+        """
+        Given
+            a limit above the number of available indicators
+        When
+            calling the get_indicator command
+        Then
+            verify that the maximum available amount is returned.
+        """
+        mocker.patch.object(Client, 'http_request', side_effect=[
+            {'objects': INDICATOR * 50},
+            {'objects': []},
+        ])
+        results = mocker.patch.object(demisto, 'results')
+        client = Client(
+            base_url='',
+            use_ssl=False,
+            default_threshold='high',
+            reliability='B - Usually reliable',
+        )
+
+        get_indicators(client, limit='7000')
+
+        assert len(results.call_args_list[0][0][0].get('EntryContext', {}).get('ThreatStream.Indicators', [])) == 50
+
+    @staticmethod
+    def test_pagination(mocker):
+        """
+        Given
+            a limit above the page size
+        When
+            calling the get_indicator command
+        Then
+            verify that the requested amount is returned.
+        """
+        mocker.patch.object(Client, 'http_request', side_effect=[
+            {'objects': INDICATOR * 1000},
+            {'objects': INDICATOR * 1000},
+            {'objects': INDICATOR * 1000},
+            {'objects': INDICATOR * 1000},
+            {'objects': INDICATOR * 1000},
+            {'objects': INDICATOR * 1000},
+            {'objects': INDICATOR * 1000},
+        ])
+        results = mocker.patch.object(demisto, 'results')
+        client = Client(
+            base_url='',
+            use_ssl=False,
+            default_threshold='high',
+            reliability='B - Usually reliable',
+        )
+
+        get_indicators(client, limit='7000')
+
+        assert len(results.call_args_list[0][0][0].get('EntryContext', {}).get('ThreatStream.Indicators', [])) == 7000

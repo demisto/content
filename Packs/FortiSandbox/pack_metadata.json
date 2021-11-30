@@ -7,7 +7,9 @@
     "url": "",
     "email": "",
     "created": "2021-01-21T23:27:50Z",
-    "categories": [],
+    "categories": [
+        "Forensics & Malware Analysis"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],
