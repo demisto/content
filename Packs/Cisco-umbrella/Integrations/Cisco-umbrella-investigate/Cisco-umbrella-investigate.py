@@ -849,7 +849,8 @@ def get_domain_command():
                 'ReadableContentsFormat': formats['markdown'],
                 'HumanReadable':
                     tableToMarkdown('"Umbrella Investigate" Domain Reputation for: ' + domain, contents, headers)
-                    + tableToMarkdown('"Umbrella Investigate" WHOIS Record Data for: ' + domain, whois, headers)
+                    + tableToMarkdown('"Umbrella Investigate" WHOIS Record Data for: ' + domain, whois, headers,
+                                      date_fields=["Last Retrieved"])
                     + tableToMarkdown('Name Servers:', {'Name Servers': name_servers}, headers)
                     + tableToMarkdown('Emails:', emails, ['Emails'])
                     + tableToMarkdown('Domain Categorization:', domain_categorization_table, headers),
