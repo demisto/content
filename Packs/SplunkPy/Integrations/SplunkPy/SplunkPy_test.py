@@ -1125,7 +1125,7 @@ def test_build_search_human_readable(mocker):
 def test_build_search_kwargs():
     """
     Given:
-        The command args.
+        The splunk-search command args.
 
     When:
         Running the build_search_kwargs to build the search query kwargs.
