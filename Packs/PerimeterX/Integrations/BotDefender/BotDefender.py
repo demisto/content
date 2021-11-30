@@ -49,7 +49,7 @@ class pXScoring:
         :param ip_address: IP Address to be used as the indicator for this entry
 
         :type risk_score: ``int``
-        :param risk_score: PerimeterX provided risk score for the IP Address
+        :param risk_score: PerimeterX provided risk sco1re for the IP Address
 
         :return: Updated List of Common IP Addresses with this entry appended
         :rtype: ``List[Common.IP]``
@@ -61,7 +61,8 @@ class pXScoring:
             indicator_type=DBotScoreType.IP,
             integration_name='PerimeterX',
             score=pXScoring.dbotscore_from_risk(risk_score, thresholds),
-            malicious_description='Something random from PerimeterX for now enjoy!'
+            malicious_description='High risk score indicates high probability that the requests from the IP are '
+                                  'malicious '
         )
 
         # Create the IP Standard Context structure using Common.IP and add
@@ -172,12 +173,14 @@ def test_module(client: Client):
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
-
-    result = client.test_api_connection()
-    if result['message'] == 'ok':
-        return 'ok'
-    else:
-        return 'Test failed because something wasn\'t right'
+    try:
+        result = client.test_api_connection()
+        if result['success']:
+            return 'ok'
+        else:
+            return 'Connection to api failed: ' + result['errors']
+    except DemistoException as de:
+        return 'Connection to api failed with exception: ' + de.message
 
 
 def perimeterx_get_investigate_details(client: Client, args: Dict[str, Any],
@@ -211,8 +214,6 @@ def perimeterx_get_investigate_details(client: Client, args: Dict[str, Any],
 
     # Check for an IP based investigation
     supported_ip_search_types = ['true_ip', 'socket_ip']
-
-    # risk_score=result['maxRiskScore']
 
     if search_type in supported_ip_search_types:
         """
@@ -293,7 +294,6 @@ def main():
     api_key = params.get('apikey')
 
     # get the service API url
-    # '/investigate?search=ip:1.1.1.1&tops=path' + api_key
     base_url = urljoin(params['url'], '/v1/bot-defender/')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
@@ -322,9 +322,6 @@ def main():
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
             demisto.results(result)
-
-        # elif demisto.command() == 'perimeterx-get-investigate-details':
-        #    return_results(perimeterx_get_investigate_details(client=client, args=demisto.args(), thresholds=thresholds))
 
         elif demisto.command() == 'ip':
             return_results(ip(client=client, args=demisto.args(), thresholds=thresholds))
