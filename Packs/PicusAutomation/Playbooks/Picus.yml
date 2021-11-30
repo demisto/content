@@ -212,7 +212,7 @@ tasks:
       version: -1
       name: Filter Insecure Attacks
       description: Filter insecure attacks
-      script: '|||filter-insecure-attacks'
+      script: '|||picus-filter-insecure-attacks'
       type: regular
       iscommand: true
       brand: ""
