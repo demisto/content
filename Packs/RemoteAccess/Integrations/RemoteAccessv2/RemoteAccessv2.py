@@ -13,7 +13,8 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 ''' HELPER FUNCTIONS '''
 
 
-def perform_copy_command(ssh_client: SSHClient, file_path: str, destination_path: str, copy_to_remote: bool) -> str:
+def perform_copy_command(ssh_client: SSHClient, file_path: str, destination_path: str, copy_to_remote: bool,
+                         socket_timeout: float) -> str:
     """
     Function to perform copy to or copy from remote machine.
     This helper function was separated from command functions mainly for easier mocking in tests.
@@ -26,6 +27,7 @@ def perform_copy_command(ssh_client: SSHClient, file_path: str, destination_path
         - Copy to remote machine from Cortex XSOAR - the remote machine file path to contain the copied data.
         - Copy to Cortex XSOAR from remote machine - Temp file name to save the file, before extracting its data.
         copy_to_remote (bool): Whether a request to copy to remote was made.
+        socket_timeout(float): Socket timeout.
 
     Returns:
         (str): Empty str if command requested was copy to.
@@ -166,6 +168,7 @@ def copy_to_command(ssh_client: SSHClient, args: Dict[str, Any]) -> CommandResul
         (CommandResults).
     """
     entry_id: str = args.get('entry_id', '')
+    socket_timeout
     if not (file_path := demisto.getFilePath(entry_id).get('path', '')):
         raise DemistoException('Could not find given entry ID path. Please assure given entry ID is correct.')
     destination_path: str = args.get('destination_path', file_path)
