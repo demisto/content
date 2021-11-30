@@ -113,6 +113,16 @@ def test_azure_devops_user_add_command(requests_mock):
     assert dict_safe_get(result.outputs, ['accessLevel', 'accountLicenseType']) == 'express'
     assert result.outputs.get('lastAccessedDate') == '0001-01-01T00:00:00Z'
 
+    # Error case
+    mock_response = json.loads(load_mock_response('add_user_error.json'))
+    requests_mock.post(url, json=mock_response)
+
+    with pytest.raises(Exception):
+        user_add_command(client, {'user_email': user_email,
+                                  'account_license_type': account_license_type,
+                                  'group_type': group_type,
+                                  'project_id': project_id})
+
 
 def test_azure_devops_user_remove_command(requests_mock):
     """

@@ -1,0 +1,15 @@
+{
+  "operationResult": {
+    "isSuccess": false,
+    "errors": [
+      {
+        "key": 5000,
+        "value": "A project was provided that was invalid."
+      }
+    ],
+    "userId": null,
+    "result": null
+  },
+  "isSuccess": null,
+  "userEntitlement": null
+}
