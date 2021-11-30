@@ -1,17 +1,17 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
-''' IMPORTS '''
+''' IMPORTS test'''
+
+import threading
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from typing import Any, Dict, Tuple, Union
 
 import dateparser
 import requests
 from requests import Response
-from typing import Dict, Any, Union, Tuple
-from requests.exceptions import MissingSchema, InvalidSchema, InvalidURL, SSLError
-from concurrent.futures import ThreadPoolExecutor, as_completed
-import threading
-
+from requests.exceptions import (InvalidSchema, InvalidURL, MissingSchema,
+                                 SSLError)
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
