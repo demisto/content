@@ -545,6 +545,75 @@ def get_container_hosts_list(client: PrismaCloudComputeClient, args: dict) -> Co
     )
 
 
+def build_containers_forensic_response(
+    client: PrismaCloudComputeClient, container_ids: List[str], args: dict
+) -> Tuple[List[dict], str]:
+    """
+    Build a table and a context response for the 'prisma-cloud-compute-profile-container-hosts-list' command.
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        container_ids (list[str]): container IDs.
+        args (dict): prisma-cloud-compute-profile-container-forensic-list command arguments.
+
+    Returns:
+        Tuple[list, str]: Context and table response.
+    """
+    context_output = []
+    table = []
+
+    for container_id in container_ids:
+        all_forensic_response = get_api_info(
+            client=client, url_suffix=f"profiles/container/{container_id}/forensic", args=args
+        )
+        if all_forensic_response:
+            context_output.append(
+                {
+                    "ContainerID": container_id,
+                    "Forensics": all_forensic_response
+                }
+            )
+            for report in all_forensic_response:
+                if report.get("containerId"):
+                    table.append(
+                        {
+                            "ContainerID": report.get("containerId"),
+                            "Type": report.get("type"),
+                            "Path": report.get("path"),
+                        }
+                    )
+
+    if not context_output:
+        return [], tableToMarkdown(name="Container forensic report", t=[])
+
+    return context_output, tableToMarkdown(
+        name="Containers forensic report", t=table, headers=["ContainerID", "Type", "Path"]
+    )
+
+
+@validate_limit_and_offset
+def get_profile_container_forensic_list(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
+    """
+    Returns runtime forensics data for a specific container on a specific host.
+    Implement the command 'prisma-cloud-compute-profile-container-forensic-list'
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-profile-container-forensic-list command arguments.
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    container_ids = argToList(args.pop("id"))
+    context, table = build_containers_forensic_response(client=client, container_ids=container_ids, args=args)
+
+    return CommandResults(
+        outputs_prefix='prismaCloudCompute.containerForensic',
+        outputs=context,
+        readable_output=table
+    )
+
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -572,7 +641,8 @@ def main():
     available_commands = {
         'prisma-cloud-compute-profile-host-list': get_profile_host_list,
         'prisma-cloud-compute-profile-container-list': get_container_profile_list,
-        'prisma-cloud-compute-profile-container-hosts-list': get_container_hosts_list
+        'prisma-cloud-compute-profile-container-hosts-list': get_container_hosts_list,
+        'prisma-cloud-compute-profile-container-forensic-list': get_profile_container_forensic_list
     }
 
     try:
