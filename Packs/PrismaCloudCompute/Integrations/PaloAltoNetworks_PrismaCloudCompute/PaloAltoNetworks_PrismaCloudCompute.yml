@@ -405,6 +405,9 @@ script:
           isArray: false
           defaultValue: "0"
       outputs:
+        - contextPath: prismaCloudCompute.containerForensic.ContainerID
+          description: The container ID.
+          type: String
         - contextPath: prismaCloudCompute.containerForensic.Forensics.allPorts
           description: AllPorts indicates all listening ports are allowed
           type: Boolean
@@ -582,13 +585,30 @@ script:
           description: User is the event user
           type: Unknown
     - name: prisma-cloud-compute-console-version-info
-      description: "Get the console version. "
+      description: Get the console version
       deprecated: false
       arguments: []
       outputs:
         - contextPath: prismaCloudCompute.console.version
           description: The console version
           type: String
+    - name: prisma-cloud-compute-custom-feeds-ip-list
+      description: Get all the BlackListed IP addresses in the system
+      deprecated: false
+      arguments: []
+      outputs:
+        - contextPath: prismaCloudCompute.customFeedIP._id
+          description: ID is the custom feed id
+          type: String
+        - contextPath: prismaCloudCompute.customFeedIP.digest
+          description: Digest is an internal digest of the custom ip feed
+          type: String
+        - contextPath: prismaCloudCompute.customFeedIP.feed
+          description: Feed is the list of custom ips
+          type: Unknown
+        - contextPath: prismaCloudCompute.customFeedIP.modified
+          description: Modified is the last time the custom feed was modified
+          type: Date
 tests:
   - No test
 fromversion: 5.0.0

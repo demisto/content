@@ -464,3 +464,36 @@ Get the console version.
 |---|
 | 21.04.439 |
 
+### prisma-cloud-compute-custom-feeds-ip-list
+***
+Get all the BlackListed IP addresses in the system
+
+
+#### Base Command
+
+`prisma-cloud-compute-custom-feeds-ip-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| prismaCloudCompute.customFeedIP._id | String | ID is the custom feed id | 
+| prismaCloudCompute.customFeedIP.digest | String | Digest is an internal digest of the custom ip feed | 
+| prismaCloudCompute.customFeedIP.feed  | Unknown | Feed is the list of custom ips | 
+| prismaCloudCompute.customFeedIP.modified | Date | Modified is the last time the custom feed was modified | 
+
+
+#### Command Example
+```!prisma-cloud-compute-custom-feeds-ip-list```
+
+#### Human Readable Output
+### IP Feeds
+|modified|feed|
+|---|---|
+| November 30, 2021 20:47:06 PM | 4.4.4.4,<br>1.1.1.1,<br>2.2.2.2,<br>3.3.3.3 |
+
