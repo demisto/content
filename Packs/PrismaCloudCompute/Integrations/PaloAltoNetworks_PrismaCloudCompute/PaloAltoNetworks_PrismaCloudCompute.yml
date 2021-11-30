@@ -288,15 +288,73 @@ script:
           description: Processes is the profile processes metadata
           type: Unknown
         - contextPath: prismaCloudCompute.profileContainer.relearningCause
-          description: RelearningCause is a string that describes the reasoning
-                          for a profile to enter the learning mode afterbeing activated
+          description: RelearningCause is a string that describes the reasoning for a
+            profile to enter the learning mode afterbeing activated
           type: String
         - contextPath: prismaCloudCompute.profileContainer.remainingLearningDurationSec
-          description: RemainingLearningDurationSec represents the total time
-                          left that the system need to finish learning this image
+          description: RemainingLearningDurationSec represents the total time left that
+            the system need to finish learning this image
           type: Number
         - contextPath: prismaCloudCompute.profileContainer.state
           description: State is the current state of the profile.
+          type: Unknown
+    - name: prisma-cloud-compute-profile-container-hosts-list
+      description: Get the hosts where a specific container is running.
+      deprecated: false
+      arguments:
+        - name: id
+          description: Container profile ID
+          required: true
+          isArray: true
+          defaultValue: ""
+        - name: cluster
+          description: Clusters is the runtime profile k8s cluster filter
+          required: false
+          isArray: true
+          defaultValue: ""
+        - name: hostName
+          description: Hosts is the runtime profile hostname filter
+          required: false
+          isArray: true
+          defaultValue: ""
+        - name: image
+          description: Images is the runtime profile image filter
+          required: false
+          isArray: true
+          defaultValue: ""
+        - name: imageID
+          description: ImageIDs is the runtime profile image id filter
+          required: false
+          isArray: true
+          defaultValue: ""
+        - name: namespace
+          description: Namespaces is the runtime profile k8s namespace filter
+          required: false
+          isArray: true
+          defaultValue: ""
+        - name: os
+          description: OS is the service runtime profile OS filter
+          required: false
+          isArray: true
+          defaultValue: ""
+        - name: state
+          description: States is the runtime profile state filter
+          required: false
+          isArray: true
+          defaultValue: ""
+        - name: limit
+          description: The maximum number of hosts to return. Default is 50.
+          required: false
+          isArray: false
+          defaultValue: "50"
+        - name: offset
+          description: The offset number to begin listing hosts of the container.
+          required: false
+          isArray: false
+          defaultValue: "0"
+      outputs:
+        - contextPath: prismaCloudCompute.profileContainerHost.ContainerHosts
+          description: Container ID and its Hosts
           type: Unknown
 tests:
   - No test

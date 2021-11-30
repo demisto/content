@@ -4,6 +4,7 @@ from CommonServerPython import *
 ''' IMPORTS '''
 import requests
 import tempfile
+from typing import Tuple
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -293,8 +294,8 @@ def validate_limit_and_offset(func):
 
 
 def parse_date_string_format(
-    date_string, date_string_format='%Y-%m-%dT%H:%M:%S.%fZ', new_format="%B %d, %Y %H:%M:%S %p"
-):
+    date_string: str, date_string_format: str = '%Y-%m-%dT%H:%M:%S.%fZ', new_format: str = "%B %d, %Y %H:%M:%S %p"
+) -> str:
     """
     Parses a date string format to a different date string format.
 
@@ -426,7 +427,7 @@ def build_profile_container_table_response(full_response: List[dict]) -> str:
                 "Image": response.get("image"),
                 "OS": response.get("os"),
                 "State": response.get("state"),
-                "Created": parse_date_string_format(date_string=response.get("created"))
+                "Created": parse_date_string_format(date_string=response.get("created"))  # type:ignore
             }
         )
 
@@ -479,6 +480,71 @@ def get_container_profile_list(client: PrismaCloudComputeClient, args: dict) -> 
     )
 
 
+def build_container_hosts_response(
+    client: PrismaCloudComputeClient, container_ids: List[str], args: dict
+) -> Tuple[List[dict], str]:
+    """
+    Build a table and a context response for the 'prisma-cloud-compute-profile-container-hosts-list' command.
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        container_ids (list[str]): container IDs.
+        args (dict): prisma-cloud-compute-profile-container-list command arguments.
+
+    Returns:
+        Tuple[list, str]: Context and table response.
+    """
+    context_output = []
+
+    for container_id in container_ids:
+        response = get_api_info(client=client, url_suffix=f"profiles/container/{container_id}/hosts", args=args)
+        if response:
+            context_output.append(
+                {
+                    "ContainerHosts": {
+                        container_id: response
+                    }
+                }
+            )
+
+    if not context_output:
+        return [], tableToMarkdown(name="Containers hosts list", t=[])
+
+    table = [
+        {
+            "ContainerID": container_id,
+            "HostsIDs": hostsIDs
+        } for response in context_output for container_id, hostsIDs in response["ContainerHosts"].items()
+    ]
+
+    return context_output, tableToMarkdown(
+        name="Containers hosts list", t=table, headers=["ContainerID", "HostsIDs"]
+    )
+
+
+@validate_limit_and_offset
+def get_container_hosts_list(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
+    """
+    Returns the hosts where the containers are running.
+    Implement the command 'prisma-cloud-compute-profile-container-hosts-list'.
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-profile-container-hosts-list command arguments.
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    container_ids = argToList(args.pop("id"))
+    context, table = build_container_hosts_response(client=client, container_ids=container_ids, args=args)
+
+    return CommandResults(
+        outputs_prefix='prismaCloudCompute.profileContainerHost',
+        outputs=context,
+        readable_output=table
+    )
+
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -505,7 +571,8 @@ def main():
 
     available_commands = {
         'prisma-cloud-compute-profile-host-list': get_profile_host_list,
-        'prisma-cloud-compute-profile-container-list': get_container_profile_list
+        'prisma-cloud-compute-profile-container-list': get_container_profile_list,
+        'prisma-cloud-compute-profile-container-hosts-list': get_container_hosts_list
     }
 
     try:

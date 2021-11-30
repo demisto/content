@@ -1068,3 +1068,43 @@ Get information about the containers and their profile events.
 | 1234 | static | /usr/bin/sed | January 01, 0001 00:00:00 AM |
 | 1234 | static | /app/server | January 01, 0001 00:00:00 AM |
 | 1234 | behavioral | /usr/bin/mongod | September 02, 2021 11:05:08 AM |
+### prisma-cloud-compute-profile-container-hosts-list
+***
+Get the hosts where a specific container is running.
+
+
+#### Base Command
+
+`prisma-cloud-compute-profile-container-hosts-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Container profile ID. | Required | 
+| cluster | Clusters is the runtime profile k8s cluster filter. | Optional | 
+| hostName | Hosts is the runtime profile hostname filter. | Optional | 
+| image | Images is the runtime profile image filter. | Optional | 
+| imageID | ImageIDs is the runtime profile image id filter. | Optional | 
+| namespace | Namespaces is the runtime profile k8s namespace filter. | Optional | 
+| os | OS is the service runtime profile OS filter. | Optional | 
+| state | States is the runtime profile state filter. | Optional | 
+| limit | The maximum number of hosts to return. Default is 50. Default is 50. | Optional | 
+| offset | The offset number to begin listing hosts of the container. Default is 0. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| prismaCloudCompute.profileContainerHost.ContainerHosts | Unknown | Container ID and its Hosts | 
+
+
+#### Command Example
+```!prisma-cloud-compute-profile-container-hosts-list id=123```
+
+#### Human Readable Output
+### Containers hosts list
+|ContainerID|HostsIDs|
+|---|---|
+| container_id_1 | host_id-1,<br>host_id-2 |
+
