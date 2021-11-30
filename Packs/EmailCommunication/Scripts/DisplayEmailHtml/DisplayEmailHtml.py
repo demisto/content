@@ -5,14 +5,13 @@ from CommonServerPython import *  # noqa: F401
 
 
 def create_email_html(email_html='', entry_id_list=None):
-    demisto.debug(f"entry id list is {entry_id_list}\n\n\n")
     if not entry_id_list:
         return email_html
 
     account_name = get_tenant_account_name()
 
     for entry_id in entry_id_list:
-        if re.match(f'src="[^>]+"(?=[^>]+alt="{entry_id[0]}")', email_html):
+        if re.search(f'src="[^>]+"(?=[^>]+alt="{entry_id[0]}")', email_html):
             email_html = re.sub(f'src="[^>]+"(?=[^>]+alt="{entry_id[0]}")',
                                 f'src={account_name}/entry/download/{entry_id[1]}',
                                 email_html

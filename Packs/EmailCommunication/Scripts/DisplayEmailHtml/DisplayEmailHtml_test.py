@@ -1,7 +1,6 @@
 import demistomock as demisto
 import pytest
 
-
 EMAIL_HTML = """
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head><body><div dir="ltr">image 1:
 <div><div><img src="cid:ii_kgjzy6yh0" alt="image_1.png" width="275" height="184"><br></div></div><div>image 2:
@@ -10,6 +9,29 @@ EMAIL_HTML = """
 <a href="mailto:avishai@demistodev.onmicrosoft.com">avishai@demistodev.onmicrosoft.com</a>&gt; wrote:<br></div>
 <blockquote class="gmail_quote" style="margin: 0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204)"><u></u><div>
 <p>please add multiple inline images</p></div></blockquote></div></body></html>"""
+
+EMAIL_HTML_NO_ALT = """
+<html><head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"><style type="text/css" style="display:none">
+
+<!–
+
+p
+
+    {margin-top:0;
+
+    margin-bottom:0}
+
+–>
+
+</style></head>
+<body dir="ltr"><div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt; color:rgb(0,0,0)">
+<img size="178792" data-outlook-trace="F:1|T:1" src="cid:89593b98-b18d-46aa-ba4f-26773138c3f7" style="max-width:100%">
+</div><div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt; color:rgb(0,0,0)"><img size="8023" 
+data-outlook-trace="F:1|T:1" src="cid:6a65eb70-7748-4bba-aaac-fe93235f63bd" style="max-width:100%">
+</div></body></html>
+"""
 
 EXPECTED_RESULT_1 = """
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head><body><div dir="ltr">image 1:
@@ -31,10 +53,35 @@ EXPECTED_RESULT_2 = """
 <blockquote class="gmail_quote" style="margin: 0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204)"><u></u><div>
 <p>please add multiple inline images</p></div></blockquote></div></body></html>"""
 
+EXPECTED_RESULT_NO_ALT = """
+<html><head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"><style type="text/css" style="display:none">
+
+<!–
+
+p
+
+    {margin-top:0;
+
+    margin-bottom:0}
+
+–>
+
+</style></head>
+<body dir="ltr"><div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt; color:rgb(0,0,0)">
+<img size="178792" data-outlook-trace="F:1|T:1" src=/entry/download/37@119 style="max-width:100%">
+</div><div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt; color:rgb(0,0,0)"><img size="8023" 
+data-outlook-trace="F:1|T:1" src=/entry/download/38@120 style="max-width:100%">
+</div></body></html>
+"""
+
 
 @pytest.mark.parametrize(
     "email_html,entry_id_list,expected",
-    [(EMAIL_HTML, [('image_1.png', '37@119'), ('image_2.png', '38@120')], EXPECTED_RESULT_1)]
+    [(EMAIL_HTML, [('image_1.png', '37@119'), ('image_2.png', '38@120')], EXPECTED_RESULT_1),
+     (EMAIL_HTML_NO_ALT, [('image_1.png', '37@119'), ('image_2.png', '38@120')], EXPECTED_RESULT_NO_ALT),
+     ]
 )
 def test_create_email_html(email_html, entry_id_list, expected):
     """

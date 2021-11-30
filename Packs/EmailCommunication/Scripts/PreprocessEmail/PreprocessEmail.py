@@ -197,7 +197,7 @@ def get_attachments_using_instance(email_related_incident, labels):
                                               'using': instance_name}})
 
     else:
-        demisto.debug('Attachments could only be retrieved from EWS v2 or Gmail')
+        demisto.debug('Attachments could only be retrieved from EWS v2, Gmail or Microsoft Graph Mail')
 
 
 def get_incident_related_files(incident_id):
@@ -264,7 +264,6 @@ def main():
     email_subject = custom_fields.get('emailsubject')
     email_html = custom_fields.get('emailhtml')
     attachments = incident.get('attachment', [])
-    demisto.debug(f"attachmenters areeee: {attachments}")
     email_latest_message = custom_fields.get('emaillatestmessage')
 
     try:
