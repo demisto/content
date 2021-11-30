@@ -7,7 +7,7 @@ configuration:
   defaultvalue: https://management.azure.com
   hidden: false
   name: server_url
-  required: false
+  required: true
   type: 0
 - display: Tenant ID
   name: tenant_id
@@ -689,6 +689,23 @@ script:
       required: true
       secret: false
     - default: false
+      description: The comment ID.
+      isArray: false
+      name: comment_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Deletes a comment from incident in Azure Sentinel.
+    execution: false
+    name: azure-sentinel-incident-delete-comment
+  - arguments:
+    - default: false
+      description: The incident ID.
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    - default: false
       defaultValue: '50'
       description: The maximum number of related entities to return.
       isArray: false
@@ -914,7 +931,7 @@ script:
     - contextPath: AzureSentinel.WatchlistItem.ItemsKeyValue
       description: Key-value pairs for a watchlist item.
       type: Unknown
-  dockerimage: demisto/crypto:1.0.0.24037
+  dockerimage: demisto/crypto:1.0.0.24380
   feed: false
   isfetch: true
   longRunning: false

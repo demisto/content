@@ -1,0 +1,383 @@
+id: MicrosoftManagementActivity - Test
+version: -1
+name: MicrosoftManagementActivity - Test
+fromversion: 5.0.0
+vcShouldKeepItemLegacyProdMachine: false
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 000ca1ff-ee0c-4d1f-8ab1-8ac542fc4804
+    type: start
+    task:
+      id: 000ca1ff-ee0c-4d1f-8ab1-8ac542fc4804
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 62dc6f5c-7ecf-4f6b-876a-37271503044d
+    type: regular
+    task:
+      id: 62dc6f5c-7ecf-4f6b-876a-37271503044d
+      version: -1
+      name: ms-management-activity-list-content
+      description: Returns all content of a specific content type.
+      script: Microsoft Management Activity API (O365 Azure Events)|||ms-management-activity-list-content
+      type: regular
+      iscommand: true
+      brand: Microsoft Management Activity API (O365 Azure Events)
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      content_type:
+        simple: Audit.AzureActiveDirectory
+      timeout:
+        simple: "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1055
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 4307ddcb-f846-4480-811d-b6d59acdeb04
+    type: regular
+    task:
+      id: 4307ddcb-f846-4480-811d-b6d59acdeb04
+      version: -1
+      name: ms-management-activity-list-subscriptions
+      description: List the content types you are currently subscribed to
+      script: Microsoft Management Activity API (O365 Azure Events)|||ms-management-activity-list-subscriptions
+      type: regular
+      iscommand: true
+      brand: Microsoft Management Activity API (O365 Azure Events)
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 3c958be7-f62c-4c28-8aee-cd91e91786b3
+    type: regular
+    task:
+      id: 3c958be7-f62c-4c28-8aee-cd91e91786b3
+      version: -1
+      name: ms-management-activity-start-subscription
+      description: Starts a subscription to a given content type
+      script: Microsoft Management Activity API (O365 Azure Events)|||ms-management-activity-start-subscription
+      type: regular
+      iscommand: true
+      brand: Microsoft Management Activity API (O365 Azure Events)
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      content_type:
+        simple: Audit.AzureActiveDirectory
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: e3b270e9-b058-4885-8c86-8d5ff16a946d
+    type: regular
+    task:
+      id: e3b270e9-b058-4885-8c86-8d5ff16a946d
+      version: -1
+      name: ms-management-activity-stop-subscription
+      description: Stops a subscription to a given content type
+      script: Microsoft Management Activity API (O365 Azure Events)|||ms-management-activity-stop-subscription
+      type: regular
+      iscommand: true
+      brand: Microsoft Management Activity API (O365 Azure Events)
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      content_type:
+        simple: Audit.AzureActiveDirectory
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 782cd768-1cb4-4282-833c-4697b9d567c4
+    type: regular
+    task:
+      id: 782cd768-1cb4-4282-833c-4697b9d567c4
+      version: -1
+      name: ms-management-activity-list-subscriptions
+      description: List the content types you are currently subscribed to
+      script: Microsoft Management Activity API (O365 Azure Events)|||ms-management-activity-list-subscriptions
+      type: regular
+      iscommand: true
+      brand: Microsoft Management Activity API (O365 Azure Events)
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 2d6fee94-9545-441f-8d1b-00836006e43c
+    type: condition
+    task:
+      id: 2d6fee94-9545-441f-8d1b-00836006e43c
+      version: -1
+      name: validate 0 lists are subscribed to
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: MicrosoftManagement.Subscription
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 782d4091-8c89-4685-84dd-83dd8914a284
+    type: condition
+    task:
+      id: 782d4091-8c89-4685-84dd-83dd8914a284
+      version: -1
+      name: validate there's one list subscripted to
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftManagement.Subscription
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: f0930215-5fc6-4aa9-8d0a-20ed790151fe
+    type: regular
+    task:
+      id: f0930215-5fc6-4aa9-8d0a-20ed790151fe
+      version: -1
+      name: ms-management-activity-list-subscriptions
+      description: List the content types you are currently subscribed to
+      script: Microsoft Management Activity API (O365 Azure Events)|||ms-management-activity-list-subscriptions
+      type: regular
+      iscommand: true
+      brand: Microsoft Management Activity API (O365 Azure Events)
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: ba1ac61b-2973-40d2-865f-ca5393cf053a
+    type: condition
+    task:
+      id: ba1ac61b-2973-40d2-865f-ca5393cf053a
+      version: -1
+      name: validate unsubscription
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isFalse
+          left:
+            value:
+              simple: MicrosoftManagement.Subscription.[1].Enabled
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 1c7d14f8-1dcd-4ca6-8265-d22870667ea2
+    type: title
+    task:
+      id: 1c7d14f8-1dcd-4ca6-8265-d22870667ea2
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1735,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

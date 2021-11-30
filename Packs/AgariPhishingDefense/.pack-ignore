@@ -4,3 +4,6 @@ ignore=IF100
 
 [file:incidentfield-APD_Policy_Event_ID.json]
 ignore=IF100
+
+[file:AgariPhishingDefense.yml]
+ignore=IN145

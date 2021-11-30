@@ -2,7 +2,8 @@
     "associatedToAll": false,
     "associatedTypes": [
         "GIB OSI Public Leak",
-        "GIB Brand Protection Phishing Kit"
+        "GIB Brand Protection Phishing Kit",
+        "GIB Brand Protection Domain"
     ],
     "caseInsensitive": true,
     "cliName": "gibdatecreated",

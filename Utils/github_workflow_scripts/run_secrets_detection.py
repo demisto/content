@@ -44,7 +44,7 @@ def trigger_generic_webhook(options):
         sys.exit(1)
 
     res_json = res.json()
-    if res_json and type(res_json) == list:
+    if res_json and isinstance(res_json, list):
         res_json_response_data = res.json()[0]
         if res_json_response_data:
             investigation_id = res_json_response_data.get("id")

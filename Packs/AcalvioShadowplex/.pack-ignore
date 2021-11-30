@@ -2,4 +2,4 @@
 ignore=RM102
 
 [file:acalvioapp.yml]
-ignore=IN136
+ignore=IN136,IN145

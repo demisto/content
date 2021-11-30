@@ -228,7 +228,7 @@
                                 "fieldId": "dbotmodified",
                                 "height": 53,
                                 "id": "incident-modified-field",
-                                "index": 1,
+                                "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -255,7 +255,7 @@
                                 "fieldId": "dbotclosed",
                                 "height": 53,
                                 "id": "incident-closed-field",
-                                "index": 1,
+                                "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 1
                             }
@@ -325,7 +325,7 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "cyberpionvulnerabilitydescription",
-                                "height": 22,
+                                "height": 53,
                                 "id": "92385b00-6f91-11eb-be0b-57c4c9922807",
                                 "index": 0,
                                 "sectionItemType": "field",
@@ -334,9 +334,9 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "cyberpiondescription",
-                                "height": 53,
+                                "height": 106,
                                 "id": "7346a740-6f02-11eb-96af-59183a16e65d",
-                                "index": 0,
+                                "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -345,7 +345,7 @@
                                 "fieldId": "cyberpionimpact",
                                 "height": 106,
                                 "id": "773fcde0-6f02-11eb-96af-59183a16e65d",
-                                "index": 0,
+                                "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -439,21 +439,19 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "cyberpioncategory",
+                                "fieldId": "cyberpionasset",
                                 "height": 22,
-                                "id": "38839dc0-8118-11eb-98e0-cfc685c06c28",
+                                "id": "86ea1570-fb52-11eb-a9f9-e5f7d3c502a1",
                                 "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
-                                "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "cyberpiondomain",
+                                "fieldId": "cyberpioncategory",
                                 "height": 22,
-                                "id": "62116f00-8118-11eb-98e0-cfc685c06c28",
+                                "id": "38839dc0-8118-11eb-98e0-cfc685c06c28",
                                 "index": 2,
-                                "listId": "caseinfoid-b53d7720-8116-11eb-98e0-cfc685c06c28",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -467,9 +465,28 @@
                                 "listId": "caseinfoid-b53d7720-8116-11eb-98e0-cfc685c06c28",
                                 "sectionItemType": "field",
                                 "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "cyberpionsummary",
+                                "height": 22,
+                                "id": "29d21920-fda8-11eb-947e-2982dc117e6a",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "cyberpionportallink",
+                                "height": 22,
+                                "id": "21c84c40-fda8-11eb-947e-2982dc117e6a",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
                             }
                         ],
-                        "maxW": 3,
+                        "maxH": null,
+                        "maxW": 1,
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
