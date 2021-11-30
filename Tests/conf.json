@@ -4749,12 +4749,15 @@
             "fromversion": "5.5.0"
         },
         {
+            "playbookID": "JsonToTable - Test Playbook",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": [
                 "RemoteAccess v2"
             ],
             "playbookID": "RemoteAccessTest",
             "fromversion": "6.0.0"
-
         }
     ],
     "skipped_tests": {
