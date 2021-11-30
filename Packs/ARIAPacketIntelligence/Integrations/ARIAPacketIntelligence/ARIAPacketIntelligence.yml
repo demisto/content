@@ -906,7 +906,7 @@ script:
       description: 'Endpoint information, such as the IP address, about the SIAs that were modified based on the rule change.'
       type: string
     description: Removes a named rule from the source subnet logic block, disabling the alerts.
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   runonce: false
 tests:
 - No test
