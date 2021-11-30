@@ -29,12 +29,15 @@ class Client(BaseClient):
 
     def get_request(self, args: dict) -> Dict:
         url_suffix = "/v1" if args.get('request_type_suffix') == INCIDENTS_SUFFIX else "/v2"
-        data = self._http_request(
+        res = self._http_request(
             method='GET',
             url_suffix=f"{url_suffix}/{args.get('request_type_suffix')}/{REQUESTS_SUFFIX}/"
                        f"{args.get('request_id')}"
         )
-        return data
+        if not demisto.get(res, "data.success"):
+            status = demisto.get(res, "data.status")
+            raise DemistoException(f"The command failed, the reason: {status}")
+        return res
 
     def get_paged(self, args: dict):
         data = self._http_request(
