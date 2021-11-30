@@ -1,7 +1,9 @@
 import pytest
 from collections import OrderedDict
-from PaloAltoNetworks_PrismaCloudCompute import PrismaCloudComputeClient, camel_case_transformer, fetch_incidents,\
-    get_headers, HEADERS_BY_NAME, get_profile_host_list, get_container_profile_list
+from PaloAltoNetworks_PrismaCloudCompute import (
+    PrismaCloudComputeClient, camel_case_transformer, fetch_incidents, get_headers,
+    HEADERS_BY_NAME, get_profile_host_list, get_container_profile_list, get_container_hosts_list
+)
 
 from CommonServerPython import DemistoException
 
@@ -456,6 +458,22 @@ PROFILE_HOST_LIST_COMMAND_ARGS = [
         ),
         get_container_profile_list,
         "/profiles/container"
+    ),
+    (
+        OrderedDict(
+            cluster="cluster", hostname="hostname", image="image", imageid="1", namespace="namespace", os="os",
+            state="state", limit="10", offset="0", id="123"
+        ),
+        get_container_hosts_list,
+        "/profiles/container/123/hosts"
+    ),
+    (
+        OrderedDict(
+            cluster="cluster", hostname="hostname", image="image", imageid="1", namespace="namespace", os="os",
+            state="state", limit="100", offset="0", id="123"
+        ),
+        get_container_hosts_list,
+        "/profiles/container/123/hosts"
     )
 ]
 
@@ -485,16 +503,16 @@ def query_params_to_str(params: dict) -> str:
 
 
 @pytest.mark.parametrize("args, func, url_suffix", PROFILE_HOST_LIST_COMMAND_ARGS)
-def test_get_profile_host_list_query_params(requests_mock, args, func, url_suffix, client):
+def test_http_request_url_is_valid(requests_mock, args, func, url_suffix, client):
     """
     Given:
-        - command arguments for the 'prisma-cloud-compute-profile-host-list'.
+        - query command arguments.
 
     When:
         - Calling the http-request for the command endpoint.
 
     Then:
-        - Verify that the full URL of the http request is sent with the correct query params.
+        - Verify that the full URL of the http request is sent with the correct query/uri params.
     """
     full_url = BASE_URL + url_suffix
 
