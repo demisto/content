@@ -1,5 +1,6 @@
 # Azure DevOps
 Manage Git repositories in Azure DevOps Services. Integration capabilities include retrieving, creating, and updating pull requests. Run pipelines and retrieve git information.
+** Note: This is a beta Integration, which lets you implement and test pre-release software. Since the integration is beta, it might contain bugs. Updates to the integration during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the integration to help us identify issues, fix them, and continually improve.
 This integration was integrated and tested with version 6.1 of AzureDevOps
 
 ## Configure AzureDevOps (Beta) on Cortex XSOAR
@@ -169,17 +170,14 @@ Run a pipeline. A DevOps pipeline is a set of automated processes and tools that
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureDevOps.Project.name | String | The name of the project. | 
-| AzureDevOps.Project.Pipeline.id | Number | The ID of the pipeline. | 
-| AzureDevOps.Project.Pipeline.revision | Number | Pipeline revision number | 
-| AzureDevOps.Project.Pipeline.name | String | Pipeline repository name | 
-| AzureDevOps.Project.Pipeline.folder | String | Pipeline folder | 
-| AzureDevOps.Project.Pipeline.Run.state | String | The run state. | 
-| AzureDevOps.Project.Pipeline.Run.createdDate | Date | Run-pipeline creation date. | 
-| AzureDevOps.Project.Pipeline.Run.url | String | The URL of the run. | 
-| AzureDevOps.Project.Pipeline.Run.run_id | Number | The ID of the run. | 
-| AzureDevOps.Project.Pipeline.Run.name | String | The name of the run. | 
-| AzureDevOps.Project.Pipeline.Run.name | String | The result of the pipeline running. If the run is in progress, the default value is 'unknown'. | 
+| AzureDevOps.PipelineRun.[1].project | String | The name of the project. | 
+| AzureDevOps.PipelineRun.pipeline.id | Number | The ID of the pipeline. | 
+| AzureDevOps.PipelineRun.pipeline.name | String | Pipeline repository name | 
+| AzureDevOps.PipelineRun.state | String | The run state. | 
+| AzureDevOps.PipelineRun.createdDate | Date | The run creation date. | 
+| AzureDevOps.PipelineRun.run_id | Number | The ID of the run. | 
+| AzureDevOps.PipelineRun.name | String | The name of the run. | 
+| AzureDevOps.PipelineRun.result | String | The result of the pipeline running. If the run is in progress, the default value is 'unknown'. | 
 
 
 #### Command Example
@@ -189,22 +187,47 @@ Run a pipeline. A DevOps pipeline is a set of automated processes and tools that
 ```json
 {
     "AzureDevOps": {
-        "Project": {
-            "Pipeline": {
-                "Run": {
-                    "createdDate": "2021-11-21T14:54:00",
-                    "name": "20211121.9",
-                    "result": "unknown",
-                    "run_id": 1142,
-                    "state": "inProgress",
-                    "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/pipelines/1/runs/113"
+        "PipelineRun": {
+            "_links": {
+                "pipeline": {
+                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/pipelines/1?revision=1"
                 },
+                "pipeline.web": {
+                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_build/definition?definitionId=1"
+                },
+                "self": {
+                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/pipelines/1/runs/1154"
+                },
+                "web": {
+                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_build/results?buildId=1154"
+                }
+            },
+            "createdDate": "2021-11-30T08:57:03.110121+00:00",
+            "name": "20211130.1",
+            "pipeline": {
                 "folder": "\\",
                 "id": 1,
                 "name": "xsoar",
-                "revision": 1
+                "revision": 1,
+                "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/pipelines/1?revision=1"
             },
-            "name": "xsoar"
+            "project": "xsoar",
+            "resources": {
+                "repositories": {
+                    "self": {
+                        "refName": "refs/heads/main",
+                        "repository": {
+                            "id": "XXXX",
+                            "type": "azureReposGit"
+                        },
+                        "version": "2eca089fab76f1f32051d188653ea7d279b90a4b"
+                    }
+                }
+            },
+            "result": "unknown",
+            "run_id": 1154,
+            "state": "inProgress",
+            "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/pipelines/1/runs/1154"
         }
     }
 }
@@ -215,7 +238,7 @@ Run a pipeline. A DevOps pipeline is a set of automated processes and tools that
 >### Pipeline Run Information:
 >|Pipeline Id|Run State|Creation Date|Run Id|Result|
 >|---|---|---|---|---|
->| 1 | inProgress | 2021-11-21T14:54:00 | 1142 | unknown |
+>| 1 | inProgress | 2021-11-30T08:57:03.110121+00:00 | 1154 | unknown |
 
 
 ### azure-devops-user-add
@@ -241,8 +264,6 @@ Add a user, assign license and extensions and make them a member of a project gr
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | AzureDevOps.User.id | String | The ID of the user. | 
-| AzureDevOps.User.accountLicenseType | String | The type of account license. | 
-| AzureDevOps.User.lastAccessedDate | Date | Date the user last accessed the collection. | 
 
 
 #### Command Example
@@ -253,9 +274,51 @@ Add a user, assign license and extensions and make them a member of a project gr
 {
     "AzureDevOps": {
         "User": {
-            "accountLicenseType": "express",
+            "accessLevel": {
+                "accountLicenseType": "express",
+                "assignmentSource": "unknown",
+                "licenseDisplayName": "Basic",
+                "licensingSource": "account",
+                "msdnLicenseType": "none",
+                "status": "pending",
+                "statusMessage": ""
+            },
+            "dateCreated": "2021-11-29T09:05:26.9223894Z",
+            "extensions": [],
+            "groupAssignments": [],
             "id": "XXXX",
-            "lastAccessedDate": "0001-01-01T00:00:00Z"
+            "lastAccessedDate": "0001-01-01T00:00:00Z",
+            "projectEntitlements": [],
+            "user": {
+                "_links": {
+                    "avatar": {
+                        "href": "https://dev.azure.com/xsoar-organization/_apis/GraphProfile/MemberAvatars/aad.NWYyZWMzNTctMjgzMS03M2I4LTk1NWYtMmRkZGM2OWVmMzg3"
+                    },
+                    "membershipState": {
+                        "href": "https://vssps.dev.azure.com/xsoar-organization/_apis/Graph/MembershipStates/aad.NWYyZWMzNTctMjgzMS03M2I4LTk1NWYtMmRkZGM2OWVmMzg3"
+                    },
+                    "memberships": {
+                        "href": "https://vssps.dev.azure.com/xsoar-organization/_apis/Graph/Memberships/aad.NWYyZWMzNTctMjgzMS03M2I4LTk1NWYtMmRkZGM2OWVmMzg3"
+                    },
+                    "self": {
+                        "href": "https://vssps.dev.azure.com/xsoar-organization/_apis/Graph/Users/aad.NWYyZWMzNTctMjgzMS03M2I4LTk1NWYtMmRkZGM2OWVmMzg3"
+                    },
+                    "storageKey": {
+                        "href": "https://vssps.dev.azure.com/xsoar-organization/_apis/Graph/StorageKeys/aad.NWYyZWMzNTctMjgzMS03M2I4LTk1NWYtMmRkZGM2OWVmMzg3"
+                    }
+                },
+                "descriptor": "aad.NWYyZWMzNTctMjgzMS03M2I4LTk1NWYtMmRkZGM2OWVmMzg3",
+                "directoryAlias": "User 1",
+                "displayName": "XSOAR User 2",
+                "domain": "XXXX",
+                "mailAddress": "user1@xsoar.com",
+                "metaType": "member",
+                "origin": "aad",
+                "originId": "2c7514ff-41d0-4eb0-ac82-35b8671de094",
+                "principalName": "user1@xsoar.com",
+                "subjectKind": "user",
+                "url": "https://vssps.dev.azure.com/xsoar-organization/_apis/Graph/Users/aad.NWYyZWMzNTctMjgzMS03M2I4LTk1NWYtMmRkZGM2OWVmMzg3"
+            }
         }
     }
 }
@@ -320,86 +383,142 @@ Create a new pull request.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureDevOps.Project.name | String | The name of the project. | 
-| AzureDevOps.Project.Repository.id | String | The ID of the repository. | 
-| AzureDevOps.Project.Repository.name | String | The name of the repository. | 
-| AzureDevOps.Project.Repository.url | String | The URL of the repository. | 
-| AzureDevOps.Project.Repository.size | Number | The size of the repository. | 
-| AzureDevOps.Project.Repository.PullRequest.Id | Number | The ID of the pull request. | 
-| AzureDevOps.Project.Repository.PullRequest.status | String | The status of the pull request. | 
-| AzureDevOps.Project.Repository.PullRequest.CreatedBy.displayName | String | The display name of the pull request creator. | 
-| AzureDevOps.Project.Repository.PullRequest.CreatedBy.id | String | The ID of the pull request creator. | 
-| AzureDevOps.Project.Repository.PullRequest.CreatedBy.uniqueName | String | The unique name of the pull request creator. | 
-| AzureDevOps.Project.Repository.PullRequest.creationDate | Date | The creation date of the pull request. | 
-| AzureDevOps.Project.Repository.PullRequest.title | String | The title of the pull request | 
-| AzureDevOps.Project.Repository.PullRequest.description | String | The description of the pull request. | 
-| AzureDevOps.Project.Repository.PullRequest.sourceRefName | String | The source branch of the pull request. | 
-| AzureDevOps.Project.Repository.PullRequest.targetRefName | String | The target branch of the pull request. | 
-| AzureDevOps.Project.Repository.PullRequest.mergeStatus | String | The current status of the pull request merge. | 
-| AzureDevOps.Project.Repository.PullRequest.isDraft | Boolean | Draft / WIP pull request. | 
-| AzureDevOps.Project.Repository.PullRequest.LastMergeSourceCommit.commitId | String | The ID of the commit at the head of the source branch at the time of the last pull request merge. | 
-| AzureDevOps.Project.Repository.PullRequest.LastMergeSourceCommit.url | String | The REST URL for this resource. | 
-| AzureDevOps.Project.Repository.PullRequest.LastMergeTargetCommit.commitId | String | The ID of the commit at the head of the target branch at the time of the last pull request merge. | 
-| AzureDevOps.Project.Repository.PullRequest.LastMergeTargetCommit.url | String | The REST URL for this resource. | 
-| AzureDevOps.Project.Repository.PullRequest.Reviewers.reviewerUrl | String | URL to retrieve information about the reviewer identity. | 
-| AzureDevOps.Project.Repository.PullRequest.Reviewers.vote | Number | Vote on a pull request: 10 - approved 5 - approved with suggestions 0 - no vote -5 - waiting for author -10 - rejected | 
-| AzureDevOps.Project.Repository.PullRequest.Reviewers.hasDeclined | Boolean | Indicates if this reviewer has declined to review this pull request. | 
-| AzureDevOps.Project.Repository.PullRequest.Reviewers.isFlagged | Boolean | Indicates if this reviewer is flagged for attention on this pull request. | 
-| AzureDevOps.Project.Repository.PullRequest.Reviewers.displayName | String | The display name of the pull request reviewer. | 
-| AzureDevOps.Project.Repository.PullRequest.Reviewers.id | String | The ID of the pull request reviewer. | 
-| AzureDevOps.Project.Repository.PullRequest.Reviewers.uniqueName | String | The unique name of the pull request reviewer. | 
+| AzureDevOps.PullRequest.repository.project.name | String | The name of the project. | 
+| AzureDevOps.PullRequest.repository.id | String | The ID of the repository. | 
+| AzureDevOps.PullRequest.repository.name | String | The name of the repository. | 
+| AzureDevOps.PullRequest.repository.url | String | The URL of the repository. | 
+| AzureDevOps.PullRequest.repository.size | Number | The size of the repository. | 
+| AzureDevOps.PullRequest.pullRequestId | Number | The ID of the pull request. | 
+| AzureDevOps.PullRequest.status | String | The status of the pull request. | 
+| AzureDevOps.PullRequest.createdBy.displayName | String | The display name of the pull request creator. | 
+| AzureDevOps.PullRequest.createdBy.id | String | The ID of the pull request creator. | 
+| AzureDevOps.PullRequest.createdBy.uniqueName | String | The unique name of the pull request creator. | 
+| AzureDevOps.PullRequest.creationDate | Date | The creation date of the pull request. | 
+| AzureDevOps.PullRequest.title | String | The title of the pull request | 
+| AzureDevOps.PullRequest.description | String | The description of the pull request. | 
+| AzureDevOps.PullRequest.sourceRefName | String | The source branch of the pull request. | 
+| AzureDevOps.PullRequest.targetRefName | String | The target branch of the pull request. | 
+| AzureDevOps.PullRequest.mergeStatus | String | The current status of the pull request merge. | 
+| AzureDevOps.PullRequest.isDraft | Boolean | Draft / WIP pull request. | 
+| AzureDevOps.PullRequest.lastMergeSourceCommit.commitId | String | The ID of the commit at the head of the source branch at the time of the last pull request merge. | 
+| AzureDevOps.PullRequest.lastMergeSourceCommit.url | String | The REST URL for this resource. | 
+| AzureDevOps.PullRequest.lastMergeTargetCommit.commitId | String | The ID of the commit at the head of the target branch at the time of the last pull request merge. | 
+| AzureDevOps.PullRequest.lastMergeTargetCommit.url | String | The REST URL for this resource. | 
 
 
 #### Command Example
-```!azure-devops-pull-request-create project="xsoar" repository_id="XXXX" source_branch="qm1" target_branch="main" title="Test xsoar" description="Demo pr" reviewers_ids="XXXX"```
+```!azure-devops-pull-request-create project="xsoar" repository_id="XXXX" source_branch="test-test" target_branch="main" title="Test xsoar" description="Demo pr" reviewers_ids="XXXX"```
 
 #### Context Example
 ```json
 {
     "AzureDevOps": {
-        "Project": {
-            "Repository": {
-                "PullRequest": {
-                    "CreatedBy": {
-                        "displayName": "XSOAR User",
-                        "id": "XXXX",
-                        "uniqueName": "user2@xsoar.com"
-                    },
-                    "Id": 48,
-                    "LastMergeSourceCommit": {
-                        "commitId": "e44039f67d30924c24615bb334350dd72e41cf44",
-                        "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/commits/e44039f67d30924c24615bb334350dd72e41cf44"
-                    },
-                    "LastMergeTargetCommit": {
-                        "commitId": "cb63a958fbaed6d416c68330ac8f8a9e5544603c",
-                        "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/commits/cb63a958fbaed6d416c68330ac8f8a9e5544603c"
-                    },
-                    "Reviewers": [
-                        {
-                            "displayName": "XSOAR User",
-                            "hasDeclined": false,
-                            "id": "XXXX",
-                            "isFlagged": false,
-                            "reviewerUrl": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/pullRequests/48/reviewers/XXXX",
-                            "uniqueName": "user2@xsoar.com",
-                            "vote": 0
-                        }
-                    ],
-                    "creationDate": "2021-11-03T09:24:48",
-                    "description": "Demo pr",
-                    "isDraft": false,
-                    "mergeStatus": "queued",
-                    "sourceRefName": "refs/heads/qm1",
-                    "status": "active",
-                    "targetRefName": "refs/heads/main",
-                    "title": "Test xsoar"
+        "PullRequest": {
+            "_links": {
+                "createdBy": {
+                    "href": "https://vssps.visualstudio.com/XXXX/_apis/Identities/XXXX"
                 },
-                "id": "XXXX",
-                "name": "xsoar",
-                "size": 9439,
-                "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX"
+                "iterations": {
+                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/pullRequests/70/iterations"
+                },
+                "repository": {
+                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX"
+                },
+                "self": {
+                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/pullRequests/70"
+                },
+                "sourceBranch": {
+                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/refs/heads/test-test"
+                },
+                "sourceCommit": {
+                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/commits/b21e2330a6ae2f920b8f5ae9b74e069230b27087"
+                },
+                "statuses": {
+                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/pullRequests/70/statuses"
+                },
+                "targetBranch": {
+                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/refs/heads/main"
+                },
+                "targetCommit": {
+                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/commits/2eca089fab76f1f32051d188653ea7d279b90a4b"
+                },
+                "workItems": {
+                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/pullRequests/70/workitems"
+                }
             },
-            "name": "xsoar"
+            "artifactId": "vstfs:///Git/PullRequestId/xsoar-project%2fXXXX%2f70",
+            "codeReviewId": 70,
+            "createdBy": {
+                "_links": {
+                    "avatar": {
+                        "href": "https://dev.azure.com/xsoar-organization/_apis/GraphProfile/MemberAvatars/aad.ZWFlMjk2ZGYtMzYwOS03YWY3LWFkNzMtYzNlYmRhZDM3ZmQ5"
+                    }
+                },
+                "descriptor": "aad.ZWFlMjk2ZGYtMzYwOS03YWY3LWFkNzMtYzNlYmRhZDM3ZmQ5",
+                "displayName": "XSOAR User 1",
+                "id": "XXXX",
+                "imageUrl": "https://dev.azure.com/xsoar-organization/_api/_common/identityImage?id=XXXX",
+                "uniqueName": "user2@xsoar.com",
+                "url": "https://vssps.visualstudio.com/XXXX/_apis/Identities/XXXX"
+            },
+            "creationDate": "2021-11-30T08:56:55.531709+00:00",
+            "description": "Demo pr",
+            "isDraft": false,
+            "labels": [],
+            "lastMergeSourceCommit": {
+                "commitId": "b21e2330a6ae2f920b8f5ae9b74e069230b27087",
+                "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/commits/b21e2330a6ae2f920b8f5ae9b74e069230b27087"
+            },
+            "lastMergeTargetCommit": {
+                "commitId": "2eca089fab76f1f32051d188653ea7d279b90a4b",
+                "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/commits/2eca089fab76f1f32051d188653ea7d279b90a4b"
+            },
+            "mergeId": "a950a614-1a14-4412-90ad-e6f7417e26c6",
+            "mergeStatus": "queued",
+            "pullRequestId": 70,
+            "repository": {
+                "id": "XXXX",
+                "isDisabled": false,
+                "name": "xsoar",
+                "project": {
+                    "id": "xsoar-project",
+                    "lastUpdateTime": "2021-10-13T15:46:18.017Z",
+                    "name": "xsoar",
+                    "revision": 11,
+                    "state": "wellFormed",
+                    "url": "https://dev.azure.com/xsoar-organization/_apis/projects/xsoar-project",
+                    "visibility": "private"
+                },
+                "remoteUrl": "https://xsoar-organization@dev.azure.com/xsoar-organization/xsoar/_git/xsoar",
+                "size": 12366,
+                "sshUrl": "git@ssh.dev.azure.com:v3/xsoar-organization/xsoar/xsoar",
+                "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX",
+                "webUrl": "https://dev.azure.com/xsoar-organization/xsoar/_git/xsoar"
+            },
+            "reviewers": [
+                {
+                    "_links": {
+                        "avatar": {
+                            "href": "https://dev.azure.com/xsoar-organization/_apis/GraphProfile/MemberAvatars/aad.ZWFlMjk2ZGYtMzYwOS03YWY3LWFkNzMtYzNlYmRhZDM3ZmQ5"
+                        }
+                    },
+                    "displayName": "XSOAR User 1",
+                    "hasDeclined": false,
+                    "id": "XXXX",
+                    "imageUrl": "https://dev.azure.com/xsoar-organization/_api/_common/identityImage?id=XXXX",
+                    "isFlagged": false,
+                    "reviewerUrl": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/pullRequests/70/reviewers/XXXX",
+                    "uniqueName": "user2@xsoar.com",
+                    "url": "https://vssps.visualstudio.com/XXXX/_apis/Identities/XXXX",
+                    "vote": 0
+                }
+            ],
+            "sourceRefName": "refs/heads/test-test",
+            "status": "active",
+            "supportsIterations": true,
+            "targetRefName": "refs/heads/main",
+            "title": "Test xsoar",
+            "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/pullRequests/70"
         }
     }
 }
@@ -410,7 +529,7 @@ Create a new pull request.
 >### Pull Request Information:
 >|Title|Description|Created By|Pull Request Id|Repository Name|Repository Id|Project Name|Project Id|Creation Date|
 >|---|---|---|---|---|---|---|---|---|
->| Test xsoar | Demo pr | XSOAR User | 48 | xsoar | XXXX | xsoar | xsoar-project | 2021-11-03T09:24:48 |
+>| Test xsoar | Demo pr | XSOAR User 1 | 70 | xsoar | XXXX | xsoar | xsoar-project | 2021-11-30T08:56:55 |
 
 
 ### azure-devops-pull-request-update
@@ -437,85 +556,156 @@ Update a pull request. At least one of the arguments: title, description, or sta
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureDevOps.Project.name | String | The name of the project. | 
-| AzureDevOps.Project.Repository.id | String | The ID of the repository. | 
-| AzureDevOps.Project.Repository.name | String | The name of the repository. | 
-| AzureDevOps.Project.Repository.url | String | The URL of the repository. | 
-| AzureDevOps.Project.Repository.size | Number | The size of the repository. | 
-| AzureDevOps.Project.Repository.PullRequest.Id | Number | The ID of the pull request. | 
-| AzureDevOps.Project.Repository.PullRequest.status | String | The status of the pull request. | 
-| AzureDevOps.Project.Repository.PullRequest.CreatedBy.displayName | String | The display name of the pull request creator. | 
-| AzureDevOps.Project.Repository.PullRequest.CreatedBy.id | String | The ID of the pull request creator. | 
-| AzureDevOps.Project.Repository.PullRequest.CreatedBy.uniqueName | String | The unique name of the pull request creator. | 
-| AzureDevOps.Project.Repository.PullRequest.creationDate | Date | The creation date of the pull request. | 
-| AzureDevOps.Project.Repository.PullRequest.title | String | The title of the pull request | 
-| AzureDevOps.Project.Repository.PullRequest.description | String | The description of the pull request. | 
-| AzureDevOps.Project.Repository.PullRequest.sourceRefName | String | The source branch of the pull request. | 
-| AzureDevOps.Project.Repository.PullRequest.targetRefName | String | The target branch of the pull request. | 
-| AzureDevOps.Project.Repository.PullRequest.mergeStatus | String | The current status of the pull request merge. | 
-| AzureDevOps.Project.Repository.PullRequest.isDraft | Boolean | Draft / WIP pull request. | 
-| AzureDevOps.Project.Repository.PullRequest.LastMergeSourceCommit.commitId | String | The ID of the commit. | 
-| AzureDevOps.Project.Repository.PullRequest.LastMergeSourceCommit.url | String | The REST URL for this resource. | 
-| AzureDevOps.Project.Repository.PullRequest.LastMergeTargetCommit.commitId | String | The ID of the commit. | 
-| AzureDevOps.Project.Repository.PullRequest.Reviewers.reviewerUrl | String | URL to retrieve information about the reviewer identity. | 
-| AzureDevOps.Project.Repository.PullRequest.Reviewers.vote | Number | Vote on a pull request: 10 - approved 5 - approved with suggestions 0 - no vote -5 - waiting for author -10 - rejected | 
-| AzureDevOps.Project.Repository.PullRequest.Reviewers.hasDeclined | Boolean | Indicates if this reviewer has declined to review this pull request. | 
-| AzureDevOps.Project.Repository.PullRequest.Reviewers.isFlagged | Boolean | Indicates if this reviewer is flagged for attention on this pull request. | 
-| AzureDevOps.Project.Repository.PullRequest.Reviewers.displayName | String | The display name of the pull request reviewer. | 
-| AzureDevOps.Project.Repository.PullRequest.Reviewers.id | String | The ID of the pull request reviewer. | 
-| AzureDevOps.Project.Repository.PullRequest.Reviewers.uniqueName | String | The unique name of the pull request reviewer. | 
+| AzureDevOps.PullRequest.repository.project.name | String | The name of the project. | 
+| AzureDevOps.PullRequest.repository.id | String | The ID of the repository. | 
+| AzureDevOps.PullRequest.repository.name | String | The name of the repository. | 
+| AzureDevOps.PullRequest.repository.url | String | The URL of the repository. | 
+| AzureDevOps.PullRequest.repository.size | Number | The size of the repository. | 
+| AzureDevOps.PullRequest.pullRequestId | Number | The ID of the pull request. | 
+| AzureDevOps.PullRequest.status | String | The status of the pull request. | 
+| AzureDevOps.PullRequest.createdBy.displayName | String | The display name of the pull request creator. | 
+| AzureDevOps.PullRequest.createdBy.id | String | The ID of the pull request creator. | 
+| AzureDevOps.PullRequest.createdBy.uniqueName | String | The unique name of the pull request creator. | 
+| AzureDevOps.PullRequest.creationDate | Date | The creation date of the pull request. | 
+| AzureDevOps.PullRequest.title | String | The title of the pull request | 
+| AzureDevOps.PullRequest.description | String | The description of the pull request. | 
+| AzureDevOps.PullRequest.sourceRefName | String | The source branch of the pull request. | 
+| AzureDevOps.PullRequest.targetRefName | String | The target branch of the pull request. | 
+| AzureDevOps.PullRequest.mergeStatus | String | The current status of the pull request merge. | 
+| AzureDevOps.PullRequest.isDraft | Boolean | Draft / WIP pull request. | 
+| AzureDevOps.PullRequest.lastMergeSourceCommit.commitId | String | The ID of the commit at the head of the source branch at the time of the last pull request merge. | 
+| AzureDevOps.PullRequest.lastMergeSourceCommit.url | String | The REST URL for this resource. | 
+| AzureDevOps.PullRequest.lastMergeTargetCommit.commitId | String | The ID of the commit at the head of the target branch at the time of the last pull request merge. | 
+| AzureDevOps.PullRequest.lastMergeTargetCommit.url | String | The REST URL for this resource. | 
 
 
 #### Command Example
-```!azure-devops-pull-request-update project="xsoar" repository_id="XXXX" pull_request_id="48" title="New title"```
+```!azure-devops-pull-request-update project="xsoar" repository_id="XXXX" pull_request_id="70" title="New title"```
 
 #### Context Example
 ```json
 {
     "AzureDevOps": {
-        "Project": {
-            "Repository": {
-                "PullRequest": {
-                    "CreatedBy": {
-                        "displayName": "XSOAR User",
-                        "id": "XXXX",
-                        "uniqueName": "user2@xsoar.com"
-                    },
-                    "Id": 48,
-                    "LastMergeSourceCommit": {
-                        "commitId": "e44039f67d30924c24615bb334350dd72e41cf44",
-                        "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/commits/e44039f67d30924c24615bb334350dd72e41cf44"
-                    },
-                    "LastMergeTargetCommit": {
-                        "commitId": "cb63a958fbaed6d416c68330ac8f8a9e5544603c",
-                        "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/commits/cb63a958fbaed6d416c68330ac8f8a9e5544603c"
-                    },
-                    "Reviewers": [
-                        {
-                            "displayName": "XSOAR User",
-                            "hasDeclined": false,
-                            "id": "XXXX",
-                            "isFlagged": false,
-                            "reviewerUrl": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/pullRequests/48/reviewers/XXXX",
-                            "uniqueName": "user2@xsoar.com",
-                            "vote": 0
-                        }
-                    ],
-                    "creationDate": "2021-11-03T09:24:48",
-                    "description": "Demo pr",
-                    "isDraft": false,
-                    "mergeStatus": "succeeded",
-                    "sourceRefName": "refs/heads/qm1",
-                    "status": "active",
-                    "targetRefName": "refs/heads/main",
-                    "title": "New title"
+        "PullRequest": {
+            "_links": {
+                "createdBy": {
+                    "href": "https://vssps.visualstudio.com/XXXX/_apis/Identities/XXXX"
                 },
-                "id": "XXXX",
-                "name": "xsoar",
-                "size": 9439,
-                "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX"
+                "iterations": {
+                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/pullRequests/70/iterations"
+                },
+                "repository": {
+                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX"
+                },
+                "self": {
+                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/pullRequests/70"
+                },
+                "sourceBranch": {
+                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/refs/heads/test-test"
+                },
+                "sourceCommit": {
+                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/commits/b21e2330a6ae2f920b8f5ae9b74e069230b27087"
+                },
+                "statuses": {
+                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/pullRequests/70/statuses"
+                },
+                "targetBranch": {
+                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/refs/heads/main"
+                },
+                "targetCommit": {
+                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/commits/2eca089fab76f1f32051d188653ea7d279b90a4b"
+                },
+                "workItems": {
+                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/pullRequests/70/workitems"
+                }
             },
-            "name": "xsoar"
+            "artifactId": "vstfs:///Git/PullRequestId/xsoar-project%2fXXXX%2f70",
+            "codeReviewId": 70,
+            "createdBy": {
+                "_links": {
+                    "avatar": {
+                        "href": "https://dev.azure.com/xsoar-organization/_apis/GraphProfile/MemberAvatars/aad.ZWFlMjk2ZGYtMzYwOS03YWY3LWFkNzMtYzNlYmRhZDM3ZmQ5"
+                    }
+                },
+                "descriptor": "aad.ZWFlMjk2ZGYtMzYwOS03YWY3LWFkNzMtYzNlYmRhZDM3ZmQ5",
+                "displayName": "XSOAR User 1",
+                "id": "XXXX",
+                "imageUrl": "https://dev.azure.com/xsoar-organization/_api/_common/identityImage?id=XXXX",
+                "uniqueName": "user2@xsoar.com",
+                "url": "https://vssps.visualstudio.com/XXXX/_apis/Identities/XXXX"
+            },
+            "creationDate": "2021-11-30T08:56:55.531709+00:00",
+            "description": "Demo pr",
+            "isDraft": false,
+            "lastMergeCommit": {
+                "author": {
+                    "date": "2021-11-30T08:56:55Z",
+                    "email": "user2@xsoar.com",
+                    "name": "XSOAR User 1"
+                },
+                "comment": "Merge pull request 70 from test-test into main",
+                "commitId": "333b2ec34ca6b330901af84a2483c87effb49c23",
+                "committer": {
+                    "date": "2021-11-30T08:56:55Z",
+                    "email": "user2@xsoar.com",
+                    "name": "XSOAR User 1"
+                },
+                "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/commits/333b2ec34ca6b330901af84a2483c87effb49c23"
+            },
+            "lastMergeSourceCommit": {
+                "commitId": "b21e2330a6ae2f920b8f5ae9b74e069230b27087",
+                "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/commits/b21e2330a6ae2f920b8f5ae9b74e069230b27087"
+            },
+            "lastMergeTargetCommit": {
+                "commitId": "2eca089fab76f1f32051d188653ea7d279b90a4b",
+                "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/commits/2eca089fab76f1f32051d188653ea7d279b90a4b"
+            },
+            "mergeId": "a950a614-1a14-4412-90ad-e6f7417e26c6",
+            "mergeStatus": "succeeded",
+            "pullRequestId": 70,
+            "repository": {
+                "id": "XXXX",
+                "isDisabled": false,
+                "name": "xsoar",
+                "project": {
+                    "id": "xsoar-project",
+                    "lastUpdateTime": "2021-10-13T15:46:18.017Z",
+                    "name": "xsoar",
+                    "revision": 11,
+                    "state": "wellFormed",
+                    "url": "https://dev.azure.com/xsoar-organization/_apis/projects/xsoar-project",
+                    "visibility": "private"
+                },
+                "remoteUrl": "https://xsoar-organization@dev.azure.com/xsoar-organization/xsoar/_git/xsoar",
+                "size": 12366,
+                "sshUrl": "git@ssh.dev.azure.com:v3/xsoar-organization/xsoar/xsoar",
+                "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX",
+                "webUrl": "https://dev.azure.com/xsoar-organization/xsoar/_git/xsoar"
+            },
+            "reviewers": [
+                {
+                    "_links": {
+                        "avatar": {
+                            "href": "https://dev.azure.com/xsoar-organization/_apis/GraphProfile/MemberAvatars/aad.ZWFlMjk2ZGYtMzYwOS03YWY3LWFkNzMtYzNlYmRhZDM3ZmQ5"
+                        }
+                    },
+                    "displayName": "XSOAR User 1",
+                    "hasDeclined": false,
+                    "id": "XXXX",
+                    "imageUrl": "https://dev.azure.com/xsoar-organization/_api/_common/identityImage?id=XXXX",
+                    "isFlagged": false,
+                    "reviewerUrl": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/pullRequests/70/reviewers/XXXX",
+                    "uniqueName": "user2@xsoar.com",
+                    "url": "https://vssps.visualstudio.com/XXXX/_apis/Identities/XXXX",
+                    "vote": 0
+                }
+            ],
+            "sourceRefName": "refs/heads/test-test",
+            "status": "active",
+            "supportsIterations": true,
+            "targetRefName": "refs/heads/main",
+            "title": "New title",
+            "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/pullRequests/70"
         }
     }
 }
@@ -526,7 +716,7 @@ Update a pull request. At least one of the arguments: title, description, or sta
 >### Pull Request Information:
 >|Title|Description|Created By|Pull Request Id|Repository Name|Repository Id|Project Name|Project Id|Creation Date|
 >|---|---|---|---|---|---|---|---|---|
->| New title | Demo pr | XSOAR User | 48 | xsoar | XXXX | xsoar | xsoar-project | 2021-11-03T09:24:48 |
+>| New title | Demo pr | XSOAR User 1 | 70 | xsoar | XXXX | xsoar | xsoar-project | 2021-11-30T08:56:55 |
 
 
 ### azure-devops-pull-request-list
@@ -551,32 +741,26 @@ Retrieve pull requests in repository.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureDevOps.Project.name | String | The name of the project. | 
-| AzureDevOps.Project.Repository.id | String | The ID of the repository. | 
-| AzureDevOps.Project.Repository.name | String | The name of the repository. | 
-| AzureDevOps.Project.Repository.url | String | The URL of the repository. | 
-| AzureDevOps.Project.Repository.PullRequest.Id | Number | The ID of the pull request. | 
-| AzureDevOps.Project.Repository.PullRequest.status | String | The status of the pull request. | 
-| AzureDevOps.Project.Repository.PullRequest.CreatedBy.displayName | String | The display name of the pull request creator. | 
-| AzureDevOps.Project.Repository.PullRequest.CreatedBy.id | String | The ID of the pull request creator. | 
-| AzureDevOps.Project.Repository.PullRequest.CreatedBy.uniqueName | String | The unique name of the pull request creator. | 
-| AzureDevOps.Project.Repository.PullRequest.creationDate | Date | The creation date of the pull request. | 
-| AzureDevOps.Project.Repository.PullRequest.title | String | The title of the pull request | 
-| AzureDevOps.Project.Repository.PullRequest.description | String | The description of the pull request. | 
-| AzureDevOps.Project.Repository.PullRequest.sourceRefName | String | The source branch of the pull request. | 
-| AzureDevOps.Project.Repository.PullRequest.targetRefName | String | The target branch of the pull request. | 
-| AzureDevOps.Project.Repository.PullRequest.mergeStatus | String | The current status of the pull request merge. | 
-| AzureDevOps.Project.Repository.PullRequest.isDraft | Boolean | Draft / WIP pull request. | 
-| AzureDevOps.Project.Repository.PullRequest.LastMergeSourceCommit.commitId | String | The ID of the commit. | 
-| AzureDevOps.Project.Repository.PullRequest.LastMergeSourceCommit.url | String | The REST URL for this resource. | 
-| AzureDevOps.Project.Repository.PullRequest.LastMergeTargetCommit.commitId | String | The ID of the commit. | 
-| AzureDevOps.Project.Repository.PullRequest.Reviewers.reviewerUrl | String | URL to retrieve information about the reviewer identity. | 
-| AzureDevOps.Project.Repository.PullRequest.Reviewers.vote | Number | Vote on a pull request: 10 - approved 5 - approved with suggestions 0 - no vote -5 - waiting for author -10 - rejected | 
-| AzureDevOps.Project.Repository.PullRequest.Reviewers.hasDeclined | Boolean | Indicates if this reviewer has declined to review this pull request. | 
-| AzureDevOps.Project.Repository.PullRequest.Reviewers.isFlagged | Boolean | Indicates if this reviewer is flagged for attention on this pull request. | 
-| AzureDevOps.Project.Repository.PullRequest.Reviewers.displayName | String | The display name of the pull request reviewer. | 
-| AzureDevOps.Project.Repository.PullRequest.Reviewers.id | String | The ID of the pull request reviewer. | 
-| AzureDevOps.Project.Repository.PullRequest.Reviewers.uniqueName | String | The unique name of the pull request reviewer. | 
+| AzureDevOps.PullRequest.repository.project.name | String | The name of the project. | 
+| AzureDevOps.PullRequest.repository.id | String | The ID of the repository. | 
+| AzureDevOps.PullRequest.repository.name | String | The name of the repository. | 
+| AzureDevOps.PullRequest.repository.url | String | The URL of the repository. | 
+| AzureDevOps.PullRequest.pullRequestId | Number | The ID of the pull request. | 
+| AzureDevOps.PullRequest.status | String | The status of the pull request. | 
+| AzureDevOps.PullRequest.createdBy.displayName | String | The display name of the pull request creator. | 
+| AzureDevOps.PullRequest.createdBy.id | String | The ID of the pull request creator. | 
+| AzureDevOps.PullRequest.createdBy.uniqueName | String | The unique name of the pull request creator. | 
+| AzureDevOps.PullRequest.creationDate | Date | The creation date of the pull request. | 
+| AzureDevOps.PullRequest.title | String | The title of the pull request | 
+| AzureDevOps.PullRequest.description | String | The description of the pull request. | 
+| AzureDevOps.PullRequest.sourceRefName | String | The source branch of the pull request. | 
+| AzureDevOps.PullRequest.targetRefName | String | The target branch of the pull request. | 
+| AzureDevOps.PullRequest.mergeStatus | String | The current status of the pull request merge. | 
+| AzureDevOps.PullRequest.isDraft | Boolean | Draft / WIP pull request. | 
+| AzureDevOps.PullRequest.lastMergeSourceCommit.commitId | String | The ID of the commit at the head of the source branch at the time of the last pull request merge. | 
+| AzureDevOps.PullRequest.lastMergeSourceCommit.url | String | The REST URL for this resource. | 
+| AzureDevOps.PullRequest.lastMergeTargetCommit.commitId | String | The ID of the commit at the head of the target branch at the time of the last pull request merge. | 
+| AzureDevOps.PullRequest.lastMergeTargetCommit.url | String | The REST URL for this resource. | 
 
 
 #### Command Example
@@ -586,87 +770,148 @@ Retrieve pull requests in repository.
 ```json
 {
     "AzureDevOps": {
-        "Project": {
-            "Repository": {
-                "PullRequest": [
-                    {
-                        "CreatedBy": {
-                            "displayName": "XSOAR User",
-                            "id": "XXXX",
-                            "uniqueName": "user2@xsoar.com"
-                        },
-                        "Id": 51,
-                        "LastMergeSourceCommit": {
-                            "commitId": "e44039f67d30924c24615bb334350dd72e41cf44",
-                            "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/commits/e44039f67d30924c24615bb334350dd72e41cf44"
-                        },
-                        "LastMergeTargetCommit": {
-                            "commitId": "cb63a958fbaed6d416c68330ac8f8a9e5544603c",
-                            "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/commits/cb63a958fbaed6d416c68330ac8f8a9e5544603c"
-                        },
-                        "Reviewers": [
-                            {
-                                "displayName": "XSOAR User",
-                                "hasDeclined": false,
-                                "id": "XXXX",
-                                "isFlagged": false,
-                                "reviewerUrl": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/pullRequests/48/reviewers/XXXX",
-                                "uniqueName": "user2@xsoar.com",
-                                "vote": 0
-                            }
-                        ],
-                        "creationDate": "2021-11-21T10:29:49",
-                        "description": "Demo pr",
-                        "isDraft": false,
-                        "mergeStatus": "succeeded",
-                        "sourceRefName": "refs/heads/qm4",
-                        "status": "active",
-                        "targetRefName": "refs/heads/main",
-                        "title": "Test xsoar"
+        "PullRequest": [
+            {
+                "codeReviewId": 70,
+                "createdBy": {
+                    "_links": {
+                        "avatar": {
+                            "href": "https://dev.azure.com/xsoar-organization/_apis/GraphProfile/MemberAvatars/aad.ZWFlMjk2ZGYtMzYwOS03YWY3LWFkNzMtYzNlYmRhZDM3ZmQ5"
+                        }
                     },
+                    "descriptor": "aad.ZWFlMjk2ZGYtMzYwOS03YWY3LWFkNzMtYzNlYmRhZDM3ZmQ5",
+                    "displayName": "XSOAR User 1",
+                    "id": "XXXX",
+                    "imageUrl": "https://dev.azure.com/xsoar-organization/_api/_common/identityImage?id=XXXX",
+                    "uniqueName": "user2@xsoar.com",
+                    "url": "https://vssps.visualstudio.com/XXXX/_apis/Identities/XXXX"
+                },
+                "creationDate": "2021-11-30T08:56:55.531709+00:00",
+                "description": "Demo pr",
+                "isDraft": false,
+                "lastMergeCommit": {
+                    "commitId": "333b2ec34ca6b330901af84a2483c87effb49c23",
+                    "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/commits/333b2ec34ca6b330901af84a2483c87effb49c23"
+                },
+                "lastMergeSourceCommit": {
+                    "commitId": "b21e2330a6ae2f920b8f5ae9b74e069230b27087",
+                    "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/commits/b21e2330a6ae2f920b8f5ae9b74e069230b27087"
+                },
+                "lastMergeTargetCommit": {
+                    "commitId": "2eca089fab76f1f32051d188653ea7d279b90a4b",
+                    "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/commits/2eca089fab76f1f32051d188653ea7d279b90a4b"
+                },
+                "mergeId": "a950a614-1a14-4412-90ad-e6f7417e26c6",
+                "mergeStatus": "succeeded",
+                "pullRequestId": 70,
+                "repository": {
+                    "id": "XXXX",
+                    "name": "xsoar",
+                    "project": {
+                        "id": "xsoar-project",
+                        "lastUpdateTime": "0001-01-01T00:00:00",
+                        "name": "xsoar",
+                        "state": "unchanged",
+                        "visibility": "unchanged"
+                    },
+                    "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX"
+                },
+                "reviewers": [
                     {
-                        "CreatedBy": {
-                            "displayName": "XSOAR User",
-                            "id": "XXXX",
-                            "uniqueName": "user2@xsoar.com"
-                        },
-                        "Id": 49,
-                        "LastMergeSourceCommit": {
-                            "commitId": "b9dc78e5897c9640e3be3a8a70c8ec688ab5204b",
-                            "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/commits/b9dc78e5897c9640e3be3a8a70c8ec688ab5204b"
-                        },
-                        "LastMergeTargetCommit": {
-                            "commitId": "d44cbcddda038454199a78d4a757341caf2de7f7",
-                            "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/commits/d44cbcddda038454199a78d4a757341caf2de7f7"
-                        },
-                        "Reviewers": [
-                            {
-                                "displayName": "XSOAR User",
-                                "hasDeclined": false,
-                                "id": "XXXX",
-                                "isFlagged": false,
-                                "reviewerUrl": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/pullRequests/31/reviewers/XXXX",
-                                "uniqueName": "user2@xsoar.com",
-                                "vote": 0
+                        "_links": {
+                            "avatar": {
+                                "href": "https://dev.azure.com/xsoar-organization/_apis/GraphProfile/MemberAvatars/aad.ZWFlMjk2ZGYtMzYwOS03YWY3LWFkNzMtYzNlYmRhZDM3ZmQ5"
                             }
-                        ],
-                        "creationDate": "2021-11-11T15:33:01",
-                        "description": "test title",
-                        "isDraft": false,
-                        "mergeStatus": "conflicts",
-                        "sourceRefName": "refs/heads/qm1",
-                        "status": "active",
-                        "targetRefName": "refs/heads/main",
-                        "title": "test1234"
+                        },
+                        "displayName": "XSOAR User 1",
+                        "hasDeclined": false,
+                        "id": "XXXX",
+                        "imageUrl": "https://dev.azure.com/xsoar-organization/_api/_common/identityImage?id=XXXX",
+                        "isFlagged": false,
+                        "reviewerUrl": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/pullRequests/70/reviewers/XXXX",
+                        "uniqueName": "user2@xsoar.com",
+                        "url": "https://vssps.visualstudio.com/XXXX/_apis/Identities/XXXX",
+                        "vote": 0
                     }
                 ],
-                "id": "XXXX",
-                "name": "xsoar",
-                "size": null,
-                "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX"
+                "sourceRefName": "refs/heads/test-test",
+                "status": "active",
+                "supportsIterations": true,
+                "targetRefName": "refs/heads/main",
+                "title": "Test xsoar",
+                "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/pullRequests/70"
             },
-            "name": "xsoar"
-        }
+            {
+                "codeReviewId": 65,
+                "createdBy": {
+                    "_links": {
+                        "avatar": {
+                            "href": "https://dev.azure.com/xsoar-organization/_apis/GraphProfile/MemberAvatars/aad.ZWFlMjk2ZGYtMzYwOS03YWY3LWFkNzMtYzNlYmRhZDM3ZmQ5"
+                        }
+                    },
+                    "descriptor": "aad.ZWFlMjk2ZGYtMzYwOS03YWY3LWFkNzMtYzNlYmRhZDM3ZmQ5",
+                    "displayName": "XSOAR User 1",
+                    "id": "XXXX",
+                    "imageUrl": "https://dev.azure.com/xsoar-organization/_api/_common/identityImage?id=XXXX",
+                    "uniqueName": "user2@xsoar.com",
+                    "url": "https://vssps.visualstudio.com/XXXX/_apis/Identities/XXXX"
+                },
+                "creationDate": "2021-11-28T16:08:09.172985+00:00",
+                "description": "Demo pr",
+                "isDraft": false,
+                "lastMergeCommit": {
+                    "commitId": "62d2b76a5479406cdfba377f041fed7bb621ccf7",
+                    "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/commits/62d2b76a5479406cdfba377f041fed7bb621ccf7"
+                },
+                "lastMergeSourceCommit": {
+                    "commitId": "738ab51bc619423969314de9bb93373bfb6ae101",
+                    "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/commits/738ab51bc619423969314de9bb93373bfb6ae101"
+                },
+                "lastMergeTargetCommit": {
+                    "commitId": "2eca089fab76f1f32051d188653ea7d279b90a4b",
+                    "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/commits/2eca089fab76f1f32051d188653ea7d279b90a4b"
+                },
+                "mergeId": "46bd552a-8a93-45bb-82ae-4c108020ca15",
+                "mergeStatus": "succeeded",
+                "pullRequestId": 65,
+                "repository": {
+                    "id": "XXXX",
+                    "name": "xsoar",
+                    "project": {
+                        "id": "xsoar-project",
+                        "lastUpdateTime": "0001-01-01T00:00:00",
+                        "name": "xsoar",
+                        "state": "unchanged",
+                        "visibility": "unchanged"
+                    },
+                    "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX"
+                },
+                "reviewers": [
+                    {
+                        "_links": {
+                            "avatar": {
+                                "href": "https://dev.azure.com/xsoar-organization/_apis/GraphProfile/MemberAvatars/aad.ZWFlMjk2ZGYtMzYwOS03YWY3LWFkNzMtYzNlYmRhZDM3ZmQ5"
+                            }
+                        },
+                        "displayName": "XSOAR User 1",
+                        "hasDeclined": false,
+                        "id": "XXXX",
+                        "imageUrl": "https://dev.azure.com/xsoar-organization/_api/_common/identityImage?id=XXXX",
+                        "isFlagged": false,
+                        "reviewerUrl": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/pullRequests/65/reviewers/XXXX",
+                        "uniqueName": "user2@xsoar.com",
+                        "url": "https://vssps.visualstudio.com/XXXX/_apis/Identities/XXXX",
+                        "vote": 0
+                    }
+                ],
+                "sourceRefName": "refs/heads/xsoar-test",
+                "status": "active",
+                "supportsIterations": true,
+                "targetRefName": "refs/heads/main",
+                "title": "Test xsoar",
+                "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/pullRequests/65"
+            }
+        ]
     }
 }
 ```
@@ -678,8 +923,8 @@ Retrieve pull requests in repository.
 > Showing page 1 out others that may exist.
 >|Title|Description|Created By|Pull Request Id|Repository Name|Repository Id|Project Name|Project Id|Creation Date|
 >|---|---|---|---|---|---|---|---|---|
->| test-yehuda-update-1342 | bbb | Yehuda Pashay | 51 | xsoar | bbd1bda1-b58e-41de-930a-59c92d852dcd | xsoar | c137b60a-54a4-4a65-bb75-e1972c77da30 | 2021-11-21T10:29:49 |
->| test1234 | test title | Yehuda Pashay | 49 | xsoar | bbd1bda1-b58e-41de-930a-59c92d852dcd | xsoar | c137b60a-54a4-4a65-bb75-e1972c77da30 | 2021-11-11T15:33:01 |
+>| Test xsoar | Demo pr | XSOAR User 1 | 70 | xsoar | XXXX | xsoar | xsoar-project | 2021-11-30T08:56:55 |
+>| Test xsoar | Demo pr | XSOAR User 1 | 65 | xsoar | XXXX | xsoar | xsoar-project | 2021-11-28T16:08:09 |
 
 
 ### azure-devops-project-list
@@ -707,7 +952,7 @@ Retrieve all projects in the organization that the authenticated user has access
 | AzureDevOps.Project.revision | Number | The revision number of the project. | 
 | AzureDevOps.Project.visibility | String | Indicates whom the project is visible to. | 
 | AzureDevOps.Project.lastUpdateTime | Date | Project last update time. | 
-| AzureDevOps.Project.id | String | The ID of the Project | 
+| AzureDevOps.Project.id | String | The ID of the Project. | 
 
 
 #### Command Example
@@ -719,27 +964,12 @@ Retrieve all projects in the organization that the authenticated user has access
     "AzureDevOps": {
         "Project": [
             {
-                "id": "xsoar-project-1",
-                "lastUpdateTime": "2021-10-27T08:38:28",
-                "name": "test",
-                "revision": 39,
-                "state": "wellFormed",
-                "visibility": "private"
-            },
-            {
-                "id": "xsoar-project-2",
-                "lastUpdateTime": "2021-10-13T15:46:18",
+                "id": "xsoar-project",
+                "lastUpdateTime": "2021-10-13T15:46:18.017000+00:00",
                 "name": "xsoar",
                 "revision": 11,
                 "state": "wellFormed",
-                "visibility": "private"
-            },
-            {
-                "id": "xsoar-project-3",
-                "lastUpdateTime": "2021-11-18T14:30:28",
-                "name": "test-1",
-                "revision": 47,
-                "state": "wellFormed",
+                "url": "https://dev.azure.com/xsoar-organization/_apis/projects/xsoar-project",
                 "visibility": "private"
             }
         ]
@@ -754,9 +984,7 @@ Retrieve all projects in the organization that the authenticated user has access
 > Showing page 1 out others that may exist.
 >|Name|Id|State|Revision|Visibility|Last Update Time|
 >|---|---|---|---|---|---|
->| test | xsoar-project-1| wellFormed | 39 | private | 2021-10-27T08:38:28 |
->| xsoar | xsoar-project-2 | wellFormed | 11 | private | 2021-10-13T15:46:18 |
->| test-1 | xsoar-project-3 | wellFormed | 47 | private | 2021-11-18T14:30:28 |
+>| xsoar | xsoar-project | wellFormed | 11 | private | 2021-10-13T15:46:18.017000+00:00 |
 
 
 ### azure-devops-repository-list
@@ -781,10 +1009,10 @@ Retrieve git repositories in the organization project.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | AzureDevOps.Project.name | String | The name of the project. | 
-| AzureDevOps.Project.Repository.id | String | The ID of the repository. | 
-| AzureDevOps.Project.Repository.name | String | The name of the repository. | 
-| AzureDevOps.Project.Repository.url | String | The URL of the repository. | 
-| AzureDevOps.Project.Repository.size | Number | The size of the repository. | 
+| AzureDevOps.Repository.id | String | The ID of the repository. | 
+| AzureDevOps.Repository.name | String | The name of the repository. | 
+| AzureDevOps.Repository.webUrl | String | The web URL of the repository. | 
+| AzureDevOps.Repository.size | Number | The size of the repository \(in bytes\). | 
 
 
 #### Command Example
@@ -794,16 +1022,24 @@ Retrieve git repositories in the organization project.
 ```json
 {
     "AzureDevOps": {
-        "Project": {
-            "Repository": [
-                {
-                    "id": "XXXX",
-                    "name": "yehuda123",
-                    "size": 1183,
-                    "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX"
-                }
-            ],
-            "name": "xsoar"
+        "Repository": {
+            "id": "xsoar-repository",
+            "isDisabled": false,
+            "name": "test2803",
+            "project": {
+                "id": "xsoar-project",
+                "lastUpdateTime": "2021-10-13T15:46:18.017Z",
+                "name": "xsoar",
+                "revision": 11,
+                "state": "wellFormed",
+                "url": "https://dev.azure.com/xsoar-organization/_apis/projects/xsoar-project",
+                "visibility": "private"
+            },
+            "remoteUrl": "https://xsoar-organization@dev.azure.com/xsoar-organization/xsoar/_git/test2803",
+            "size": 0,
+            "sshUrl": "git@ssh.dev.azure.com:v3/xsoar-organization/xsoar/test2803",
+            "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/xsoar-repository",
+            "webUrl": "https://dev.azure.com/xsoar-organization/xsoar/_git/test2803"
         }
     }
 }
@@ -814,9 +1050,9 @@ Retrieve git repositories in the organization project.
 >### Repositories List:
 > Current page size: 1
 > Showing page 1 out others that may exist.
->|Id|Name|Size ( Bytes )|
->|---|---|---|
->| XXXX | test2803 | 0 |
+>|Id|Name|Web Url|Size ( Bytes )|
+>|---|---|---|---|
+>| xsoar-repository | test2803 | https:<span>//</span>dev.azure.com/xsoar-organization/xsoar/_git/test2803 | 0 |
 
 
 ### azure-devops-user-list
@@ -841,8 +1077,8 @@ Query users that were added to organization projects.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | AzureDevOps.User.entityType | String | The type of the entity. | 
-| AzureDevOps.User.id | String | The ID of the identity. | 
-| AzureDevOps.User.email | String | The email address of the user. | 
+| AzureDevOps.User.localId | String | The ID of the identity. | 
+| AzureDevOps.User.signInAddress | String | The email address of the user. | 
 
 
 #### Command Example
@@ -854,14 +1090,28 @@ Query users that were added to organization projects.
     "AzureDevOps": {
         "User": [
             {
-                "email": "user1@xsoar.com",
+                "active": true,
+                "department": null,
+                "description": null,
+                "displayName": "XSOAR User 2",
+                "entityId": "vss.ds.v1.aad.user.2c7514ff41d04eb0ac8235b8671de094",
                 "entityType": "User",
-                "id": "XXXX"
-            },
-            {
-                "email": "user2@xsoar.com",
-                "entityType": "User",
-                "id": "XXXX"
+                "guest": false,
+                "isMru": false,
+                "jobTitle": null,
+                "localDirectory": "vsd",
+                "localId": "XXXX",
+                "mail": "user1@xsoar.com",
+                "mailNickname": "User 1",
+                "originDirectory": "aad",
+                "originId": "2c7514ff-41d0-4eb0-ac82-35b8671de094",
+                "physicalDeliveryOfficeName": null,
+                "samAccountName": "user1@xsoar.com",
+                "scopeName": "Palo Alto Networks",
+                "signInAddress": "user1@xsoar.com",
+                "subjectDescriptor": "aad.NWYyZWMzNTctMjgzMS03M2I4LTk1NWYtMmRkZGM2OWVmMzg3",
+                "surname": "User 1",
+                "telephoneNumber": null
             }
         ]
     }
@@ -900,86 +1150,156 @@ Retrieve pull-request.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureDevOps.Project.name | String | The name of the project. | 
-| AzureDevOps.Project.Repository.id | String | The ID of the repository. | 
-| AzureDevOps.Project.Repository.name | String | The name of the repository. | 
-| AzureDevOps.Project.Repository.url | String | The URL of the repository. | 
-| AzureDevOps.Project.Repository.size | Number | The size of the repository. | 
-| AzureDevOps.Project.Repository.PullRequest.Id | Number | The ID of the pull request. | 
-| AzureDevOps.Project.Repository.PullRequest.status | String | The status of the pull request. | 
-| AzureDevOps.Project.Repository.PullRequest.CreatedBy.displayName | String | The display name of the pull request creator. | 
-| AzureDevOps.Project.Repository.PullRequest.CreatedBy.id | String | The ID of the pull request creator. | 
-| AzureDevOps.Project.Repository.PullRequest.CreatedBy.uniqueName | String | The unique name of the pull request creator. | 
-| AzureDevOps.Project.Repository.PullRequest.creationDate | Date | The creation date of the pull request. | 
-| AzureDevOps.Project.Repository.PullRequest.title | String | The title of the pull request | 
-| AzureDevOps.Project.Repository.PullRequest.description | String | The description of the pull request. | 
-| AzureDevOps.Project.Repository.PullRequest.sourceRefName | String | The source branch of the pull request. | 
-| AzureDevOps.Project.Repository.PullRequest.targetRefName | String | The target branch of the pull request. | 
-| AzureDevOps.Project.Repository.PullRequest.mergeStatus | String | The current status of the pull request merge. | 
-| AzureDevOps.Project.Repository.PullRequest.isDraft | Boolean | Draft / WIP pull request. | 
-| AzureDevOps.Project.Repository.PullRequest.LastMergeSourceCommit.commitId | String | The ID of the commit at the head of the source branch at the time of the last pull request merge. | 
-| AzureDevOps.Project.Repository.PullRequest.LastMergeSourceCommit.url | String | The REST URL for this resource. | 
-| AzureDevOps.Project.Repository.PullRequest.LastMergeTargetCommit.commitId | String | The ID of the commit at the head of the target branch at the time of the last pull request merge. | 
-| AzureDevOps.Project.Repository.PullRequest.LastMergeTargetCommit.url | String | The REST URL for this resource. | 
-| AzureDevOps.Project.Repository.PullRequest.Reviewers.reviewerUrl | String | URL to retrieve information about the reviewer identity. | 
-| AzureDevOps.Project.Repository.PullRequest.Reviewers.vote | Number | Vote on a pull request: 10 - approved 5 - approved with suggestions 0 - no vote -5 - waiting for author -10 - rejected | 
-| AzureDevOps.Project.Repository.PullRequest.Reviewers.hasDeclined | Boolean | Indicates if this reviewer has declined to review this pull request. | 
-| AzureDevOps.Project.Repository.PullRequest.Reviewers.isFlagged | Boolean | Indicates if this reviewer is flagged for attention on this pull request. | 
-| AzureDevOps.Project.Repository.PullRequest.Reviewers.displayName | String | The display name of the pull request reviewer. | 
-| AzureDevOps.Project.Repository.PullRequest.Reviewers.id | String | The ID of the pull request reviewer. | 
-| AzureDevOps.Project.Repository.PullRequest.Reviewers.uniqueName | String | The unique name of the pull request reviewer. | 
+| AzureDevOps.PullRequest.repository.project.name | String | The name of the project. | 
+| AzureDevOps.PullRequest.repository.id | String | The ID of the repository. | 
+| AzureDevOps.PullRequest.repository.name | String | The name of the repository. | 
+| AzureDevOps.PullRequest.repository.url | String | The URL of the repository. | 
+| AzureDevOps.PullRequest.repository.size | Number | The size of the repository. | 
+| AzureDevOps.PullRequest.pullRequestId | Number | The ID of the pull request. | 
+| AzureDevOps.PullRequest.status | String | The status of the pull request. | 
+| AzureDevOps.PullRequest.createdBy.displayName | String | The display name of the pull request creator. | 
+| AzureDevOps.PullRequest.createdBy.id | String | The ID of the pull request creator. | 
+| AzureDevOps.PullRequest.createdBy.uniqueName | String | The unique name of the pull request creator. | 
+| AzureDevOps.PullRequest.creationDate | Date | The creation date of the pull request. | 
+| AzureDevOps.PullRequest.title | String | The title of the pull request | 
+| AzureDevOps.PullRequest.description | String | The description of the pull request. | 
+| AzureDevOps.PullRequest.sourceRefName | String | The source branch of the pull request. | 
+| AzureDevOps.PullRequest.targetRefName | String | The target branch of the pull request. | 
+| AzureDevOps.PullRequest.mergeStatus | String | The current status of the pull request merge. | 
+| AzureDevOps.PullRequest.isDraft | Boolean | Draft / WIP pull request. | 
+| AzureDevOps.PullRequest.lastMergeSourceCommit.commitId | String | The ID of the commit at the head of the source branch at the time of the last pull request merge. | 
+| AzureDevOps.PullRequest.lastMergeSourceCommit.url | String | The REST URL for this resource. | 
+| AzureDevOps.PullRequest.lastMergeTargetCommit.commitId | String | The ID of the commit at the head of the target branch at the time of the last pull request merge. | 
+| AzureDevOps.PullRequest.lastMergeTargetCommit.url | String | The REST URL for this resource. | 
 
 
 #### Command Example
-```!azure-devops-pull-request-get project="xsoar" repository_id="bbd1bda1-b58e-41de-930a-59c92d852dcd" pull_request_id="48"```
+```!azure-devops-pull-request-get project="xsoar" repository_id="XXXX" pull_request_id="70"```
 
 #### Context Example
 ```json
 {
     "AzureDevOps": {
-        "Project": {
-            "Repository": {
-                "PullRequest": {
-                    "CreatedBy": {
-                        "displayName": "XSOAR User",
-                        "id": "XXXX",
-                        "uniqueName": "user2@xsoar.com"
-                    },
-                    "Id": 48,
-                    "LastMergeSourceCommit": {
-                        "commitId": "e44039f67d30924c24615bb334350dd72e41cf44",
-                        "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/commits/e44039f67d30924c24615bb334350dd72e41cf44"
-                    },
-                    "LastMergeTargetCommit": {
-                        "commitId": "cb63a958fbaed6d416c68330ac8f8a9e5544603c",
-                        "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/commits/cb63a958fbaed6d416c68330ac8f8a9e5544603c"
-                    },
-                    "Reviewers": [
-                        {
-                            "displayName": "XSOAR User",
-                            "hasDeclined": false,
-                            "id": "XXXX",
-                            "isFlagged": false,
-                            "reviewerUrl": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/pullRequests/48/reviewers/XXXX",
-                            "uniqueName": "user2@xsoar.com",
-                            "vote": 0
-                        }
-                    ],
-                    "creationDate": "2021-11-03T09:24:48",
-                    "description": "Demo pr",
-                    "isDraft": false,
-                    "mergeStatus": "succeeded",
-                    "sourceRefName": "refs/heads/qm1",
-                    "status": "active",
-                    "targetRefName": "refs/heads/main",
-                    "title": "Test xsoar"
+        "PullRequest": {
+            "_links": {
+                "createdBy": {
+                    "href": "https://vssps.visualstudio.com/XXXX/_apis/Identities/XXXX"
                 },
-                "id": "XXXX",
-                "name": "xsoar",
-                "size": 9439,
-                "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX"
+                "iterations": {
+                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/pullRequests/70/iterations"
+                },
+                "repository": {
+                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX"
+                },
+                "self": {
+                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/pullRequests/70"
+                },
+                "sourceBranch": {
+                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/refs/heads/test-test"
+                },
+                "sourceCommit": {
+                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/commits/b21e2330a6ae2f920b8f5ae9b74e069230b27087"
+                },
+                "statuses": {
+                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/pullRequests/70/statuses"
+                },
+                "targetBranch": {
+                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/refs/heads/main"
+                },
+                "targetCommit": {
+                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/commits/2eca089fab76f1f32051d188653ea7d279b90a4b"
+                },
+                "workItems": {
+                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/pullRequests/70/workitems"
+                }
             },
-            "name": "xsoar"
+            "artifactId": "vstfs:///Git/PullRequestId/xsoar-project%2fXXXX%2f70",
+            "codeReviewId": 70,
+            "createdBy": {
+                "_links": {
+                    "avatar": {
+                        "href": "https://dev.azure.com/xsoar-organization/_apis/GraphProfile/MemberAvatars/aad.ZWFlMjk2ZGYtMzYwOS03YWY3LWFkNzMtYzNlYmRhZDM3ZmQ5"
+                    }
+                },
+                "descriptor": "aad.ZWFlMjk2ZGYtMzYwOS03YWY3LWFkNzMtYzNlYmRhZDM3ZmQ5",
+                "displayName": "XSOAR User 1",
+                "id": "XXXX",
+                "imageUrl": "https://dev.azure.com/xsoar-organization/_api/_common/identityImage?id=XXXX",
+                "uniqueName": "user2@xsoar.com",
+                "url": "https://vssps.visualstudio.com/XXXX/_apis/Identities/XXXX"
+            },
+            "creationDate": "2021-11-30T08:56:55.531709+00:00",
+            "description": "Demo pr",
+            "isDraft": false,
+            "lastMergeCommit": {
+                "author": {
+                    "date": "2021-11-30T08:56:55Z",
+                    "email": "user2@xsoar.com",
+                    "name": "XSOAR User 1"
+                },
+                "comment": "Merge pull request 70 from test-test into main",
+                "commitId": "333b2ec34ca6b330901af84a2483c87effb49c23",
+                "committer": {
+                    "date": "2021-11-30T08:56:55Z",
+                    "email": "user2@xsoar.com",
+                    "name": "XSOAR User 1"
+                },
+                "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/commits/333b2ec34ca6b330901af84a2483c87effb49c23"
+            },
+            "lastMergeSourceCommit": {
+                "commitId": "b21e2330a6ae2f920b8f5ae9b74e069230b27087",
+                "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/commits/b21e2330a6ae2f920b8f5ae9b74e069230b27087"
+            },
+            "lastMergeTargetCommit": {
+                "commitId": "2eca089fab76f1f32051d188653ea7d279b90a4b",
+                "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/commits/2eca089fab76f1f32051d188653ea7d279b90a4b"
+            },
+            "mergeId": "a950a614-1a14-4412-90ad-e6f7417e26c6",
+            "mergeStatus": "succeeded",
+            "pullRequestId": 70,
+            "repository": {
+                "id": "XXXX",
+                "isDisabled": false,
+                "name": "xsoar",
+                "project": {
+                    "id": "xsoar-project",
+                    "lastUpdateTime": "2021-10-13T15:46:18.017Z",
+                    "name": "xsoar",
+                    "revision": 11,
+                    "state": "wellFormed",
+                    "url": "https://dev.azure.com/xsoar-organization/_apis/projects/xsoar-project",
+                    "visibility": "private"
+                },
+                "remoteUrl": "https://xsoar-organization@dev.azure.com/xsoar-organization/xsoar/_git/xsoar",
+                "size": 12366,
+                "sshUrl": "git@ssh.dev.azure.com:v3/xsoar-organization/xsoar/xsoar",
+                "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX",
+                "webUrl": "https://dev.azure.com/xsoar-organization/xsoar/_git/xsoar"
+            },
+            "reviewers": [
+                {
+                    "_links": {
+                        "avatar": {
+                            "href": "https://dev.azure.com/xsoar-organization/_apis/GraphProfile/MemberAvatars/aad.ZWFlMjk2ZGYtMzYwOS03YWY3LWFkNzMtYzNlYmRhZDM3ZmQ5"
+                        }
+                    },
+                    "displayName": "XSOAR User 1",
+                    "hasDeclined": false,
+                    "id": "XXXX",
+                    "imageUrl": "https://dev.azure.com/xsoar-organization/_api/_common/identityImage?id=XXXX",
+                    "isFlagged": false,
+                    "reviewerUrl": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/pullRequests/70/reviewers/XXXX",
+                    "uniqueName": "user2@xsoar.com",
+                    "url": "https://vssps.visualstudio.com/XXXX/_apis/Identities/XXXX",
+                    "vote": 0
+                }
+            ],
+            "sourceRefName": "refs/heads/test-test",
+            "status": "active",
+            "supportsIterations": true,
+            "targetRefName": "refs/heads/main",
+            "title": "Test xsoar",
+            "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/pullRequests/70"
         }
     }
 }
@@ -990,7 +1310,7 @@ Retrieve pull-request.
 >### Pull Request Information:
 >|Title|Description|Created By|Pull Request Id|Repository Name|Repository Id|Project Name|Project Id|Creation Date|
 >|---|---|---|---|---|---|---|---|---|
->| Test xsoar | Demo pr | XSOAR User | 48 | xsoar | XXXX | xsoar | xsoar-project | 2021-11-03T09:24:48 |
+>| Test xsoar | Demo pr | XSOAR User 1 | 70 | xsoar | XXXX | xsoar | xsoar-project | 2021-11-30T08:56:55 |
 
 
 ### azure-devops-pipeline-run-get
@@ -1017,42 +1337,65 @@ Retrieve a pipeline run information.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureDevOps.Project.name | String | The name of the project. | 
-| AzureDevOps.Project.Pipeline.id | Number | The ID of the pipeline. | 
-| AzureDevOps.Project.Pipeline.revision | Number | Pipeline revision number | 
-| AzureDevOps.Project.Pipeline.name | String | Pipeline repository name | 
-| AzureDevOps.Project.Pipeline.folder | String | Pipeline folder | 
-| AzureDevOps.Project.Pipeline.Run.state | String | The run state. | 
-| AzureDevOps.Project.Pipeline.Run.createdDate | Date | Run-pipeline creation date. | 
-| AzureDevOps.Project.Pipeline.Run.url | String | The URL of the run. | 
-| AzureDevOps.Project.Pipeline.Run.run_id | Number | The ID of the run. | 
-| AzureDevOps.Project.Pipeline.Run.name | String | The name of the run. | 
-| AzureDevOps.Project.Pipeline.Run.name | String | The result of the pipeline running. If the run is in progress, the default value is 'unknown'. | 
+| AzureDevOps.PipelineRun.project | String | The name of the project. | 
+| AzureDevOps.PipelineRun.pipeline.id | Number | The ID of the pipeline. | 
+| AzureDevOps.PipelineRun.pipeline.name | String | Pipeline repository name. | 
+| AzureDevOps.PipelineRun.state | String | The run state. | 
+| AzureDevOps.PipelineRun.createdDate | Date | The run creation date. | 
+| AzureDevOps.PipelineRun.run_id | Number | The ID of the run. | 
+| AzureDevOps.PipelineRun.name | String | The name of the run. | 
+| AzureDevOps.PipelineRun.result | String | The result of the pipeline running. If the run is in progress, the default value is 'unknown'. | 
 
 
 #### Command Example
-```!azure-devops-pipeline-run-get project="xsoar" pipeline_id="1" run_id="13"```
+```!azure-devops-pipeline-run-get project="xsoar" pipeline_id="1" run_id="114"```
 
 #### Context Example
 ```json
 {
     "AzureDevOps": {
-        "Project": {
-            "Pipeline": {
-                "Run": {
-                    "createdDate": "2021-10-25T06:34:31",
-                    "name": "20211025.1",
-                    "result": "failed",
-                    "run_id": 13,
-                    "state": "completed",
-                    "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/pipelines/1/runs/13"
+        "PipelineRun": {
+            "_links": {
+                "pipeline": {
+                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/pipelines/1?revision=1"
                 },
+                "pipeline.web": {
+                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_build/definition?definitionId=1"
+                },
+                "self": {
+                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/pipelines/1/runs/114"
+                },
+                "web": {
+                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_build/results?buildId=114"
+                }
+            },
+            "createdDate": "2021-11-07T08:09:03.592213+00:00",
+            "finishedDate": "2021-11-07T08:09:28.3447367Z",
+            "name": "20211107.1",
+            "pipeline": {
                 "folder": "\\",
                 "id": 1,
                 "name": "xsoar",
-                "revision": 1
+                "revision": 1,
+                "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/pipelines/1?revision=1"
             },
-            "name": "xsoar"
+            "project": "xsoar",
+            "resources": {
+                "repositories": {
+                    "self": {
+                        "refName": "refs/heads/main",
+                        "repository": {
+                            "id": "XXXX",
+                            "type": "azureReposGit"
+                        },
+                        "version": "2eca089fab76f1f32051d188653ea7d279b90a4b"
+                    }
+                }
+            },
+            "result": "failed",
+            "run_id": 114,
+            "state": "completed",
+            "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/pipelines/1/runs/114"
         }
     }
 }
@@ -1063,7 +1406,7 @@ Retrieve a pipeline run information.
 >### Pipeline Run Information:
 >|Pipeline Id|Run State|Creation Date|Run Id|Result|
 >|---|---|---|---|---|
->| 1 | completed | 2021-10-25T06:34:31 | 13 | failed |
+>| 1 | completed | 2021-11-07T08:09:03.592213+00:00 | 114 | failed |
 
 
 ### azure-devops-pipeline-run-list
@@ -1088,17 +1431,14 @@ Retrieve pipeline runs list. The command retrieves up to the top 10000 runs for 
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureDevOps.Project.name | String | The name of the project. | 
-| AzureDevOps.Project.Pipeline.id | Number | The ID of the pipeline. | 
-| AzureDevOps.Project.Pipeline.revision | Number | Pipeline revision number | 
-| AzureDevOps.Project.Pipeline.name | String | Pipeline repository name | 
-| AzureDevOps.Project.Pipeline.folder | String | Pipeline folder | 
-| AzureDevOps.Project.Pipeline.Run.state | String | The run state. | 
-| AzureDevOps.Project.Pipeline.Run.createdDate | Date | Run-pipeline creation date. | 
-| AzureDevOps.Project.Pipeline.Run.url | String | The URL of the run. | 
-| AzureDevOps.Project.Pipeline.Run.run_id | Number | The ID of the run. | 
-| AzureDevOps.Project.Pipeline.Run.name | String | The name of the run. | 
-| AzureDevOps.Project.Pipeline.Run.name | String | The result of the pipeline running. If the run is in progress, the default value is 'unknown'. | 
+| AzureDevOps.PipelineRun.project | String | The name of the project. | 
+| AzureDevOps.PipelineRun.pipeline.id | Number | The ID of the pipeline. | 
+| AzureDevOps.PipelineRun.pipeline.name | String | Pipeline repository name | 
+| AzureDevOps.PipelineRun.state | String | The run state. | 
+| AzureDevOps.PipelineRun.createdDate | Date | The run creation date. | 
+| AzureDevOps.PipelineRun.run_id | Number | The ID of the run. | 
+| AzureDevOps.PipelineRun.name | String | The name of the run. | 
+| AzureDevOps.PipelineRun.result | String | The result of the pipeline running. If the run is in progress, the default value is 'unknown'. | 
 
 
 #### Command Example
@@ -1108,24 +1448,35 @@ Retrieve pipeline runs list. The command retrieves up to the top 10000 runs for 
 ```json
 {
     "AzureDevOps": {
-        "Project": {
-            "Pipeline": [
-                {
-                    "Run": {
-                        "createdDate": "2021-11-03T09:25:20",
-                        "id": 113,
-                        "name": "20211103.1",
-                        "result": "failed",
-                        "state": "completed",
-                        "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/pipelines/1/runs/113"
-                    },
-                    "folder": "\\",
-                    "id": 1,
-                    "name": "xsoar",
-                    "revision": 1
+        "PipelineRun": {
+            "_links": {
+                "pipeline": {
+                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/pipelines/1?revision=1"
+                },
+                "pipeline.web": {
+                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_build/definition?definitionId=1"
+                },
+                "self": {
+                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/pipelines/1/runs/1154"
+                },
+                "web": {
+                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_build/results?buildId=1154"
                 }
-            ],
-            "name": "xsoar"
+            },
+            "createdDate": "2021-11-30T08:57:03.110121+00:00",
+            "name": "20211130.1",
+            "pipeline": {
+                "folder": "\\",
+                "id": 1,
+                "name": "xsoar",
+                "revision": 1,
+                "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/pipelines/1?revision=1"
+            },
+            "project": "xsoar",
+            "result": "unknown",
+            "run_id": 1154,
+            "state": "inProgress",
+            "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/pipelines/1/runs/1154"
         }
     }
 }
@@ -1138,7 +1489,7 @@ Retrieve pipeline runs list. The command retrieves up to the top 10000 runs for 
 > Showing page 1 out others that may exist.
 >|Pipeline Id|Run State|Creation Date|Run Id|Result|
 >|---|---|---|---|---|
->| 1 | inProgress | 2021-11-21T14:54:00 | 1142 | unknown |
+>| 1 | inProgress | 2021-11-30T08:57:03.110121+00:00 | 1154 | unknown |
 
 
 ### azure-devops-pipeline-list
@@ -1162,11 +1513,11 @@ Retrieve project pipelines list.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureDevOps.Project.name | String | The name of the project. | 
-| AzureDevOps.Project.Pipeline.id | Number | The ID of the pipeline. | 
-| AzureDevOps.Project.Pipeline.revision | Number | Pipeline revision number | 
-| AzureDevOps.Project.Pipeline.name | String | Pipeline repository name | 
-| AzureDevOps.Project.Pipeline.folder | String | Pipeline folder | 
+| AzureDevOps.Pipeline.project | String | The name of the project. | 
+| AzureDevOps.Pipeline.id | Number | The ID of the pipeline. | 
+| AzureDevOps.Pipeline.revision | Number | Pipeline revision number. | 
+| AzureDevOps.Pipeline.name | String | Pipeline name. | 
+| AzureDevOps.Pipeline.folder | String | Pipeline folder. | 
 
 
 #### Command Example
@@ -1176,16 +1527,21 @@ Retrieve project pipelines list.
 ```json
 {
     "AzureDevOps": {
-        "Project": {
-            "Pipeline": [
-                {
-                    "folder": "\\",
-                    "id": 2,
-                    "name": "xsoar (1)",
-                    "revision": 1
+        "Pipeline": {
+            "_links": {
+                "self": {
+                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/pipelines/2?revision=1"
+                },
+                "web": {
+                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_build/definition?definitionId=2"
                 }
-            ],
-            "name": "xsoar"
+            },
+            "folder": "\\",
+            "id": 2,
+            "name": "xsoar (1)",
+            "project": "xsoar",
+            "revision": 1,
+            "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/pipelines/2?revision=1"
         }
     }
 }
@@ -1223,10 +1579,9 @@ Retrieve repository branches list.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureDevOps.Project.name | String | The name of the project. | 
-| AzureDevOps.Project.Repository.name | String | The name of the repository. | 
-| AzureDevOps.Project.Repository.Branch.name | String | The name of the branch | 
-| AzureDevOps.Project.Repository.Branch.creator | String | Thr creator of the branch. | 
+| AzureDevOps.Branch.project | String | The name of the project. | 
+| AzureDevOps.Branch.repository | String | The name of the repository. | 
+| AzureDevOps.Branch.name | String | The name of the branch. | 
 
 
 #### Command Example
@@ -1236,17 +1591,25 @@ Retrieve repository branches list.
 ```json
 {
     "AzureDevOps": {
-        "Project": {
-            "Repository": {
-                "Branch": [
-                    {
-                        "creator": "XSOAR User",
-                        "name": "main"
+        "Branch": {
+            "creator": {
+                "_links": {
+                    "avatar": {
+                        "href": "https://dev.azure.com/xsoar-organization/_apis/GraphProfile/MemberAvatars/aad.ZWFlMjk2ZGYtMzYwOS03YWY3LWFkNzMtYzNlYmRhZDM3ZmQ5"
                     }
-                ],
-                "name": "xsoar"
+                },
+                "descriptor": "aad.ZWFlMjk2ZGYtMzYwOS03YWY3LWFkNzMtYzNlYmRhZDM3ZmQ5",
+                "displayName": "XSOAR User 1",
+                "id": "XXXX",
+                "imageUrl": "https://dev.azure.com/xsoar-organization/_api/_common/identityImage?id=XXXX",
+                "uniqueName": "user2@xsoar.com",
+                "url": "https://vssps.visualstudio.com/XXXX/_apis/Identities/XXXX"
             },
-            "name": "xsoar"
+            "name": "refs/heads/main",
+            "objectId": "2eca089fab76f1f32051d188653ea7d279b90a4b",
+            "project": "xsoar",
+            "repository": "xsoar",
+            "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/refs?filter=heads%2Fmain"
         }
     }
 }
@@ -1257,7 +1620,7 @@ Retrieve repository branches list.
 >### Branches List:
 > Current page size: 1
 > Showing page 1 out others that may exist.
->|Name|Creator|
->|---|---|
->| main | XSOAR User |
+>|Name|
+>|---|
+>| refs/heads/main |
 

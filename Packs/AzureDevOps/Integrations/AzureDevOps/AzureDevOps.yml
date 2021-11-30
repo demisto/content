@@ -152,7 +152,7 @@ script:
     polling: true
     name: azure-devops-pipeline-run
     outputs:
-    - contextPath: AzureDevOps.PipelineRun.[1].project
+    - contextPath: AzureDevOps.PipelineRun.project
       description: The name of the project.
       type: String
     - contextPath: AzureDevOps.PipelineRun.pipeline.id
