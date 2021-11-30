@@ -1821,7 +1821,7 @@ def splunk_search_command(service):
         status_cmd_result.scheduled_command = scheduled_command
         status_cmd_result.readable_output = 'Job is still running, it may take a little while...'
         return status_cmd_result
-    elif status.lower() == 'done' and polling is True:
+    elif (status.lower() == 'done' and polling is True) or search_job is None:
         # Get the job by its SID.
         search_job = service.job(job_sid)
 
