@@ -4752,6 +4752,10 @@
         {
             "playbookID": "test_AssignToNextShiftOOO",
             "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "JsonToTable - Test Playbook",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
