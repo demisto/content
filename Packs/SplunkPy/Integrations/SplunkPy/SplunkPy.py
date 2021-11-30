@@ -1,3 +1,4 @@
+from typing import *  # noqa: F401
 from splunklib.binding import HTTPError, namespace, AuthenticationError
 
 import demistomock as demisto
@@ -1689,6 +1690,8 @@ def build_search_kwargs(args):
         # A blocking search runs synchronously, and returns a job when it's finished.
         # It will be added just if it's not a polling command.
         kwargs_normalsearch['exec_mode'] = "blocking"
+    else:
+        kwargs_normalsearch['exec_mode'] = "blocking"
     return kwargs_normalsearch
 
 
@@ -1790,8 +1793,10 @@ def splunk_search_command(service):
     search_kwargs = build_search_kwargs(args)
     job_sid = args.get("sid", None)
     search_job = None
+    polling = argToBoolean(args.get("polling", False))
+    interval_in_secs = int(args.get('interval_in_seconds', 30))
 
-    if not job_sid or not argToBoolean(args.get("polling", False)):
+    if not job_sid or not polling:
         # create a new job to search the query.
         search_job = service.jobs.create(query, **search_kwargs)  # type: ignore
         job_sid = search_job["sid"]
@@ -1801,33 +1806,28 @@ def splunk_search_command(service):
     status = status_cmd_result.outputs['Status']
     if status.lower() != 'done':
         # Job is still running, schedule the next run of the command.
-        interval_in_secs = int(args.get('interval_in_seconds', 60))
-        polling_args = {
-            "sid": job_sid,
-            "polling": True,
-            "interval_in_seconds": interval_in_secs,
-        }
-        polling_args.update(args)
+        if 'sid' not in args:
+            args['sid'] = job_sid
         scheduled_command = ScheduledCommand(
             command="splunk-search",
             next_run_in_seconds=interval_in_secs,
-            args=polling_args,
+            args=args,
             timeout_in_seconds=600
         )
         status_cmd_result.scheduled_command = scheduled_command
         status_cmd_result.readable_output = 'Job is still running, it may take a little while...'
         return status_cmd_result
-    else:
+    elif status.lower() == 'done' and polling is True:
         # Get the job by his SID.
         search_job = service.job(job_sid)
 
     num_of_results_from_query = search_job["resultCount"]
 
-    results_limit = float(demisto.args().get("event_limit", 100))
+    results_limit = float(args.get("event_limit", 100))
     if results_limit == 0.0:
         # In Splunk, a result limit of 0 means no limit.
         results_limit = float("inf")
-    batch_size = int(demisto.args().get("batch_limit", 25000))
+    batch_size = int(args.get("batch_limit", 25000))
 
     results_offset = 0
     total_parsed_results = []  # type: List[Dict[str,Any]]

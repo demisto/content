@@ -253,7 +253,7 @@ Searches Splunk for events.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Splunk.Result | Unknown | The results of the Splunk search. The results are a JSON array, in which each item is a Splunk event. | 
-| Splunk.Status | String | The search status. | 
+| Splunk.JobStatus | String | The search status. | 
 
 
 ##### Command Example
