@@ -1445,10 +1445,11 @@ def get_detections(client_obj, rule_or_version_id: str, page_size: str, detectio
     :return: ec, json_data: Context data and raw response for the fetched detections
     """
     # Make a request URL
-    if detection_for_all_versions:
-        rule_or_version_id = f"{rule_or_version_id}@-"
     if not rule_or_version_id:
         rule_or_version_id = "-"
+    if detection_for_all_versions and rule_or_version_id:
+        rule_or_version_id = f"{rule_or_version_id}@-"
+
     request_url = '{}/detect/rules/{}/detections?pageSize={}' \
         .format(BACKSTORY_API_V2_URL, rule_or_version_id, page_size)
 
