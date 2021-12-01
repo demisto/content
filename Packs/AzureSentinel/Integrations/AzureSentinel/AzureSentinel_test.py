@@ -21,6 +21,7 @@ NEXT_LINK_CONTEXT_KEY = 'AzureSentinel.NextLink(val.Description == "NextLink for
 
 API_VERSION = '2021-04-01'
 
+DEFAULT_LIMIT = 50
 
 def mock_client():
     client = AzureSentinelClient(
