@@ -226,7 +226,8 @@ def list_groups_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, D
     if next_link_response:
         entry_context = {f'{INTEGRATION_CONTEXT_NAME}NextLink': {'GroupsNextLink': next_link_response},
                          f'{INTEGRATION_CONTEXT_NAME}(val.ID === obj.ID)': groups_outputs}
-        title = 'Groups (Note that there are more results. Please use the GroupsNextLink argument to see them.):'
+        title = 'Groups (Note that there are more results. Please use the next_link argument to see them. The value ' \
+                'can be found in the context under GroupsNextLink): '
     else:
         entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID === obj.ID)': groups_outputs}
         title = 'Groups:'
@@ -352,7 +353,8 @@ def list_members_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, 
         group_data['MembersNextLink'] = next_link_response
         entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID === obj.ID)': group_data}
         title = f'Group {group_id} members ' \
-                f'(Note that there are more results. Please use the next_link argument to see them.):'
+                f'(Note that there are more results. Please use the next_link argument to see them. The value can be ' \
+                f'found in the context under {INTEGRATION_CONTEXT_NAME}.MembersNextLink): '
     else:
         group_data['Members'] = members_outputs  # add a field with the members to the group
         entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID === obj.ID)': group_data}
@@ -412,7 +414,7 @@ def main():
     tenant = params.get('tenant_id')
     auth_and_token_url = params.get('auth_id')
     enc_key = params.get('enc_key')
-    verify = not params.get('insecure', True)
+    verify = not params.get('insecure', False)
     proxy = params.get('proxy')
     self_deployed: bool = params.get('self_deployed', False)
 

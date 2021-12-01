@@ -48,17 +48,27 @@ def test_commands(command, args, response, expected_result, mocker):
     assert expected_result == result[1]  # entry context is found in the 2nd place in the result of the command
 
 
-@pytest.mark.parametrize('command, args, response, expected_result', [
-    (list_members_command, {'group_id': 'under100'}, RESPONSE_LIST_MEMBERS_UNDER_100, EXPECTED_LIST_MEMBERS),
-    (list_members_command, {'group_id': 'above100'}, RESPONSE_LIST_MEMBERS_ABOVE_100, EXPECTED_LIST_MEMBERS)
+@pytest.mark.parametrize('args, response, expected_result', [
+    ({'group_id': 'under100'}, RESPONSE_LIST_MEMBERS_UNDER_100, EXPECTED_LIST_MEMBERS),
+    ({'group_id': 'above100'}, RESPONSE_LIST_MEMBERS_ABOVE_100, EXPECTED_LIST_MEMBERS)
 ])  # noqa: E124
-def test_list_members_command(command, args, response, expected_result, mocker):
+def test_list_members_command(args, response, expected_result, mocker):
+    """
+    Given:
+      - a group ID with less than 100 members.
+      - a group ID with more than 100 members.
+    When:
+      - calling list_members_command.
+    Then:
+      - ensure the command results are as expected (Members are found and MembersNextLink is shown when there are more
+      than 100 members.
+    """
     client = MsGraphClient(base_url='https://graph.microsoft.com/v1.0', tenant_id='tenant-id',
                            auth_id='auth_and_token_url', enc_key='enc_key', app_name='ms-graph-groups',
                            verify='use_ssl', proxy='proxies', self_deployed='self_deployed')
     mocker.patch.object(client.ms_client, 'http_request', return_value=response)
     mocker.patch.object(demisto, 'dt', return_value=RESPONSE_GET_GROUP)
-    result = command(client, args)
+    result = list_members_command(client, args)
     if args.get('group_id') == 'under100':
         assert 'MembersNextLink' not in result[1]['MSGraphGroups(val.ID === obj.ID)']
     else:  # above 100
