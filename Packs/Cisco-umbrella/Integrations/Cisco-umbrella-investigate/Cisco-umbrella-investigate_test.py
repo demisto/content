@@ -1,4 +1,3 @@
-import pytest
 from requests import RequestException
 
 import demistomock as demisto
