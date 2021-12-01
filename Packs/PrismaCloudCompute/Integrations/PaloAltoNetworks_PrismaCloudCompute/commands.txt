@@ -5,3 +5,4 @@
 !prisma-cloud-compute-host-forensic-list id=hostID limit=5
 !prisma-cloud-compute-console-version-info
 !prisma-cloud-compute-custom-feeds-ip-list
+!prisma-cloud-compute-custom-feeds-ip-add IP=1.1.1.1,2.2.2.2

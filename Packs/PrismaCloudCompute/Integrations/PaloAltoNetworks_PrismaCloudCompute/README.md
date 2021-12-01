@@ -1307,3 +1307,32 @@ Get all the BlackListed IP addresses in the system
 |---|---|
 | November 30, 2021 20:47:06 PM | 4.4.4.4,<br>1.1.1.1,<br>2.2.2.2,<br>3.3.3.3 |
 
+
+### prisma-cloud-compute-custom-feeds-ip-add
+***
+Add a list of banned IPs to be blocked by the system
+
+
+#### Base Command
+
+`prisma-cloud-compute-custom-feeds-ip-add`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| IP | List of custom ips to add to the banned IPs list that will be blocked. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!prisma-cloud-compute-custom-feeds-ip-add IP=1.1.1.1,2.2.2.2```
+
+#### Human Readable Output
+### IP Feeds
+|Feeds|
+|---|
+| 2.2.2.2,<br>1.1.1.1 |
+
