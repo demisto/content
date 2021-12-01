@@ -1,4 +1,4 @@
-This playbook will schedule a specified command and monitor for completion by looking for output in context. Make the playbook context shared globally if you have a command that returns to Context automatically and you have a specific key to monitor. The key monitored must be a single field value and not an array.
+This playbook will schedule a specified command and monitor for completion by looking for output in context. Make the playbook context shared globally if you have a command that returns to Context automatically, and you have a specific key to monitor. The key monitored must be a single field value and not an array.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -34,7 +34,3 @@ This playbook does not use any commands.
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | SchedulingTask.schedResults | Results from command executed | unknown |
-
-## Playbook Image
----
-![Schedule Task and Poll](Insert the link to your image here)
