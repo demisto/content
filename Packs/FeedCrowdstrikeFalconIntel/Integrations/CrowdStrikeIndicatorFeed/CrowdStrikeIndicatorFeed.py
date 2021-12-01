@@ -27,6 +27,7 @@ CROWDSTRIKE_TO_XSOAR_TYPES = {
     'domain': FeedIndicatorType.Domain,
     'email_address': FeedIndicatorType.Email,
     'hash_md5': FeedIndicatorType.File,
+    'hash_sha1': FeedIndicatorType.File,
     'hash_sha256': FeedIndicatorType.File,
     'registry': FeedIndicatorType.Registry,
     'url': FeedIndicatorType.URL,
@@ -259,12 +260,12 @@ class Client(CrowdStrikeClient):
 
         for field in CROWDSTRIKE_INDICATOR_RELATION_FIELDS:
             if field in resource and resource[field]:
-                relationships.extend(create_relationship(field, indicator, resource))
+                relationships.extend(create_relationships(field, indicator, resource))
 
         return relationships
 
 
-def create_relationship(field: str, indicator: dict, resource: dict) -> list:
+def create_relationships(field: str, indicator: dict, resource: dict) -> list:
 
     relationships = []
 
@@ -281,7 +282,7 @@ def create_relationship(field: str, indicator: dict, resource: dict) -> list:
             entity_b=relation['indicator'] if field == 'relations' else relation,
             entity_b_type=related_indicator_type,
             reverse_name=EntityRelationship.Relationships.RELATIONSHIPS_NAMES[relation_name]
-        )
+        ).to_indicator()
 
         relationships.append(indicator_relation)
 
