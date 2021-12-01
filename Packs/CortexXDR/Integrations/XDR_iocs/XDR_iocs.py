@@ -142,14 +142,19 @@ def create_file_sync(file_path, batch_size: int = 200):
 
 def get_iocs_size(query=None) -> int:
     search_indicators = IndicatorsSearcher()
-    return search_indicators.search_indicators_by_version(query=query if query else Client.query, size=1)\
+    query = query if query else Client.query
+    query = f'expirationStatus:active AND ({query})'
+    return search_indicators.search_indicators_by_version(query=query, size=1)\
         .get('total', 0)
 
 
 def get_iocs(page=0, size=200, query=None) -> List:
     search_indicators = IndicatorsSearcher(page=page)
-    return search_indicators.search_indicators_by_version(query=query if query else Client.query, size=size)\
+    query = query if query else Client.query
+    query = f'expirationStatus:active AND ({query})'
+    return search_indicators.search_indicators_by_version(query=query, size=size)\
         .get('iocs', [])
+
 
 
 def demisto_expiration_to_xdr(expiration) -> int:
