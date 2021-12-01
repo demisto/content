@@ -26,14 +26,14 @@ configuration:
   type: 13
 - additionalinfo: Public token obtained by creating an API token pair on the /config
     configuration page
-  displaypassword: Public API Token (Recommended)
+  displaypassword: Public API Token
   hiddenusername: true
   name: public_creds
   required: false
   type: 9
 - additionalinfo: Private token obtained by creating an API token pair on the /config
     configuration page
-  displaypassword: Private API Token (Recommended)
+  displaypassword: Private API Token
   hiddenusername: true
   name: private_creds
   required: false
