@@ -1,0 +1,42 @@
+args:
+- description: The value to be appended.
+  isArray: true
+  name: value
+- description: Item(s) to append. Comma separated supported.
+  isArray: true
+  name: item
+- auto: PREDEFINED
+  defaultValue: "true"
+  description: Set to true if you want to append item(s) without separating them by
+    comma
+  name: raw
+  predefined:
+  - "true"
+  - "false"
+comment: Append item(s) to the end of the list if they are not empty.
+commonfields:
+  id: daf028d9-567f-4178-86b3-3f14e072ae42
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 0c732789-cedf-4ad7-85b3-2fd11c349738
+    propagationLabels:
+    - all
+    toServerVersion: ""
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: AppendIfNotEmpty
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+tags:
+- transformer
+- entirelist
+- general
+type: javascript
