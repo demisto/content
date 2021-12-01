@@ -156,6 +156,7 @@ def get_vms(args):
                 'State': summary.runtime.powerState,
                 'HostName': summary.guest.hostName if summary.guest.hostName else ' ',
                 'MACAddress': mac_address,
+                'Snapshot': child.snapshot.currentSnapshot if child.snapshot else ' ',
                 'Deleted': 'False'
             })
     ec = {
@@ -458,9 +459,10 @@ def change_nic_state(args):
         raise SystemExit('Error occurred while trying to clone VM.')
 
 
-def list_vm_tags(uuid, parent_category_name):
+def list_vm_tags(uuid):
     dynamic_id = DynamicID(type='VirtualMachine', id=uuid)
     tags = vsphere_client.tagging.TagAssociation.list_attached_tags(dynamic_id)
+    x = 2
 
 
 def create_vm(args):
@@ -495,6 +497,8 @@ def create_vm(args):
             'State': summary.runtime.powerState,
             'HostName': summary.guest.hostName if summary.guest.hostName else ' ',
             'MACAddress': mac_address,
+            'Snapshot': task.info.result.snapshot.currentSnapshot if task.info.result.snapshot else ' ',
+            'Deleted': 'False'
         }
         ec = {
             'VMWare(val.UUID && val.UUID === obj.UUID)': data
@@ -549,6 +553,8 @@ def clone_vm(args):
             'State': summary.runtime.powerState,
             'HostName': summary.guest.hostName if summary.guest.hostName else ' ',
             'MACAddress': mac_address,
+            'Snapshot': task.info.result.snapshot.currentSnapshot if task.info.result.snapshot else ' ',
+            'Deleted': 'False'
         }
         ec = {
             'VMWare(val.UUID && val.UUID === obj.UUID)': data
@@ -566,9 +572,9 @@ def clone_vm(args):
 
 
 def relocate_vm(args):
-    vm = get_vm(args.get('args'))
+    vm = get_vm(args.get('uuid'))
     content = si.RetrieveContent()
-    priority = vim.VirtualMachine.MovePriority()
+    priority = vim.VirtualMachine.MovePriority(args.get('priority'))
     service = vim.ServiceLocator()
     service.sslThumbprint = args.get('service')
     spec = vim.vm.RelocateSpec()
@@ -580,8 +586,6 @@ def relocate_vm(args):
     if datastore:
         spec.datastore = datastore
         spec.disks = create_rellocation_locator_spec(vm, datastore)
-
-    # spec.profile = args.get('profile')  todo
 
     task = vm.RelocateVM_Task(spec, priority.args.get('priority'))
     wait_for_tasks(si, [task])
@@ -604,13 +608,20 @@ def delete_vm(args):
     task = vm.Destroy_Task()
     wait_for_tasks(si, [task])
     if task.info.state == 'success':
+        data = {
+            'UUID': args.get('uuid'),
+            'Deleted': 'True'
+        }
+        ec = {
+            'VMWare(val.UUID && val.UUID === obj.UUID)': data
+        }
         return {
             'ContentsFormat': formats['json'],
             'Type': entryTypes['note'],
             'Contents': {},
             'ReadableContentsFormat': formats['text'],
             'HumanReadable': 'Virtual Machine was deleted successfully.',
-            'EntryContext': {}
+            'EntryContext': ec
         }
     elif task.info.state == 'error':
         raise SystemExit('Error occurred while trying to delete VM.')
@@ -683,7 +694,7 @@ try:
     if demisto.command() == 'vmware-change-nic-state':
         result = change_nic_state(demisto.args())
     if demisto.command() == 'vmware-list-vm-tags':
-        result = list_vm_tags(demisto.args()['uuid'], demisto.args()['parent-category-name'])
+        result = list_vm_tags(demisto.args()['uuid'])
     if demisto.command() == 'vmware-add-tag':
         result = list_vm_tags(demisto.args()['vm-uuid'], demisto.args()['parent-category-name'])
     if demisto.command() == 'vmware-create-vm':
@@ -691,8 +702,7 @@ try:
     if demisto.command() == 'vmware-clone-vm':
         result = clone_vm(demisto.args())
     if demisto.command() == 'vmware-relocate-vm':
-        # result = relocate_vm(demisto.args())
-        pass
+        result = relocate_vm(demisto.args())
     if demisto.command() == 'vmware-delete-vm':
         result = delete_vm(demisto.args())
     if demisto.command() == 'vmware-register-vm':

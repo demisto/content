@@ -35,7 +35,35 @@ display: VMware
 name: VMware
 script:
   commands:
-    - arguments: []
+    - arguments:
+        - name: ip
+          description: List of IPs to filter VMs by.
+          required: false
+          isArray: true
+          defaultValue: ""
+          predefined:
+            - ""
+        - name: hostname
+          description: Hostname to filter VMs by.
+          required: false
+          isArray: false
+          defaultValue: ""
+          predefined:
+            - ""
+        - name: name
+          description: List of VM names to filter VMs by.ion
+          required: false
+          isArray: true
+          defaultValue: ""
+          predefined:
+            - ""
+        - name: uuid
+          description: List of UUIDs to filter VMs by.
+          required: false
+          isArray: true
+          defaultValue: ""
+          predefined:
+            - ""
       description: Returns all virtual machines on a system.
       important:
         - contextPath: VMWare.UUID
@@ -73,6 +101,12 @@ script:
         - contextPath: VMWare.MACAddress
           description: MAC address of VM.
           type: String
+        - contextPath: VMWare.Snapshot
+          description: Last snapshot info of the VM.
+          type: Unknown
+        - contextPath: VMWare.Deleted
+          description: If set to true, the VM was deleted.
+          type: Boolean
     - arguments:
         - description: VM UUID of virtual machine to be powered on.
           name: vm-uuid
@@ -389,7 +423,40 @@ script:
           defaultValue: ""
           predefined:
             - ""
-      outputs: []
+      outputs:
+        - contextPath: VMWare.Name
+          description: VM name.
+          type: String
+        - contextPath: VMWare.Template
+          description: true if template, else false.
+          type: bool
+        - contextPath: VMWare.Path
+          description: Path to VM.
+          type: String
+        - contextPath: VMWare.Guest
+          description: Guest full name.
+          type: String
+        - contextPath: VMWare.UUID
+          description: VM instance UUID.
+          type: String
+        - contextPath: VMWare.IP
+          description: VM IP address.
+          type: String
+        - contextPath: VMWare.State
+          description: VM state (i.e., poweredOn, poweredOff, suspended, HardRebooted).
+          type: String
+        - contextPath: VMWare.HostName
+          description: Host name of VM.
+          type: String
+        - contextPath: VMWare.MACAddress
+          description: MAC address of VM.
+          type: String
+        - contextPath: VMWare.Snapshot
+          description: Last snapshot info of the VM.
+          type: Unknown
+        - contextPath: VMWare.Deleted
+          description: If set to true, the VM was deleted.
+          type: Boolean
     - name: vmware-clone-vm
       description: Creates a clone of this virtual machine. If the virtual machine is
         used as a template, this method corresponds to the deploy command.
@@ -454,9 +521,39 @@ script:
           predefined:
             - ""
       outputs:
-        - contextPath: " VMWare"
-          description: description
+        - contextPath: VMWare.Name
+          description: VM name.
+          type: String
+        - contextPath: VMWare.Template
+          description: true if template, else false.
+          type: bool
+        - contextPath: VMWare.Path
+          description: Path to VM.
+          type: String
+        - contextPath: VMWare.Guest
+          description: Guest full name.
+          type: String
+        - contextPath: VMWare.UUID
+          description: VM instance UUID.
+          type: String
+        - contextPath: VMWare.IP
+          description: VM IP address.
+          type: String
+        - contextPath: VMWare.State
+          description: VM state (i.e., poweredOn, poweredOff, suspended, HardRebooted).
+          type: String
+        - contextPath: VMWare.HostName
+          description: Host name of VM.
+          type: String
+        - contextPath: VMWare.MACAddress
+          description: MAC address of VM.
+          type: String
+        - contextPath: VMWare.Snapshot
+          description: Last snapshot info of the VM.
           type: Unknown
+        - contextPath: VMWare.Deleted
+          description: If set to true, the VM was deleted.
+          type: Boolean
     - name: vmware-relocate-vm
       description: Relocates a virtual machine to the location specified.
       deprecated: false
@@ -534,7 +631,13 @@ script:
           defaultValue: ""
           predefined:
             - ""
-      outputs: []
+      outputs:
+        - contextPath: VMWare.UUID
+          description: VM instance UUID.
+          type: String
+        - contextPath: VMWare.Deleted
+          description: If set to true, the VM was deleted.
+          type: String
     - name: vmware-register-vm
       description: Adds an existing virtual machine to the folder.
       deprecated: false
