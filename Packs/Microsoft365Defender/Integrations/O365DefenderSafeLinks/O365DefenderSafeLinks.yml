@@ -853,7 +853,7 @@ script:
           description: 'The date and time the rule was modified. Time format: YYYY-MM-DDThh:mm:ss+00:00.'
           type: Date
     - name: o365-defender-safelinks-urltrace-get
-      description: Update a given Safe Links rule.
+      description: View the results of Safe Links actions in your cloud-based organization. Currently, the date range can't be more than seven days.
       deprecated: false
       arguments:
         - name: start_date
