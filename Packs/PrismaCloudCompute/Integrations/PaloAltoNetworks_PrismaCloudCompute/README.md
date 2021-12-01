@@ -85,12 +85,7 @@ Get information about the hosts and their profile events.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | cluster | Clusters is the runtime profile k8s cluster filter. | Optional | 
-| hostName | Hosts is the runtime profile hostname filter. | Optional | 
-| id | IDs is the runtime profile id filter. | Optional | 
-| image | Images is the runtime profile image filter. | Optional | 
-| namespace | Namespaces is the runtime profile k8s namespace filter. | Optional | 
-| os | OS is the service runtime profile OS filter. | Optional | 
-| state | States is the runtime profile state filter. | Optional | 
+| hostName | Hosts is the runtime profile hostname filter. | Optional |  
 | limit | The maximum number of hosts and their profile events to return. Default is 15. . Default is 15. | Optional | 
 | offset | The offset number to begin listing hosts and their profile events. Default is 0. Default is 0. | Optional | 
 
@@ -173,7 +168,6 @@ Get information about the containers and their profile events.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | cluster | Clusters is the runtime profile k8s cluster filter. | Optional | 
-| hostName | Hosts is the runtime profile hostname filter. | Optional | 
 | id | IDs is the runtime profile id filter. | Optional | 
 | image | Images is the runtime profile image filter. | Optional | 
 | imageID | ImageIDs is the runtime profile image id filter. | Optional | 
@@ -270,14 +264,7 @@ Get the hosts where a specific container is running.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Container profile ID. | Required | 
-| cluster | Clusters is the runtime profile k8s cluster filter. | Optional | 
-| hostName | Hosts is the runtime profile hostname filter. | Optional | 
-| image | Images is the runtime profile image filter. | Optional | 
-| imageID | ImageIDs is the runtime profile image id filter. | Optional | 
-| namespace | Namespaces is the runtime profile k8s namespace filter. | Optional | 
-| os | OS is the service runtime profile OS filter. | Optional | 
-| state | States is the runtime profile state filter. | Optional | 
+| id | Container profile ID. | Required |
 | limit | The maximum number of hosts to return. Default is 50. Default is 50. | Optional | 
 | offset | The offset number to begin listing hosts of the container. Default is 0. | Optional | 
 
@@ -316,7 +303,6 @@ Get runtime forensics data for a specific container on a specific host
 | hostname | Hostname is the hostname for which data should be fetched. | Required | 
 | incidentID | IncidentID is the incident ID in case the request kind is an incident. | Optional | 
 | eventTime | EventTime is the forensic event pivot time in milliseconds (used to fetch events). | Optional | 
-| format | Format is the forensic data format. | Optional | 
 | limit | maximum of forensics data records to return. Default is 20. | Optional | 
 | offset | The offset number to begin listing records from . Default is 0. | Optional | 
 
@@ -394,10 +380,8 @@ Get forensics on a specific host
 | --- | --- | --- |
 | id | host ID. | Required | 
 | collections | Collections are collections scoping the query. | Optional | 
-| hostname | Hostname is the hostname for which data should be fetched. | Optional | 
 | incidentID | IncidentID is the incident ID in case the request kind is an incident. | Optional | 
 | eventTime | EventTime is the forensic event pivot time in milliseconds (used to fetch events). | Optional | 
-| format | Format is the forensic data format. | Optional | 
 | limit | maximum of forensics data records to return. Default is 20. | Optional | 
 | offset | The offset number to begin listing host forensics from . Default is 0. | Optional | 
 
