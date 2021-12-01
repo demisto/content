@@ -1159,11 +1159,12 @@ Get runtime forensics data for a specific container on a specific host
 | prismaCloudCompute.containerForensic.Forensics.type | Unknown | Type is the event type. | 
 | prismaCloudCompute.containerForensic.Forensics.timestamp | Boolean | Timestamp is the event timestamp | 
 | prismaCloudCompute.containerForensic.Forensics.user | String | User is the event user | 
-| prismaCloudCompute.containerForensic.ContainerID | String | Container ID of the forensic. | 
+| prismaCloudCompute.containerForensic.ContainerID | String | Container ID of the forensic | 
+| prismaCloudCompute.containerForensic.Hostname | String | The Hostname | 
 
 
 #### Command Example
-```!prisma-cloud-compute-profile-container-forensic-list id=123,456 hostname=hostname1```
+```!prisma-cloud-compute-profile-container-forensic-list id=123 hostname=hostname1```
 
 #### Human Readable Output
 ### Containers forensic report

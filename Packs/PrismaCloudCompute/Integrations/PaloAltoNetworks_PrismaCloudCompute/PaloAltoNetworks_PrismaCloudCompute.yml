@@ -301,7 +301,7 @@ script:
         - name: id
           description: Container profile ID
           required: true
-          isArray: true
+          isArray: false
           defaultValue: ""
         - name: cluster
           description: Clusters is the runtime profile k8s cluster filter
@@ -362,7 +362,7 @@ script:
         - name: id
           description: The container ID.
           required: true
-          isArray: true
+          isArray: false
           defaultValue: ""
         - name: collections
           description: Collections are collections scoping the query
@@ -403,6 +403,9 @@ script:
       outputs:
         - contextPath: prismaCloudCompute.containerForensic.ContainerID
           description: The container ID.
+          type: String
+        - contextPath: prismaCloudCompute.containerForensic.Hostname
+          description: The Hostname.
           type: String
         - contextPath: prismaCloudCompute.containerForensic.Forensics.allPorts
           description: AllPorts indicates all listening ports are allowed

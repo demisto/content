@@ -484,14 +484,14 @@ def get_container_profile_list(client: PrismaCloudComputeClient, args: dict) -> 
 
 
 def build_container_hosts_response(
-    client: PrismaCloudComputeClient, container_ids: List[str], args: dict
+    client: PrismaCloudComputeClient, container_id: str, args: dict
 ) -> Tuple[List[dict], str]:
     """
     Build a table and a context response for the 'prisma-cloud-compute-profile-container-hosts-list' command.
 
     Args:
         client (PrismaCloudComputeClient): prisma-cloud-compute client.
-        container_ids (list[str]): container IDs.
+        container_id (str): container ID.
         args (dict): prisma-cloud-compute-profile-container-list command arguments.
 
     Returns:
@@ -499,20 +499,19 @@ def build_container_hosts_response(
     """
     context_output = []
     # this api endpoint does not support either limit/offset.
-    # limit, offset = args.pop("limit"), args.pop("offset")
+    limit, offset = args.pop("limit"), args.pop("offset")
 
-    for container_id in container_ids:
-        hosts_ids = perform_api_request(
-            client=client, url_suffix=f"profiles/container/{container_id}/hosts", args=args
+    hosts_ids = perform_api_request(
+        client=client, url_suffix=f"profiles/container/{container_id}/hosts", args=args
+    )[offset:limit]
+
+    if hosts_ids:
+        context_output.append(
+            {
+                "ContainerID": container_id,
+                "HostsIDs": hosts_ids
+            }
         )
-
-        if hosts_ids:
-            context_output.append(
-                {
-                    "ContainerID": container_id,
-                    "HostsIDs": hosts_ids
-                }
-            )
 
     if not context_output:
         return [], tableToMarkdown(name="Containers hosts list", t=[])
@@ -535,8 +534,8 @@ def get_container_hosts_list(client: PrismaCloudComputeClient, args: dict) -> Co
     Returns:
         CommandResults: command-results object.
     """
-    container_ids = argToList(args.pop("id"))
-    context, table = build_container_hosts_response(client=client, container_ids=container_ids, args=args)
+    container_id = args.pop("id")
+    context, table = build_container_hosts_response(client=client, container_id=container_id, args=args)
 
     return CommandResults(
         outputs_prefix='prismaCloudCompute.profileContainerHost',
@@ -546,14 +545,14 @@ def get_container_hosts_list(client: PrismaCloudComputeClient, args: dict) -> Co
 
 
 def build_containers_forensic_response(
-    client: PrismaCloudComputeClient, container_ids: List[str], args: dict
+    client: PrismaCloudComputeClient, container_id: List[str], args: dict
 ) -> Tuple[List[dict], str]:
     """
-    Build a table and a context response for the 'prisma-cloud-compute-profile-container-hosts-list' command.
+    Build a table and a context response for the 'prisma-cloud-compute-profile-container-forensic-list' command.
 
     Args:
         client (PrismaCloudComputeClient): prisma-cloud-compute client.
-        container_ids (list[str]): container IDs.
+        container_id (str): container ID.
         args (dict): prisma-cloud-compute-profile-container-forensic-list command arguments.
 
     Returns:
@@ -563,35 +562,35 @@ def build_containers_forensic_response(
     table = []
 
     # api request does not support offset only, but does support limit.
-    # offset = args.pop("offset")
+    offset = args.pop("offset")
 
-    for container_id in container_ids:
-        all_forensic_response = perform_api_request(
-            client=client, url_suffix=f"profiles/container/{container_id}/forensic", args=args
+    all_forensic_response = perform_api_request(
+        client=client, url_suffix=f"profiles/container/{container_id}/forensic", args=args
+    )
+
+    if all_forensic_response:
+        all_forensic_response = all_forensic_response[offset:]
+        context_output.append(
+            {
+                "ContainerID": container_id,
+                "Hostname": args.get("hostname"),
+                "Forensics": all_forensic_response
+            }
         )
-
-        if all_forensic_response:
-            context_output.append(
-                {
-                    "ContainerID": container_id,
-                    "Forensics": all_forensic_response
-                }
-            )
-            for report in all_forensic_response:
-                if report.get("containerId"):
-                    table.append(
-                        {
-                            "ContainerID": report.get("containerId"),
-                            "Type": report.get("type"),
-                            "Path": report.get("path"),
-                        }
-                    )
-
-    if not context_output:
+        for report in all_forensic_response:
+            if report.get("containerId"):
+                table.append(
+                    {
+                        "ContainerID": report.get("containerId"),
+                        "Type": report.get("type"),
+                        "Path": report.get("path"),
+                    }
+                )
+    else:
         return [], tableToMarkdown(name="Container forensic report", t=[])
 
     return context_output, tableToMarkdown(
-        name="Containers forensic report", t=table, headers=["ContainerID", "Type", "Path"]
+        name="Containers forensic report", t=table, headers=["ContainerID", "Type", "Path"], removeNull=True
     )
 
 
@@ -608,8 +607,8 @@ def get_profile_container_forensic_list(client: PrismaCloudComputeClient, args: 
     Returns:
         CommandResults: command-results object.
     """
-    container_ids = argToList(args.pop("id"))
-    context, table = build_containers_forensic_response(client=client, container_ids=container_ids, args=args)
+    container_id = args.get("id")
+    context, table = build_containers_forensic_response(client=client, container_id=container_id, args=args)
 
     return CommandResults(
         outputs_prefix='prismaCloudCompute.containerForensic',
