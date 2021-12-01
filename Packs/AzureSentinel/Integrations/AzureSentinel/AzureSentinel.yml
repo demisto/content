@@ -941,7 +941,7 @@ script:
     - default: false
       description: The name of the indicator.
       isArray: false
-      name: name
+      name: indicator_name
       required: false
       secret: false
     - default: false
@@ -960,73 +960,82 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: list_threat_indicator_command returns a list of threat indicators.
+    description: Returns a list of threat indicators.
     execution: false
     name: azure-sentinel-threat-indicator-list
     outputs:
     - contextPath: AzureSentinel.ThreatIndicator.ID
-      description: The threat indicator ID.
+      description: The ID of the indicator.
       type: String
     - contextPath: AzureSentinel.ThreatIndicator.Name
-      description: The threat indicator name.
+      description: The name of the indicator.
       type: String
     - contextPath: AzureSentinel.ThreatIndicator.ETag
-      description: The ETag of the threat indicator.
+      description: The ETag of the indicator.
       type: String
     - contextPath: AzureSentinel.ThreatIndicator.Type
-      description: The type of the threat indicator.
+      description: The type of the indicator.
       type: String
     - contextPath: AzureSentinel.ThreatIndicator.Kind
-      description: The kind of the threat indicator.
+      description: The kind of the indicator.
       type: String
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.Confidence
-      description: The confidenc of the threat indicatore, A number between 0-100.
+    - contextPath: AzureSentinel.ThreatIndicators.Confidence
+      description: The confidence of the threat indicator. A number between 0-100.
       type: Number
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.Created
+    - contextPath: AzureSentinel.ThreatIndicator.Created
       description: When was the threat indicator created.
       type: Date
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.CreatedByRef
-      description: The creator of the threat indicator.
+    - contextPath: AzureSentinel.ThreatIndicator.CreatedByRef
+      description: The creator of the indicator.
       type: String
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.ExternalID
-      description: The external id of the threat indicator.
+    - contextPath: AzureSentinel.ThreatIndicator.ExternalID
+      description: The external id of the indicator.
       type: String
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.Revoked
+    - contextPath: AzureSentinel.ThreatIndicator.Revoked
       description: Was the threat indicator revoked or not.
       type: Boolean
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.Source
-      description: The source of the threat indicator.
+    - contextPath: AzureSentinel.ThreatIndicator.Source
+      description: The source of the indicator.
       type: String
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.eTags
-      description: The tags of the threat indicator.
+    - contextPath: AzureSentinel.ThreatIndicator.ETags
+      description: The etags of the indicator.
       type: Unknown
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.DisplayName
-      description: The display name of the threat indicator.
+    - contextPath: AzureSentinel.ThreatIndicator.DisplayName
+      description: The display name of the indicator.
       type: String
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.Description
-      description: The description of the threat indicator.
+    - contextPath: AzureSentinel.ThreatIndicator.Description
+      description: The description of the indicator.
       type: String
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.ThreatTypes
-      description: The threat types of the threat indicator.
+    - contextPath: AzureSentinel.ThreatIndicator.ThreatTypes
+      description: The threat types of the indicator.
       type: Unknown
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.KillChainPhases
-      description: The threat indicator killchains phases
+    - contextPath: AzureSentinel.ThreatIndicator.KillChainPhases.KillChainName
+      description: The kill chains name of the indicator.
       type: Unknown
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.ParsedPattern
-      description: The threat indicator parsed pattern
+    - contextPath: AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeKey
+      description: The pattern type key of the indicator.
       type: Unknown
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.Pattern
-      description: The pattern of the threat indicator.
+    - contextPath: AzureSentinel.ThreatIndicator.Pattern
+      description: The pattern of the indicator.
       type: String
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.PatternType
-      description: The threat indicator pattern type
+    - contextPath: AzureSentinel.ThreatIndicator.PatternType
+      description: The pattern type of the indicator.
       type: String
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.ValidFrom
+    - contextPath: AzureSentinel.ThreatIndicator.ValidFrom
       description: The date which the indicator is valid from.
       type: Date
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.ValidUntil
+    - contextPath: AzureSentinel.ThreatIndicator.ValidUntil
       description: The date which the indicator is valid until.
       type: Date
+    - contextPath: AzureSentinel.ThreatIndicator.KillChainPhases.PhaseName
+      description: The phase name of the indicator.
+      type: Unknown
+    - contextPath: AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeValues.Value
+      description: The value of the inidcator.
+      type: Unknown
+    - contextPath: AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeValues.ValueType
+      description: The value type of the indicator.
+      type: Unknown
   - arguments:
     - default: false
       defaultValue: '50'
@@ -1120,74 +1129,82 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: query_threat_indicators_command returns a list of threat indicators
-      with specific entities.
+    description: Returns a list of threat indicators with specific entities.
     execution: false
     name: azure-sentinel-threat-indicator-query
     outputs:
     - contextPath: AzureSentinel.ThreatIndicator.ID
-      description: The threat indicator ID
+      description: The ID of the indicator.
       type: String
     - contextPath: AzureSentinel.ThreatIndicator.Name
-      description: The threat indicator name
+      description: The name of the indicator.
       type: String
     - contextPath: AzureSentinel.ThreatIndicator.ETag
-      description: The threat indicator etag
+      description: The ETag of the indicator.
       type: String
     - contextPath: AzureSentinel.ThreatIndicator.Type
-      description: The threat indicator type
+      description: The type of the indicator.
       type: String
     - contextPath: AzureSentinel.ThreatIndicator.Kind
-      description: The threat indicator kind
+      description: The kind of the indicator.
       type: String
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.Confidence
-      description: The threat indicator confidence, A number between 0-100
+    - contextPath: AzureSentinel.ThreatIndicators.Confidence
+      description: The confidence of the threat indicator. A number between 0-100.
       type: Number
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.Created
-      description: When was the threat indicator created
+    - contextPath: AzureSentinel.ThreatIndicator.Created
+      description: When was the threat indicator created.
       type: Date
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.CreatedByRef
-      description: The threat indicator creator
+    - contextPath: AzureSentinel.ThreatIndicator.CreatedByRef
+      description: The creator of the indicator.
       type: String
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.ExternalID
-      description: The threat indicator external id
+    - contextPath: AzureSentinel.ThreatIndicator.ExternalID
+      description: The external id of the indicator.
       type: String
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.Revoked
-      description: Was the threat indicator revoked or not
+    - contextPath: AzureSentinel.ThreatIndicator.Revoked
+      description: Was the threat indicator revoked or not.
       type: Boolean
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.Source
-      description: The threat indicator source
+    - contextPath: AzureSentinel.ThreatIndicator.Source
+      description: The source of the indicator.
       type: String
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.ThreatIntelligenceTags
-      description: The threat indicator tags
+    - contextPath: AzureSentinel.ThreatIndicator.ETags
+      description: The etags of the indicator.
       type: Unknown
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.DisplayName
-      description: The threat indicator display name
+    - contextPath: AzureSentinel.ThreatIndicator.DisplayName
+      description: The display name of the indicator.
       type: String
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.Description
-      description: The threat indicator description
+    - contextPath: AzureSentinel.ThreatIndicator.Description
+      description: The description of the indicator.
       type: String
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.ThreatTypes
-      description: The threat types of the threat indicator
+    - contextPath: AzureSentinel.ThreatIndicator.ThreatTypes
+      description: The threat types of the indicator.
       type: Unknown
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.KillChainPhases
-      description: The threat indicator killchains phases
+    - contextPath: AzureSentinel.ThreatIndicator.KillChainPhases.KillChainName
+      description: The kill chains name of the indicator.
       type: Unknown
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.ParsedPattern
-      description: The threat indicator parsed pattern
+    - contextPath: AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeKey
+      description: The pattern type key of the indicator.
       type: Unknown
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.Pattern
-      description: The threat indicator pattern
+    - contextPath: AzureSentinel.ThreatIndicator.Pattern
+      description: The pattern of the indicator.
       type: String
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.PatternType
-      description: The threat indicator pattern type
+    - contextPath: AzureSentinel.ThreatIndicator.PatternType
+      description: The pattern type of the indicator.
       type: String
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.ValidFrom
-      description: The date which the indicator is valid from
+    - contextPath: AzureSentinel.ThreatIndicator.ValidFrom
+      description: The date which the indicator is valid from.
       type: Date
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.ValidUntil
-      description: The date which the indicator is valid until
+    - contextPath: AzureSentinel.ThreatIndicator.ValidUntil
+      description: The date which the indicator is valid until.
       type: Date
+    - contextPath: AzureSentinel.ThreatIndicator.KillChainPhases.PhaseName
+      description: The phase name of the indicator.
+      type: Unknown
+    - contextPath: AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeValues.Value
+      description: The value of the inidcator.
+      type: Unknown
+    - contextPath: AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeValues.ValueType
+      description: The value type of the indicator.
+      type: Unknown
   - arguments:
     - default: false
       description: The value of the threat indicator.
@@ -1234,7 +1251,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The confidence of the new threat indicator,a number between 0-100.
+      description: The confidence of the new threat indicator. Should be a number
+        between 0-100.
       isArray: false
       name: confidence
       required: false
@@ -1256,13 +1274,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: The  kill_chains phases of the indicator.
+      description: The kill chains phases of the indicator.
       isArray: true
       name: kill_chains
       required: false
       secret: false
     - default: false
-      description: The tags of the new threat indicator, seperated by commas.
+      description: The tags of the new threat indicator, separated by commas.
       isArray: true
       name: tags
       required: false
@@ -1287,7 +1305,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Is the indicator revoked or not.
+      defaultValue: 'false'
+      description: If true, the indicator is revoked.
       isArray: false
       name: revoked
       predefined:
@@ -1296,78 +1315,87 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: azure-sentinel-threat-indicator-create creates a new threat indicator.
+    description: Creates a new threat indicator.
     execution: false
     name: azure-sentinel-threat-indicator-create
     outputs:
     - contextPath: AzureSentinel.ThreatIndicator.ID
-      description: The threat indicator ID
+      description: The ID of the indicator.
       type: String
     - contextPath: AzureSentinel.ThreatIndicator.Name
-      description: The threat indicator name
+      description: The name of the indicator.
       type: String
     - contextPath: AzureSentinel.ThreatIndicator.ETag
-      description: The threat indicator etag
+      description: The ETag of the indicator.
       type: String
     - contextPath: AzureSentinel.ThreatIndicator.Type
-      description: The threat indicator type
+      description: The type of the indicator.
       type: String
     - contextPath: AzureSentinel.ThreatIndicator.Kind
-      description: The threat indicator kind
+      description: The kind of the indicator.
       type: String
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.Confidence
-      description: The threat indicator confidence, A number between 0-100
+    - contextPath: AzureSentinel.ThreatIndicators.Confidence
+      description: The confidence of the threat indicator. A number between 0-100.
       type: Number
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.Created
-      description: When was the threat indicator created
+    - contextPath: AzureSentinel.ThreatIndicator.Created
+      description: When was the threat indicator created.
       type: Date
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.CreatedByRef
-      description: The threat indicator creator
+    - contextPath: AzureSentinel.ThreatIndicator.CreatedByRef
+      description: The creator of the indicator.
       type: String
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.ExternalID
-      description: The threat indicator external id
+    - contextPath: AzureSentinel.ThreatIndicator.ExternalID
+      description: The external id of the indicator.
       type: String
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.Revoked
-      description: Was the threat indicator revoked or not
+    - contextPath: AzureSentinel.ThreatIndicator.Revoked
+      description: Was the threat indicator revoked or not.
       type: Boolean
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.Source
-      description: The threat indicator source
+    - contextPath: AzureSentinel.ThreatIndicator.Source
+      description: The source of the indicator.
       type: String
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.ThreatIntelligenceTags
-      description: The threat indicator tags
+    - contextPath: AzureSentinel.ThreatIndicator.ETags
+      description: The etags of the indicator.
       type: Unknown
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.DisplayName
-      description: The threat indicator display name
+    - contextPath: AzureSentinel.ThreatIndicator.DisplayName
+      description: The display name of the indicator.
       type: String
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.Description
-      description: The threat indicator description
+    - contextPath: AzureSentinel.ThreatIndicator.Description
+      description: The description of the indicator.
       type: String
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.ThreatTypes
-      description: The threat types of the threat indicator
+    - contextPath: AzureSentinel.ThreatIndicator.ThreatTypes
+      description: The threat types of the indicator.
       type: Unknown
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.KillChainPhases
-      description: The threat indicator killchains phases
+    - contextPath: AzureSentinel.ThreatIndicator.KillChainPhases.KillChainName
+      description: The kill chains name of the indicator.
       type: Unknown
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.ParsedPattern
-      description: The threat indicator parsed pattern
+    - contextPath: AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeKey
+      description: The pattern type key of the indicator.
       type: Unknown
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.Pattern
-      description: The threat indicator pattern
+    - contextPath: AzureSentinel.ThreatIndicator.Pattern
+      description: The pattern of the indicator.
       type: String
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.PatternType
-      description: The threat indicator pattern type
+    - contextPath: AzureSentinel.ThreatIndicator.PatternType
+      description: The pattern type of the indicator.
       type: String
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.ValidFrom
-      description: The date which the indicator is valid from
+    - contextPath: AzureSentinel.ThreatIndicator.ValidFrom
+      description: The date which the indicator is valid from.
       type: Date
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.ValidUntil
-      description: The date which the indicator is valid until
+    - contextPath: AzureSentinel.ThreatIndicator.ValidUntil
+      description: The date which the indicator is valid until.
       type: Date
+    - contextPath: AzureSentinel.ThreatIndicator.KillChainPhases.PhaseName
+      description: The phase name of the indicator.
+      type: Unknown
+    - contextPath: AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeValues.Value
+      description: The value of the inidcator.
+      type: Unknown
+    - contextPath: AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeValues.ValueType
+      description: The value type of the indicator.
+      type: Unknown
   - arguments:
     - default: false
       description: The name of the indicator.
       isArray: false
-      name: name
+      name: indicator_name
       required: true
       secret: false
     - default: false
@@ -1467,250 +1495,273 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: azure-sentinel-threat-indicator-update updates an existing threat
-      indicator
+    description: Updates an existing threat indicator.
     execution: false
     name: azure-sentinel-threat-indicator-update
     outputs:
     - contextPath: AzureSentinel.ThreatIndicator.ID
-      description: The threat indicator ID
+      description: The ID of the indicator.
       type: String
     - contextPath: AzureSentinel.ThreatIndicator.Name
-      description: The threat indicator name
+      description: The name of the indicator.
       type: String
     - contextPath: AzureSentinel.ThreatIndicator.ETag
-      description: The threat indicator etag
+      description: The ETag of the indicator.
       type: String
     - contextPath: AzureSentinel.ThreatIndicator.Type
-      description: The threat indicator type
+      description: The type of the indicator.
       type: String
     - contextPath: AzureSentinel.ThreatIndicator.Kind
-      description: The threat indicator kind
+      description: The kind of the indicator.
       type: String
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.Confidence
-      description: The threat indicator confidence, A number between 0-100
+    - contextPath: AzureSentinel.ThreatIndicators.Confidence
+      description: The confidence of the threat indicator. A number between 0-100.
       type: Number
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.Created
-      description: When was the threat indicator created
+    - contextPath: AzureSentinel.ThreatIndicator.Created
+      description: When was the threat indicator created.
       type: Date
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.CreatedByRef
-      description: The threat indicator creator
+    - contextPath: AzureSentinel.ThreatIndicator.CreatedByRef
+      description: The creator of the indicator.
       type: String
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.ExternalID
-      description: The threat indicator external id
+    - contextPath: AzureSentinel.ThreatIndicator.ExternalID
+      description: The external id of the indicator.
       type: String
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.Revoked
-      description: Was the threat indicator revoked or not
+    - contextPath: AzureSentinel.ThreatIndicator.Revoked
+      description: Was the threat indicator revoked or not.
       type: Boolean
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.Source
-      description: The threat indicator source
+    - contextPath: AzureSentinel.ThreatIndicator.Source
+      description: The source of the indicator.
       type: String
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.ThreatIntelligenceTags
-      description: The threat indicator tags
+    - contextPath: AzureSentinel.ThreatIndicator.ETags
+      description: The etags of the indicator.
       type: Unknown
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.DisplayName
-      description: The threat indicator display name
+    - contextPath: AzureSentinel.ThreatIndicator.DisplayName
+      description: The display name of the indicator.
       type: String
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.Description
-      description: The threat indicator description
+    - contextPath: AzureSentinel.ThreatIndicator.Description
+      description: The description of the indicator.
       type: String
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.ThreatTypes
-      description: The threat types of the threat indicator
+    - contextPath: AzureSentinel.ThreatIndicator.ThreatTypes
+      description: The threat types of the indicator.
       type: Unknown
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.KillChainPhases
-      description: The threat indicator killchains phases
+    - contextPath: AzureSentinel.ThreatIndicator.KillChainPhases.KillChainName
+      description: The kill chains name of the indicator.
       type: Unknown
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.ParsedPattern
-      description: The threat indicator parsed pattern
+    - contextPath: AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeKey
+      description: The pattern type key of the indicator.
       type: Unknown
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.Pattern
-      description: The threat indicator pattern
+    - contextPath: AzureSentinel.ThreatIndicator.Pattern
+      description: The pattern of the indicator.
       type: String
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.PatternType
-      description: The threat indicator pattern type
+    - contextPath: AzureSentinel.ThreatIndicator.PatternType
+      description: The pattern type of the indicator.
       type: String
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.ValidFrom
-      description: The date which the indicator is valid from
+    - contextPath: AzureSentinel.ThreatIndicator.ValidFrom
+      description: The date which the indicator is valid from.
       type: Date
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.ValidUntil
-      description: The date which the indicator is valid until
+    - contextPath: AzureSentinel.ThreatIndicator.ValidUntil
+      description: The date which the indicator is valid until.
       type: Date
+    - contextPath: AzureSentinel.ThreatIndicator.KillChainPhases.PhaseName
+      description: The phase name of the indicator.
+      type: Unknown
+    - contextPath: AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeValues.Value
+      description: The value of the inidcator.
+      type: Unknown
+    - contextPath: AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeValues.ValueType
+      description: The value type of the indicator.
+      type: Unknown
   - arguments:
     - default: false
       description: The name of the indicator to delete.
       isArray: true
-      name: name
+      name: indicator_name
       required: true
       secret: false
     deprecated: false
-    description: azure-sentinel-threat-indicator-delete deletes an existing threat
-      indicator.
+    description: Deletes an existing threat indicator.
     execution: false
     name: azure-sentinel-threat-indicator-delete
   - arguments:
     - default: false
-      description: Tha name of the indicator.
+      description: The name of the indicator.
       isArray: false
-      name: name
+      name: indicator_name
       required: true
       secret: false
     - default: false
-      description: Tha tags you want to append, seperated by commas.
+      description: A comma-separated list of tags to append.
       isArray: true
       name: tags
       required: true
       secret: false
     deprecated: false
-    description: azure-sentinel-threat-indicator-tags-append appens new tags to an
-      existing indicator.
+    description: Appends new tags to an existing indicator.
     execution: false
     name: azure-sentinel-threat-indicator-tags-append
     outputs:
     - contextPath: AzureSentinel.ThreatIndicator.ID
-      description: The threat indicator ID
+      description: The ID of the indicator.
       type: String
     - contextPath: AzureSentinel.ThreatIndicator.Name
-      description: The threat indicator name
+      description: The name of the indicator.
       type: String
     - contextPath: AzureSentinel.ThreatIndicator.ETag
-      description: The threat indicator etag
+      description: The ETag of the indicator.
       type: String
     - contextPath: AzureSentinel.ThreatIndicator.Type
-      description: The threat indicator type
+      description: The type of the indicator.
       type: String
     - contextPath: AzureSentinel.ThreatIndicator.Kind
-      description: The threat indicator kind
+      description: The kind of the indicator.
       type: String
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.Confidence
-      description: The threat indicator confidence, A number between 0-100
+    - contextPath: AzureSentinel.ThreatIndicators.Confidence
+      description: The confidence of the threat indicator. A number between 0-100.
       type: Number
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.Created
-      description: When was the threat indicator created
+    - contextPath: AzureSentinel.ThreatIndicator.Created
+      description: When was the threat indicator created.
       type: Date
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.CreatedByRef
-      description: The threat indicator creator
+    - contextPath: AzureSentinel.ThreatIndicator.CreatedByRef
+      description: The creator of the indicator.
       type: String
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.ExternalID
-      description: The threat indicator external id
+    - contextPath: AzureSentinel.ThreatIndicator.ExternalID
+      description: The external id of the indicator.
       type: String
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.Revoked
-      description: Was the threat indicator revoked or not
+    - contextPath: AzureSentinel.ThreatIndicator.Revoked
+      description: Was the threat indicator revoked or not.
       type: Boolean
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.Source
-      description: The threat indicator source
+    - contextPath: AzureSentinel.ThreatIndicator.Source
+      description: The source of the indicator.
       type: String
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.ThreatIntelligenceTags
-      description: The threat indicator tags
+    - contextPath: AzureSentinel.ThreatIndicator.ETags
+      description: The etags of the indicator.
       type: Unknown
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.DisplayName
-      description: The threat indicator display name
+    - contextPath: AzureSentinel.ThreatIndicator.DisplayName
+      description: The display name of the indicator.
       type: String
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.Description
-      description: The threat indicator description
+    - contextPath: AzureSentinel.ThreatIndicator.Description
+      description: The description of the indicator.
       type: String
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.ThreatTypes
-      description: The threat types of the threat indicator
+    - contextPath: AzureSentinel.ThreatIndicator.ThreatTypes
+      description: The threat types of the indicator.
       type: Unknown
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.KillChainPhases
-      description: The threat indicator killchains phases
+    - contextPath: AzureSentinel.ThreatIndicator.KillChainPhases.KillChainName
+      description: The kill chains name of the indicator.
       type: Unknown
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.ParsedPattern
-      description: The threat indicator parsed pattern
+    - contextPath: AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeKey
+      description: The pattern type key of the indicator.
       type: Unknown
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.Pattern
-      description: The threat indicator pattern
+    - contextPath: AzureSentinel.ThreatIndicator.Pattern
+      description: The pattern of the indicator.
       type: String
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.PatternType
-      description: The threat indicator pattern type
+    - contextPath: AzureSentinel.ThreatIndicator.PatternType
+      description: The pattern type of the indicator.
       type: String
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.ValidFrom
-      description: The date which the indicator is valid from
+    - contextPath: AzureSentinel.ThreatIndicator.ValidFrom
+      description: The date which the indicator is valid from.
       type: Date
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.ValidUntil
-      description: The date which the indicator is valid until
+    - contextPath: AzureSentinel.ThreatIndicator.ValidUntil
+      description: The date which the indicator is valid until.
       type: Date
+    - contextPath: AzureSentinel.ThreatIndicator.KillChainPhases.PhaseName
+      description: The phase name of the indicator.
+      type: Unknown
+    - contextPath: AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeValues.Value
+      description: The value of the inidcator.
+      type: Unknown
+    - contextPath: AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeValues.ValueType
+      description: The value type of the indicator.
+      type: Unknown
   - arguments:
     - default: false
-      description: The name of the treat indicator.
+      description: The name of the indicator.
       isArray: false
-      name: name
+      name: indicator_name
       required: true
       secret: false
     - default: false
-      description: Tags to append to an existing indicator, seperated by commas.
+      description: A comma-separated list of tags to replace.
       isArray: true
       name: tags
       required: true
       secret: false
     deprecated: false
-    description: azure-sentinel-threat-indicator-tags-replace replaces the tags of
-      a given indicator.
+    description: Replaces the tags of a given indicator.
     execution: false
     name: azure-sentinel-threat-indicator-tags-replace
     outputs:
     - contextPath: AzureSentinel.ThreatIndicator.ID
-      description: The threat indicator ID
+      description: The ID of the indicator.
       type: String
     - contextPath: AzureSentinel.ThreatIndicator.Name
-      description: The threat indicator name
+      description: The name of the indicator.
       type: String
     - contextPath: AzureSentinel.ThreatIndicator.ETag
-      description: The threat indicator etag
+      description: The ETag of the indicator.
       type: String
     - contextPath: AzureSentinel.ThreatIndicator.Type
-      description: The threat indicator type
+      description: The type of the indicator.
       type: String
     - contextPath: AzureSentinel.ThreatIndicator.Kind
-      description: The threat indicator kind
+      description: The kind of the indicator.
       type: String
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.Confidence
-      description: The threat indicator confidence, A number between 0-100
+    - contextPath: AzureSentinel.ThreatIndicators.Confidence
+      description: The confidence of the threat indicator. A number between 0-100.
       type: Number
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.Created
-      description: When was the threat indicator created
+    - contextPath: AzureSentinel.ThreatIndicator.Created
+      description: When was the threat indicator created.
       type: Date
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.CreatedByRef
-      description: The threat indicator creator
+    - contextPath: AzureSentinel.ThreatIndicator.CreatedByRef
+      description: The creator of the indicator.
       type: String
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.ExternalID
-      description: The threat indicator external id
+    - contextPath: AzureSentinel.ThreatIndicator.ExternalID
+      description: The external id of the indicator.
       type: String
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.Revoked
-      description: Was the threat indicator revoked or not
+    - contextPath: AzureSentinel.ThreatIndicator.Revoked
+      description: Was the threat indicator revoked or not.
       type: Boolean
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.Source
-      description: The threat indicator source
+    - contextPath: AzureSentinel.ThreatIndicator.Source
+      description: The source of the indicator.
       type: String
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.ThreatIntelligenceTags
-      description: The threat indicator tags
+    - contextPath: AzureSentinel.ThreatIndicator.ETags
+      description: The etags of the indicator.
       type: Unknown
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.DisplayName
-      description: The threat indicator display name
+    - contextPath: AzureSentinel.ThreatIndicator.DisplayName
+      description: The display name of the indicator.
       type: String
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.Description
-      description: The threat indicator description
+    - contextPath: AzureSentinel.ThreatIndicator.Description
+      description: The description of the indicator.
       type: String
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.ThreatTypes
-      description: The threat types of the threat indicator
+    - contextPath: AzureSentinel.ThreatIndicator.ThreatTypes
+      description: The threat types of the indicator.
       type: Unknown
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.KillChainPhases
-      description: The threat indicator killchains phases
+    - contextPath: AzureSentinel.ThreatIndicator.KillChainPhases.KillChainName
+      description: The kill chains name of the indicator.
       type: Unknown
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.ParsedPattern
-      description: The threat indicator parsed pattern
+    - contextPath: AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeKey
+      description: The pattern type key of the indicator.
       type: Unknown
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.Pattern
-      description: The threat indicator pattern
+    - contextPath: AzureSentinel.ThreatIndicator.Pattern
+      description: The pattern of the indicator.
       type: String
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.PatternType
-      description: The threat indicator pattern type
+    - contextPath: AzureSentinel.ThreatIndicator.PatternType
+      description: The pattern type of the indicator.
       type: String
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.ValidFrom
-      description: The date which the indicator is valid from
+    - contextPath: AzureSentinel.ThreatIndicator.ValidFrom
+      description: The date which the indicator is valid from.
       type: Date
-    - contextPath: AzureSentinel.ThreatIndicator.Properties.ValidUntil
-      description: The date which the indicator is valid until
+    - contextPath: AzureSentinel.ThreatIndicator.ValidUntil
+      description: The date which the indicator is valid until.
       type: Date
+    - contextPath: AzureSentinel.ThreatIndicator.KillChainPhases.PhaseName
+      description: The phase name of the indicator.
+      type: Unknown
+    - contextPath: AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeValues.Value
+      description: The value of the inidcator.
+      type: Unknown
+    - contextPath: AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeValues.ValueType
+      description: The value type of the indicator.
+      type: Unknown
   dockerimage: demisto/crypto:1.0.0.24380
   feed: false
   isfetch: true

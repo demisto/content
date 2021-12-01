@@ -1060,8 +1060,11 @@ def threat_indicators_data_to_xsoar_format(ind_data):
             for phase in properties.get('KillChainPhases', [])],
 
         'ParsedPattern': [{
-            'patternTypeKey': pattern.get('patternTypeKey'),
-            'patternTypeValues': pattern.get('patternTypeValues')
+            'PatternTypeKey': pattern.get('patternTypeKey'),
+            'PatternTypeValues': {
+                'Value': pattern.get('patternTypeValues')[0].get('value'),
+                'ValueType': pattern.get('patternTypeValues')[0].get('valueType')
+            }
         }
             for pattern in properties.get('parsedPattern', [])],
 
@@ -1079,8 +1082,8 @@ def build_query_filter(args):
     filtering_args = {
         'minConfidence': args.get('min_confidence', ''),
         'maxConfidence': args.get('max_confidence', ''),
-        'minValidUntil': args.get('min_valid_until', ''),
-        'maxValidUntil': args.get('max_valid_until', ''),
+        'minValidUntil': format_date(args.get('min_valid_from', '')),
+        'maxValidUntil': format_date(args.get('max_valid_from', '')),
         'sources': argToList(args.get('sources')),
         'keywords': argToList(args.get('keywords')),
         'threatTypes': argToList(args.get('threat_types')),
@@ -1124,8 +1127,8 @@ def build_threat_indicator_data(args):
         'includeDisabled': args.get('include_disabled', ''),
         'source': args.get('source', 'Azure Sentinel'),
         'threatIntelligenceTags': argToList(args.get('tags')),
-        'validFrom': datetime.strftime(dateparser.parse(args.get('valid_from', ''))),
-        'validUntil': datetime.strftime(dateparser.parse(args.get('valid_until', ''))),
+        'validFrom': format_date(args.get('valid_from', '')),
+        'validUntil': format_date(args.get('valid_until', '')),
         'createdByRef': args.get('created_by', ''),
     }
 
@@ -1200,9 +1203,9 @@ def list_threat_indicator_command(client, args):
         next_link = next_link.replace('%20', ' ')  # OData syntax can't handle '%' character
         result = client.http_request('GET', full_url=next_link)
     else:
-        name = args.get('name')
-        if name:
-            url_suffix += f'/{name}'
+        indicator_name = args.get('indicator_name')
+        if indicator_name:
+            url_suffix += f'/{indicator_name}'
 
         result = client.http_request('GET', url_suffix, params={'$top': limit})
 
@@ -1295,8 +1298,8 @@ def create_threat_indicator_command(client, args):
 
 
 def update_threat_indicator_command(client, args):
-    name = args.get('name')
-    get_indicator_url_suffix = f'threatIntelligence/main/indicators/{name}'
+    indicator_name = args.get('indicator_name')
+    get_indicator_url_suffix = f'threatIntelligence/main/indicators/{indicator_name}'
 
     original_data = client.http_request('GET', get_indicator_url_suffix)
 
@@ -1307,12 +1310,12 @@ def update_threat_indicator_command(client, args):
         "properties": updated_data
     }
 
-    update_indicator_url_suffix = f'threatIntelligence/main/indicators/{name}'
+    update_indicator_url_suffix = f'threatIntelligence/main/indicators/{indicator_name}'
 
     result = client.http_request('PUT', update_indicator_url_suffix, data=data)
     threat_indicators = [threat_indicators_data_to_xsoar_format(result)]
 
-    readable_output = tableToMarkdown(f'Threat Indicator {name} was updated',
+    readable_output = tableToMarkdown(f'Threat Indicator {indicator_name} was updated',
                                       threat_indicators,
                                       headers=THREAT_INDICATORS_HEADERS,
                                       headerTransform=pascalToSpace,
@@ -1328,10 +1331,10 @@ def update_threat_indicator_command(client, args):
 
 
 def delete_threat_indicator_command(client, args):
-    names = argToList(args.get('name'))
+    indicator_names = argToList(args.get('indicator_name'))
 
-    for name in names:
-        url_suffix = f'threatIntelligence/main/indicators/{name}'
+    for indicator_name in indicator_names:
+        url_suffix = f'threatIntelligence/main/indicators/{indicator_name}'
         client.http_request('DELETE', url_suffix)
 
     return CommandResults(
@@ -1343,9 +1346,9 @@ def delete_threat_indicator_command(client, args):
 
 
 def append_tags_threat_indicator_command(client, args):
-    name = args.get('name')
+    indicator_name = args.get('indicator_name')
     tags = argToList(args.get('tags'))
-    url_suffix = f'threatIntelligence/main/indicators/{name}/appendTags'
+    url_suffix = f'threatIntelligence/main/indicators/{indicator_name}/appendTags'
 
     data = {'threatIntelligenceTags': tags}
 
@@ -1354,7 +1357,7 @@ def append_tags_threat_indicator_command(client, args):
     threat_indicators = [threat_indicators_data_to_xsoar_format(result)]
 
     return CommandResults(
-        readable_output=f'Tags were appended to {name} Threat Indicator.',
+        readable_output=f'Tags were appended to {indicator_name} Threat Indicator.',
         outputs_prefix='AzureSentinel.ThreatIndicator',
         outputs=threat_indicators,
         outputs_key_field='ID',
@@ -1363,9 +1366,9 @@ def append_tags_threat_indicator_command(client, args):
 
 
 def replace_tags_threat_indicator_command(client, args):
-    name = args.get('name')
+    indicator_name = args.get('indicator_name')
     tags = argToList(args.get('tags'))
-    url_suffix = f'threatIntelligence/main/indicators/{name}/replaceTags'
+    url_suffix = f'threatIntelligence/main/indicators/{indicator_name}/replaceTags'
 
     data = {
         "properties": {
@@ -1378,7 +1381,7 @@ def replace_tags_threat_indicator_command(client, args):
     threat_indicators = [threat_indicators_data_to_xsoar_format(result)]
 
     return CommandResults(
-        readable_output=f'Tags were replaced to {name} Threat Indicator.',
+        readable_output=f'Tags were replaced to {indicator_name} Threat Indicator.',
         outputs_prefix='AzureSentinel.ThreatIndicator',
         outputs=threat_indicators,
         outputs_key_field='ID',
