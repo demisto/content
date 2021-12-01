@@ -4,5 +4,5 @@ ignore=BA108,BA109,IN145
 [file:README.md]
 ignore=RM106
 
-[file:Attlasian]
+[file:pack_metadata.json]
 ignore=PA129
