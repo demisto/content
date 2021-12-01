@@ -1617,25 +1617,27 @@ def logger(func):
     return func_wrapper
 
 
-def formatCell(data, is_pretty=True):
+def formatCell(data, is_pretty=True, json_transform=None):
     """
        Convert a given object to md while decending multiple levels
 
-       :type data: ``str`` or ``list``
+
+       :type data: ``str`` or ``list`` or ``dict``
        :param data: The cell content (required)
 
        :type is_pretty: ``bool``
        :param is_pretty: Should cell content be prettified (default is True)
 
+       :type json_transform: ``JsonTransformer``
+       :param json_transform: The Json transform object to transform the data
+
        :return: The formatted cell content as a string
        :rtype: ``str``
     """
-    if isinstance(data, STRING_TYPES):
-        return data
-    elif isinstance(data, dict):
-        return '\n'.join([u'{}: {}'.format(k, flattenCell(v, is_pretty)) for k, v in data.items()])
-    else:
-        return flattenCell(data, is_pretty)
+    if json_transform is None:
+        json_transform = JsonTransformer(flatten=True)
+
+    return json_transform.json_to_str(data, is_pretty)
 
 
 def flattenCell(data, is_pretty=True):
@@ -1825,8 +1827,107 @@ def create_clickable_url(url):
     return '[{}]({})'.format(url, url)
 
 
+class JsonTransformer:
+    """
+    A class to transform a json to
+
+    :type flatten: ``bool``
+    :param flatten: Should we flatten the json using `flattenCell` (for BC)
+
+    :type keys: ``Set[str]``
+    :param keys: Set of keys to keep
+
+    :type is_nested: ``bool``
+    :param is_nested: If look for nested
+
+    :type func: ``Callable``
+    :param func: A function to parse the json
+
+    :return: None
+    :rtype: ``None``
+    """
+    def __init__(self, flatten=False, keys=None, is_nested=False, func=None):
+        """
+        Constructor for JsonTransformer
+
+        :type flatten: ``bool``
+        :param flatten:  Should we flatten the json using `flattenCell` (for BC)
+
+        :type keys: ``Iterable[str]``
+        :param keys: an iterable of relevant keys list from the json. Notice we save it as a set in the class
+
+        :type is_nested: ``bool``
+        :param is_nested: Whether to search in nested keys or not
+
+        :type func: ``Callable``
+        :param func: A function to parse the json
+        """
+        if keys is None:
+            keys = []
+        self.keys = set(keys)
+        self.is_nested = is_nested
+        self.func = func
+        self.flatten = flatten
+
+    def json_to_str(self, json_input, is_pretty=True):
+        if self.func:
+            return self.func(json_input)
+        if isinstance(json_input, STRING_TYPES):
+            return json_input
+        if not isinstance(json_input, dict):
+            return flattenCell(json_input, is_pretty)
+        if self.flatten:
+            return '\n'.join(
+                [u'{key}: {val}'.format(key=k, val=flattenCell(v, is_pretty)) for k, v in json_input.items()])  # for BC
+
+        str_lst = []
+        prev_path = None
+        for path, key, val in self.json_to_path_generator(json_input):
+            if path != prev_path:  # need to construct tha `path` string only of it changed from the last one
+                str_path = '\n'.join(["{tabs}**{p}**:".format(p=p, tabs=i * '\t') for i, p in enumerate(path)])
+                str_lst.append(str_path)
+                prev_path = path
+
+            str_lst.append(
+                '{tabs}***{key}***: {val}'.format(tabs=len(path) * '\t', key=key, val=flattenCell(val, is_pretty)))
+
+        return '\n'.join(str_lst)
+
+    def json_to_path_generator(self, json_input, path=None):
+        """
+        :type json_input: ``list`` or ``dict``
+        :param json_input: The json input to transform
+ fca
+        :type path: ``List[str]``
+        :param path: The path of the key, value pair inside the json
+
+        :rtype ``Tuple[List[str], str, str]``
+        :return:  A tuple. the second and third elements are key, values, and the first is their path in the json
+        """
+        if path is None:
+            path = []
+        is_in_path = not self.keys or any(p for p in path if p in self.keys)
+        if isinstance(json_input, dict):
+            for k, v in json_input.items():
+
+                if is_in_path or k in self.keys:
+                    if isinstance(v, dict):
+                        for res in self.json_to_path_generator(v, path + [k]):  # this is yield from for python2 BC
+                            yield res
+                    else:
+                        yield path, k, v
+
+                if self.is_nested:
+                    for res in self.json_to_path_generator(v, path + [k]):  # this is yield from for python2 BC
+                        yield res
+        if isinstance(json_input, list):
+            for item in json_input:
+                for res in self.json_to_path_generator(item, path):  # this is yield from for python2 BC
+                    yield res
+
+
 def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None, url_keys=None,
-                    date_fields=None):
+                    date_fields=None, json_transform_mapping=None, is_auto_json_transform=False):
     """
        Converts a demisto table in JSON form to a Markdown table
 
@@ -1854,6 +1955,12 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
 
        :type date_fields: ``list``
        :param date_fields: A list of date fields to format the value to human-readable output.
+
+        :type json_transform_mapping: ``Dict[str, JsonTransformer]``
+        :param json_transform_mapping: A mapping between a header key to correspoding JsonTransformer
+
+        :type is_auto_json_transform: ``bool``
+        :param is_auto_json_transform: Boolean to try to auto transform complex json
 
        :return: A string representation of the markdown table
        :rtype: ``str``
@@ -1905,6 +2012,10 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
                 headers_aux.remove(header)
         headers = headers_aux
 
+    if not json_transform_mapping:
+        json_transform_mapping = {header: JsonTransformer(flatten=not is_auto_json_transform) for header in
+                                  headers}
+
     if t and len(headers) > 0:
         newHeaders = []
         if headerTransform is None:  # noqa
@@ -1928,7 +2039,8 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
                     except Exception:
                         pass
 
-            vals = [stringEscapeMD((formatCell(entry_copy.get(h, ''), False) if entry_copy.get(h) is not None else ''),
+            vals = [stringEscapeMD((formatCell(entry_copy.get(h, ''), False,
+                                               json_transform_mapping.get(h)) if entry_copy.get(h) is not None else ''),
                                    True, True) for h in headers]
 
             # this pipe is optional
@@ -5325,6 +5437,9 @@ def arg_to_number(arg, arg_name=None, required=False):
                 raise ValueError('Missing required argument')
 
         return None
+
+    arg = encode_string_results(arg)
+
     if isinstance(arg, str):
         if arg.isdigit():
             return int(arg)
