@@ -1,7 +1,7 @@
 id: OpsGenieV3TestPlaybook
 version: -1
 vcShouldKeepItemLegacyProdMachine: false
-name: OpsGenieV3
+name: OpsGenieV3TestPlaybook
 starttaskid: "0"
 tasks:
   "0":
