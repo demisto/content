@@ -3611,7 +3611,10 @@
             "timeout": 2400
         },
         {
-            "integrations": ["MalwareBazaar Feed", "Demisto REST API"],
+            "integrations": [
+                "MalwareBazaar Feed",
+                "Demisto REST API"
+            ],
             "playbookID": "Fetch Indicators Test",
             "fromversion": "6.0.0",
             "is_mockable": false,
@@ -4654,18 +4657,27 @@
             "playbookID": "ThreatStream-Test"
         },
         {
-            "integrations": ["AutoFocusTagsFeed", "Demisto REST API"],
+            "integrations": [
+                "AutoFocusTagsFeed",
+                "Demisto REST API"
+            ],
             "playbookID": "AutoFocusTagsFeed-test",
             "timeout": 300
         },
         {
-            "integrations": ["Unit42IntelObjectsFeed", "Demisto REST API"],
+            "integrations": [
+                "Unit42IntelObjectsFeed",
+                "Demisto REST API"
+            ],
             "playbookID": "Unit42 Intel Objects Feed - Test",
             "timeout": 300
         },
         {
             "playbookID": "Tanium Threat Response V2 Test",
-            "integrations": ["Tanium Threat Response v2", "Demisto REST API"],
+            "integrations": [
+                "Tanium Threat Response v2",
+                "Demisto REST API"
+            ],
             "fromversion": "6.0.0",
             "timeout": 3000
         },
@@ -4723,8 +4735,8 @@
                 "EWS v2"
             ],
             "instance_names": "ewv2_regular"
-       },
-       {
+        },
+        {
             "integrations": [
                 "Demisto REST API"
             ],
@@ -4762,7 +4774,7 @@
         "MISP V2 Test": "The integration is deprecated as we released MISP V3",
         "Zscaler Test": "We won't get license (Issues 40157,17784)",
         "Github IAM - Test Playbook": "Issue 32383",
-        "O365-SecurityAndCompliance-ContextResults-Test":  "Issue 38900",
+        "O365-SecurityAndCompliance-ContextResults-Test": "Issue 38900",
         "Calculate Severity - Standard - Test": "Issue 32715",
         "Calculate Severity - Generic v2 - Test": "Issue 32716",
         "Workday - Test": "No credentials Issue 29595",
@@ -4849,14 +4861,26 @@
         "VerifyOOBV2Predictions-Test": "Issue 37947",
         "HybridAnalysis-Test": "Issue 26599",
         "Infoblox Test": "Issue 25651",
+        "AutoFocusTagsFeed-test": "shares API quota with the other test",
         "Carbon Black Edr - Test": "Issue 40132",
         "Phishing v2 - Test - Actual Incident": "Issue 41322",
         "Kaspersky Security Center - Test": "Issue 36487",
         "carbonBlackEndpointStandardTestPlaybook": "Issue 36936",
         "RecordedFutureFeed - Test": "Quota issue. Need to unskip in 1.12.21",
-        "Recorded Future Test": "Quota issue. Need to unskip in 1.12.21"
+        "Recorded Future Test": "Quota issue. Need to unskip in 1.12.21",
+        "test_Qradar_v2": "the integration is deprecated as we released Qradar V3",
+        "XsoarPowershellTesting-Test": "Issue 32689",
+        "Unit42 Intel Objects Feed - Test": "Issue 44100",
+        "RedCanaryTest": "Issue 43818",
+        "MailListener-POP3 - Test": "Issue 44199",
+        "MicrosoftManagementActivity - Test": "Issue 43922",
+        "VMWare Test": "Issue 43823",
+        "Google-Vault-Generic-Test": "Issue 24347",
+        "Google_Vault-Search_And_Display_Results_test": "Issue 24348",
+        "Tenable.io Scan Test": "Issue 26728"
     },
     "skipped_integrations": {
+
         "_comment1": "~~~ NO INSTANCE ~~~",
         "Ipstack": "Usage limit reached (Issue 38063)",
         "AnsibleAlibabaCloud": "No instance - issue 40447",
