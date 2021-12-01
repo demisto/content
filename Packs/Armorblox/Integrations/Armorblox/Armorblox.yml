@@ -22,7 +22,7 @@ configuration:
   required: false
   type: 0
 - defaultvalue: lastDay
-  display: First fetch timestamp (last <number> <time unit>, e.g., last7Days)
+  display: First fetch timestamp
   name: first_fetch
   options:
   - lastDay
