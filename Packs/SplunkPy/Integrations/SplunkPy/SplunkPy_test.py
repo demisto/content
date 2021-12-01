@@ -7,6 +7,7 @@ import splunklib.client as client
 import demistomock as demisto
 from CommonServerPython import *
 from datetime import timedelta, datetime
+from collections import namedtuple
 
 RETURN_ERROR_TARGET = 'SplunkPy.return_error'
 
@@ -165,6 +166,28 @@ POSITIVE = {
 RAW_JSON = '{"Test": "success"}'
 RAW_STANDARD = '"Test="success"'
 RAW_JSON_AND_STANDARD_OUTPUT = {"Test": "success"}
+
+
+class Jobs:
+    def __init__(self, status):
+        self.oneshot = None
+        state = namedtuple('state', 'content')
+        self.state = state(content={'dispatchState': str(status)})
+
+    def __getitem__(self, arg):
+        return 0
+
+    def create(self, query, latest_time, app, earliest_time, exec_mode):
+        return {'sid': '123456', 'resultCount': 0}
+
+
+class Service:
+    def __init__(self, status):
+        self.jobs = Jobs(status)
+        self.status = status
+
+    def job(self, sid):
+        return Jobs(self.status)
 
 
 def test_raw_to_dict():
@@ -1122,7 +1145,8 @@ def test_build_search_human_readable(mocker):
     assert headers == expected_headers
 
 
-def test_build_search_kwargs():
+@pytest.mark.parametrize('polling', [False, True])
+def test_build_search_kwargs(polling):
     """
     Given:
         The splunk-search command args.
@@ -1134,11 +1158,15 @@ def test_build_search_kwargs():
         Ensure the query kwargs as expected.
 
     """
-    args = {'earliest_time': '2021-11-23T10:10:10', 'latest_time': '2021-11-23T10:10:20', 'app': 'test_app', 'polling': False}
-    kwargs_normalsearch = splunk.build_search_kwargs(args)
+    args = {'earliest_time': '2021-11-23T10:10:10', 'latest_time': '2021-11-23T10:10:20', 'app': 'test_app', 'polling': polling}
+    kwargs_normalsearch = splunk.build_search_kwargs(args, polling)
     for field in args:
         if field == 'polling':
             assert 'exec_mode' in kwargs_normalsearch
+            if polling:
+                assert kwargs_normalsearch['exec_mode'] == 'normal'
+            else:
+                assert kwargs_normalsearch['exec_mode'] == 'blocking'
         else:
             assert field in kwargs_normalsearch
 
@@ -1158,36 +1186,20 @@ def test_splunk_search_command(mocker, polling, status):
         Ensure the result as expected in polling and in regular search.
 
     """
-    class Jobs:
-        def __init__(self):
-            self.oneshot = None
-
-        def create(query, earliest_time):
-            return {'sid': '123456', 'resultCount': 0}
-
-    class Service:
-        def __init__(self):
-            self.jobs = Jobs()
-
-        def job(sid, a):
-            return {'sid': sid, 'resultCount': 0}
 
     mocker.patch.object(demisto, 'args', return_value={'query': 'query', 'earliest_time': '2021-11-23T10:10:10',
                                                        'latest_time': '2020-10-20T10:10:20', 'app': 'test_app',
                                                        'polling': polling})
-    mocker.patch.object(splunk, 'build_search_query', returnvalue='query')
-    mocker.patch.object(splunk, 'build_search_kwargs', return_value={})
-    mocker.patch.object(splunk, 'splunk_job_status', return_value=CommandResults(outputs={'Status': status}))
     mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported')
 
-    search_result = splunk.splunk_search_command(Service())
+    search_result = splunk.splunk_search_command(Service(status))
 
     if search_result.scheduled_command:
         assert search_result.outputs['Status'] == status
         assert search_result.scheduled_command._args['sid'] == '123456'
     else:
         assert search_result.outputs['Splunk.Result'] == []
-        assert search_result.outputs['Splunk.JobStatus(val.SID && val.SID === obj.SID)']['Status'] == status
+        assert search_result.readable_output == '### Splunk Search results for query: query\n**No entries.**\n'
 
 
 @pytest.mark.parametrize(

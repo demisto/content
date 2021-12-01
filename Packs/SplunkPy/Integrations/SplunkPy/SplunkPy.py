@@ -1813,19 +1813,21 @@ def splunk_search_command(service):
         job_sid = search_job["sid"]
         args['sid'] = job_sid
 
-    status_cmd_result = splunk_job_status(service, args)
-    status = status_cmd_result.outputs['Status']
-    if status.lower() != 'done':
-        # Job is still running, schedule the next run of the command.
-        scheduled_command = schedule_polling_command("splunk-search", args, interval_in_secs)
-        status_cmd_result.scheduled_command = scheduled_command
-        status_cmd_result.readable_output = 'Job is still running, it may take a little while...'
-        return status_cmd_result
-    elif (status.lower() == 'done' and polling is True) or search_job is None:
-        # Get the job by its SID.
-        search_job = service.job(job_sid)
+    status_cmd_result = None
+    if polling:
+        status_cmd_result = splunk_job_status(service, args)
+        status = status_cmd_result.outputs['Status']
+        if status.lower() != 'done':
+            # Job is still running, schedule the next run of the command.
+            scheduled_command = schedule_polling_command("splunk-search", args, interval_in_secs)
+            status_cmd_result.scheduled_command = scheduled_command
+            status_cmd_result.readable_output = 'Job is still running, it may take a little while...'
+            return status_cmd_result
+        elif status.lower() == 'done' or search_job is None:
+            # Get the job by its SID.
+            search_job = service.job(job_sid)
 
-    num_of_results_from_query = search_job["resultCount"]
+    num_of_results_from_query = search_job["resultCount"] if search_job else None
 
     results_limit = float(args.get("event_limit", 100))
     if results_limit == 0.0:
