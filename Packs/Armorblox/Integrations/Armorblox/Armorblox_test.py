@@ -51,7 +51,7 @@ def mock_client(mocker, http_request_result=None, throw_error=False):
         mocker.patch.object(client, '_http_request', return_value=http_request_result)
 
     if throw_error:
-        err_msg = "Error in API call [400] - BAD REQUEST}"
+        err_msg = "Error in API call [400] - BAD REQUEST"
         mocker.patch.object(client, '_http_request', side_effect=DemistoException(err_msg, res={}))
 
     return client
