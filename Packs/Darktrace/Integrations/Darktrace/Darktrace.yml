@@ -63,13 +63,13 @@ configuration:
   type: 0
 - additionalinfo: Use the "Public API Token (Recommended)" parameter instead.
   display: Public API Token (Deprecated)
-  hidden: false
+  hidden: true
   name: public_api_token
   required: false
   type: 4
 - additionalinfo: Use the "Private API Token (Recommended)" parameter instead.
   display: Private API Token (Deprecated)
-  hidden: false
+  hidden: true
   name: private_api_token
   required: false
   type: 4
