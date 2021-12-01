@@ -1261,7 +1261,8 @@ async def fetch_channels_iterable():
             # This provides the function with a safety net to prevent the fetch process itself from taking longer than
             # 10 minutes. If the workspace has more than 120,000 channels or fetching the updated list takes longer than
             # 10 minutes, we will store the channels the function has collected so far and end the fetch.
-            demisto.debug("Timeout safety net was exceeded. Current fetch_channels_iterable run is being abandoned.")
+            demisto.debug(f"Timeout safety net was exceeded. Current fetch_channels_iterable run is being abandoned.\n"
+                          f"The timeout_safety variable is {timeout_safety} and the current time is {now}.")
             break
         cursor = res.get('response_metadata', {}).get('next_cursor')
         demisto.debug(f"Length of channels received from Slack api is {len(res.get('channels', []))}")
