@@ -616,6 +616,10 @@ Returns all connections.
 | --- | --- | --- |
 | limit | The maximum number of connections to return. Default is 50. | Optional | 
 | offset | The offset number to begin listing connections. Default is 0. | Optional | 
+| status | Comma-seperated list of statuses to get the connections that match only those statuses, for example status=connected,waiting. Possible values are: disconnected, timeout, waiting, connected. | Optional | 
+| ip | Comma-seperated list of ips to get the connections that match only those ips, for example status=1.1.1.1,1.1.1.1. | Optional | 
+| platform | Comma-seperated list of platforms to get the connections that match only those platforms, for example platform=Linux,Windows. | Optional | 
+| hostname | Comma-seperated list of hostnames to get the connections that match only those hostnames, for example hostname=host1,host2. | Optional | 
 
 
 #### Context Output
@@ -921,6 +925,9 @@ Returns all downloaded files in the system.
 | limit | The maximum number of files to return. Default is 50. | Optional | 
 | offset | Offset to start getting file downloads. Default is 0. | Optional | 
 | sort | Column which to sort by. | Optional | 
+| hostname | Comma-seperated list of hostnames to get the downloaded files that match only those hostnames, for example hostname=host1,host2. | Optional | 
+| hash | Comma-seperated list of hashes to get the downloaded files that match only those hashes, for example hash=123,456. | Optional | 
+| process_time_start | Get the downloaded files that match only to the process time start, for example process_time_start=2019-09-03T17:51:40.000Z. | Optional | 
 
 
 #### Context Output
@@ -1725,6 +1732,8 @@ Returns a list of all available evidence in the system.
 | limit | The maximum number of evidences to return. Default is 50. | Optional | 
 | offset | Offset to start getting the events result set. Default is 0. | Optional | 
 | sort | A comma-separated list of fields by which to sort, using +/- prefixes for ascending/descending, in order of priority (left to right). | Optional | 
+| hostname | Comma-seperated list of hostnames to get the event evidences that match only those hostnames, for example hostname=123,456. | Optional | 
+| type | Get the event evidences that match only to a specific type, for example type=file. | Optional | 
 
 
 #### Context Output
@@ -2846,6 +2855,11 @@ Get system status, to retrieve all possible connection's client ids, hostnames, 
 | --- | --- | --- |
 | limit | The maximum number of entries to return. Default is 50. | Optional | 
 | offset | The offset number to begin listing entries. Default is 0. | Optional | 
+| status | Comma-seperated list of statuses to get the system-status that match only those statuses, for example status=Blocked,Leader. | Optional | 
+| ip_server | Comma-seperated list of ip servers to get the system-status that match only those ip servers, for example ip_server=1.1.1.1,2.2.2.2. | Optional | 
+| ip_client | Comma-seperated list of ip clients to get the system-status that match only those ip clients, for example ip_client=1.1.1.1,2.2.2.2. | Optional | 
+| hostname | Comma-seperated list of hostnames to get the system-status that match only those hostnames, for example hostname=host1,host2. | Optional | 
+| port | port to get the system-status that match only this port, for example port=80. | Optional | 
 
 
 #### Context Output
