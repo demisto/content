@@ -224,7 +224,7 @@ def list_groups_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, D
         next_link_response = groups['@odata.nextLink']
 
     if next_link_response:
-        entry_context = {f'{INTEGRATION_CONTEXT_NAME}NextLink:': {'GroupsNextLink': next_link_response},
+        entry_context = {f'{INTEGRATION_CONTEXT_NAME}NextLink': {'GroupsNextLink': next_link_response},
                          f'{INTEGRATION_CONTEXT_NAME}(val.ID === obj.ID)': groups_outputs}
         title = 'Groups (Note that there are more results. Please use the GroupsNextLink argument to see them.):'
     else:
