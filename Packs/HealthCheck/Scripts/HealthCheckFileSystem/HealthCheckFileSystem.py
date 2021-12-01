@@ -20,7 +20,7 @@ def count_partitions(filesystem):
                     name = file.get('name')
                     regx = re.search("demisto_\d{6}\.db", name)
                     if regx:
-                        partitionscounter +=1
+                        partitionscounter += 1
         return partitionscounter
 
 
