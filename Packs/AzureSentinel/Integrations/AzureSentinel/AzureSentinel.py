@@ -26,7 +26,7 @@ XSOAR_USER_AGENT = 'SentinelPartner-PaloAltoNetworks-CortexXsoar/1.0.0'
 AUTHORIZATION_ERROR_MSG = 'There was a problem in retrieving an updated access token.\n'\
                           'The response from the server did not contain the expected content.'
 
-INCIDENT_HEADERS = ['ID', 'IncidentNumber', 'Title', 'Description', 'Severity', 'Status', 'AssigneeName',
+INCIDENT_HEADERS = ['ID', 'IncidentNumber', 'Title', 'Description', 'Severity', 'Status', 'IncidentUrl', 'AssigneeName',
                     'AssigneeEmail', 'Label', 'FirstActivityTimeUTC', 'LastActivityTimeUTC', 'LastModifiedTimeUTC',
                     'CreatedTimeUTC', 'AlertsCount', 'BookmarksCount', 'CommentsCount', 'AlertProductNames',
                     'Tactics', 'FirstActivityTimeGenerated', 'LastActivityTimeGenerated']
@@ -146,6 +146,7 @@ def incident_data_to_xsoar_format(inc_data):
     formatted_data = {
         'ID': inc_data.get('name'),
         'IncidentNumber': properties.get('incidentNumber'),
+        'IncidentUrl': properties.get('incidentUrl'),
         'Title': properties.get('title'),
         'Description': properties.get('description'),
         'Severity': properties.get('severity'),
@@ -405,7 +406,7 @@ def get_incident_by_id_command(client, args):
 
     result = client.http_request('GET', url_suffix)
     incident = incident_data_to_xsoar_format(result)
-    readable_output = tableToMarkdown(f'Incident {inc_id} details', incident,
+    readable_output = tableToMarkdown(f'Incident {inc_id} details', incident, url_keys=['IncidentUrl'],
                                       headers=INCIDENT_HEADERS,
                                       headerTransform=pascalToSpace,
                                       removeNull=True)
@@ -889,7 +890,7 @@ def main():
     LOG(f'Command being called is {demisto.command()}')
     try:
         client = AzureSentinelClient(
-            server_url=params.get('server_url', DEFAULT_AZURE_SERVER_URL),
+            server_url=params.get('server_url') or DEFAULT_AZURE_SERVER_URL,
             tenant_id=params.get('tenant_id', ''),
             client_id=params.get('credentials', {}).get('identifier'),
             client_secret=params.get('credentials', {}).get('password'),

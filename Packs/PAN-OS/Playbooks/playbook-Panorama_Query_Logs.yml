@@ -1,8 +1,10 @@
 id: Panorama Query Logs
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Panorama Query Logs
-fromversion: 5.0.0
-description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering and wildfire.'
+description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering and
+  wildfire.'
 starttaskid: "0"
 tasks:
   "0":
@@ -13,9 +15,9 @@ tasks:
       id: a0d6fdde-6ca0-4bfb-8fe1-b107ef3e0781
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -30,6 +32,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
     taskid: 8cc99b6c-6607-4ad3-8581-5526974c4bef
@@ -38,7 +44,8 @@ tasks:
       id: 8cc99b6c-6607-4ad3-8581-5526974c4bef
       version: -1
       name: Is Palo Alto Networks PAN-OS enabled?
-      description: Checks if there is a valid instance of the Palo Alto Networks PAN-OS integration enabled.
+      description: Checks if there is a valid instance of the Palo Alto Networks PAN-OS
+        integration enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -85,6 +92,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
     taskid: 578c260e-fced-4b70-83af-552dffc2bcda
@@ -111,16 +122,15 @@ tasks:
       addr-src:
         complex:
           root: inputs.addr-src
-      ip:
-        complex:
-          root: inputs.ip
       filedigest:
         complex:
           root: inputs.filedigest
+      ip:
+        complex:
+          root: inputs.ip
       log-type:
         complex:
           root: inputs.log_type
-      number_of_logs: {}
       port-dst:
         complex:
           root: inputs.port-dst
@@ -153,6 +163,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
     taskid: 18309376-a27f-4db9-8936-c8a62354fbc4
@@ -161,17 +175,15 @@ tasks:
       id: 18309376-a27f-4db9-8936-c8a62354fbc4
       version: -1
       name: GenericPolling
-      description: ""
       playbookName: GenericPolling
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
     scriptarguments:
-      AdditionalPollingCommandArgNames: {}
-      AdditionalPollingCommandArgValues: {}
       Ids:
         complex:
           root: Panorama
@@ -191,6 +203,7 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -201,15 +214,21 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 8c6d8c01-8351-4954-84cf-cbdd684ace09
+    taskid: fe4d46a7-0e8a-437b-8b5c-3a46ffd6167d
     type: regular
     task:
-      id: 8c6d8c01-8351-4954-84cf-cbdd684ace09
+      id: fe4d46a7-0e8a-437b-8b5c-3a46ffd6167d
       version: -1
       name: Panorama Get Logs
       description: Retrieves log query data by job ID.
+      tags:
+      - PanoramaResults
       script: '|||panorama-get-logs'
       type: regular
       iscommand: true
@@ -218,7 +237,6 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      ignore_auto_extract: {}
       job_id:
         complex:
           root: Panorama
@@ -243,6 +261,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: 58850584-2a54-4ac5-80ec-268f5ed17c1a
@@ -251,10 +273,10 @@ tasks:
       id: 58850584-2a54-4ac5-80ec-268f5ed17c1a
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -266,6 +288,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
     taskid: 3516389a-7392-4907-8336-e3da80e36abb
@@ -298,6 +324,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
     taskid: 3a40b2a9-6c37-4bd7-85cd-bb8c5720b91c
@@ -306,7 +336,7 @@ tasks:
       id: 3a40b2a9-6c37-4bd7-85cd-bb8c5720b91c
       version: -1
       name: Filter JobID
-      description: ""
+      description: Filtering the JOBID.
       type: condition
       iscommand: false
       brand: ""
@@ -345,6 +375,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
@@ -362,66 +397,85 @@ inputs:
   value: {}
   required: true
   description: 'Log type to query. Can be: traffic, threat, wildfire, url or data-filtering.'
+  playbookInputQuery:
 - key: query
   value: {}
   required: false
-  description: The query string by which to match criteria for the logs. This is similar to the query provided in the web interface under the Monitor tab when viewing the logs.
+  description: The query string by which to match criteria for the logs. This is similar
+    to the query provided in the web interface under the Monitor tab when viewing
+    the logs.
+  playbookInputQuery:
 - key: time-generated
   value: {}
   required: false
-  description: 'The time the log was generated from the timestamp and prior to it. For example: "2019/08/11 01:10:44".'
+  description: 'The time the log was generated from the timestamp and prior to it.
+    For example: "2019/08/11 01:10:44".'
+  playbookInputQuery:
 - key: addr-src
   value: {}
   required: false
   description: Source address.
+  playbookInputQuery:
 - key: addr-dst
   value: {}
   required: false
   description: Destination address.
+  playbookInputQuery:
 - key: ip
   value: {}
   required: false
   description: Source or destination IP address.
+  playbookInputQuery:
 - key: zone-src
   value: {}
   required: false
   description: Source zone.
+  playbookInputQuery:
 - key: zone-dst
   value: {}
   required: false
   description: Destination zone.
+  playbookInputQuery:
 - key: action
   value: {}
   required: false
   description: Rule action.
+  playbookInputQuery:
 - key: port-dst
   value: {}
   required: false
   description: Destination port.
+  playbookInputQuery:
 - key: rule
   value: {}
   required: false
   description: 'Rule name, for example: "Allow all outbound".'
+  playbookInputQuery:
 - key: url
   value: {}
   required: false
   description: 'URL, for example: "safebrowsing.googleapis.com".'
+  playbookInputQuery:
 - key: filedigest
   value: {}
   required: false
   description: File hash (for WildFIre logs only).
+  playbookInputQuery:
 outputs:
 - contextPath: Panorama.Monitor
   description: Monitor logs object.
   type: string
 - contextPath: Panorama.Monitor.Logs.Action
-  description: Action taken for the session. Can be "alert", "allow", "deny", "drop", "drop-all-packets", "reset-client", "reset-server", "reset-both", or "block-url".
+  description: Action taken for the session. Can be "alert", "allow", "deny", "drop",
+    "drop-all-packets", "reset-client", "reset-server", "reset-both", or "block-url".
   type: string
 - contextPath: Panorama.Monitor.Logs.Application
   description: Application associated with the session.
   type: string
 - contextPath: Panorama.Monitor.Logs.Category
-  description: For URL subtype, it is the URL category; For WildFire subtype, it is the verdict on the file and is either ‘malicious’, ‘phishing’, ‘grayware’, or ‘benign’; For other subtypes, the value is ‘any’.
+  description: For URL subtype, it is the URL category; For WildFire subtype, it is
+    the verdict on the file and is either ‘malicious’, ‘phishing’, ‘grayware’, or
+    ‘benign’; For other subtypes, the value is ‘any’.
   type: string
 - contextPath: Panorama.Monitor.Logs.DeviceName
   description: The hostname of the firewall on which the session was logged.
@@ -433,7 +487,8 @@ outputs:
   description: Username of the user to which the session was sent.
   type: string
 - contextPath: Panorama.Monitor.Logs.DestinationCountry
-  description: Destination country or internal region for private addresses. Maximum length is 32 bytes.
+  description: Destination country or internal region for private addresses. Maximum
+    length is 32 bytes.
   type: string
 - contextPath: Panorama.Monitor.Logs.DestinationPort
   description: Destination port utilized by the session.
@@ -480,7 +535,10 @@ outputs:
   description: Post-NAT source port.
   type: string
 - contextPath: Panorama.Monitor.Logs.PCAPid
-  description: The packet capture (pcap) ID is a 64 bit unsigned integral denoting an ID to correlate threat pcap files with extended pcaps taken as a part of that flow. All threat logs contain either a pcap_id of 0 (no associated pcap), or an ID referencing the extended pcap file.
+  description: The packet capture (pcap) ID is a 64 bit unsigned integral denoting
+    an ID to correlate threat pcap files with extended pcaps taken as a part of that
+    flow. All threat logs contain either a pcap_id of 0 (no associated pcap), or an
+    ID referencing the extended pcap file.
   type: string
 - contextPath: Panorama.Monitor.Logs.IPProtocol
   description: IP protocol associated with the session.
@@ -511,13 +569,15 @@ outputs:
   description: The serial number of the firewall on which the session was logged.
   type: string
 - contextPath: Panorama.Monitor.Logs.Severity
-  description: Severity associated with the threat. Can be "informational", "low", "medium", "high", or "critical".
+  description: Severity associated with the threat. Can be "informational", "low",
+    "medium", "high", or "critical".
   type: string
 - contextPath: Panorama.Monitor.Logs.SourceAddress
   description: Original session source IP address.
   type: string
 - contextPath: Panorama.Monitor.Logs.SourceCountry
-  description: Source country or internal region for private addresses. Maximum length is 32 bytes.
+  description: Source country or internal region for private addresses. Maximum length
+    is 32 bytes.
   type: string
 - contextPath: Panorama.Monitor.Logs.SourceUser
   description: Username of the user who initiated the session.
@@ -526,7 +586,8 @@ outputs:
   description: Source port utilized by the session.
   type: string
 - contextPath: Panorama.Monitor.Logs.Name
-  description: Palo Alto Networks identifier for the threat. It is a description string followed by a 64-bit numerical identifier.
+  description: Palo Alto Networks identifier for the threat. It is a description string
+    followed by a 64-bit numerical identifier.
   type: string
 - contextPath: Panorama.Monitor.Logs.ID
   description: Palo Alto Networks ID for the threat.
@@ -538,7 +599,8 @@ outputs:
   description: Time that the log was generated on the dataplane.
   type: string
 - contextPath: Panorama.Monitor.Logs.URLCategoryList
-  description: A list of the URL filtering categories that the firewall used to enforce policy.
+  description: A list of the URL filtering categories that the firewall used to enforce
+    policy.
   type: string
 - contextPath: Panorama.Monitor.Logs.Vsys
   description: Vsys on the firewall that generated the log.
@@ -553,3 +615,4 @@ outputs:
   type: string
 tests:
 - Panorama Query Logs - Test
+fromversion: 5.0.0

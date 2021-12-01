@@ -548,7 +548,30 @@ def test_build_events_search_response(mocker):
     from MISPV3 import build_events_search_response, EVENT_FIELDS
     search_response = util_load_json("test_data/search_event_by_tag.json")
     search_expected_output = util_load_json("test_data/search_event_by_tag_outputs.json")
-    search_outputs = build_events_search_response(search_response)
+    search_outputs = build_events_search_response(search_response, {'include_feed_correlations': True})
+    for actual_event, expected_event in zip(search_outputs, search_expected_output):
+        for event_field in EVENT_FIELDS:
+            if actual_event.get(event_field):
+                assert actual_event.get(event_field) == expected_event.get(event_field)
+
+
+def test_build_events_search_response_without_feed_correlations(mocker):
+    """
+
+    Given:
+    - A MISP event search response (json).
+
+    When:
+    - Running misp-search-events command.
+
+    Then:
+    - Ensure that the output to context data is valid and was parsed correctly.
+    """
+    mock_misp(mocker)
+    from MISPV3 import build_events_search_response, EVENT_FIELDS
+    search_response = util_load_json("test_data/search_event_by_tag.json")
+    search_expected_output = util_load_json("test_data/search_event_by_tag_no_feed_outputs.json")
+    search_outputs = build_events_search_response(search_response, {'include_feed_correlations': False})
     for actual_event, expected_event in zip(search_outputs, search_expected_output):
         for event_field in EVENT_FIELDS:
             if actual_event.get(event_field):

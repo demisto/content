@@ -15,7 +15,7 @@ A custom category ID has the format `CUSTOM_01`, which is not indicative of the
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | cloud | Cloud Name \(i.e., https://admin.zscalertwo.net\) | True |
-| credentials | Credentials | True |
+| credentials | Username | True |
 | key | API Key | True |
 | auto_logout | Auto Logout | False |
 | auto_activate | Auto Activate Changes | False |

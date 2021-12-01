@@ -1,7 +1,7 @@
 ## MISP Feed Help
 
 How to configure the MISP Feed integration
-- Use your MISP instance URL as 'https://x.x.x.x/'.
+- Use your MISP instance URL as 'https://x.x.x.x'.
 - You can find your API key in **Global Actions** >**My Profile** >**Auth key**>. Click the eye symbol to view your key.
 
 How to configure your fetch indicators query

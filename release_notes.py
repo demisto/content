@@ -646,7 +646,7 @@ def main():
                     'these steps will merge your branch with content master as a base.')
         sys.exit(1)
     else:
-        modified_files, added_files, removed_files, _, _, _ = filter_changed_files(change_log)
+        modified_files, added_files, removed_files, _, _, _, _ = filter_changed_files(change_log)
         modified_files, added_files, removed_files = filter_packagify_changes(modified_files, added_files,
                                                                               removed_files, tag=tag)
 

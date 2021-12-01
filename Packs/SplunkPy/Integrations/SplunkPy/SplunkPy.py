@@ -1,4 +1,4 @@
-from splunklib.binding import HTTPError, namespace
+from splunklib.binding import HTTPError, namespace, AuthenticationError
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -1383,6 +1383,97 @@ def get_current_splunk_time(splunk_service):
     raise ValueError('Error: Could not fetch Splunk time')
 
 
+def quote_group(text):
+    """ A function that splits groups of key value pairs.
+        Taking into consideration key values pairs with nested quotes.
+    """
+
+    def clean(t):
+        return t.strip().rstrip(',')
+
+    # Return strings that aren't key-valued, as is.
+    if len(text.strip()) < 3 or "=" not in text:
+        return [text]
+
+    # Remove prefix & suffix wrapping quotes if present around all the text
+    # For example a text could be:
+    # "a="123"", we want it to be: a="123"
+    text = re.sub(r'^\"([\s\S]+\")\"$', r'\1', text)
+
+    # Some of the texts don't end with a comma so we add it to make sure
+    # everything acts the same.
+    if not text.rstrip().endswith(","):
+        text = text.rstrip()
+        text += ","
+
+    # Fix elements that aren't key=value (`111, a="123"` => `a="123"`)
+    # (^) - start of text
+    # ([^=]+), - everything without equal sign and a comma at the end
+    #   ('111,' above)
+    text = re.sub(r"(^)([^=]+),", ",", text).lstrip(",")
+
+    # Wrap all key values without a quote (`a=123` => `a="123"`)
+    # Key part: ([^\"\,]+?=)
+    #   asdf=123, here it will match 'asdf'.
+    #
+    # Value part: ([^\"]+?)
+    #   every string without a quote or doesn't start the text.
+    #   For example: asdf=123, here it will match '123'.
+    #
+    # End value part: (,|\")
+    #   we need to decide when to end the value, in our case
+    #   with a comma. We also check for quotes for this case:
+    #   a="b=nested_value_without_a_wrapping_quote", as we want to
+    #   wrap 'nested_value_without_a_wrapping_quote' with quotes.
+    text = re.sub(r'([^\"\,]+?=)([^\"]+?)(,|\")', r'\1"\2"\3', text)
+
+    # The basic idea here is to check that every key value ends with a `",`
+    # Assuming that there are even number of quotes before
+    # (some values can have deep nested quotes).
+    quote_counter = 0
+    rindex = 0
+    lindex = 0
+    groups = []
+    while rindex < len(text):
+
+        # For every quote we increment the quote counter
+        # (to preserve context on the opening/closed quotes)
+        if text[rindex] == '"':
+            quote_counter += 1
+
+        # A quote group ends when `",` is encountered.
+        is_end_keypair = rindex > 1 and text[rindex - 1] + text[rindex] == '",'
+
+        # If the quote_counter isn't even we shouldn't close the group,
+        # for example: a="b="1",c="3""                * *
+        # I'll space for readability:   a = " b = " 1 " , c ...
+        #                               0 1 2 3 4 5 6 7 8 9
+        # quote_counter is even:            F     T   F   T
+        # On index 7 & 8 we find a potential quote closing, but as you can
+        # see it isn't a valid group (because of nesting) we need to check
+        # the quote counter for an even number => a closing match.
+        is_even_number_of_quotes = quote_counter % 2 == 0
+
+        # We check both conditions to find a group
+        if is_end_keypair and is_even_number_of_quotes:
+            # Clean the match group and append to groups
+            groups.append(clean(text[lindex:rindex]))
+
+            # Incrementing the indexes to start searching for the next group.
+            lindex = rindex + 1
+            rindex += 1
+            quote_counter = 0
+
+        # Continue to walk the string until we find a quote again.
+        rindex += 1
+
+    # Sometimes there aren't any quotes in the string so we can just append it
+    if len(groups) == 0:
+        groups.append(clean(text))
+
+    return groups
+
+
 def rawToDict(raw):
     result = {}  # type: Dict[str, str]
     try:
@@ -1408,9 +1499,12 @@ def rawToDict(raw):
             # search for the pattern: `key="value", `
             # (the double quotes are optional)
             # we append `, ` to the end of the string to catch the last value
-            raw_response = re.findall(r'(\S+=("?)[\S\s]+?\2), ', raw + ', ')
-            for key_val, _ in raw_response:
-                key_value = key_val.replace('"', '').strip()
+            groups = quote_group(raw)
+            for g in groups:
+                key_value = g.replace('"', '').strip()
+                if key_value == '':
+                    continue
+
                 if '=' in key_value:
                     key_and_val = key_value.split('=', 1)
                     result[key_and_val[0]] = key_and_val[1]
@@ -1628,7 +1722,8 @@ def build_search_human_readable(args, parsed_search_results):
 
                 headers = update_headers_from_field_names(parsed_search_results, chosen_fields)
 
-    human_readable = tableToMarkdown("Splunk Search results for query: {}".format(args['query']),
+    query = args['query'].replace('`', r'\`')
+    human_readable = tableToMarkdown("Splunk Search results for query: {}".format(query),
                                      parsed_search_results, headers)
     return human_readable
 
@@ -1928,6 +2023,14 @@ def splunk_parse_raw_command():
 
 
 def test_module(service):
+
+    try:
+        # validate connection
+        service.info()
+    except AuthenticationError:
+        return_error('Authentication error, please validate your credentials.')
+
+    # validate fetch
     params = demisto.params()
     if params.get('isFetch'):
         t = datetime.utcnow() - timedelta(hours=1)
@@ -2188,6 +2291,7 @@ def main():
     else:
         connection_args['username'] = username
         connection_args['password'] = password
+        connection_args['autologin'] = True
 
     if use_requests_handler:
         handle_proxy()
