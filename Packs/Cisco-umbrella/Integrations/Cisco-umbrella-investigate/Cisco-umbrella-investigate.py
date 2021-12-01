@@ -857,8 +857,8 @@ def get_domain_command():
                     + tableToMarkdown('Domain Categorization:', domain_categorization_table, headers),
                 'EntryContext': context
             })
-        except RequestException:
-            pass
+        except RequestException as r:
+            print("Failed to find " + domain + ", reason: " + r.message)
     return results
 
 

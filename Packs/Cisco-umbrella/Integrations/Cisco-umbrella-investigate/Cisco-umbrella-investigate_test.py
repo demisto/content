@@ -43,6 +43,12 @@ def test_get_domain_command_all_domains_are_valid(mocker):
     """
     mocker.patch.object(demisto, 'args', return_value={'domain': ["good1.com", "good2.com", "good3.com"]})
     mocker.patch.object(Cisco_umbrella_investigate, 'get_whois_for_domain', return_value={})
+    domains_info = {
+        "good1.com": {"key": "val"},
+        "good2.com": {"key": "val"},
+        "good3.com": {"key": "val"}
+    }
+    mocker.patch.object(Cisco_umbrella_investigate, 'http_request', return_value=domains_info)
 
     assert len(Cisco_umbrella_investigate.get_domain_command()) == 3
 
@@ -73,6 +79,7 @@ def test_get_domain_command_some_valid_domains(mocker):
     """
     mocker.patch.object(demisto, 'args', return_value={'domain': ["good.com", "bad.com"]})
     mocker.patch.object(Cisco_umbrella_investigate, 'get_whois_for_domain', side_effect=different_inputs_handling)
+    mocker.patch.object(Cisco_umbrella_investigate, 'http_request', return_value={"good.com": {"key": "val"}})
 
     assert len(Cisco_umbrella_investigate.get_domain_command()) == 1
 
