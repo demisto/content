@@ -1,6 +1,5 @@
 id: TestAzureSentinelPlaybookV2
-version: 96
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: TestAzureSentinelPlaybookV2
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -617,6 +617,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -1790,18 +1791,20 @@ inputs:
     simple: DO_NOT_TOUCH-FOR_TEST_PLAYBOOK
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: watchlist_alias
   value:
     simple: TEST_PLAYBOOK_ALIAS
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: test_comment
   value:
     simple: test_comment
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
 sourceplaybookid: TestAzureSentinelPlaybook
+fromversion: 5.0.0
+description: ''
