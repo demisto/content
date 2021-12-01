@@ -34,5 +34,5 @@ ignore=RM106
 [file:script-DemistoUploadFileToIncident_README.md]
 ignore=RM106
 
-[file:script-SetIRProceduresMarkdown.yml]
+[file:SetIRProceduresMarkdown.yml]
 ignore=SC106

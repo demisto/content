@@ -58,5 +58,5 @@ ignore=SC106
 [file:ExtractIndicatorsFromTextFile.yml]
 ignore=SC106
 
-[file:DBotClosedIncidentsPercentage.yml]
+[file:script-DBotClosedIncidentsPercentage.yml]
 ignore=SC106
