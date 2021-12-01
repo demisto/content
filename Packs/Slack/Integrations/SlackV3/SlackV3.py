@@ -1249,9 +1249,7 @@ async def check_and_handle_entitlement(text: str, user: dict, thread_id: str) ->
 
 
 async def fetch_channels_iterable(last_update):
-    expected_next_run = return_next_interval(fetch_interval=CHANNEL_FETCH_INTERVAL, last_update_time=last_update)
-    if datetime.now() >= expected_next_run:
-        demisto.debug('Fetching updated channels as part of long-running')
+
         cursor = None
         updated_channel_list: list = []
 
@@ -1310,7 +1308,10 @@ async def fetch_channels_async():
     """
     last_update = datetime.now()
     while True:
-        last_update = await fetch_channels_iterable(last_update)
+        expected_next_run = return_next_interval(fetch_interval=CHANNEL_FETCH_INTERVAL, last_update_time=last_update)
+        if datetime.now() >= expected_next_run:
+            demisto.debug('Fetching updated channels as part of long-running')
+            last_update = await fetch_channels_iterable(last_update)
 
 
 ''' SEND '''
@@ -1326,56 +1327,15 @@ def get_conversation_by_name(conversation_name: str) -> dict:
     Returns:
         The slack conversation
     """
-    integration_context = get_integration_context(SYNC_CONTEXT)
-
     conversation_to_search = conversation_name.lower()
     # Find conversation in the cache
-    conversations = integration_context.get('conversations')
-    if conversations:
-        conversations = json.loads(conversations)
-        conversation_filter = list(
-            filter(
-                lambda c: conversation_to_search == c.get('name', '').lower(),
-                conversations
-            )
-        )
-        if conversation_filter:
-            return conversation_filter[0]
-
-    demisto.debug(f'could not find slack channel "{conversation_to_search}" in integration context, searching via API')
-    # If not found in cache, search for it
-    body = {
-        'types': 'private_channel,public_channel',
-        'limit': PAGINATED_COUNT
-    }
-    response = send_slack_request_sync(CLIENT, 'conversations.list', http_verb='GET', body=body)
-
-    conversation: dict = {}
-    while True:
-        conversations = response['channels'] if response and response.get('channels') else []
-        cursor = response.get('response_metadata', {}).get('next_cursor')
-        conversation_filter = list(filter(lambda c: c.get('name') == conversation_name, conversations))
-        if conversation_filter:
-            break
-        if not cursor:
-            demisto.info("Reached the end of looking for a channel")
-            break
-
-        body = body.copy()  # strictly for unit-test purposes (test_get_conversation_by_name_paging)
-        body.update({'cursor': cursor})
-        response = send_slack_request_sync(CLIENT, 'conversations.list', http_verb='GET', body=body)
-    if conversation_filter:
-        conversation = conversation_filter[0]
-
+    conversation = search_context_for_channel_id(conversation_name)
+    if not conversation:
+        demisto.debug(f'could not find slack channel "{conversation_to_search}" in integration context, searching via API')
+        conversation = fetch_channels_from_api(conversation_to_search)
     # Save conversations to cache
     if conversation:
-        conversations = integration_context.get('conversations')
-        if conversations:
-            conversations = json.loads(conversations)
-            conversations.append(conversation)
-        else:
-            conversations = [conversation]
-        set_to_integration_context_with_retries({'conversations': conversations}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+        save_channels_to_context([conversation])
     return conversation
 
 
@@ -2120,28 +2080,86 @@ def pin_message():
         return_error(f"{slack_error}")
 
 
-def fetch_channels():
+def search_context_for_channel_id(conversation_name: str):
     """
-    updates context with all conversations an their IDs
+    Searches the integration context to find a channel ID that matches the given channel name
+
+    Args:
+        conversation_name: The conversation name
+
+    Returns:
+        The slack conversation
+    """
+    integration_context = get_integration_context(SYNC_CONTEXT)
+
+    conversation_to_search = conversation_name.lower()
+    # Find conversation in the cache
+    conversations = integration_context.get('conversations')
+    if conversations:
+        conversations = json.loads(conversations)
+        conversation_filter = list(
+            filter(
+                lambda c: conversation_to_search == c.get('name', '').lower(),
+                conversations
+            )
+        )
+        if conversation_filter:
+            return conversation_filter[0]
+    else:
+        return None
+
+
+def save_channels_to_context(updated_channel_list):
+    """
+    Saves a list of conversations into the integration context.
+
+    Args:
+        updated_channel_list: A list of conversations
+    """
+    # Save conversations to cache
+    integration_context = get_integration_context(SYNC_CONTEXT)
+    conversations = integration_context.get('conversations')
+    if conversations:
+        conversations = json.loads(conversations)
+        conversations.extend(updated_channel_list)
+    else:
+        conversations = updated_channel_list
+    set_to_integration_context_with_retries({'conversations': conversations}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+
+
+def fetch_channels_from_api(conversation_name: str = ''):
+    """
+    Fetches channel IDs based on their name, if given a conversation name, it will search for a specific ID
+
+    Args:
+        conversation_name: Optional - The human readable form of a channel's name.
+
+    Returns:
+        A list of dictionaries containing a channel name and ID, or a singular name and ID if given a conversation name.
     """
     demisto.debug('Fetching channels')
-
     cursor = None
     updated_channel_list: list = []
 
-    integration_context = get_integration_context(SYNC_CONTEXT)
-    res = CLIENT.conversations_list(types='private_channel,public_channel', exclude_archived=True, cursor=cursor)
+    res = CLIENT.conversations_list(types='private_channel,public_channel', limit=PAGINATED_COUNT,
+                                    exclude_archived=True, cursor=cursor)
 
     while True:
         cursor = res.get('response_metadata', {}).get('next_cursor')
-        for channel in res.get('channels', []):
-            updated_channel: dict = {
-                'name': channel.get('name'),
-                'id': channel.get('id')
-            }
-            updated_channel_list.append(updated_channel)
+        channels = res['channels'] if res and res.get('channels') else []
+        if conversation_name:
+            conversation_filter = list(filter(lambda c: c.get('name') == conversation_name, channels))
+            if conversation_filter:
+                return conversation_filter[0]
+        else:
+            for channel in channels:
+                updated_channel: dict = {
+                    'name': channel.get('name'),
+                    'id': channel.get('id')
+                }
+                updated_channel_list.append(updated_channel)
         if not cursor:
-            demisto.info("Finished updating channel list")
+            demisto.info("Reached the end of looking for a channel")
             break
         else:
             total_try_time = 0
@@ -2166,15 +2184,12 @@ def fetch_channels():
                         else:
                             raise
                 break
+    return updated_channel_list
 
-    # Save conversations to cache
-    conversations = integration_context.get('conversations')
-    if conversations:
-        conversations = json.loads(conversations)
-        conversations.extend(updated_channel_list)
-    else:
-        conversations = updated_channel_list
-    set_to_integration_context_with_retries({'conversations': conversations}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+
+def fetch_channels_command():
+    updated_channel_list = fetch_channels_from_api()
+    save_channels_to_context(updated_channel_list=updated_channel_list)
     demisto.results("Successfully updated channels to the Integration Context")
 
 
@@ -2286,7 +2301,7 @@ def main() -> None:
         'slack-get-integration-context': slack_get_integration_context,
         'slack-edit-message': slack_edit_message,
         'slack-pin-message': pin_message,
-        'slack-fetch-channels': fetch_channels
+        'slack-fetch-channels': fetch_channels_command
     }
 
     command_name: str = demisto.command()

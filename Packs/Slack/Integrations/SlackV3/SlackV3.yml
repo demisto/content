@@ -103,7 +103,8 @@ configuration:
   required: false
   type: 8
 - defaultvalue: 'None'
-  additionalinfo:
+  additionalinfo: "For workspaces that contain large amounts of channels, it is advised to periodically\
+    \fetch the new channels."
   display: Channel fetch interval
   name: channel_fetch_interval
   required: false

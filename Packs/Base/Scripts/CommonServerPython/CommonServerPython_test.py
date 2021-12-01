@@ -5742,6 +5742,13 @@ fetch_interval_test_bank = [
 
 @pytest.mark.parametrize('test_fetch_interval, expected_datetime', fetch_interval_test_bank)
 def test_handle_date_interval(test_fetch_interval, expected_datetime):
+    """
+    Given: a string containing a from of time interval (e.g. 3 days)
+
+    When: attempting to determine what is the datetime for the next interval (e.g. 3 days from last update time)
+
+    Then: return a datetime object which is exactly the given interval time longer than the last update time.
+    """
     last_update_time = datetime(2015, 7, 18, 9, 50, 20)
 
     from CommonServerPython import return_next_interval

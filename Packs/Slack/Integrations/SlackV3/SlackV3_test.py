@@ -2084,8 +2084,6 @@ def test_send_request_with_severity(mocker):
     def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'users.list':
             return {'members': js.loads(USERS)}
-        elif method == 'conversations.list':
-            return {'channels': js.loads(CONVERSATIONS)}
         elif method == 'conversations.open':
             return {'channel': {'id': 'im_channel'}}
         return {}
@@ -2096,6 +2094,7 @@ def test_send_request_with_severity(mocker):
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
+    mocker.patch.object(slack_sdk.WebClient, 'conversations_list', side_effect={'channels': js.loads(CONVERSATIONS)})
     mocker.patch.object(SlackV3, 'send_message', return_value=SLACK_RESPONSE)
 
     # Arrange
@@ -2877,36 +2876,32 @@ def test_get_conversation_by_name_paging(mocker):
     from SlackV3 import get_conversation_by_name
     # Set
 
-    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
-        if method == 'conversations.list':
-            if len(params) == 2:
-                return {'channels': js.loads(CONVERSATIONS), 'response_metadata': {
-                    'next_cursor': 'dGVhbTpDQ0M3UENUTks='
-                }}
-            else:
-                return {'channels': [{
-                    'id': 'C248918AB',
-                    'name': 'lulz'
-                }], 'response_metadata': {
-                    'next_cursor': ''
-                }}
+    def api_call(cursor, exclude_archived, types, limit=1, team_id=None):
+        if cursor is None:
+            return {'channels': js.loads(CONVERSATIONS), 'response_metadata': {
+                'next_cursor': 'dGVhbTpDQ0M3UENUTks='
+            }}
+        else:
+            return {'channels': [{
+                'id': 'C248918AB',
+                'name': 'lulz'
+            }], 'response_metadata': {
+                'next_cursor': ''
+            }}
 
-    mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
+    mocker.patch.object(slack_sdk.WebClient, 'conversations_list', side_effect=api_call)
 
     # Arrange
     channel = get_conversation_by_name('lulz')
-    args = slack_sdk.WebClient.api_call.call_args_list
+    args = slack_sdk.WebClient.conversations_list.call_args_list
     first_args = args[0][1]
     second_args = args[1][1]
 
     # Assert
-    assert args[0][0][0] == 'conversations.list'
-    assert len(first_args['params']) == 2
-    assert first_args['params']['limit'] == 200
-    assert len(second_args['params']) == 3
-    assert second_args['params']['cursor'] == 'dGVhbTpDQ0M3UENUTks='
+    assert first_args['limit'] == 200
+    assert second_args['cursor'] == 'dGVhbTpDQ0M3UENUTks='
     assert channel['id'] == 'C248918AB'
-    assert slack_sdk.WebClient.api_call.call_count == 2
+    assert slack_sdk.WebClient.conversations_list.call_count == 2
 
 
 def test_send_file_no_args_investigation(mocker):
@@ -3950,7 +3945,7 @@ def test_fetch_channels(mocker):
     mocker.patch.object(demisto, 'results')
 
     # Arrange
-    SlackV3.fetch_channels()
+    SlackV3.fetch_channels_command()
 
     # Assert
     assert demisto.results.mock_calls[0][1][0] == expected_body
@@ -3968,7 +3963,7 @@ def test_fetch_channels_rate_limited(mocker):
         Expect a successful response and appended context after successfully handling the rate limit and waiting the
         indicated amount of time
     """
-    from SlackV3 import fetch_channels, init_globals
+    from SlackV3 import fetch_channels_command, init_globals
     from slack_sdk.errors import SlackApiError
     from slack_sdk.web.slack_response import SlackResponse
     import time
@@ -3987,7 +3982,7 @@ def test_fetch_channels_rate_limited(mocker):
     mocker.patch.object(time, 'sleep')
 
     # Arrange
-    fetch_channels()
+    fetch_channels_command()
     args = slack_sdk.WebClient.conversations_list.call_args_list
     first_args = args[0][1]
     second_args = args[1][1]
