@@ -6,3 +6,6 @@ ignore=BA101
 
 [file:classifier-MSGraphMail_-_Incoming_Mapper_-_Email_Communication.json]
 ignore=BA101
+
+[file:PreprocessEmail.yml]
+ignore=SC106
