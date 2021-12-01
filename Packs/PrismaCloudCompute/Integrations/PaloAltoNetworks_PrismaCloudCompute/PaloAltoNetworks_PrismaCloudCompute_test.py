@@ -3,7 +3,8 @@ from collections import OrderedDict
 from PaloAltoNetworks_PrismaCloudCompute import (
     PrismaCloudComputeClient, camel_case_transformer, fetch_incidents, get_headers,
     HEADERS_BY_NAME, get_profile_host_list, get_container_profile_list, get_container_hosts_list,
-    get_profile_container_forensic_list, get_profile_host_forensic_list, get_console_version, get_custom_feeds_ip_list
+    get_profile_container_forensic_list, get_profile_host_forensic_list, get_console_version, get_custom_feeds_ip_list,
+    add_custom_ip_feeds
 )
 
 from CommonServerPython import DemistoException
@@ -586,3 +587,40 @@ def test_http_request_url_is_valid(requests_mock, func, url_suffix, client):
     func(client=client)
 
     assert full_url == mocker.last_request._url_parts.geturl()
+
+
+HTTP_BODY_REQUEST_PARAMS = [
+    (
+        add_custom_ip_feeds,
+        "/feeds/custom/ips",
+        {
+            "IP": [
+                "1.1.1.1",
+            ]
+        }
+    )
+]
+
+
+@pytest.mark.parametrize("func, url_suffix, args", HTTP_BODY_REQUEST_PARAMS)
+def test_http_request_body_request_is_valid(requests_mock, func, url_suffix, args, client):
+    """
+    Given:
+        - http body request to an api endpoint.
+
+    When:
+        - Calling the http-request for the command endpoint.
+
+    Then:
+        - Verify that the http body request that was sent is correct.
+    """
+    full_url = BASE_URL + url_suffix
+
+    requests_mock.get(url=full_url, json={})
+    mocker = requests_mock.put(url=full_url, json={})
+
+    expected_body_request = {"feed": args.get("IP")}
+
+    func(client=client, args=args)
+
+    assert expected_body_request == mocker.last_request.json()
