@@ -28,7 +28,7 @@ Please refer to the video tutorial [found here](https://live.paloaltonetworks.co
     | `proxy_url` | Proxy URL to use in Slack API calls. | False |
     | `filtered_tags` | Comma-separated list of tags by which to filter the messages sent from XSOAR. Only supported in Cortex XSOAR V6.1 and above. | False |
     | `permitted_notifications` | Types of Notifications to send in the dedicated channel. | False |
-    | `channel_fetch_interval` | The frequency with which to update the channel IDs. | False |
+    | `channel_fetch_interval` | The frequency with which to update the channel IDs. **Note:** For workspaces that contain large amounts of channels, it is advised to periodically fetch the new channels. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
