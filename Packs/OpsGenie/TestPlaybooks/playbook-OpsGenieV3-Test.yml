@@ -1,4 +1,4 @@
-id: OpsGenieV3
+id: OpsGenieV3TestPlaybook
 version: 82
 vcShouldKeepItemLegacyProdMachine: false
 name: OpsGenieV3
