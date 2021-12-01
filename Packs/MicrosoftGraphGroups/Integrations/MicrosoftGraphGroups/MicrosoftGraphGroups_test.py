@@ -1,8 +1,10 @@
 import pytest
-from MicrosoftGraphGroups import parse_outputs, camel_case_to_readable, MsGraphClient, list_groups_command,\
-    get_group_command, create_group_command
-from test_data.response_constants import RESPONSE_LIST_GROUPS, RESPONSE_GET_GROUP, RESPONSE_CREATE_GROUP
-from test_data.result_constants import EXPECTED_LIST_GROUPS, EXPECTED_GET_GROUP, EXPECTED_CREATE_GROUP
+from MicrosoftGraphGroups import parse_outputs, camel_case_to_readable, MsGraphClient, list_groups_command, \
+    get_group_command, create_group_command, list_members_command, demisto
+from test_data.response_constants import RESPONSE_LIST_GROUPS, RESPONSE_GET_GROUP, RESPONSE_CREATE_GROUP, \
+    RESPONSE_LIST_MEMBERS_UNDER_100, RESPONSE_LIST_MEMBERS_ABOVE_100
+from test_data.result_constants import EXPECTED_LIST_GROUPS, EXPECTED_GET_GROUP, EXPECTED_CREATE_GROUP, \
+    EXPECTED_LIST_MEMBERS
 
 
 def test_camel_case_to_readable():
@@ -36,6 +38,8 @@ def test_parse_outputs():
     (get_group_command, {'group_id': '123'}, RESPONSE_GET_GROUP, EXPECTED_GET_GROUP),
     (create_group_command, {'group_id': '123', 'mail_nickname': 'nick', 'security_enabled': True},
      RESPONSE_CREATE_GROUP, EXPECTED_CREATE_GROUP),
+    (list_members_command, {'group_id': '123'}, RESPONSE_LIST_MEMBERS_UNDER_100, EXPECTED_GET_GROUP),
+    (list_members_command, {'group_id': '123'}, RESPONSE_LIST_MEMBERS_ABOVE_100, EXPECTED_GET_GROUP)
 ])  # noqa: E124
 def test_commands(command, args, response, expected_result, mocker):
     client = MsGraphClient(base_url='https://graph.microsoft.com/v1.0', tenant_id='tenant-id',
@@ -44,3 +48,23 @@ def test_commands(command, args, response, expected_result, mocker):
     mocker.patch.object(client.ms_client, 'http_request', return_value=response)
     result = command(client, args)
     assert expected_result == result[1]  # entry context is found in the 2nd place in the result of the command
+
+
+@pytest.mark.parametrize('command, args, response, expected_result', [
+    (list_members_command, {'group_id': 'under100'}, RESPONSE_LIST_MEMBERS_UNDER_100, EXPECTED_LIST_MEMBERS),
+    (list_members_command, {'group_id': 'above100'}, RESPONSE_LIST_MEMBERS_ABOVE_100, EXPECTED_LIST_MEMBERS)
+])  # noqa: E124
+def test_list_members_command(command, args, response, expected_result, mocker):
+    client = MsGraphClient(base_url='https://graph.microsoft.com/v1.0', tenant_id='tenant-id',
+                           auth_id='auth_and_token_url', enc_key='enc_key', app_name='ms-graph-groups',
+                           verify='use_ssl', proxy='proxies', self_deployed='self_deployed')
+    mocker.patch.object(client.ms_client, 'http_request', return_value=response)
+    mocker.patch.object(demisto, 'dt', return_value=RESPONSE_GET_GROUP)
+    result = command(client, args)
+    if args.get('group_id') == 'under100':
+        assert 'MembersNextLink' not in result[1]['MSGraphGroups(val.ID === obj.ID)']
+    else:  # above 100
+        assert 'MembersNextLink' in result[1]['MSGraphGroups(val.ID === obj.ID)']
+
+    assert expected_result == result[1]['MSGraphGroups(val.ID === obj.ID)'][
+        'Members']  # entry context is found in the 2nd place in the result of the command
