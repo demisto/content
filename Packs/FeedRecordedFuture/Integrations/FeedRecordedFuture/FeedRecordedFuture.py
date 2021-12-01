@@ -412,13 +412,14 @@ def get_indicators_command(client, args) -> Tuple[str, Dict[Any, Any], Union[Dic
 
     human_readable: str = ''
     entry_results: Union[Dict[str, List], List]
+    indicators_list: List[Dict]
 
     if client.risk_rule:
         entry_results = {}
         for risk_rule in client.risk_rule:
             client.current_risk_rule = risk_rule
 
-            indicators_list: List[Dict] = []
+            indicators_list = []
             for indicators in fetch_indicators_command(client, indicator_type, limit):
                 indicators_list.extend(indicators)
 
