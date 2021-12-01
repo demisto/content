@@ -396,16 +396,22 @@ class TestGetConversationByName:
         - Conversation do not exists.
 
         Then:
-        - Check no conversation was returned.
-        - Check that a API command was called.
+        - Verify an error was returned indicating the channel could not be found.
         """
         from SlackV3 import get_conversation_by_name
         self.set_conversation_mock(mocker)
 
+        return_error_mock = mocker.patch(RETURN_ERROR_TARGET, side_effect=InterruptedError())
+
         conversation_name = 'no exists'
-        conversation = get_conversation_by_name(conversation_name)
-        assert not conversation
-        assert slack_sdk.WebClient.api_call.call_count == 1
+        with pytest.raises(InterruptedError):
+            get_conversation_by_name(conversation_name)
+
+        err_msg = return_error_mock.call_args[0][0]
+
+        # Assert
+        assert err_msg == 'Channel was not found - Either the Slack app is not a member of the channel, ' \
+                          'or the slack app does not have permission to find the channel.'
 
 
 def test_get_user_by_name(mocker):
@@ -4082,7 +4088,7 @@ async def test_fetch_channels_paginated_async(mocker):
     SlackV3.init_globals()
     SlackV3.CHANNEL_FETCH_INTERVAL = "3 seconds"
     time.sleep(1)
-    returned_time = await SlackV3.fetch_channels_iterable(last_update=last_update)
+    returned_time = await SlackV3.fetch_channels_iterable()
 
     # Assert
     assert returned_time.replace(microsecond=0) >= (last_update + timedelta(seconds=8)).replace(microsecond=0)

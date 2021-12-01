@@ -52,6 +52,7 @@ OBJECTS_TO_KEYS = {
     'users': 'id'
 }
 SYNC_CONTEXT = True
+TIMEOUT_SAFETY_NET = '10 minutes'
 
 ''' GLOBALS '''
 
@@ -1254,14 +1255,16 @@ async def fetch_channels_iterable():
                                                 cursor=cursor)
     integration_context = get_integration_context(SYNC_CONTEXT)
     now = datetime.now()
-    timeout_safety = return_next_interval(fetch_interval='10 minutes', last_update_time=now)
+    timeout_safety = return_next_interval(fetch_interval=TIMEOUT_SAFETY_NET, last_update_time=now)
     while True:
         if now >= timeout_safety:
             # This provides the function with a safety net to prevent the fetch process itself from taking longer than
             # 10 minutes. If the workspace has more than 120,000 channels or fetching the updated list takes longer than
             # 10 minutes, we will store the channels the function has collected so far and end the fetch.
+            demisto.debug("Timeout safety net was exceeded. Current fetch_channels_iterable run is being abandoned.")
             break
         cursor = res.get('response_metadata', {}).get('next_cursor')
+        demisto.debug(f"Length of channels received from Slack api is {len(res.get('channels', []))}")
         for channel in res.get('channels', []):
             updated_channel: dict = {
                 'name': channel.get('name'),
@@ -1272,29 +1275,34 @@ async def fetch_channels_iterable():
             demisto.info("Finished updating channel list")
             break
         total_try_time = 0
-        while True:
+        while total_try_time < MAX_LIMIT_TIME:
             try:
                 res = await ASYNC_CLIENT.conversations_list(types='private_channel,public_channel',
                                                             exclude_archived=True, cursor=cursor)
             except SlackApiError as api_error:
-                demisto.debug(f'Got rate limit error (sync). Body is: {str(res)}\n{api_error}')
+                demisto.debug(f'Got rate limit error (sync). Body is: {str(res)}\n{api_error}.'
+                              f'Retries count is - {total_try_time} out of max retries limit: {MAX_LIMIT_TIME}')
                 response = api_error.response
                 headers = response.headers  # type: ignore
                 if 'Retry-After' in headers:
                     retry_after = int(headers['Retry-After'])
                     total_try_time += retry_after
                     if total_try_time < MAX_LIMIT_TIME:
-                        time.sleep(retry_after)
+                        demisto.debug(f"Retry-After header was found. Sleeping for {retry_after} seconds.")
+                        await asyncio.sleep(retry_after)
                         continue
                 else:
                     if total_try_time < MAX_LIMIT_TIME:
-                        time.sleep(5)
+                        demisto.debug("No Retry-After header was found. Sleeping for 5 seconds.")
+                        await asyncio.sleep(5)
                         continue
                     else:
                         raise
+            demisto.debug("Response received from Slack conversations.list api. No retry is necessary.")
             break
 
     # Save conversations to cache
+    demisto.debug(f"updated_channel_list has a length of {len(updated_channel_list)}. Updating the integration context.")
     conversations = integration_context.get('conversations')
     if conversations:
         conversations = json.loads(conversations)
@@ -2189,6 +2197,9 @@ def fetch_channels_from_api(conversation_name: str = ''):
                         else:
                             raise
                 break
+    if conversation_name and len(updated_channel_list) == 0:
+        return_error('Channel was not found - Either the Slack app is not a member of the channel, '
+                     'or the slack app does not have permission to find the channel.')
     return updated_channel_list
 
 

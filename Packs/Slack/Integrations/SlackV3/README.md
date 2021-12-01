@@ -525,7 +525,7 @@ There is no context output for this command.
 
 ### slack-fetch-channels
 ***
-Fetches the channel IDs for all channels in the workspace. 
+Fetches the channel IDs for all channels in the workspace and saves them to the internal integration context. 
 In the event a command takes an excessive amount of time, 
 or results in a timeout, it is advised to execute this command. 
 If after executing this command subsequent commands do not timeout, 

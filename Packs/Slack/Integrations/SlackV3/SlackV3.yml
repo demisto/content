@@ -517,7 +517,7 @@ script:
       description: The text the message was updated with.
       type: String
   - deprecated: false
-    description: Fetches the Channel IDs for the workspace.
+    description: Fetches the Channel IDs for the workspace and saves them to the internal integration context.
     execution: false
     name: slack-fetch-channels
   dockerimage: demisto/slackv3:1.0.0.23423
