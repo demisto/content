@@ -1,20 +1,16 @@
 contentitemexportablefields:
   contentitemfields:
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 8a1bd90a-4399-4f4b-8095-1a4abf2db74c
     propagationLabels:
     - all
-    toServerVersion: ""
 description: This playbook will schedule a specified command and monitor for completion
   by looking for output in context. Make the playbook context shared globally if you
   have a command that returns to Context automatically and you have a specific key
   to monitor. The key monitored must be a single field value and not an array.
-id: 6532fca0-3446-4877-87e8-ca8f8a995266
+id: Schedule Task and Poll
 inputs:
 - description: Command to Schedule
   key: Command
-  playbookInputQuery: null
+  playbookInputQuery:
   required: true
   value:
     simple: '!Print value="The command has executed"'
@@ -28,31 +24,31 @@ inputs:
     9:01 AM
     - (server time) run !GetTime to see server time
   key: Cron
-  playbookInputQuery: null
+  playbookInputQuery:
   required: true
   value: {}
 - description: How many times to run before stopping (based on cron as well)
   key: Number of Times to Run
-  playbookInputQuery: null
+  playbookInputQuery:
   required: true
   value: {}
 - description: Provide the Key of the value that will be output from the command to
     poll for completion. If specifying a context value of a command that already outputs
     to Context set context for sub-playbook to be shared globally.
   key: OutputContextValue
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: Frequency to run polling command to check context (in minutes)
   key: FrequencyToPoll
-  playbookInputQuery: null
+  playbookInputQuery:
   required: true
   value:
     simple: "1"
 - description: The regex to check the field for. By default the regex contains .+,
     which matches anything other than None.
   key: RegExVal
-  playbookInputQuery: null
+  playbookInputQuery:
   required: true
   value:
     simple: .+
@@ -81,6 +77,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ''
     taskid: c56f5f8c-37f1-49c5-82e1-97c7a3c823b4
     timertriggers: []
     type: start
@@ -204,6 +201,7 @@ tasks:
       name: Specific Output Key?
       type: condition
       version: -1
+      description: Whether the output key is a single value (rather than an array).
     taskid: 698c6d46-b2bb-44a9-8b29-227d56496f28
     timertriggers: []
     type: condition
@@ -270,3 +268,6 @@ view: |-
       }
     }
   }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
