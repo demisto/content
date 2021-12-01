@@ -7,6 +7,7 @@ import json
 import requests
 import dateparser
 import uuid
+
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -23,7 +24,7 @@ NEXTLINK_DESCRIPTION = 'NextLink for listing commands'
 
 XSOAR_USER_AGENT = 'SentinelPartner-PaloAltoNetworks-CortexXsoar/1.0.0'
 
-AUTHORIZATION_ERROR_MSG = 'There was a problem in retrieving an updated access token.\n'\
+AUTHORIZATION_ERROR_MSG = 'There was a problem in retrieving an updated access token.\n' \
                           'The response from the server did not contain the expected content.'
 
 INCIDENT_HEADERS = ['ID', 'IncidentNumber', 'Title', 'Description', 'Severity', 'Status', 'IncidentUrl', 'AssigneeName',
@@ -39,6 +40,7 @@ ENTITIES_RETENTION_PERIOD_MESSAGE = '\nNotice that in the current Azure Sentinel
 DEFAULT_LIMIT = 50
 
 THREAT_INDICATORS_HEADERS = ['DisplayName', 'Values', 'Types', 'Source', 'Confidence', 'Tags']
+
 
 class AzureSentinelClient:
     def __init__(self, server_url: str, tenant_id: str, client_id: str,
@@ -75,8 +77,8 @@ class AzureSentinelClient:
         :type proxy: ``bool``
         :param proxy: Whether to run the integration using the system proxy.
         """
-        server_url = f'{server_url}/subscriptions/{subscription_id}/'\
-                     f'resourceGroups/{resource_group_name}/providers/Microsoft.OperationalInsights/workspaces/'\
+        server_url = f'{server_url}/subscriptions/{subscription_id}/' \
+                     f'resourceGroups/{resource_group_name}/providers/Microsoft.OperationalInsights/workspaces/' \
                      f'{workspace_name}/providers/Microsoft.SecurityInsights'
         self._client = MicrosoftClient(
             tenant_id=tenant_id,
@@ -470,7 +472,6 @@ def list_incidents_command(client, args, is_fetch_incidents=False):
 
 
 def list_watchlists_command(client, args):
-
     url_suffix = 'watchlists'
     specific_watchlists_alias = args.get('watchlist_alias')
     if specific_watchlists_alias:
@@ -749,6 +750,7 @@ def list_incident_entities_command(client, args):
     :param client: (AzureSentinelClient) The Azure Sentinel client to work with.
     :param args:  (dict) arguments for this command.
     """
+
     def xsoar_transformer(entity):
         return dict(
             ID=entity.get('name'),
@@ -1328,7 +1330,6 @@ def main():
 
 
 from MicrosoftApiModule import *  # noqa: E402
-
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
