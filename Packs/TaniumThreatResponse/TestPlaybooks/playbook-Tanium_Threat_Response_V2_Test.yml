@@ -2499,6 +2499,8 @@ tasks:
         simple: "150"
       offset:
         simple: "30"
+      type:
+        simple: "event"
     separatecontext: false
     view: |-
       {

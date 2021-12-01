@@ -1,5 +1,4 @@
 ## RaDark Integration
-#### Integration Author: KELA
 #### Configuration Instructions:
 
 * Name the instance under the **Name** field.

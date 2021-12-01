@@ -46,6 +46,11 @@ configuration:
   name: create_relationships
   required: false
   type: 8
+- display: User Agent
+  name: useragent
+  type: 0
+  required: false
+  additionalinfo: User Agent to perform requests
 description: Use urlscan.io integration to perform scans on suspected URLs and see their reputation.
 display: urlscan.io
 name: urlscan.io
@@ -140,6 +145,12 @@ script:
       - 'true'
       - 'false'
       defaultValue: 'false'
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: useragent
+      description: User agent to perform request
       required: false
       secret: false
     deprecated: true
@@ -269,6 +280,12 @@ script:
       - 'true'
       - 'false'
       defaultValue: 'false'
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: useragent
+      description: User agent to perform request
       required: false
       secret: false
     deprecated: false
@@ -466,6 +483,6 @@ script:
   script: '-'
   subtype: python2
   type: python
-  dockerimage: demisto/python:2.7.18.24066
+  dockerimage: demisto/python:2.7.18.24398
 defaultEnabled: false
 fromversion: 5.0.0

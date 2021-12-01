@@ -1,6 +1,9 @@
 from copy import deepcopy
 import pytest
+from splunklib.binding import AuthenticationError
+
 import SplunkPy as splunk
+import splunklib.client as client
 import demistomock as demisto
 from CommonServerPython import *
 from datetime import timedelta, datetime
@@ -185,6 +188,53 @@ def test_raw_to_dict():
     assert splunk.rawToDict(RAW_STANDARD) == RAW_JSON_AND_STANDARD_OUTPUT
 
     assert splunk.rawToDict('drilldown_search="key IN ("test1","test2")') == {'drilldown_search': 'key IN (test1,test2)'}
+
+
+@pytest.mark.parametrize('text, output', [
+    ('', ['']),
+    ('"",', ['"",']),
+    #   a value shouldn't do anything special
+    ('woopwoop', ['woopwoop']),
+    #  a normal key value without quotes
+    ('abc=123', ['abc="123"']),
+    #  add a comma at the end
+    ('abc=123,', ['abc="123"']),
+    #  a normal key value with quotes
+    ('cbd="123"', ['cbd="123"']),
+    #  check all wrapped with quotes removed
+    ('"abc="123""', ['abc="123"']),
+    #   we need to remove 111 at the start.
+    ('111, cbd="123"', ['cbd="123"']),
+    # Testing with/without quotes and/or spaces:
+    ('abc=123,cbd=123', ['abc="123"', 'cbd="123"']),
+    ('abc=123,cbd="123"', ['abc="123"', 'cbd="123"']),
+    ('abc="123",cbd=123', ['abc="123"', 'cbd="123"']),
+    ('abc="123",cbd="123"', ['abc="123"', 'cbd="123"']),
+    ('abc=123, cbd=123', ['abc="123"', 'cbd="123"']),
+    ('abc=123, cbd="123"', ['abc="123"', 'cbd="123"']),
+    ('cbd="123", abc=123', ['abc="123"', 'cbd="123"']),
+    ('cbd="123",abc=123', ['abc="123"', 'cbd="123"']),
+    # Continue testing quotes with more values:
+    ('xyz=321,cbd=123,abc=123', ['xyz="321"', 'abc="123"', 'cbd="123"']),
+    ('xyz=321,cbd="123",abc=123', ['xyz="321"', 'abc="123"', 'cbd="123"']),
+    ('xyz="321",cbd="123",abc=123', ['xyz="321"', 'abc="123"', 'cbd="123"']),
+    ('xyz="321",cbd="123",abc="123"', ['xyz="321"', 'abc="123"', 'cbd="123"']),
+    # Testing nested quotes (the main reason for quote_group):
+    #   Try to remove the start 111.
+    ('111, cbd="a="123""', ['cbd="a="123""']),
+    ('cbd="a="123""', ['cbd="a="123""']),
+    ('cbd="a="123", b=321"', ['cbd="a="123", b="321""']),
+    ('cbd="a=123, b=321"', ['cbd="a="123", b="321""']),
+    ('cbd="a=123, b="321""', ['cbd="a="123", b="321""']),
+    ('cbd="a="123", b="321""', ['cbd="a="123", b="321""']),
+    ('cbd="a=123, b=321"', ['cbd="a="123", b="321""']),
+    ('xyz=123, cbd="a="123", b=321"', ['xyz="123"', 'cbd="a="123", b="321""']),
+    ('xyz="123", cbd="a="123", b="321""', ['xyz="123"', 'cbd="a="123", b="321""']),
+    ('xyz="123", cbd="a="123", b="321"", qqq=2', ['xyz="123"', 'cbd="a="123", b="321""', 'qqq="2"']),
+    ('xyz="123", cbd="a="123", b="321"", qqq="2"', ['xyz="123"', 'cbd="a="123", b="321""', 'qqq="2"']),
+])
+def test_quote_group(text, output):
+    assert sorted(splunk.quote_group(text)) == sorted(output)
 
 
 data_test_replace_keys = [
@@ -548,7 +598,7 @@ def test_reset_enriching_fetch_mechanism(mocker):
     (datetime.utcnow().isoformat(), datetime.utcnow().isoformat(), 5, False),
     ((datetime.utcnow() - timedelta(minutes=6)).isoformat(), datetime.utcnow().isoformat(), 5, True)
 ])
-def test_is_enrichment_exceeding_timeout(drilldown_creation_time, asset_creation_time, enrichment_timeout, output):
+def test_is_enrichment_exceeding_timeout(mocker, drilldown_creation_time, asset_creation_time, enrichment_timeout, output):
     """
     Scenario: When one of the notable's enrichments is exceeding the timeout, we want to create an incident we all
      the data gathered so far.
@@ -563,7 +613,7 @@ def test_is_enrichment_exceeding_timeout(drilldown_creation_time, asset_creation
     Then:
     - Return the expected result
     """
-    splunk.ENABLED_ENRICHMENTS = [splunk.DRILLDOWN_ENRICHMENT, splunk.ASSET_ENRICHMENT]
+    mocker.patch.object(splunk, 'ENABLED_ENRICHMENTS', return_value=[splunk.DRILLDOWN_ENRICHMENT, splunk.ASSET_ENRICHMENT])
     notable = splunk.Notable({splunk.EVENT_ID: 'id'})
     notable.enrichments.append(splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, creation_time=drilldown_creation_time))
     notable.enrichments.append(splunk.Enrichment(splunk.ASSET_ENRICHMENT, creation_time=asset_creation_time))
@@ -1070,3 +1120,148 @@ def test_build_search_human_readable(mocker):
     splunk.build_search_human_readable(args, results)
     headers = func_patch.call_args[0][1]
     assert headers == expected_headers
+
+
+@pytest.mark.parametrize(
+    argnames='credentials',
+    argvalues=[{'username': 'test', 'password': 'test'}, {'splunkToken': 'token', 'password': 'test'}]
+)
+def test_module_test(mocker, credentials):
+    """
+    Given:
+        - Credentials for connecting Splunk
+
+    When:
+        - Run test-module command
+
+    Then:
+        - Validate the info method was called
+    """
+
+    # prepare
+    mocker.patch.object(client.Service, 'info')
+    mocker.patch.object(client.Service, 'login')
+    service = client.Service(**credentials)
+    # run
+
+    splunk.test_module(service)
+
+    # validate
+    assert service.info.call_count == 1
+
+
+@pytest.mark.parametrize(
+    argnames='credentials',
+    argvalues=[{'username': 'test', 'password': 'test'}, {'splunkToken': 'token', 'password': 'test'}]
+)
+def test_module__exception_raised(mocker, credentials):
+    """
+    Given:
+        - AuthenticationError was occurred
+
+    When:
+        - Run test-module command
+
+    Then:
+        - Validate the expected message was returned
+    """
+
+    # prepare
+    def exception_raiser():
+        raise AuthenticationError()
+
+    mocker.patch.object(AuthenticationError, '__init__', return_value=None)
+    mocker.patch.object(client.Service, 'info', side_effect=exception_raiser)
+    mocker.patch.object(client.Service, 'login')
+
+    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
+    service = client.Service(**credentials)
+    # run
+
+    splunk.test_module(service)
+
+    # validate
+    assert return_error_mock.call_args[0][0] == 'Authentication error, please validate your credentials.'
+
+
+def test_module_hec_url(mocker):
+    """
+    Given:
+        - hec_url was is in params
+
+    When:
+        - Run test-module command
+
+    Then:
+        - Validate taht the request.get was called with the expected args
+    """
+
+    # prepare
+
+    mocker.patch.object(demisto, 'params', return_value={'hec_url': 'test_hec_url'})
+    mocker.patch.object(client.Service, 'info')
+    mocker.patch.object(client.Service, 'login')
+    mocker.patch.object(requests, 'get')
+
+    service = client.Service(username='test', password='test')
+    # run
+
+    splunk.test_module(service)
+
+    # validate
+    assert requests.get.call_args[0][0] == 'test_hec_url/services/collector/health'
+
+
+def test_labels_with_non_str_values(mocker):
+    """
+    Given:
+        - Raw response with values in _raw that stored as dict or list
+
+    When:
+        - Fetch incidents
+
+    Then:
+        - Validate the Labels created in the incident are well formatted to avoid server errors on json.Unmarshal
+    """
+
+    # prepare
+    raw = {
+        "message": "Authentication of user via Radius",
+        "actor_obj": {
+            "id": "test",
+            "type": "User",
+            "alternateId": "test",
+            "displayName": "test"
+        },
+        "actor_list": [{
+            "id": "test",
+            "type": "User",
+            "alternateId": "test",
+            "displayName": "test"
+        }],
+        "actor_tuple": ("id", "test"),
+        "num_val": 100,
+        "bool_val": False,
+        "float_val": 100.0
+    }
+    mocked_response = SAMPLE_RESPONSE[0].copy()
+    mocked_response['_raw'] = json.dumps(raw)
+    mock_last_run = {'time': '2018-10-24T14:13:20'}
+    mock_params = {'fetchQuery': "something", "parseNotableEventsRaw": True}
+    mocker.patch.object(demisto, 'incidents')
+    mocker.patch.object(demisto, 'setLastRun')
+    mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
+    mocker.patch('demistomock.params', return_value=mock_params)
+    mocker.patch('splunklib.results.ResultsReader', return_value=[mocked_response])
+
+    # run
+    service = mocker.patch('splunklib.client.connect', return_value=None)
+    splunk.fetch_incidents(service)
+    incidents = demisto.incidents.call_args[0][0]
+
+    # validate
+    assert demisto.incidents.call_count == 1
+    assert len(incidents) == 1
+    labels = incidents[0]["labels"]
+    assert len(labels) >= 7
+    assert all(isinstance(label['value'], str) for label in labels)
