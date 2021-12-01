@@ -79,31 +79,6 @@ script:
           required: false
           isArray: true
           defaultValue: ""
-        - name: id
-          description: IDs is the runtime profile id filter
-          required: false
-          isArray: true
-          defaultValue: ""
-        - name: image
-          description: Images is the runtime profile image filter
-          required: false
-          isArray: true
-          defaultValue: ""
-        - name: namespace
-          description: Namespaces is the runtime profile k8s namespace filter
-          required: false
-          isArray: true
-          defaultValue: ""
-        - name: os
-          description: OS is the service runtime profile OS filter
-          required: false
-          isArray: true
-          defaultValue: ""
-        - name: state
-          description: States is the runtime profile state filter
-          required: false
-          isArray: false
-          defaultValue: ""
         - name: limit
           description: "The maximum number of hosts and their profile events to return.
             Default is 15. "
@@ -153,11 +128,6 @@ script:
       arguments:
         - name: cluster
           description: Clusters is the runtime profile k8s cluster filter
-          required: false
-          isArray: true
-          defaultValue: ""
-        - name: hostName
-          description: Hosts is the runtime profile hostname filter
           required: false
           isArray: true
           defaultValue: ""
@@ -303,41 +273,6 @@ script:
           required: true
           isArray: false
           defaultValue: ""
-        - name: cluster
-          description: Clusters is the runtime profile k8s cluster filter
-          required: false
-          isArray: true
-          defaultValue: ""
-        - name: hostName
-          description: Hosts is the runtime profile hostname filter
-          required: false
-          isArray: true
-          defaultValue: ""
-        - name: image
-          description: Images is the runtime profile image filter
-          required: false
-          isArray: true
-          defaultValue: ""
-        - name: imageID
-          description: ImageIDs is the runtime profile image id filter
-          required: false
-          isArray: true
-          defaultValue: ""
-        - name: namespace
-          description: Namespaces is the runtime profile k8s namespace filter
-          required: false
-          isArray: true
-          defaultValue: ""
-        - name: os
-          description: OS is the service runtime profile OS filter
-          required: false
-          isArray: true
-          defaultValue: ""
-        - name: state
-          description: States is the runtime profile state filter
-          required: false
-          isArray: true
-          defaultValue: ""
         - name: limit
           description: The maximum number of hosts to return. Default is 50.
           required: false
@@ -382,11 +317,6 @@ script:
         - name: eventTime
           description: EventTime is the forensic event pivot time in milliseconds (used to
             fetch events)
-          required: false
-          isArray: false
-          defaultValue: ""
-        - name: format
-          description: Format is the forensic data format
           required: false
           isArray: false
           defaultValue: ""
@@ -494,11 +424,6 @@ script:
           required: false
           isArray: true
           defaultValue: ""
-        - name: hostname
-          description: Hostname is the hostname for which data should be fetched
-          required: false
-          isArray: false
-          defaultValue: ""
         - name: incidentID
           description: IncidentID is the incident ID in case the request kind is an incident
           required: false
@@ -507,11 +432,6 @@ script:
         - name: eventTime
           description: EventTime is the forensic event pivot time in milliseconds (used to
             fetch events)
-          required: false
-          isArray: false
-          defaultValue: ""
-        - name: format
-          description: Format is the forensic data format
           required: false
           isArray: false
           defaultValue: ""

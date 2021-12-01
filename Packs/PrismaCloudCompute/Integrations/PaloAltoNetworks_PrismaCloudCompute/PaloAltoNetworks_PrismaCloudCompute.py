@@ -275,6 +275,7 @@ def validate_limit_and_offset(func):
     """
     def wrapper(*args, **kwargs):
 
+        # maximum of objects per request
         api_limit_call = 50
 
         command_args = kwargs.get('args')
@@ -503,9 +504,10 @@ def build_container_hosts_response(
 
     hosts_ids = perform_api_request(
         client=client, url_suffix=f"profiles/container/{container_id}/hosts", args=args
-    )[offset:limit]
+    )
 
     if hosts_ids:
+        hosts_ids = hosts_ids[offset:limit]
         context_output.append(
             {
                 "ContainerID": container_id,
@@ -545,7 +547,7 @@ def get_container_hosts_list(client: PrismaCloudComputeClient, args: dict) -> Co
 
 
 def build_containers_forensic_response(
-    client: PrismaCloudComputeClient, container_id: List[str], args: dict
+    client: PrismaCloudComputeClient, container_id: str, args: dict
 ) -> Tuple[List[dict], str]:
     """
     Build a table and a context response for the 'prisma-cloud-compute-profile-container-forensic-list' command.
@@ -608,7 +610,9 @@ def get_profile_container_forensic_list(client: PrismaCloudComputeClient, args: 
         CommandResults: command-results object.
     """
     container_id = args.get("id")
-    context, table = build_containers_forensic_response(client=client, container_id=container_id, args=args)
+    context, table = build_containers_forensic_response(
+        client=client, container_id=container_id, args=args  # type:ignore
+    )
 
     return CommandResults(
         outputs_prefix='prismaCloudCompute.containerForensic',

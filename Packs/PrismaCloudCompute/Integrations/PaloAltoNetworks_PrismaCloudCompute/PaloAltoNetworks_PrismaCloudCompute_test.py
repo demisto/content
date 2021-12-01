@@ -431,23 +431,19 @@ def test_get_headers():
 HTTP_REQUEST_URL_WITH_QUERY_PARAMS = [
     (
         OrderedDict(
-            cluster="cluster", hostname="hostname", id="1", image="image", namespace="namespace", os="os",
-            state="state", limit="10", offset="0"
+            cluster="cluster", hostname="hostname", id="1", limit="10", offset="0"
         ),
         get_profile_host_list,
         "/profiles/host"
     ),
     (
-        OrderedDict(
-            cluster="cluster", hostname="hostname", id="1", image="image", namespace="namespace", os="os",
-            state="state", limit="100", offset="0"
-        ),
+        OrderedDict(cluster="cluster", hostname="hostname", id="1", limit="100", offset="0"),
         get_profile_host_list,
         "/profiles/host"
     ),
     (
         OrderedDict(
-            cluster="cluster", hostname="hostname", id="1", image="image", imageid="1", namespace="namespace", os="os",
+            cluster="cluster", id="1", image="image", imageid="1", namespace="namespace", os="os",
             state="state", limit="10", offset="0"
         ),
         get_container_profile_list,
@@ -455,52 +451,46 @@ HTTP_REQUEST_URL_WITH_QUERY_PARAMS = [
     ),
     (
         OrderedDict(
-            cluster="cluster", hostname="hostname", id="1", image="image", imageid="1", namespace="namespace", os="os",
+            cluster="cluster", id="1", image="image", imageid="1", namespace="namespace", os="os",
             state="state", limit="100", offset="0"
         ),
         get_container_profile_list,
         "/profiles/container"
     ),
     (
-        OrderedDict(
-            cluster="cluster", hostname="hostname", image="image", imageid="1", namespace="namespace", os="os",
-            state="state", limit="10", offset="0", id="123"
-        ),
+        OrderedDict(limit="10", offset="0", id="123"),
+        get_container_hosts_list,
+        "/profiles/container/123/hosts"
+    ),
+    (
+        OrderedDict(limit="100", offset="0", id="123"),
         get_container_hosts_list,
         "/profiles/container/123/hosts"
     ),
     (
         OrderedDict(
-            cluster="cluster", hostname="hostname", image="image", imageid="1", namespace="namespace", os="os",
-            state="state", limit="100", offset="0", id="123"
-        ),
-        get_container_hosts_list,
-        "/profiles/container/123/hosts"
-    ),
-    (
-        OrderedDict(
-            collections="collections", format="format", hostname="hostname", limit="10", offset="0", id="123"
+            collections="collections", hostname="hostname", limit="10", offset="0", id="123"
         ),
         get_profile_container_forensic_list,
         "/profiles/container/123/forensic"
     ),
     (
         OrderedDict(
-            collections="collections", format="format", hostname="hostname", limit="100", offset="0", id="123"
+            collections="collections", hostname="hostname", limit="100", offset="0", id="123"
         ),
         get_profile_container_forensic_list,
         "/profiles/container/123/forensic"
     ),
     (
         OrderedDict(
-            collections="collections", format="format", hostname="hostname", limit="10", offset="0", id="123"
+            collections="collections", limit="10", offset="0", id="123"
         ),
         get_profile_host_forensic_list,
         "/profiles/host/123/forensic"
     ),
     (
         OrderedDict(
-            collections="collections", format="format", hostname="hostname", limit="100", offset="0", id="123"
+            collections="collections", limit="100", offset="0", id="123"
         ),
         get_profile_host_forensic_list,
         "/profiles/host/123/forensic"
