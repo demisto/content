@@ -17,9 +17,8 @@ REQUIRED_PERMISSIONS = (
     'IdentityRiskEvent.Read.All',
     'IdentityRiskyUser.ReadWrite.All'
 )
-DATE_FORMAT_WITH_MS = '%Y-%m-%dT%H:%M:%S.%fZ'
-DATE_FORMAT_WITHOUT_MS = '%Y-%m-%dT%H:%M:%SZ'
 
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
 
 def __reorder_first_headers(headers: List[str], first_headers: List[str]) -> None:
     """
@@ -193,7 +192,7 @@ class AADClient(MicrosoftClient):
         updated_time = arg_to_datetime(updated_time)  # None input to arg_to_datetime stays None
         if updated_time:
             filter_arguments.append(
-                f"riskLastUpdatedDateTime gt {updated_time.strftime(DATE_FORMAT_WITH_MS)}")  # '' wrap only required for strings
+                f"riskLastUpdatedDateTime gt {updated_time.strftime(DATE_FORMAT)}")  # '' wrap only required for strings
 
         raw_response = self.query_list(
             url_suffix='RiskyUsers',
@@ -253,22 +252,28 @@ def azure_ad_identity_protection_risky_users_dismiss_command(client: AADClient, 
     return client.azure_ad_identity_protection_risky_users_dismiss(**kwargs)
 
 
+def detection_date_to_parsable_format(detection_date_str):
+    new_detection_date_str = detection_date_str[:-1] if detection_date_str[-1].lower() == 'z' else detection_date_str
+    if '.' in detection_date_str:
+        date_without_ms, ms = detection_date_str.split('.')
+        ms = ms[:6]
+        detection_date_str = date_without_ms + ms
+
+    return detection_date_str
+
+
 def detections_to_incidents(risk_detections: List[Dict[str, str]], last_fetch_datetime: datetime) -> \
         Tuple[List[Dict[str, str]], datetime]:
-
     incidents: List[Dict[str, str]] = []
     latest_incident_time = last_fetch_datetime
 
     for detection in risk_detections:
         # 'activityDateTime': '2021-07-15T11:02:54Z' / 'activityDateTime': '2021-07-15T11:02:54.12345Z'
         detection_date_str: str = detection.get('detectedDateTime', '')
-
-        if '.' in detection_date_str:
-            demisto.debug(f"[AzureADIdentityProtection] Timestamp {detection_date_str} of {DATE_FORMAT_WITH_MS} format")
-            detection_date = datetime.strptime(detection_date_str, DATE_FORMAT_WITH_MS)
-        else:
-            demisto.debug(f"[AzureADIdentityProtection] Timestamp {detection_date_str} of {DATE_FORMAT_WITHOUT_MS} format")
-            detection_date = datetime.strptime(detection_date_str, DATE_FORMAT_WITHOUT_MS)
+        demisto.debug(f'1- DEMISTO STR DATE: {detection_date_str}')
+        detection_date_str = date_str_to_azure_format(detection_date_str)
+        demisto.debug(f'2- DEMISTO STR DATE: {detection_date_str}')
+        detection_date = datetime.strptime(detection_date_str, DATE_FORMAT)
 
         risk_detection_id: str = detection.get('id', '')
         risk_detection_type: str = detection.get('riskEventType', '')
@@ -276,7 +281,7 @@ def detections_to_incidents(risk_detections: List[Dict[str, str]], last_fetch_da
         incident = {
             'name': f'Azure AD:'
                     f' {risk_detection_id} {risk_detection_type} {risk_detection_detail}',
-            'occurred': detection_date_str,
+            'occurred': f'{detection_date_str}Z',
             'rawJSON': json.dumps(detection)
         }
         incidents.append(incident)
@@ -293,29 +298,52 @@ def get_last_fetch_time(last_run, params):
         demisto.debug(f'[AzureADIdentityProtection] First run')
         # handle first time fetch
         first_fetch = f"{params.get('first_fetch') or '1 days'} ago"
-        default_fetch_datetime = dateparser.parse(date_string=first_fetch, date_formats=[DATE_FORMAT_WITH_MS])
-        last_fetch = str(default_fetch_datetime.isoformat(timespec='milliseconds')) + 'Z'
+        default_fetch_datetime = dateparser.parse(date_string=first_fetch, date_formats=[DATE_FORMAT])
+        last_fetch = str(default_fetch_datetime.isoformat(timespec='milliseconds'))
 
-    last_fetch_datetime: datetime = datetime.strptime(last_fetch, DATE_FORMAT_WITH_MS)
+    last_fetch = date_str_to_azure_format(last_fetch)
+    last_fetch_datetime: datetime = datetime.strptime(last_fetch, DATE_FORMAT)
     demisto.debug(f'[AzureADIdentityProtection] last_fetch: {last_fetch}, last_fetch_datetime: {last_fetch_datetime}')
     return last_fetch, last_fetch_datetime
 
 
 def build_filter(last_fetch, params):
-    start_time_enforcing_filter = f'detectedDateTime gt {last_fetch}'
+    start_time_enforcing_filter = f"detectedDateTime gt {last_fetch}Z"
     user_supplied_filter = params.get('fetch_filter_expression', '')
-    query_filter = f'{user_supplied_filter} and {start_time_enforcing_filter}'
-    demisto.debug(f'[AzureADIdentityProtection] query_filter: {query_filter}')
+    query_filter = f'{user_supplied_filter} and {start_time_enforcing_filter}' if user_supplied_filter else start_time_enforcing_filter
+    demisto.debug(f'[AzureADIdentityProtection] query_filter: {query_filter}Z')
     return query_filter
 
 
-def fetch_incidents(client: AADClient, params: Dict[str, str]):
+def date_str_to_azure_format(date_str):
+    date_str = date_str[:-1] if date_str[-1].lower() == 'z' else date_str
+    if '.' not in date_str:
+        date_str = f'{date_str}.000'
+    else:
+        date_without_ms, ms = date_str.split('.')
+        ms = ms[:6]
+        date_str = f'{date_without_ms}.{ms}'
 
+    return date_str
+
+
+def azure_date_to_datetime(date_str):
+    date_str = date_str_to_azure_format(date_str)
+    date_datetime = datetime.strptime(date_str, DATE_FORMAT)
+    return date_datetime
+
+
+def datetime_to_azure_date(datetime_obj):
+    return datetime.strftime(datetime_obj, DATE_FORMAT)
+
+
+def fetch_incidents(client: AADClient, params: Dict[str, str]):
     last_run: Dict[str, str] = demisto.getLastRun()
-    demisto.debug(f'last run: {last_run}')
+    demisto.debug(f'[AzureIdentityProtection] last run: {last_run}')
 
     last_fetch, last_fetch_datetime = get_last_fetch_time(last_run, params)
     query_filter = build_filter(last_fetch, params)
+    demisto.debug(f'[AzureIdentityProtection] last fetch is: {last_fetch}, filter is: {query_filter}')
 
     risk_detection_list_raw: Dict = client.azure_ad_identity_protection_risk_detection_list_raw(
         limit=int(params.get('max_fetch', '50')),
@@ -327,11 +355,13 @@ def fetch_incidents(client: AADClient, params: Dict[str, str]):
     risk_detections: list = risk_detection_list_raw.get('value', [])
 
     incidents, latest_detection_time = detections_to_incidents(risk_detections, last_fetch_datetime=last_fetch_datetime)
-    demisto.debug(f'Fetched {len(incidents)} incidents')
+    demisto.debug(f'[AzureIdentityProtection] Fetched {len(incidents)} incidents')
+    demisto.debug(
+        f'[AzureIdentityProtection] next run latest_detection_found: {latest_detection_time.strftime(DATE_FORMAT)}')
 
     demisto.incidents(incidents)
     demisto.setLastRun({
-        'latest_detection_found': latest_detection_time.strftime(DATE_FORMAT_WITH_MS)
+        'latest_detection_found': latest_detection_time.strftime(DATE_FORMAT)
     })
 
 
