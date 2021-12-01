@@ -31,21 +31,28 @@ def test_send_reply(mocker):
 
 
 GET_EMAIL_RECIPIENTS = [
+    # Both service mail and mailbox are configured as different addresses, should remove only mailbox.
     ('["avishai@demistodev.onmicrosoft.com", "test test <\'test@test.com\'>"]',
      "test123@gmail.com",
      "avishai@demistodev.onmicrosoft.com",
      "test@test.com",
      {"test123@gmail.com", "avishai@demistodev.onmicrosoft.com"}),
+
+    # Only mailbox is configured, should be removed.
     ('["avishai@demistodev.onmicrosoft.com", "test test <\'test@test.com\'>"]',
      "test123@gmail.com",
      "",
      "test@test.com",
      {"test123@gmail.com", "avishai@demistodev.onmicrosoft.com"}),
+
+    # Only service mail is configured, should be removed.
     ('["avishai@demistodev.onmicrosoft.com", "test1@gmail.com"]',
      "test123@gmail.com",
      "avishai@demistodev.onmicrosoft.com",
      "",
      {"test123@gmail.com", "test1@gmail.com"}),
+
+    # Neither service mail nor mailbox is configured, make sure nothing is removed.
     ('["avishai@demistodev.onmicrosoft.com", "test1@gmail.com"]',
      "test123@gmail.com",
      "",
@@ -66,7 +73,7 @@ def test_get_email_recipients(email_to, email_from, service_mail, mailbox, excep
         - Getting the email recipients.
         Then
         - validate that the correct email recipients are returned.
-        """
+    """
     from SendEmailReply import get_email_recipients
 
     result = set(get_email_recipients(email_to, email_from, service_mail, mailbox).split(','))

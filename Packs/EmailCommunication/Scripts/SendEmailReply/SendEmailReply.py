@@ -184,6 +184,9 @@ def get_reply_body(notes, incident_id, attachments):
 
 def get_email_recipients(email_to, email_from, service_mail, mailbox):
     """Get the email recipient.
+        The mailbox should be removed from the recipients list, so the replied email
+        won't get to the same mailbox and causes a loop. If somehow it is None,
+        the service mail should be removed.
     Args:
         email_to (str): The email receiver.
         email_from (str): The email's sender.
@@ -198,10 +201,11 @@ def get_email_recipients(email_to, email_from, service_mail, mailbox):
 
     recipient_to_remove = ''
     address_to_remove = mailbox if mailbox else service_mail
-    for recipient in email_to_set:
-        if address_to_remove and address_to_remove in recipient:
-            recipient_to_remove = recipient
-            break
+    if address_to_remove:
+        for recipient in email_to_set:
+            if address_to_remove and address_to_remove in recipient:
+                recipient_to_remove = recipient
+                break
 
     if recipient_to_remove:
         email_to_set.remove(recipient_to_remove)
