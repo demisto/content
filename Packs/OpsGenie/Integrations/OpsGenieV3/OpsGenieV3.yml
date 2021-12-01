@@ -941,7 +941,6 @@ script:
     - contextPath: OpsGenie.Schedule.Override.alertId
       description: ID of the schedule.
       type: String
-      type: String
     - contextPath: OpsGenie.Schedule.Override.alias
       description: Alias of the schedule.
       type: String
