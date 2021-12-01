@@ -252,16 +252,6 @@ def azure_ad_identity_protection_risky_users_dismiss_command(client: AADClient, 
     return client.azure_ad_identity_protection_risky_users_dismiss(**kwargs)
 
 
-def detection_date_to_parsable_format(detection_date_str):
-    new_detection_date_str = detection_date_str[:-1] if detection_date_str[-1].lower() == 'z' else detection_date_str
-    if '.' in detection_date_str:
-        date_without_ms, ms = detection_date_str.split('.')
-        ms = ms[:6]
-        detection_date_str = date_without_ms + ms
-
-    return detection_date_str
-
-
 def detections_to_incidents(risk_detections: List[Dict[str, str]], last_fetch_datetime: datetime) -> \
         Tuple[List[Dict[str, str]], datetime]:
     incidents: List[Dict[str, str]] = []
