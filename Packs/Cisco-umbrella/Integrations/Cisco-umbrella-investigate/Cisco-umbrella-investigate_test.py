@@ -1,4 +1,5 @@
 import pytest
+from requests import RequestException
 
 import demistomock as demisto
 import importlib
@@ -56,7 +57,7 @@ def test_get_domain_command_no_valid_domains(mocker):
             - return an empty list
     """
     mocker.patch.object(demisto, 'args', return_value={'domain': ["bad1.com", "bad2.com"]})
-    mocker.patch.object(Cisco_umbrella_investigate, 'get_whois_for_domain', side_effect=Exception())
+    mocker.patch.object(Cisco_umbrella_investigate, 'get_whois_for_domain', side_effect=RequestException())
 
     assert Cisco_umbrella_investigate.get_domain_command() == []
 
@@ -80,4 +81,4 @@ def different_inputs_handling(*args):
     if args[0] == "good.com":
         return {}
     if args[0] == "bad.com":
-        raise Exception()
+        raise RequestException()

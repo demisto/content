@@ -1,3 +1,5 @@
+from requests import RequestException
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -855,7 +857,7 @@ def get_domain_command():
                     + tableToMarkdown('Domain Categorization:', domain_categorization_table, headers),
                 'EntryContext': context
             })
-        except Exception:
+        except RequestException:
             pass
     return results
 
