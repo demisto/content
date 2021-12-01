@@ -4046,7 +4046,7 @@ async def test_fetch_channels_async(mocker):
     SlackV3.init_globals()
     SlackV3.CHANNEL_FETCH_INTERVAL = "1 second"
     time.sleep(1)
-    returned_time = await SlackV3.fetch_channels_iterable(last_update=last_update)
+    returned_time = await SlackV3.fetch_channels_iterable()
 
     # Assert
     assert returned_time.replace(microsecond=0) >= (last_update + timedelta(seconds=1)).replace(microsecond=0)

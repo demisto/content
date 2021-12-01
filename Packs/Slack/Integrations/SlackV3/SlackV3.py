@@ -1253,7 +1253,14 @@ async def fetch_channels_iterable():
     res = await ASYNC_CLIENT.conversations_list(types='private_channel,public_channel', exclude_archived=True,
                                                 cursor=cursor)
     integration_context = get_integration_context(SYNC_CONTEXT)
+    now = datetime.now()
+    timeout_safety = return_next_interval(fetch_interval='10 minutes', last_update_time=now)
     while True:
+        if now >= timeout_safety:
+            # This provides the function with a safety net to prevent the fetch process itself from taking longer than
+            # 10 minutes. If the workspace has more than 120,000 channels or fetching the updated list takes longer than
+            # 10 minutes, we will store the channels the function has collected so far and end the fetch.
+            break
         cursor = res.get('response_metadata', {}).get('next_cursor')
         for channel in res.get('channels', []):
             updated_channel: dict = {
