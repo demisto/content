@@ -37,9 +37,7 @@ def test_parse_outputs():
     (list_groups_command, {}, RESPONSE_LIST_GROUPS, EXPECTED_LIST_GROUPS),
     (get_group_command, {'group_id': '123'}, RESPONSE_GET_GROUP, EXPECTED_GET_GROUP),
     (create_group_command, {'group_id': '123', 'mail_nickname': 'nick', 'security_enabled': True},
-     RESPONSE_CREATE_GROUP, EXPECTED_CREATE_GROUP),
-    (list_members_command, {'group_id': '123'}, RESPONSE_LIST_MEMBERS_UNDER_100, EXPECTED_GET_GROUP),
-    (list_members_command, {'group_id': '123'}, RESPONSE_LIST_MEMBERS_ABOVE_100, EXPECTED_GET_GROUP)
+     RESPONSE_CREATE_GROUP, EXPECTED_CREATE_GROUP)
 ])  # noqa: E124
 def test_commands(command, args, response, expected_result, mocker):
     client = MsGraphClient(base_url='https://graph.microsoft.com/v1.0', tenant_id='tenant-id',
