@@ -28,8 +28,8 @@ p
 </style></head>
 <body dir="ltr"><div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt; color:rgb(0,0,0)">
 <img size="178792" data-outlook-trace="F:1|T:1" src="cid:89593b98-b18d-46aa-ba4f-26773138c3f7" style="max-width:100%">
-</div><div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt; color:rgb(0,0,0)"><img size="8023" 
-data-outlook-trace="F:1|T:1" src="cid:6a65eb70-7748-4bba-aaac-fe93235f63bd" style="max-width:100%">
+</div><div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt; color:rgb(0,0,0)">
+<img size="8023" data-outlook-trace="F:1|T:1" src="cid:6a65eb70-7748-4bba-aaac-fe93235f63bd" style="max-width:100%">
 </div></body></html>
 """
 
@@ -71,8 +71,8 @@ p
 </style></head>
 <body dir="ltr"><div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt; color:rgb(0,0,0)">
 <img size="178792" data-outlook-trace="F:1|T:1" src=/entry/download/37@119 style="max-width:100%">
-</div><div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt; color:rgb(0,0,0)"><img size="8023" 
-data-outlook-trace="F:1|T:1" src=/entry/download/38@120 style="max-width:100%">
+</div><div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt; color:rgb(0,0,0)">
+<img size="8023" data-outlook-trace="F:1|T:1" src=/entry/download/38@120 style="max-width:100%">
 </div></body></html>
 """
 
