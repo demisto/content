@@ -3,6 +3,7 @@ import secrets
 from enum import Enum
 from ipaddress import ip_address
 from typing import Tuple, Set, Dict, Callable
+from urllib import parse
 
 import pytz
 import urllib3
@@ -534,7 +535,7 @@ class Client(BaseClient):
 
     def reference_sets_list(self, range_: Optional[str] = None, ref_name: Optional[str] = None,
                             filter_: Optional[str] = None, fields: Optional[str] = None):
-        name_suffix = f'/{ref_name}' if ref_name else ''
+        name_suffix = f'/{parse.quote(ref_name, safe="")}' if ref_name else ''
         params = assign_params(fields=fields) if ref_name else assign_params(filter=filter_, fields=fields)
         additional_headers = {'Range': range_} if not ref_name else None
         return self.http_request(
@@ -561,7 +562,7 @@ class Client(BaseClient):
     def reference_set_delete(self, ref_name: str, purge_only: Optional[str] = None, fields: Optional[str] = None):
         return self.http_request(
             method='DELETE',
-            url_suffix=f'/reference_data/sets/{ref_name}',
+            url_suffix=f'/reference_data/sets/{parse.quote(ref_name, safe="")}',
             params=assign_params(purge_only=purge_only, fields=fields)
         )
 
@@ -569,14 +570,14 @@ class Client(BaseClient):
                                    fields: Optional[str] = None):
         return self.http_request(
             method='POST',
-            url_suffix=f'/reference_data/sets/{ref_name}',
+            url_suffix=f'/reference_data/sets/{parse.quote(ref_name, safe="")}',
             params=assign_params(value=value, source=source, fields=fields)
         )
 
     def reference_set_value_delete(self, ref_name: str, value: str):
         return self.http_request(
             method='DELETE',
-            url_suffix=f'/reference_data/sets/{ref_name}/{value}'
+            url_suffix=f'/reference_data/sets/{parse.quote(ref_name, safe="")}/{value}'
         )
 
     def domains_list(self, domain_id: Optional[int] = None, range_: Optional[str] = None, filter_: Optional[str] = None,
@@ -599,7 +600,7 @@ class Client(BaseClient):
             headers['fields'] = fields
         return self.http_request(
             method='POST',
-            url_suffix=f'/reference_data/sets/bulk_load/{ref_name}',
+            url_suffix=f'/reference_data/sets/bulk_load/{parse.quote(ref_name, safe="")}',
             json_data=indicators,
             additional_headers=headers
         )
