@@ -185,7 +185,7 @@ def threats_analysis(severity_score: dict, threats: List, indicator: str, thresh
     """
 
     threshold_score = severity_score.get(threshold)
-    if not threshold_score:
+    if threshold_score is None:
         raise Exception(
             f'Cofense error: Invalid threshold value: {threshold}. Valid values are: None, Minor, Moderate or Major')
 
@@ -227,7 +227,7 @@ def ip_threats_analysis(severity_score, threats: List, ip: str, threshold: str, 
              ip indicator : indicator object with the data collected from the threats
     """
     threshold_score = severity_score.get(threshold)
-    if not threshold_score:
+    if threshold_score is None:
         raise Exception(
             f'Cofense error: Invalid threshold value: {threshold}. Valid values are: None, Minor, Moderate or Major')
 
@@ -276,7 +276,7 @@ def file_threats_analysis(severity_score, threats: List, file: str, threshold: s
     """
 
     threshold_score = severity_score.get(threshold)
-    if not threshold_score:
+    if threshold_score is None:
         raise Exception(
             f'Cofense error: Invalid threshold value: {threshold}. Valid values are: None, Minor, Moderate or Major')
 
