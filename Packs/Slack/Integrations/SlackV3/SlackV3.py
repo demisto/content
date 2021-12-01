@@ -599,6 +599,7 @@ async def long_running_loop():
         try:
             check_for_mirrors()
             check_for_unanswered_questions()
+            await asyncio.sleep(5)
         except requests.exceptions.ConnectionError as e:
             error = f'Could not connect to the Slack endpoint: {str(e)}'
         except Exception as e:
@@ -820,32 +821,23 @@ class SlackLogger:
 
 
 async def slack_loop():
-    exception_await_seconds = 1
     while True:
+        # SocketModeClient does not respect environment variables for ssl verification.
+        # Instead we use a custom session.
+        session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(verify_ssl=VERIFY_CERT))
+        slack_logger = SlackLogger()
+        client = SocketModeClient(
+            app_token=APP_TOKEN,
+            web_client=ASYNC_CLIENT,
+            logger=slack_logger  # type: ignore
+        )
+        client.aiohttp_client_session = session
+        client.socket_mode_request_listeners.append(listen)  # type: ignore
         try:
-            slack_logger = SlackLogger()
-            client = SocketModeClient(
-                app_token=APP_TOKEN,
-                web_client=ASYNC_CLIENT,
-                logger=slack_logger  # type: ignore
-            )
-            client.socket_mode_request_listeners.append(listen)  # type: ignore
-
-            try:
-                await client.connect()
-                await asyncio.sleep(float("inf"))
-            except Exception as e:
-                await handle_listen_error(f"An error occurred {str(e)}")
-            finally:
-                try:
-                    await client.disconnect()
-                except Exception as e:
-                    demisto.debug(f"Failed to close client. - {e}")
-            exception_await_seconds = 1
+            await client.connect()
+            await asyncio.sleep(float("inf"))
         except Exception as e:
-            demisto.debug(f"Exception in long running loop, waiting {exception_await_seconds} - {e}")
-            await asyncio.sleep(exception_await_seconds)
-            exception_await_seconds *= exception_await_seconds
+            await handle_listen_error(f"An error occurred {str(e)}")
 
 
 async def handle_listen_error(error: str):
@@ -863,11 +855,10 @@ async def start_listening():
     """
     Starts a Slack SocketMode client and checks for mirrored incidents.
     """
-    await slack_loop()
+    tasks = [asyncio.ensure_future(slack_loop()), asyncio.ensure_future(long_running_loop())]
     if CHANNEL_FETCH_INTERVAL != 'None':
-        await fetch_channels_async()
-    long_loop_task = asyncio.create_task(long_running_loop(), name="Unanswered loop")
-    await asyncio.gather(long_loop_task)
+        tasks.append(asyncio.ensure_future(fetch_channels_async()))
+    await asyncio.gather(*tasks)
 
 
 async def handle_dm(user: dict, text: str, client: AsyncWebClient):
@@ -1255,58 +1246,57 @@ async def check_and_handle_entitlement(text: str, user: dict, thread_id: str) ->
     return ''
 
 
-async def fetch_channels_iterable(last_update):
+async def fetch_channels_iterable():
+    cursor = None
+    updated_channel_list: list = []
 
-        cursor = None
-        updated_channel_list: list = []
-
-        res = await ASYNC_CLIENT.conversations_list(types='private_channel,public_channel', exclude_archived=True,
-                                                    cursor=cursor)
-        integration_context = get_integration_context(SYNC_CONTEXT)
+    res = await ASYNC_CLIENT.conversations_list(types='private_channel,public_channel', exclude_archived=True,
+                                                cursor=cursor)
+    integration_context = get_integration_context(SYNC_CONTEXT)
+    while True:
+        cursor = res.get('response_metadata', {}).get('next_cursor')
+        for channel in res.get('channels', []):
+            updated_channel: dict = {
+                'name': channel.get('name'),
+                'id': channel.get('id')
+            }
+            updated_channel_list.append(updated_channel)
+        if not cursor:
+            demisto.info("Finished updating channel list")
+            break
+        total_try_time = 0
         while True:
-            cursor = res.get('response_metadata', {}).get('next_cursor')
-            for channel in res.get('channels', []):
-                updated_channel: dict = {
-                    'name': channel.get('name'),
-                    'id': channel.get('id')
-                }
-                updated_channel_list.append(updated_channel)
-            if not cursor:
-                demisto.info("Finished updating channel list")
-                break
-            total_try_time = 0
-            while True:
-                try:
-                    res = await ASYNC_CLIENT.conversations_list(types='private_channel,public_channel',
-                                                                exclude_archived=True, cursor=cursor)
-                except SlackApiError as api_error:
-                    demisto.debug(f'Got rate limit error (sync). Body is: {str(res)}\n{api_error}')
-                    response = api_error.response
-                    headers = response.headers  # type: ignore
-                    if 'Retry-After' in headers:
-                        retry_after = int(headers['Retry-After'])
-                        total_try_time += retry_after
-                        if total_try_time < MAX_LIMIT_TIME:
-                            time.sleep(retry_after)
-                            continue
+            try:
+                res = await ASYNC_CLIENT.conversations_list(types='private_channel,public_channel',
+                                                            exclude_archived=True, cursor=cursor)
+            except SlackApiError as api_error:
+                demisto.debug(f'Got rate limit error (sync). Body is: {str(res)}\n{api_error}')
+                response = api_error.response
+                headers = response.headers  # type: ignore
+                if 'Retry-After' in headers:
+                    retry_after = int(headers['Retry-After'])
+                    total_try_time += retry_after
+                    if total_try_time < MAX_LIMIT_TIME:
+                        time.sleep(retry_after)
+                        continue
+                else:
+                    if total_try_time < MAX_LIMIT_TIME:
+                        time.sleep(5)
+                        continue
                     else:
-                        if total_try_time < MAX_LIMIT_TIME:
-                            time.sleep(5)
-                            continue
-                        else:
-                            raise
-                break
+                        raise
+            break
 
-        # Save conversations to cache
-        conversations = integration_context.get('conversations')
-        if conversations:
-            conversations = json.loads(conversations)
-            conversations.extend(updated_channel_list)
-        else:
-            conversations = updated_channel_list
-        set_to_integration_context_with_retries({'conversations': conversations}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
-        demisto.debug('Successfully updated channels as part of long-running')
-        return datetime.now()
+    # Save conversations to cache
+    conversations = integration_context.get('conversations')
+    if conversations:
+        conversations = json.loads(conversations)
+        conversations.extend(updated_channel_list)
+    else:
+        conversations = updated_channel_list
+    set_to_integration_context_with_retries({'conversations': conversations}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+    demisto.debug('Successfully updated channels as part of long-running')
+    return datetime.now()
 
 
 async def fetch_channels_async():
@@ -1318,7 +1308,8 @@ async def fetch_channels_async():
         expected_next_run = return_next_interval(fetch_interval=CHANNEL_FETCH_INTERVAL, last_update_time=last_update)
         if datetime.now() >= expected_next_run:
             demisto.debug('Fetching updated channels as part of long-running')
-            last_update = await fetch_channels_iterable(last_update)
+            last_update = await fetch_channels_iterable()
+        await asyncio.sleep(5)
 
 
 ''' SEND '''
