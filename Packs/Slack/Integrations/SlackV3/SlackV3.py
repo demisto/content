@@ -820,25 +820,32 @@ class SlackLogger:
 
 
 async def slack_loop():
+    exception_await_seconds = 1
     while True:
-        # SocketModeClient does not respect environment variables for ssl verification.
-        # Instead we use a custom session.
-        session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(verify_ssl=VERIFY_CERT))
-        slack_logger = SlackLogger()
-        client = SocketModeClient(
-            app_token=APP_TOKEN,
-            web_client=ASYNC_CLIENT,
-            logger=slack_logger  # type: ignore
-        )
-        client.aiohttp_client_session = session
-        client.socket_mode_request_listeners.append(listen)  # type: ignore
         try:
-            await client.connect()
-            await asyncio.sleep(float("inf"))
+            slack_logger = SlackLogger()
+            client = SocketModeClient(
+                app_token=APP_TOKEN,
+                web_client=ASYNC_CLIENT,
+                logger=slack_logger  # type: ignore
+            )
+            client.socket_mode_request_listeners.append(listen)  # type: ignore
+
+            try:
+                await client.connect()
+                await asyncio.sleep(float("inf"))
+            except Exception as e:
+                await handle_listen_error(f"An error occurred {str(e)}")
+            finally:
+                try:
+                    await client.disconnect()
+                except Exception as e:
+                    demisto.debug(f"Failed to close client. - {e}")
+            exception_await_seconds = 1
         except Exception as e:
-            await handle_listen_error(f"An error occurred {str(e)}")
-        finally:
-            await client.disconnect()
+            demisto.debug(f"Exception in long running loop, waiting {exception_await_seconds} - {e}")
+            await asyncio.sleep(exception_await_seconds)
+            exception_await_seconds *= exception_await_seconds
 
 
 async def handle_listen_error(error: str):

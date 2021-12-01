@@ -4,6 +4,7 @@ This integration was integrated and tested with Slack.
 
 Slack V3 utilizes ["Socket Mode"](https://api.slack.com/apis/connections/socket) to enable the integration to communicate directly with Slack for mirroring. This requires a dedicated Slack app to be created for the XSOAR integration. See [Creating a Custom App](#creating-a-custom-app) on how to create your App in Slack.
 
+Please refer to the video tutorial [found here](https://live.paloaltonetworks.com/t5/cortex-xsoar-how-to-videos/cortex-xsoar-how-to-video-slack-v3-configuration/ta-p/445226) to learn about configuring SlackV3 using the app manifest.
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for SlackV3.
@@ -551,8 +552,10 @@ There is no context output for this command.
 >Successfully updated channels to the Integration Context
 
 ### Known Limitations
-SlackV3 mirrors incidents by listening to messages being sent in channels the bot has been added to.
+- SlackV3 mirrors incidents by listening to messages being sent in channels the bot has been added to.
 Because of this, you may have some users in Slack who are not users in XSOAR. This will occasionally cause the module 
 health to indicate that an error has occurred because a user was unable to be found. In this circumstance, the error is expected and is purely cosmetic in nature.
 
-Please note: If a dedicated channel is configured, however there are no notifications being sent, please verify that the **Types of Notifications** to send parameter is populated.
+- In some cases when mirroring an investigation, kicking the admin will cause no further actions to be able to be performed by the bot. Any subsequent actions taken on the channel (such as mirror out) will result in a "not in channel" error.
+
+- Please note: If a dedicated channel is configured, however there are no notifications being sent, please verify that the **Types of Notifications** to send parameter is populated.
