@@ -1,5 +1,5 @@
 id: OpsGenieV3TestPlaybook
-version: 95
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: OpsGenieV3
 starttaskid: "0"
@@ -1057,10 +1057,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 10361a8e-4d7a-4948-89e0-6b6bff985b3e
+    taskid: c6b987c6-26b5-412e-8ae4-de9803ffa438
     type: regular
     task:
-      id: 10361a8e-4d7a-4948-89e0-6b6bff985b3e
+      id: c6b987c6-26b5-412e-8ae4-de9803ffa438
       version: -1
       name: opsgenie-create-incident
       script: OpsGenieV3|||opsgenie-create-incident
@@ -1072,9 +1072,8 @@ tasks:
       - "33"
     scriptarguments:
       message:
-        simple: test_playbook
-      responders:
-        simple: team,name,test_team
+        simple: ${OpsGenie.Alert.alertId}
+    continueonerror: true
     separatecontext: false
     view: |-
       {
@@ -1092,16 +1091,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: a8e3203a-fdb0-4b8a-8d8f-c563e483f7f2
+    taskid: f89ccba0-5cf0-45a1-896a-302f990a53a9
     type: condition
     task:
-      id: a8e3203a-fdb0-4b8a-8d8f-c563e483f7f2
+      id: f89ccba0-5cf0-45a1-896a-302f990a53a9
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
+      error:
+      - "51"
       "yes":
       - "43"
     separatecontext: false
@@ -1143,6 +1144,16 @@ tasks:
             value:
               simple: OpsGenie.Incident.success
             iscontext: true
+    - label: error
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.runStatus
+            iscontext: true
+          right:
+            value:
+              simple: error
     view: |-
       {
         "position": {
