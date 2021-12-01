@@ -38,7 +38,7 @@ def main():
     server_to_port_mapping, server_version = Build.get_servers(ami_env=options.ami_env)
 
     logging.info('Retrieving the credentials for Cortex XSOAR server')
-    secret_conf_file = get_json(path=options.secret)
+    secret_conf_file = get_json(file_path=options.secret)
     username: str = secret_conf_file.get('username')
     password: str = secret_conf_file.get('userPassword')
     branch_name: str = options.branch
