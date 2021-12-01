@@ -23,6 +23,7 @@ API_VERSION = '2021-04-01'
 
 DEFAULT_LIMIT = 50
 
+
 def mock_client():
     client = AzureSentinelClient(
         server_url='http://server_url',
@@ -464,39 +465,39 @@ MOCKED_UPDATE_THREAT_INDICATOR = {
 }
 
 MOCKED_ORIGINAL_THREAT_INDICATOR_OUTPUT = {
-            "id": "ind_id",
-            "name": "ind_name",
-            "etag": "\"1200b4fe-0000-0800-0000-6194cfae0000\"",
-            "type": "Microsoft.SecurityInsights/threatIntelligence",
-            "kind": "indicator",
-            "properties": {
-                "confidence": 100,
-                "created": "2021-11-17T09:43:15.9576155Z",
-                "externalId": "indicator--0a1a583a-d801-4b64-9c5b-f595f77aa53d",
-                "lastUpdatedTimeUtc": "2021-11-17T09:43:15.9579245Z",
-                "source": "Azure Sentinel",
-                "threatIntelligenceTags": [
-                    "wereplacedthetag"
-                ],
-                "displayName": "displayfortestmay",
-                "threatTypes": [
-                    "malicious-activity"
-                ],
-                "parsedPattern": [
+    "id": "ind_id",
+    "name": "ind_name",
+    "etag": "\"1200b4fe-0000-0800-0000-6194cfae0000\"",
+    "type": "Microsoft.SecurityInsights/threatIntelligence",
+    "kind": "indicator",
+    "properties": {
+        "confidence": 100,
+        "created": "2021-11-17T09:43:15.9576155Z",
+        "externalId": "indicator--0a1a583a-d801-4b64-9c5b-f595f77aa53d",
+        "lastUpdatedTimeUtc": "2021-11-17T09:43:15.9579245Z",
+        "source": "Azure Sentinel",
+        "threatIntelligenceTags": [
+            "wereplacedthetag"
+        ],
+        "displayName": "displayfortestmay",
+        "threatTypes": [
+            "malicious-activity"
+        ],
+        "parsedPattern": [
+            {
+                "patternTypeKey": "url",
+                "patternTypeValues": [
                     {
-                        "patternTypeKey": "url",
-                        "patternTypeValues": [
-                            {
-                                "valueType": "url",
-                                "value": "‘twitter.com’"
-                            }
-                        ]
+                        "valueType": "url",
+                        "value": "‘twitter.com’"
                     }
-                ],
-                "pattern": "[url:value = ‘twitter.com’]",
-                "patternType": "twitter.com",
-                "validFrom": "0001-01-01T00:00:00"
+                ]
             }
+        ],
+        "pattern": "[url:value = ‘twitter.com’]",
+        "patternType": "twitter.com",
+        "validFrom": "0001-01-01T00:00:00"
+    }
 }
 
 ARGS_TO_UPDATE = {
@@ -971,12 +972,13 @@ class TestHappyPath:
         if expected_next_link:
             mocked_indicators['nextLink'] = expected_next_link
 
-        requests_mock.get('http://server_url/subscriptions/subscriptionID/resourceGroups/resourceGroupName/providers/Microsoft.OperationalInsights/workspaces/workspaceName/providers/Microsoft.SecurityInsights/threatIntelligence/main/indicators',
-                          json=mocked_indicators)
+        requests_mock.get(
+            'http://server_url/subscriptions/subscriptionID/resourceGroups/resourceGroupName/providers/Microsoft'
+            '.OperationalInsights/workspaces/workspaceName/providers/Microsoft.SecurityInsights/threatIntelligence'
+            '/main/indicators', json=mocked_indicators)
         requests_mock.get('https://test.com', json=mocked_indicators)
 
         requests_mock.post('https://login.microsoftonline.com/tenant_id/oauth2/v2.0/token', json={})
-
 
         # execute
         command_res = list_threat_indicator_command(client, args=args)
@@ -1013,12 +1015,13 @@ class TestHappyPath:
         if expected_next_link:
             mocked_indicators['nextLink'] = expected_next_link
 
-        requests_mock.post('http://server_url/subscriptions/subscriptionID/resourceGroups/resourceGroupName/providers/Microsoft.OperationalInsights/workspaces/workspaceName/providers/Microsoft.SecurityInsights/threatIntelligence/main/queryIndicators',
-                          json=mocked_indicators)
+        requests_mock.post(
+            'http://server_url/subscriptions/subscriptionID/resourceGroups/resourceGroupName/providers/Microsoft'
+            '.OperationalInsights/workspaces/workspaceName/providers/Microsoft.SecurityInsights/threatIntelligence'
+            '/main/queryIndicators', json=mocked_indicators)
         requests_mock.get('https://test.com', json=mocked_indicators)
 
         requests_mock.post('https://login.microsoftonline.com/tenant_id/oauth2/v2.0/token', json={})
-
 
         # execute
         command_res = query_threat_indicators_command(client, args=args)
@@ -1162,10 +1165,14 @@ class TestHappyPath:
         mocked_indicators = MOCKED_ORIGINAL_THREAT_INDICATOR_OUTPUT
         mocked_updated_indicators = MOCKED_UPDATE_THREAT_INDICATOR
 
-        requests_mock.get('http://server_url/subscriptions/subscriptionID/resourceGroups/resourceGroupName/providers/Microsoft.OperationalInsights/workspaces/workspaceName/providers/Microsoft.SecurityInsights/threatIntelligence/main/indicators/ind_name',
-                          json=mocked_indicators)
-        requests_mock.put('http://server_url/subscriptions/subscriptionID/resourceGroups/resourceGroupName/providers/Microsoft.OperationalInsights/workspaces/workspaceName/providers/Microsoft.SecurityInsights/threatIntelligence/main/indicators/ind_name',
-                          json=mocked_updated_indicators)
+        requests_mock.get(
+            'http://server_url/subscriptions/subscriptionID/resourceGroups/resourceGroupName/providers/Microsoft'
+            '.OperationalInsights/workspaces/workspaceName/providers/Microsoft.SecurityInsights/threatIntelligence'
+            '/main/indicators/ind_name', json=mocked_indicators)
+        requests_mock.put(
+            'http://server_url/subscriptions/subscriptionID/resourceGroups/resourceGroupName/providers/Microsoft'
+            '.OperationalInsights/workspaces/workspaceName/providers/Microsoft.SecurityInsights/threatIntelligence'
+            '/main/indicators/ind_name', json=mocked_updated_indicators)
 
         requests_mock.post('https://login.microsoftonline.com/tenant_id/oauth2/v2.0/token', json={})
 
