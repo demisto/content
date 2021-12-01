@@ -152,7 +152,7 @@ RESPONSE_CREATE_GROUP = {
     "visibility": None
 }
 RESPONSE_LIST_MEMBERS_UNDER_100 = {
-        "@odata.context": "https://someLink",
+        "@odata.context": "someLink",
         "value": [
             {
                 "id": "ID1",
@@ -203,8 +203,8 @@ RESPONSE_LIST_MEMBERS_UNDER_100 = {
         ]
     }
 RESPONSE_LIST_MEMBERS_ABOVE_100 = {
-        "@odata.context": "https://someLink",
-        "@odata.nextLink": "https://someNextLink",
+        "@odata.context": "someLink",
+        "@odata.nextLink": "someNextLink",
         "value": [
             {
                 "@odata.type": "#microsoft.graph.user",
