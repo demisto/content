@@ -65,7 +65,7 @@ def test_get_domain_command_no_valid_domains(mocker):
     mocker.patch.object(demisto, 'args', return_value={'domain': ["bad1.com", "bad2.com"]})
     mocker.patch.object(Cisco_umbrella_investigate, 'get_whois_for_domain', side_effect=RequestException())
 
-    assert Cisco_umbrella_investigate.get_domain_command() == []
+    assert len(Cisco_umbrella_investigate.get_domain_command()) == 2
 
 
 def test_get_domain_command_some_valid_domains(mocker):
@@ -81,7 +81,7 @@ def test_get_domain_command_some_valid_domains(mocker):
     mocker.patch.object(Cisco_umbrella_investigate, 'get_whois_for_domain', side_effect=different_inputs_handling)
     mocker.patch.object(Cisco_umbrella_investigate, 'http_request', return_value={"good.com": {"key": "val"}})
 
-    assert len(Cisco_umbrella_investigate.get_domain_command()) == 1
+    assert len(Cisco_umbrella_investigate.get_domain_command()) == 2
 
 
 def different_inputs_handling(*args):
