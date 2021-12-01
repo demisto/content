@@ -15,22 +15,13 @@ args:
   - "false"
 comment: Append item(s) to the end of the list if they are not empty.
 commonfields:
-  id: daf028d9-567f-4178-86b3-3f14e072ae42
+  id: AppendIfNotEmpty
   version: -1
 contentitemexportablefields:
   contentitemfields:
-    definitionid: ""
     fromServerVersion: ""
-    itemVersion: ""
-    packID: 0c732789-cedf-4ad7-85b3-2fd11c349738
-    propagationLabels:
-    - all
-    toServerVersion: ""
 enabled: true
-engineinfo: {}
-mainengineinfo: {}
 name: AppendIfNotEmpty
-pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''
@@ -40,3 +31,6 @@ tags:
 - entirelist
 - general
 type: javascript
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
