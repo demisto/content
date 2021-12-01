@@ -53,13 +53,12 @@ def test_get_domain_command_no_valid_domains(mocker):
         When:
             - All of the domains cannot be found by whois
         Then:
-            - An Exception is raised
+            - return an empty list
     """
-    with pytest.raises(Exception):
-        mocker.patch.object(demisto, 'args', return_value={'domain': ["bad1.com", "bad2.com"]})
-        mocker.patch.object(Cisco_umbrella_investigate, 'get_whois_for_domain', side_effect=Exception())
+    mocker.patch.object(demisto, 'args', return_value={'domain': ["bad1.com", "bad2.com"]})
+    mocker.patch.object(Cisco_umbrella_investigate, 'get_whois_for_domain', side_effect=Exception())
 
-        Cisco_umbrella_investigate.get_domain_command()
+    assert Cisco_umbrella_investigate.get_domain_command() == []
 
 
 def test_get_domain_command_some_valid_domains(mocker):

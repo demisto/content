@@ -743,7 +743,6 @@ def get_ip_malicious_domains(ip):
 def get_domain_command():
     results = []
     domains_list = argToList(demisto.args()['domain'])
-    failed_domains = 0
     for domain in domains_list:
         contents = []
         context = {}
@@ -856,11 +855,8 @@ def get_domain_command():
                     + tableToMarkdown('Domain Categorization:', domain_categorization_table, headers),
                 'EntryContext': context
             })
-        except Exception as k:
-            raise Exception(k)
-            # failed_domains += 1
-    if failed_domains == len(domains_list):
-        raise Exception("Command failed to get any of the requested domains")
+        except Exception:
+            pass
     return results
 
 
