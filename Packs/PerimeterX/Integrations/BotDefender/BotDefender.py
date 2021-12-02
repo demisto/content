@@ -172,7 +172,7 @@ def test_module(client: Client):
 
     Returns:
         'ok' if test passed, anything else will fail the test.
-    """
+    """ 
     try:
         result = client.test_api_connection()
         if result['success']:
