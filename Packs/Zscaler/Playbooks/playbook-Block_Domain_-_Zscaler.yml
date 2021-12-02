@@ -101,7 +101,7 @@ tasks:
       id: 29429f18-564b-4d05-8c78-eaaee9e7a41c
       version: -1
       name: Block Domain
-      description: Adds the specified URLs to the blacklist.
+      description: Adds the specified URLs to the block list.
       script: '|||zscaler-blacklist-url'
       type: regular
       iscommand: true

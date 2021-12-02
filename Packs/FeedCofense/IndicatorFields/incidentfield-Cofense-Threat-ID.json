@@ -5,7 +5,7 @@
     "name": "Cofense Feed Threat ID",
     "ownerOnly": false,
     "cliName": "cofensefeedthreatid",
-    "type": "html",
+    "type": "shortText",
     "closeForm": false,
     "editForm": true,
     "required": false,
