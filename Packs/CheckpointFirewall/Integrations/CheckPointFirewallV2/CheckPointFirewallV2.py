@@ -159,7 +159,7 @@ class Client(BaseClient):
                 'comments': comments,
                 'ignore-warnings': ignore_warnings,
                 'ignore-errors': ignore_errors}
-        if add == True or remove == True:
+        if add or remove:
             if add == True:
                 body['members'] = {'add': members}
             if remove == True:
