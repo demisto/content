@@ -418,7 +418,7 @@ def test_get_user_by_name(mocker):
     from SlackV3 import get_user_by_name
     # Set
 
-    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
+    def api_call():
         users = {'members': js.loads(USERS)}
         new_user = {
             'name': 'perikles',
@@ -431,9 +431,13 @@ def test_get_user_by_name(mocker):
         users['members'].append(new_user)
         return users
 
+    SLACK_RESPONSE = SlackResponse(client=None, http_verb='', api_url='', req_args={}, data=api_call(),
+                                   headers={},
+                                   status_code=0)
+
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
-    mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
+    mocker.patch.object(slack_sdk.WebClient, 'users_list', side_effect=[SLACK_RESPONSE, SLACK_RESPONSE, SLACK_RESPONSE])
 
     # Assert
 
@@ -441,19 +445,19 @@ def test_get_user_by_name(mocker):
     username = 'spengler'
     user = get_user_by_name(username)
     assert user['id'] == 'U012A3CDE'
-    assert slack_sdk.WebClient.api_call.call_count == 0
+    assert slack_sdk.WebClient.users_list.call_count == 0
 
     # User email exists in integration context
     email = 'spengler@ghostbusters.example.com'
     user = get_user_by_name(email)
     assert user['id'] == 'U012A3CDE'
-    assert slack_sdk.WebClient.api_call.call_count == 0
+    assert slack_sdk.WebClient.users_list.call_count == 0
 
     # User name doesn't exist in integration context
     username = 'perikles'
     user = get_user_by_name(username)
     assert user['id'] == 'U012B3CUI'
-    assert slack_sdk.WebClient.api_call.call_count == 1
+    assert slack_sdk.WebClient.users_list.call_count == 1
 
     set_integration_context({
         'mirrors': MIRRORS,
@@ -466,49 +470,50 @@ def test_get_user_by_name(mocker):
     email = 'perikles@acropoli.com'
     user = get_user_by_name(email)
     assert user['id'] == 'U012B3CUI'
-    assert slack_sdk.WebClient.api_call.call_count == 2
+    assert slack_sdk.WebClient.users_list.call_count == 2
 
     # User doesn't exist
     username = 'alexios'
     user = get_user_by_name(username)
     assert user == {}
-    assert slack_sdk.WebClient.api_call.call_count == 3
+    assert slack_sdk.WebClient.users_list.call_count == 3
 
 
 def test_get_user_by_name_paging(mocker):
     from SlackV3 import get_user_by_name
     # Set
 
-    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
-        if len(params) == 1:
-            return {'members': js.loads(USERS), 'response_metadata': {
-                'next_cursor': 'dGVhbTpDQ0M3UENUTks='
-            }}
-        else:
-            return {'members': [{
-                'id': 'U248918AB',
-                'name': 'alexios'
-            }], 'response_metadata': {
-                'next_cursor': ''
-            }}
+    first_call = {
+        'members': js.loads(USERS),
+        'response_metadata': {
+            'next_cursor': 'dGVhbTpDQ0M3UENUTks='
+        }
+    }
+    second_call = {
+        'members': [{
+            'id': 'U248918AB',
+            'name': 'alexios'
+        }],
+        'response_metadata': {
+            'next_cursor': ''
+        }
+    }
 
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
-    mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
+    mocker.patch.object(slack_sdk.WebClient, 'users_list', side_effect=[first_call, second_call])
 
     # Arrange
     user = get_user_by_name('alexios')
-    args = slack_sdk.WebClient.api_call.call_args_list
+    args = slack_sdk.WebClient.users_list.call_args_list
     first_args = args[0][1]
     second_args = args[1][1]
 
     # Assert
-    assert len(first_args['params']) == 1
-    assert first_args['params']['limit'] == 200
-    assert len(second_args['params']) == 2
-    assert second_args['params']['cursor'] == 'dGVhbTpDQ0M3UENUTks='
+    assert first_args['limit'] == 200
+    assert second_args['cursor'] == 'dGVhbTpDQ0M3UENUTks='
     assert user['id'] == 'U248918AB'
-    assert slack_sdk.WebClient.api_call.call_count == 2
+    assert slack_sdk.WebClient.users_list.call_count == 2
 
 
 def test_mirror_investigation_new_mirror(mocker):
@@ -1023,9 +1028,7 @@ def test_mirror_investigation_existing_channel_with_topic(mocker):
 
     # Set
 
-    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
-        if method == 'users.list':
-            return {'members': js.loads(USERS)}
+    api_call = {'members': js.loads(USERS)}
 
     mocker.patch.object(demisto, 'args', return_value={'channelName': 'group2', 'type': 'chat', 'autoclose': 'false',
                                                        'direction': 'FromDemisto', 'mirrorTo': 'group'})
@@ -1033,7 +1036,7 @@ def test_mirror_investigation_existing_channel_with_topic(mocker):
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'results')
-    mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
+    mocker.patch.object(slack_sdk.WebClient, 'users_list', side_effect=api_call)
 
     new_mirror = {
         'channel_id': 'GKB19PA3V',
@@ -1050,7 +1053,7 @@ def test_mirror_investigation_existing_channel_with_topic(mocker):
 
     mirror_investigation()
 
-    calls = slack_sdk.WebClient.api_call.call_args_list
+    calls = slack_sdk.WebClient.users_list.call_args_list
     channels_call = [c for c in calls if c[0][0] == 'conversations.create']
     users_call = [c for c in calls if c[0][0] == 'users.list']
     invite_call = [c for c in calls if c[0][0] == 'conversations.invite']
@@ -1090,6 +1093,9 @@ def test_check_for_mirrors(mocker):
         users['members'].append(new_user)
         return users
 
+    users = {'members': js.loads(USERS)}
+    users['members'].append(new_user)
+
     # Set
     mirrors = js.loads(MIRRORS)
     mirrors.append({
@@ -1121,6 +1127,8 @@ def test_check_for_mirrors(mocker):
         'mirrored': True
     }
 
+    mocker.patch.object(slack_sdk.WebClient, 'users_list', side_effect=[users])
+    mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=[users])
     mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
@@ -1133,7 +1141,7 @@ def test_check_for_mirrors(mocker):
     check_for_mirrors()
 
     calls = slack_sdk.WebClient.api_call.call_args_list
-    users_call = [c for c in calls if c[0][0] == 'users.list']
+    users_call = [slack_sdk.WebClient.users_list.call_args_list]
     invite_call = [c for c in calls if c[0][0] == 'conversations.invite']
 
     mirror_id = demisto.mirrorInvestigation.call_args[0][0]
@@ -1156,7 +1164,7 @@ def test_check_for_mirrors(mocker):
     assert len(invite_call) == 2
     assert invited_users == ['U012A3CDE', 'U012B3CUI']
     assert channel == ['new_group', 'new_group']
-    assert demisto.setIntegrationContext.call_count == 1
+    assert demisto.setIntegrationContext.call_count == 3
     assert len(our_mirror_filter) == 1
     assert our_mirror == new_mirror
     assert len(our_user_filter) == 1
@@ -1185,18 +1193,21 @@ def test_check_for_mirrors_no_updates(mocker):
 def test_check_for_mirrors_email_user_not_matching(mocker):
     from SlackV3 import check_for_mirrors
 
+    new_user = {
+        'name': 'perikles',
+        'profile': {
+            'email': 'bruce.wayne@pharmtech.zz',
+        },
+        'id': 'U012B3CUI'
+    }
+
     def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         users = {'members': js.loads(USERS)}
-        new_user = {
-            'name': 'nope',
-            'profile': {
-                'email': 'perikles@acropoli.com',
-            },
-            'id': 'U012B3CUI'
-        }
-
         users['members'].append(new_user)
         return users
+
+    users = {'members': js.loads(USERS)}
+    users['members'].append(new_user)
 
     # Set
     mirrors = js.loads(MIRRORS)
@@ -1217,7 +1228,8 @@ def test_check_for_mirrors_email_user_not_matching(mocker):
         'conversations': CONVERSATIONS,
         'bot_id': 'W12345678'
     })
-
+    mocker.patch.object(slack_sdk.WebClient, 'users_list', side_effect=[users, users])
+    mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=[users])
     mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
@@ -1230,12 +1242,12 @@ def test_check_for_mirrors_email_user_not_matching(mocker):
     check_for_mirrors()
 
     calls = slack_sdk.WebClient.api_call.call_args_list
-    users_call = [c for c in calls if c[0][0] == 'users.list']
+    users_call = [slack_sdk.WebClient.users_list.call_args_list]
     invite_call = [c for c in calls if c[0][0] == 'conversations.invite']
 
     invited_users = [c[1]['json']['users'] for c in invite_call]
     channel = [c[1]['json']['channel'] for c in invite_call]
-    assert demisto.setIntegrationContext.call_count == 1
+    assert demisto.setIntegrationContext.call_count == 3
 
     # Assert
     assert len(users_call) == 1
@@ -1246,19 +1258,21 @@ def test_check_for_mirrors_email_user_not_matching(mocker):
 
 def test_check_for_mirrors_email_not_matching(mocker):
     from SlackV3 import check_for_mirrors
+    new_user = {
+        'name': 'perikles',
+        'profile': {
+            'email': 'bruce.wayne@pharmtech.zz',
+        },
+        'id': 'U012B3CUI'
+    }
 
     def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         users = {'members': js.loads(USERS)}
-        new_user = {
-            'name': 'perikles',
-            'profile': {
-                'email': 'bruce.wayne@pharmtech.zz',
-            },
-            'id': 'U012B3CUI'
-        }
-
         users['members'].append(new_user)
         return users
+
+    users = {'members': js.loads(USERS)}
+    users['members'].append(new_user)
 
     # Set
     mirrors = js.loads(MIRRORS)
@@ -1280,7 +1294,8 @@ def test_check_for_mirrors_email_not_matching(mocker):
         'bot_id': 'W12345678'
     })
 
-    mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
+    mocker.patch.object(slack_sdk.WebClient, 'users_list', side_effect=[users, users])
+    mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=[users, users])
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'mirrorInvestigation', return_value=[{'email': 'spengler@ghostbusters.example.com',
@@ -1292,7 +1307,7 @@ def test_check_for_mirrors_email_not_matching(mocker):
     check_for_mirrors()
 
     calls = slack_sdk.WebClient.api_call.call_args_list
-    users_call = [c for c in calls if c[0][0] == 'users.list']
+    users_call = [slack_sdk.WebClient.users_list.call_args_list]
     invite_call = [c for c in calls if c[0][0] == 'conversations.invite']
 
     invited_users = [c[1]['json']['users'] for c in invite_call]
@@ -1303,24 +1318,27 @@ def test_check_for_mirrors_email_not_matching(mocker):
     assert len(invite_call) == 2
     assert invited_users == ['U012A3CDE', 'U012B3CUI']
     assert channel == ['new_group', 'new_group']
-    assert demisto.setIntegrationContext.call_count == 1
+    assert demisto.setIntegrationContext.call_count == 3
 
 
 def test_check_for_mirrors_user_email_not_matching(mocker):
     from SlackV3 import check_for_mirrors
 
+    new_user = {
+        'name': 'perikles',
+        'profile': {
+            'email': 'perikles@acropoli.com',
+        },
+        'id': 'U012B3CUI'
+    }
+
     def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         users = {'members': js.loads(USERS)}
-        new_user = {
-            'name': 'perikles',
-            'profile': {
-                'email': 'perikles@acropoli.com',
-            },
-            'id': 'U012B3CUI'
-        }
-
         users['members'].append(new_user)
         return users
+
+    users = {'members': js.loads(USERS)}
+    users['members'].append(new_user)
 
     # Set
     mirrors = js.loads(MIRRORS)
@@ -1342,7 +1360,8 @@ def test_check_for_mirrors_user_email_not_matching(mocker):
         'bot_id': 'W12345678'
     })
 
-    mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
+    mocker.patch.object(slack_sdk.WebClient, 'users_list', side_effect=[users, users])
+    mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=[users, users])
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'mirrorInvestigation', return_value=[{'email': 'spengler@ghostbusters.example.com',
@@ -1355,7 +1374,7 @@ def test_check_for_mirrors_user_email_not_matching(mocker):
     check_for_mirrors()
 
     calls = slack_sdk.WebClient.api_call.call_args_list
-    users_call = [c for c in calls if c[0][0] == 'users.list']
+    users_call = [slack_sdk.WebClient.users_list.call_args_list]
     invite_call = [c for c in calls if c[0][0] == 'conversations.invite']
 
     invited_users = [c[1]['json']['users'] for c in invite_call]
@@ -1364,9 +1383,9 @@ def test_check_for_mirrors_user_email_not_matching(mocker):
     error_results = demisto.results.call_args_list[0][0]
 
     # Assert
-    assert demisto.setIntegrationContext.call_count == 1
+    assert demisto.setIntegrationContext.call_count == 2
     assert error_results[0]['Contents'] == 'User 123 not found in Slack'
-    assert len(users_call) == 2
+    assert len(users_call) == 1
     assert len(invite_call) == 1
     assert invited_users == ['U012A3CDE']
     assert channel == ['new_group']
@@ -3368,22 +3387,22 @@ def test_get_user_by_name_paging_rate_limit(mocker):
 
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
-    mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=[first_call, second_call, third_call])
+    mocker.patch.object(slack_sdk.WebClient, 'users_list', side_effect=[first_call, second_call, third_call])
     mocker.patch.object(time, 'sleep')
 
     # Arrange
     user = get_user_by_name('alexios')
-    args = slack_sdk.WebClient.api_call.call_args_list
+    args = slack_sdk.WebClient.users_list.call_args_list
     first_args = args[0][1]
     second_args = args[2][1]
 
     # Assert
-    assert len(first_args['params']) == 1
-    assert first_args['params']['limit'] == 200
-    assert len(second_args['params']) == 2
-    assert second_args['params']['cursor'] == 'dGVhbTpDQ0M3UENUTks='
+    assert len(first_args) == 2
+    assert first_args['limit'] == 200
+    assert len(second_args) == 2
+    assert second_args['cursor'] == 'dGVhbTpDQ0M3UENUTks='
     assert user['id'] == 'U248918AB'
-    assert slack_sdk.WebClient.api_call.call_count == 3
+    assert slack_sdk.WebClient.users_list.call_count == 3
 
 
 def test_get_user_by_name_paging_rate_limit_error(mocker):
@@ -3402,19 +3421,19 @@ def test_get_user_by_name_paging_rate_limit_error(mocker):
 
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
-    mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=[first_call, second_call, second_call, third_call])
+    mocker.patch.object(slack_sdk.WebClient, 'users_list', side_effect=[first_call, second_call, second_call, third_call])
     mocker.patch.object(time, 'sleep')
 
     # Arrange
-    with pytest.raises(SlackApiError):
-        get_user_by_name('alexios')
-    args = slack_sdk.WebClient.api_call.call_args_list
+    get_user_by_name('alexios')
+
+    args = slack_sdk.WebClient.users_list.call_args_list
     first_args = args[0][1]
 
     # Assert
-    assert len(first_args['params']) == 1
-    assert first_args['params']['limit'] == 200
-    assert slack_sdk.WebClient.api_call.call_count == 3
+    assert len(first_args) == 2
+    assert first_args['limit'] == 200
+    assert slack_sdk.WebClient.users_list.call_count == 4
 
 
 def test_get_user_by_name_paging_normal_error(mocker):
@@ -3432,18 +3451,17 @@ def test_get_user_by_name_paging_normal_error(mocker):
 
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
-    mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=[first_call, second_call, third_call])
+    mocker.patch.object(slack_sdk.WebClient, 'users_list', side_effect=[first_call, second_call, third_call])
 
     # Arrange
-    with pytest.raises(SlackApiError):
-        get_user_by_name('alexios')
-    args = slack_sdk.WebClient.api_call.call_args_list
+    get_user_by_name('alexios')
+    args = slack_sdk.WebClient.users_list.call_args_list
     first_args = args[0][1]
 
     # Assert
-    assert len(first_args['params']) == 1
-    assert first_args['params']['limit'] == 200
-    assert slack_sdk.WebClient.api_call.call_count == 2
+    assert len(first_args) == 2
+    assert first_args['limit'] == 200
+    assert slack_sdk.WebClient.users_list.call_count == 3
 
 
 def test_message_setting_name_and_icon(mocker):
@@ -4092,3 +4110,151 @@ async def test_fetch_channels_paginated_async(mocker):
 
     # Assert
     assert returned_time.replace(microsecond=0) >= (last_update + timedelta(seconds=8)).replace(microsecond=0)
+
+
+@pytest.mark.asyncio
+async def test_fetch_users_paginated_async(mocker):
+    """
+     Given:
+        A fetch user command where the first result has no pagination
+
+    When:
+        Updating the user IDs to context
+
+    Then:
+        Expect a successful response and appended context
+    """
+    import SlackV3
+
+    # Set
+    err_response = AsyncSlackResponse(api_url='', client=None, http_verb='GET', req_args={},
+                                      data={'ok': False}, status_code=429, headers={'Retry-After': 3})
+    first_call = {'users': js.loads(USERS), 'response_metadata': {'next_cursor': 'dGVhbTpDQ0M3UENUTks='}}
+    second_call = SlackApiError('Rate limit reached!', err_response)
+    third_call = {'users': js.loads(USERS), 'response_metadata': {'next_cursor': ''}}
+
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(AsyncWebClient, 'users_list', side_effect=[first_call, second_call, third_call])
+    last_update = datetime.datetime.now() - timedelta(seconds=5)
+
+    # Arrange
+    SlackV3.init_globals()
+    SlackV3.USERS_FETCH_INTERVAL = "3 seconds"
+    time.sleep(1)
+    returned_time = await SlackV3.fetch_users_iterable()
+
+    # Assert
+    assert returned_time.replace(microsecond=0) >= (last_update + timedelta(seconds=8)).replace(microsecond=0)
+
+
+@pytest.mark.asyncio
+async def test_fetch_users_async(mocker):
+    """
+     Given:
+        A fetch users command where the first result has no pagination
+
+    When:
+        Updating the user IDs to context
+
+    Then:
+        Expect a successful response and appended context
+    """
+    import SlackV3
+
+    users_response = {'users': js.loads(USERS), 'response_metadata': {
+    }}
+    # Set
+    async_slack_response = AsyncSlackResponse(client=None, http_verb='', api_url='', req_args={}, data=users_response,
+                                              headers={}, status_code=0)
+
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(AsyncWebClient, 'users_list', return_value=async_slack_response)
+    last_update = datetime.datetime.now()
+
+    # Arrange
+    SlackV3.init_globals()
+    SlackV3.USERS_FETCH_INTERVAL = "1 second"
+    time.sleep(1)
+    returned_time = await SlackV3.fetch_users_iterable()
+
+    # Assert
+    assert returned_time.replace(microsecond=0) >= (last_update + timedelta(seconds=1)).replace(microsecond=0)
+
+
+def test_fetch_users_rate_limited(mocker):
+    """
+     Given:
+        A fetch users command where the first result indicates pagination and the next two calls throw a rate limit
+        error.
+    When:
+        Updating the user IDs to context
+
+    Then:
+        Expect a successful response and appended context after successfully handling the rate limit and waiting the
+        indicated amount of time
+    """
+    from SlackV3 import fetch_users_command, init_globals
+    from slack_sdk.errors import SlackApiError
+    from slack_sdk.web.slack_response import SlackResponse
+    import time
+
+    # Set
+    init_globals()
+    err_response: SlackResponse = SlackResponse(api_url='', client=None, http_verb='GET', req_args={},
+                                                data={'ok': False}, status_code=429, headers={'Retry-After': 40})
+    first_call = {'users': js.loads(USERS), 'response_metadata': {'next_cursor': 'dGVhbTpDQ0M3UENUTks='}}
+    second_call = SlackApiError('Rate limit reached!', err_response)
+    third_call = {'users': js.loads(USERS), 'response_metadata': {'next_cursor': ''}}
+
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch.object(slack_sdk.WebClient, 'users_list', side_effect=[first_call, second_call, second_call, third_call])
+    mocker.patch.object(time, 'sleep')
+
+    # Arrange
+    fetch_users_command()
+    args = slack_sdk.WebClient.users_list.call_args_list
+    first_args = args[0][1]
+    second_args = args[1][1]
+    third_args = args[2][1]
+    fourth_args = args[2][1]
+    # Assert
+    assert len(args) == 4
+    assert first_args['cursor'] is None
+    assert second_args['cursor'] == 'dGVhbTpDQ0M3UENUTks='
+    assert third_args['cursor'] == 'dGVhbTpDQ0M3UENUTks='
+    assert fourth_args['cursor'] == 'dGVhbTpDQ0M3UENUTks='
+
+
+def test_fetch_users(mocker):
+    """
+     Given:
+        A fetch users command where the first result has no pagination
+
+    When:
+        Updating the user IDs to context
+
+    Then:
+        Expect a successful response and appended context
+    """
+    import SlackV3
+
+    users_response = {'users': js.loads(USERS), 'response_metadata': {
+    }}
+    # Set
+    SLACK_RESPONSE = SlackResponse(client=None, http_verb='', api_url='', req_args={}, data=users_response, headers={},
+                                   status_code=0)
+
+    expected_body = ("Successfully updated users to the Integration Context")
+
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(slack_sdk.WebClient, 'users_list', side_effect=SLACK_RESPONSE)
+    mocker.patch.object(demisto, 'results')
+
+    # Arrange
+    SlackV3.fetch_users_command()
+
+    # Assert
+    assert demisto.results.mock_calls[0][1][0] == expected_body

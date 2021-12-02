@@ -76,6 +76,7 @@ PAGINATED_COUNT: int
 ENABLE_DM: bool
 PERMITTED_NOTIFICATION_TYPES: List[str]
 CHANNEL_FETCH_INTERVAL: str
+USERS_FETCH_INTERVAL: str
 
 
 ''' HELPER FUNCTIONS '''
@@ -120,59 +121,26 @@ def get_current_utc_time() -> datetime:
     return datetime.utcnow()
 
 
-def get_user_by_name(user_to_search: str, add_to_context: bool = True) -> dict:
+def get_user_by_name(user_to_search: str) -> dict:
     """
     Gets a slack user by a user name
 
     Args:
         user_to_search: The user name or email
-        add_to_context: Whether to update the integration context
 
     Returns:
         A slack user object
     """
-
-    user: dict = {}
-    users: list = []
-    integration_context = get_integration_context(SYNC_CONTEXT)
-
     user_to_search = user_to_search.lower()
-    if integration_context.get('users'):
-        users = json.loads(integration_context['users'])
-        users_filter = list(filter(lambda u: u.get('name', '').lower() == user_to_search
-                                             or u.get('profile', {}).get('email', '').lower() == user_to_search
-                                             or u.get('real_name', '').lower() == user_to_search, users))
-        if users_filter:
-            user = users_filter[0]
+    # Find user in the cache
+    user = search_context_for_user(user_to_search)
     if not user:
-        body = {
-            'limit': PAGINATED_COUNT
-        }
-
-        response = send_slack_request_sync(CLIENT, 'users.list', http_verb='GET', body=body)
-        while True:
-            workspace_users = response['members'] if response and response.get('members',
-                                                                               []) else []
-            cursor = response.get('response_metadata', {}).get('next_cursor')
-            users_filter = list(filter(lambda u: u.get('name', '').lower() == user_to_search
-                                       or u.get('profile', {}).get('email', '').lower() == user_to_search
-                                       or u.get('real_name', '').lower() == user_to_search, workspace_users))
-            if users_filter:
-                break
-            if not cursor:
-                break
-            body = body.copy()  # strictly for unit testing purposes
-            body.update({'cursor': cursor})
-            response = send_slack_request_sync(CLIENT, 'users.list', http_verb='GET', body=body)
-
-        if users_filter:
-            user = users_filter[0]
-            if add_to_context:
-                users.append(user)
-                set_to_integration_context_with_retries({'users': users}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
-        else:
-            return {}
-
+        demisto.debug(
+            f'could not find slack user "{user_to_search}" in integration context, searching via API')
+        user = fetch_users_from_api(user_to_search)
+    # Save users to cache
+    if user:
+        save_users_to_context([user])
     return user
 
 
@@ -600,7 +568,7 @@ async def long_running_loop():
         try:
             check_for_mirrors()
             check_for_unanswered_questions()
-            await asyncio.sleep(5)
+            await asyncio.sleep(10)
         except requests.exceptions.ConnectionError as e:
             error = f'Could not connect to the Slack endpoint: {str(e)}'
         except Exception as e:
@@ -649,6 +617,7 @@ def answer_question(text: str, question: dict, email: str = ''):
 
 
 def check_for_unanswered_questions():
+    demisto.debug("Checking for unanswered questions.")
     integration_context = get_integration_context(SYNC_CONTEXT)
     questions = integration_context.get('questions', [])
     users = integration_context.get('users', [])
@@ -684,6 +653,7 @@ def check_for_unanswered_questions():
         question['last_poll_time'] = now_string
         updated_questions.append(question)
     if updated_questions:
+        demisto.debug(f"Found updated questions with a length of {len(updated_questions)}")
         set_to_integration_context_with_retries({'users': users, 'questions': questions}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
 
 
@@ -691,11 +661,13 @@ def check_for_mirrors():
     """
     Checks for newly created mirrors and handles the mirroring process
     """
+    demisto.debug("Checking for new mirrors")
     integration_context = get_integration_context(SYNC_CONTEXT)
     if integration_context.get('mirrors'):
         mirrors = json.loads(integration_context['mirrors'])
         updated_mirrors = []
         updated_users = []
+        demisto.debug(f"Total of {len(mirrors)} mirrors found in context.")
         for mirror in mirrors:
             if not mirror['mirrored']:
                 investigation_id = mirror['investigation_id']
@@ -723,6 +695,7 @@ def check_for_mirrors():
                     demisto.info(f'Could not mirror {investigation_id}')
 
         if updated_mirrors:
+            demisto.debug(f"Total of {len(updated_mirrors)} updated mirrors found.")
             context = {'mirrors': updated_mirrors}
             if updated_users:
                 context['users'] = updated_users
@@ -748,11 +721,11 @@ def invite_to_mirrored_channel(channel_id: str, users: List[Dict]) -> list:
         user_email = user.get('email', '')
         user_name = user.get('username', '')
         if user_email:
-            slack_user = get_user_by_name(user_email, False)
+            slack_user = get_user_by_name(user_email)
         if not slack_user:
             # Try to invite by XSOAR user name
             if user_name:
-                slack_user = get_user_by_name(user_name, False)
+                slack_user = get_user_by_name(user_name)
         if slack_user:
             slack_users.append(slack_user)
         else:
@@ -859,6 +832,8 @@ async def start_listening():
     tasks = [asyncio.ensure_future(slack_loop()), asyncio.ensure_future(long_running_loop())]
     if CHANNEL_FETCH_INTERVAL != 'None':
         tasks.append(asyncio.ensure_future(fetch_channels_async()))
+    if USERS_FETCH_INTERVAL != 'None':
+        tasks.append(asyncio.ensure_future(fetch_users_async()))
     await asyncio.gather(*tasks)
 
 
@@ -1317,7 +1292,7 @@ async def fetch_channels_iterable():
 
 async def fetch_channels_async():
     """
-    updates context with all conversations an their IDs
+    updates context with all conversations and their IDs
     """
     last_update = datetime.now()
     while True:
@@ -1325,6 +1300,91 @@ async def fetch_channels_async():
         if datetime.now() >= expected_next_run:
             demisto.debug('Fetching updated channels as part of long-running')
             last_update = await fetch_channels_iterable()
+        await asyncio.sleep(5)
+
+
+async def fetch_users_iterable():
+    cursor = None
+    updated_users_list: list = []
+
+    res = await ASYNC_CLIENT.users_list(limit=PAGINATED_COUNT, cursor=cursor)
+    integration_context = get_integration_context(SYNC_CONTEXT)
+    now = datetime.now()
+    timeout_safety = return_next_interval(fetch_interval=TIMEOUT_SAFETY_NET, last_update_time=now)
+    while True:
+        if now >= timeout_safety:
+            # This provides the function with a safety net to prevent the fetch process itself from taking longer than
+            # 10 minutes. If the workspace has more than 120,000 users or fetching the updated list takes longer than
+            # 10 minutes, we will store the users the function has collected so far and end the fetch.
+            demisto.debug(f"Timeout safety net was exceeded. Current fetch_users_iterable run is being abandoned.\n"
+                          f"The timeout_safety variable is {timeout_safety} and the current time is {now}.")
+            break
+        cursor = res.get('response_metadata', {}).get('next_cursor')
+        members = res['members'] if res and res.get('members') else []
+        demisto.debug(f"Length of members received from Slack api is {len(members)}")
+        for member in members:
+            updated_member: dict = {
+                'name': member.get('name'),
+                'id': member.get('id'),
+                'real_name': member.get('real_name', ''),
+                'profile': {
+                    'email': member.get('email', '')
+                }
+            }
+            updated_users_list.append(updated_member)
+        if not cursor:
+            demisto.info("Finished updating users list")
+            break
+        total_try_time = 0
+        while total_try_time < MAX_LIMIT_TIME:
+            try:
+                res = await ASYNC_CLIENT.users_list(limit=PAGINATED_COUNT, cursor=cursor)
+
+            except SlackApiError as api_error:
+                demisto.debug(f'Got rate limit error (sync). Body is: {str(res)}\n{api_error}.'
+                              f'Retries count is - {total_try_time} out of max retries limit: {MAX_LIMIT_TIME}')
+                response = api_error.response
+                headers = response.headers  # type: ignore
+                if 'Retry-After' in headers:
+                    retry_after = int(headers['Retry-After'])
+                    total_try_time += retry_after
+                    if total_try_time < MAX_LIMIT_TIME:
+                        demisto.debug(f"Retry-After header was found. Sleeping for {retry_after} seconds.")
+                        await asyncio.sleep(retry_after)
+                        continue
+                else:
+                    if total_try_time < MAX_LIMIT_TIME:
+                        demisto.debug("No Retry-After header was found. Sleeping for 5 seconds.")
+                        await asyncio.sleep(5)
+                        continue
+                    else:
+                        raise
+            demisto.debug("Response received from Slack users.list api. No retry is necessary.")
+            break
+
+    # Save users to cache
+    demisto.debug(f"updated_users_list has a length of {len(updated_users_list)}. Updating the integration context.")
+    users = integration_context.get('users')
+    if users:
+        users = json.loads(users)
+        users.extend(updated_users_list)
+    else:
+        users = updated_users_list
+    set_to_integration_context_with_retries({'users': users}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+    demisto.debug('Successfully updated users as part of long-running')
+    return datetime.now()
+
+
+async def fetch_users_async():
+    """
+    updates context with all users and their IDs
+    """
+    last_update = datetime.now()
+    while True:
+        expected_next_run = return_next_interval(fetch_interval=USERS_FETCH_INTERVAL, last_update_time=last_update)
+        if datetime.now() >= expected_next_run:
+            demisto.debug('Fetching updated users as part of long-running')
+            last_update = await fetch_users_iterable()
         await asyncio.sleep(5)
 
 
@@ -2141,6 +2201,50 @@ def save_channels_to_context(updated_channel_list):
     set_to_integration_context_with_retries({'conversations': conversations}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
 
 
+def search_context_for_user(user_name: str):
+    """
+    Searches the integration context to find a user ID that matches the given user's name
+
+    Args:
+        user_name: The user's name
+
+    Returns:
+        The slack user
+    """
+    integration_context = get_integration_context(SYNC_CONTEXT)
+
+    # Find user in the cache
+    users = integration_context.get('users')
+    if users:
+        users = json.loads(users)
+        user_to_search = user_name.lower()
+        users_filter = list(filter(lambda u: u.get('name', '').lower() == user_to_search
+                                             or u.get('profile', {}).get('email', '').lower() == user_to_search
+                                             or u.get('real_name', '').lower() == user_to_search, users))
+        if users_filter:
+            return users_filter[0]
+    else:
+        return None
+
+
+def save_users_to_context(updated_users_list):
+    """
+    Saves a list of users into the integration context.
+
+    Args:
+        updated_users_list: A list of users
+    """
+    # Save conversations to cache
+    integration_context = get_integration_context(SYNC_CONTEXT)
+    users = integration_context.get('users')
+    if users:
+        users = json.loads(users)
+        users.extend(updated_users_list)
+    else:
+        users = updated_users_list
+    set_to_integration_context_with_retries({'users': users}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+
+
 def fetch_channels_from_api(conversation_name: str = ''):
     """
     Fetches channel IDs based on their name, if given a conversation name, it will search for a specific ID
@@ -2210,6 +2314,80 @@ def fetch_channels_command():
     demisto.results("Successfully updated channels to the Integration Context")
 
 
+def fetch_users_from_api(user_name: str = ''):
+    """
+    Fetches users based on their name
+
+    Args:
+        user_name: Optional - The human readable form of a user's name.
+
+    Returns:
+        A list of dictionaries containing a user's name, ID, and email.
+    """
+    demisto.debug('Fetching users')
+    cursor = None
+    updated_users_list: list = []
+
+    res = CLIENT.users_list(limit=PAGINATED_COUNT, cursor=cursor)
+
+    while True:
+        cursor = res.get('response_metadata', {}).get('next_cursor')
+        members = res['members'] if res and res.get('members') else []
+        if user_name:
+            user_to_search = user_name.lower()
+            users_filter = list(filter(lambda u: u.get('name', '').lower() == user_to_search
+                                                 or u.get('profile', {}).get('email', '').lower() == user_to_search
+                                                 or u.get('real_name', '').lower() == user_to_search, members))
+            if users_filter:
+                return users_filter[0]
+        else:
+            for member in members:
+                updated_member: dict = {
+                    'name': member.get('name'),
+                    'id': member.get('id'),
+                    'real_name': member.get('real_name', ''),
+                    'profile': {
+                        'email': member.get('email', '')
+                    }
+                }
+                updated_users_list.append(updated_member)
+        if not cursor:
+            demisto.info("Reached the end of looking for a user")
+            break
+        else:
+            total_try_time = 0
+            while True:
+                try:
+                    res = CLIENT.users_list(limit=PAGINATED_COUNT, cursor=cursor)
+
+                except SlackApiError as api_error:
+                    demisto.debug(f'Got rate limit error (sync). Body is: {str(res)}\n{api_error}')
+                    response = api_error.response
+                    headers = response.headers  # type: ignore
+                    if 'Retry-After' in headers:
+                        retry_after = int(headers['Retry-After'])
+                        total_try_time += retry_after
+                        if total_try_time < MAX_LIMIT_TIME:
+                            time.sleep(retry_after)
+                            continue
+                    else:
+                        if total_try_time < MAX_LIMIT_TIME:
+                            time.sleep(5)
+                            continue
+                        else:
+                            raise
+                break
+    if user_name and len(updated_users_list) == 0:
+        return {}
+    return updated_users_list
+
+
+def fetch_users_command():
+    updated_users_list = fetch_users_from_api()
+    save_users_to_context(updated_users_list=updated_users_list)
+    demisto.results("Successfully updated users to the Integration Context")
+
+
 def long_running_main():
     """
     Starts the long running thread.
@@ -2234,7 +2412,7 @@ def init_globals(command_name: str = ''):
     global BOT_TOKEN, PROXY_URL, PROXIES, DEDICATED_CHANNEL, CLIENT
     global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, INCIDENT_TYPE, VERIFY_CERT, ENABLE_DM
     global BOT_NAME, BOT_ICON_URL, MAX_LIMIT_TIME, PAGINATED_COUNT, SSL_CONTEXT, APP_TOKEN, ASYNC_CLIENT
-    global PERMITTED_NOTIFICATION_TYPES, CHANNEL_FETCH_INTERVAL
+    global PERMITTED_NOTIFICATION_TYPES, CHANNEL_FETCH_INTERVAL, USERS_FETCH_INTERVAL
 
     VERIFY_CERT = not demisto.params().get('unsecure', False)
     if not VERIFY_CERT:
@@ -2269,6 +2447,7 @@ def init_globals(command_name: str = ''):
     ENABLE_DM = params.get('enable_dm', True)
     PERMITTED_NOTIFICATION_TYPES = params.get('permitted_notifications', [])
     CHANNEL_FETCH_INTERVAL = params.get('channel_fetch_interval', 'None')
+    USERS_FETCH_INTERVAL = params.get('users_fetch_interval', 'None')
 
 
 def print_thread_dump():
@@ -2318,7 +2497,8 @@ def main() -> None:
         'slack-get-integration-context': slack_get_integration_context,
         'slack-edit-message': slack_edit_message,
         'slack-pin-message': pin_message,
-        'slack-fetch-channels': fetch_channels_command
+        'slack-fetch-channels': fetch_channels_command,
+        'slack-fetch-users': fetch_users_command
     }
 
     command_name: str = demisto.command()

@@ -103,10 +103,17 @@ configuration:
   required: false
   type: 8
 - defaultvalue: 'None'
-  additionalinfo: "For workspaces that contain large amounts of channels, it is advised to periodically\
-    \fetch the new channels."
+  additionalinfo: "For workspaces that contain large amounts of channels, it is advised to periodically
+    fetch the new channels."
   display: Channel fetch interval
   name: channel_fetch_interval
+  required: false
+  type: 0
+- defaultvalue: 'None'
+  additionalinfo: "For workspaces that contain large amounts of users, it is advised to periodically
+    fetch new users."
+  display: User fetch interval
+  name: users_fetch_interval
   required: false
   type: 0
 description: Send messages and notifications to your Slack team.
@@ -520,6 +527,10 @@ script:
     description: Fetches the Channel IDs for the workspace and saves them to the internal integration context.
     execution: false
     name: slack-fetch-channels
+  - deprecated: false
+    description: Fetches the User IDs for the workspace and saves them to the internal integration context.
+    execution: false
+    name: slack-fetch-users
   dockerimage: demisto/slackv3:1.0.0.23423
   feed: false
   isfetch: false

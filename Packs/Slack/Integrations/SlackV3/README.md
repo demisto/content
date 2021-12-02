@@ -29,6 +29,8 @@ Please refer to the video tutorial [found here](https://live.paloaltonetworks.co
     | `filtered_tags` | Comma-separated list of tags by which to filter the messages sent from XSOAR. Only supported in Cortex XSOAR V6.1 and above. | False |
     | `permitted_notifications` | Types of Notifications to send in the dedicated channel. | False |
     | `channel_fetch_interval` | The frequency with which to update the channel IDs. **Note:** For workspaces that contain large amounts of channels, it is advised to periodically fetch the new channels. | False |
+    | `users_fetch_interval` | The frequency with which to update the user IDs. **Note:** For workspaces that contain large amounts of users, it is advised to periodically fetch the new users. | False |
+
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -550,6 +552,36 @@ There is no context output for this command.
 
 #### Human Readable Output
 >Successfully updated channels to the Integration Context
+
+
+### slack-fetch-users
+***
+Fetches the user IDs for all users in the workspace and saves them to the internal integration context. 
+In the event a command takes an excessive amount of time, 
+or results in a timeout, it is advised to execute this command. 
+If after executing this command subsequent commands do not timeout, 
+please configure the **Users fetch interval** with an 
+appropriate time interval for your organization.
+
+
+#### Base Command
+
+`slack-fetch-users`
+#### Input
+There are no inputs for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```
+!slack-fetch-users
+```
+
+#### Human Readable Output
+>Successfully updated users to the Integration Context
+
 
 ### Known Limitations
 - SlackV3 mirrors incidents by listening to messages being sent in channels the bot has been added to.
