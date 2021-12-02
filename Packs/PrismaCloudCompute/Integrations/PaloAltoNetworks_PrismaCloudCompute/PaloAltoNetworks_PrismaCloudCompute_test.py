@@ -4,7 +4,7 @@ from PaloAltoNetworks_PrismaCloudCompute import (
     PrismaCloudComputeClient, camel_case_transformer, fetch_incidents, get_headers,
     HEADERS_BY_NAME, get_profile_host_list, get_container_profile_list, get_container_hosts_list,
     get_profile_container_forensic_list, get_profile_host_forensic_list, get_console_version, get_custom_feeds_ip_list,
-    add_custom_ip_feeds, get_api_filtered_response
+    add_custom_ip_feeds, get_api_filtered_response, parse_date_string_format
 )
 
 from CommonServerPython import DemistoException
@@ -712,3 +712,31 @@ def test_http_body_response_filtering_is_valid(requests_mock, args, url_suffix, 
     else:
         assert len(body_response) == len(response[offset:])
         assert body_response == response[offset:]
+
+
+def test_date_string_format_conversion_is_successful():
+    """
+    Given:
+        - a valid date string
+
+    When:
+        - trying to parse the date string into a different format
+
+    Then:
+        - verify that the format parsing was successful.
+    """
+    assert parse_date_string_format(date_string='2020-11-10T09:37:42.301Z') == 'November 10, 2020 09:37:42 AM'
+
+
+def test_date_string_conversion_is_failing():
+    """
+    Given:
+        - invalid date string format
+
+    When:
+        - trying to parse the date string into a different format
+
+    Then:
+        - verify that the format does not succeed.
+    """
+    assert parse_date_string_format(date_string='2020-11-10T09:37:42.301Z-341') == '2020-11-10T09:37:42.301Z-341'
