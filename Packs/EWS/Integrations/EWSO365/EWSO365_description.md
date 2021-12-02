@@ -5,3 +5,7 @@ After authorizing the Demisto app, you will get an ID, Token, and Key, which nee
 #### Office 365 Exchange Online
 **full_access_as_app** - To set this permission follow [the Microsoft documentation](https://docs.microsoft.com/en-us/exchange/client-developer/exchange-web-services/how-to-authenticate-an-ews-application-by-using-oauth#configure-for-app-only-authentication).
 You can't manage the **Office 365 Exchange Online** app permissions via the Azure portal.
+
+
+---
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/ewso365)
