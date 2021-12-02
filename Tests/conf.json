@@ -2967,7 +2967,8 @@
         },
         {
             "integrations": "PaloAltoNetworks_PrismaCloudCompute",
-            "playbookID": "PaloAltoNetworks_PrismaCloudCompute-Test"
+            "playbookID": "PaloAltoNetworks_PrismaCloudCompute-Test",
+            "instance_names": "prisma_cloud_compute_21_04"
         },
         {
             "integrations": "SaasSecurity",
