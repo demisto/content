@@ -609,7 +609,17 @@ def check_params(kafka: KafkaCommunicator, topic: str, partitions: Optional[list
     return True
 
 
-def get_topic_partition_if_relevant(kafka, topic, partition, specific_offset):
+def get_topic_partition_if_relevant(kafka: KafkaCommunicator, topic: str, partition: str,
+                                    specific_offset: Union[str, int]) -> list:
+    """Return the TopicPartition if topic, partition and specific_offset are valid otherwise return []
+
+    Args:
+        kafka: The KafkaCommunicator object
+        topic: The topic of the TopicPartition to retrieve
+        partition: The partition of the TopicPartition to retrieve
+        specific_offset: The offset of the TopicPartition to retrieve
+
+    """
     demisto.debug(f'Getting last offset for partition {partition}, specific offset is {specific_offset}\n')
     add_topic_partition = True
     if isinstance(specific_offset, int):
@@ -626,10 +636,23 @@ def get_topic_partition_if_relevant(kafka, topic, partition, specific_offset):
     return []
 
 
-def get_fetch_topic_partitions(kafka, topic, offset, last_fetched_offsets):
+def get_fetch_topic_partitions(kafka: KafkaCommunicator, topic: str, offset: Union[str, int],
+                               last_fetched_offsets: dict) -> List[TopicPartition]:
+    """Get topic partitions for fetching incidents without a specified partitions.
 
+    If fetched from those partitions before chose offset accordingly.
+
+    Args:
+        kafka: The KafkaCommunicator object
+        topic: The topic of the TopicPartitions to retrieve
+        offset: The general offset to start fetching from
+        last_fetched_offsets: The dictionary with the last fetched offsets
+
+    Return a list of topic partitions
+    """
     all_topic_partitions = kafka.get_topic_partitions(topic=topic, partition=-1, offset=offset, consumer=True)
     if not last_fetched_offsets:
+        demisto.debug("Did not fetch from this topic previously, returning all available topic partitions")
         return all_topic_partitions
 
     topic_partitions_in_system = []
@@ -640,6 +663,8 @@ def get_fetch_topic_partitions(kafka, topic, offset, last_fetched_offsets):
 
         for topic_partition in all_topic_partitions:
             if topic_partition.partition == int(partition):
+                demisto.debug(f"Updating topic {topic} and partition {partition} to fetch from "
+                              f"previous offset {specific_offset}")
                 all_topic_partitions.remove(topic_partition)
 
     return topic_partitions_in_system + all_topic_partitions
