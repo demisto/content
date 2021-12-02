@@ -388,6 +388,20 @@ def test_get_schedule_overrides_without_args():
         OpsGenieV3.get_schedule_overrides(mock_client, {})
 
 
+def test_get_schedule_without_args():
+    """
+    Given:
+        - An app client object
+    When:
+        - Calling function get_schedule with no arguments
+    Then:
+        - Ensure the resulted will raise an exception.
+    """
+    mock_client = OpsGenieV3.Client(base_url="")
+    with pytest.raises(DemistoException):
+        mock_client.get_schedule({})
+
+
 def test_get_schedule_overrides():
     """
     Given:
@@ -889,3 +903,19 @@ def test_build_query_not_fetch_without_query():
     mock_client = OpsGenieV3.Client(base_url="")
     res = mock_client.build_query(args)
     assert (res == "status=open AND priority: (P1 OR P3) AND tag: (1 OR 2)")
+
+
+def test_responders_to_json_empty_value():
+    """
+    Given:
+        - An app client object
+        - responders = {}
+    When:
+        - Calling function responders_to_json
+    Then:
+        - Ensure the return data is correct
+    """
+    mock_client = OpsGenieV3.Client(base_url="")
+    res = mock_client.responders_to_json(responders={},
+                                         responder_key="responder")
+    assert (res == {})

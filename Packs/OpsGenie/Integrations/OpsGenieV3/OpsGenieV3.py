@@ -176,7 +176,7 @@ class Client(BaseClient):
                                              f"{args.get('alert-id')}/attachments")
 
     def get_schedule(self, args: dict):
-        if args.get("schedule_id") and args.get("schedule_name"):
+        if not (args.get("schedule_id") and args.get("schedule_name")):
             raise DemistoException("Either schedule_id or schedule_name should be provided.")
         identifier_type = "id" if args.get("schedule_id") else "name"
         schedule = args.get("schedule_id", None) or args.get("schedule_name", None)
