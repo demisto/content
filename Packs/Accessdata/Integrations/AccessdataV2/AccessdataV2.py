@@ -17,19 +17,20 @@ from accessdata.client import Client
 from CommonServerPython import *
 import demistomock as demisto
 
-
 """ decorator wrapping demisto commands """
 
-
 _run_functions = {}
+
 
 def wrap_demisto_command(command):
     def _func(func):
         @wraps(func)
         def _inside(*args, **kwargs):
             return func(*args, **kwargs)
+
         _run_functions[command] = func
         return _inside
+
     return _func
 
 
@@ -82,14 +83,14 @@ def _process_evidence(client, caseid, evidence_path, evidence_type, options):
     # try find json in the options
     try:
         options = loads(options)
-    except Exception as exception:
+    except Exception:
         pass
 
     # determine the type of processing options supplied
     options_type = type(options)
     if options_type is str:
         jobs = case.evidence.process(evidence_path, evidence_type,
-            completeprocessingoptions=options)
+                                     completeprocessingoptions=options)
         return CommandResults(
             outputs_prefix="Accessdata.Case.Jobs",
             outputs=[
@@ -100,7 +101,7 @@ def _process_evidence(client, caseid, evidence_path, evidence_type, options):
         )
     elif options_type is dict:
         jobs = case.evidence.process(evidence_path, evidence_type,
-            processingoptions=options)
+                                     processingoptions=options)
         return CommandResults(
             outputs_prefix="Accessdata.Case.Jobs",
             outputs=[
@@ -225,6 +226,7 @@ _comparator_mapping = {
     "<=": "__le__"
 }
 
+
 @wrap_demisto_command("accessdata-api-create-filter")
 def _create_filter(client, column, comparator, value):
     comp = _comparator_mapping.get(comparator, comparator)
@@ -255,7 +257,7 @@ def _and_filter(client, filter_json1, filter_json2):
     try:
         filter_json1 = loads(filter_json1)
         filter_json2 = loads(filter_json2)
-    except Exception as exception:
+    except Exception:
         raise ValueError("Both filters must be JSON content.")
 
     filter_json = and_(filter_json1, filter_json2)
@@ -275,7 +277,7 @@ def _or_filter(client, filter_json1, filter_json2):
     try:
         filter_json1 = loads(filter_json1)
         filter_json2 = loads(filter_json2)
-    except Exception as exception:
+    except Exception:
         raise ValueError("Both filters must be JSON content.")
 
     filter_json = or_(filter_json1, filter_json2)
@@ -293,14 +295,14 @@ def _or_filter(client, filter_json1, filter_json2):
 def _test_module(client):
     # test the client can reach the case list
     try:
-        cases = client.cases
-    except Exception as exception:
+        client.cases
+    except Exception:
         raise ValueError("Client cannot reach the server with the current configuration.")
 
     return "ok"
 
 
-""" define entry """#
+""" define entry """  #
 
 
 def main():
@@ -335,6 +337,7 @@ def main():
     except Exception as exception:
         demisto.error(format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(exception)}')
+
 
 """ Entry Point """
 

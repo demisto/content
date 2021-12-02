@@ -1,8 +1,7 @@
 id: AccessData_Process_Evidence
-version: 36
+version: 37
 fromversion: 6.0.0
-vcShouldKeepItemLegacyProdMachine: false
-name: 'AccessData: Process Evidence and Export'
+name: 'AccessData_Process_Evidence'
 description: Creates a new case and processes targetted evidence.
 starttaskid: "0"
 tasks:
@@ -517,6 +516,7 @@ tasks:
       id: 642adf15-4c7d-44f6-8945-23465102264c
       version: -1
       name: AccessDataCreateFilter
+      description: ''
       script: AccessData|||accessdata-api-create-filter
       type: regular
       iscommand: true
@@ -596,20 +596,22 @@ inputs:
   value: {}
   required: true
   description: The protocol to use for accessing the REST API.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: SERVER
   value: {}
   required: true
   description: The address of the REST API service.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: PORT
   value: {}
   required: true
   description: The port to reach the REST API service.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: APIKEY
   value: {}
   required: true
   description: The API key used for authentication with the REST API.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
+tests:
+- No tests (auto formatted)
