@@ -4714,6 +4714,17 @@
             "timeout": 2400
         },
         {
+            "integrations": [
+                "CrowdStrike Indicator Feed",
+                "Demisto REST API"
+            ],
+            "playbookID": "Fetch Indicators Test",
+            "fromversion": "6.0.0",
+            "is_mockable": false,
+            "instance_names": "CrowdStrike_feed_instance",
+            "timeout": 2400
+        },
+        {
             "playbookID": "Get Original Email - Microsoft Graph Mail - test",
             "fromversion": "6.1.0",
             "integrations": [
