@@ -609,14 +609,40 @@ def check_params(kafka: KafkaCommunicator, topic: str, partitions: Optional[list
     return True
 
 
-def update_topic_partitions_with_history(kafka, topic, offset, last_fetched_offsets):
+def get_topic_partition_if_relevant(kafka, topic, partition, specific_offset):
+    demisto.debug(f'Getting last offset for partition {partition}, specific offset is {specific_offset}\n')
+    add_topic_partition = True
+    if isinstance(specific_offset, int):
+        specific_offset += 1
+        earliest_offset, latest_offset = kafka.get_partition_offsets(topic=topic, partition=int(partition))
+
+        if specific_offset >= latest_offset or specific_offset < earliest_offset:
+            add_topic_partition = False
+            demisto.debug(f'Skipping partition {partition}, due to specific offset mismatch: '
+                          f'{specific_offset} not in [{earliest_offset}, {latest_offset}) \n')
+
+    if add_topic_partition:
+        return [kafka.get_topic_partitions(topic=topic, partition=int(partition), offset=specific_offset, consumer=True)]
+    return []
+
+
+def get_fetch_topic_partitions(kafka, topic, offset, last_fetched_offsets):
 
     all_topic_partitions = kafka.get_topic_partitions(topic=topic, partition=-1, offset=offset, consumer=True)
-    if not last_run:
+    if not last_fetched_offsets:
         return all_topic_partitions
+
+    topic_partitions_in_system = []
+
     for partition in last_fetched_offsets.keys():
+        specific_offset = last_fetched_offsets.get(partition, offset)
+        topic_partitions_in_system += get_topic_partition_if_relevant(kafka, topic, partition, specific_offset)
 
+        for topic_partition in all_topic_partitions:
+            if topic_partition.partition == partition:
+                all_topic_partitions.remove(topic_partition)
 
+    return topic_partitions_in_system + all_topic_partitions
 
 
 def fetch_incidents(kafka: KafkaCommunicator, demisto_params: dict) -> None:
@@ -657,26 +683,13 @@ def fetch_incidents(kafka: KafkaCommunicator, demisto_params: dict) -> None:
     topic_partitions = []
     for partition in partitions:
         specific_offset = last_fetched_offsets.get(partition, offset) if partition in last_fetched_offsets else offset
-        demisto.debug(f'Getting last offset for partition {partition}, specific offset is {specific_offset}\n')
-        add_topic_partition = True
-        if isinstance(specific_offset, int):
-            specific_offset += 1
-            earliest_offset, latest_offset = kafka.get_partition_offsets(topic=topic, partition=int(partition))
+        topic_partitions += get_topic_partition_if_relevant(kafka, topic, partition, specific_offset)
 
-            if specific_offset >= latest_offset or specific_offset < earliest_offset:
-                add_topic_partition = False
-                demisto.debug(f'Skipping partition {partition}, due to specific offset mismatch: '
-                              f'{specific_offset} not in [{earliest_offset}, {latest_offset}) \n')
-
-        if add_topic_partition:
-            topic_partitions += kafka.get_topic_partitions(topic=topic, partition=int(partition),
-                                                           offset=specific_offset, consumer=True)
     if not partitions:
         if isinstance(offset, int):
             offset += 1
         demisto.debug(f'No partitions were set, getting all available partitions for topic {topic}')
-        topic_partitions = update_topic_partitions_with_history(kafka, topic, offset, last_fetched_offsets)
-
+        topic_partitions = get_fetch_topic_partitions(kafka, topic, offset, last_fetched_offsets)
 
     try:
         if topic_partitions:
