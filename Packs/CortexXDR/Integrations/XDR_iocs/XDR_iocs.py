@@ -156,7 +156,6 @@ def get_iocs(page=0, size=200, query=None) -> List:
         .get('iocs', [])
 
 
-
 def demisto_expiration_to_xdr(expiration) -> int:
     if expiration and not expiration.startswith('0001'):
         try:
