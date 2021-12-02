@@ -1,4 +1,4 @@
 [file:README.md]
 ignore=RM106
-[file:ExtFilter]
+[file:pack_metadata.json]
 ignore=PA129
