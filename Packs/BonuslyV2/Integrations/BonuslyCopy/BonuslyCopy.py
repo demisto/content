@@ -11,7 +11,6 @@ import json
 
 import dateparser
 # contrib comment
-# second comment
 import requests
 
 # IMPORTS
