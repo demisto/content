@@ -8,5 +8,5 @@ ignore=IF100
 [file:incidentfield-FireEye_Alert_Vlan.json]
 ignore=IF100
 
-[file:FireEyeCommonFields]
+[file:pack_metadata.json]
 ignore=PA129

@@ -3611,7 +3611,10 @@
             "timeout": 2400
         },
         {
-            "integrations": ["MalwareBazaar Feed", "Demisto REST API"],
+            "integrations": [
+                "MalwareBazaar Feed",
+                "Demisto REST API"
+            ],
             "playbookID": "Fetch Indicators Test",
             "fromversion": "6.0.0",
             "is_mockable": false,
@@ -4654,18 +4657,27 @@
             "playbookID": "ThreatStream-Test"
         },
         {
-            "integrations": ["AutoFocusTagsFeed", "Demisto REST API"],
+            "integrations": [
+                "AutoFocusTagsFeed",
+                "Demisto REST API"
+            ],
             "playbookID": "AutoFocusTagsFeed-test",
             "timeout": 300
         },
         {
-            "integrations": ["Unit42IntelObjectsFeed", "Demisto REST API"],
+            "integrations": [
+                "Unit42IntelObjectsFeed",
+                "Demisto REST API"
+            ],
             "playbookID": "Unit42 Intel Objects Feed - Test",
             "timeout": 300
         },
         {
             "playbookID": "Tanium Threat Response V2 Test",
-            "integrations": ["Tanium Threat Response v2", "Demisto REST API"],
+            "integrations": [
+                "Tanium Threat Response v2",
+                "Demisto REST API"
+            ],
             "fromversion": "6.0.0",
             "timeout": 3000
         },
@@ -4723,8 +4735,8 @@
                 "EWS v2"
             ],
             "instance_names": "ewv2_regular"
-       },
-       {
+        },
+        {
             "integrations": [
                 "Demisto REST API"
             ],
@@ -4755,9 +4767,8 @@
     ],
     "skipped_tests": {
         "MISP V2 Test": "The integration is deprecated as we released MISP V3",
-        "Zscaler Test": "We won't get license (Issues 40157,17784)",
         "Github IAM - Test Playbook": "Issue 32383",
-        "O365-SecurityAndCompliance-ContextResults-Test":  "Issue 38900",
+        "O365-SecurityAndCompliance-ContextResults-Test": "Issue 38900",
         "Calculate Severity - Standard - Test": "Issue 32715",
         "Calculate Severity - Generic v2 - Test": "Issue 32716",
         "Workday - Test": "No credentials Issue 29595",
@@ -4851,10 +4862,19 @@
         "carbonBlackEndpointStandardTestPlaybook": "Issue 36936",
         "RecordedFutureFeed - Test": "Quota issue. Need to unskip in 1.12.21",
         "Recorded Future Test": "Quota issue. Need to unskip in 1.12.21",
-        "test_Qradar_v2": "the integration is deprecated as we released Qradar V3"
+        "test_Qradar_v2": "the integration is deprecated as we released Qradar V3",
+        "XsoarPowershellTesting-Test": "Issue 32689",
+        "Unit42 Intel Objects Feed - Test": "Issue 44100",
+        "RedCanaryTest": "Issue 43818",
+        "MailListener-POP3 - Test": "Issue 44199",
+        "MicrosoftManagementActivity - Test": "Issue 43922",
+        "VMWare Test": "Issue 43823",
+        "Google-Vault-Generic-Test": "Issue 24347",
+        "Google_Vault-Search_And_Display_Results_test": "Issue 24348",
+        "Tenable.io Scan Test": "Issue 26728"
     },
     "skipped_integrations": {
-
+        
         "_comment1": "~~~ NO INSTANCE ~~~",
         "Ipstack": "Usage limit reached (Issue 38063)",
         "AnsibleAlibabaCloud": "No instance - issue 40447",
@@ -4943,16 +4963,16 @@
         "FraudWatch": "Issue 34299",
         "Cisco Stealthwatch": "No instance - developed by Qmasters",
         "Armis": "No instance - developed by SOAR Experts",
-
+        
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
-
+        
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
-
+        
         "_comment4": "~~~ OTHER ~~~",
         "Anomali ThreatStream v2": "Will be deprecated soon.",
         "Anomali ThreatStream": "Will be deprecated soon.",
@@ -5134,7 +5154,7 @@
         "HelloWorldPremium-Test"
     ],
     "docker_thresholds": {
-
+        
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {
