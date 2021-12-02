@@ -32,7 +32,7 @@ class Client(BaseClient):
         uri = params.get('deactivate_uri')
         return self._http_request(method='GET', url_suffix=uri, resp_type='response')
 
-    def get_user(self, user_name: str) -> Optional[IAMUserAppData]:
+    def get_user(self, _, user_name: str) -> Optional[IAMUserAppData]:
         """ Returns an IAMUserAppData object
         that holds the user_id, username, is_active and app_data attributes given in the query response.
 
@@ -192,7 +192,6 @@ def get_mapping_fields(client: Client) -> GetMappingFieldsResponse:
 
 
 def main():
-    user_profile = None
     params = demisto.params()
     base_url = params.get('url').strip('/')
     deactivate_uri = params.get('deactivate_uri')
@@ -204,13 +203,25 @@ def main():
     proxy = params.get('proxy', False)
     command = demisto.command()
     args = demisto.args()
-    user_id = args.get('user-profile').get('id')
-    email = args.get('user-profile').get('email')
-    user_name = args.get('user-profile').get('username')
+
+    user_profile: Optional[IAMUserProfile] = None
+    user_id, email, user_name = '', '', ''
+
+    # Extracting the user ID, email and username to pass to Client. This is needed because IAM Command uses the client
+    # get-user When get-user is not supported by the api. So get-user here just returns the fields to allow disable
+    # Command to work as expected.
+    if args.get('user-profile'):
+        incident_type: str = IAMUserProfile.CREATE_INCIDENT_TYPE if command == 'iam-create-user' else \
+            IAMUserProfile.UPDATE_INCIDENT_TYPE
+        if user_profile := IAMUserProfile(args.get('user-profile'), mapper=mapper_out, incident_type=incident_type):
+            user_id = user_profile.get_attribute('id')
+            email = user_profile.get_attribute('email')
+            user_name = user_profile.get_attribute('username')
 
     is_disable_enabled = params.get("disable_user_enabled")
 
-    iam_command = IAMCommand(is_disable_enabled=is_disable_enabled, mapper_in=mapper_in, mapper_out=mapper_out, attr='username')
+    iam_command = IAMCommand(is_disable_enabled=is_disable_enabled, mapper_in=mapper_in, mapper_out=mapper_out,
+                             get_user_iam_attrs=['username'])
 
     headers = {
         'Content-Type': 'application/json',

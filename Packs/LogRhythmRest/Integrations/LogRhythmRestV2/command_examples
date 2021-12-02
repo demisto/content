@@ -1,0 +1,36 @@
+!lr-alarms-list count=2 alarm_status=Opened
+!lr-alarm-update alarm_id=200 alarm_status=Closed rbp=100
+!lr-alarm-add-comment alarm_id=200 alarm_comment=test
+!lr-alarm-history-list alarm_id=200 type=status
+!lr-alarm-events-list alarm_id=200
+!lr-alarm-summary alarm_id=200
+!lr-cases-list priority=5
+!lr-case-create name=test priority=1 external_id=9900 summary=`test case`
+!lr-case-update case_id=2E7FA20D-191E-4733-B7DC-A18BBFE762CE priority=3
+!lr-case-status-change case_id=2E7FA20D-191E-4733-B7DC-A18BBFE762CE status=Incident
+!lr-case-evidence-list case_id=583A7DAA-872A-4ECE-80B8-0DECB6FC3061
+!lr-case-alarm-evidence-add case_id=2E7FA20D-191E-4733-B7DC-A18BBFE762CE alarm_numbers=200,201
+!lr-case-note-evidence-add case_id=2E7FA20D-191E-4733-B7DC-A18BBFE762CE note=test
+!lr-case-file-evidence-add case_id=2E7FA20D-191E-4733-B7DC-A18BBFE762CE entryId=1450@383ed6ae-1fd7-431a-858d-a11f2620c73b
+!lr-case-evidence-delete case_id=2E7FA20D-191E-4733-B7DC-A18BBFE762CE evidence_number=65
+!lr-case-file-evidence-download case_id=2E7FA20D-191E-4733-B7DC-A18BBFE762CE evidence_number=66
+!lr-case-tags-add case_id=2E7FA20D-191E-4733-B7DC-A18BBFE762CE tag_numbers=2,3
+!lr-case-tags-remove case_id=2E7FA20D-191E-4733-B7DC-A18BBFE762CE tag_numbers=1,2
+!lr-tags-list count=2
+!lr-case-collaborators-list case_id=2E7FA20D-191E-4733-B7DC-A18BBFE762CE
+!lr-case-collaborators-update case_id=2E7FA20D-191E-4733-B7DC-A18BBFE762CE collaborators=1 owner=1
+!lr-entities-list count=2
+!lr-hosts-list count=2
+!lr-users-list count=2
+!lr-networks-list count=2
+!lr-lists-get
+!lr-hosts-status-update host_id=7 host_status=Active
+!lr-list-details-and-items-get list_guid=EA778B8F-20CA-4413-9A2D-CF69FB536793
+!lr-list-items-add list_guid=EA778B8F-20CA-4413-9A2D-CF69FB536793 items=`{"listItemDataType": "PortRange","listItemType": "PortRange","value": "200,300","valueAsListReference":{"listType": "Network"}}`
+!lr-list-items-remove list_guid=EA778B8F-20CA-4413-9A2D-CF69FB536793 items=`{"displayValue": "201,301","listItemType": "PortRange","value": "201,301"}`
+!lr-add-host entity-name=`Global Entity` host-status=Retired host-zone=DMZ name=test_host2 os=AIX risk-level="High-High" use-eventlog-credentials=false
+!endpoint hostname=EC2AMAZ-F6K2KDP using=LogrhythmV2_instance_2
+!lr-execute-search-query number_of_days=5
+!lr-get-query-result task_id="2b408017-fe27-4054-acd8-cd88bbc7c834"
+!lr-list-summary-create-update does_expire=false enabled=true entity_name=`Global Entity` list_type=User name=test1 need_to_notify=false read_access=Private replace_existing=false restricted_read=false use_patterns=false write_access=Private owner=1
+

@@ -33,7 +33,8 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
+    fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -83,9 +84,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the Google Cloud Platform whitelist integration to get indicators
-  from the feed.
-display: GCP Whitelist Feed
+description: Deprecated. Use the Google IP Ranges Feed integration instead.
+display: GCP Whitelist Feed (Deprecated)
 name: GCP Whitelist Feed
 script:
   commands:
@@ -93,7 +93,7 @@ script:
     - name: limit
       description: The maximum number of results to return. The default value is 10.
       defaultValue: "10"
-    deprecated: false
+    deprecated: true
     description: Gets indicators from the feed.
     execution: false
     name: gcp-whitelist-get-indicators
@@ -107,5 +107,6 @@ script:
   subtype: python3
   type: python
 fromversion: 5.5.0
+deprecated: true
 tests:
-- GCPWhitelist_Feed_Test
+  - No tests (auto formatted)

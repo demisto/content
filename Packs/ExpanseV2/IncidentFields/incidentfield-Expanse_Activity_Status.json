@@ -18,7 +18,6 @@
     "ownerOnly": false,
     "required": false,
     "selectValues": [
-        "",
         "Active",
         "Inactive"
     ],

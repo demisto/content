@@ -122,7 +122,17 @@ def test_module(client: Client) -> str:
     :param client: the client object with the given params
     :return: ok if the request succeeded
     """
-    client.list_credentials()
+    if client._credentials_list:
+        client.list_credentials()
+    else:
+        try:
+            # Running a dummy credential just to check connection itself.
+            client.get_credentials("test_cred")
+        except DemistoException as e:
+            if 'Error in API call [500]' in e.message or 'Error in API call [404]' in e.message:
+                return 'ok'
+            else:
+                raise e
     return "ok"
 
 

@@ -2,7 +2,7 @@
     "id": "RedLock",
     "name": "Prisma Cloud - Classifier",
     "type": "classification",
-    "description": "Classifies Prisma Cloud events.",
+    "description": "Classifies incoming Prisma Cloud events that are created through the 'fetch incidents' command in the Prisma Cloud integration.",
 	"defaultIncidentType": "Prisma Cloud",
 	"keyTypeMap": {
 		"05befc8b-c78a-45e9-98dc-c7fbaef580e7": "AWS CloudTrail Misconfiguration",

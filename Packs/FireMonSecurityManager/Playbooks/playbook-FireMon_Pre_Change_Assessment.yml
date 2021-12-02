@@ -18,12 +18,12 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "4"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 50
         }
       }
@@ -48,8 +48,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 370
+          "x": 162.5,
+          "y": 545
         }
       }
     note: false
@@ -65,9 +65,9 @@ tasks:
       id: c0306ee1-d5a4-4cda-816b-7343eb39b397
       version: -1
       name: pca
-      description: "PCA- Pre-Change Assessment is process of showing impact of created\
-        \ devices changes in early stages before implementing changes to devices.\
-        \ \nWe can check the PCA table in Review stage of Policy planner ticket."
+      description: "PCA- Pre-Change Assessment is process of showing impact of created
+        devices changes in early stages before implementing changes to devices. \nWe
+        can check the PCA table in Review stage of Policy planner ticket."
       script: '|||firemon-pca'
       type: regular
       iscommand: true
@@ -93,6 +93,43 @@ tasks:
       {
         "position": {
           "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: f40194c2-33e7-474c-8b77-1b14b31ea436
+    type: condition
+    task:
+      id: f40194c2-33e7-474c-8b77-1b14b31ea436
+      version: -1
+      name: Is Firemon Integration Available
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "2"
+      "yes":
+      - "3"
+    scriptarguments:
+      brandname:
+        simple: FireMonSecurityManager
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
           "y": 195
         }
       }
@@ -103,17 +140,68 @@ tasks:
     quietmode: 0
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "4_2_no": 0.61,
+      "4_3_yes": 0.57
+    },
     "paper": {
       "dimensions": {
-        "height": 385,
-        "width": 380,
+        "height": 560,
+        "width": 492.5,
         "x": 50,
         "y": 50
       }
     }
   }
-inputs: []
+inputs:
+- key: domain_id
+  value:
+    complex:
+      root: incident
+      accessor: domainid
+  required: true
+  description: Enter Domain Id (Integer)
+  playbookInputQuery: null
+- key: device_group_id
+  value:
+    complex:
+      root: incident
+      accessor: devicegroupid
+  required: true
+  description: Enter Device Group Id (Integer)
+  playbookInputQuery: null
+- key: destinations
+  value:
+    complex:
+      root: incident
+      accessor: destination
+  required: true
+  description: Enter List of Destinations
+  playbookInputQuery: null
+- key: sources
+  value:
+    complex:
+      root: incident
+      accessor: source
+  required: true
+  description: Enter List of Sources
+  playbookInputQuery: null
+- key: services
+  value:
+    complex:
+      root: incident
+      accessor: service
+  required: true
+  description: Enter List of Services
+  playbookInputQuery: null
+- key: action
+  value:
+    complex:
+      root: incident
+      accessor: action
+  required: true
+  description: Select an Action
+  playbookInputQuery: null
 outputs: []
 tests:
 - No tests (auto formatted)

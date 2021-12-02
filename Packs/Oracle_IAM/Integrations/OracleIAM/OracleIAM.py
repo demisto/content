@@ -88,21 +88,25 @@ class Client(BaseClient):
         if user_app_data:
             user_name = user_app_data.get('userName')
             is_active = user_app_data.get('active')
+            email = get_first_primary_email_by_scim_schema(user_app_data)
 
-            return IAMUserAppData(user_id, user_name, is_active, user_app_data)
+            return IAMUserAppData(user_id, user_name, is_active, user_app_data, email)
         return None
 
-    def get_user(self, user_name: str) -> Optional['IAMUserAppData']:
+    def get_user(self, filter_name: str, filter_value: str) -> Optional['IAMUserAppData']:
         """ Queries the user in the application using REST API by its email, and returns an IAMUserAppData object
         that holds the user_id, username, is_active and app_data attributes given in the query response.
 
-        :type user_name: ``str``
-        :param user_name: userName of the user
+        :type filter_name: ``str``
+        :param filter_name: Attribute name to filter by.
+
+        :type filter_value: ``str``
+        :param filter_value: The filter attribute value.
 
         :return: An IAMUserAppData object if user exists, None otherwise.
         :rtype: ``Optional[IAMUserAppData]``
         """
-        query_params = {'filter': f'userName eq "{user_name}"'}
+        query_params = {'filter': f'{filter_name} eq "{filter_value}"'}
 
         res = self._http_request(
             method='GET',
@@ -142,8 +146,9 @@ class Client(BaseClient):
         user_id = user_app_data.get('id')
         is_active = user_app_data.get('active')
         username = user_app_data.get('userName')
+        email = get_first_primary_email_by_scim_schema(user_app_data)
 
-        return IAMUserAppData(user_id, username, is_active, user_app_data)
+        return IAMUserAppData(user_id, username, is_active, user_app_data, email)
 
     def update_user(self, user_id, new_user_data):
         old_user_data = self._http_request(
@@ -159,8 +164,9 @@ class Client(BaseClient):
 
         is_active = user_app_data.get('active')
         username = user_app_data.get('userName')
+        email = get_first_primary_email_by_scim_schema(user_app_data)
 
-        return IAMUserAppData(user_id, username, is_active, user_app_data)
+        return IAMUserAppData(user_id, username, is_active, user_app_data, email)
 
     def enable_user(self, user_id: str):
         """ Enables a user in the application using REST API.
@@ -192,8 +198,9 @@ class Client(BaseClient):
         if user_app_data:
             user_name = user_app_data.get('userName')
             is_active = user_app_data.get('active')
+            email = get_first_primary_email_by_scim_schema(user_app_data)
 
-            return IAMUserAppData(user_id, user_name, is_active, user_app_data)
+            return IAMUserAppData(user_id, user_name, is_active, user_app_data, email)
         return None
 
     def disable_user(self, user_id: str):
@@ -226,8 +233,9 @@ class Client(BaseClient):
         if user_app_data:
             user_name = user_app_data.get('userName')
             is_active = user_app_data.get('active')
+            email = get_first_primary_email_by_scim_schema(user_app_data)
 
-            return IAMUserAppData(user_id, user_name, is_active, user_app_data)
+            return IAMUserAppData(user_id, user_name, is_active, user_app_data, email)
         return None
 
     def get_group_by_id(self, group_id: str):
@@ -242,7 +250,7 @@ class Client(BaseClient):
 
         return self._http_request(
             method='GET',
-            url_suffix=f'admin/v1/Groups/{group_id}',
+            url_suffix=f'admin/v1/Groups/{group_id}?attributes=id,displayName,members',
             resp_type='response',
         )
 
@@ -261,7 +269,7 @@ class Client(BaseClient):
         }
         return self._http_request(
             method='GET',
-            url_suffix='admin/v1/Groups',
+            url_suffix='admin/v1/Groups?attributes=id,displayName,members',
             params=query_params,
             resp_type='response',
         )
@@ -378,7 +386,7 @@ class Client(BaseClient):
         user_profile.set_result(action=action,
                                 success=False,
                                 error_code=error_code,
-                                error_message=error_message)
+                                error_message=f'{error_message}\n{traceback.format_exc()}')
 
         demisto.error(traceback.format_exc())
 
@@ -470,7 +478,8 @@ def get_group_command(client, args):
             res = client.get_group_by_id(group_id)
             res_json = res.json()
             if res.status_code == 200:
-                generic_iam_context = OutputContext(success=True, id=group_id, displayName=res_json.get('displayName'))
+                generic_iam_context = OutputContext(success=True, id=group_id, displayName=res_json.get('displayName'),
+                                                    members=res_json.get('members'))
         except DemistoException as exc:
             if exc.res.status_code == 404:
                 generic_iam_context = OutputContext(success=False, displayName=group_name, id=group_id,
@@ -485,7 +494,8 @@ def get_group_command(client, args):
             res_json = res.json()
             if res.status_code == 200 and res_json.get('totalResults') > 0:
                 res_json = res_json['Resources'][0]
-                generic_iam_context = OutputContext(success=True, id=res_json.get('id'), displayName=group_name)
+                generic_iam_context = OutputContext(success=True, id=res_json.get('id'), displayName=group_name,
+                                                    members=res_json.get('members'))
         except DemistoException as exc:
             if exc.res.status_code == 404:
                 generic_iam_context = OutputContext(success=False, displayName=group_name, id=group_id, errorCode=404,
@@ -515,15 +525,20 @@ def create_group_command(client, args):
 
     group_data = scim
     group_data['schemas'] = ['urn:ietf:params:scim:schemas:core:2.0:Group']
-    res = client.create_group(group_data)
-    res_json = res.json()
-
-    if res.status_code == 201:
-        generic_iam_context = OutputContext(success=True, id=res_json.get('id'), displayName=group_name)
-    else:
+    try:
+        res = client.create_group(group_data)
         res_json = res.json()
-        generic_iam_context = OutputContext(success=False, displayName=group_name, errorCode=res_json.get('code'),
-                                            errorMessage=res_json.get('message'), details=res_json)
+
+        if res.status_code == 201:
+            generic_iam_context = OutputContext(success=True, id=res_json.get('id'), displayName=group_name)
+        else:
+            res_json = res.json()
+            generic_iam_context = OutputContext(success=False, displayName=group_name, errorCode=res_json.get('code'),
+                                                errorMessage=res_json.get('message'), details=res_json)
+    except DemistoException as e:
+        res_json = e.res.json()
+        generic_iam_context = OutputContext(success=False, displayName=group_name, errorCode=res_json.get('status'),
+                                            errorMessage=res_json.get('detail'), details=res_json)
 
     readable_output = tableToMarkdown('Oracle Cloud Create Group:', generic_iam_context.data, removeNull=True)
 
@@ -680,7 +695,8 @@ def main():
     create_if_not_exists = params.get('create_if_not_exists')
 
     iam_command = IAMCommand(is_create_enabled, is_enable_enabled, is_disable_enabled, is_update_enabled,
-                             create_if_not_exists, mapper_in, mapper_out, 'username')
+                             create_if_not_exists, mapper_in, mapper_out,
+                             get_user_iam_attrs=['id', 'userName', 'emails'])
 
     headers = {
         'Content-Type': 'application/scim+json',

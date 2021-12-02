@@ -65,6 +65,7 @@ This playbook does not use any integrations.
 * setIncident
 * closeInvestigation
 * send-mail
+* extractIndicators
 
 ## Playbook Inputs
 ---
