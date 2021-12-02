@@ -416,12 +416,15 @@ def run_polling_paging_command(args: dict, cmd: str, results_function: Callable,
                           )
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client, params: dict) -> str:
     """
     Tries to run list_alerts, returning OK if integration is working.
     """
-    result = client.list_alerts({"sort": "createdAt", "limit": 5})
-    if result:
+    result_list = client.list_alerts({"sort": "createdAt", "limit": 5})
+    result_fetch = [{'ok': 'ok'}]
+    if params.get("isFetch"):
+        result_fetch, last_run = fetch_incidents_command(client, params)
+    if result_list and result_fetch:
         return 'ok'
     return 'Failed.'
 
@@ -1044,7 +1047,7 @@ def main() -> None:
         command = demisto.command()
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            return_results(test_module(client))
+            return_results(test_module(client, demisto.params()))
         elif command == 'fetch-incidents':
             incidents, new_run_date = fetch_incidents_command(client=client,
                                                               params=demisto.params(),

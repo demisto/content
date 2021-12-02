@@ -11,12 +11,29 @@ def util_load_json(path):
 
 
 def test_create_alert_wrong_responders():
+    """
+    Given:
+        - An app client object
+    When:
+        - Calling function create_alert with argument responders in the wrong format
+    Then:
+        - Ensure the resulted will raise an exception.
+    """
     mock_client = OpsGenieV3.Client(base_url="")
     with pytest.raises(DemistoException):
         OpsGenieV3.create_alert(mock_client, {'responders': ['team', 'id']})
 
 
 def test_create_alert(mocker):
+    """
+    Given:
+        - An app client object
+        - Responders "team,id,123"
+    When:
+        - Calling function create_alert with argument responders in the right format
+    Then:
+        - Ensure the return data is correct
+    """
     mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
     mock_client = OpsGenieV3.Client(base_url="")
     mocker.patch.object(mock_client, 'create_alert',
@@ -28,6 +45,15 @@ def test_create_alert(mocker):
 
 
 def test_get_alerts(mocker):
+    """
+    Given:
+        - An app client object
+        - Limit = 1
+    When:
+        - Calling function list_alerts
+    Then:
+        - Ensure the return data is correct
+    """
     mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
     mock_client = OpsGenieV3.Client(base_url="")
     mocker.patch.object(mock_client, 'list_alerts',
@@ -37,6 +63,18 @@ def test_get_alerts(mocker):
 
 
 def test_get_alerts_going_to_right_function():
+    """
+    Given:
+        - An app client object
+    When:
+        - Calling function get_alerts
+        Case A: "alert-id" = 1234
+        Case B: No arguments
+    Then:
+        - Ensure the right function was called
+        Case A: Called get_alert
+        Case B: Called list_alerts
+    """
     mock_client = OpsGenieV3.Client(base_url="")
     mock_client.get_alert = mock.MagicMock()
     OpsGenieV3.get_alerts(mock_client, {"alert-id": 1234})
@@ -47,6 +85,15 @@ def test_get_alerts_going_to_right_function():
 
 
 def test_delete_alert(mocker):
+    """
+    Given:
+        - An app client object
+        - Alert-id = 1234
+    When:
+        - Calling function delete_alert
+    Then:
+        - Ensure the return data is correct
+    """
     mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
     mock_client = OpsGenieV3.Client(base_url="")
     mocker.patch.object(mock_client, 'delete_alert',
@@ -58,6 +105,15 @@ def test_delete_alert(mocker):
 
 
 def test_ack_alert(mocker):
+    """
+    Given:
+        - An app client object
+        - Alert-id = 1234
+    When:
+        - Calling function ack_alert
+    Then:
+        - Ensure the return data is correct
+    """
     mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
     mock_client = OpsGenieV3.Client(base_url="")
     mocker.patch.object(mock_client, 'ack_alert',
@@ -69,6 +125,15 @@ def test_ack_alert(mocker):
 
 
 def test_close_alert(mocker):
+    """
+    Given:
+        - An app client object
+        - Alert-id = 1234
+    When:
+        - Calling function close_alert
+    Then:
+        - Ensure the return data is correct
+    """
     mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
     mock_client = OpsGenieV3.Client(base_url="")
     mocker.patch.object(mock_client, 'close_alert',
@@ -80,12 +145,30 @@ def test_close_alert(mocker):
 
 
 def test_assign_alert_without_args():
+    """
+    Given:
+        - An app client object
+    When:
+        - Calling function assign_alert with no arguments
+    Then:
+        - Ensure the resulted will raise an exception.
+    """
     mock_client = OpsGenieV3.Client(base_url="")
     with pytest.raises(DemistoException):
         OpsGenieV3.assign_alert(mock_client, {})
 
 
 def test_assign_alert(mocker):
+    """
+    Given:
+        - An app client object
+        - Alert-id = 1234
+        - Owner_id = 123
+    When:
+        - Calling function assign_alert
+    Then:
+        - Ensure the return data is correct
+    """
     mock_client = OpsGenieV3.Client(base_url="")
     mocker.patch.object(mock_client, 'assign_alert',
                         return_value=util_load_json('test_data/request.json'))
@@ -96,12 +179,30 @@ def test_assign_alert(mocker):
 
 
 def test_add_responder_alert_wrong_responders():
+    """
+    Given:
+        - An app client object
+    When:
+        - Calling function add_responder_alert with argument responders in the wrong format
+    Then:
+        - Ensure the resulted will raise an exception.
+    """
     mock_client = OpsGenieV3.Client(base_url="")
     with pytest.raises(DemistoException):
         OpsGenieV3.add_responder_alert(mock_client, {'responders': ['team', 'id']})
 
 
 def test_add_responder_alert(mocker):
+    """
+    Given:
+        - An app client object
+        - Alert-id = 1234
+        - owner_id = 123
+    When:
+        - Calling function add_responder_alert
+    Then:
+        - Ensure the return data is correct
+    """
     mock_client = OpsGenieV3.Client(base_url="")
     mocker.patch.object(mock_client, 'add_responder_alert',
                         return_value=util_load_json('test_data/request.json'))
@@ -112,12 +213,28 @@ def test_add_responder_alert(mocker):
 
 
 def test_get_escalations_without_args():
+    """
+    Given:
+        - An app client object
+    When:
+        - Calling function escalate_alert with no arguments
+    Then:
+        - Ensure the resulted will raise an exception.
+    """
     mock_client = OpsGenieV3.Client(base_url="")
     with pytest.raises(DemistoException):
         OpsGenieV3.escalate_alert(mock_client, {})
 
 
 def test_get_escalations(mocker):
+    """
+    Given:
+        - An app client object
+    When:
+        - Calling function get_escalations
+    Then:
+        - Ensure the return data is correct
+    """
     mock_client = OpsGenieV3.Client(base_url="")
     mocker.patch.object(mock_client, 'get_escalations',
                         return_value=util_load_json('test_data/get_escalations.json'))
@@ -126,6 +243,15 @@ def test_get_escalations(mocker):
 
 
 def test_get_escalation(mocker):
+    """
+    Given:
+        - An app client object
+        - escalation_id = 123
+    When:
+        - Calling function get_escalations
+    Then:
+        - Ensure the return data is correct
+    """
     mock_client = OpsGenieV3.Client(base_url="")
     mocker.patch.object(mock_client, 'get_escalation',
                         return_value=util_load_json('test_data/get_escalations.json'))
@@ -134,12 +260,30 @@ def test_get_escalation(mocker):
 
 
 def test_escalate_alert_without_args():
+    """
+    Given:
+        - An app client object
+    When:
+        - Calling function escalate_alert with no arguments
+    Then:
+        - Ensure the resulted will raise an exception.
+    """
     mock_client = OpsGenieV3.Client(base_url="")
     with pytest.raises(DemistoException):
         OpsGenieV3.escalate_alert(mock_client, {})
 
 
 def test_escalate_alert(mocker):
+    """
+    Given:
+        - An app client object
+        - Alert-id = 1234
+        = escalation_id = 123
+    When:
+        - Calling function escalate_alert
+    Then:
+        - Ensure the return data is correct
+    """
     mock_client = OpsGenieV3.Client(base_url="")
     mocker.patch.object(mock_client, 'escalate_alert',
                         return_value=util_load_json('test_data/request.json'))
@@ -150,6 +294,16 @@ def test_escalate_alert(mocker):
 
 
 def test_add_alert_tag(mocker):
+    """
+    Given:
+        - An app client object
+        - Alert-id = 1234
+        - tags = [1,2]
+    When:
+        - Calling function add_alert_tag
+    Then:
+        - Ensure the return data is correct
+    """
     mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
     mock_client = OpsGenieV3.Client(base_url="")
     mocker.patch.object(mock_client, 'add_alert_tag',
@@ -161,6 +315,16 @@ def test_add_alert_tag(mocker):
 
 
 def test_remove_alert_tag(mocker):
+    """
+    Given:
+        - An app client object
+        - Alert-id = 1234
+        - tags = [1,2]
+    When:
+        - Calling function remove_alert_tag
+    Then:
+        - Ensure the return data is correct
+    """
     mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
     mock_client = OpsGenieV3.Client(base_url="")
     mocker.patch.object(mock_client, 'remove_alert_tag',
@@ -172,6 +336,15 @@ def test_remove_alert_tag(mocker):
 
 
 def test_get_alert_attachments(mocker):
+    """
+    Given:
+        - An app client object
+        - Alert-id = 1234
+    When:
+        - Calling function get_alert_attachments
+    Then:
+        - Ensure the return data is correct
+    """
     mock_client = OpsGenieV3.Client(base_url="")
     mocker.patch.object(mock_client, 'get_alert_attachments',
                         return_value=util_load_json('test_data/get_alert_attachments.json'))
@@ -180,6 +353,18 @@ def test_get_alert_attachments(mocker):
 
 
 def test_get_schedules():
+    """
+    Given:
+        - An app client object
+    When:
+        - Calling function get_schedules
+        Case A: "schedule_id" = 1234
+        Case B: No arguments
+    Then:
+        - Ensure the right function was called
+        Case A: Called get_schedule
+        Case B: Called list_schedules
+    """
     mock_client = OpsGenieV3.Client(base_url="")
     mock_client.get_schedule = mock.MagicMock()
     OpsGenieV3.get_schedules(mock_client, {"schedule_id": 1234})
@@ -190,12 +375,32 @@ def test_get_schedules():
 
 
 def test_get_schedule_overrides_without_args():
+    """
+    Given:
+        - An app client object
+    When:
+        - Calling function get_schedule_overrides with no arguments
+    Then:
+        - Ensure the resulted will raise an exception.
+    """
     mock_client = OpsGenieV3.Client(base_url="")
     with pytest.raises(DemistoException):
         OpsGenieV3.get_schedule_overrides(mock_client, {})
 
 
 def test_get_schedule_overrides():
+    """
+    Given:
+        - An app client object
+    When:
+        - Calling function get_schedule_overrides
+        Case A: "schedule_id" = 1234 , override_alias = 123
+        Case B: No arguments
+    Then:
+        - Ensure the right function was called
+        Case A: Called get_schedule_override
+        Case B: Called list_schedule_overrides
+    """
     mock_client = OpsGenieV3.Client(base_url="")
     mock_client.get_schedule_override = mock.MagicMock()
     OpsGenieV3.get_schedule_overrides(mock_client, {"schedule_id": 1234, "override_alias": 123})
@@ -206,12 +411,29 @@ def test_get_schedule_overrides():
 
 
 def test_get_on_call_without_args():
+    """
+    Given:
+        - An app client object
+    When:
+        - Calling function get_on_call with no arguments
+    Then:
+        - Ensure the resulted will raise an exception.
+    """
     mock_client = OpsGenieV3.Client(base_url="")
     with pytest.raises(DemistoException):
         OpsGenieV3.get_on_call(mock_client, {})
 
 
 def test_get_on_call(mocker):
+    """
+    Given:
+        - An app client object
+        - schedule_id = 1234
+    When:
+        - Calling function get_on_call
+    Then:
+        - Ensure the return data is correct
+    """
     mock_client = OpsGenieV3.Client(base_url="")
     mocker.patch.object(mock_client, 'get_on_call',
                         return_value=util_load_json('test_data/delete_incident.json'))
@@ -220,23 +442,47 @@ def test_get_on_call(mocker):
 
 
 def test_create_incident_wrong_args():
+    """
+    Given:
+        - An app client object
+    When:
+        - Calling function create_incident with argument responders in the wrong format
+    Then:
+        - Ensure the resulted will raise an exception.
+    """
     mock_client = OpsGenieV3.Client(base_url="")
     with pytest.raises(DemistoException):
         OpsGenieV3.create_incident(mock_client, {'responders': ['team', 'id']})
 
 
 def test_create_incident(mocker):
+    """
+    Given:
+        - An app client object
+    When:
+        - Calling function create_incident
+    Then:
+        - Ensure the return data is correct
+    """
     mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
     mock_client = OpsGenieV3.Client(base_url="")
     mocker.patch.object(mock_client, 'create_incident',
                         return_value=util_load_json('test_data/request.json'))
     mocker.patch.object(mock_client, 'get_request',
                         return_value=util_load_json('test_data/create_incident.json'))
-    res = OpsGenieV3.create_incident(mock_client, {"incident_id": 1234})
+    res = OpsGenieV3.create_incident(mock_client, {})
     assert (res.raw_response == util_load_json('test_data/create_incident.json'))
 
 
 def test_delete_incident(mocker):
+    """
+    Given:
+        - incident_id = 1234
+    When:
+        - Calling function delete_incident
+    Then:
+        - Ensure the return data is correct
+    """
     mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
     mock_client = OpsGenieV3.Client(base_url="")
     mocker.patch.object(mock_client, 'delete_incident',
@@ -248,6 +494,15 @@ def test_delete_incident(mocker):
 
 
 def test_get_incidents(mocker):
+    """
+    Given:
+        - An app client object
+        - limit = 1
+    When:
+        - Calling function get_incidents
+    Then:
+        - Ensure the return data is correct
+    """
     mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
     mock_client = OpsGenieV3.Client(base_url="")
     mocker.patch.object(mock_client, 'list_incidents',
@@ -257,6 +512,16 @@ def test_get_incidents(mocker):
 
 
 def test_responders_to_json():
+    """
+    Given:
+        - An app client object
+        - responders = ["team", "id", 1, "schedule", "name", "a"]
+        - responder_key = 'responders'
+    When:
+        - Calling function responders_to_json
+    Then:
+        - Ensure the return data is correct
+    """
     mock_client = OpsGenieV3.Client(base_url="")
     res = mock_client.responders_to_json(responders=["team", "id", 1, "schedule", "name", "a"],
                                          responder_key='responders')
@@ -264,6 +529,18 @@ def test_responders_to_json():
 
 
 def test_get_incidents_going_to_right_function():
+    """
+    Given:
+        - An app client object
+    When:
+        - Calling function get_incidents
+        Case A: "incident_id" = 1234
+        Case B: No arguments
+    Then:
+        - Ensure the right function was called
+        Case A: Called get_incident
+        Case B: Called list_incidents
+    """
     mock_client = OpsGenieV3.Client(base_url="")
     mock_client.get_incident = mock.MagicMock()
     OpsGenieV3.get_incidents(mock_client, {"incident_id": 1234})
@@ -274,6 +551,15 @@ def test_get_incidents_going_to_right_function():
 
 
 def test_close_incident(mocker):
+    """
+    Given:
+        - An app client object
+        - incident_id = 1234
+    When:
+        - Calling function close_incident
+    Then:
+        - Ensure the return data is correct
+    """
     mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
     mock_client = OpsGenieV3.Client(base_url="")
     mocker.patch.object(mock_client, 'close_incident',
@@ -285,6 +571,15 @@ def test_close_incident(mocker):
 
 
 def test_resolve_incident(mocker):
+    """
+    Given:
+        - An app client object
+        - incident_id = 1234
+    When:
+        - Calling function resolve_incident
+    Then:
+        - Ensure the return data is correct
+    """
     mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
     mock_client = OpsGenieV3.Client(base_url="")
     mocker.patch.object(mock_client, 'resolve_incident',
@@ -296,22 +591,50 @@ def test_resolve_incident(mocker):
 
 
 def test_add_responder_incident_wrong_args():
+    """
+    Given:
+        - An app client object
+    When:
+        - Calling function add_responder_incident with argument responders in the wrong format
+    Then:
+        - Ensure the resulted will raise an exception.
+    """
     mock_client = OpsGenieV3.Client(base_url="")
     with pytest.raises(DemistoException):
         OpsGenieV3.add_responder_incident(mock_client, {'responders': ['team', 'id']})
 
 
 def test_add_responder_incident(mocker):
+    """
+    Given:
+        - An app client object
+        - incident_id = 1234
+        - responders = ["team", "id", "name"]
+    When:
+        - Calling function add_responder_incident
+    Then:
+        - Ensure the return data is correct
+    """
     mock_client = OpsGenieV3.Client(base_url="")
     mocker.patch.object(mock_client, 'add_responder_incident',
                         return_value=util_load_json('test_data/request.json'))
     mocker.patch.object(mock_client, 'get_request',
                         return_value=util_load_json('test_data/add_responder_incident.json'))
-    res = OpsGenieV3.add_responder_incident(mock_client, {"incident_id": 1234, "tags": [1, 2]})
+    res = OpsGenieV3.add_responder_incident(mock_client, {"incident_id": 1234, "responders": ["team", "id", "name"]})
     assert (res.raw_response == util_load_json('test_data/add_responder_incident.json'))
 
 
 def test_add_tag_incident(mocker):
+    """
+    Given:
+        - An app client object
+        - incident_id = 1234
+        - tags = [1, 2]
+    When:
+        - Calling function add_tag_incident
+    Then:
+        - Ensure the return data is correct
+    """
     mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
     mock_client = OpsGenieV3.Client(base_url="")
     mocker.patch.object(mock_client, 'add_tag_incident',
@@ -323,6 +646,16 @@ def test_add_tag_incident(mocker):
 
 
 def test_remove_tag_incident(mocker):
+    """
+    Given:
+        - An app client object
+        - incident_id = 1234
+        - tags = [1, 2]
+    When:
+        - Calling function remove_tag_incident
+    Then:
+        - Ensure the return data is correct
+    """
     mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
     mock_client = OpsGenieV3.Client(base_url="")
     mocker.patch.object(mock_client, 'remove_tag_incident',
@@ -334,6 +667,14 @@ def test_remove_tag_incident(mocker):
 
 
 def test_get_teams(mocker):
+    """
+    Given:
+        - An app client object
+    When:
+        - Calling function get_teams
+    Then:
+        - Ensure the return data is correct
+    """
     mock_client = OpsGenieV3.Client(base_url="")
     mocker.patch.object(mock_client, 'list_teams',
                         return_value=util_load_json('test_data/get_teams.json'))
@@ -342,6 +683,18 @@ def test_get_teams(mocker):
 
 
 def test_get_teams_going_to_right_function():
+    """
+    Given:
+        - An app client object
+    When:
+        - Calling function get_teams
+        Case A: "team_id" = 1234
+        Case B: No arguments
+    Then:
+        - Ensure the right function was called
+        Case A: Called get_team
+        Case B: Called list_teams
+    """
     mock_client = OpsGenieV3.Client(base_url="")
     mock_client.get_team = mock.MagicMock()
     OpsGenieV3.get_teams(mock_client, {"team_id": 1234})
@@ -352,17 +705,67 @@ def test_get_teams_going_to_right_function():
 
 
 def test_fetch_incidents_command(mocker):
+    """
+    Given:
+        - An app client object
+    When:
+        - Calling function fetch_incidents_command
+    Then:
+        - Ensure the return data is correct
+    """
     mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
     mock_client = OpsGenieV3.Client(base_url="")
     mocker.patch.object(mock_client, 'list_alerts',
                         return_value=util_load_json('test_data/get_alerts.json'))
     mocker.patch.object(mock_client, 'list_incidents',
                         return_value=util_load_json('test_data/get_incidents.json'))
+    mocker.patch.object(OpsGenieV3, '_get_utc_now', return_value=datetime(2021, 11, 26))
+    mocker.patch.object(OpsGenieV3, '_parse_fetch_time', return_value='2021-11-23T12:19:48Z')
     res, last_run = OpsGenieV3.fetch_incidents_command(mock_client, {"max_fetch": 1})
     assert len(res) == 2
+    assert last_run == {'Alerts': {'lastRun': '2021-11-26T00:00:00Z',
+                                   'next_page': 'https://api.opsgenie.com/v2/alerts?limit=1&sort=createdAt&offset=1&order=desc'},
+                        'Incidents': {'lastRun': '2021-11-26T00:00:00Z',
+                                     'next_page': 'https://api.opsgenie.com/v1/incidents?limit=1&sort=insertedAt&offset=1&order=desc'}}
 
 
-def test_fetch_with_paging(mocker):
+def test_fetch_incidents_command_no_result(mocker):
+    """
+    Given:
+        - An app client object
+        - max_fetch = 1
+    When:
+        - Calling function fetch_incidents_command
+        - The list_alerts and list_incidents functions returns empty response
+    Then:
+        - Ensure the return data is correct
+    """
+    mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
+    mock_client = OpsGenieV3.Client(base_url="")
+    mocker.patch.object(mock_client, 'list_alerts',
+                        return_value=util_load_json('test_data/empty_response.json'))
+    mocker.patch.object(mock_client, 'list_incidents',
+                        return_value=util_load_json('test_data/empty_response.json'))
+    mocker.patch.object(OpsGenieV3, '_get_utc_now', return_value=datetime(2021, 11, 26))
+    mocker.patch.object(OpsGenieV3, '_parse_fetch_time', return_value='2021-11-23T12:19:48Z')
+    res, last_run = OpsGenieV3.fetch_incidents_command(mock_client, {"max_fetch": 1})
+    assert len(res) == 0
+    assert last_run == {'Alerts': {'lastRun': '2021-11-26T00:00:00Z', 'next_page': None},
+                        'Incidents': {'lastRun': '2021-11-26T00:00:00Z', 'next_page': None}}
+
+
+def test_fetch_with_paging_only_alerts(mocker):
+    """
+    Given:
+        - An app client object
+        - max_fetch = 2
+        - event_types = OpsGenieV3.ALERT_TYPE
+    When:
+        - Calling function fetch_incidents_command
+        - The list_alerts function returns result with paging
+    Then:
+        - Ensure the return data is correct
+    """
     mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
     mock_client = OpsGenieV3.Client(base_url="")
     mocker.patch.object(mock_client, 'list_alerts',
@@ -384,7 +787,50 @@ def test_fetch_with_paging(mocker):
                          'Incidents': {'lastRun': None, 'next_page': None}})
 
 
+def test_fetch_with_paging_only_incidents(mocker):
+    """
+    Given:
+        - An app client object
+        - max_fetch = 2
+        - event_types = OpsGenieV3.INCIDENT_TYPE
+    When:
+        - Calling function fetch_incidents_command
+        - The list_incidents function returns result with paging
+    Then:
+        - Ensure the return data is correct
+    """
+    mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
+    mock_client = OpsGenieV3.Client(base_url="")
+    mocker.patch.object(mock_client, 'list_incidents',
+                        return_value=util_load_json('test_data/get_incidents.json'))
+    mocker.patch.object(mock_client, 'get_paged',
+                        return_value=util_load_json('test_data/get_incidents_without_next.json'))
+    mocker.patch.object(OpsGenieV3, '_get_utc_now', return_value=datetime(2021, 11, 26))
+    mocker.patch.object(OpsGenieV3, '_parse_fetch_time', return_value='2021-11-23T12:19:48Z')
+    res, last_run = OpsGenieV3.fetch_incidents_command(mock_client, {"max_fetch": 2,
+                                                                     "event_types": OpsGenieV3.INCIDENT_TYPE})
+    assert (last_run == {'Incidents': {'lastRun': '2021-11-26T00:00:00Z',
+                                       'next_page': 'https://api.opsgenie.com/v1/incidents?limit=1&sort=insertedAt&offset=1&order=desc'},
+                         'Alerts': {'lastRun': None, 'next_page': None}})
+    mocker.patch.object(demisto, 'getLastRun', return_value=last_run)
+    res, last_run = OpsGenieV3.fetch_incidents_command(mock_client,
+                                                       {"max_fetch": 2, "event_types": OpsGenieV3.INCIDENT_TYPE},
+                                                       last_run)
+    assert (last_run == {'Incidents': {'lastRun': '2021-11-26T00:00:00Z', 'next_page': None},
+                         'Alerts': {'lastRun': None, 'next_page': None}})
+
+
 def test_build_query_fetch():
+    """
+    Given:
+        - An app client object
+        - args
+        - is_fetch_query = True
+    When:
+        - Calling function build_query
+    Then:
+        - Ensure the return data is correct
+    """
     args = {
         "query": "createdAt < 147039484114",
         "status": "Open",
@@ -398,6 +844,16 @@ def test_build_query_fetch():
 
 
 def test_build_query_not_fetch():
+    """
+    Given:
+        - An app client object
+        - args
+        - is_fetch_query = False
+    When:
+        - Calling function build_query
+    Then:
+        - Ensure the return data is correct
+    """
     args = {
         "query": "createdAt < 147039484114",
         "status": "Open",
@@ -411,6 +867,16 @@ def test_build_query_not_fetch():
 
 
 def test_build_query_not_fetch_without_query():
+    """
+    Given:
+        - An app client object
+        - args
+        - is_fetch_query = False
+    When:
+        - Calling function build_query
+    Then:
+        - Ensure the return data is correct
+    """
     args = {
         "status": "Open",
         "is_fetch_query": False,
