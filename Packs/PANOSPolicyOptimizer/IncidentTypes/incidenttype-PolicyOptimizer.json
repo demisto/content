@@ -1,0 +1,43 @@
+[
+	{
+		"id": "Policy Optimizer",
+		"version": 3,
+		"modified": "2021-11-09T16:18:39.46247886Z",
+		"sortValues": null,
+		"packID": "",
+		"itemVersion": "",
+		"fromServerVersion": "",
+		"toServerVersion": "",
+		"definitionId": "",
+		"vcShouldIgnore": false,
+		"vcShouldKeepItemLegacyProdMachine": false,
+		"commitMessage": "",
+		"shouldCommit": false,
+		"locked": false,
+		"name": "Policy Optimizer",
+		"prevName": "Policy Optimizer",
+		"color": "#7D28A7",
+		"playbookId": "e4bb6818-5ef2-4c89-88c6-2e1be6b15ee6",
+		"hours": 0,
+		"days": 0,
+		"weeks": 0,
+		"hoursR": 0,
+		"daysR": 0,
+		"weeksR": 0,
+		"system": false,
+		"readonly": false,
+		"default": false,
+		"autorun": true,
+		"preProcessingScript": "",
+		"closureScript": "",
+		"disabled": false,
+		"reputationCalc": 0,
+		"onChangeRepAlg": 0,
+		"layout": "401b9de1-3e55-4c39-8910-98cf6bd16f34",
+		"detached": false,
+		"extractSettings": {
+			"mode": "Specific",
+			"fieldCliNameToExtractSettings": {}
+		}
+	}
+]

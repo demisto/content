@@ -1,0 +1,381 @@
+id: 94edd630-6eec-4775-8fd0-0f46b117fa37
+version: 11
+vcShouldKeepItemLegacyProdMachine: false
+name: Policy Optimizer - Add Applications to Policy Rules
+description: |-
+  This playbook is used in the PAN-OS - Policy Optimizer playbooks to edit rules with unused applications or rules that are port based, and add an application to the rule.
+  The playbook uses communication task to get a rule name and the application to edit from the user.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8d6f588b-6b8a-464b-86ea-89326cb82551
+    type: start
+    task:
+      id: 8d6f588b-6b8a-464b-86ea-89326cb82551
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 89802fb0-3469-4200-80c4-a7878ff07d80
+    type: condition
+    task:
+      id: 89802fb0-3469-4200-80c4-a7878ff07d80
+      version: -1
+      name: Is PAN-OS integration available?
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "2"
+    scriptarguments:
+      brandname:
+        simple: Panorama
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 96436397-332f-4979-8dea-9ca9b53f5b84
+    type: collection
+    task:
+      id: 96436397-332f-4979-8dea-9ca9b53f5b84
+      version: -1
+      name: Choose app to add to the rule
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body:
+        simple: Choose a policy rule and an application to add to the rule
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Would you like to automatically update any of the following policy
+            rules with new applications?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: inputs.rules_list
+        - simple: "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: You can choose more than one rule to update at any time, but only
+          one application to apply to these rules. If you wish to change different
+          application, choose the different rule in the next playbook run (loop).
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Choose application to add to the rule.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Choose application to add to the rule. The new application will replace
+          the current application in the rule configuration.
+        readonly: false
+      title: Add applications to policy rules
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 22187f91-6d93-4703-89ff-d97d39c5a182
+    type: condition
+    task:
+      id: 22187f91-6d93-4703-89ff-d97d39c5a182
+      version: -1
+      name: Update rules automatically?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              complex:
+                root: Add applications to policy rules.Answers
+                accessor: "0"
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: "no"
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 7c5a510f-54df-4a13-8ec9-0e78ad26a73d
+    type: regular
+    task:
+      id: 7c5a510f-54df-4a13-8ec9-0e78ad26a73d
+      version: -1
+      name: PAN-OS - Edit rule
+      description: Edits a policy rule.
+      script: '|||panorama-edit-rule'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      element_to_change:
+        simple: application
+      element_value:
+        complex:
+          root: Add applications to policy rules.Answers
+          accessor: "1"
+      rulename:
+        complex:
+          root: Add applications to policy rules.Answers
+          accessor: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 72017fda-f521-4ac6-8ee5-c97fad5da2b0
+    type: title
+    task:
+      id: 72017fda-f521-4ac6-8ee5-c97fad5da2b0
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 1030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: c3c5e787-0891-4ecd-8417-5774f648adc3
+    type: regular
+    task:
+      id: c3c5e787-0891-4ecd-8417-5774f648adc3
+      version: -1
+      name: Delete rules information from context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        complex:
+          root: Add applications to policy rules
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 80c25bf6-2cee-440b-8bb5-239f4ec2fd51
+    type: regular
+    task:
+      id: 80c25bf6-2cee-440b-8bb5-239f4ec2fd51
+      version: -1
+      name: Set no rules to context
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: RulesToEdit
+      value:
+        simple: "No"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1055,
+        "width": 910,
+        "x": 380,
+        "y": 40
+      }
+    }
+  }
+inputs:
+- key: rules_list
+  value: {}
+  required: false
+  description: PAN-OS rules to edit using the playbook.
+  playbookInputQuery: null
+outputs:
+- contextPath: RulesToEdit
+  description: Policy rules to edit using the playbook.
+  type: string
