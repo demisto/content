@@ -4,7 +4,7 @@ from PaloAltoNetworks_PrismaCloudCompute import (
     PrismaCloudComputeClient, camel_case_transformer, fetch_incidents, get_headers,
     HEADERS_BY_NAME, get_profile_host_list, get_container_profile_list, get_container_hosts_list,
     get_profile_container_forensic_list, get_profile_host_forensic_list, get_console_version, get_custom_feeds_ip_list,
-    add_custom_ip_feeds
+    add_custom_ip_feeds, get_api_filtered_response
 )
 
 from CommonServerPython import DemistoException
@@ -614,3 +614,101 @@ def test_http_request_body_request_is_valid(requests_mock, func, url_suffix, arg
     func(client=client, args=args)
 
     assert expected_body_request == mocker.last_request.json()
+
+
+HTTP_FILTERING_BODY_RESPONSE_PARAMS = [
+    (
+        {
+            "limit": "4",
+            "offset": "2"
+        },
+        "/profiles/container/123/hosts",
+        ["host1", "host2", "host3", "host4", "host5"],
+    ),
+    (
+        {
+            "offset": "1"
+        },
+        "/profiles/container/123/forensic",
+        [
+            {
+                "type": "Binary created",
+                "containerId": "123",
+            },
+            {
+                "type": "Binary created",
+                "containerId": "1234",
+            },
+            {
+                "type": "Binary created",
+                "containerId": "12345",
+            },
+            {
+                "type": "Binary created",
+                "containerId": "123456",
+            },
+            {
+                "type": "Binary created",
+                "containerId": "1234567",
+            }
+        ]
+    ),
+    (
+        {
+            "offset": "1"
+        },
+        "/profiles/host/123/forensic",
+        [
+            {
+                "type": "Process spawned",
+                "app": "ffdd78ae",
+            },
+            {
+                "type": "Listening port",
+                "app": "ffdd78ae",
+            },
+            {
+                "type": "Listening port",
+                "app": "ffdd78ae",
+            },
+            {
+                "type": "Listening port",
+                "app": "ffdd78ae",
+            },
+            {
+                "type": "Listening port",
+                "app": "ffdd78ae",
+            }
+        ]
+    )
+]
+
+
+@pytest.mark.parametrize("args, url_suffix, response", HTTP_FILTERING_BODY_RESPONSE_PARAMS)
+def test_http_body_response_filtering_is_valid(requests_mock, args, url_suffix, response, client):
+    """
+    Given:
+        - http body response.
+
+    When:
+        - Calling a function that is responsible for a single command.
+
+    Then:
+        - Verify that the http body response is filtered correctly.
+    """
+    full_url = BASE_URL + url_suffix
+
+    offset, limit = int(args.pop("offset")), args.pop("limit", None)
+    limit = int(limit) if limit else limit
+
+    requests_mock.get(url=full_url, json=response)
+    body_response = get_api_filtered_response(
+        client=client, url_suffix=url_suffix, offset=offset, limit=limit, args=args
+    )
+
+    if limit:
+        assert len(body_response) == len(response[offset:limit])
+        assert body_response == response[offset:limit]
+    else:
+        assert len(body_response) == len(response[offset:])
+        assert body_response == response[offset:]
