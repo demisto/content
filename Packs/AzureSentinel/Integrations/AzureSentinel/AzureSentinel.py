@@ -39,6 +39,8 @@ ENTITIES_RETENTION_PERIOD_MESSAGE = '\nNotice that in the current Azure Sentinel
 
 DEFAULT_LIMIT = 50
 
+DEFAULT_SOURCE = 'Azure Sentinel'
+
 THREAT_INDICATORS_HEADERS = ['DisplayName', 'Values', 'Types', 'Source', 'Confidence', 'Tags']
 
 
@@ -825,7 +827,7 @@ def list_incident_relations_command(client, args):
     )
 
 
-def update_next_link_in_context(result: dict, outputs: dict, new_format=False):
+def update_next_link_in_context(result: dict, outputs: dict):
     """
     Update the output context with the next link if exist
     """
@@ -836,11 +838,7 @@ def update_next_link_in_context(result: dict, outputs: dict, new_format=False):
             'Description': NEXTLINK_DESCRIPTION,
             'URL': next_link,
         }
-
-        if new_format:
-            outputs['AzureSentinel.NextLink'] = next_link_item
-        else:
-            outputs[f'AzureSentinel.NextLink(val.Description == "{NEXTLINK_DESCRIPTION}")'] = next_link_item
+        outputs[f'AzureSentinel.NextLink(val.Description == "{NEXTLINK_DESCRIPTION}")'] = next_link_item
 
 
 def fetch_incidents(client, last_run, first_fetch_time, min_severity):
@@ -990,7 +988,7 @@ def build_threat_indicator_data(args):
         'confidence': arg_to_number(args.get('confidence')),
         'threatTypes': argToList(args.get('threat_types')),
         'includeDisabled': args.get('include_disabled', ''),
-        'source': args.get('source', 'Azure Sentinel'),
+        'source': args.get('source', DEFAULT_SOURCE),
         'threatIntelligenceTags': argToList(args.get('tags')),
         'validFrom': format_date(args.get('valid_from', '')),
         'validUntil': format_date(args.get('valid_until', '')),
@@ -1082,7 +1080,7 @@ def list_threat_indicator_command(client, args):
         num_of_threat_indicators = len(threat_indicators)
 
     outputs = {'AzureSentinel.ThreatIndicator': threat_indicators}
-    update_next_link_in_context(result, outputs, True)
+    update_next_link_in_context(result, outputs)
 
     readable_output = tableToMarkdown(
         f'Threat Indicators ({num_of_threat_indicators} results)',
@@ -1121,7 +1119,7 @@ def query_threat_indicators_command(client, args):
         num_of_threat_indicators = len(threat_indicators)
 
     outputs = {'AzureSentinel.ThreatIndicator': threat_indicators}
-    update_next_link_in_context(result, outputs, True)
+    update_next_link_in_context(result, outputs)
 
     readable_output = tableToMarkdown(
         f'Threat Indicators ({num_of_threat_indicators} results)',

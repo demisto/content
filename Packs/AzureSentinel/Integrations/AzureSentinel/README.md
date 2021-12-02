@@ -98,6 +98,49 @@ Gets a single incident from Azure Sentinel.
 #### Command Example
 ```!azure-sentinel-get-incident-by-id incident_id=8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742```
 
+#### Context Example
+```json
+{
+    "AzureSentinel": {
+        "Incident": {
+            "AlertProductNames": [
+                "Azure Sentinel"
+            ],
+            "AlertsCount": 1,
+            "AssigneeEmail": "test@test.com",
+            "AssigneeName": null,
+            "BookmarksCount": 0,
+            "CommentsCount": 3,
+            "CreatedTimeUTC": "2020-01-15T09:29:14Z",
+            "Deleted": false,
+            "Description": "Identifies when the volume of documents uploaded to or downloaded from Sharepoint by new IP addresses\nexceeds a threshold (default is 100).",
+            "Etag": "\"2700a244-0000-0100-0000-6123a2930000\"",
+            "FirstActivityTimeGenerated": null,
+            "FirstActivityTimeUTC": null,
+            "ID": "8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742",
+            "IncidentNumber": 2,
+            "Label": [
+                {
+                    "Name": "label_a",
+                    "Type": "User"
+                },
+                {
+                    "Name": "label_b",
+                    "Type": "User"
+                }
+            ],
+            "LastActivityTimeGenerated": null,
+            "LastActivityTimeUTC": null,
+            "LastModifiedTimeUTC": "2021-08-23T13:28:51Z",
+            "Severity": "Informational",
+            "Status": "New",
+            "Tactics": null,
+            "Title": "SharePointFileOperation via previously unseen IPs"
+        }
+    }
+}
+```
+
 #### Human Readable Output
 
 >### Incident 8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742 details

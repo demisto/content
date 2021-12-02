@@ -247,11 +247,6 @@ tasks:
             value:
               simple: AzureSentinel.Incident.IncidentNumber
             iscontext: true
-      - - operator: isNotExists
-          left:
-            value:
-              simple: AzureSentinel.NextLink
-            iscontext: true
     view: |-
       {
         "position": {

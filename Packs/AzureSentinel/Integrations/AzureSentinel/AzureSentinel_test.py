@@ -23,6 +23,7 @@ API_VERSION = '2021-04-01'
 
 DEFAULT_LIMIT = 50
 
+NEXTLINK_DESCRIPTION = 'NextLink for listing commands'
 
 def mock_client():
     client = AzureSentinelClient(
@@ -992,7 +993,7 @@ class TestHappyPath:
         assert context['DisplayName'] == 'displayfortestmay'
 
         assert len(raw_response['value']) == 1
-        next_link = outputs.get('AzureSentinel.NextLink', {}).get('URL')
+        next_link = outputs.get(f'AzureSentinel.NextLink(val.Description == "{NEXTLINK_DESCRIPTION}")', {}).get('URL')
         assert next_link == expected_next_link
 
     @pytest.mark.parametrize('args, expected_next_link, client', [  # disable-secrets-detection
@@ -1034,7 +1035,7 @@ class TestHappyPath:
         assert context['DisplayName'] == 'displayfortestmay'
 
         assert len(raw_response['value']) == 1
-        next_link = outputs.get('AzureSentinel.NextLink', {}).get('URL')
+        next_link = outputs.get(f'AzureSentinel.NextLink(val.Description == "{NEXTLINK_DESCRIPTION}")', {}).get('URL')
         assert next_link == expected_next_link
 
     @pytest.mark.parametrize('args, client', [  # disable-secrets-detection
