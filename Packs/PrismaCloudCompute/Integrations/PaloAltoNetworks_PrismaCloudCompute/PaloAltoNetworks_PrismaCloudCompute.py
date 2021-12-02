@@ -332,6 +332,30 @@ def perform_api_request(
     )
 
 
+def get_api_filtered_response(
+    client: PrismaCloudComputeClient, url_suffix: str, offset: int, limit: int = None, args: dict = None
+):
+    """
+    Filter the api response according to the offset/limit, used in case the api doesn't support limit/offset
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        url_suffix (str): url suffix of the base api url.
+        offset (int): the offset from which to begin listing the response.
+        limit (int): the maximum limit of records in the response to fetch.
+        args (dict): any command arguments if exist.
+
+    Returns:
+        list: api filtered response, empty list in case there aren't any records in the api response.
+    """
+    response = perform_api_request(client=client, url_suffix=url_suffix, args=args)
+
+    if response:
+        return response[offset:limit] if limit else response[offset:]
+
+    return response
+
+
 def build_profile_host_table_response(full_response: List[dict]) -> str:
     """
     Build a table from the api response of the profile host
@@ -401,7 +425,7 @@ def get_profile_host_list(client: PrismaCloudComputeClient, args: dict) -> Comma
     return CommandResults(
         outputs_prefix='prismaCloudCompute.profileHost',
         outputs_key_field='_id',
-        outputs=full_response,
+        outputs=full_response if full_response else None,
         readable_output=build_profile_host_table_response(full_response=full_response),
         raw_response=full_response
     )
@@ -478,7 +502,7 @@ def get_container_profile_list(client: PrismaCloudComputeClient, args: dict) -> 
     return CommandResults(
         outputs_prefix='prismaCloudCompute.profileContainer',
         outputs_key_field='_id',
-        outputs=full_response,
+        outputs=full_response if full_response else None,
         readable_output=build_profile_container_table_response(full_response=full_response),
         raw_response=full_response
     )
@@ -486,7 +510,7 @@ def get_container_profile_list(client: PrismaCloudComputeClient, args: dict) -> 
 
 def build_container_hosts_response(
     client: PrismaCloudComputeClient, container_id: str, args: dict
-) -> Tuple[List[dict], str]:
+) -> Tuple[dict, str]:
     """
     Build a table and a context response for the 'prisma-cloud-compute-profile-container-hosts-list' command.
 
@@ -496,31 +520,24 @@ def build_container_hosts_response(
         args (dict): prisma-cloud-compute-profile-container-list command arguments.
 
     Returns:
-        Tuple[list, str]: Context and table response.
+        Tuple[dict, str]: Context and table response.
     """
-    context_output = []
     # this api endpoint does not support either limit/offset.
     limit, offset = args.pop("limit"), args.pop("offset")
 
-    hosts_ids = perform_api_request(
-        client=client, url_suffix=f"profiles/container/{container_id}/hosts", args=args
+    hosts_ids = get_api_filtered_response(
+        client=client, url_suffix=f"profiles/container/{container_id}/hosts", offset=offset, limit=limit, args=args
     )
 
     if hosts_ids:
-        hosts_ids = hosts_ids[offset:limit]
-        context_output.append(
-            {
-                "ContainerID": container_id,
-                "HostsIDs": hosts_ids
-            }
+        context_output = {
+            "ContainerID": container_id,
+            "HostsIDs": hosts_ids
+        }
+        return context_output, tableToMarkdown(
+            name="Containers hosts list", t=context_output, headers=["ContainerID", "HostsIDs"]
         )
-
-    if not context_output:
-        return [], tableToMarkdown(name="Containers hosts list", t=[])
-
-    return context_output, tableToMarkdown(
-        name="Containers hosts list", t=context_output, headers=["ContainerID", "HostsIDs"]
-    )
+    return {}, tableToMarkdown(name="Containers hosts list", t=[])
 
 
 @validate_limit_and_offset
@@ -541,14 +558,14 @@ def get_container_hosts_list(client: PrismaCloudComputeClient, args: dict) -> Co
 
     return CommandResults(
         outputs_prefix='prismaCloudCompute.profileContainerHost',
-        outputs=context,
+        outputs=context if context else None,
         readable_output=table
     )
 
 
 def build_containers_forensic_response(
     client: PrismaCloudComputeClient, container_id: str, args: dict
-) -> Tuple[List[dict], str]:
+) -> Tuple[dict, str]:
     """
     Build a table and a context response for the 'prisma-cloud-compute-profile-container-forensic-list' command.
 
@@ -558,42 +575,40 @@ def build_containers_forensic_response(
         args (dict): prisma-cloud-compute-profile-container-forensic-list command arguments.
 
     Returns:
-        Tuple[list, str]: Context and table response.
+        Tuple[dict, str]: Context and table response.
     """
-    context_output = []
     table = []
-
     # api request does not support offset only, but does support limit.
     offset = args.pop("offset")
 
-    all_forensic_response = perform_api_request(
-        client=client, url_suffix=f"profiles/container/{container_id}/forensic", args=args
+    container_forensics = get_api_filtered_response(
+        client=client, url_suffix=f"profiles/container/{container_id}/forensic", offset=offset, args=args
     )
 
-    if all_forensic_response:
-        all_forensic_response = all_forensic_response[offset:]
-        context_output.append(
-            {
-                "ContainerID": container_id,
-                "Hostname": args.get("hostname"),
-                "Forensics": all_forensic_response
-            }
-        )
-        for report in all_forensic_response:
+    if container_forensics:
+        context_output = {
+            "ContainerID": container_id,
+            "Hostname": args.get("hostname"),
+            "Forensics": container_forensics
+        }
+
+        for report in container_forensics:
             if report.get("containerId"):
                 table.append(
                     {
                         "ContainerID": report.get("containerId"),
                         "Type": report.get("type"),
                         "Path": report.get("path"),
+                        "Process": report.get("process")
                     }
                 )
-    else:
-        return [], tableToMarkdown(name="Container forensic report", t=[])
-
-    return context_output, tableToMarkdown(
-        name="Containers forensic report", t=table, headers=["ContainerID", "Type", "Path"], removeNull=True
-    )
+        return context_output, tableToMarkdown(
+            name="Containers forensic report",
+            t=table,
+            headers=["ContainerID", "Type", "Path", "Process"],
+            removeNull=True
+        )
+    return {}, tableToMarkdown(name="Container forensic report", t=[])
 
 
 @validate_limit_and_offset
@@ -616,7 +631,7 @@ def get_profile_container_forensic_list(client: PrismaCloudComputeClient, args: 
 
     return CommandResults(
         outputs_prefix='prismaCloudCompute.containerForensic',
-        outputs=context,
+        outputs=context if context else None,
         readable_output=table
     )
 
@@ -636,15 +651,17 @@ def build_host_forensic_response(
         Tuple[list, str]: Context and table response.
     """
     # api request does not support offset only, but does support limit.
-    # offset = args.pop("offset")
+    offset = args.pop("offset")
 
-    host_forensics = perform_api_request(client=client, url_suffix=f"/profiles/host/{host_id}/forensic", args=args)
-    if not host_forensics:
-        return [], tableToMarkdown(name="Host forensics report", t=[])
-
-    return host_forensics, tableToMarkdown(
-        name="Host forensics report", t=host_forensics, headers=["type", "app", "path", "command"], removeNull=True
+    host_forensics = get_api_filtered_response(
+        client=client, url_suffix=f"/profiles/host/{host_id}/forensic", offset=offset, args=args
     )
+
+    if host_forensics:
+        return host_forensics, tableToMarkdown(
+            name="Host forensics report", t=host_forensics, headers=["type", "app", "path", "command"], removeNull=True
+        )
+    return [], tableToMarkdown(name="Host forensics report", t=[])
 
 
 @validate_limit_and_offset
@@ -665,7 +682,7 @@ def get_profile_host_forensic_list(client: PrismaCloudComputeClient, args: dict)
 
     return CommandResults(
         outputs_prefix='prismaCloudCompute.hostForensic',
-        outputs=context,
+        outputs=context if context else None,
         readable_output=table
     )
 
