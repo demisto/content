@@ -25,6 +25,7 @@ DEFAULT_LIMIT = 50
 
 NEXTLINK_DESCRIPTION = 'NextLink for listing commands'
 
+
 def mock_client():
     client = AzureSentinelClient(
         server_url='http://server_url',
