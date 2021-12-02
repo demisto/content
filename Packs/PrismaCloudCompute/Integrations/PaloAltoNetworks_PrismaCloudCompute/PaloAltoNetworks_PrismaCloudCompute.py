@@ -285,8 +285,8 @@ def validate_limit_and_offset(func):
         command_args['offset'] = offset  # type:ignore
 
         limit = arg_to_number(arg=command_args.get('limit'), arg_name='limit')  # type:ignore
-        if limit - offset > api_limit_call:  # type:ignore
-            limit = offset + api_limit_call  # type:ignore
+        if limit > api_limit_call:  # type:ignore
+            limit = api_limit_call  # type:ignore
         command_args['limit'] = limit  # type:ignore
 
         return func(*args, **kwargs)
