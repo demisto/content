@@ -343,7 +343,7 @@ def fetch_and_create_indicators(client, risk_rule=None):
         demisto.createIndicators(indicators)
 
 
-def fetch_indicators_command(client, indicator_type, risk_rule, limit: Optional[int] = None):
+def fetch_indicators_command(client, indicator_type, risk_rule=None, limit: Optional[int] = None):
     """Fetches indicators from the Recorded Future feeds.
     Args:
         client(Client): Recorded Future Feed client
