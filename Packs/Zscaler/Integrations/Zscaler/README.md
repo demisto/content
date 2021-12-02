@@ -642,7 +642,10 @@ Retrieves the Zscaler default blacklist.
 `zscaler-get-blacklist`
 #### Input
 
-There are no input arguments for this command.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| filter | Filter results by URL or IP objects. Possible values are: ip, url. | Optional |
+| query | Query (Python regular expression) to match against. For example, 8.*.*.8 | Optional | 
 
 #### Context Output
 
