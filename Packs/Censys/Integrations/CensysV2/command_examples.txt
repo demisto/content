@@ -1,0 +1,3 @@
+!censys-view index="Ipv4" query="8.8.8.8"
+!censys-certificates-search query="parsed.issuer.common_name: \"Let's Encrypt\"" limit=1
+!censys-hosts-search query="services.service_name:HTTP" limit=1
