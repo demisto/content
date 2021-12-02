@@ -45,7 +45,8 @@ ignore=BA110
 
 [file:script-PCAPMiner_README.md]
 ignore=RM106
-[file:CommonScripts]
+
+[file:pack_metadata.json]
 ignore=PA129
 
 [file:script-ChangeRemediationSLAOnSevChange.yml]
