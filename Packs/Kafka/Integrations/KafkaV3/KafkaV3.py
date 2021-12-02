@@ -609,6 +609,16 @@ def check_params(kafka: KafkaCommunicator, topic: str, partitions: Optional[list
     return True
 
 
+def update_topic_partitions_with_history(kafka, topic, offset, last_fetched_offsets):
+
+    all_topic_partitions = kafka.get_topic_partitions(topic=topic, partition=-1, offset=offset, consumer=True)
+    if not last_run:
+        return all_topic_partitions
+    for partition in last_fetched_offsets.keys():
+
+
+
+
 def fetch_incidents(kafka: KafkaCommunicator, demisto_params: dict) -> None:
     """Fetch incidents as kafka messages from a specific topic.
 
@@ -633,7 +643,7 @@ def fetch_incidents(kafka: KafkaCommunicator, demisto_params: dict) -> None:
     kafka.update_conf_for_fetch(message_max_bytes=message_max_bytes)
 
     kafka_consumer = kafka.get_kafka_consumer()
-    demisto.debug(f'Checking params')
+    demisto.debug('Checking params')
     check_params(kafka, topic, partitions, offset, True, False)
 
     if topic != last_topic:
@@ -665,7 +675,9 @@ def fetch_incidents(kafka: KafkaCommunicator, demisto_params: dict) -> None:
         if isinstance(offset, int):
             offset += 1
         demisto.debug(f'No partitions were set, getting all available partitions for topic {topic}')
-        topic_partitions = kafka.get_topic_partitions(topic=topic, partition=-1, offset=offset, consumer=True)
+        topic_partitions = update_topic_partitions_with_history(kafka, topic, offset, last_fetched_offsets)
+
+
     try:
         if topic_partitions:
             kafka_consumer.assign(topic_partitions)
@@ -727,7 +739,7 @@ def commands_manager(kafka_kwargs: dict, demisto_params: dict, demisto_args: dic
         if kafka.client_key_path and os.path.isfile(kafka.client_key_path):
             os.remove(os.path.abspath(kafka.client_key_path))
         if exception:
-            raise e
+            raise exception
 
 
 def main():  # pragma: no cover
