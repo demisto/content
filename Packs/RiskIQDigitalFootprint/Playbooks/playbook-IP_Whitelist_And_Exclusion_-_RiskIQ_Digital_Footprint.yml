@@ -1,7 +1,7 @@
 id: IP Whitelist And Exclusion - RiskIQ Digital Footprint
 version: -1
 name: IP Whitelist And Exclusion - RiskIQ Digital Footprint
-description: Whitelists the IP Address(es) after checking if it should be whitelisted
+description: Adds the IP Address(es) to allow list after checking if it should be added to allow list
   according to the user inputs provided. This playbook also adds these IP Address
   indicators to the exclusion list and tags it with the "RiskIQ Whitelisted IP Address"
   tag.
@@ -518,9 +518,9 @@ tasks:
       id: 42e38537-ae1d-453f-8156-f84f1a917f41
       version: -1
       name: Check IP Address For Whitelisting - RiskIQ Digital Footprint
-      description: Checks if the provided IP Address should be whitelisted and excluded
+      description: Checks if the provided IP Address should be added to allow list and excluded
         or not. Use this playbook as a sub-playbook to loop over multiple IP Addresses
-        to check if they should be whitelisted and excluded.
+        to check if they should be added to allow list and excluded.
       playbookName: Check IP Address For Whitelisting - RiskIQ Digital Footprint
       type: playbook
       iscommand: false
@@ -679,7 +679,7 @@ tasks:
       id: be574890-af05-4984-82dd-9a2a0417e0de
       version: -1
       name: Exclude the whitelisted IP Address(es)
-      description: Exclude the IP Address indicators that have been whitelisted.
+      description: Exclude the IP Address indicators that have been added to allow list.
       script: Builtin|||excludeIndicators
       type: regular
       iscommand: true
@@ -1305,7 +1305,7 @@ tasks:
       id: 50b8b81d-925e-4c6b-8c91-50d18df414e4
       version: -1
       name: Exclude the whitelisted IP Address(es)
-      description: Exclude the IP Address indicators that have been whitelisted.
+      description: Exclude the IP Address indicators that have been added to allow list.
       script: Builtin|||excludeIndicators
       type: regular
       iscommand: true
@@ -1355,8 +1355,8 @@ tasks:
     task:
       id: 4f5853ba-2b4c-4e6c-8c6f-bfdd53afb7dd
       version: -1
-      name: Create a CSV file for the IP Address(es) to be whitelisted
-      description: Exports the list of IP Address(es) to be whitelisted in the form
+      name: Create a CSV file for the IP Address(es) to be added to allow list
+      description: Exports the list of IP Address(es) to be added to allow list in the form
         of a CSV file.
       scriptName: ExportToCSV
       type: regular
@@ -1434,7 +1434,7 @@ tasks:
       id: 3b12f157-fd85-4090-8640-4082b2f1dcb1
       version: -1
       name: Send the created file through an email
-      description: Sends the created file of the IP Address(es) to be whitelisted
+      description: Sends the created file of the IP Address(es) to be added to allow list
         through an email.
       script: '|||send-mail'
       type: regular
@@ -1468,8 +1468,8 @@ tasks:
           Please follow the following steps and upload the modified CSV file to the XSOAR incident: ${ServerURL.URL}/#/Custom/caseinfoid/${incident.id} to proceed further.
 
           - Download the CSV file attached to this email.
-          - Modify the value of the column "Should the IP Address be whitelisted?" to "No" if you do not want to whitelist the IP Address.
-          - If you do not want to whitelist any IP Address, please submit the form for entering entryID with an empty value.
+          - Modify the value of the column "Should the IP Address be whitelisted?" to "No" if you do not want to add the IP Address to allow list.
+          - If you do not want to add any IP Address to allow list, please submit the form for entering entryID with an empty value.
       cc: {}
       from: {}
       htmlBody: {}
@@ -1506,9 +1506,9 @@ tasks:
     task:
       id: 798ba47a-2682-48ee-87d3-0e39736e6cf5
       version: -1
-      name: Get the modified CSV file for the IP Address(es) to be whitelisted
+      name: Get the modified CSV file for the IP Address(es) to be added to allow list
       description: Gets the EntryID of the modified CSV file for the IP Address(es)
-        to be whitelisted.
+        to be added to allow list.
       type: collection
       iscommand: false
       brand: ""
@@ -1550,7 +1550,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: EntryID of the modified file for the IP Address(es) to be whitelisted
+          simple: EntryID of the modified file for the IP Address(es) to be added to allow list
         required: false
         gridcolumns: []
         defaultrows: []
@@ -1560,16 +1560,16 @@ tasks:
         fieldassociated: ""
         placeholder: eg. 50@1
         tooltip: Please enter the EntryID of the modified file for the IP Address(es)
-          to be whitelisted. Submit this form with an empty value if you do not want
-          to whitelist any IP Address.
+          to be added to allow list. Submit this form with an empty value if you do not want
+          to add any IP Address to allow list.
         readonly: false
       title: Modified CSV File for whitelisting
       description: Please download the CSV file from the email sent to you or from
         the war room, modify the value in column "Should the IP Address be whitelisted?"
-        to "No" for the IP Address(es) that should not be whitelisted, and upload
+        to "No" for the IP Address(es) that should not be added to allow list, and upload
         that file here. After uploading the file, please enter the EntryID corresponding
-        to it here. Submit this form with an empty value if you do not want to whitelist
-        any IP Address.
+        to it here. Submit this form with an empty value if you do not want to add
+        any IP Address to allow list.
       sender: ""
       expired: false
       totalanswers: 0
@@ -1582,9 +1582,9 @@ tasks:
     task:
       id: 075cb215-f05d-4bda-8af0-f2c3f02eb3f6
       version: -1
-      name: Is the user willing to whitelist the IP Address(es) and the entered EntryID
+      name: Is the user willing to add the IP Address(es) to allow list and is the entered EntryID
         valid?
-      description: Checks whether the user is willing to whitelist the IP Address(es)
+      description: Checks whether the user is willing to add the IP Address(es) to allow list
         and if the entered EntryID is valid.
       type: condition
       iscommand: false
@@ -1634,7 +1634,7 @@ tasks:
       id: 9b115943-d06b-4370-84e1-4c56ad0bb39e
       version: -1
       name: Parse the modified CSV for the IP Address(es) to be whitelisted
-      description: Parses the modified CSV for the IP Address(es) to be whitelisted.
+      description: Parses the modified CSV for the IP Address(es) to be added to allow list.
       scriptName: ParseCSV
       type: regular
       iscommand: false
@@ -2156,13 +2156,13 @@ inputs:
 - key: ip_address
   value: {}
   required: true
-  description: The list of IP Address(es) to be whitelisted and excluded.
+  description: The list of IP Address(es) to be added to allow list and excluded.
   playbookInputQuery:
 - key: InternalRange
   value: {}
   required: false
   description: 'A list of IP ranges to check if the IP Address is in that range for
-    whitelisting. The list should be provided in CIDR notation, separated by commas.
+    adding to allow list. The list should be provided in CIDR notation, separated by commas.
     An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16"
     (without quotes). If a list is not provided, will use the default list provided
     in the IsIPInRanges script (the known IPv4 private address ranges).'
@@ -2173,7 +2173,7 @@ inputs:
       root: incident
       accessor: riskiqautowhitelistipaddress
   required: false
-  description: Automatically whitelist the IP Address(es). You can set this as 'Yes'
+  description: Automatically add the IP Address(es) to allow list. You can set this as 'Yes'
     or 'No' manually here or you can set it into a custom incident field 'RiskIQ Auto
     Whitelist IP Address'.
   playbookInputQuery:
@@ -2183,7 +2183,7 @@ inputs:
       root: incident
       accessor: riskiqautoexcludewhitelistedipaddress
   required: false
-  description: Automatically add the whitelisted IP Address(es) to the exclusion list.
+  description: Automatically add the IP Address(es) on allow list to the exclusion list.
     You can set this as 'Yes' or 'No' manually here or you can set it into a custom
     incident field 'RiskIQ Auto Exclude Whitelisted IP Address'.
   playbookInputQuery:
@@ -2202,7 +2202,7 @@ inputs:
       root: incident
       accessor: riskiqassetawssecuritygroupname
   required: false
-  description: Name of the AWS Security Group to update the whitelisted IPs.
+  description: Name of the AWS Security Group to update the IPs on allow list.
   playbookInputQuery:
 - key: gcp_firewall_name
   value:
@@ -2210,8 +2210,7 @@ inputs:
       root: incident
       accessor: riskiqassetgcpfirewallname
   required: false
-  description: Name of the GCP Firewall where the playbook should set the whitelisted
-    IPs.
+  description: Name of the GCP Firewall where the playbook should set the IPs on allow list.
   playbookInputQuery:
 - key: okta_zone_id
   value:
@@ -2219,7 +2218,7 @@ inputs:
       root: incident
       accessor: riskiqassetoktazoneid
   required: false
-  description: ID of the Okta Zone to update the whitelisted IPs. Use !okta-list-zones
+  description: ID of the Okta Zone to update the IPs on allow list. Use !okta-list-zones
     to obtain the available zones.
   playbookInputQuery:
 outputs: []

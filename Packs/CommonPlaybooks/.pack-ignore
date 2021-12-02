@@ -60,5 +60,5 @@ ignore=RM106
 
 [file:playbook-Block_Domain_-_Generic.yml]
 ignore=PB110
-[file:CommonPlaybooks]
+[file:pack_metadata.json]
 ignore=PA129

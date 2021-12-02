@@ -144,9 +144,9 @@ Blocking hash
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | md5hash | the blacklisted hash. | Required | 
-| text | text description of blacklist. | Required | 
+| text | text description of block list. | Required | 
 | lastBanTime | the last time the hash was blocked or prevented from being executed. | Optional | 
-| banCount | total number of blocks on this blacklist. | Optional | 
+| banCount | total number of blocks on this block list. | Optional | 
 | lastBanHost | last hostname to block this hash. | Optional | 
 
 
@@ -166,7 +166,7 @@ Blocking hash
 
 ### cb-get-hash-blacklist
 ***
-Returns a list of blacklisted hashes, with each list entry describing one blacklisted hash
+Returns a list of hashes on block list, with each list entry describing one hash on block list.
 
 
 #### Base Command
@@ -488,8 +488,8 @@ Unblocking hash
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| md5hash | the blacklisted hash. | Required | 
-| text | text description of blacklist. | Required | 
+| md5hash | the hash on the block list. | Required | 
+| text | text description of block list. | Required | 
 
 
 #### Context Output
