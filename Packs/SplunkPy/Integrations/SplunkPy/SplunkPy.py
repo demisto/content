@@ -304,7 +304,8 @@ class Notable:
             if isParseNotableEventsRaw:
                 rawDict = rawToDict(notable_data['_raw'])
                 for rawKey in rawDict:
-                    labels.append({'type': rawKey, 'value': rawDict[rawKey]})
+                    val = rawDict[rawKey] if isinstance(rawDict[rawKey], str) else convert_to_str(rawDict[rawKey])
+                    labels.append({'type': rawKey, 'value': val})
         if demisto.get(notable_data, 'security_domain'):
             labels.append({'type': 'security_domain', 'value': notable_data["security_domain"]})
         incident['labels'] = labels
@@ -1722,7 +1723,8 @@ def build_search_human_readable(args, parsed_search_results):
 
                 headers = update_headers_from_field_names(parsed_search_results, chosen_fields)
 
-    human_readable = tableToMarkdown("Splunk Search results for query: {}".format(args['query']),
+    query = args['query'].replace('`', r'\`')
+    human_readable = tableToMarkdown("Splunk Search results for query: {}".format(query),
                                      parsed_search_results, headers)
     return human_readable
 
@@ -2290,6 +2292,7 @@ def main():
     else:
         connection_args['username'] = username
         connection_args['password'] = password
+        connection_args['autologin'] = True
 
     if use_requests_handler:
         handle_proxy()
