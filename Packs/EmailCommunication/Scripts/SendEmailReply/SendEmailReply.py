@@ -203,7 +203,7 @@ def get_email_recipients(email_to, email_from, service_mail, mailbox):
     address_to_remove = mailbox if mailbox else service_mail
     if address_to_remove:
         for recipient in email_to_set:
-            if address_to_remove and address_to_remove in recipient:
+            if address_to_remove in recipient:
                 recipient_to_remove = recipient
                 break
 
@@ -218,7 +218,7 @@ def get_mailbox_from_incident_labels(labels):
     """
     Gets the mailbox from which the incident was fetched from the incident labels.
     Args:
-        labels (list): th incident labels.
+        labels (list): the incident labels.
     Returns:
         The mailbox label.
     """
