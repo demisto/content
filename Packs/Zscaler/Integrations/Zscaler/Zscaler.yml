@@ -73,7 +73,7 @@ script:
       defaultValue: 'true'
       description: Whether there are multiple URLs in the 'url' argument. If a URL
         contains commas, set this argument to 'false' and enter the single URL as
-        the 'url' argument. Default is 'true'.
+        the 'url' argument.
       isArray: false
       name: multiple
       predefined:
@@ -379,8 +379,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to display the URLs of each category in the War Room. Default
-        is 'false'. URLs will always be returned to the Context Data.
+      description: Whether to display the URLs of each category in the War Room. URLs will always be returned to the Context Data.
       isArray: false
       name: displayURL
       predefined:
@@ -391,8 +390,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to retrieve only custom categories to the War Room. Default
-        is 'false'.
+      description: Whether to retrieve only custom categories to the War Room. 
       isArray: false
       name: custom_categories_only
       predefined:
@@ -435,6 +433,17 @@ script:
     description: Retrieves the Zscaler default blacklist.
     execution: false
     name: zscaler-get-blacklist
+    arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Filter results by URL or IP objects.
+      name: filter
+      predefined:
+      - 'url'
+      - 'ip'
+    - default: false
+      description: Query (Python regular expression) to match against. For example, 8.*.*.8
+      name: query
     outputs:
     - contextPath: Zscaler.Blacklist
       description: The Zscaler blacklist.
