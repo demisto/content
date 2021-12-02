@@ -750,7 +750,6 @@ def commands_manager(kafka_kwargs: dict, demisto_params: dict, demisto_args: dic
     """Start command function according to demisto command."""
     kafka_kwargs['logger'] = kafka_logger
     kafka = KafkaCommunicator(**kafka_kwargs)
-    exception = None
 
     try:
         if demisto_command == 'test-module':
@@ -767,8 +766,6 @@ def commands_manager(kafka_kwargs: dict, demisto_params: dict, demisto_args: dic
             fetch_incidents(kafka, demisto_params)
         else:
             raise NotImplementedError(f'Command {demisto_command} not found in command list')
-    except Exception as e:
-        exception = e
     finally:
         if kafka.ca_path and os.path.isfile(kafka.ca_path):
             os.remove(os.path.abspath(kafka.ca_path))
@@ -776,8 +773,6 @@ def commands_manager(kafka_kwargs: dict, demisto_params: dict, demisto_args: dic
             os.remove(os.path.abspath(kafka.client_cert_path))
         if kafka.client_key_path and os.path.isfile(kafka.client_key_path):
             os.remove(os.path.abspath(kafka.client_key_path))
-        if exception:
-            raise exception
 
 
 def main():  # pragma: no cover
