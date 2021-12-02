@@ -150,12 +150,12 @@ def test_get_indicators_command_by_risk_rules(mocker, indicator_type, risk_rules
     hr, _, entry_results = get_indicators_command(client, args)
 
     risk_rules_list = argToList(risk_rules)
-    assert list(entry_results.keys()) == risk_rules_list, "raw response doesn't contain indicators from all risk rules"
     for rule in risk_rules_list:
         assert f'Indicators from RecordedFuture Feed for {rule} risk rule' in hr, \
             f"human readable output doesn't contain indicators from risk rule {rule}"
-        assert entry_results[rule][0]['Value'] == value
-        assert entry_results[rule][0]['Type'] == type
+        for entry in entry_results:
+            assert entry.get('Value', '') == value
+            assert entry.get('Type', '') == type
 
 
 CALCULATE_DBOT_SCORE_INPUTS = [
