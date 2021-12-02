@@ -94,3 +94,5 @@ ignore=RM106
 
 [file:RestartFailedTasks.py]
 ignore=E9003
+[file:IntegrationsAndIncidentsHealthCheck]
+ignore=PA129
