@@ -97,8 +97,7 @@ class Client:
             if 'code' in err_json:
                 err_msg = err_msg + \
                     'QRadar Error Code: {0}'.format(err_json['code'])
-            return_error(err_msg)
-        return ""
+            raise Exception(err_msg)
 
     def test_quinc(self):
         res = self.http_request('GET', 'api/v2/enterpriseapi/statuscheck')

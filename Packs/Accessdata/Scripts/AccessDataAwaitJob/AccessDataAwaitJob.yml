@@ -1,7 +1,6 @@
 commonfields:
   id: AccessDataAwaitJob
-  version: 3
-vcShouldKeepItemLegacyProdMachine: false
+  version: 4
 name: AccessDataAwaitJob
 script: '-'
 type: python
@@ -25,8 +24,10 @@ outputs:
   description: Any extra information about the job specified.
 scripttarget: 0
 subtype: python3
-pswd: ""
 runonce: false
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.9.8.24399
 runas: DBotWeakRole
-engineinfo: {}
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
+dockerimage45: demisto/python3:3.9.7.24076
