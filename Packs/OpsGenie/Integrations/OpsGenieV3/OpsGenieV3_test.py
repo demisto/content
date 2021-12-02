@@ -724,9 +724,11 @@ def test_fetch_incidents_command(mocker):
     res, last_run = OpsGenieV3.fetch_incidents_command(mock_client, {"max_fetch": 1})
     assert len(res) == 2
     assert last_run == {'Alerts': {'lastRun': '2021-11-26T00:00:00Z',
-                                   'next_page': 'https://api.opsgenie.com/v2/alerts?limit=1&sort=createdAt&offset=1&order=desc'},
+                                   'next_page': 'https://api.opsgenie.com/v2/alerts?limit=1&sort='
+                                                'createdAt&offset=1&order=desc'},
                         'Incidents': {'lastRun': '2021-11-26T00:00:00Z',
-                                     'next_page': 'https://api.opsgenie.com/v1/incidents?limit=1&sort=insertedAt&offset=1&order=desc'}}
+                                      'next_page': 'https://api.opsgenie.com/v1/incidents?limit=1&'
+                                                   'sort=insertedAt&offset=1&order=desc'}}
 
 
 def test_fetch_incidents_command_no_result(mocker):
@@ -810,7 +812,8 @@ def test_fetch_with_paging_only_incidents(mocker):
     res, last_run = OpsGenieV3.fetch_incidents_command(mock_client, {"max_fetch": 2,
                                                                      "event_types": OpsGenieV3.INCIDENT_TYPE})
     assert (last_run == {'Incidents': {'lastRun': '2021-11-26T00:00:00Z',
-                                       'next_page': 'https://api.opsgenie.com/v1/incidents?limit=1&sort=insertedAt&offset=1&order=desc'},
+                                       'next_page': 'https://api.opsgenie.com/v1/incidents?limit='
+                                                    '1&sort=insertedAt&offset=1&order=desc'},
                          'Alerts': {'lastRun': None, 'next_page': None}})
     mocker.patch.object(demisto, 'getLastRun', return_value=last_run)
     res, last_run = OpsGenieV3.fetch_incidents_command(mock_client,
