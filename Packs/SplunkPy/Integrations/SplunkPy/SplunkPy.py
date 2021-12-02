@@ -304,7 +304,8 @@ class Notable:
             if isParseNotableEventsRaw:
                 rawDict = rawToDict(notable_data['_raw'])
                 for rawKey in rawDict:
-                    labels.append({'type': rawKey, 'value': rawDict[rawKey]})
+                    val = rawDict[rawKey] if isinstance(rawDict[rawKey], str) else convert_to_str(rawDict[rawKey])
+                    labels.append({'type': rawKey, 'value': val})
         if demisto.get(notable_data, 'security_domain'):
             labels.append({'type': 'security_domain', 'value': notable_data["security_domain"]})
         incident['labels'] = labels
