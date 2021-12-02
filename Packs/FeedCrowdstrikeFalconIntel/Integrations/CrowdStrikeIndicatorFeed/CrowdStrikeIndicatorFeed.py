@@ -159,7 +159,7 @@ class Client(CrowdStrikeClient):
             demisto.setIntegrationContext({'last_modified_time': timestamp})
             demisto.info(f'set last_run: {timestamp}')
 
-        indicators = self.create_indicators_from_response(response, self.tlp_color, self.feed_tags)
+        indicators = self.create_indicators_from_response(response, self.tlp_color, self.feed_tags, self.create_relationships)
         return indicators
 
     @staticmethod
@@ -186,13 +186,15 @@ class Client(CrowdStrikeClient):
             params = ''
         return params
 
-    def create_indicators_from_response(self, raw_response, tlp_color=None, feed_tags=None) -> list:
+    @staticmethod
+    def create_indicators_from_response(raw_response, tlp_color=None, feed_tags=None, create_relationships=True) -> list:
         """ Builds indicators from API raw response
 
             Args:
                 raw_response: response from crowdstrike API
                 tlp_color: tlp color chosen by customer
                 feed_tags: Feed tags to filter by
+                create_relationships: Whether to create relationships.
 
             Returns:
                 (list): list of indicators
@@ -225,8 +227,8 @@ class Client(CrowdStrikeClient):
                 indicator['fields']['trafficlightprotocol'] = tlp_color
             if feed_tags:
                 indicator['fields']['tags'].extend(feed_tags)
-            if self.create_relationships:
-                relationships = self.create_and_add_relationships(indicator, resource)
+            if create_relationships:
+                relationships = create_and_add_relationships(indicator, resource)
                 indicator['relationships'] = relationships
             parsed_indicators.append(indicator)
 
@@ -253,20 +255,40 @@ class Client(CrowdStrikeClient):
         result = ','.join(crowdstrike_types)
         return result
 
-    @staticmethod
-    def create_and_add_relationships(indicator: dict, resource: dict) -> list:
 
-        relationships = []
+def create_and_add_relationships(indicator: dict, resource: dict) -> list:
+    """
+    Creates and adds relationships to indicators for each CrowdStrike relationships type.
 
-        for field in CROWDSTRIKE_INDICATOR_RELATION_FIELDS:
-            if field in resource and resource[field]:
-                relationships.extend(create_relationships(field, indicator, resource))
+    Args:
+        indicator(dict): The indicator in XSOAR format.
+        resource(dict): The indicator from the response.
 
-        return relationships
+    Returns:
+        List of relationships objects.
+    """
+
+    relationships = []
+
+    for field in CROWDSTRIKE_INDICATOR_RELATION_FIELDS:
+        if field in resource and resource[field]:
+            relationships.extend(create_relationships(field, indicator, resource))
+
+    return relationships
 
 
 def create_relationships(field: str, indicator: dict, resource: dict) -> list:
+    """
+    Creates indicator relationships.
 
+    Args:
+        field(str): A CrowdStrike indicator field which contains relationships.
+        indicator(dict): The indicator in XSOAR format.
+        resource(dict): The indicator from the response.
+
+    Returns:
+        List of relationships objects.
+    """
     relationships = []
 
     for relation in resource[field]:
