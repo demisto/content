@@ -42,6 +42,13 @@ GRAPH_ENDPOINTS = {
     'de': 'https://graph.microsoft.de',
     'cn': 'https://microsoftgraph.chinacloudapi.cn'
 }
+GRAPH_BASE_ENDPOINTS = {
+    'https://graph.microsoft.com': 'com',
+    'https://graph.microsoft.us': 'gcc-high',
+    'https://dod-graph.microsoft.us': 'dod',
+    'https://graph.microsoft.de': 'de',
+    'https://microsoftgraph.chinacloudapi.cn': 'cn'
+}
 
 
 class MicrosoftClient(BaseClient):

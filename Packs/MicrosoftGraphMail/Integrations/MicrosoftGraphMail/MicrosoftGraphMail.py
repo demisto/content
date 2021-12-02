@@ -56,14 +56,6 @@ WELL_KNOWN_FOLDERS = {
     'sent items': 'sentitems',
 }
 
-GRAPH_BASE_ENDPOINTS = {
-    'https://graph.microsoft.com': 'com',
-    'https://graph.microsoft.us': 'gcc-high',
-    'https://dod-graph.microsoft.us': 'dod',
-    'https://graph.microsoft.de': 'de',
-    'https://microsoftgraph.chinacloudapi.cn': 'cn'
-}
-
 ''' CLIENT '''
 
 

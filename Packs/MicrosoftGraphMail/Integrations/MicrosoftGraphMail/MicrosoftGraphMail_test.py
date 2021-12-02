@@ -530,6 +530,6 @@ def test_server_to_endpoint(server_url, expected_endpoint):
     Then:
         - Verify that the host address is translated to the correct endpoint code, i.e. com/gcc-high/dod/de/cn
     """
-    from MicrosoftGraphMail import GRAPH_BASE_ENDPOINTS
+    from MicrosoftApiModule import GRAPH_BASE_ENDPOINTS
 
     assert GRAPH_BASE_ENDPOINTS[server_url] == expected_endpoint
