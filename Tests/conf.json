@@ -4768,7 +4768,6 @@
     ],
     "skipped_tests": {
         "MISP V2 Test": "The integration is deprecated as we released MISP V3",
-        "Zscaler Test": "We won't get license (Issues 40157,17784)",
         "Github IAM - Test Playbook": "Issue 32383",
         "O365-SecurityAndCompliance-ContextResults-Test": "Issue 38900",
         "Calculate Severity - Standard - Test": "Issue 32715",
@@ -4858,7 +4857,7 @@
         "HybridAnalysis-Test": "Issue 26599",
         "Infoblox Test": "Issue 25651",
         "AutoFocusTagsFeed-test": "shares API quota with the other test",
-        "Carbon Black Edr - Test": "Issue 40132",
+        "Carbon Black Edr - Test": "Jira ticket XDR-43185",
         "Phishing v2 - Test - Actual Incident": "Issue 41322",
         "Kaspersky Security Center - Test": "Issue 36487",
         "carbonBlackEndpointStandardTestPlaybook": "Issue 36936",
@@ -4876,7 +4875,7 @@
         "Tenable.io Scan Test": "Issue 26728"
     },
     "skipped_integrations": {
-        
+        "AutoFocus V2": "Issue 26464",
         "_comment1": "~~~ NO INSTANCE ~~~",
         "Ipstack": "Usage limit reached (Issue 38063)",
         "AnsibleAlibabaCloud": "No instance - issue 40447",
