@@ -22,7 +22,7 @@ configuration:
   name: server
   required: true
   type: 0
-- displaypassword: API Key
+- displaypassword: API Key (Recommended)
   name: credentials
   required: false
   hiddenusername: true
@@ -40,7 +40,6 @@ configuration:
   name: api_key
   required: false
   type: 4
-  hidden: true
 description: Malware analysis sandboxing.
 display: VMRay
 name: vmray
