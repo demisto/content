@@ -1533,7 +1533,7 @@ Get threat intelligence for an IP, Domain, CVE, URL or File.
             "score": 0,
             "threatLists": [
                 {
-                    "description": "This list consists of DNS public or open DNS servers and is an absolute white list for Risk Scoring.",
+                    "description": "This list consists of DNS public or open DNS servers and is an absolute allow list for Risk Scoring.",
                     "id": "report:Uz6vFG",
                     "name": "DNS Server List (White List)",
                     "type": "EntityList"
@@ -1568,7 +1568,7 @@ Get threat intelligence for an IP, Domain, CVE, URL or File.
 >### Threat Lists
 >|Threat List Name|Description|
 >|---|---|
->| DNS Server List (White List) | This list consists of DNS public or open DNS servers and is an absolute white list for Risk Scoring. |
+>| DNS Server List (White List) | This list consists of DNS public or open DNS servers and is an absolute allow list for Risk Scoring. |
 
 
 ### recordedfuture-links
