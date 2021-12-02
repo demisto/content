@@ -15,16 +15,18 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 class Client(BaseClient):
 
-    def censys_view_request(self, index: str, query: str):
-        if index == 'Ipv4':
-            url_suffix = f'v2/hosts/{query}'
-        else:
-            url_suffix = f'v1/view/certificates/{query}'
+    def censys_view_host_request(self, query: str):
+        url_suffix = f'v2/hosts/{query}'
+        res = self._http_request('GET', url_suffix)
+        return res
+    
+    def censys_view_cert_request(self, query: str):
+        url_suffix = f'v1/view/certificates/{query}'
         res = self._http_request('GET', url_suffix)
         return res
 
     def censys_search_ip_request(self, query: Dict, page_size: int):
-        url_suffix = f'v2/hosts/search'
+        url_suffix = 'v2/hosts/search'
         params = {
             'q': query,
             'per_page': page_size
@@ -34,7 +36,7 @@ class Client(BaseClient):
         return res
 
     def search_pagination(self, query, page_size, cursor):
-        url_suffix = f'v2/hosts/search'
+        url_suffix = 'v2/hosts/search'
         params = {
             'q': query,
             'per_page': page_size,
@@ -54,59 +56,59 @@ class Client(BaseClient):
 
 
 def test_module(client: Client) -> str:
-    res = client.censys_view_request('Ipv4', '8.8.8.8')
+    res = client.censys_view_host_request('8.8.8.8')
     if res:
         return 'ok'
 
 
-def censys_view_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def censys_view_host_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Returns host information for the specified IP address or structured certificate data for the specified SHA-256
     """
 
-    index = args.get('index')
     query = args.get('query')
+    res = client.censys_view_host_request(query)
+    result = res.get('result', {})
+    content = {
+        'Name': result.get('autonomous_system', {}).get('name'),
+        'Bgp Prefix': result.get('autonomous_system', {}).get('bgp_prefix'),
+        'ASN': result.get('autonomous_system', {}).get('asn'),
+        'Service': [{
+            'Port': service.get('port'),
+            'Service Name': service.get('service_name')
+        } for service in result.get('services', [])],
+        'Last Updated': result.get('last_updated_at')
+    }
 
-    res = client.censys_view_request(index, query)
-    if index == 'Ipv4':
-        result = res.get('result', {})
-        content = {
-            'Name': result.get('autonomous_system', {}).get('name'),
-            'Bgp Prefix': result.get('autonomous_system', {}).get('bgp_prefix'),
-            'ASN': result.get('autonomous_system', {}).get('asn'),
-            'Service': [{
-                'Port': service.get('port'),
-                'Service Name': service.get('service_name')
-            } for service in result.get('services', [])],
-            'Last Updated': result.get('last_updated_at')
-        }
+    human_readable = tableToMarkdown(f'Information for IP {query}', content)
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_prefix='Censys.HostView',
+        outputs_key_field='ip',
+        outputs=result,
+        raw_response=res
+    )
 
-        human_readable = tableToMarkdown(f'Information for IP {query}', content)
-        return CommandResults(
-            readable_output=human_readable,
-            outputs_prefix='Censys.View',
-            outputs_key_field='ip',
-            outputs=result,
-            raw_response=res
-        )
 
-    else:
-        metadata = res.get('metadata')
-        content = {
-            'SHA 256': res.get('fingerprint_sha256'),
-            'Tags': res.get('tags'),
-            'Source': metadata.get('source'),
-            'Added': metadata.get('added_at'),
-            'Updated': metadata.get('updated_at')
-        }
+def censys_view_cert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    query = args.get('query')
+    res = client.censys_view_cert_request(query)
+    metadata = res.get('metadata')
+    content = {
+        'SHA 256': res.get('fingerprint_sha256'),
+        'Tags': res.get('tags'),
+        'Source': metadata.get('source'),
+        'Added': metadata.get('added_at'),
+        'Updated': metadata.get('updated_at')
+    }
 
-        human_readable = tableToMarkdown(f'Information for certificate ', content)
-        return CommandResults(
-            readable_output=human_readable,
-            outputs_prefix='Censys.View',
-            outputs_key_field='fingerprint_sha256',
-            outputs=res
-        )
+    human_readable = tableToMarkdown(f'Information for certificate ', content)
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_prefix='Censys.CertificateView',
+        outputs_key_field='fingerprint_sha256',
+        outputs=res
+    )
 
 
 def censys_search_hosts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -210,8 +212,10 @@ def main() -> None:
             result = test_module(client)
             return_results(result)
 
-        elif demisto.command() == 'censys-view':
-            return_results(censys_view_command(client, demisto.args()))
+        elif demisto.command() == 'censys-host-view':
+            return_results(censys_view_host_command(client, demisto.args()))
+        elif demisto.command() == 'censys-certificate-view':
+            return_results(censys_view_cert_command(client, demisto.args()))
         elif demisto.command() == 'censys-hosts-search':
             return_results(censys_search_hosts_command(client, demisto.args()))
         elif demisto.command() == 'censys-certificates-search':
