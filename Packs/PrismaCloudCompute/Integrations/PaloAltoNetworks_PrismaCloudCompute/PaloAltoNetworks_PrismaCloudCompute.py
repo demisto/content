@@ -306,9 +306,12 @@ def parse_date_string_format(
         new_format (str): the new requested format for the date string.
 
     Returns:
-        str: date as a new format.
+        str: date as a new format, in case of a failure returns the original date string.
     """
-    return parse_date_string(date_string=date_string, date_format=date_string_format).strftime(new_format)
+    try:
+        return parse_date_string(date_string=date_string, date_format=date_string_format).strftime(new_format)
+    except ValueError:
+        return date_string
 
 
 def perform_api_request(
@@ -599,7 +602,6 @@ def build_containers_forensic_response(
                         "ContainerID": report.get("containerId"),
                         "Type": report.get("type"),
                         "Path": report.get("path"),
-                        "Process": report.get("process")
                     }
                 )
         return context_output, tableToMarkdown(
