@@ -1814,6 +1814,8 @@ def long_running_execution_command(client: Client, params: Dict):
             print_debug_msg(
                 f'Error while reseting mirroring variables, retring. Error details: {str(e)} \n'
                 f'{traceback.format_exc()}')
+            demisto.info('Exception when calling reset_mirroring_events_variables')
+            break
 
     while True:
         try:
@@ -3083,7 +3085,10 @@ def json_loads_inner(json_dumps_list: List[str]) -> list:
     """
     python_object_list = []
     for json_dump in json_dumps_list:
-        python_object_list.append(json.loads(json_dump))
+        try:
+            python_object_list.append(json.loads(json_dump))
+        except Exception as e:
+            demisto.info(f'Exception {e} when trying to json parse {json_dump}, as part of {json_dumps_list}')
 
     return python_object_list
 
