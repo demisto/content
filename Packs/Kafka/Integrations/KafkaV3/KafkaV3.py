@@ -622,7 +622,7 @@ def get_topic_partition_if_relevant(kafka, topic, partition, specific_offset):
                           f'{specific_offset} not in [{earliest_offset}, {latest_offset}) \n')
 
     if add_topic_partition:
-        return [kafka.get_topic_partitions(topic=topic, partition=int(partition), offset=specific_offset, consumer=True)]
+        return kafka.get_topic_partitions(topic=topic, partition=int(partition), offset=specific_offset, consumer=True)
     return []
 
 
@@ -639,7 +639,7 @@ def get_fetch_topic_partitions(kafka, topic, offset, last_fetched_offsets):
         topic_partitions_in_system += get_topic_partition_if_relevant(kafka, topic, partition, specific_offset)
 
         for topic_partition in all_topic_partitions:
-            if topic_partition.partition == partition:
+            if topic_partition.partition == int(partition):
                 all_topic_partitions.remove(topic_partition)
 
     return topic_partitions_in_system + all_topic_partitions
