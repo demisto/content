@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: Bonusly
+  id: Bonusly_copy
   version: -1
 configuration:
 - defaultvalue: https://bonus.ly/api/v1/
@@ -28,7 +28,7 @@ configuration:
   name: application_name
   required: false
   type: 0
-- defaultvalue: '20'
+- defaultvalue: "20"
   display: Max. number of bonuses to fetch (Default is 20)
   name: limit
   required: false
@@ -41,7 +41,7 @@ configuration:
   name: hashtag
   required: false
   type: 0
-- defaultvalue: '1'
+- defaultvalue: "1"
   display: Start fetching from X days ago (Defaults is 1 day)
   name: fetch_time
   required: false
@@ -50,20 +50,28 @@ configuration:
   name: isFetch
   required: false
   type: 8
-- defaultvalue: '1'
+- defaultvalue: "1"
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   required: false
   type: 19
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: e60c46b7-4453-4c91-88a9-b48e373da037
+    propagationLabels:
+    - all
+    toServerVersion: ""
 description: The Bonusly integration is used to interact with the Bonusly platform
   through the API. Bonusly is an employee recognition platform which enterprises use
   to for employee recognition.
-display: Bonusly
-name: Bonusly
+display: Bonusly_copy
+name: Bonusly_copy
 script:
   commands:
   - arguments:
-    - defaultValue: '20'
+    - defaultValue: "20"
       description: 'Number of bonuses to retrieve (min: 1, max: 100) Default: 20.'
       name: limit
     - description: The start time by which to filter returned bonuses. e.g., 2015-10-28T21:26:50Z.
@@ -93,8 +101,8 @@ script:
       description: Date the bonus was created (given), e.g., 2015-10-28T21:26:50Z.
       type: Date
     - contextPath: Bonusly.Bonus.reason
-      description: "The bonus message, e.g., \"For signing up for the world's favorite\
-        \ employee recognition solution! #problem-solving\""
+      description: 'The bonus message, e.g., "For signing up for the world''s favorite
+        employee recognition solution! #problem-solving"'
       type: String
     - contextPath: Bonusly.Bonus.reason_html
       description: HTML representation of the bonus.
@@ -220,8 +228,8 @@ script:
       description: Date the bonus was created (given), e.g., 2015-10-28T21:26:50Z.
       type: Date
     - contextPath: Bonusly.Bonus.reason
-      description: "The bonus message, e.g., \"For signing up for the world's favorite\
-        \ employee recognition solution! #problem-solving\""
+      description: 'The bonus message, e.g., "For signing up for the world''s favorite
+        employee recognition solution! #problem-solving"'
       type: String
     - contextPath: Bonusly.Bonus.reason_html
       description: HTML representation of the bonus.
@@ -339,8 +347,8 @@ script:
       description: Date the bonus was created (given), e.g., 2015-10-28T21:26:50Z.
       type: Date
     - contextPath: Bonusly.Bonus.reason
-      description: "The bonus message, e.g., \"For signing up for the world's favorite\
-        \ employee recognition solution! #problem-solving\""
+      description: 'The bonus message, e.g., "For signing up for the world''s favorite
+        employee recognition solution! #problem-solving"'
       type: String
     - contextPath: Bonusly.Bonus.reason_html
       description: HTML representation of the bonus.
@@ -462,8 +470,8 @@ script:
       description: Date the bonus was created (given), e.g., 2015-10-28T21:26:50Z.
       type: Date
     - contextPath: Bonusly.Bonus.reason
-      description: "The bonus message, e.g., \"For signing up for the world's favorite\
-        \ employee recognition solution! #problem-solving\""
+      description: 'The bonus message, e.g., "For signing up for the world''s favorite
+        employee recognition solution! #problem-solving"'
       type: String
     - contextPath: Bonusly.Bonus.reason_html
       description: HTML representation of the bonus.
@@ -583,6 +591,4 @@ script:
   script: ''
   subtype: python3
   type: python
-fromversion: 5.0.0
-tests:
-- No tests
+sourcemoduleid: Bonusly
