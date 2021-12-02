@@ -583,6 +583,9 @@ def build_containers_forensic_response(
     table = []
     # api request does not support offset only, but does support limit.
     offset = args.pop("offset")
+    # because the api supports only limit, it is necessary to add the requested offset to the limit be able to take the
+    # correct offset:limit after the api call.
+    args["limit"] = offset + args["limit"]
 
     container_forensics = get_api_filtered_response(
         client=client, url_suffix=f"profiles/container/{container_id}/forensic", offset=offset, args=args
@@ -654,6 +657,7 @@ def build_host_forensic_response(
     """
     # api request does not support offset only, but does support limit.
     offset = args.pop("offset")
+    args["limit"] = offset + args["limit"]
 
     host_forensics = get_api_filtered_response(
         client=client, url_suffix=f"/profiles/host/{host_id}/forensic", offset=offset, args=args
