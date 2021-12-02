@@ -244,12 +244,16 @@ Searches Splunk for events.
 | app | The string that contains the application namespace in which to restrict searches. | Optional|
 | batch_limit | The maximum number of returned results to process at a time. For example, if 100 results are returned, and you specify a `batch_limit` of 10, the results will be processed 10 at a time over 10 iterations. This does not affect the search or the context and outputs returned. In some cases, specifying a `batch_size` enhances search performance. If you think that the search execution is suboptimal, it is  recommended to try several `batch_size` values to determine which works best for your search. The default is 25,000. | Optional |	
 | update_context | Determines whether the results will be entered into the context. | Optional |
+| polling | Use XSOAR built-in polling to retrieve the result when it's ready. | Optional |
+| interval_in_seconds | Interval in seconds between each poll. | Optional |
+| sid | The job sid. | Optional |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Splunk.Result | Unknown | The results of the Splunk search. The results are a JSON array, in which each item is a Splunk event. | 
+| Splunk.JobStatus | String | The search status. | 
 
 
 ##### Command Example
