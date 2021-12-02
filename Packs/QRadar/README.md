@@ -11,3 +11,6 @@ Basically, you can perform tasks that a user would need to do manually in the QR
 
 ## How to use this pack?
 Follow the steps provided in this [article](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-tutorials/tutorials/ingest-incidents-from-a-siem.html) to configure fetching offenses from QRadar to XSOAR.
+
+## Full pack details
+Full details about the pack can be found in this [article](https://xsoar.pan.dev/docs/reference/packs/QRadar).
