@@ -7,7 +7,9 @@
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-10-01T09:14:58Z",
-    "categories": [],
+    "categories": [
+        "Utilities"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": []

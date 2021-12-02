@@ -1,0 +1,31 @@
+{
+    "id": "incident_cybersixgillassessment",
+    "version": -1,
+    "modified": "2020-01-28T07:27:31.345544514Z",
+    "name": "Cybersixgill Assessment",
+    "ownerOnly": false,
+    "description": "Cybersixgill Assessment",
+    "cliName": "cybersixgillassessment",
+    "type": "longText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": true,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Cybersixgill Actionable Alerts"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}
