@@ -227,7 +227,7 @@ def list_groups_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, D
         entry_context = {f'{INTEGRATION_CONTEXT_NAME}NextLink': {'GroupsNextLink': next_link_response},
                          f'{INTEGRATION_CONTEXT_NAME}(val.ID === obj.ID)': groups_outputs}
         title = 'Groups (Note that there are more results. Please use the next_link argument to see them. The value ' \
-                'can be found in the context under GroupsNextLink): '
+                'can be found in the context under MSGraphGroupsNextLink.GroupsNextLink): '
     else:
         entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID === obj.ID)': groups_outputs}
         title = 'Groups:'
