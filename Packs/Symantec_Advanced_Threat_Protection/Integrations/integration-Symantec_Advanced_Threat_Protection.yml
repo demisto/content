@@ -615,7 +615,7 @@ script:
     - contextPath: ATPEvents.Result.parent_file_sha2
       description: The SHA256 of the parent file
     - contextPath: ATPEvents.Result.reason
-      description: 'This field is overloaded and has following possible interpretations (depending on the corresponding type_id).  For type_id 4118, it specifies the Blacklist hash function that was used to identify the file. This field has following possible values: 0 = BY_FILE_BLACKLIST_SHA2 1 = BY_FILE_BLACKLIST_MD5  For type_id 4112, it specifies the Blacklist criteria that identify the traffic. This field has following possible values: 0 = BY_SOURCE_IP 1 = BY_DEST_IP 2 = BY_DEST_URL'
+      description: 'This field is overloaded and has following possible interpretations (depending on the corresponding type_id).  For type_id 4118, it specifies the block list hash function that was used to identify the file. This field has following possible values: 0 = BY_FILE_BLACKLIST_SHA2 1 = BY_FILE_BLACKLIST_MD5  For type_id 4112, it specifies the block list criteria that identify the traffic. This field has following possible values: 0 = BY_SOURCE_IP 1 = BY_DEST_IP 2 = BY_DEST_URL'
     - contextPath: ATPEvents.Result.manual_submit
       description: Indicates whether the file was manually submitted for analysis
     - contextPath: ATPEvents.Result.signature_id
@@ -819,7 +819,7 @@ script:
     - contextPath: ATPIncidentEvents.Result.parent_file_sha2
       description: The SHA256 of the parent file
     - contextPath: ATPIncidentEvents.Result.reason
-      description: 'This field is overloaded and has following possible interpretations (depending on the corresponding type_id).  For type_id 4118, it specifies the Blacklist hash function that was used to identify the file. This field has following possible values: 0 = BY_FILE_BLACKLIST_SHA2 1 = BY_FILE_BLACKLIST_MD5  For type_id 4112, it specifies the Blacklist criteria that identify the traffic. This field has following possible values: 0 = BY_SOURCE_IP 1 = BY_DEST_IP 2 = BY_DEST_URL'
+      description: 'This field is overloaded and has following possible interpretations (depending on the corresponding type_id).  For type_id 4118, it specifies the block list hash function that was used to identify the file. This field has following possible values: 0 = BY_FILE_BLACKLIST_SHA2 1 = BY_FILE_BLACKLIST_MD5  For type_id 4112, it specifies the Blacklist criteria that identify the traffic. This field has following possible values: 0 = BY_SOURCE_IP 1 = BY_DEST_IP 2 = BY_DEST_URL'
     - contextPath: ATPIncidentEvents.Result.manual_submit
       description: Indicates whether the file was manually submitted for analysis
     - contextPath: ATPIncidentEvents.Result.signature_id
