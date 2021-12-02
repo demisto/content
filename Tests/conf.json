@@ -4772,7 +4772,6 @@
     ],
     "skipped_tests": {
         "MISP V2 Test": "The integration is deprecated as we released MISP V3",
-        "Zscaler Test": "We won't get license (Issues 40157,17784)",
         "Github IAM - Test Playbook": "Issue 32383",
         "O365-SecurityAndCompliance-ContextResults-Test": "Issue 38900",
         "Calculate Severity - Standard - Test": "Issue 32715",

@@ -149,7 +149,7 @@ ignore=RP102
 ignore=IF107
 
 [file:CommonTypes]
-ignore=PA116
+ignore=PA116,PA129
 
 [file:layoutscontainer-Account.json]
 ignore=BA101
