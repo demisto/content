@@ -242,13 +242,13 @@ script:
     name: sentinelone-create-white-list-item
     outputs:
     - contextPath: SentinelOne.Exclusions.ID
-      description: The whitelisted entity ID.
+      description: The entity ID on allow list.
       type: string
     - contextPath: SentinelOne.Exclusions.Type
-      description: The whitelisted item type.
+      description: The item type on allow list.
       type: string
     - contextPath: SentinelOne.Exclusions.CreatedAt
-      description: Time when the whitelist item was created.
+      description: Time when the allow list item was created.
       type: date
   - arguments:
     - default: false
