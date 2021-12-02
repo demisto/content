@@ -4948,6 +4948,7 @@
         "Freshdesk": "Trial account expired",
         "Threat Grid": "Issue 16197",
         "Kafka V2": "Can not connect to instance from remote",
+        "KafkaV3": "Can not connect to instance from remote",
         "Check Point Sandblast": "Issue 15948",
         "Remedy AR": "getting 'Not Found' in test button",
         "Salesforce": "Issue 15901",
