@@ -1,16 +1,18 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 """
 VirusTotal V3 - Premium API
 Difference: https://developers.virustotal.com/v3.0/reference#public-vs-premium-api
 """
 import copy
-from typing import Tuple, Iterable
+from typing import Iterable, Tuple
 
 import urllib3
 from dateparser import parse
 
-from CommonServerPython import *
-
 # Disable insecure warnings
+# contrib comment
 
 urllib3.disable_warnings()  # pylint: disable=no-member
 

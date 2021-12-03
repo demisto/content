@@ -15,3 +15,6 @@ Use "Tag" to filter which notification tag to get.
 For example, using the "malicious_executables" will fetch only notifications caught by malicious_executables ruleset.
 The scope of the rule-set should be narrowed to catch only indicators that you want to analyze by a playbook.
 Defining a broad rule-set will cause the integration to create multiple redundant incidents.  
+
+---
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/virus-total---premium-api-v3)

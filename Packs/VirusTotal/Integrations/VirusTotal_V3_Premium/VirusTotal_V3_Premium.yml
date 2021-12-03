@@ -5,22 +5,22 @@ commonfields:
 configuration:
 - display: API Key (leave empty. Fill in the API key in the password field.)
   displaypassword: API Key
-  name: credentials
-  type: 9
-  required: true
   hiddenusername: true
+  name: credentials
+  required: true
+  type: 9
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
-- display: Incident type
-  defaultvalue: VirusTotal Intelligence LiveHunt Notification
+- defaultvalue: VirusTotal Intelligence LiveHunt Notification
+  display: Incident type
   name: incidentType
   required: false
   type: 13
 - defaultvalue: '40'
-  name: max_fetch
   display: Maximum number of incidents per fetch
+  name: max_fetch
   required: false
   type: 0
 - defaultvalue: 3 days
@@ -29,8 +29,7 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-- defaultvalue: ''
-  display: "Tag: The ruleset's name or the identifier for the YARA rule matching the\
+- display: "Tag: The ruleset's name or the identifier for the YARA rule matching the\
     \ file to fetch its notifications. Leave blank to fetch all."
   name: tag
   required: false
@@ -43,7 +42,13 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Analyse retro hunts, read live hunt notifications and download files from VirusTotal.
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+description: Analyse retro hunts, read live hunt notifications and download files
+  from VirusTotal.
 display: VirusTotal - Premium (API v3)
 name: VirusTotal - Premium (API v3)
 script:
@@ -51,10 +56,10 @@ script:
   - arguments:
     - default: true
       description: SHA-256, SHA-1 or MD5 identifying the file.
-      isArray: false
       name: hash
       required: true
-      secret: false
+    description: Downloads file from VirusTotal
+    name: vt-private-download-file
     outputs:
     - contextPath: File
       description: The file details command results.
@@ -87,10 +92,6 @@ script:
       description: The file type, as determined by libmagic (same as displayed in
         file entries).
       type: String
-    deprecated: false
-    description: Downloads file from VirusTotal
-    execution: false
-    name: vt-private-download-file
   - arguments:
     - default: true
       description: A commma separated list of hashes (SHA-256, SHA-1, or MD5) for
@@ -98,46 +99,12 @@ script:
       isArray: true
       name: file
       required: true
-      secret: false
-    - default: false
-      description: A password to protect the zip.
+    - description: A password to protect the zip.
       isArray: true
       name: password
-      required: false
       secret: true
-    outputs:
-    - contextPath: VirusTotal.Zip.id
-      description: ID of the zip
-      type: String
-    - contextPath: VirusTotal.Zip.type
-      description: Type of the ID (zip_file)
-      type: String
-    - contextPath: VirusTotal.Zip.links.self
-      description: Self link to file
-      type: String
-    - contextPath: VirusTotal.Zip.attributes.files_error
-      description: The number of files resulted in error
-      type: Number
-    - contextPath: VirusTotal.Zip.attributes.files_ok
-      description: The number of files resulted in success zipped.
-      type: Number
-    - contextPath: VirusTotal.Zip.attributes.progress
-      description: Progress of the zipping command in percentage.
-      type: Number
-    - contextPath: VirusTotal.Zip.attributes.status
-      description: The status of the zip process. "finished" is the state when finished.
-      type: String
-    deprecated: false
     description: Creates a password-protected ZIP file containing files from VirusTotal.
-    execution: false
     name: vt-private-zip-create
-  - arguments:
-    - default: true
-      description: A zip ID. Can be retrieved from the output of vt-private-zip-create.
-      isArray: false
-      name: zip_id
-      required: true
-      secret: false
     outputs:
     - contextPath: VirusTotal.Zip.id
       description: ID of the zip
@@ -160,17 +127,42 @@ script:
     - contextPath: VirusTotal.Zip.attributes.status
       description: The status of the zip process. "finished" is the state when finished.
       type: String
-    deprecated: false
-    description: Retrieve information about a ZIP file.
-    execution: false
-    name: vt-private-zip-get
   - arguments:
     - default: true
       description: A zip ID. Can be retrieved from the output of vt-private-zip-create.
-      isArray: false
       name: zip_id
       required: true
-      secret: false
+    description: Retrieve information about a ZIP file.
+    name: vt-private-zip-get
+    outputs:
+    - contextPath: VirusTotal.Zip.id
+      description: ID of the zip
+      type: String
+    - contextPath: VirusTotal.Zip.type
+      description: Type of the ID (zip_file)
+      type: String
+    - contextPath: VirusTotal.Zip.links.self
+      description: Self link to file
+      type: String
+    - contextPath: VirusTotal.Zip.attributes.files_error
+      description: The number of files resulted in error
+      type: Number
+    - contextPath: VirusTotal.Zip.attributes.files_ok
+      description: The number of files resulted in success zipped.
+      type: Number
+    - contextPath: VirusTotal.Zip.attributes.progress
+      description: Progress of the zipping command in percentage.
+      type: Number
+    - contextPath: VirusTotal.Zip.attributes.status
+      description: The status of the zip process. "finished" is the state when finished.
+      type: String
+  - arguments:
+    - default: true
+      description: A zip ID. Can be retrieved from the output of vt-private-zip-create.
+      name: zip_id
+      required: true
+    description: Download a ZIP file.
+    name: vt-private-zip-download
     outputs:
     - contextPath: File
       description: The file details command results.
@@ -203,17 +195,14 @@ script:
       description: The file type, as determined by libmagic (same as displayed in
         file entries).
       type: String
-    deprecated: false
-    description: Download a ZIP file.
-    execution: false
-    name: vt-private-zip-download
   - arguments:
     - default: true
-      description: Sandbox report ID. Can be aquired from vt-file-sandbox-report in VirusTotal (API v3) integration.
-      isArray: false
+      description: Sandbox report ID. Can be aquired from vt-file-sandbox-report in
+        VirusTotal (API v3) integration.
       name: report_id
       required: true
-      secret: false
+    description: Extracted PCAP from a sandbox analysis.
+    name: vt-private-file-sandbox-pcap
     outputs:
     - contextPath: File
       description: The file details command results.
@@ -246,59 +235,34 @@ script:
       description: The file type, as determined by libmagic (same as displayed in
         file entries).
       type: String
-    deprecated: false
-    description: Extracted PCAP from a sandbox analysis.
-    execution: false
-    name: vt-private-file-sandbox-pcap
   - arguments:
-    - default: false
-      description: Search query.
-      isArray: false
+    - description: Search query.
       name: query
       required: true
-      secret: false
-    - default: false
+    - defaultValue: '10'
       description: Maximum number of results.
-      defaultValue: '10'
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The order value can be sorted depends on the query type. See documentation.
+    - description: The order value can be sorted depends on the query type. See documentation.
         https://developers.virustotal.com/v3.0/reference#intelligence-search
-      isArray: false
       name: order
-      required: false
-      secret: false
-    - default: false
-      description: Continuation cursor.
-      isArray: false
+    - description: Continuation cursor.
       name: cursor
-      required: false
-      secret: false
-    - default: false
+    - auto: PREDEFINED
+      defaultValue: 'false'
       description: Whether to return full object information or just object descriptors.
-      isArray: false
       name: descriptors_only
-      defaultValue: 'false'
-      auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
-      required: false
-      secret: false
-    - default: false
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
       description: Whether to return full data information.
-      isArray: false
       name: extended_data
-      defaultValue: 'false'
-      auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
-      required: false
-      secret: false
+      - 'true'
+      - 'false'
+    description: Search for files.
+    name: vt-private-intelligence-search
     outputs:
     - contextPath: VirusTotal.IntelligenceSearch.attributes.last_analysis_stats.harmless
       description: number of reports saying that is harmless.
@@ -337,30 +301,21 @@ script:
     - contextPath: VirusTotal.IntelligenceSearch.links.self
       description: Link to the response
       type: String
-    deprecated: false
-    description: Search for files.
-    execution: false
-    name: vt-private-intelligence-search
   - arguments:
-    - default: false
-      description: File search query. For example, query="type:peexe size:90kb+ positives:5+
+    - description: File search query. For example, query="type:peexe size:90kb+ positives:5+
         behaviour:'taskkill'"
-      isArray: false
       name: query
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Return all of the results, note that it can be thousands of results.
         Prefer not to use in playbooks. The default value is "false"
-      isArray: false
       name: fullResponse
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
+    description: Search for files.
+    name: vt-private-search-file
     outputs:
     - contextPath: VirusTotal.SearchFile.SearchResult
       description: The hashes of files that fit the query
@@ -368,18 +323,14 @@ script:
     - contextPath: VirusTotal.SearchFile.Query
       description: Original search query
       type: string
-    deprecated: false
-    description: Search for files.
-    execution: false
-    name: vt-private-search-file
   - arguments:
     - default: true
       description: Ruleset identifier. Can be retreived from the vt-private-livehunt-rules-list
         command.
-      isArray: false
       name: id
       required: true
-      secret: false
+    description: Retrieve VT Hunting livehunt rulesets.
+    name: vt-private-livehunt-rules-get-by-id
     outputs:
     - contextPath: VirusTotal.LiveHuntRule.attributes.name
       description: The rule's name
@@ -417,54 +368,32 @@ script:
     - contextPath: VirusTotal.LiveHuntRule.links.self
       description: Link to the ruleset
       type: String
-    deprecated: false
-    description: Retrieve VT Hunting livehunt rulesets.
-    execution: false
-    name: vt-private-livehunt-rules-get-by-id
   - arguments:
-    - default: false
-      description: Return the rulesets matching the given criteria only.
-      isArray: false
+    - description: Return the rulesets matching the given criteria only.
       name: filter
-      required: false
-      secret: false
-    - default: false
+    - defaultValue: '10'
       description: Maximum number of results.
-      defaultValue: '10'
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
+    - auto: PREDEFINED
       description: Sort order.
-      auto: PREDEFINED
-      predefined:
-      - "name-"
-      - "creation_date-"
-      - "modification_date-"
-      - "name+"
-      - "creation_date+"
-      - "modification_date+"
-      isArray: false
       name: order
-      required: false
-      secret: false
-    - default: false
-      description: Continuation cursor.
-      isArray: false
-      name: cursor
-      required: false
-      secret: false
-    - default: false
-      description: Should list only enabled or disabled rules.
-      isArray: false
-      name: enabled
-      required: false
-      secret: false
-      auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
+      - name-
+      - creation_date-
+      - modification_date-
+      - name+
+      - creation_date+
+      - modification_date+
+    - description: Continuation cursor.
+      name: cursor
+    - auto: PREDEFINED
+      description: Should list only enabled or disabled rules.
+      name: enabled
+      predefined:
+      - 'true'
+      - 'false'
+    description: Retrieve VT Hunting livehunt rulesets.
+    name: vt-private-livehunt-rules-list
     outputs:
     - contextPath: VirusTotal.LiveHuntRule.attributes.name
       description: The rule's name
@@ -502,49 +431,29 @@ script:
     - contextPath: VirusTotal.LiveHuntRule.links.self
       description: Link to the ruleset
       type: String
-    deprecated: false
-    description: Retrieve VT Hunting livehunt rulesets.
-    execution: false
-    name: vt-private-livehunt-rules-list
   - arguments:
-    - default: false
-      description: Name of the rule.
-      isArray: false
+    - description: Name of the rule.
       name: name
       required: true
-      secret: false
-    - default: false
-      description: The rule itself.
-      isArray: false
+    - description: The rule itself.
       name: yara_rule
       required: true
-      secret: false
-    - default: false
+    - auto: PREDEFINED
+      defaultValue: 'false'
       description: Whatever to enable the rule.
-      isArray: false
       name: enabled
-      required: false
-      secret: false
-      defaultValue: "false"
-      auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
-    - default: false
-      description: A comma-separated list of emails to notify.
-      isArray: false
+      - 'true'
+      - 'false'
+    - description: A comma-separated list of emails to notify.
       name: notification_emails
-      required: false
-      secret: false
-    - default: false
-      description: max number of notifications that will be generated by the ruleset
+    - description: max number of notifications that will be generated by the ruleset
         in a 24h period. If a match is found, number of generated hunting notifications
         in the last 24h is looked up and if it's greater than this limit, that match
         is ignored.
-      isArray: false
       name: limit
-      required: false
-      secret: false
+    description: Create a new VT Hunting Livehunt ruleset.
+    name: vt-private-livehunt-rules-create
     outputs:
     - contextPath: VirusTotal.LiveHuntRule.attributes.name
       description: The rule's name
@@ -582,50 +491,30 @@ script:
     - contextPath: VirusTotal.LiveHuntRule.links.self
       description: Link to the ruleset
       type: String
-    deprecated: false
-    description: Create a new VT Hunting Livehunt ruleset.
-    execution: false
-    name: vt-private-livehunt-rules-create
   - arguments:
     - default: true
       description: Rule identifier. Can be retrieved from the vt-private-livehunt-rules-list
         command.
-      isArray: false
       name: id
       required: true
-      secret: false
-    - default: false
-      description: The rule itself.
-      isArray: false
+    - description: The rule itself.
       name: yara_rule
-      required: false
-      secret: false
-    - default: false
+    - auto: PREDEFINED
+      defaultValue: 'false'
       description: Whatever to enable the rule.
-      isArray: false
       name: enabled
-      required: false
-      secret: false
-      defaultValue: "false"
-      auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
-    - default: false
-      description: A comma-separated list of emails to notify.
-      isArray: false
+      - 'true'
+      - 'false'
+    - description: A comma-separated list of emails to notify.
       name: notification_emails
-      required: false
-      secret: false
-    - default: false
-      description: max number of notifications that will be generated by the ruleset
+    - description: max number of notifications that will be generated by the ruleset
         in a 24h period. If a match is found, number of generated hunting notifications
         in the last 24h is looked up and if it's greater than this limit, that match
         is ignored.
-      isArray: false
       name: limit
-      required: false
-      secret: false
+    description: Update a VT Hunting Livehunt ruleset.
+    name: vt-private-livehunt-rules-update
     outputs:
     - contextPath: VirusTotal.LiveHuntRule.attributes.name
       description: The rule's name
@@ -663,55 +552,29 @@ script:
     - contextPath: VirusTotal.LiveHuntRule.links.self
       description: Link to the ruleset
       type: String
-    deprecated: false
-    description: Update a VT Hunting Livehunt ruleset.
-    execution: false
-    name: vt-private-livehunt-rules-update
   - arguments:
     - default: true
       description: Ruleset identifier. Can be retreived from the vt-private-livehunt-rules-list
-      isArray: false
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Delete a VT Hunting Livehunt ruleset.
-    execution: false
     name: vt-private-livehunt-rules-delete
   - arguments:
-    - default: false
+    - defaultValue: '10'
       description: Maximum number of notifications to retrieve. Maximum can be up
         to 40.
-      defaultValue: "10"
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: Fetch notification from given time. Can be epoch time, a date or
+    - description: Fetch notification from given time. Can be epoch time, a date or
         time range (3 days, 1 year)
-      isArray: false
       name: from_time
-      required: false
-      secret: false
-    - default: false
-      description: Fetch notification from given time. Can be epoch time or a date.
-      isArray: false
+    - description: Fetch notification from given time. Can be epoch time or a date.
       name: to_time
-      required: false
-      secret: false
-    - default: false
-      description: Continuation cursor.
-      isArray: false
+    - description: Continuation cursor.
       name: cursor
-      required: false
-      secret: false
-    - default: false
-      description: Filter notifications by tag.
-      isArray: false
+    - description: Filter notifications by tag.
       name: tag
-      required: false
-      secret: false
+    description: Retrieve VT Hunting Livehunt notifications.
+    name: vt-private-livehunt-notifications-list
     outputs:
     - contextPath: VirusTotal.LiveHuntNotification.meta.count
       description: Notification count
@@ -755,30 +618,16 @@ script:
     - contextPath: VirusTotal.LiveHuntNotification.links.next
       description: The link to the next page
       type: String
-    deprecated: false
-    description: Retrieve VT Hunting Livehunt notifications.
-    execution: false
-    name: vt-private-livehunt-notifications-list
   - arguments:
-    - default: false
-      description: String to search within the hunting notification tags.
-      isArray: false
+    - description: String to search within the hunting notification tags.
       name: filter
-      required: false
-      secret: false
-    - default: false
-      description: Continuation cursor.
-      isArray: false
+    - description: Continuation cursor.
       name: cursor
-      required: false
-      secret: false
-    - default: false
+    - defaultValue: '10'
       description: Maximum number of notifications to retrieve.
-      isArray: false
-      defaultValue: "10"
       name: limit
-      required: false
-      secret: false
+    description: Retrieve file objects for VT Hunting Livehunt notifications.
+    name: vt-private-livehunt-notifications-files-list
     outputs:
     - contextPath: VirusTotal.LiveHuntFiles.meta.count
       description: Total file's count.
@@ -953,24 +802,16 @@ script:
     - contextPath: VirusTotal.LiveHuntFiles.links.next
       description: Link to the next page
       type: String
-    deprecated: false
-    description: Retrieve file objects for VT Hunting Livehunt notifications.
-    execution: false
-    name: vt-private-livehunt-notifications-files-list
   - arguments:
-    - default: false
-      description: Hashes to search within VirusTotal. Will search only hashes and
+    - description: Hashes to search within VirusTotal. Will search only hashes and
         will ignore any other value.
       isArray: true
       name: hash
       required: true
-      secret: false
-    - default: false
-      description: Continuation cursor.
-      isArray: false
+    - description: Continuation cursor.
       name: cursor
-      required: false
-      secret: false
+    description: Retrieve file objects for VT Hunting Livehunt notifications.
+    name: vt-private-livehunt-notifications-files-get-by-hash
     outputs:
     - contextPath: VirusTotal.LiveHuntFiles.meta.count
       description: Total file's count.
@@ -1145,31 +986,19 @@ script:
     - contextPath: VirusTotal.LiveHuntFiles.links.next
       description: Link to the next page
       type: String
-    deprecated: false
-    description: Retrieve file objects for VT Hunting Livehunt notifications.
-    execution: false
-    name: vt-private-livehunt-notifications-files-get-by-hash
   - arguments:
     - default: true
       description: Rule identifier. Can be retrieved from the vt-private-livehunt-rules-list
         command.
-      isArray: false
       name: id
       required: true
-      secret: false
-    - default: false
-      description: Continuation cursor.
-      isArray: false
+    - description: Continuation cursor.
       name: cursor
-      required: false
-      secret: false
-    - default: false
+    - defaultValue: '10'
       description: Maximum number of notifications to retrieve.
-      isArray: false
-      defaultValue: "10"
       name: limit
-      required: false
-      secret: false
+    description: Get a VT Hunting Livehunt ruleset by hunting notification files relationship.
+    name: vt-private-livehunt-rule-list-files
     outputs:
     - contextPath: VirusTotal.LiveHuntFiles.id
       description: ID of the file
@@ -1177,87 +1006,16 @@ script:
     - contextPath: VirusTotal.LiveHuntFiles.type
       description: Type of the entry (file)
       type: String
-    deprecated: false
-    description: Get a VT Hunting Livehunt ruleset by hunting notification files relationship.
-    execution: false
-    name: vt-private-livehunt-rule-list-files
   - arguments:
-    - default: false
-      description: Return the jobs matching the given criteria only.
-      isArray: false
+    - description: Return the jobs matching the given criteria only.
       name: filter
-      required: false
-      secret: false
-    - default: false
-      description: Continuation cursor.
-      isArray: false
+    - description: Continuation cursor.
       name: cursor
-      required: false
-      secret: false
-    - default: false
+    - defaultValue: '10'
       description: Maximum number jobs to retrieve.
-      isArray: false
-      defaultValue: "10"
       name: limit
-      required: false
-      secret: false
-    outputs:
-    - contextPath: VirusTotal.RetroHuntJob.attributes.status
-      description: can be either "starting", "running", "aborting", "aborted" or "finished".
-      type: String
-    - contextPath: VirusTotal.RetroHuntJob.attributes.finish_date
-      description: date when the Retrohunt job finished
-      type: Number
-    - contextPath: VirusTotal.RetroHuntJob.attributes.rules
-      description: The ruleset in the job
-      type: String
-    - contextPath: VirusTotal.RetroHuntJob.attributes.num_matches_outside_time_range
-      description: Matches outside time range
-      type: Number
-    - contextPath: VirusTotal.RetroHuntJob.attributes.scanned_bytes
-      description: Total scanned bytes
-      type: Date
-    - contextPath: VirusTotal.RetroHuntJob.attributes.time_range.start
-      description: Start of job's time range
-      type: Number
-    - contextPath: VirusTotal.RetroHuntJob.attributes.time_range.end
-      description: End of job's time range
-      type: Number
-    - contextPath: VirusTotal.RetroHuntJob.attributes.num_matches
-      description: Number of matches.
-      type: Number
-    - contextPath: VirusTotal.RetroHuntJob.attributes.progress
-      description: The progress in percentage
-      type: Number
-    - contextPath: VirusTotal.RetroHuntJob.attributes.corpus
-      description: Corpus of the job (main/goodware)
-      type: String
-    - contextPath: VirusTotal.RetroHuntJob.attributes.creation_date
-      description: Job's creation date as UTC timestamp.
-      type: Number
-    - contextPath: VirusTotal.RetroHuntJob.attributes.start_date
-      description: The start date of the job in epch.
-      type: Number
-    - contextPath: VirusTotal.RetroHuntJob.type
-      description: Type of the entry (retrohunt_job)
-      type: String
-    - contextPath: VirusTotal.RetroHuntJob.id
-      description: ID of the retro job.
-      type: String
-    - contextPath: VirusTotal.RetroHuntJob.links.self
-      description: Link to the entry
-      type: String
-    deprecated: false
     description: Get a VT Hunting Livehunt ruleset by hunting notification files relationship.
-    execution: false
     name: vt-private-retrohunt-jobs-list
-  - arguments:
-    - default: true
-      description: Job identifier. Can be acquired from vt-private-retrohunt-jobs-list
-      isArray: false
-      name: id
-      required: true
-      secret: false
     outputs:
     - contextPath: VirusTotal.RetroHuntJob.attributes.status
       description: can be either "starting", "running", "aborting", "aborted" or "finished".
@@ -1304,28 +1062,73 @@ script:
     - contextPath: VirusTotal.RetroHuntJob.links.self
       description: Link to the entry
       type: String
-    deprecated: false
-    description: Retrieve a retrohunt job.
-    execution: false
-    name: vt-private-retrohunt-jobs-get-by-id
   - arguments:
     - default: true
       description: Job identifier. Can be acquired from vt-private-retrohunt-jobs-list
-      isArray: false
       name: id
       required: true
-      secret: false
-    - default: false
-      description: Whether to return full data information.
-      isArray: false
-      name: extended_data
+    description: Retrieve a retrohunt job.
+    name: vt-private-retrohunt-jobs-get-by-id
+    outputs:
+    - contextPath: VirusTotal.RetroHuntJob.attributes.status
+      description: can be either "starting", "running", "aborting", "aborted" or "finished".
+      type: String
+    - contextPath: VirusTotal.RetroHuntJob.attributes.finish_date
+      description: date when the Retrohunt job finished
+      type: Number
+    - contextPath: VirusTotal.RetroHuntJob.attributes.rules
+      description: The ruleset in the job
+      type: String
+    - contextPath: VirusTotal.RetroHuntJob.attributes.num_matches_outside_time_range
+      description: Matches outside time range
+      type: Number
+    - contextPath: VirusTotal.RetroHuntJob.attributes.scanned_bytes
+      description: Total scanned bytes
+      type: Date
+    - contextPath: VirusTotal.RetroHuntJob.attributes.time_range.start
+      description: Start of job's time range
+      type: Number
+    - contextPath: VirusTotal.RetroHuntJob.attributes.time_range.end
+      description: End of job's time range
+      type: Number
+    - contextPath: VirusTotal.RetroHuntJob.attributes.num_matches
+      description: Number of matches.
+      type: Number
+    - contextPath: VirusTotal.RetroHuntJob.attributes.progress
+      description: The progress in percentage
+      type: Number
+    - contextPath: VirusTotal.RetroHuntJob.attributes.corpus
+      description: Corpus of the job (main/goodware)
+      type: String
+    - contextPath: VirusTotal.RetroHuntJob.attributes.creation_date
+      description: Job's creation date as UTC timestamp.
+      type: Number
+    - contextPath: VirusTotal.RetroHuntJob.attributes.start_date
+      description: The start date of the job in epch.
+      type: Number
+    - contextPath: VirusTotal.RetroHuntJob.type
+      description: Type of the entry (retrohunt_job)
+      type: String
+    - contextPath: VirusTotal.RetroHuntJob.id
+      description: ID of the retro job.
+      type: String
+    - contextPath: VirusTotal.RetroHuntJob.links.self
+      description: Link to the entry
+      type: String
+  - arguments:
+    - default: true
+      description: Job identifier. Can be acquired from vt-private-retrohunt-jobs-list
+      name: id
+      required: true
+    - auto: PREDEFINED
       defaultValue: 'false'
-      auto: PREDEFINED
+      description: Whether to return full data information.
+      name: extended_data
       predefined:
-      - "true"
-      - "false"
-      required: false
-      secret: false
+      - 'true'
+      - 'false'
+    description: Retrieve matches for a retrohunt job matching file relationship.
+    name: vt-private-retrohunt-jobs-get-matching-files
     outputs:
     - contextPath: VirusTotal.RetroHuntJobFiles.attributes.type_description
       description: describes the file type.
@@ -1498,51 +1301,30 @@ script:
     - contextPath: VirusTotal.RetroHuntJobFiles.context_attributes.match_in_subfile
       description: whether the match was in a subfile or not.
       type: Boolean
-    deprecated: false
-    description: Retrieve matches for a retrohunt job matching file relationship.
-    execution: false
-    name: vt-private-retrohunt-jobs-get-matching-files
   - arguments:
-    - default: false
-      description: The rules to create. https://yara.readthedocs.io/en/stable/
-      isArray: false
+    - description: The rules to create. https://yara.readthedocs.io/en/stable/
       name: rules
       required: true
-      secret: false
-    - default: false
+    - auto: PREDEFINED
+      defaultValue: main
       description: The "main" corpus is a composition of files sent to VirusTotal
         during the last few months. The "goodware" corpus is a random selection of
         ~1.000.000 files from the NSRL that are not detected by any antivirus engine.
-      isArray: false
       name: corpus
-      defaultValue: "main"
-      auto: PREDEFINED
       predefined:
-      - "main"
-      - "goodware"
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of emails to notify.
-      isArray: false
+      - main
+      - goodware
+    - description: A comma-separated list of emails to notify.
       name: notification_email
-      required: false
-      secret: false
-    - default: false
-      description: Fetch retrohunt jobs from given time. Can be epoch time, a date
+    - description: Fetch retrohunt jobs from given time. Can be epoch time, a date
         or time range (3 days, 1 year)
-      isArray: false
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: Fetch retrohunt jobs to given time. Can be epoch time, a date or
+    - description: Fetch retrohunt jobs to given time. Can be epoch time, a date or
         time range. If start_time supplied and not end_time, end_time will be the
         current time.
-      isArray: false
       name: end_time
-      required: false
-      secret: false
+    description: Create a new retrohunt job.
+    name: vt-private-retrohunt-jobs-create
     outputs:
     - contextPath: VirusTotal.RetroHuntJob.attributes.status
       description: can be either "starting", "running", "aborting", "aborted" or "finished".
@@ -1589,18 +1371,14 @@ script:
     - contextPath: VirusTotal.RetroHuntJob.links.self
       description: Link to the entry
       type: String
-    deprecated: false
-    description: Create a new retrohunt job.
-    execution: false
-    name: vt-private-retrohunt-jobs-create
   - arguments:
     - default: true
       description: User ID or API key. If not supplied, will use the API Key configured
         in the integration.
-      isArray: false
       name: id
-      required: false
       secret: true
+    description: Retrieve user's API usage.
+    name: vt-private-quota-limits-list
     outputs:
     - contextPath: VirusTotal.QuotaLimits.cases_creation_monthly.user.group.used
       description: quota has been used.
@@ -1767,17 +1545,12 @@ script:
     - contextPath: VirusTotal.QuotaLimits.intelligence_searches_monthly.user.allowed
       description: quota limit.
       type: Number
-    deprecated: false
-    description: Retrieve user's API usage.
-    execution: false
-    name: vt-private-quota-limits-list
+  dockerimage: demisto/python3:3.9.8.24399
   isfetch: true
   runonce: false
-  script: '-'
-  type: python
+  script: ''
   subtype: python3
-  dockerimage: demisto/python3:3.9.7.24076
-defaultmapperin: VirusTotal Intelligence LiveHunt Notification
+  type: python
 fromversion: 5.5.0
 tests:
 - VirusTotal Premium v3 TestPlaybook
