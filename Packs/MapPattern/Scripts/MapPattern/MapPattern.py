@@ -318,50 +318,53 @@ class Translator:
 def main():
     args = demisto.args()
     value = args.get('value')
-    mappings = args['mappings']
-    algorithm = args.get('algorithm') or DEFAULT_ALGORITHM
-    priority = args.get('priority') or DEFAULT_PRIORITY
-    context = args.get('context')
-    comparison_fields = argToList(args.get('comparison_fields'))
-    regex_flags = re.IGNORECASE if argToBoolean(args.get('caseless') or 'true') else 0
-    for flag in argToList(args.get('flags', '')):
-        if flag in ('dotall', 's'):
-            regex_flags |= re.DOTALL
-        elif flag in ('multiline', 'm'):
-            regex_flags |= re.MULTILINE
-        elif flag in ('ignorecase', 'i'):
-            regex_flags |= re.IGNORECASE
-        elif flag in ('unicode', 'u'):
-            regex_flags |= re.UNICODE
+    try:
+        mappings = args['mappings']
+        algorithm = args.get('algorithm') or DEFAULT_ALGORITHM
+        priority = args.get('priority') or DEFAULT_PRIORITY
+        context = args.get('context')
+        comparison_fields = argToList(args.get('comparison_fields'))
+        regex_flags = re.IGNORECASE if argToBoolean(args.get('caseless') or 'true') else 0
+        for flag in argToList(args.get('flags', '')):
+            if flag in ('dotall', 's'):
+                regex_flags |= re.DOTALL
+            elif flag in ('multiline', 'm'):
+                regex_flags |= re.MULTILINE
+            elif flag in ('ignorecase', 'i'):
+                regex_flags |= re.IGNORECASE
+            elif flag in ('unicode', 'u'):
+                regex_flags |= re.UNICODE
+            else:
+                raise ValueError(f'Unknown flag: {flag}')
+
+        if isinstance(mappings, str):
+            try:
+                mappings = json.loads(mappings)
+            except ValueError:
+                raise ValueError(f'Unable to decode mappings in JSON: {mappings}')
+
+        tr = Translator(context=context, arg_value=value)
+        if comparison_fields:
+            if isinstance(value, dict):
+                _, value, matched = tr.translate_fields(
+                    obj_value=value,
+                    field_mapping=mappings,
+                    regex_flags=regex_flags,
+                    priority=priority,
+                    algorithm=algorithm,
+                    comparison_fields=comparison_fields)
         else:
-            raise ValueError(f'Unknown flag: {flag}')
+            if not isinstance(value, (dict, list)):
+                _, value, _ = tr.translate(
+                    source=value,
+                    pattern_mapping=mappings,
+                    regex_flags=regex_flags,
+                    priority=priority,
+                    algorithm=algorithm)
+    except Exception as err:
+        return_error(err)
 
-    if isinstance(mappings, str):
-        try:
-            mappings = json.loads(mappings)
-        except ValueError:
-            raise ValueError(f'Unable to decode mappings in JSON: {mappings}')
-
-    tr = Translator(context=context, arg_value=value)
-    if comparison_fields:
-        if isinstance(value, dict):
-            _, value, matched = tr.translate_fields(
-                obj_value=value,
-                field_mapping=mappings,
-                regex_flags=regex_flags,
-                priority=priority,
-                algorithm=algorithm,
-                comparison_fields=comparison_fields)
-    else:
-        if not isinstance(value, (dict, list)):
-            _, value, _ = tr.translate(
-                source=value,
-                pattern_mapping=mappings,
-                regex_flags=regex_flags,
-                priority=priority,
-                algorithm=algorithm)
-
-    demisto.results(value)
+    return_results(value)
 
 
 if __name__ in ('__builtin__', 'builtins'):
