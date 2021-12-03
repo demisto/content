@@ -284,6 +284,16 @@ class Translator:
                          priority: str,
                          algorithm: str,
                          comparison_fields: List[str]) -> Tuple[Optional[List[str]], Any, bool]:
+        """ Replace the string given with the field mapping.
+
+        :param obj_value: The object whose values to be replaced.
+        :param field_mapping: The mapping table to translate.
+        :param regex_flags: The regex flags for pattern matching.
+        :param priority: The priority order (first_match, last_match or longest_pattern).
+        :param algorithm: The default algorithm for pattern match.
+        :param comparison_fields: The comparison fields.
+        :return: The mapping matched, a new value replaced by it, and a flag if a pattern has matched or not.
+        """
         if not isinstance(field_mapping, dict):
             raise ValueError(f'field-mapping must be an array or an object in JSON: type={type(field_mapping)}')
 

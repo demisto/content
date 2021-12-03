@@ -390,5 +390,33 @@
         "result": "unknown - 192.168.1.1"
       }
     ]
+  }, {
+    "algorithm": "regex",
+    "caseless": "true",
+    "priority": "first_match",
+    "context": {},
+    "flags": "",
+    "comparison_fields": "a",
+    "mappings": {
+      "a": {
+        "aaa": {
+          "output": null,
+          "comparison_fields": "b",
+          "next": {
+            "b": {
+              "bbb": "xxx"
+            }
+          }
+        }
+      }
+    },
+    "patterns": [{
+        "value": {
+          "a": "aaa",
+          "b": "bbb"
+        },
+        "result": "xxx"
+      }
+    ]
   }
 ]
