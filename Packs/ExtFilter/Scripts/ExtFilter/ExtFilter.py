@@ -356,19 +356,22 @@ def extract_value(source: Any,
                  extractor: Optional[Callable[[str,
                                                Optional[ContextData],
                                                Optional[Dict[str, Any]]],
-                                              Optional[Dict[str, Any]]]],
+                                              Any]],
                  dx: Optional[ContextData],
                  node: Optional[Dict[str, Any]],
                  si: int,
-                 endc: Optional[str]) -> Tuple[str, int]:
-        val = ''
+                 endc: Optional[str]) -> Tuple[Any, int]:
+        val = None
         ci = si
         while ci < len(source):
             if endc is not None and source[ci] == endc:
                 if not extractor:
                     return '', ci + len(endc)
                 xval = extractor(source[si:ci], dx, node)
-                val += str(xval) if xval is not None else ''
+                if val is None:
+                    val = xval
+                elif xval is not None:
+                    val = str(val) + str(xval)
                 si = ci = ci + len(endc)
                 endc = None
             else:
@@ -377,14 +380,22 @@ def extract_value(source: Any,
                 if nextec:
                     _, ci = _extract(source, None, dx, node, ci + 1, nextec)
                 elif extractor and source[ci:ci + 2] == '${':
-                    val += source[si:ci]
+                    if si != ci:
+                        val = source[si:ci] if val is None else str(val) + source[si:ci]
                     si = ci = ci + 2
                     endc = '}'
                 elif source[ci] == '\\':
                     ci += 2
                 else:
                     ci += 1
-        return (val + source[si:], 0) if extractor else ('', ci)
+        if not extractor:
+            return ('', ci)
+        elif si >= len(source):
+            return (val, 0)
+        elif val is None:
+            return (source[si:], 0)
+        else:
+            return (str(val) + source[si:], 0)
 
     if isinstance(source, dict):
         return {
@@ -393,11 +404,7 @@ def extract_value(source: Any,
     elif isinstance(source, list):
         return [extract_value(v, extractor, dx, node) for v in source]
     elif isinstance(source, str):
-        if source.startswith('${') and source.endswith('}'):
-            return extractor(source[2:-1], dx, node)
-        else:
-            dst, _ = _extract(source, extractor, dx, node, 0, None)
-            return dst
+        return _extract(source, extractor, dx, node, 0, None)[0] if source else ''
     else:
         return source
 
