@@ -76,16 +76,21 @@ There are no outputs for this script.
     
     algorithm ::= "literal" | "wildcard" | "regex" | "regmatch"
     
+    comp-fields ::= List[field] | comma-separated-fields
+    
+    comma-separated-fields ::= str # Comma separated field
+    
     config ::= Dict[str, Any]
               
            The structure is:
               {
                   "algorithm": algorithm,               # (Optional) The algorithm to pattern matching.
                   "output": output-any,                 # (Optional) The data to replace to the value by the pattern.
-                  "exclude": pattern | List[pattern],   # (Optional) The patterns to exclude in the pattern matching.
-                  "next": mappings                      # (Optional) The subsequent condition to do the pattern matching with the value taken from the output.
+                  "exclude": pattern | List[pattern],   # (Optional) Patterns to exclude in the pattern matching.
+                  "next": mappings                      # (Optional) Subsequent conditions to do the pattern matching with the value taken from the output.
+                  "comparison_fields": comp-fields      # (Optional) A list of comparison fields. The list is required when `output` is `null` and
+                                                        #           `comparison_fields` is given in the input arguments
               }
-
 
 
 ---

@@ -67,17 +67,17 @@ def make_regex(pattern: str, algorithm: str) -> str:
         raise ValueError(f'Invalid algorithm: {algorithm}')
 
 
-def iterate_mapping(mappings: Union[List[Dict[str, Any]], Dict[str, Any]]):
+def iterate_pattern_mapping(pattern_mapping: Union[List[Dict[str, Any]], Dict[str, Any]]):
     """ Iterate mapping entry.
 
-    :param mappings: The mapping table given.
+    :param pattern_mapping: The pattern mapping table.
     :return: Each mapping entry. {pattern:, exclude:, algorithm:, output:, next:}
     """
-    if isinstance(mappings, list):
-        for m in mappings:
-            yield from iterate_mapping(m)
-    elif isinstance(mappings, dict):
-        for k, v in mappings.items():
+    if isinstance(pattern_mapping, list):
+        for m in pattern_mapping:
+            yield from iterate_pattern_mapping(m)
+    elif isinstance(pattern_mapping, dict):
+        for k, v in pattern_mapping.items():
             d = v if isinstance(v, dict) else {'output': v}
             exclude = d.get('exclude') or []
             exclude = exclude if isinstance(exclude, list) else [exclude]
@@ -87,21 +87,22 @@ def iterate_mapping(mappings: Union[List[Dict[str, Any]], Dict[str, Any]]):
                 'exclude': exclude,
                 'output': d.get('output'),
                 'algorithm': d.get('algorithm'),
-                'next': d.get('next')
+                'next': d.get('next'),
+                'comparison_fields': d.get('comparison_fields')
             }
     else:
-        raise ValueError(f'mappings must be an array or an object: {mappings}')
+        raise ValueError(f'pattern-mapping must be an array or an object: {pattern_mapping}')
 
 
 class ContextData:
     def __init__(self,
-                 demisto: Optional[Dict[str, Any]] = None,
+                 context: Optional[Dict[str, Any]] = None,
                  arg_value: Optional[Dict[str, Any]] = None):
         """
-        :param demisto: The demisto context.
+        :param context: The demisto context.
         :param arg_value: The data of the `value` given in the argument parameters.
         """
-        self.__demisto = demisto
+        self.__demisto = context
         self.__value = arg_value
 
     def get(self, key: Optional[str] = None,) -> Any:
@@ -124,11 +125,16 @@ class ContextData:
 
 
 class Translator:
-    def __init__(self, context: Optional[ContextData]):
+    def __init__(self, context: Any, arg_value: Any, ):
         """
-        :param context: The context data.
+        :param context: The demisto context.
+        :param arg_value: The data of the `value` given in the argument parameters.
         """
-        self.__context = context
+        self.__arg_value = arg_value
+        self.__context = None
+        if isinstance(context, dict):
+            self.__context = ContextData(context=context,
+                                         arg_value=arg_value if isinstance(arg_value, dict) else None)
 
     def __extract_value(self,
                         source: str,
@@ -195,14 +201,14 @@ class Translator:
 
     def translate(self,
                   source: Any,
-                  mappings: Union[List[Dict[str, Any]], Dict[str, Any]],
+                  pattern_mapping: Union[List[Dict[str, Any]], Dict[str, Any]],
                   regex_flags: int,
                   priority: str,
                   algorithm: str) -> Tuple[Optional[List[str]], Any, bool]:
         """ Replace the string given with the patterns.
 
         :param source: The string to be replaced.
-        :param mappings: The mapping table to translate.
+        :param pattern_mapping: The mapping table to translate.
         :param regex_flags: The regex flags for pattern matching.
         :param priority: The priority order (first_match, last_match or longest_pattern).
         :param algorithm: The default algorithm for pattern match.
@@ -212,7 +218,7 @@ class Translator:
         matched_mapping = None
         matched_output = source
         source = '' if source is None else str(source)
-        for mapping in iterate_mapping(mappings):
+        for mapping in iterate_pattern_mapping(pattern_mapping):
             algorithm = mapping.get('algorithm') or algorithm
 
             # Check if the source matches a pattern
@@ -227,18 +233,37 @@ class Translator:
                 continue
 
             # Set the output
+            comparison_fields = None
             output = mapping.get('output')
+            next_mappings = mapping.get('next')
             if output is None:
-                output = demisto.args().get('value')
+                output = self.__arg_value
+                if next_mappings and isinstance(output, dict):
+                    # `comparison_fields` is given
+                    comparison_fields = argToList(mapping['comparison_fields'])
+
             elif algorithm == 'regex' and isinstance(output, str):
                 output = match.expand(output.replace(r'\0', r'\g<0>'))
             if self.__context is not None and isinstance(output, str):
                 output = self.__extract_value(output, self.__extract_dt, self.__context)
 
-            next_mappings = mapping.get('next')
             if next_mappings:
-                mapping, output, _ = self.translate(output, next_mappings, regex_flags, priority, algorithm)
-                if not mapping:
+                if comparison_fields is not None:
+                    mapping, output, matched = self.translate_fields(
+                        obj_value=output,
+                        field_mapping=next_mappings,
+                        regex_flags=regex_flags,
+                        priority=priority,
+                        algorithm=algorithm,
+                        comparison_fields=comparison_fields)
+                else:
+                    mapping, output, matched = self.translate(
+                        source=output,
+                        pattern_mapping=next_mappings,
+                        regex_flags=regex_flags,
+                        priority=priority,
+                        algorithm=algorithm)
+                if not matched:
                     continue
 
             if priority in ('first_match', 'last_match'):
@@ -252,71 +277,82 @@ class Translator:
 
         return matched_mapping, matched_output, matched
 
+    def translate_fields(self,
+                         obj_value: Dict[str, Any],
+                         field_mapping: Dict[str, Any],
+                         regex_flags: int,
+                         priority: str,
+                         algorithm: str,
+                         comparison_fields: List[str]) -> Tuple[Optional[List[str]], Any, bool]:
+        if not isinstance(field_mapping, dict):
+            raise ValueError(f'field-mapping must be an array or an object in JSON: type={type(field_mapping)}')
+
+        for path in comparison_fields:
+            # Get pattern mapping
+            mapping = field_mapping.get(path.replace('\\', ''))
+            if mapping is None:
+                continue
+            if not isinstance(mapping, (dict, list)):
+                raise ValueError(f'pattern-mapping must be an array or an object in JSON: type={type(mapping)}')
+
+            # Get a value for pattern matching
+            comparison_value = demisto_get(obj_value, path)
+            if not isinstance(comparison_value, (dict, list)):
+                matched_mapping, matched_output, matched = self.translate(
+                    comparison_value, mapping, regex_flags, priority, algorithm)
+                if matched:
+                    return matched_mapping, matched_output, matched
+        return None, obj_value, False
+
 
 def main():
     args = demisto.args()
-
-    try:
-        value = args.get('value')
-        mappings = args['mappings']
-        algorithm = args.get('algorithm') or DEFAULT_ALGORITHM
-        priority = args.get('priority') or DEFAULT_PRIORITY
-        context = args.get('context')
-        comparison_fields = argToList(args.get('comparison_fields'))
-        regex_flags = re.IGNORECASE if argToBoolean(args.get('caseless') or 'true') else 0
-        for flag in argToList(args.get('flags', '')):
-            if flag in ('dotall', 's'):
-                regex_flags |= re.DOTALL
-            elif flag in ('multiline', 'm'):
-                regex_flags |= re.MULTILINE
-            elif flag in ('ignorecase', 'i'):
-                regex_flags |= re.IGNORECASE
-            elif flag in ('unicode', 'u'):
-                regex_flags |= re.UNICODE
-            else:
-                raise ValueError(f'Unknown flag: {flag}')
-
-        if isinstance(mappings, str):
-            try:
-                mappings = json.loads(mappings)
-            except ValueError:
-                raise ValueError(f'Unable to decode mappings in JSON: {mappings}')
-
-        tr = Translator(
-            ContextData(demisto=context, arg_value=value if isinstance(value, dict) else None)
-            if isinstance(context, dict) else None)
-
-        if comparison_fields:
-            if isinstance(value, dict):
-                if not isinstance(mappings, dict):
-                    raise ValueError(f'mappings must be an array or an object in JSON: type={type(mappings)}')
-
-                for path in comparison_fields:
-                    # Get mappings
-                    m = mappings.get(path.replace('\\', ''))
-                    if m is None:
-                        continue
-                    if not isinstance(m, (dict, list)):
-                        raise ValueError(f'mappings must be an array or an object in JSON: type={type(m)}')
-
-                    # Get a value for pattern matching
-                    comparison_value = demisto_get(value, path)
-                    if not isinstance(comparison_value, (dict, list)):
-                        _, matched_output, matched = tr.translate(comparison_value, m, regex_flags, priority, algorithm)
-                        if matched:
-                            value = matched_output
-                            break
+    value = args.get('value')
+    mappings = args['mappings']
+    algorithm = args.get('algorithm') or DEFAULT_ALGORITHM
+    priority = args.get('priority') or DEFAULT_PRIORITY
+    context = args.get('context')
+    comparison_fields = argToList(args.get('comparison_fields'))
+    regex_flags = re.IGNORECASE if argToBoolean(args.get('caseless') or 'true') else 0
+    for flag in argToList(args.get('flags', '')):
+        if flag in ('dotall', 's'):
+            regex_flags |= re.DOTALL
+        elif flag in ('multiline', 'm'):
+            regex_flags |= re.MULTILINE
+        elif flag in ('ignorecase', 'i'):
+            regex_flags |= re.IGNORECASE
+        elif flag in ('unicode', 'u'):
+            regex_flags |= re.UNICODE
         else:
-            if not isinstance(value, (dict, list)):
-                if not isinstance(mappings, (dict, list)):
-                    raise ValueError(f'mappings must be an array or an object in JSON: type={type(mappings)}')
-                _, value, _ = tr.translate(value, mappings, regex_flags, priority, algorithm)
+            raise ValueError(f'Unknown flag: {flag}')
 
-    except Exception as err:
-        return_error(err)
+    if isinstance(mappings, str):
+        try:
+            mappings = json.loads(mappings)
+        except ValueError:
+            raise ValueError(f'Unable to decode mappings in JSON: {mappings}')
 
-    return_results(value)
+    tr = Translator(context=context, arg_value=value)
+    if comparison_fields:
+        if isinstance(value, dict):
+            _, value, matched = tr.translate_fields(
+                obj_value=value,
+                field_mapping=mappings,
+                regex_flags=regex_flags,
+                priority=priority,
+                algorithm=algorithm,
+                comparison_fields=comparison_fields)
+    else:
+        if not isinstance(value, (dict, list)):
+            _, value, _ = tr.translate(
+                source=value,
+                pattern_mapping=mappings,
+                regex_flags=regex_flags,
+                priority=priority,
+                algorithm=algorithm)
+
+    demisto.results(value)
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ('__builtin__', 'builtins'):
     main()
