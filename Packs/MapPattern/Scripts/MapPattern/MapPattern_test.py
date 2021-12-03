@@ -1,6 +1,7 @@
 import demistomock as demisto
 import json
 
+
 def side_effect_demisto_dt(obj, dt):
     if isinstance(obj, dict):
         return obj.get(dt)
