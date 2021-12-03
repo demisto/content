@@ -1,12 +1,19 @@
 import demistomock as demisto
 import json
 
+def side_effect_demisto_dt(obj, dt):
+    if isinstance(obj, dict):
+        return obj.get(dt)
+    return None
+
 
 def test_main(mocker):
     from MapPattern import main
 
     with open('./test_data/test-1.json', 'r') as f:
         test_list = json.load(f)
+
+    mocker.patch.object(demisto, 'dt', side_effect=side_effect_demisto_dt)
 
     for t in test_list:
         for pattern in t['patterns']:
