@@ -177,6 +177,8 @@ class Translator:
                 return ('', ci)
             elif si >= len(source):
                 return (val, 0)
+            elif val is None:
+                return (source[si:], 0)
             else:
                 return (str(val) + source[si:], 0)
 
