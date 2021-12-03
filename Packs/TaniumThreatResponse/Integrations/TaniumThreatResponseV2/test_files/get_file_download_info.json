@@ -1,0 +1,20 @@
+{
+    "evidence": {
+        "uuid": "1",
+        "hostname": "host",
+        "path": "C:\\log1.txt",
+        "downloaded": "2020-01-15 13:04:02.827",
+        "hash": "123",
+        "size": 10485904,
+        "process_creation_time": "2019-09-03T17:51:40.000Z",
+        "created_by": "",
+        "created_by_proc": "",
+        "last_modified": "2020-01-15T08:57:19.000Z",
+        "last_modified_by": "",
+        "last_modified_by_proc": "",
+        "tags": "",
+        "comments": "",
+        "username": null,
+        "evidenceType": "file"
+    }
+}

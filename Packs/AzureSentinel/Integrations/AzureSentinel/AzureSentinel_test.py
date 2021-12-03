@@ -10,7 +10,7 @@ from AzureSentinel import AzureSentinelClient, list_incidents_command, list_inci
     list_incident_alerts_command, list_watchlists_command, \
     delete_watchlist_command, list_watchlist_items_command, \
     create_update_watchlist_command, create_update_watchlist_item_command, delete_watchlist_item_command, \
-    delete_incident_command, XSOAR_USER_AGENT
+    delete_incident_command, XSOAR_USER_AGENT, incident_delete_comment_command
 
 TEST_ITEM_ID = 'test_watchlist_item_id_1'
 
@@ -424,6 +424,36 @@ class TestHappyPath:
         assert outputs['Message'] == 'test_message'
         assert outputs['AuthorEmail'] == 'test@demisto.com'
         assert outputs['IncidentID'] == 'inc_id'
+
+    @pytest.mark.parametrize(argnames='mocked_status_code, expected_result',
+                             argvalues=[
+                                 (200, 'Comment comment_id was deleted successfully.'),
+                                 (204, 'Comment comment_id does not exist.'),
+                             ])
+    def test_incident_delete_comment(self, mocker, mocked_status_code, expected_result):
+        """
+        Given:
+            - Incident Id and comment Id as argument for the command
+
+        When:
+            - Calling function incident_delete_comment_command
+
+        Then:
+            - Validate the comment was sent as expected
+        """
+
+        # prepare
+        client = mock_client()
+        res = requests.Response()
+        res.status_code = mocked_status_code
+        mocker.patch.object(client, 'http_request', return_value=res)
+
+        # run
+        args = {'incident_id': 'inc_id', 'comment_id': 'comment_id'}
+        readable_output = incident_delete_comment_command(client, args=args).readable_output
+
+        # validate
+        assert readable_output == expected_result
 
     def test_update_incident(self, mocker):
         """

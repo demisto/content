@@ -40,11 +40,11 @@ The Generic Webhook integration accepts POST HTTP queries, with the following op
 
 For example, the following triggers the webhook using cURL:
 
-`curl -POST https://my.demisto.live/instance/execute/webhook -H "Authorization: token" -d '{"name":"incident created via generic webhook","raw_json":{"some_field":"some_value"}}'`
+`curl -POST https://my.demisto.live/instance/execute/webhook -H "Authorization: token" -H "Content-Type: application/json" -d '{"name":"incident created via generic webhook","raw_json":{"some_field":"some_value"}}'`
 
 The request payload does not have to contain the fields mentioned above, and may include anything:
 
-`curl -POST https://my.demisto.live/instance/execute/webhook -H "Authorization: token" -d '{"string_field":"string_field_value","array_field":["item1","item2"]}'`
+`curl -POST https://my.demisto.live/instance/execute/webhook -H "Authorization: token" -H "Content-Type: application/json" -d '{"string_field":"string_field_value","array_field":["item1","item2"]}'`
 
 The payload could then be mapped in the [Cortex XSOAR mapping wizard](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/incidents/classification-and-mapping/create-a-mapper):
 - Note that the *Store sample events for mapping* parameter needs to be set.

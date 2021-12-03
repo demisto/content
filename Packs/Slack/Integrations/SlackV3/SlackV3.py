@@ -1026,6 +1026,17 @@ async def create_incidents(incidents: list, user_name: str, user_email: str, use
     return data
 
 
+async def get_bot_id_async() -> str:
+    """
+    Gets the app bot ID
+
+    Returns:
+        The app bot ID
+    """
+    response = await ASYNC_CLIENT.auth_test()
+    return response.get('bot_id')
+
+
 async def listen(client: SocketModeClient, req: SocketModeRequest):
     demisto.info("Handling request")
     if req.envelope_id:
@@ -1058,11 +1069,25 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
             return
 
         actions = data.get('actions', [])
+        integration_context = get_integration_context(SYNC_CONTEXT)
         if subtype == 'bot_message' or message_bot_id or message.get('subtype') == 'bot_message' \
                 or \
                 event.get('bot_id', None):
-            if not actions:
+
+            if integration_context.get('bot_user_id'):
+                bot_id = integration_context['bot_user_id']
+                if bot_id == 'null' or bot_id is None:
+                    # In some cases the bot_id can be stored as a string 'null', this handles this edge case.
+                    bot_id = await get_bot_id_async()
+                    set_to_integration_context_with_retries({'bot_user_id': bot_id}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+            else:
+                bot_id = await get_bot_id_async()
+                set_to_integration_context_with_retries({'bot_user_id': bot_id}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+            if event.get('subtype') == 'bot_message':
                 demisto.debug("Received bot_message event type. Ignoring.")
+                return
+            if event.get('bot_id', None) in bot_id:
+                demisto.debug("Received bot message from the current bot. Ignoring.")
                 return
         if event.get('subtype') == 'message_changed':
             demisto.debug("Received message_changed event type. Ignoring.")
@@ -1087,6 +1112,7 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
 
         else:
             if user_id != '':
+                # User ID is returned as an empty string
                 user = await get_user_by_id_async(ASYNC_CLIENT, user_id)  # type: ignore
                 entitlement_reply = await check_and_handle_entitlement(text, user, thread)  # type: ignore
 
@@ -1106,7 +1132,7 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
             await handle_dm(user, text, ASYNC_CLIENT)  # type: ignore
         else:
             channel_id = channel
-            integration_context = get_integration_context(SYNC_CONTEXT)
+
             if not integration_context or 'mirrors' not in integration_context:
                 return
 

@@ -1,0 +1,63 @@
+args:
+- default: false
+  description: Page url to scrap
+  isArray: false
+  name: page_url
+  predefined:
+  - ''
+  required: false
+  secret: false
+- default: false
+  description: HTML page to scrap
+  isArray: false
+  name: page_html
+  predefined:
+  - ''
+  required: false
+  secret: false
+- default: false
+  description: Request headers
+  isArray: false
+  name: headers
+  required: false
+  secret: false
+- default: false
+  description: Request parameters
+  isArray: false
+  name: params
+  required: false
+  secret: false
+- default: false
+  description: 'HTML tags navigation tree, example: "body.table"'
+  isArray: false
+  name: navigator_tree
+  required: false
+  secret: false
+- default: false
+  defaultValue: 'False'
+  description: Ignore certificate validation errors
+  isArray: false
+  name: insecure
+  required: false
+  secret: false
+comment: An Automation Script to Web Scrap a URL or HTML Page
+commonfields:
+  id: WebScraper
+  version: -1
+enabled: false
+name: WebScraper
+outputs:
+- contextPath: WebScraper.Tree
+  description: Scraped Pages
+  type: String
+script: '-'
+subtype: python3
+system: false
+tags:
+- ''
+timeout: '0'
+type: python
+dockerimage: demisto/bs4-py3:1.0.0.24176
+fromversion: '6.0.0'
+tests:
+- No tests

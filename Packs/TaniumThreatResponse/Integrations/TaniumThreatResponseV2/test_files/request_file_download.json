@@ -1,0 +1,15 @@
+{
+    "taskInfo": {
+        "id": 1,
+        "status": "STARTED",
+        "metadata": {
+            "connection": "remote:host:123:",
+            "paths": [
+                "C:\\file.txt"
+            ],
+            "compress": "true"
+        },
+        "startTime": "2021-09-14T08:48:37.465Z"
+    },
+    "status": "ACCEPTED"
+}

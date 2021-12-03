@@ -2,6 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 from typing import Dict
+from urllib.parse import quote
 
 # disable insecure warnings
 
@@ -12,6 +13,7 @@ BLOCK_ACCOUNT_JSON = '{"accountEnabled": false}'
 UNBLOCK_ACCOUNT_JSON = '{"accountEnabled": true}'
 NO_OUTPUTS: dict = {}
 APP_NAME = 'ms-graph-user'
+INVALID_USER_CHARS_REGEX = re.compile(r'[%&*+/=?`{|}]')
 
 
 def camel_case_to_readable(text):
@@ -47,6 +49,15 @@ def parse_outputs(users_data):
         return user_readable, user_outputs
 
 
+def get_unsupported_chars_in_user(user: Optional[str]) -> set:
+    """
+    Extracts the invalid user characters found in the provided string.
+    """
+    if not user:
+        return set([])
+    return set(INVALID_USER_CHARS_REGEX.findall(user))
+
+
 class MsGraphClient:
     """
     Microsoft Graph Mail Client enables authorized access to a user's Office 365 mail data in a personal account.
@@ -66,7 +77,7 @@ class MsGraphClient:
     def terminate_user_session(self, user):
         self.ms_client.http_request(
             method='PATCH',
-            url_suffix=f'users/{user}',
+            url_suffix=f'users/{quote(user)}',
             data=BLOCK_ACCOUNT_JSON,
             resp_type="text"
         )
@@ -75,7 +86,7 @@ class MsGraphClient:
     def unblock_user(self, user):
         self.ms_client.http_request(
             method='PATCH',
-            url_suffix=f'users/{user}',
+            url_suffix=f'users/{quote(user)}',
             data=UNBLOCK_ACCOUNT_JSON,
             resp_type="text"
         )
@@ -85,7 +96,7 @@ class MsGraphClient:
     def delete_user(self, user):
         self.ms_client.http_request(
             method='DELETE',
-            url_suffix=f'users/{user}',
+            url_suffix=f'users/{quote(user)}',
             resp_type="text"
         )
 
@@ -104,7 +115,7 @@ class MsGraphClient:
             body[field] = value
         self.ms_client.http_request(
             method='PATCH',
-            url_suffix=f'users/{user}',
+            url_suffix=f'users/{quote(user)}',
             json_data=body,
             resp_type="text")
 
@@ -122,7 +133,7 @@ class MsGraphClient:
         }
         self.ms_client.http_request(
             method='PATCH',
-            url_suffix=f'users/{user}',
+            url_suffix=f'users/{quote(user)}',
             json_data=body,
             resp_type="text")
 
@@ -137,7 +148,7 @@ class MsGraphClient:
         try:
             user_data = self.ms_client.http_request(
                 method='GET',
-                url_suffix=f'users/{user}',
+                url_suffix=f'users/{quote(user)}',
                 params={'$select': properties})
             user_data.pop('@odata.context', None)
             return user_data
@@ -159,7 +170,7 @@ class MsGraphClient:
     def get_direct_reports(self, user):
         res = self.ms_client.http_request(
             method='GET',
-            url_suffix=f'users/{user}/directReports')
+            url_suffix=f'users/{quote(user)}/directReports')
 
         res.pop('@odata.context', None)
         return res.get('value', [])
@@ -167,7 +178,7 @@ class MsGraphClient:
     def get_manager(self, user):
         manager_data = self.ms_client.http_request(
             method='GET',
-            url_suffix=f'users/{user}/manager')
+            url_suffix=f'users/{quote(user)}/manager')
         manager_data.pop('@odata.context', None)
         manager_data.pop('@odata.type', None)
         return manager_data
@@ -179,7 +190,7 @@ class MsGraphClient:
         body = {"@odata.id": manager_ref}
         self.ms_client.http_request(
             method='PUT',
-            url_suffix=f'users/{user}/manager/$ref',
+            url_suffix=f'users/{quote(user)}/manager/$ref',
             json_data=body,
             resp_type="text"
         )
@@ -292,7 +303,15 @@ def get_delta_command(client: MsGraphClient, args: Dict):
 def get_user_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
     properties = args.get('properties', '*')
-    user_data = client.get_user(user, properties)
+    try:
+        user_data = client.get_user(user, properties)
+    except DemistoException as e:
+        if 'Bad request. Please fix the request before retrying' in e.args[0]:
+            invalid_chars = get_unsupported_chars_in_user(user)
+            if len(invalid_chars) > 0:
+                error = f'Request failed because the user contains unsupported characters: {invalid_chars}\n{str(e)}'
+                return error, {}, error
+        raise e
 
     # In case the request returned a 404 error display a proper message to the war room
     if user_data.get('NotFound', ''):

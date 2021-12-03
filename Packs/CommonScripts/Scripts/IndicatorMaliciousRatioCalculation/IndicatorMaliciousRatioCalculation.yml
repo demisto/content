@@ -1,0 +1,51 @@
+commonfields:
+  id: IndicatorMaliciousRatioCalculation
+  version: -1
+name: IndicatorMaliciousRatioCalculation
+script: ''
+type: python
+subtype: python2
+tags:
+- ml
+comment: |-
+  Return indicators appears in resolved incidents, and resolved incident ids.
+
+  This automation runs using the default Limited User role, unless you explicitly change the permissions.
+  For more information, see the section about permissions here:
+  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+enabled: true
+args:
+- name: maxIncidents
+  description: Max number of incidents to query.
+  defaultValue: "100000"
+- name: maxIndicators
+  description: Max number of indicators to query.
+  defaultValue: "100000"
+- name: appearsInMinNumberOfIncidents
+  description: Indicator appears in minimum number of incidents.
+  defaultValue: "3"
+- name: query
+  description: The query to fetch the indicators from incident which are "bad".
+  defaultValue: incident.closeReason:Resolved
+- name: maxDisplayResults
+  description: Maximum number of results (indicators) to display as output.
+  defaultValue: "50"
+- name: fileResult
+  auto: PREDEFINED
+  predefined:
+  - "yes"
+  - "no"
+  description: Generate file result
+  defaultValue: "no"
+- default: false
+  description: 'The start date by which to filter incidents. Date format will be the
+    same as in the incidents query page, for example:"2021-01-01T00:00:00").'
+  name: fromDate
+  required: false
+scripttarget: 0
+timeout: 300ns
+runonce: false
+fromversion: 5.0.0
+tests:
+  - IndicatorMaliciousRatioCalculation_test
+dockerimage: demisto/python:2.7.18.24398

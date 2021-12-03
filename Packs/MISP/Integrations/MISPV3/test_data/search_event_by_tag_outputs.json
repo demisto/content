@@ -17,6 +17,18 @@
     "PublishTimestamp": "1623745862",
     "SharingGroupID": "0",
     "DisableCorrelation": false,
+    "Attribute" : [
+        {
+          "ID": "69548",
+          "Value": "2ccc6",
+          "Feed": []
+        },
+        {
+          "ID": "69549",
+          "Value": "fa9",
+          "Feed": []
+        }
+    ],
     "Organization": {
       "ID": "1",
       "Name": "ORGNAME",
@@ -67,6 +79,18 @@
     "PublishTimestamp": "1623832501",
     "SharingGroupID": "0",
     "DisableCorrelation": false,
+    "Attribute": [
+      {
+          "ID": "70915",
+          "Value": "1.2.3.4",
+          "Feed" : []
+      },
+      {
+          "ID": "70916",
+          "Value": "1.1.1.1",
+          "Feed" : []
+      }
+    ],
     "Organization": {
       "ID": "1",
       "Name": "ORGNAME",

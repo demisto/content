@@ -2,7 +2,7 @@
 ignore=RM104
 
 [file:PassiveTotal_v2.yml]
-ignore=BA108,BA109
+ignore=BA108,BA109,IN145
 
 [file:RiskIQPassiveTotalComponentsScript.yml]
 ignore=BA110

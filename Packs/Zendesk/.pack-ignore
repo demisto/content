@@ -1,2 +1,2 @@
-[file:integration-Zendesk.yml]
-ignore=IN126
+[file:Zendesk.yml]
+ignore=IN126,IN145

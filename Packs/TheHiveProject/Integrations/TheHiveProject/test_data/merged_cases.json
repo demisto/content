@@ -1,0 +1,17 @@
+{"_id": "5",
+  "id": "5",
+  "instance": "",
+  "mirroring": "both",
+  "observables": [],
+  "caseId": "5",
+  "createdBy": "example@example.com",
+  "createdAt": "2021-07-21T09:15:09Z",
+  "updatedAt": "2021-07-21T09:15:09Z",
+  "_type": "case",
+  "title": "merged case title",
+  "description": "merged case description",
+  "severity": 2,
+  "status": "Open",
+  "tasks": [],
+  "owner": "example@example.com"
+}

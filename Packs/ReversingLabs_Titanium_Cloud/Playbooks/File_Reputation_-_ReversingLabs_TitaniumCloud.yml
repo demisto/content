@@ -1,0 +1,231 @@
+id: File Reputation - ReversingLabs TitaniumCloud
+version: -1
+name: File Reputation - ReversingLabs TitaniumCloud
+description: |-
+  Provides file reputation data for a file (malicious, suspicious, known good or unknown).
+  Required TitaniumCloud API rights:
+
+  TCA-0101
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0f6aa5cb-b782-478d-8557-f2f0f487fe75
+    type: start
+    task:
+      id: 0f6aa5cb-b782-478d-8557-f2f0f487fe75
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 62c91cb8-05a2-40bc-8b77-6c97fd811f35
+    type: condition
+    task:
+      id: 62c91cb8-05a2-40bc-8b77-6c97fd811f35
+      version: -1
+      name: Is ReversingLabs TitaniumCloud v2 enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ReversingLabs TitaniumCloud v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: d4e5065b-db2f-4779-86e3-c5efd5109259
+    type: title
+    task:
+      id: d4e5065b-db2f-4779-86e3-c5efd5109259
+      version: -1
+      name: done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 1170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: e26a8458-5941-4fb1-88e6-d493061ed4de
+    type: condition
+    task:
+      id: e26a8458-5941-4fb1-88e6-d493061ed4de
+      version: -1
+      name: Is there a file hash to analyze?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: SHA1
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: cd2fe13a-31f0-4225-8fcb-7bfd5732e0f2
+    type: regular
+    task:
+      id: cd2fe13a-31f0-4225-8fcb-7bfd5732e0f2
+      version: -1
+      name: reversinglabs-titaniumcloud-file-reputation
+      description: Retrieve File Reputation data from TitaniumCloud
+      script: ReversingLabs TitaniumCloud v2|||reversinglabs-titaniumcloud-file-reputation
+      type: regular
+      iscommand: true
+      brand: ReversingLabs TitaniumCloud v2
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      hash:
+        simple: ${inputs.hash}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 885
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1185,
+        "width": 760,
+        "x": 70,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: hash
+  value:
+    simple: ${File.SHA1}
+  required: false
+  description: File hash (sha1, md5 or sha256).
+  playbookInputQuery:
+outputs:
+- contextPath: File.MD5
+  description: Bad hash found
+- contextPath: File.SHA1
+  description: Bad hash SHA1
+- contextPath: File.SHA256
+  description: Bad hash SHA256
+- contextPath: DBotScore.Score
+  description: The actual score.
+- contextPath: DBotScore.Type
+  description: The indicator type.
+- contextPath: DBotScore.Indicator
+  description: The indicator that was tested.
+- contextPath: DBotScore.Vendor
+  description: The vendor used to calculate the score.
+- contextPath: ReversingLabs.file_reputation
+  description: Report in JSON.
+tests:
+- No tests
+fromversion: 6.0.0
