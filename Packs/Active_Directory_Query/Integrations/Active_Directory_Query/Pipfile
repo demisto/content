@@ -6,15 +6,18 @@ verify_ssl = true
 [dev-packages]
 pylint = "*"
 pytest = "*"
-flake8 = "*"
-astroid = "*"
 pytest-mock = "*"
+requests-mock = "*"
+pytest-asyncio = "*"
+pytest-xdist = "*"
+pytest-datadir-ng = "*"
+freezegun = "*"
+pytest-json = "*"
+vcrpy = "*"
+pytest-cov = "*"
+hypothesis = "*"
 
 [packages]
-ldap3 = "*"
 
 [requires]
-python_version = "3.7"
-
-[pipenv]
-allow_prereleases = true
+python_version = "3.9"

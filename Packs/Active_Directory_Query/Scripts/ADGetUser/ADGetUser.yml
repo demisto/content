@@ -1,0 +1,95 @@
+commonfields:
+  id: ADGetUser
+  version: -1
+name: ADGetUser
+script: ''
+type: python
+subtype: python2
+tags:
+- active directory
+- enhancement
+- username
+comment: |-
+  Use Active Directory to retrieve detailed information about a user account. The user can be specified by name, email or as an Active Directory Distinguished Name (DN).
+  If no filter is provided, the result will show all users.
+enabled: true
+args:
+- name: dn
+  default: true
+  description: Active Directory Distinguished Name for the desired user
+- name: name
+  description: Name of the desired user
+- name: attributes
+  description: Include these AD attributes of the resulting objects in addition to
+    the default ones
+- name: customFieldType
+  description: Search user by this custom field type
+- name: customFieldData
+  description: Search user by this custom field data (relevant only if `customFieldType`
+    is provided)
+- name: headers
+  description: The columns headers to show by order
+- name: nestedSearch
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: ' Enter ''true'' to allow nested groups search as well'
+- name: username
+  description: samAccountName of the desire user
+- name: limit
+  description: Maximum number of objects to return (default is 20)
+- name: email
+  description: mail attribute of desire user
+- name: userAccountControlOut
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Include verbose translation for UserAccountControl flags
+- name: using
+  description: Select instance name
+outputs:
+- contextPath: Account
+  description: Active Directory Account
+- contextPath: Account.Type
+  description: Type of the Account entity
+  type: string
+- contextPath: Account.ID
+  description: The unique Account DN (Distinguished Name)
+  type: string
+- contextPath: Account.Username
+  description: The Account username
+  type: string
+- contextPath: Account.Email
+  description: The email object associated with the Account
+- contextPath: Account.Groups
+  description: The groups the Account is part of
+  type: string
+- contextPath: Account.DisplayName
+  description: The Account display name
+  type: string
+- contextPath: Account.Manager
+  description: The Account's manager
+  type: string
+- contextPath: Account.Email.Address
+  description: The email address object associated with the Account
+  type: string
+- contextPath: DBotScore.Indicator
+  description: The indicator value
+  type: string
+- contextPath: DBotScore.Type
+  description: The indicator's type
+  type: string
+- contextPath: DBotScore.Vendor
+  description: The indicator's vendor
+  type: string
+- contextPath: DBotScore.Score
+  description: The indicator's score
+  type: number
+scripttarget: 0
+dependson:
+  must:
+  - activedir|||ad-search
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.24398
