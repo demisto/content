@@ -8,30 +8,6 @@ inputs:
   required: true
   value:
     simple: xyz@gmail.com
-- description: "Sender's mailing address"
-  key: sender_mail_address
-  playbookInputQuery:
-  required: true
-  value:
-    simple: test@gmail.com
-- description: "Sender's password"
-  key: sender_mail_password
-  playbookInputQuery:
-  required: true
-  value:
-    simple: ABCDEF@123
-- description: "The SMTP server for the sender's email"
-  key: smtp_server
-  playbookInputQuery:
-  required: true
-  value:
-    simple: smtp.gmail.com
-- description: "SMTP server port."
-  key: smtp_port
-  playbookInputQuery:
-  required: true
-  value:
-    simple: "465"
 name: Armorblox Needs Review
 outputs:
 - contextPath: Armorblox.Threat.remediation_actions
@@ -53,12 +29,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: ''
-      id: c13b9f45-a269-4f5f-82d4-5337018ff132
+      id: 75f9948a-4330-4c25-86eb-2b4263af8761
       iscommand: false
       name: ""
       version: -1
-    taskid: c13b9f45-a269-4f5f-82d4-5337018ff132
+      description: ''
+    taskid: 75f9948a-4330-4c25-86eb-2b4263af8761
     timertriggers: []
     type: start
     view: |-
@@ -86,13 +62,13 @@ tasks:
     task:
       brand: Armorblox
       description: 'Check the recommended remediation action for any incident '
-      id: e4c88f5b-04c8-4d86-81b2-0641ba7f4fbb
+      id: 8c3d5112-83da-4163-85d7-d1b719441c02
       iscommand: true
-      name: check-remediation-action
+      name: Get Remediation Action
       script: Armorblox|||armorblox-check-remediation-action
       type: regular
       version: -1
-    taskid: e4c88f5b-04c8-4d86-81b2-0641ba7f4fbb
+    taskid: 8c3d5112-83da-4163-85d7-d1b719441c02
     timertriggers: []
     type: regular
     view: |-
@@ -107,42 +83,38 @@ tasks:
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
     note: false
     quietmode: 0
     scriptarguments:
-      incident_id:
-        simple: ${incident.armorbloxincidentid}
-      recipient_mail_address:
+      htmlBody:
+        simple: <html><body>Hello, <br><p>Armorblox Incident Id - <b>${incident.armorbloxincidentid}</b>
+          Needs Review</p>Thank you.</body></html>
+      subject:
+        simple: NEEDS REVIEW
+      to:
         simple: ${inputs.recipient_mail_address}
-      remediation_action:
-        simple: ${Armorblox.Threat.remediation_actions}
-      sender_mail_address:
-        simple: ${inputs.sender_mail_address}
-      sender_mail_password:
-        simple: ${inputs.sender_mail_password}
-      smtp_port:
-        simple: ${inputs.smtp_port}
-      smtp_server:
-        simple: ${inputs.smtp_server}
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: ''
-      id: ff04f871-c147-4206-82cf-1841adc25162
-      iscommand: false
-      name: ArmorbloxSendEmail
-      script: ArmorbloxSendEmail
+      brand: Mail Sender (New)
+      description: Send an email
+      id: 1501c195-fc64-4e86-88db-cfd478bb631f
+      iscommand: true
+      name: Send Email
+      script: Mail Sender (New)|||send-mail
       type: regular
       version: -1
-    taskid: ff04f871-c147-4206-82cf-1841adc25162
+    taskid: 1501c195-fc64-4e86-88db-cfd478bb631f
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 530
+          "x": 710,
+          "y": 710
         }
       }
   "3":
@@ -165,20 +137,20 @@ tasks:
       '#default#':
       - "4"
       "YES":
-      - "2"
+      - "6"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
+      description: ""
       brand: ""
-      description: ''
-      id: 454d402c-45a4-4487-8731-108f6b18b377
+      id: fbcab54a-3258-4bcb-88f5-c3009593119f
       iscommand: false
-      name: IfReviewNeeded
+      name: Is Review Needed?
       type: condition
       version: -1
-    taskid: 454d402c-45a4-4487-8731-108f6b18b377
+    taskid: fbcab54a-3258-4bcb-88f5-c3009593119f
     timertriggers: []
     type: condition
     view: |-
@@ -203,20 +175,119 @@ tasks:
     task:
       brand: ""
       description: Prints text to war room (Markdown supported)
-      id: 3212c583-2a76-42c3-8cef-447ec14da87f
+      id: 936feb4c-4726-472c-87e3-4e6bc341d1d8
       iscommand: false
       name: Done
       script: Print
       type: regular
       version: -1
-    taskid: 3212c583-2a76-42c3-8cef-447ec14da87f
+    taskid: 936feb4c-4726-472c-87e3-4e6bc341d1d8
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": -270,
+          "x": -240,
           "y": 530
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: Mail Sent successfully to ${inputs.recipient_mail_address}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: a1111d6d-6e09-4a04-89cd-65a1030040c4
+      iscommand: false
+      name: Mail Sent Successful
+      script: Print
+      type: regular
+      version: -1
+    taskid: a1111d6d-6e09-4a04-89cd-65a1030040c4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 890
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "no":
+      - "7"
+      "yes":
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      brandname:
+        simple: Mail Sender (New)
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      id: 2f97dd0b-f541-471d-87a8-3a6951c1e506
+      iscommand: false
+      name: Is Mail Sender Integration Enabled?
+      script: IsIntegrationAvailable
+      type: condition
+      version: -1
+    taskid: 2f97dd0b-f541-471d-87a8-3a6951c1e506
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 530
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: Please configure Mail Sender (New) Integration to enable this feature
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: 7ec451fa-cf14-44a8-89d3-8097f63de061
+      iscommand: false
+      name: Error Sending Mail
+      script: Print
+      type: regular
+      version: -1
+    taskid: 7ec451fa-cf14-44a8-89d3-8097f63de061
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 710
         }
       }
 version: -1
@@ -225,9 +296,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 575,
-        "width": 1110,
-        "x": -270,
+        "height": 935,
+        "width": 1330,
+        "x": -240,
         "y": 50
       }
     }

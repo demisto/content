@@ -7,14 +7,16 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
+* Mail Sender (New)
 * Armorblox
 
 ### Scripts
+* IsIntegrationAvailable
 * Print
-* ArmorbloxSendEmail
 
 ### Commands
 * armorblox-check-remediation-action
+* send-mail
 
 ## Playbook Inputs
 ---
@@ -22,10 +24,6 @@ This playbook does not use any sub-playbooks.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | recipient_mail_address | Receiver's mailing address. | xyz@gmail.com | Required |
-| sender_mail_address | Sender's mailing address | test@gmail.com | Required |
-| sender_mail_password | Sender's password | ABCDEF@123 | Required |
-| smtp_server | The SMTP server for the sender's email | smtp.gmail.com | Required |
-| smtp_port | SMTP server port. | 465 | Required |
 
 ## Playbook Outputs
 ---
@@ -36,4 +34,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![Armorblox Needs Review](./doc_files/Armorblox_Needs_Review_Thu_Nov_11_2021.png)
+![Armorblox Needs Review](doc_files/Armorblox_Needs_Review.png)
