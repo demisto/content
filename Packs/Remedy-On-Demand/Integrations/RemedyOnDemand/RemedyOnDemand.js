@@ -1,4 +1,4 @@
-// remove '/' at the end of the url (if exists)
+// remove '/' at the end of the url (if exists) test
 params.url = params.url.replace(/[\/]+$/, '');
 
 var baseUrl = params.url;
