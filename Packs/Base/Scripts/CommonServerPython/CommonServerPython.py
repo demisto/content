@@ -1998,9 +1998,10 @@ def fileResult(filename, data, file_type=None, investigation_id=None):
        :return: A Demisto war room entry
        :rtype: ``dict``
     """
+    demisto.debug(f'{filename=}, {bool(data)}, {file_type=}, {investigation_id=}')
     if file_type is None:
-        file_type = entryTypes['file']
-    if not investigation_id:
+        file_type = EntryType.FILE
+    if investigation_id is None:
         investigation_id = demisto.investigation()['id']
     temp = demisto.uniqueFile()
     # pylint: disable=undefined-variable

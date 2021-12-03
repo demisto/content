@@ -18,9 +18,10 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
+
 async def get_file(self: AsyncWebClient, url_private: str):
     demisto.debug(f'download url is {url_private=}')
-    res = requests.get(url_private, headers={'Authorization': f'Bearer {self.token}'})
+    res = requests.get(url_private, headers={'Authorization': f'Bearer {self.token}'}, verify=False)  # TODO: verify from params.
     demisto.debug(f'{url_private} {res.status_code=}')
     return res.content
 
@@ -84,6 +85,11 @@ PERMITTED_NOTIFICATION_TYPES: List[str]
 
 
 ''' HELPER FUNCTIONS '''
+
+
+def is_bot_message(message, bot_id=None):
+    if not bot_id:
+        bot_id = get_bot_id()
 
 
 def get_bot_id() -> str:
@@ -1037,7 +1043,6 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
 
     try:
         data: dict = req.payload
-        # demisto.debug(f'Slack v3 data: {json.dumps(data, indent=4)=}')
         event: dict = data.get('event', {})
         subtype = data.get('subtype', '')
         text = event.get('text', '')
@@ -1063,7 +1068,12 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
             demisto.debug("Received message_changed event type. Ignoring.")
             return
         if event.get('subtype') == 'file_share':
-            demisto.debug('Received file_share event type. Processing.')
+            if event.get('client_msg_id'):
+                demisto.debug('Received file_share event type. Processing.')
+            else:
+                demisto.debug('Got a file that is a mirror from XSOAR. Ignoring')
+                return
+            
 
         if len(actions) > 0:
             channel = data.get('channel', {}).get('id', '')
@@ -1132,22 +1142,24 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
                 investigation_id = mirror['investigation_id']
                 # Post to the warroom
                 if event.get('subtype') == 'file_share':
-                    file_obj = event.get('files', [{}])[0]
-                    data = await get_file(ASYNC_CLIENT, file_obj.get('url_private'))
-                    name = file_obj.get('name')
-                    demisto.debug(f'{name=}, {bool(data)=}, {investigation_id=}')
-                    file_ = fileResult(name, data, investigation_id=investigation_id)
-                    handle_file(
-                        investigation_id, 
-                        file_,
-                        user  # type: ignore
-                    )
+                    for file_obj in event.get('files', []):
+                        data = await get_file(ASYNC_CLIENT, file_obj.get('url_private'))
+                        name = file_obj.get('name')
+                        file_ = fileResult(name, data, investigation_id=investigation_id)
+                        demisto.debug('after file result')
+                        demisto.debug(f'{file_=}')
+                        await handle_file(
+                            investigation_id,
+                            file_,
+                            user  # type: ignore
+                        )
+
                 else:
                     await handle_text(ASYNC_CLIENT, investigation_id, text, user)  # type: ignore
         # Reset module health
         demisto.updateModuleHealth("")
         demisto.info("SlackV3 - Event handled successfully.")
-        return
+
     except Exception as e:
         await handle_listen_error(f'Error occurred while listening to Slack: {e}')
 
@@ -1182,19 +1194,21 @@ async def get_user_by_id_async(client: AsyncWebClient, user_id: str) -> dict:
 
     return user
 
-def handle_file(
+
+async def handle_file(
     investigation_id: str,
     file_result: dict,
     user: dict
 ):
     demisto.info(f'SlackV3 - adding file entry to incident {investigation_id}')
     demisto.addEntry(
-            id=investigation_id,
-            entry=json.dumps(file_result),
-            username=user.get('name', ''),
-            email=user.get('profile', {}).get('email', ''),
-            footer=MESSAGE_FOOTER            
-        )
+        id=investigation_id,
+        entry=json.dumps(file_result),
+        username=user.get('name', ''),
+        email=user.get('profile', {}).get('email', ''),
+        footer=MESSAGE_FOOTER,
+        entryType=EntryType.FILE
+    )
 
 
 async def handle_text(client: AsyncWebClient, investigation_id: str, text: str, user: dict):
@@ -1209,12 +1223,13 @@ async def handle_text(client: AsyncWebClient, investigation_id: str, text: str, 
     """
     if text:
         demisto.info(f'SlackV3 - adding entry to incident {investigation_id}')
-        demisto.addEntry(id=investigation_id,
-                         entry=await clean_message(text, client),
-                         username=user.get('name', ''),
-                         email=user.get('profile', {}).get('email', ''),
-                         footer=MESSAGE_FOOTER
-                         )
+        demisto.addEntry(
+            id=investigation_id,
+            entry=await clean_message(text, client),
+            username=user.get('name', ''),
+            email=user.get('profile', {}).get('email', ''),
+            footer=MESSAGE_FOOTER
+        )
         demisto.info("SlackV3 - Text handled successfully.")
     else:
         demisto.info('Entry does not added to incident, no text supplied')
@@ -1660,8 +1675,8 @@ def send_file_to_destinations(destinations: list, file_dict: dict, thread_id: st
         'filename': file_dict['name']
     }
 
-    if 'comment' in file_dict:
-        body['initial_comment'] = file_dict['comment']
+    if comment := file_dict.get('comment'):
+        body['initial_comment'] = comment
 
     for destination in destinations:
         body['channels'] = destination
