@@ -15,5 +15,9 @@
     "keywords": [],
     "githubUser": [
         "yacut"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

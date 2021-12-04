@@ -16,5 +16,9 @@
         "Linkshadow"
     ],
     "dependencies": {},
-    "githubUser": "Devika-LS"
+    "githubUser": "Devika-LS",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

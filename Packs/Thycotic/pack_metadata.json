@@ -24,5 +24,9 @@
     },
     "displayedImages": [
         "CommonScripts"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

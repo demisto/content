@@ -61,5 +61,9 @@
             "mandatory": false,
             "display_name": "EWS Mail Sender"
         }
-    }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

@@ -18,5 +18,9 @@
     "githubUser": [
         "kashyap-solanki"
     ],
-    "certification": "certified"
+    "certification": "certified",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

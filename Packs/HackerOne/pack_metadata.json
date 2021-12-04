@@ -1,27 +1,31 @@
 {
-  "name": "HackerOne",
-  "description": "HackerOne is a vulnerability coordination and bug bounty platform that connects businesses with penetration testers and cyber-security researchers.",
-  "support": "partner",
-  "currentVersion": "1.0.0",
-  "author": "HackerOne",
-  "url": "https://docs.hackerone.com/",
-  "email": "support@hackerone.com",
-  "created": "2021-08-24T06:32:22Z",
-  "categories": [
-    "Vulnerability Management"
-  ],
-  "tags": [
-    "Security"
-  ],
-  "useCases": [
-    "Vulnerability Management"
-  ],
-  "keywords": [
-    "HackerOne",
-    "reports",
-    "vulnerability"
-  ],
-  "githubUser": [
-    "martijnrusschen"
-  ]
+    "name": "HackerOne",
+    "description": "HackerOne is a vulnerability coordination and bug bounty platform that connects businesses with penetration testers and cyber-security researchers.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "HackerOne",
+    "url": "https://docs.hackerone.com/",
+    "email": "support@hackerone.com",
+    "created": "2021-08-24T06:32:22Z",
+    "categories": [
+        "Vulnerability Management"
+    ],
+    "tags": [
+        "Security"
+    ],
+    "useCases": [
+        "Vulnerability Management"
+    ],
+    "keywords": [
+        "HackerOne",
+        "reports",
+        "vulnerability"
+    ],
+    "githubUser": [
+        "martijnrusschen"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

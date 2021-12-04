@@ -63,5 +63,9 @@
             "display_name": "Microsoft Policy And Compliance",
             "mandatory": false
         }
-    }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

@@ -74,5 +74,9 @@
             "mandatory": false,
             "display_name": "Gmail"
         }
-    }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

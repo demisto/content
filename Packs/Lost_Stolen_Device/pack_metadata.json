@@ -17,5 +17,9 @@
     "keywords": [
         "Stolen Device",
         "Lost Device"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

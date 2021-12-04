@@ -11,7 +11,13 @@
         "Network Security"
     ],
     "tags": [],
-    "itemPrefix": [""],
+    "itemPrefix": [
+        ""
+    ],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

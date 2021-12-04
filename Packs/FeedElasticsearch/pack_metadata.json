@@ -17,5 +17,9 @@
         "Feed"
     ],
     "price": 0,
-    "dependencies": {}
+    "dependencies": {},
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

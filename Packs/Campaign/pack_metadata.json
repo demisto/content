@@ -29,5 +29,9 @@
         "Actions On Low Similarity",
         "Select Low Similarity",
         "Campaign"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

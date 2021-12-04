@@ -15,5 +15,9 @@
     "keywords": [
         "checkpoint",
         "firewall"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }
