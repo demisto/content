@@ -1,0 +1,4208 @@
+[{
+        "path": "Contents.File",
+        "operation": "is filtered with",
+        "filter": {
+            "Name": {
+                "ends with": ".exe"
+            }
+        },
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [{
+                        "Contents": {
+                            "File": [{
+                                    "Name": "a.dat",
+                                    "Size": 100
+                                }, {
+                                    "Name": "b.exe",
+                                    "Size": 200
+                                }, {
+                                    "Name": "c.txt",
+                                    "Size": 300
+                                }
+                            ],
+                            "Host": [{
+                                    "IP": "1.1.1.1",
+                                    "Name": "computer1"
+                                }, {
+                                    "IP": "2.2.2.2",
+                                    "Name": "computer2"
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "result": [{
+                        "Contents": {
+                            "File": [{
+                                    "Name": "b.exe",
+                                    "Size": 200
+                                }
+                            ],
+                            "Host": [{
+                                    "IP": "1.1.1.1",
+                                    "Name": "computer1"
+                                }, {
+                                    "IP": "2.2.2.2",
+                                    "Name": "computer2"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "is transformed with",
+        "filter": {
+            "is replaced with": {
+                "User": "JDOE"
+            }
+        },
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [{
+                        "Name": "a.dat",
+                        "Size": 100
+                    }, {
+                        "Name": "b.exe",
+                        "Size": 200
+                    }
+                ],
+                "result": [{
+                        "User": "JDOE"
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "is individually transformed with",
+        "filter": {
+            "is updated with": {
+                "Size": "${..Size=val+1}"
+            }
+        },
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [{
+                        "Name": "a.dat",
+                        "Size": 100
+                    }, {
+                        "Name": "b.exe",
+                        "Size": 200
+                    }
+                ],
+                "result": [{
+                        "Name": "a.dat",
+                        "Size": 101
+                    }, {
+                        "Name": "b.exe",
+                        "Size": 201
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "is collectively transformed with",
+        "filter": {
+            "switch-case": {
+                "switch": {
+                    "#has_untrusted": {
+                        "is filtered with": {
+                            "Trusted": {
+                                "===": false
+                            }
+                        }
+                    }
+                },
+                "#has_untrusted": {
+                    "is replaced with": ["Untrusted"]
+                },
+                "default": {
+                    "is replaced with": ["Trusted"]
+                }
+            }
+        },
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [{
+                        "Name": "a.dat",
+                        "Trusted": true
+                    }, {
+                        "Name": "b.exe",
+                        "Trusted": false
+                    }, {
+                        "Name": "c.txt",
+                        "Trusted": true
+                    }
+                ],
+                "result": ["Untrusted"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "keeps",
+        "filter": ["Host", "User"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [{
+                        "Host": "JDOH",
+                        "IP": "1.1.1.1"
+                    }, {
+                        "First Name": "John",
+                        "Last Name": "Doe",
+                        "User": "John Doe"
+                    }, {
+                        "Host": "YTARO",
+                        "User": "Taro Yamada"
+                    }
+                ],
+                "result": [{
+                        "Host": "JDOH"
+                    }, {
+                        "User": "John Doe"
+                    }, {
+                        "Host": "YTARO",
+                        "User": "Taro Yamada"
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "CSV",
+        "operation": "matches conditions of",
+        "filter": [{
+                "ActivityName": {
+                    "==": "User Logged In - Failed"
+                }
+            }, "or", [{
+                    "ActivityName": {
+                        "in list": "File uploaded,File downloaded"
+                    }
+                }, "and", "not", {
+                    "DeviceID": {
+                        "matches any string of": "${local.TrustedDevices}"
+                    }
+                }
+            ]],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [{
+                        "CSV": [{
+                                "ActivityName": "User Logged In - Success",
+                                "DeviceID": "D000001"
+                            }, {
+                                "ActivityName": "File uploaded",
+                                "DeviceID": "D000001"
+                            }, {
+                                "ActivityName": "File downloaded",
+                                "DeviceID": "D000002"
+                            }, {
+                                "ActivityName": "User Logged In - Failed",
+                                "DeviceID": "D000003"
+                            }
+                        ],
+                        "TrustedDevices": ["D000002", "D000003"]
+                    }
+                ],
+                "result": [{
+                        "CSV": [{
+                                "ActivityName": "File uploaded",
+                                "DeviceID": "D000001"
+                            }, {
+                                "ActivityName": "User Logged In - Failed",
+                                "DeviceID": "D000003"
+                            }
+                        ],
+                        "TrustedDevices": ["D000002", "D000003"]
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "value matches conditions of",
+        "filter": {
+            "detected": {
+                "==": true
+            }
+        },
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [{
+                        "Autofocus": {
+                            "detected": true,
+                            "version": 456
+                        },
+                        "Trendmicro": {
+                            "detected": false,
+                            "version": 123
+                        },
+                        "XXX": {
+                            "version": 789
+                        }
+                    }
+                ],
+                "result": [{
+                        "Autofocus": {
+                            "detected": true,
+                            "version": 456
+                        }
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "matches conditions of",
+        "filter": {
+            "Host": {
+                "wildcard: matches": "COMPUTER*"
+            }
+        },
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [{
+                        "Host": "COMPUTER1",
+                        "IP": "1.1.1.1",
+                        "User": "MAOKI"
+                    }, {
+                        "Host": "SERVER2",
+                        "IP": "2.2.2.2",
+                        "User": "NGOTOH"
+                    }
+                ],
+                "result": [{
+                        "Host": "COMPUTER1",
+                        "IP": "1.1.1.1",
+                        "User": "MAOKI"
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "matches conditions of",
+        "filter": {
+            "Host": {
+                "regex: matches": "COMPUTER.*"
+            }
+        },
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [{
+                        "Host": "COMPUTER1",
+                        "IP": "1.1.1.1",
+                        "User": "MAOKI"
+                    }, {
+                        "Host": "SERVER2",
+                        "IP": "2.2.2.2",
+                        "User": "NGOTOH"
+                    }
+                ],
+                "result": [{
+                        "Host": "COMPUTER1",
+                        "IP": "1.1.1.1",
+                        "User": "MAOKI"
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "value matches conditions of",
+        "filter": [{
+                "Log": {
+                    "is filtered with": [{
+                            "risk.score": {
+                                ">=": 20,
+                                "<=": 50
+                            }
+                        }, "or", {
+                            "protocol": {
+                                "==": "ssh"
+                            }
+                        }
+                    ]
+                }
+            }, "and", {
+                "RiskScore": {
+                    ">=": 10
+                }
+            }
+        ],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [{
+                        "COMPXX1": {
+                            "IP": "192.168.0.1",
+                            "Log": [{
+                                    "date": "2020-10-01 00:00:01 JST",
+                                    "desc": "C2 detection",
+                                    "ip.dst": "2.2.2.2",
+                                    "ip.src": "192.168.0.1",
+                                    "message": "xxxxxxxxxxxx",
+                                    "port.dst": 443,
+                                    "port.src": 12345,
+                                    "protocol": "https",
+                                    "risk.score": 40,
+                                    "type": "alert"
+                                }, {
+                                    "date": "2020-10-01 00:00:02 JST",
+                                    "desc": "C2 detection",
+                                    "ip.dst": "3.3.3.3",
+                                    "ip.src": "192.168.0.1",
+                                    "message": "xxxxxxxxxxxx",
+                                    "port.dst": 443,
+                                    "port.src": 12345,
+                                    "protocol": "https",
+                                    "risk.score": 60,
+                                    "type": "alert"
+                                }, {
+                                    "date": "2020-10-01 00:00:03 JST",
+                                    "desc": "access",
+                                    "ip.dst": "4.4.4.4",
+                                    "ip.src": "192.168.0.1",
+                                    "message": "xxxxxxxxxxxx",
+                                    "port.dst": 443,
+                                    "port.src": 12345,
+                                    "protocol": "https",
+                                    "risk.score": 0,
+                                    "type": "event"
+                                }
+                            ],
+                            "RiskScore": 40,
+                            "UserName": "NAOKI"
+                        },
+                        "SRVXYY1": {
+                            "IP": "192.168.0.2",
+                            "Log": [{
+                                    "date": "2020-10-01 00:00:01 JST",
+                                    "desc": "C2 detection",
+                                    "ip.dst": "2.2.2.2",
+                                    "ip.src": "192.168.0.2",
+                                    "message": "xxxxxxxxxxxx",
+                                    "port.dst": 443,
+                                    "port.src": 12345,
+                                    "protocol": "https",
+                                    "risk.score": 30,
+                                    "type": "alert"
+                                }, {
+                                    "date": "2020-10-01 00:00:02 JST",
+                                    "desc": "access",
+                                    "ip.dst": "3.3.3.3",
+                                    "ip.src": "192.168.0.2",
+                                    "message": "xxxxxxxxxxxx",
+                                    "port.dst": 443,
+                                    "port.src": 12345,
+                                    "protocol": "https",
+                                    "risk.score": 0,
+                                    "type": "event"
+                                }, {
+                                    "date": "2020-10-01 00:00:03 JST",
+                                    "desc": "access",
+                                    "ip.dst": "4.4.4.4",
+                                    "ip.src": "192.168.0.2",
+                                    "message": "xxxxxxxxxxxx",
+                                    "port.dst": 22,
+                                    "port.src": 12345,
+                                    "protocol": "ssh",
+                                    "risk.score": 0,
+                                    "type": "event"
+                                }
+                            ],
+                            "RiskScore": 10,
+                            "UserName": "TGOTOH"
+                        },
+                        "SRVXZZ2": {
+                            "IP": "192.168.0.3",
+                            "Log": [{
+                                    "date": "2020-10-01 00:00:03 JST",
+                                    "desc": "access",
+                                    "ip.dst": "4.4.4.4",
+                                    "ip.src": "192.168.0.3",
+                                    "message": "xxxxxxxxxxxx",
+                                    "port.dst": 443,
+                                    "port.src": 12345,
+                                    "protocol": "https",
+                                    "risk.score": 0,
+                                    "type": "event"
+                                }
+                            ],
+                            "RiskScore": 0,
+                            "UserName": "GMACHIDA"
+                        }
+                    }
+                ],
+                "result": [{
+                        "COMPXX1": {
+                            "IP": "192.168.0.1",
+                            "Log": [{
+                                    "date": "2020-10-01 00:00:01 JST",
+                                    "desc": "C2 detection",
+                                    "ip.dst": "2.2.2.2",
+                                    "ip.src": "192.168.0.1",
+                                    "message": "xxxxxxxxxxxx",
+                                    "port.dst": 443,
+                                    "port.src": 12345,
+                                    "protocol": "https",
+                                    "risk.score": 40,
+                                    "type": "alert"
+                                }
+                            ],
+                            "RiskScore": 40,
+                            "UserName": "NAOKI"
+                        },
+                        "SRVXYY1": {
+                            "IP": "192.168.0.2",
+                            "Log": [{
+                                    "date": "2020-10-01 00:00:01 JST",
+                                    "desc": "C2 detection",
+                                    "ip.dst": "2.2.2.2",
+                                    "ip.src": "192.168.0.2",
+                                    "message": "xxxxxxxxxxxx",
+                                    "port.dst": 443,
+                                    "port.src": 12345,
+                                    "protocol": "https",
+                                    "risk.score": 30,
+                                    "type": "alert"
+                                }, {
+                                    "date": "2020-10-01 00:00:03 JST",
+                                    "desc": "access",
+                                    "ip.dst": "4.4.4.4",
+                                    "ip.src": "192.168.0.2",
+                                    "message": "xxxxxxxxxxxx",
+                                    "port.dst": 22,
+                                    "port.src": 12345,
+                                    "protocol": "ssh",
+                                    "risk.score": 0,
+                                    "type": "event"
+                                }
+                            ],
+                            "RiskScore": 10,
+                            "UserName": "TGOTOH"
+                        }
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "value is filtered with",
+        "filter": {
+            "includes": "Playground"
+        },
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [{
+                        "aaa": ["bbb", "Playground"],
+                        "xxx": ["yyy", "zzz"]
+                    }
+                ],
+                "result": [{
+                        "aaa": ["bbb", "Playground"]
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "Host",
+        "operation": "is",
+        "filter": "existing key",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [{
+                        "Host": "JDOH",
+                        "IP": "1.1.1.1"
+                    }, {
+                        "Email": "jdoe@domain.com",
+                        "User": "John Doe"
+                    }
+                ],
+                "result": [{
+                        "Host": "JDOH",
+                        "IP": "1.1.1.1"
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "Host.User",
+        "operation": "is",
+        "filter": "existing key",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [{
+                        "Host": {
+                            "IP": "1.1.1.1",
+                            "Score": 50,
+                            "User": "JDOE"
+                        },
+                        "User": {
+                            "ID": 1000,
+                            "Name": "John Doe"
+                        }
+                    }, {
+                        "Host": {
+                            "IP": "2.2.2.2",
+                            "Score": 30
+                        }
+                    }
+                ],
+                "result": [{
+                        "Host": {
+                            "IP": "1.1.1.1",
+                            "Score": 50,
+                            "User": "JDOE"
+                        },
+                        "User": {
+                            "ID": 1000,
+                            "Name": "John Doe"
+                        }
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "isn't",
+        "filter": "empty",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [10, {}, null, "xxx"],
+                "result": [10, "xxx"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "isn't",
+        "filter": "null",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [10, {}, null, "xxx"],
+                "result": [10, {}, "xxx"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "isn't",
+        "filter": "any integer",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [10, "123", "xxx"],
+                "result": ["xxx"]
+            }
+        ]
+    }, {
+        "path": "Host.User",
+        "operation": "isn't",
+        "filter": "existing key",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [{
+                        "Host": {
+                            "IP": "1.1.1.1",
+                            "Score": 50,
+                            "User": "JDOE"
+                        },
+                        "User": {
+                            "ID": 1000,
+                            "Name": "John Doe"
+                        }
+                    }, {
+                        "Host": {
+                            "IP": "2.2.2.2",
+                            "Score": 30
+                        }
+                    }
+                ],
+                "result": [{
+                        "Host": {
+                            "IP": "2.2.2.2",
+                            "Score": 30
+                        }
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "equals",
+        "filter": 10,
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [10, "10", 123],
+                "result": [10, "10"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "doesn't equal",
+        "filter": 10,
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [10, "10", 123],
+                "result": [123]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "greater or equal",
+        "filter": 10,
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [1, 10, "10", 123],
+                "result": [10, "10", 123]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "greater than",
+        "filter": 10,
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [1, 10, "10", 123],
+                "result": [123]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "less or equal",
+        "filter": 10,
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [1, 10, "10", 123],
+                "result": [1, 10, "10"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "less than",
+        "filter": 10,
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [1, 10, "10", 123],
+                "result": [1]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "in range",
+        "filter": "10,100",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [1, 10, "10", "30", 123],
+                "result": [10, "10", "30"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "starts with",
+        "filter": "xxx",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [10, "xxx.exe", "yyy.pdf", {
+                        "xxx": "x"
+                    }
+                ],
+                "result": ["xxx.exe"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "starts with caseless",
+        "filter": "xxx",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [10, "xxx.exe", "XXX.EXE", "yyy.pdf", {
+                        "xxx": "x"
+                    }
+                ],
+                "result": ["xxx.exe", "XXX.EXE"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "doesn't start with",
+        "filter": "xxx",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [10, "xxx.exe", "yyy.pdf", {
+                        "xxx": "x"
+                    }
+                ],
+                "result": [10, "yyy.pdf", {
+                        "xxx": "x"
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "doesn't start with caseless",
+        "filter": "xxx",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [10, "xxx.exe", "XXX.EXE", "yyy.pdf", {
+                        "xxx": "x"
+                    }
+                ],
+                "result": [10, "yyy.pdf", {
+                        "xxx": "x"
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "ends with",
+        "filter": ".exe",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [10, "xxx.exe", "yyy.pdf", {
+                        "xxx": "x"
+                    }
+                ],
+                "result": ["xxx.exe"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "ends with caseless",
+        "filter": ".exe",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [10, "xxx.exe", "XXX.EXE", "yyy.pdf", {
+                        "xxx": "x"
+                    }
+                ],
+                "result": ["xxx.exe", "XXX.EXE"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "doesn't end with",
+        "filter": ".exe",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [10, "xxx.exe", "yyy.pdf", {
+                        "xxx": "x"
+                    }
+                ],
+                "result": [10, "yyy.pdf", {
+                        "xxx": "x"
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "doesn't end with caseless",
+        "filter": ".exe",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [10, "xxx.exe", "XXX.EXE", "yyy.pdf", {
+                        "xxx": "x"
+                    }
+                ],
+                "result": [10, "yyy.pdf", {
+                        "xxx": "x"
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "includes",
+        "filter": "paloaltonetworks",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["www.paloaltonetworks.com"],
+                "result": ["www.paloaltonetworks.com"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "includes",
+        "filter": "paloaltonetworks",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [10, "www.paloaltonetworks.com", "www.paloaltonetworks.co.jp", {
+                        "xxx": "xxx.paloaltonetworks.com"
+                    }
+                ],
+                "result": ["www.paloaltonetworks.com", "www.paloaltonetworks.co.jp"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "includes caseless",
+        "filter": "paloaltonetworks",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [10, "www.paloaltonetworks.com", "WWW.PALOALTONETWORKS.COM", {
+                        "xxx": "xxx.paloaltonetworks.com"
+                    }
+                ],
+                "result": ["www.paloaltonetworks.com", "WWW.PALOALTONETWORKS.COM"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "doesn't include",
+        "filter": "paloaltonetworks",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [10, "www.paloaltonetworks.com", "www.paloaltonetworks.co.jp", {
+                        "xxx": "xxx.paloaltonetworks.com"
+                    }
+                ],
+                "result": [10, {
+                        "xxx": "xxx.paloaltonetworks.com"
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "doesn't include caseless",
+        "filter": "paloaltonetworks",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [10, "www.paloaltonetworks.com", "WWW.PALOALTONETWORKS.COM", {
+                        "xxx": "xxx.paloaltonetworks.com"
+                    }
+                ],
+                "result": [10, {
+                        "xxx": "xxx.paloaltonetworks.com"
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "finds",
+        "filter": "paloaltonetworks",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["www.paloaltonetworks.com"],
+                "result": ["www.paloaltonetworks.com"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "finds",
+        "filter": "paloaltonetworks",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [10, "www.paloaltonetworks.com", "WWW.PALOALTONETWORKS.COM", {
+                        "xxx": "xxx.paloaltonetworks.com"
+                    }
+                ],
+                "result": [10, "www.paloaltonetworks.com", "WWW.PALOALTONETWORKS.COM", {
+                        "xxx": "xxx.paloaltonetworks.com"
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "finds",
+        "filter": "xxx.paloaltonetworks",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [10, "www.paloaltonetworks.com", "WWW.PALOALTONETWORKS.COM", {
+                        "xxx": "xxx.paloaltonetworks.com"
+                    }
+                ],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "finds caseless",
+        "filter": "PALOALTONETWORKS",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["www.paloaltonetworks.com"],
+                "result": ["www.paloaltonetworks.com"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "finds caseless",
+        "filter": "PALOALTONETWORKS",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [10, "www.paloaltonetworks.com", {
+                        "xxx": "xxx.paloaltonetworks.com"
+                    }
+                ],
+                "result": [10, "www.paloaltonetworks.com", {
+                        "xxx": "xxx.paloaltonetworks.com"
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "doesn't find",
+        "filter": "paloaltonetworks",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["www.paloaltonetworks.com"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "doesn't find",
+        "filter": "paloaltonetworks",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [10, "www.paloaltonetworks.com", "WWW.PALOALTONETWORKS.COM", {
+                        "xxx": "xxx.paloaltonetworks.com"
+                    }
+                ],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "doesn't find",
+        "filter": "xxx.paloaltonetworks",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [10, "www.paloaltonetworks.com", "WWW.PALOALTONETWORKS.COM", {
+                        "xxx": "xxx.paloaltonetworks.com"
+                    }
+                ],
+                "result": [10, "www.paloaltonetworks.com", "WWW.PALOALTONETWORKS.COM", {
+                        "xxx": "xxx.paloaltonetworks.com"
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "doesn't find caseless",
+        "filter": "PALOALTONETWORKS",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["www.paloaltonetworks.com"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "doesn't find caseless",
+        "filter": "paloaltonetworks",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [10, "WWW.PALOALTONETWORKS.COM", {
+                        "xxx": "xxx.paloaltonetworks.com"
+                    }
+                ],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "doesn't find caseless",
+        "filter": "xxx.paloaltonetworks",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [10, "WWW.PALOALTONETWORKS.COM", {
+                        "xxx": "xxx.paloaltonetworks.com"
+                    }
+                ],
+                "result": [10, "WWW.PALOALTONETWORKS.COM", {
+                        "xxx": "xxx.paloaltonetworks.com"
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "matches",
+        "filter": "www.paloaltonetworks.com",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["www.paloaltonetworks.com"],
+                "result": ["www.paloaltonetworks.com"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "matches",
+        "filter": "paloaltonetworks",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["www.paloaltonetworks.com"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "matches",
+        "filter": "www.paloaltonetworks.com",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["www.demisto.com", "www.paloaltonetworks.com", {
+                        "Host": "www.paloaltonetworks.com"
+                    }
+                ],
+                "result": ["www.paloaltonetworks.com"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "matches caseless",
+        "filter": "WWW.PALOALTONETWORKS.COM",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["www.paloaltonetworks.com"],
+                "result": ["www.paloaltonetworks.com"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "matches caseless",
+        "filter": "paloaltonetworks",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["www.paloaltonetworks.com"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "matches caseless",
+        "filter": "WWW.PALOALTONETWORKS.COM",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["www.demisto.com", "www.paloaltonetworks.com", {
+                        "Host": "www.paloaltonetworks.com"
+                    }
+                ],
+                "result": ["www.paloaltonetworks.com"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "doesn't match",
+        "filter": "www.paloaltonetworks.com",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["www.paloaltonetworks.com"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "doesn't match",
+        "filter": "paloaltonetworks",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["www.paloaltonetworks.com"],
+                "result": ["www.paloaltonetworks.com"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "doesn't match",
+        "filter": "www.paloaltonetworks.com",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["www.demisto.com", "www.paloaltonetworks.com", {
+                        "Host": "www.paloaltonetworks.com"
+                    }
+                ],
+                "result": ["www.demisto.com", {
+                        "Host": "www.paloaltonetworks.com"
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "doesn't match caseless",
+        "filter": "WWW.PALOALTONETWORKS.COM",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["www.paloaltonetworks.com"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "doesn't match caseless",
+        "filter": "paloaltonetworks",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["www.paloaltonetworks.com"],
+                "result": ["www.paloaltonetworks.com"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "doesn't match caseless",
+        "filter": "WWW.PALOALTONETWORKS.COM",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["www.demisto.com", "www.paloaltonetworks.com", {
+                        "Host": "www.paloaltonetworks.com"
+                    }
+                ],
+                "result": ["www.demisto.com", {
+                        "Host": "www.paloaltonetworks.com"
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "wildcard: matches",
+        "filter": "???.paloaltonetworks.*",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["www.paloaltonetworks.com"],
+                "result": ["www.paloaltonetworks.com"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "wildcard: matches",
+        "filter": "???.paloaltonetworks.*",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["www.demisto.com", "www.paloaltonetworks.com", {
+                        "Host": "www.paloaltonetworks.com"
+                    }
+                ],
+                "result": ["www.paloaltonetworks.com"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "wildcard: matches caseless",
+        "filter": "???.PaloAltoNetworks.*",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["WWW.PaloAltoNetworks.COM"],
+                "result": ["WWW.PaloAltoNetworks.COM"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "wildcard: matches caseless",
+        "filter": "???.PaloAltoNetworks.*",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["www.demisto.com", "WWW.PaloAltoNetworks.COM", {
+                        "Host": "www.paloaltonetworks.com"
+                    }
+                ],
+                "result": ["WWW.PaloAltoNetworks.COM"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "wildcard: doesn't match",
+        "filter": "???.paloaltonetworks.*",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["www.paloaltonetworks.com"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "wildcard: doesn't match",
+        "filter": "???.paloaltonetworks.*",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["www.demisto.com", "www.paloaltonetworks.com", {
+                        "Host": "www.paloaltonetworks.com"
+                    }
+                ],
+                "result": ["www.demisto.com", {
+                        "Host": "www.paloaltonetworks.com"
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "wildcard: doesn't match caseless",
+        "filter": "???.paloaltonetworks.*",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["WWW.PaloAltoNetworks.COM"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "wildcard: doesn't match caseless",
+        "filter": "???.paloaltonetworks.*",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["www.demisto.com", "WWW.PaloAltoNetworks.COM", {
+                        "Host": "www.paloaltonetworks.com"
+                    }
+                ],
+                "result": ["www.demisto.com", {
+                        "Host": "www.paloaltonetworks.com"
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "regex: matches",
+        "filter": ".*paloaltonetworks.*",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["www.paloaltonetworks.com"],
+                "result": ["www.paloaltonetworks.com"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "regex: matches",
+        "filter": ".*paloaltonetworks.*",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["www.demisto.com", "www.paloaltonetworks.com", {
+                        "Host": "www.paloaltonetworks.com"
+                    }
+                ],
+                "result": ["www.paloaltonetworks.com"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "regex: matches caseless",
+        "filter": ".*paloaltonetworks.*",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["WWW.PaloAltoNetworks.COM"],
+                "result": ["WWW.PaloAltoNetworks.COM"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "regex: matches caseless",
+        "filter": ".*paloaltonetworks.*",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["www.demisto.com", "WWW.PaloAltoNetworks.COM", {
+                        "Host": "www.paloaltonetworks.com"
+                    }
+                ],
+                "result": ["WWW.PaloAltoNetworks.COM"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "regex: doesn't match",
+        "filter": ".*paloaltonetworks.*",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["www.paloaltonetworks.com"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "regex: doesn't match",
+        "filter": ".*paloaltonetworks.*",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["www.demisto.com", "www.paloaltonetworks.com", {
+                        "Host": "www.paloaltonetworks.com"
+                    }
+                ],
+                "result": ["www.demisto.com", {
+                        "Host": "www.paloaltonetworks.com"
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "regex: doesn't match caseless",
+        "filter": ".*paloaltonetworks.*",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["WWW.PaloAltoNetworks.COM"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "regex: doesn't match caseless",
+        "filter": ".*paloaltonetworks.*",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["www.demisto.com", "WWW.PaloAltoNetworks.COM", {
+                        "Host": "www.paloaltonetworks.com"
+                    }
+                ],
+                "result": ["www.demisto.com", {
+                        "Host": "www.paloaltonetworks.com"
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "in list",
+        "filter": "apple,banana,cherry",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["banana"],
+                "result": ["banana"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "in list",
+        "filter": "apple,banana,cherry",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["apple", "melon", "banana", {
+                        "fruit": "orange"
+                    }
+                ],
+                "result": ["apple", "banana"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "in caseless list",
+        "filter": "apple,banana,cherry",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Banana"],
+                "result": ["Banana"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "in caseless list",
+        "filter": "apple,banana,cherry",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Apple", "Melon", "Banana", {
+                        "Fruit": "Orange"
+                    }
+                ],
+                "result": ["Apple", "Banana"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "not in list",
+        "filter": "apple,banana,cherry",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["melon"],
+                "result": ["melon"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "not in list",
+        "filter": "apple,banana,cherry",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["apple", "melon", "banana", {
+                        "fruit": "orange"
+                    }
+                ],
+                "result": ["melon", {
+                        "fruit": "orange"
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "not in caseless list",
+        "filter": "apple,banana,cherry",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Melon"],
+                "result": ["Melon"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "not in caseless list",
+        "filter": "apple,banana,cherry",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Apple", "Melon", "Banana", {
+                        "Fruit": "Orange"
+                    }
+                ],
+                "result": ["Melon", {
+                        "Fruit": "Orange"
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "contains",
+        "filter": "apple",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["apple"],
+                "result": ["apple"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "contains",
+        "filter": "apple",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["banana"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "contains",
+        "filter": "apple",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["apple", "banana", "cherry"],
+                "result": ["apple", "banana", "cherry"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "contains caseless",
+        "filter": "apple",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Apple"],
+                "result": ["Apple"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "contains caseless",
+        "filter": "apple",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Apple", "Banana", "Cherry"],
+                "result": ["Apple", "Banana", "Cherry"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "doesn't contain",
+        "filter": "apple",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["apple"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "doesn't contain",
+        "filter": "apple",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["banana"],
+                "result": ["banana"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "doesn't contain",
+        "filter": "apple",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["apple", "banana", "cherry"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "doesn't contain caseless",
+        "filter": "apple",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Apple"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "doesn't contain caseless",
+        "filter": "apple",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["banana"],
+                "result": ["banana"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "doesn't contain caseless",
+        "filter": "apple",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Apple", "Banana", "Cherry"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "wildcard: contains",
+        "filter": "*a*",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["apple"],
+                "result": ["apple"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "wildcard: contains",
+        "filter": "*a*",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["apple", "banana", "cherry"],
+                "result": ["apple", "banana", "cherry"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "wildcard: contains caseless",
+        "filter": "*a*",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Apple"],
+                "result": ["Apple"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "wildcard: contains caseless",
+        "filter": "*a*",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Apple", "Banana", "Cherry"],
+                "result": ["Apple", "Banana", "Cherry"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "wildcard: doesn't contain",
+        "filter": "*a*",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["apple"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "wildcard: doesn't contain",
+        "filter": "*a*",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["cherry"],
+                "result": ["cherry"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "wildcard: doesn't contain",
+        "filter": "*a*",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["cherry", "melon"],
+                "result": ["cherry", "melon"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "wildcard: doesn't contain caseless",
+        "filter": "*a*",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Apple"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "wildcard: doesn't contain caseless",
+        "filter": "*a*",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["cherry"],
+                "result": ["cherry"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "wildcard: doesn't contain caseless",
+        "filter": "*a*",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Cherry", "Melon"],
+                "result": ["Cherry", "Melon"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "regex: contains",
+        "filter": ".*a.*",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["apple"],
+                "result": ["apple"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "regex: contains",
+        "filter": ".*a.*",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["apple", "banana", "cherry"],
+                "result": ["apple", "banana", "cherry"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "regex: contains caseless",
+        "filter": ".*a.*",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Apple"],
+                "result": ["Apple"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "regex: contains caseless",
+        "filter": ".*a.*",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Apple", "Banana", "Cherry"],
+                "result": ["Apple", "Banana", "Cherry"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "regex: doesn't contain",
+        "filter": ".*a.*",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["apple"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "regex: doesn't contain",
+        "filter": ".*a.*",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["cherry"],
+                "result": ["cherry"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "regex: doesn't contain",
+        "filter": ".*a.*",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["cherry", "melon"],
+                "result": ["cherry", "melon"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "regex: doesn't contain caseless",
+        "filter": ".*a.*",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Apple"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "regex: doesn't contain caseless",
+        "filter": ".*a.*",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["cherry"],
+                "result": ["cherry"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "regex: doesn't contain caseless",
+        "filter": ".*a.*",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Cherry", "Melon"],
+                "result": ["Cherry", "Melon"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "matches any line of",
+        "filter": "apple\nbanana\ncherry\n",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["banana"],
+                "result": ["banana"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "matches any line of",
+        "filter": "orange\nbanana\napple\n",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["apple", "banana", "cherry"],
+                "result": ["apple", "banana"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "matches any line of",
+        "filter": "melon\nlemon\norange\n",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["apple", "banana", "cherry"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "matches any caseless line of",
+        "filter": "apple\nbanana\ncherry\n",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Banana"],
+                "result": ["Banana"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "matches any caseless line of",
+        "filter": "orange\nbanana\napple\n",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Apple", "Banana", "Cherry"],
+                "result": ["Apple", "Banana"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "doesn't match any line of",
+        "filter": "apple\nbanana\ncherry\n",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["banana"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "doesn't match any line of",
+        "filter": "melon\norange\nbanana\n",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["apple", "banana", "cherry"],
+                "result": ["apple", "cherry"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "doesn't match any caseless line of",
+        "filter": "apple\nbanana\ncherry\n",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Banana"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "doesn't match any caseless line of",
+        "filter": "melon\norange\nbanana\n",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Apple", "Banana", "Cherry"],
+                "result": ["Apple", "Cherry"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "matches any string of",
+        "filter": ["apple", "banana", "cherry"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["banana"],
+                "result": ["banana"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "matches any string of",
+        "filter": ["orange", "banana", "apple"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["apple", "banana", "cherry"],
+                "result": ["apple", "banana"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "matches any string of",
+        "filter": ["melon", "lemon", "orange"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["apple", "banana", "cherry"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "matches any caseless string of",
+        "filter": ["apple", "banana", "cherry"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Banana"],
+                "result": ["Banana"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "matches any caseless string of",
+        "filter": ["orange", "banana", "apple"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Apple", "Banana", "Cherry"],
+                "result": ["Apple", "Banana"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "doesn't match any string of",
+        "filter": ["apple", "banana", "cherry"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["banana"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "doesn't match any string of",
+        "filter": ["melon", "orange", "banana"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["apple", "banana", "cherry"],
+                "result": ["apple", "cherry"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "doesn't match any caseless string of",
+        "filter": ["apple", "banana", "cherry"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Banana"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "doesn't match any caseless string of",
+        "filter": ["melon", "orange", "banana"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Apple", "Banana", "Cherry"],
+                "result": ["Apple", "Cherry"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "wildcard: matches any string of",
+        "filter": ["b?????", "*c*", "*d*"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["banana"],
+                "result": ["banana"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "wildcard: matches any string of",
+        "filter": ["b?????", "*c*", "*d*"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["apple", "banana", "cherry"],
+                "result": ["banana", "cherry"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "wildcard: matches any string of",
+        "filter": ["b?????", "*c*", "*d*"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["melon", "lemon", "orange"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "wildcard: matches any caseless string of",
+        "filter": ["b?????", "*c*", "*d*"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Banana"],
+                "result": ["Banana"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "wildcard: matches any caseless string of",
+        "filter": ["b?????", "*c*", "*d*"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Apple", "Banana", "Cherry"],
+                "result": ["Banana", "Cherry"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "wildcard: doesn't match any string of",
+        "filter": ["b?????", "*c*", "*d*"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["banana"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "wildcard: doesn't match any string of",
+        "filter": ["b?????", "*c*", "*d*"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["apple", "banana", "cherry"],
+                "result": ["apple"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "wildcard: doesn't match any caseless string of",
+        "filter": ["b?????", "*c*", "*d*"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Banana"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "wildcard: doesn't match any caseless string of",
+        "filter": ["b?????", "*c*", "*d*"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Apple", "Banana", "Cherry"],
+                "result": ["Apple"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "regex: matches any string of",
+        "filter": ["b.....", ".*c.*", ".*d.*"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["banana"],
+                "result": ["banana"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "regex: matches any string of",
+        "filter": ["b.....", ".*c.*", ".*d.*"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["apple", "banana", "cherry"],
+                "result": ["banana", "cherry"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "regex: matches any string of",
+        "filter": ["b.....", ".*c.*", ".*d.*"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["melon", "lemon", "orange"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "regex: matches any caseless string of",
+        "filter": ["b.....", ".*c.*", ".*d.*"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Banana"],
+                "result": ["Banana"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "regex: matches any caseless string of",
+        "filter": ["b.....", ".*c.*", ".*d.*"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Apple", "Banana", "Cherry"],
+                "result": ["Banana", "Cherry"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "regex: doesn't match any string of",
+        "filter": ["b.....", ".*c.*", ".*d.*"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["banana"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "regex: doesn't match any string of",
+        "filter": ["b.....", ".*c.*", ".*d.*"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["apple", "banana", "cherry"],
+                "result": ["apple"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "regex: doesn't match any caseless string of",
+        "filter": ["b.....", ".*c.*", ".*d.*"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Banana"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "regex: doesn't match any caseless string of",
+        "filter": ["b.....", ".*c.*", ".*d.*"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Apple", "Banana", "Cherry"],
+                "result": ["Apple"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "contains any line of",
+        "filter": "apple\nbanana\ncherry\n",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["banana"],
+                "result": ["banana"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "contains any line of",
+        "filter": "apple\nbanana\ncherry\n",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["apple", "banana", "cherry"],
+                "result": ["apple", "banana", "cherry"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "contains any line of",
+        "filter": "melon\nlemon\norange\n",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["apple", "banana", "cherry"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "contains any caseless line of",
+        "filter": "apple\nbanana\ncherry\n",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Banana"],
+                "result": ["Banana"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "contains any caseless line of",
+        "filter": "melon\norange\nbanana\n",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Apple", "Banana", "Cherry"],
+                "result": ["Apple", "Banana", "Cherry"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "doesn't contain any line of",
+        "filter": "apple\nbanana\ncherry\n",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["banana"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "doesn't contain any line of",
+        "filter": "melon\nlemon\norange\n",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["apple", "banana", "cherry"],
+                "result": ["apple", "banana", "cherry"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "doesn't contain any line of",
+        "filter": "melon\norange\nbanana\n",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["apple", "banana", "cherry"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "doesn't match any caseless line of",
+        "filter": "apple\nbanana\ncherry\n",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Banana"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "doesn't match any caseless line of",
+        "filter": "melon\nlemon\norange\n",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Apple", "Banana", "Cherry"],
+                "result": ["Apple", "Banana", "Cherry"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "doesn't match any caseless line of",
+        "filter": "melon\norange\nbanana\n",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Apple", "Banana", "Cherry"],
+                "result": ["Apple", "Cherry"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "contains any string of",
+        "filter": "\"banana\"",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["banana"],
+                "result": ["banana"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "contains any string of",
+        "filter": ["apple", "banana", "cherry"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["banana"],
+                "result": ["banana"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "contains any string of",
+        "filter": ["melon", "orange", "banana"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["apple", "banana", "cherry"],
+                "result": ["apple", "banana", "cherry"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "contains any string of",
+        "filter": ["melon", "lemon", "orange"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["apple", "banana", "cherry"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "contains any caseless string of",
+        "filter": ["apple", "banana", "cherry"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Banana"],
+                "result": ["Banana"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "contains any caseless string of",
+        "filter": ["melon", "orange", "banana"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Apple", "Banana", "Cherry"],
+                "result": ["Apple", "Banana", "Cherry"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "doesn't contain any string of",
+        "filter": ["apple", "banana", "cherry"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["banana"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "doesn't contain any string of",
+        "filter": ["melon", "lemon", "orange"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["apple", "banana", "cherry"],
+                "result": ["apple", "banana", "cherry"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "doesn't contain any string of",
+        "filter": ["melon", "orange", "banana"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["apple", "banana", "cherry"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "doesn't contain any caseless string of",
+        "filter": ["apple", "banana", "cherry"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["apple", "banana", "cherry"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "doesn't contain any caseless string of",
+        "filter": ["melon", "lemon", "orange"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Apple", "Banana", "Cherry"],
+                "result": ["Apple", "Banana", "Cherry"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "doesn't contain any caseless string of",
+        "filter": ["melon", "orange", "banana"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Apple", "Banana", "Cherry"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "wildcard: contains any string of",
+        "filter": "\"b?????\"",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["banana"],
+                "result": ["banana"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "wildcard: contains any string of",
+        "filter": ["b?????", "*c*", "*d*"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["banana"],
+                "result": ["banana"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "wildcard: contains any string of",
+        "filter": ["b?????", "*c*", "*d*"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["apple", "banana", "cherry"],
+                "result": ["apple", "banana", "cherry"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "wildcard: contains any string of",
+        "filter": ["b?????", "*c*", "*d*"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["melon", "lemon", "orange"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "wildcard: contains any caseless string of",
+        "filter": ["b?????", "*c*", "*d*"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Banana"],
+                "result": ["Banana"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "wildcard: contains any caseless string of",
+        "filter": ["b?????", "*c*", "*d*"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Apple", "Banana", "Cherry"],
+                "result": ["Apple", "Banana", "Cherry"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "wildcard: doesn't contain any string of",
+        "filter": ["b?????", "*c*", "*d*"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["banana"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "wildcard: doesn't contain any string of",
+        "filter": ["b?????", "*c*", "*d*"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["apple", "banana", "cherry"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "wildcard: doesn't contain any string of",
+        "filter": ["b?????", "*c*", "*d*"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["melon", "lemon", "orange"],
+                "result": ["melon", "lemon", "orange"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "wildcard: doesn't contain any caseless string of",
+        "filter": ["b?????", "*c*", "*d*"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Banana"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "wildcard: doesn't contain any caseless string of",
+        "filter": ["b?????", "*c*", "*d*"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Melon", "Lemon", "Orange"],
+                "result": ["Melon", "Lemon", "Orange"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "wildcard: doesn't contain any caseless string of",
+        "filter": ["b?????", "*c*", "*d*"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Apple", "Banana", "Cherry"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "regex: contains any string of",
+        "filter": "\"b.....\"",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["banana"],
+                "result": ["banana"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "regex: contains any string of",
+        "filter": ["b.....", ".*c.*", ".*d.*"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["banana"],
+                "result": ["banana"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "regex: contains any string of",
+        "filter": ["b.....", ".*c.*", ".*d.*"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["apple", "banana", "cherry"],
+                "result": ["apple", "banana", "cherry"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "regex: contains any string of",
+        "filter": ["b.....", ".*c.*", ".*d.*"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["melon", "lemon", "orange"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "regex: contains any caseless string of",
+        "filter": ["b.....", ".*c.*", ".*d.*"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Banana"],
+                "result": ["Banana"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "regex: contains any caseless string of",
+        "filter": ["b.....", ".*c.*", ".*d.*"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Apple", "Banana", "Cherry"],
+                "result": ["Apple", "Banana", "Cherry"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "regex: doesn't contain any string of",
+        "filter": ["b.....", ".*c.*", ".*d.*"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["banana"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "regex: doesn't contain any string of",
+        "filter": ["b.....", ".*c.*", ".*d.*"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["apple", "banana", "cherry"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "regex: doesn't contain any string of",
+        "filter": ["b.....", ".*c.*", ".*d.*"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["melon", "lemon", "orange"],
+                "result": ["melon", "lemon", "orange"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "regex: doesn't contain any caseless string of",
+        "filter": ["b.....", ".*c.*", ".*d.*"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Banana"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "regex: doesn't contain any caseless string of",
+        "filter": ["b.....", ".*c.*", ".*d.*"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Melon", "Lemon", "Orange"],
+                "result": ["Melon", "Lemon", "Orange"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "regex: doesn't contain any caseless string of",
+        "filter": ["b.....", ".*c.*", ".*d.*"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["Apple", "Banana", "Cherry"],
+                "result": []
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "matches expressions of",
+        "filter": {
+            "ends with": ".exe",
+            "starts with": "c"
+        },
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["aaa.dat", "bbb.exe", "ccc.exe"],
+                "result": ["ccc.exe"]
+            }
+        ]
+    }, {
+        "path": "Domain",
+        "operation": "matches expressions of",
+        "filter": [{
+                "ends with": ".co.jp"
+            }, "or", {
+                "includes": "demisto"
+            }
+        ],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [{
+                        "Domain": ["www.paloaltonetworks.com", "www.paloaltonetworks.co.jp", "www.demisto.com"],
+                        "IP": ["1.1.1.1", "2.2.2.2", "3.3.3.3"]
+                    }
+                ],
+                "result": [{
+                        "Domain": ["www.paloaltonetworks.co.jp", "www.demisto.com"],
+                        "IP": ["1.1.1.1", "2.2.2.2", "3.3.3.3"]
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "Events",
+        "operation": "matches conditions of",
+        "filter": [{
+                "Description": {
+                    "==": "User Logged In - Failed"
+                }
+            }, "or", [{
+                    "Description": {
+                        "in list": "File uploaded,File downloaded"
+                    }
+                }, "and", "not", {
+                    "DeviceID": {
+                        "matches any string of": "${local.TrustedDevices}"
+                    }
+                }
+            ]],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [{
+                        "Events": [{
+                                "Description": "User Logged In - Success",
+                                "DeviceID": "D000001"
+                            }, {
+                                "Description": "File uploaded",
+                                "DeviceID": "D000001"
+                            }, {
+                                "Description": "File downloaded",
+                                "DeviceID": "D000002"
+                            }, {
+                                "Description": "User Logged In - Failed",
+                                "DeviceID": "D000003"
+                            }
+                        ],
+                        "TrustedDevices": ["D000002", "D000003"]
+                    }
+                ],
+                "result": [{
+                        "Events": [{
+                                "Description": "File uploaded",
+                                "DeviceID": "D000001"
+                            }, {
+                                "Description": "User Logged In - Failed",
+                                "DeviceID": "D000003"
+                            }
+                        ],
+                        "TrustedDevices": ["D000002", "D000003"]
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "matches conditions of",
+        "filter": {
+            "Result.File": {
+                "is filtered with": {
+                    "Name": {
+                        "ends with": ".exe"
+                    }
+                }
+            },
+            "Result.Host": {
+                "is filtered with": {
+                    "Name": {
+                        "starts with": "server"
+                    }
+                }
+            }
+        },
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [{
+                        "Result": {
+                            "File": [{
+                                    "Name": "a.dat",
+                                    "Size": 100
+                                }, {
+                                    "Name": "b.exe",
+                                    "Size": 200
+                                }, {
+                                    "Name": "c.txt",
+                                    "Size": 300
+                                }
+                            ],
+                            "Host": [{
+                                    "IP": "1.1.1.1",
+                                    "Name": "computer1"
+                                }, {
+                                    "IP": "2.2.2.2",
+                                    "Name": "server1"
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "result": [{
+                        "Result": {
+                            "File": [{
+                                    "Name": "b.exe",
+                                    "Size": 200
+                                }
+                            ],
+                            "Host": [{
+                                    "IP": "2.2.2.2",
+                                    "Name": "server1"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "matches conditions of",
+        "filter": {
+            "Result": {
+                "is filtered with": {
+                    "File": {
+                        "is filtered with": {
+                            "Name": {
+                                "ends with": ".exe"
+                            }
+                        }
+                    },
+                    "Host": {
+                        "is filtered with": {
+                            "Name": {
+                                "starts with": "server"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [{
+                        "Result": {
+                            "File": [{
+                                    "Name": "a.dat",
+                                    "Size": 100
+                                }, {
+                                    "Name": "b.exe",
+                                    "Size": 200
+                                }, {
+                                    "Name": "c.txt",
+                                    "Size": 300
+                                }
+                            ],
+                            "Host": [{
+                                    "IP": "1.1.1.1",
+                                    "Name": "computer1"
+                                }, {
+                                    "IP": "2.2.2.2",
+                                    "Name": "server1"
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "result": [{
+                        "Result": {
+                            "File": [{
+                                    "Name": "b.exe",
+                                    "Size": 200
+                                }
+                            ],
+                            "Host": [{
+                                    "IP": "2.2.2.2",
+                                    "Name": "server1"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "matches conditions of",
+        "filter": {
+            "Result.Domain": {
+                "is filtered with": {
+                    "": {
+                        "starts with": "www."
+                    }
+                }
+            }
+        },
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [{
+                        "Result": {
+                            "Domain": ["www.paloaltonetworks.com", "www.demisto.com", "paloaltonetowrks.com"],
+                            "IP": ["1.1.1.1", "2.2.2.2", "3.3.3.3"]
+                        }
+                    }
+                ],
+                "result": [{
+                        "Result": {
+                            "Domain": ["www.paloaltonetworks.com", "www.demisto.com"],
+                            "IP": ["1.1.1.1", "2.2.2.2", "3.3.3.3"]
+                        }
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "value matches expressions of",
+        "filter": {
+            "contains": "1.1.1.1"
+        },
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["1.1.1.1", "2.2.2.2", "3.3.3.3"],
+                "result": ["1.1.1.1"]
+            }
+        ]
+    }, {
+        "path": "Communication",
+        "operation": "value matches expressions of",
+        "filter": {
+            "contains": "1.1.1.1"
+        },
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [{
+                        "Communication": {
+                            "Host1": ["1.1.1.1", "2.2.2.2"],
+                            "Host2": "1.1.1.1",
+                            "Host3": ["3.3.3.3", "4.4.4.4"]
+                        }
+                    }
+                ],
+                "result": [{
+                        "Communication": {
+                            "Host1": ["1.1.1.1", "2.2.2.2"],
+                            "Host2": "1.1.1.1"
+                        }
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "value matches conditions of",
+        "filter": {
+            "Score": {
+                ">=": 20
+            }
+        },
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [{
+                        "Host1": {
+                            "IP": "192.168.1.1",
+                            "Score": 30,
+                            "User": "JDOE"
+                        },
+                        "Host2": {
+                            "IP": "192.168.1.2",
+                            "Score": 10,
+                            "User": "TYAMADA"
+                        },
+                        "Host3": {
+                            "IP": "3.3.3.3",
+                            "Score": 40,
+                            "User": "MBLACK"
+                        }
+                    }
+                ],
+                "result": [{
+                        "Host1": {
+                            "IP": "192.168.1.1",
+                            "Score": 30,
+                            "User": "JDOE"
+                        },
+                        "Host3": {
+                            "IP": "3.3.3.3",
+                            "Score": 40,
+                            "User": "MBLACK"
+                        }
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "value matches conditions of",
+        "filter": {
+            "Score": {
+                ">=": 20
+            },
+            "File.Risk": {
+                "is filtered with": {
+                    "": {
+                        "ends with": ".exe"
+                    }
+                }
+            }
+        },
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [{
+                        "Host1": {
+                            "File": {
+                                "Risk": ["xxx.exe", "yyy.pdf"]
+                            },
+                            "IP": "192.168.1.1",
+                            "Score": 30,
+                            "User": "JDOE"
+                        },
+                        "Host2": {
+                            "IP": "192.168.1.2",
+                            "Score": 10,
+                            "User": "TYAMADA"
+                        },
+                        "Host3": {
+                            "File": {
+                                "Risk": ["aaa.pdf", "bbb.exe"]
+                            },
+                            "IP": "3.3.3.3",
+                            "Score": 40,
+                            "User": "MBLACK"
+                        }
+                    }
+                ],
+                "result": [{
+                        "Host1": {
+                            "File": {
+                                "Risk": ["xxx.exe"]
+                            },
+                            "IP": "192.168.1.1",
+                            "Score": 30,
+                            "User": "JDOE"
+                        },
+                        "Host3": {
+                            "File": {
+                                "Risk": ["bbb.exe"]
+                            },
+                            "IP": "3.3.3.3",
+                            "Score": 40,
+                            "User": "MBLACK"
+                        }
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "value is filtered with",
+        "filter": {
+            "starts with": "192.168."
+        },
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["192.168.1.1", "1.1.1.1", "192.168.1.2"],
+                "result": ["192.168.1.1", "192.168.1.2"]
+            }
+        ]
+    }, {
+        "path": "Score",
+        "operation": "value is filtered with",
+        "filter": {
+            ">=": 20
+        },
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [{
+                        "Host1": {
+                            "IP": "192.168.1.1",
+                            "Score": 30,
+                            "User": "JDOE"
+                        },
+                        "Host2": {
+                            "IP": "192.168.1.2",
+                            "Score": 10,
+                            "User": "TYAMADA"
+                        },
+                        "Host3": {
+                            "IP": "3.3.3.3",
+                            "Score": 40,
+                            "User": "MBLACK"
+                        }
+                    }
+                ],
+                "result": [{
+                        "Host1": {
+                            "IP": "192.168.1.1",
+                            "Score": 30,
+                            "User": "JDOE"
+                        },
+                        "Host3": {
+                            "IP": "3.3.3.3",
+                            "Score": 40,
+                            "User": "MBLACK"
+                        }
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "===",
+        "filter": 10,
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [10, "10", 123],
+                "result": [10]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "===",
+        "filter": "\"10\"",
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [10, "10", 123],
+                "result": ["10"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "!==",
+        "filter": 10,
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [10, "10", 123],
+                "result": ["10", 123]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "is replaced with",
+        "filter": [{
+                "fruit": "${local}"
+            }
+        ],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["apple", "banana"],
+                "result": [{
+                        "fruit": ["apple", "banana"]
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "is replaced with",
+        "filter": {
+            "fruit": "banana",
+            "vegitable": "tomato"
+        },
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [{
+                        "fruit": "apple"
+                    }
+                ],
+                "result": [{
+                        "fruit": "banana",
+                        "vegitable": "tomato"
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "is updated with",
+        "filter": [{
+                "fruit": "${local}"
+            }
+        ],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["apple", "banana"],
+                "result": [{
+                        "fruit": ["apple", "banana"]
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "is updated with",
+        "filter": {
+            "vegitable": "tomato"
+        },
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [{
+                        "fruit": "apple"
+                    }
+                ],
+                "result": [{
+                        "fruit": "apple",
+                        "vegitable": "tomato"
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "appends",
+        "filter": ["cherry", "lemon"],
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["apple", "banana"],
+                "result": ["apple", "banana", "cherry", "lemon"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "appends",
+        "filter": {
+            "IP": ["1.1.1.1", "2.2.2.2"]
+        },
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [{
+                        "File": ["a.exe", "b.pdf"]
+                    }
+                ],
+                "result": [{
+                        "File": ["a.exe", "b.pdf"]
+                    }, {
+                        "IP": ["1.1.1.1", "2.2.2.2"]
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "if-then-else",
+        "filter": {
+            "if": {
+                "is filtered with": {
+                    "Name": {
+                        "ends with": ".exe"
+                    }
+                }
+            },
+            "then": {
+                "is updated with": {
+                    "Executable": true
+                }
+            },
+            "else": {
+                "is updated with": {
+                    "Executable": false
+                }
+            }
+        },
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [{
+                        "Name": "a.dat",
+                        "Size": 100
+                    }, {
+                        "Name": "b.exe",
+                        "Size": 200
+                    }, {
+                        "Name": "c.txt",
+                        "Size": 300
+                    }
+                ],
+                "result": [{
+                        "Name": "a.dat",
+                        "Size": 100,
+                        "Executable": false
+                    }, {
+                        "Name": "b.exe",
+                        "Size": 200,
+                        "Executable": true
+                    }, {
+                        "Name": "c.txt",
+                        "Size": 300,
+                        "Executable": false
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "if-then-else",
+        "filter": {
+            "if": {
+                "ends with": ".exe"
+            },
+            "then": {
+                "is replaced with": 10
+            }
+        },
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["a.dat", "b.exe", "c.txt"],
+                "result": ["a.dat", 10, "c.txt"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "if-then-else",
+        "filter": {
+            "then": {
+                "is replaced with": 10
+            }
+        },
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["a.dat", "b.exe", "c.txt"],
+                "result": [10, 10, 10]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "switch-case",
+        "filter": {
+            "switch": {
+                "#low": {
+                    "is filtered with": {
+                        "Score": {
+                            "<=": 30
+                        }
+                    }
+                },
+                "#high": {
+                    "is filtered with": {
+                        "Score": {
+                            ">=": 70
+                        }
+                    }
+                }
+            },
+            "#low": {
+                "is updated with": {
+                    "Risk": "low"
+                }
+            },
+            "#high": {
+                "is updated with": {
+                    "Risk": "high"
+                }
+            },
+            "default": {
+                "is updated with": {
+                    "Risk": "middle"
+                }
+            }
+        },
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [{
+                        "IP": "1.1.1.1",
+                        "Score": 80
+                    }, {
+                        "IP": "2.2.2.2",
+                        "Score": 50
+                    }, {
+                        "IP": "3.3.3.3",
+                        "Score": 20
+                    }
+                ],
+                "result": [{
+                        "IP": "1.1.1.1",
+                        "Score": 80,
+                        "Risk": "high"
+                    }, {
+                        "IP": "2.2.2.2",
+                        "Score": 50,
+                        "Risk": "middle"
+                    }, {
+                        "IP": "3.3.3.3",
+                        "Score": 20,
+                        "Risk": "low"
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "switch-case",
+        "filter": {
+            "switch": {
+                "#low": {
+                    "is filtered with": {
+                        "Score": {
+                            "<=": 30
+                        }
+                    }
+                },
+                "#high": {
+                    "is filtered with": {
+                        "Score": {
+                            ">=": 70
+                        }
+                    }
+                }
+            },
+            "#low": {
+                "is updated with": {
+                    "Risk": "low"
+                }
+            },
+            "#high": {
+                "is updated with": {
+                    "Risk": "high"
+                }
+            }
+        },
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [{
+                        "IP": "1.1.1.1",
+                        "Score": 80
+                    }, {
+                        "IP": "2.2.2.2",
+                        "Score": 50
+                    }, {
+                        "IP": "3.3.3.3",
+                        "Score": 20
+                    }
+                ],
+                "result": [{
+                        "IP": "1.1.1.1",
+                        "Score": 80,
+                        "Risk": "high"
+                    }, {
+                        "IP": "2.2.2.2",
+                        "Score": 50
+                    }, {
+                        "IP": "3.3.3.3",
+                        "Score": 20,
+                        "Risk": "low"
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "collects values",
+        "filter": {},
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [{
+                        "JDOE": {
+                            "IP": ["1.1.1.1", "1.1.1.2"],
+                            "Score": 30
+                        },
+                        "MBLACK": {
+                            "IP": "3.3.3.3",
+                            "Score": 40
+                        },
+                        "TYAMADA": {
+                            "IP": "2.2.2.2",
+                            "Score": 10
+                        }
+                    }
+                ],
+                "result": [{
+                        "IP": ["1.1.1.1", "1.1.1.2"],
+                        "Score": 30
+                    }, {
+                        "IP": "3.3.3.3",
+                        "Score": 40
+                    }, {
+                        "IP": "2.2.2.2",
+                        "Score": 10
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "collects values",
+        "filter": {},
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["1.1.1.1", "2.2.2.2", "3.3.3.3"],
+                "result": ["1.1.1.1", "2.2.2.2", "3.3.3.3"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "collects keys",
+        "filter": {},
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [{
+                        "JDOE": {
+                            "IP": ["1.1.1.1", "1.1.1.2"],
+                            "Score": 30
+                        },
+                        "MBLACK": {
+                            "IP": "3.3.3.3",
+                            "Score": 40
+                        },
+                        "TYAMADA": {
+                            "IP": "2.2.2.2",
+                            "Score": 10
+                        }
+                    }
+                ],
+                "result": ["JDOE", "MBLACK", "TYAMADA"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "flattens with values",
+        "filter": {},
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [{
+                        "JDOE": {
+                            "IP": ["1.1.1.1", "1.1.1.2"],
+                            "Score": 30
+                        },
+                        "MBLACK": {
+                            "IP": "3.3.3.3",
+                            "Score": 40
+                        },
+                        "TYAMADA": {
+                            "IP": "2.2.2.2",
+                            "Score": 10
+                        }
+                    }
+                ],
+                "result": ["1.1.1.1", "1.1.1.2", 30, "3.3.3.3", 40, "2.2.2.2", 10]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "flattens with keys",
+        "filter": {},
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [{
+                        "JDOE": {
+                            "IP": ["1.1.1.1", "1.1.1.2"],
+                            "Score": 30
+                        },
+                        "MBLACK": {
+                            "IP": "3.3.3.3",
+                            "Score": 40
+                        },
+                        "TYAMADA": {
+                            "IP": "2.2.2.2",
+                            "Score": 10
+                        }
+                    }
+                ],
+                "result": ["JDOE", "IP", "Score", "MBLACK", "IP", "Score", "TYAMADA", "IP", "Score"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "flattens with keys",
+        "filter": {},
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [{
+                        "JDOE": {
+                            "IP": ["1.1.1.1", "1.1.1.2"],
+                            "Score": 30
+                        },
+                        "MBLACK": {
+                            "IP": "3.3.3.3",
+                            "Score": 40
+                        },
+                        "TYAMADA": {
+                            "IP": "2.2.2.2",
+                            "Score": 10
+                        }
+                    }
+                ],
+                "result": ["JDOE", "IP", "Score", "MBLACK", "IP", "Score", "TYAMADA", "IP", "Score"]
+            }
+        ]
+    }
+]

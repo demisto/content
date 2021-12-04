@@ -1717,18 +1717,15 @@ class ExtFilter:
 
     def parse_conds_json(
             self,
-            jstr: str,
-            only_parse_for_string: bool = True) -> Any:
+            jstr: str) -> Any:
         """ parse a json string
 
         :param self: This instance.
         :param jstr: A json string.
-        :param only_parse_for_string: True: only parse the JSON when jstr is `string`, otherwise returns the raw jstr.
         :return: The value extracted.
         """
-        if only_parse_for_string and not isinstance(jstr, str):
+        if not isinstance(jstr, str):
             return jstr
-
         try:
             return json.loads(jstr)
         except json.JSONDecodeError:
@@ -1737,48 +1734,50 @@ class ExtFilter:
     def parse_and_extract_conds_json(
             self,
             jstr: str,
-            node: Any,
-            only_parse_for_string: bool = True) -> Any:
+            node: Any) -> Any:
         """ parse a json string and extract value
 
         :param self: This instance.
         :param jstr: A json string.
         :param node: The current node.
-        :param only_parse_for_string: True if only parse the JSON when jstr is `string`, False otherwise.
         :return: The value extracted.
         """
-        if only_parse_for_string and not isinstance(jstr, str):
-            return extract_value(jstr, extract_dt, self.__dx, node)
+        return extract_value(self.parse_conds_json(jstr), extract_dt, self.__dx, node)
 
-        return extract_value(json.loads(jstr), extract_dt, self.__dx, node)
+
+def main():
+    args = demisto.args()
+    try:
+        value = args['value']
+        path = args.get('path', '')
+        optype = args['operation']
+        conds = args['filter']
+
+        # Setup demisto context
+        dx = args.get('ctx_demisto')
+        if dx and isinstance(dx, str):
+            dx = json.loads(dx)
+        elif not dx:
+            dx = value if isinstance(value, dict) else None
+        dx = ContextData(
+            demisto=dx,
+            inputs=args.get('ctx_inputs'),
+            lists=args.get('ctx_lists'),
+            incident=args.get('ctx_incident'),
+            local=value)
+
+        # Extract value
+        xfilter = ExtFilter(dx)
+        value = xfilter.filter_value(value, optype, conds, path)
+        value = value.value if value else None
+        value = marshal(value)
+        value = value if value is not None else []
+        value = value if isinstance(value, list) else [value]
+    except Exception as err:
+        return_error(err)
+
+    demisto.results(value)
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):
-    args = demisto.args()
-    value = args['value']
-    path = args.get('path', '')
-    optype = args['operation']
-    conds = args['filter']
-
-    # Setup demisto context
-    dx = args.get('ctx_demisto')
-    if dx and isinstance(dx, str):
-        dx = json.loads(dx)
-    elif not dx:
-        dx = value if isinstance(value, dict) else None
-    dx = ContextData(
-        demisto=dx,
-        inputs=args.get('ctx_inputs'),
-        lists=args.get('ctx_lists'),
-        incident=args.get('ctx_incident'),
-        local=value)
-
-    # Extract value
-    xfilter = ExtFilter(dx)
-    value = xfilter.filter_value(value, optype, conds, path)
-    value = value.value if value else None
-    value = marshal(value)
-    value = value if value is not None else []
-    value = value if isinstance(value, list) else [value]
-
-    demisto.results(value)
+    main()
