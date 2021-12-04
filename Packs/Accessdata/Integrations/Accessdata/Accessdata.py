@@ -1,17 +1,17 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
 
-import os
 import json
+import os
+
 import requests
 from requests.exceptions import HTTPError
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
+# contrib test
 
 
 ''' CONSTANTS '''
@@ -64,6 +64,7 @@ class Client:
     Client will implement the service API, should not contain Demisto logic.
     Should do requests and return data
     # """
+
     def __init__(self, base_url=None, verify=None, proxy=None, token=None):
         self.base_url = base_url
         self.verify = verify
