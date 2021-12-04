@@ -36,53 +36,35 @@ script:
   commands:
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: The network list type by which to filter the results. Can be "IP"
         or "GEO".
-      isArray: false
       name: list_type
       predefined:
       - IP
       - GEO
-      required: false
-      secret: false
-    - default: false
-      description: The query by which to search for list names and list items.
-      isArray: false
+    - description: The query by which to search for list names and list items.
       name: search
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'true'
       description: When enabled, provides additional response data identifying who
         created and updated the list and when, and the network list’s deployment status
         in both STAGING and PRODUCTION environments. This data takes longer to provide.
-      isArray: false
       name: extended
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'true'
       description: If enabled, the response list includes all items. For large network
         lists, this may slow responses and yield large response objects. The default
         false value when listing more than one network list omits the network list’s
         elements and only provides higher-level metadata.
-      isArray: false
       name: include_elements
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Returns a list of all network lists available for an authenticated
       user who belongs to a group.
-    execution: false
     name: akamai-get-network-lists
     outputs:
     - contextPath: Akamai.NetworkLists.Lists.Name
@@ -125,15 +107,10 @@ script:
       description: The elements in the network list.
       type: String
   - arguments:
-    - default: false
-      description: The network list ID.
-      isArray: false
+    - description: The network list ID.
       name: network_list_id
       required: true
-      secret: false
-    deprecated: false
     description: Gets a network list by the network list ID.
-    execution: false
     name: akamai-get-network-list-by-id
     outputs:
     - contextPath: Akamai.NetworkLists.Lists.Name
@@ -176,43 +153,24 @@ script:
       description: The elements in the network list.
       type: String
   - arguments:
-    - default: false
-      description: The network list name.
-      isArray: false
+    - description: The network list name.
       name: list_name
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The network list type. Can be "IP" or "GEO".
-      isArray: false
       name: list_type
       predefined:
       - IP
       - GEO
       required: true
-      secret: false
-    - default: false
-      description: The network list elements.
+    - description: The network list elements.
       isArray: true
       name: elements
-      required: false
-      secret: false
-    - default: false
-      description: The War Room entry ID of the sample file.
-      isArray: false
+    - description: The War Room entry ID of the sample file.
       name: entry_id
-      required: false
-      secret: false
-    - default: false
-      description: The network list description.
-      isArray: false
+    - description: The network list description.
       name: description
-      required: false
-      secret: false
-    deprecated: false
     description: Creates a new network list. Supports TXT file upload for elements.
-    execution: false
     name: akamai-create-network-list
     outputs:
     - contextPath: Akamai.NetworkLists.Lists.Name
@@ -231,112 +189,66 @@ script:
       description: The elements in the list.
       type: String
   - arguments:
-    - default: false
-      description: The ID of the network list to delete.
-      isArray: false
+    - description: The ID of the network list to delete.
       name: network_list_id
       required: true
-      secret: false
-    deprecated: false
     description: Deletes the specified network list.
-    execution: false
     name: akamai-delete-network-list
   - arguments:
-    - default: false
-      description: 'A comma-separated list of network list IDs to activate. For example:
+    - description: 'A comma-separated list of network list IDs to activate. For example:
         list (list1,list2).'
       isArray: true
       name: network_list_ids
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The environment type to activate the network list. Can be "STAGING"
         OR "PRODUCTION".
-      isArray: false
       name: env
       predefined:
       - STAGING
       - PRODUCTION
       required: true
-      secret: false
-    - default: false
-      description: A comment to be logged.
-      isArray: false
+    - description: A comment to be logged.
       name: comment
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of email addresses.
+    - description: A comma-separated list of email addresses.
       isArray: true
       name: notify
-      required: false
-      secret: false
-    deprecated: false
     description: Activates a network list on the specified environment.
-    execution: false
     name: akamai-activate-network-list
   - arguments:
-    - default: false
-      description: The ID of the network in which to add elements.
-      isArray: false
+    - description: The ID of the network in which to add elements.
       name: network_list_id
       required: true
-      secret: false
-    - default: false
-      description: The War Room entry ID of the sample file.
-      isArray: false
+    - description: The War Room entry ID of the sample file.
       name: entry_id
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of elements to add to the network list.
+    - description: A comma-separated list of elements to add to the network list.
       isArray: true
       name: elements
-      required: false
-      secret: false
-    deprecated: false
     description: Adds elements to the specified network list.
-    execution: false
     name: akamai-add-elements-to-network-list
   - arguments:
-    - default: false
-      description: The ID of the network list from which to remove elements.
-      isArray: false
+    - description: The ID of the network list from which to remove elements.
       name: network_list_id
       required: true
-      secret: false
-    - default: false
-      description: The element to remove from the network list.
-      isArray: false
+    - description: The element to remove from the network list.
       name: element
       required: true
-      secret: false
-    deprecated: false
     description: Removes elements from the specified network list.
-    execution: false
     name: akamai-remove-element-from-network-list
   - arguments:
-    - default: false
-      description: 'A comma-separated list of network list IDs for which to get the
+    - description: 'A comma-separated list of network list IDs for which to get the
         activation status. For example: (support list - list1,list2).'
       isArray: true
       name: network_list_ids
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The environment type. Can be "PRODUCTION" or "STAGING".
-      isArray: false
       name: env
       predefined:
       - PRODUCTION
       - STAGING
       required: true
-      secret: false
-    deprecated: false
     description: Gets the activation status of the specified network list.
-    execution: false
     name: akamai-get-network-list-activation-status
     outputs:
     - contextPath: Akamai.NetworkLists.ActivationStatus.UniqueID
@@ -348,15 +260,11 @@ script:
     - contextPath: Akamai.NetworkLists.ActivationStatus.ProductionStatus
       description: The network list environment activation status.
       type: String
-  dockerimage: demisto/akamai:1.0.0.13142
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/akamai:1.0.0.23674
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
+fromversion: 5.0.0
 tests:
 - Akamai_WAF-Test
-fromversion: 5.0.0

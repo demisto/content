@@ -1,15 +1,20 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 """ IMPORTS """
 # Std imports
 
 # 3-rd party imports
-from typing import Dict, Tuple, Union, Optional, List
+from typing import Dict, List, Optional, Tuple, Union
+
 import requests
 import urllib3
-# Local imports
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
 from akamai.edgegrid import EdgeGridAuth
+
+# Local imports
+
+# first comment
+
 
 """GLOBALS/PARAMS
 

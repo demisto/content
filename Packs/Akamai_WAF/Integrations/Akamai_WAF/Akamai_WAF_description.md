@@ -4,3 +4,7 @@ Network lists are shared sets of IP addresses, CIDR blocks, or broad geographic 
 own lists, you can also access read-only lists that Akamai dynamically updates for you.
  
 To generate API keys go to the [Akamai Control Panel](https://control.akamai.com/). For detailed instructions, see the integration documention.
+
+
+---
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/akamai-waf)
