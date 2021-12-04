@@ -1,6 +1,6 @@
 category: Network Security
 commonfields:
-  id: Akamai WAF
+  id: Akamai WAF_copy
   version: -1
 configuration:
 - defaultvalue: https://example.net
@@ -28,10 +28,18 @@ configuration:
   name: proxy
   required: false
   type: 8
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 08120232-0ea2-484c-84ff-3da2d4dfaeae
+    propagationLabels:
+    - all
+    toServerVersion: ""
 description: Use the Akamai WAF integration to manage common sets of lists used by
   various Akamai security products and features.
-display: Akamai WAF
-name: Akamai WAF
+display: Akamai WAF_copy
+name: Akamai WAF_copy
 script:
   commands:
   - arguments:
@@ -45,24 +53,24 @@ script:
     - description: The query by which to search for list names and list items.
       name: search
     - auto: PREDEFINED
-      defaultValue: 'true'
+      defaultValue: "true"
       description: When enabled, provides additional response data identifying who
         created and updated the list and when, and the network list’s deployment status
         in both STAGING and PRODUCTION environments. This data takes longer to provide.
       name: extended
       predefined:
-      - 'true'
-      - 'false'
+      - "true"
+      - "false"
     - auto: PREDEFINED
-      defaultValue: 'true'
+      defaultValue: "true"
       description: If enabled, the response list includes all items. For large network
         lists, this may slow responses and yield large response objects. The default
         false value when listing more than one network list omits the network list’s
         elements and only provides higher-level metadata.
       name: include_elements
       predefined:
-      - 'true'
-      - 'false'
+      - "true"
+      - "false"
     description: Returns a list of all network lists available for an authenticated
       user who belongs to a group.
     name: akamai-get-network-lists
@@ -260,11 +268,9 @@ script:
     - contextPath: Akamai.NetworkLists.ActivationStatus.ProductionStatus
       description: The network list environment activation status.
       type: String
-  dockerimage: demisto/akamai:1.0.0.23674
+  dockerimage: demisto/akamai:1.0.0.13142
   runonce: false
   script: ''
   subtype: python3
   type: python
-fromversion: 5.0.0
-tests:
-- Akamai_WAF-Test
+sourcemoduleid: Akamai WAF
