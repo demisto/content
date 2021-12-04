@@ -12,6 +12,7 @@ from requests.exceptions import HTTPError
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 # contrib test
+# second comment
 
 
 ''' CONSTANTS '''
