@@ -2,9 +2,6 @@ import argparse
 import io
 import json
 import os
-import sys
-
-from demisto_sdk.commands.common.tools import str2bool
 
 PACKS_DIR = 'Packs'
 PACKS_METADATA = 'pack_metadata.json'
