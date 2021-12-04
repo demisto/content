@@ -135,6 +135,10 @@ class Translator:
         if isinstance(context, dict):
             self.__context = ContextData(context=context,
                                          arg_value=arg_value if isinstance(arg_value, dict) else None)
+        self.__unescape_path_re = re.compile(r'\\(.)')
+
+    def __unescape_path(self, path: str) -> str:
+        return re.sub(self.__unescape_path_re, lambda m: m[1], path)
 
     def __extract_value(self,
                         source: str,
@@ -299,7 +303,7 @@ class Translator:
 
         for path in comparison_fields:
             # Get pattern mapping
-            mapping = field_mapping.get(path.replace('\\', ''))
+            mapping = field_mapping.get(self.__unescape_path(path))
             if mapping is None:
                 continue
             if not isinstance(mapping, (dict, list)):
