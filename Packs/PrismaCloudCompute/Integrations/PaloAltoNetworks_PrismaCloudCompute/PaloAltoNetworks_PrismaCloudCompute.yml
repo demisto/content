@@ -504,7 +504,7 @@ script:
     - contextPath: prismaCloudCompute.hostForensic.Forensics.user
       description: User is the event user
       type: Unknown
-    - contextPath: prismaCloudCompute.hostForensic.Forensics.HostID
+    - contextPath: prismaCloudCompute.hostForensic.HostID
       description: The host ID that was analyzed
       type: String
   - name: prisma-cloud-compute-console-version-info
