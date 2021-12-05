@@ -91,7 +91,7 @@ def get_ip_and_mask_from_cidr(cidr_range):
     return ip_address, mask
 
 
-def add_ip_objects_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def add_ip_objects_command(client: Client, args: Dict[str, Any]):
     """
     Adds a new IP object to the requested list type (denylist or allowlist).
     IP object includes an IP address (mandatory). Other fields are optional and have default values.
@@ -120,8 +120,8 @@ def add_ip_objects_command(client: Client, args: Dict[str, Any]) -> CommandResul
 
     if success_list:
 
-        success_list = '\n'.join(success_list)
-        human_readable = f"IP objects wehre added successfully into the {list_type}\n| IP |\n| - |\n{success_list}"
+        success_lines = '\n'.join(success_list)
+        human_readable = f"IP objects wehre added successfully into the {list_type}\n| IP |\n| - |\n{success_lines}"
         return_results(CommandResults(readable_output=human_readable))
     if errors_list:
         return_error('\n'.join(errors_list))
