@@ -80,6 +80,7 @@ def test_azure_devops_user_add_command(requests_mock):
      - Ensure number of items is correct.
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
+     - Validate API operation result error handling.
     """
     from AzureDevOps import Client, user_add_command
 
@@ -254,6 +255,7 @@ def test_azure_devops_pull_request_update_command(requests_mock):
      - Ensure number of items is correct.
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
+     - Ensure command validates that is at least one update parameter exists.
     """
     from AzureDevOps import Client, pull_request_update_command
 
@@ -302,6 +304,7 @@ def test_azure_devops_pull_request_list_command(requests_mock):
      - Ensure number of items is correct.
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
+     - Ensure the command validates the 'limit' parameter value. The parameter value should be equals or greater than 1.
     """
     from AzureDevOps import Client, pull_requests_list_command
 
@@ -348,6 +351,7 @@ def test_azure_devops_project_list_command(requests_mock):
      - Ensure number of items is correct.
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
+     - Ensure the command validates the 'limit' parameter value. The parameter value should be equals or greater than 1.
     """
     from AzureDevOps import Client, project_list_command
 
@@ -386,6 +390,7 @@ def test_azure_devops_repository_list_command(requests_mock):
      - Ensure number of items is correct.
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
+     - Ensure the command validates the 'limit' parameter value. The parameter value should be equals or greater than 1.
     """
     from AzureDevOps import Client, repository_list_command
 
@@ -424,6 +429,7 @@ def test_azure_devops_users_query_command(requests_mock):
      - Ensure number of items is correct.
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
+     - Ensure the command validates the 'limit' parameter value. The parameter value should be equals or greater than 1.
     """
     from AzureDevOps import Client, users_query_command
 
@@ -505,6 +511,7 @@ def test_azure_devops_pipeline_run_list_command(requests_mock):
      - Ensure number of items is correct.
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
+     - Ensure the command validates the 'limit' parameter value. The parameter value should be equals or greater than 1.
     """
     from AzureDevOps import Client, pipeline_run_list_command
 
@@ -552,6 +559,7 @@ def test_azure_devops_pipeline_list_command(requests_mock):
      - Ensure number of items is correct.
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
+     - Ensure the command validates the 'limit' parameter value. The parameter value should be equals or greater than 1.
     """
     from AzureDevOps import Client, pipeline_list_command
 
@@ -593,6 +601,7 @@ def test_azure_devops_branch_list_command(requests_mock):
      - Ensure number of items is correct.
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
+     - Ensure the command validates the 'limit' parameter value. The parameter value should be equals or greater than 1.
     """
     from AzureDevOps import Client, branch_list_command
 
@@ -625,11 +634,22 @@ def test_azure_devops_branch_list_command(requests_mock):
                                      'limit': '-1'})
 
 
-def test_get_last_fetch_incident_index(requests_mock):
+@pytest.mark.parametrize('test_object', [
+    ({'id': 24, 'result': 0}),
+    ({'id': 22, 'result': 1}),
+    ({'id': 25, 'result': -1}),
+    ({'id': 21, 'result': -1}),
+])
+def test_get_last_fetch_incident_index(requests_mock, test_object):
     """
     Scenario: Retrieve the index of the last fetched pull-request.
     Given:
      - User has provided valid credentials.
+     - Case A: No new pull-requests - The last pull-request is already fetched and active.
+     - Case B: One new pull-requests.
+     - Case C: No new pull-requests - The last pull request is already fetched and no longer active.
+     - Case D: There is new pull-requests - The last pull request is not yet fetched,
+       and the last-fetched pull-request is no longer active.
     When:
      - fetch-incidents called.
     Then:
@@ -654,10 +674,7 @@ def test_get_last_fetch_incident_index(requests_mock):
         verify=False,
         proxy=False)
 
-    assert get_last_fetch_incident_index(project, repository, client, 24) == 0
-    assert get_last_fetch_incident_index(project, repository, client, 22) == 1
-    assert get_last_fetch_incident_index(project, repository, client, 25) == -1
-    assert get_last_fetch_incident_index(project, repository, client, 21) == -1
+    assert get_last_fetch_incident_index(project, repository, client, test_object['id']) == test_object['result']
 
 
 def test_get_closest_index(requests_mock):

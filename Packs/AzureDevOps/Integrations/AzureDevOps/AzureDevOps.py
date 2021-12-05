@@ -1536,17 +1536,18 @@ def fetch_incidents(client, project: str, repository: str, integration_instance:
 
     pr_data = reversed(response.get("value"))
 
-    if pr_data:
-        incidents = []
-        for pr in pr_data:
-            incidents.append(parse_incident(pr, integration_instance))
-            last = pr.get('pullRequestId')
+    last = None
+    incidents = []
+    for pr in pr_data:
+        incidents.append(parse_incident(pr, integration_instance))
+        last = pr.get('pullRequestId')
 
+    if last:
         demisto.setLastRun({
             'last_id': last
         })
 
-        demisto.incidents(incidents)
+    demisto.incidents(incidents)
 
 
 def main() -> None:
@@ -1631,9 +1632,7 @@ def main() -> None:
             return_results(reset_auth())
 
         elif command == 'azure-devops-pipeline-run':
-            pipeline_result = pipeline_run_command(client, args)
-            if pipeline_result is not None:
-                return_results(pipeline_result)
+            return_results(pipeline_run_command(client, args))
 
         elif command == 'get-mapping-fields':
             return_results(get_mapping_fields_command())
