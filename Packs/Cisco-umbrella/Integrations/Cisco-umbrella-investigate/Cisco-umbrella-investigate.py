@@ -858,17 +858,20 @@ def get_domain_command():
                 'EntryContext': context
             })
         except RequestException as r:
-            human_readable = '### Umbrella Investigate Domain for: ' + domain + '\n' \
-                + "Failed to find " + domain + ", reason: " + r.message
+            if '404' in r.message:
+                human_readable = '### Umbrella Investigate Domain for: ' + domain + '\n' \
+                    + "Failed to find " + domain + ", reason: " + r.message
 
-            results.append({
-                'Type': entryTypes['note'],
-                'ContentsFormat': formats['json'],
-                'Contents': contents,
-                'HumanReadable': human_readable,
-                'HumanReadableFormat': formats['markdown'],
-                'EntryContext': None
-            })
+                results.append({
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['json'],
+                    'Contents': contents,
+                    'HumanReadable': human_readable,
+                    'HumanReadableFormat': formats['markdown'],
+                    'EntryContext': None
+                })
+            else:
+                raise r
     return results
 
 

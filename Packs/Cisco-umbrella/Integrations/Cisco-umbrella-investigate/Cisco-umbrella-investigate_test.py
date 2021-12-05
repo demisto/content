@@ -1,3 +1,4 @@
+import pytest
 from requests import RequestException
 
 import demistomock as demisto
@@ -62,7 +63,7 @@ def test_get_domain_command_no_valid_domains(mocker):
             - return an empty list
     """
     mocker.patch.object(demisto, 'args', return_value={'domain': ["bad1.com", "bad2.com"]})
-    mocker.patch.object(Cisco_umbrella_investigate, 'get_whois_for_domain', side_effect=RequestException())
+    mocker.patch.object(Cisco_umbrella_investigate, 'get_whois_for_domain', side_effect=RequestException('404'))
 
     assert len(Cisco_umbrella_investigate.get_domain_command()) == 2
 
@@ -83,8 +84,23 @@ def test_get_domain_command_some_valid_domains(mocker):
     assert len(Cisco_umbrella_investigate.get_domain_command()) == 2
 
 
+def test_get_domain_command_non_404_request_exception(mocker):
+    """
+        Given:
+            - list of domains
+        When:
+            - A non 404 http error is returned
+        Then:
+            - raise error
+    """
+    with pytest.raises(RequestException):
+        mocker.patch.object(demisto, 'args', return_value={'domain': ["bad1.com", "bad2.com"]})
+        mocker.patch.object(Cisco_umbrella_investigate, 'get_whois_for_domain', side_effect=RequestException('403'))
+        Cisco_umbrella_investigate.get_domain_command()
+
+
 def different_inputs_handling(*args):
     if args[0] == "good.com":
         return {}
     if args[0] == "bad.com":
-        raise RequestException()
+        raise RequestException('404')
