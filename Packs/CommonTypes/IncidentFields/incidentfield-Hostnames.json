@@ -15,9 +15,7 @@
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,
-    "selectValues": [
-
-    ],
+    "selectValues": [],
     "sla": 0,
     "system": false,
     "threshold": 72,

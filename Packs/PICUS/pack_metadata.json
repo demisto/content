@@ -7,7 +7,9 @@
     "url": "",
     "email": "",
     "created": "2021-02-16T12:21:20Z",
-    "categories": [],
+    "categories": [
+        "Network Security"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],

@@ -11,7 +11,7 @@ subtype: python2
 tags:
 - carbon-black-protection
 - bit9
-comment: Approve/whitelist a hash in CBEP/Bit9.
+comment: Approve/add to allow list a hash in CBEP/Bit9.
 system: true
 args:
 - name: hash
@@ -24,6 +24,6 @@ dependson:
   - cbp-fileRule-update
 timeout: 0s
 fromversion: 5.0.0
-dockerimage: demisto/python:2.7.18.24066
+dockerimage: demisto/python:2.7.18.24398
 tests:
 - No test

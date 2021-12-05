@@ -30,7 +30,7 @@ description: |-
     - Retrieve files from events.
     - Isolate endpoints.
     - Quarantine files.
-    - Add and remove hashes from blacklist.
+    - Add and remove hashes from block list.
     - Getting endpoints info.
 display: Palo Alto Networks Traps
 name: Traps
@@ -199,13 +199,13 @@ script:
     name: traps-event-bulk-update-status
   - arguments:
     - default: false
-      description: The SHA256 hash to add to the blacklist.
+      description: The SHA256 hash to add to the block list.
       isArray: false
       name: hash_id
       required: true
       secret: false
     deprecated: false
-    description: Adds the specified file hash to the blacklist.
+    description: Adds the specified file hash to the block list.
     execution: false
     name: traps-hash-blacklist
     outputs:
@@ -217,13 +217,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The SHA256 hash to remove from the blacklist.
+      description: The SHA256 hash to remove from the block list.
       isArray: false
       name: hash_id
       required: true
       secret: false
     deprecated: false
-    description: Removes the specified file hash from the blacklist.
+    description: Removes the specified file hash from the block list.
     execution: false
     name: traps-hash-blacklist-remove
     outputs:
@@ -235,18 +235,18 @@ script:
       type: String
   - arguments:
     - default: false
-      description: A comma-separated list of SHA256 file hashes for which to return the blacklist status.
+      description: A comma-separated list of SHA256 file hashes for which to return the block list status.
       isArray: true
       name: hash_ids
       required: true
       secret: false
     deprecated: false
-    description: Returns the blacklist status of the specified file hashes.
+    description: Returns the block list status of the specified file hashes.
     execution: false
     name: traps-hashes-blacklist-status
     outputs:
     - contextPath: Traps.File.BlacklistStatus
-      description: The blacklist status of the file hash. Can be "blacklisted" or "none".
+      description: The block list status of the file hash. Can be "blacklisted" or "none".
       type: String
     - contextPath: Traps.File.SHA256
       description: The SHA256 hash of the file.
