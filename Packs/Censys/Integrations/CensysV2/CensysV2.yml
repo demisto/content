@@ -18,7 +18,7 @@ configuration:
 description: Censys is a search engine that allows computer scientists to ask questions
   about the devices and networks that compose the Internet. Driven by Internet-wide
   scanning, Censys lets researchers find specific hosts and create aggregate reports
-  on how devices, websites, and certificates are configured and deployed.
+  on how devices, and certificates are configured and deployed.
 display: CensysV2
 name: CensysV2
 script:
