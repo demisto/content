@@ -38,7 +38,7 @@ else:
                     'StringA': input_string,
                     'StringB': cur_string,
                     'LevenshteinDistance': levenshtein_distance,
-                    'TooClose': levenshtein_distance > 0 and levenshtein_distance < close_distance_int
+                    'TooClose': 0 < levenshtein_distance < close_distance_int
                 })
         res.append(
             {
