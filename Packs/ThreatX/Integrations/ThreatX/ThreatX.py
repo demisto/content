@@ -52,22 +52,22 @@ def http_request(url_suffix, commands=None):
                                            })
             demisto.info('{} from server during login. Clearing session token cache.'.format(res.status_code))
 
-        return_error('HTTP {} Error in API call to ThreatX service - {}'.format(res.status_code, res.text))
+        raise DemistoException('HTTP {} Error in API call to ThreatX service - {}'.format(res.status_code, res.text))
 
     resp_json = {}  # type:dict
     try:
         resp_json = res.json()
     except ValueError:
-        return_error('Could not parse the response from ThreatX: {}'.format(res.text))
+        raise DemistoException('Could not parse the response from ThreatX: {}'.format(res.text))
 
     if 'Ok' not in resp_json:
         if url_suffix == '/login':
             demisto.setIntegrationContext({'session_token': None,
                                            'token_expires': None
                                            })
-            return_error('Login response error - {}.'.format(res.text))
+            raise DemistoException('Login response error - {}.'.format(res.text))
 
-        return_error(res.text)
+        raise DemistoException(res.text)
 
     if url_suffix == '/login':
         if 'status' in resp_json['Ok']:
@@ -75,7 +75,7 @@ def http_request(url_suffix, commands=None):
                 demisto.setIntegrationContext({'session_token': None,
                                                'token_expires': None
                                                })
-                return_error('Invalid credentials.')
+                raise DemistoException('Invalid credentials.')
 
     return resp_json['Ok']
 
@@ -165,21 +165,18 @@ def block_ip_command(args):
         except Exception as error:
             demisto.error('failed block ip: {}\n{}'.format(ip, traceback.format_exc()))
             errors.append('Failed to block ip: {} error: {}'.format(ip, error))
-        except SystemExit:
-            # exception was handled with return_error
-            pass
         else:
             results.append(ip_result)
+    if ip_result:
+        readable_outputs = tableToMarkdown('Block IP',
+                                           results,
+                                           ['Result'],
+                                           removeNull=True)
 
-    readable_outputs = tableToMarkdown('Block IP',
-                                       results,
-                                       ['Result'],
-                                       removeNull=True)
-
-    return_results(CommandResults(
-        outputs=results, readable_output=readable_outputs,
-        outputs_prefix='IP(val.Address === obj.Address).Address'
-    ))
+        return_results(CommandResults(
+            outputs=results, readable_output=readable_outputs,
+            outputs_prefix='IP(val.Address === obj.Address).Address'
+        ))
     if errors:
         return_error('\n'.join(errors))
 

@@ -109,27 +109,22 @@ def add_ip_objects_command(client: Client, args: Dict[str, Any]) -> CommandResul
     errors_list = []
     success_list = []
     for ip_address, mask in map(get_ip_and_mask_from_cidr, argToList(cidr_range)):
-        try:
-            body = define_body_for_add_ip_command(list_target, mask, ip_address, duration, note, tags)
+        body = define_body_for_add_ip_command(list_target, mask, ip_address, duration, note, tags)
 
+        try:
             client.request_ip_objects(body=body, method='POST', url_suffix=url_suffix, params={}, resp_type='content')
-            success_list.append(f'| {ip_address}/{mask} |')
-        except SystemExit:
-            # an error occurred but it was handled with the return_error method.
-            pass
         except Exception as error:
             demisto.error(traceback.format_exc())
             errors_list.append(f'could not add {ip_address}/{mask} to {list_type}. error: {error}')
+        success_list.append(f'| {ip_address}/{mask} |')
 
+    if success_list:
+
+        success_list = '\n'.join(success_list)
+        human_readable = f"IP objects wehre added successfully into the {list_type}\n| IP |\n| - |\n{success_list}"
+        return_results(CommandResults(readable_output=human_readable))
     if errors_list:
-        try:
-            return_error('\n'.join(errors_list))
-        except SystemExit:
-            if not success_list:
-                raise
-    success_list = '\n'.join(success_list)
-    human_readable = f"IP objects wehre added successfully into the {list_type}\n| IP |\n| - |\n{success_list}"
-    return CommandResults(readable_output=human_readable)
+        return_error('\n'.join(errors_list))
 
 
 def define_body_for_add_ip_command(list_target, mask, ip_address, duration, note, tags):
@@ -389,7 +384,7 @@ def main() -> None:
             return_results(get_ip_objects_list_command(client, args))
 
         elif demisto.command() == 'f5-silverline-ip-object-add':
-            return_results(add_ip_objects_command(client, args))
+            add_ip_objects_command(client, args)
 
         elif demisto.command() == 'f5-silverline-ip-object-delete':
             return_results(delete_ip_objects_command(client, args))
