@@ -4373,6 +4373,13 @@
             ]
         },
         {
+            "playbookID": "GetStringsDistance - Test",
+            "fromversion": "5.0.0",
+            "scripts": [
+                "GetStringsDistance"
+            ]
+        },
+        {
             "playbookID": "GCS Bucket Management - Test",
             "fromversion": "5.0.0",
             "integrations": [

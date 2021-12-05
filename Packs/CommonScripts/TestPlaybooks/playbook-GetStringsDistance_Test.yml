@@ -1,6 +1,6 @@
-id: GetStringsDistanceTest
+id: GetStringsDistance - Test
 version: -1
-name: GetStringsDistanceTest
+name: GetStringsDistance - Test
 starttaskid: "0"
 tasks:
   "0":
@@ -190,5 +190,5 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 5.5.0
+fromversion: 5.0.0
 description: 'Test playbook for GetStringsDistance'
