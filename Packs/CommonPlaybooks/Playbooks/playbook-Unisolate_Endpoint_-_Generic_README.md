@@ -1,21 +1,22 @@
-This playbook unisolates endpoints according to the endpoint ID or hostname that is provided by the playbook input.
-It currently supports the following integrations:
+This playbook unisolates endpoints according to the endpoint ID or hostname that is provided in the playbook.
+Currently supports the following integrations:
 - Carbon Black Response
 - Cortex XDR
 - Crowdstrike Falcon
 - FireEye HX 
 - Cybereason
-
+- Microsoft Defender For Endpoint
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Carbon Black Response - Unisolate Endpoint
 * Unisolate Endpoint - Cybereason
-* Crowdstrike Falcon - Unisolate Endpoint
 * FireEye HX - Unisolate Endpoint
+* Carbon Black Response - Unisolate Endpoint
 * Cortex XDR - Unisolate Endpoint
+* Microsoft Defender For Endpoint - Unisolate Endpoint
+* Crowdstrike Falcon - Unisolate Endpoint
 
 ### Integrations
 This playbook does not use any integrations.
@@ -36,8 +37,13 @@ This playbook does not use any commands.
 
 ## Playbook Outputs
 ---
-There are no outputs for this playbook.
+
+| **Path** | **Description** | **Type** |
+| --- | --- | --- |
+| MicrosoftATP.MachineAction.ID | The machine action ID. | unknown |
+| MicrosoftATP.NonUnisolateList | Those machine IDs that won't be released from isolation | unknown |
+| MicrosoftATP.UnisolateList | Machine IDs that were released from isolation. | unknown |
 
 ## Playbook Image
 ---
-![Unisolate Endpoint - Generic](https://raw.githubusercontent.com/demisto/content/4966d5a5c9b80af03106f8da8dcd8512b3cb259e/Packs/CommonPlaybooks/doc_files/Unisolate_Endpoint_-_Generic.png)
+![Unisolate Endpoint - Generic](../doc_files/Unisolate_Endpoint_-_Generic.png)
