@@ -23,7 +23,7 @@ outputs:
   type: Unknown
 - contextPath: CortexXSOAR.AwayUsers.email
   description: Away user email.
-  type: Unknown
+  type: String
 script: '-'
 system: false
 tags: []
