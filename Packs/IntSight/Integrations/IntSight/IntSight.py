@@ -1,6 +1,7 @@
-from CommonServerPython import *
-
 import os
+
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 URL = demisto.getParam('server')
 if URL[-1] != '/':
