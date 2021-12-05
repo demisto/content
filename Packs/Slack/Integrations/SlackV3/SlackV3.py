@@ -140,7 +140,7 @@ def get_user_by_name(user_to_search: str) -> dict:
         user = fetch_users_from_api(user_to_search)
     # Save users to cache
     if user:
-        save_users_to_context([user])
+        save_to_context(updated_list=[user], key='id', storage_key='users')
     return user
 
 
@@ -1223,6 +1223,9 @@ async def check_and_handle_entitlement(text: str, user: dict, thread_id: str) ->
 
 
 async def fetch_channels_iterable():
+    """
+    This async function fetches the channels from the API according to the given interval.
+    """
     cursor = None
     updated_channel_list: list = []
 
@@ -1263,17 +1266,15 @@ async def fetch_channels_iterable():
                 if 'Retry-After' in headers:
                     retry_after = int(headers['Retry-After'])
                     total_try_time += retry_after
-                    if total_try_time < MAX_LIMIT_TIME:
-                        demisto.debug(f"Retry-After header was found. Sleeping for {retry_after} seconds.")
-                        await asyncio.sleep(retry_after)
-                        continue
                 else:
-                    if total_try_time < MAX_LIMIT_TIME:
-                        demisto.debug("No Retry-After header was found. Sleeping for 5 seconds.")
-                        await asyncio.sleep(5)
-                        continue
-                    else:
-                        raise
+                    retry_after = 5
+                    total_try_time += retry_after
+                if total_try_time < MAX_LIMIT_TIME:
+                    demisto.debug(f"Retry-After header was found. Sleeping for {retry_after} seconds.")
+                    await asyncio.sleep(retry_after)
+                    continue
+                else:
+                    raise
             demisto.debug("Response received from Slack conversations.list api. No retry is necessary.")
             break
 
@@ -1304,6 +1305,9 @@ async def fetch_channels_async():
 
 
 async def fetch_users_iterable():
+    """
+    This async function fetches the users from the API according to the given interval.
+    """
     cursor = None
     updated_users_list: list = []
 
@@ -1348,17 +1352,15 @@ async def fetch_users_iterable():
                 if 'Retry-After' in headers:
                     retry_after = int(headers['Retry-After'])
                     total_try_time += retry_after
-                    if total_try_time < MAX_LIMIT_TIME:
-                        demisto.debug(f"Retry-After header was found. Sleeping for {retry_after} seconds.")
-                        await asyncio.sleep(retry_after)
-                        continue
                 else:
-                    if total_try_time < MAX_LIMIT_TIME:
-                        demisto.debug("No Retry-After header was found. Sleeping for 5 seconds.")
-                        await asyncio.sleep(5)
-                        continue
-                    else:
-                        raise
+                    retry_after = 5
+                    total_try_time += retry_after
+                if total_try_time < MAX_LIMIT_TIME:
+                    demisto.debug(f"Retry-After header was found. Sleeping for {retry_after} seconds.")
+                    await asyncio.sleep(retry_after)
+                    continue
+                else:
+                    raise
             demisto.debug("Response received from Slack users.list api. No retry is necessary.")
             break
 
@@ -1409,7 +1411,7 @@ def get_conversation_by_name(conversation_name: str) -> dict:
         conversation = fetch_channels_from_api(conversation_to_search)
     # Save conversations to cache
     if conversation:
-        save_channels_to_context([conversation])
+        save_to_context(updated_list=[conversation], key='id', storage_key='conversations')
     return conversation
 
 
@@ -2183,22 +2185,24 @@ def search_context_for_channel_id(conversation_name: str):
         return None
 
 
-def save_channels_to_context(updated_channel_list):
+def save_to_context(updated_list: list, key: str, storage_key: str):
     """
-    Saves a list of conversations into the integration context.
+    Saves a list of items into the integration context.
 
     Args:
-        updated_channel_list: A list of conversations
+        updated_list: An updated list of what should be in context.
+        key: The identifying key to use when updating the original list.
+        storage_key: The key under which this list should be saved in the context.
     """
-    # Save conversations to cache
+    # Save original list to cache
     integration_context = get_integration_context(SYNC_CONTEXT)
-    conversations = integration_context.get('conversations')
-    if conversations:
-        conversations = json.loads(conversations)
-        conversations.extend(updated_channel_list)
+    original_context = integration_context.get(key)
+    if original_context:
+        original_list = json.loads(original_context)
+        merged_list = merge_lists(original_list=original_list, updated_list=updated_list, key=key)
     else:
-        conversations = updated_channel_list
-    set_to_integration_context_with_retries({'conversations': conversations}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+        merged_list = updated_list
+    set_to_integration_context_with_retries({storage_key: merged_list}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
 
 
 def search_context_for_user(user_name: str):
@@ -2227,24 +2231,6 @@ def search_context_for_user(user_name: str):
         return None
 
 
-def save_users_to_context(updated_users_list):
-    """
-    Saves a list of users into the integration context.
-
-    Args:
-        updated_users_list: A list of users
-    """
-    # Save conversations to cache
-    integration_context = get_integration_context(SYNC_CONTEXT)
-    users = integration_context.get('users')
-    if users:
-        users = json.loads(users)
-        users.extend(updated_users_list)
-    else:
-        users = updated_users_list
-    set_to_integration_context_with_retries({'users': users}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
-
-
 def fetch_channels_from_api(conversation_name: str = ''):
     """
     Fetches channel IDs based on their name, if given a conversation name, it will search for a specific ID
@@ -2266,6 +2252,7 @@ def fetch_channels_from_api(conversation_name: str = ''):
         cursor = res.get('response_metadata', {}).get('next_cursor')
         channels = res['channels'] if res and res.get('channels') else []
         if conversation_name:
+            demisto.debug(f"Attempting to fetch data for {conversation_name} from Slack API.")
             conversation_filter = list(filter(lambda c: c.get('name') == conversation_name, channels))
             if conversation_filter:
                 return conversation_filter[0]
@@ -2292,15 +2279,14 @@ def fetch_channels_from_api(conversation_name: str = ''):
                     if 'Retry-After' in headers:
                         retry_after = int(headers['Retry-After'])
                         total_try_time += retry_after
-                        if total_try_time < MAX_LIMIT_TIME:
-                            time.sleep(retry_after)
-                            continue
                     else:
-                        if total_try_time < MAX_LIMIT_TIME:
-                            time.sleep(5)
-                            continue
-                        else:
-                            raise
+                        retry_after = 5
+                        total_try_time += retry_after
+                    if total_try_time < MAX_LIMIT_TIME:
+                        time.sleep(retry_after)
+                        continue
+                    else:
+                        raise
                 break
     if conversation_name and len(updated_channel_list) == 0:
         return_error('Channel was not found - Either the Slack app is not a member of the channel, '
@@ -2310,16 +2296,17 @@ def fetch_channels_from_api(conversation_name: str = ''):
 
 def fetch_channels_command():
     updated_channel_list = fetch_channels_from_api()
-    save_channels_to_context(updated_channel_list=updated_channel_list)
-    demisto.results("Successfully updated channels to the Integration Context")
+    save_to_context(updated_list=updated_channel_list, key='id', storage_key='conversations')
+    demisto.results(f"Successfully updated channels to the Integration Context. "
+                    f"Total found was - {len(updated_channel_list)}")
 
 
 def fetch_users_from_api(user_name: str = ''):
     """
-    Fetches users based on their name
+    Fetches all users found in the workspace. If a user_name is given, will only return the user data for the given user.
 
     Args:
-        user_name: Optional - The human readable form of a user's name.
+        user_name: Optional - If given, this function will return data for only the given user.
 
     Returns:
         A list of dictionaries containing a user's name, ID, and email.
@@ -2334,6 +2321,7 @@ def fetch_users_from_api(user_name: str = ''):
         cursor = res.get('response_metadata', {}).get('next_cursor')
         members = res['members'] if res and res.get('members') else []
         if user_name:
+            demisto.debug(f"Attempting to fetch data for {user_name} from Slack API.")
             user_to_search = user_name.lower()
             users_filter = list(filter(lambda u: u.get('name', '').lower() == user_to_search
                                                  or u.get('profile', {}).get('email', '').lower() == user_to_search
@@ -2356,7 +2344,7 @@ def fetch_users_from_api(user_name: str = ''):
             break
         else:
             total_try_time = 0
-            while True:
+            while total_try_time < MAX_LIMIT_TIME:
                 try:
                     res = CLIENT.users_list(limit=PAGINATED_COUNT, cursor=cursor)
 
@@ -2367,15 +2355,14 @@ def fetch_users_from_api(user_name: str = ''):
                     if 'Retry-After' in headers:
                         retry_after = int(headers['Retry-After'])
                         total_try_time += retry_after
-                        if total_try_time < MAX_LIMIT_TIME:
-                            time.sleep(retry_after)
-                            continue
                     else:
-                        if total_try_time < MAX_LIMIT_TIME:
-                            time.sleep(5)
-                            continue
-                        else:
-                            raise
+                        retry_after = 5
+                        total_try_time += retry_after
+                    if total_try_time < MAX_LIMIT_TIME:
+                        time.sleep(retry_after)
+                        continue
+                    else:
+                        raise
                 break
     if user_name and len(updated_users_list) == 0:
         return {}
@@ -2384,8 +2371,9 @@ def fetch_users_from_api(user_name: str = ''):
 
 def fetch_users_command():
     updated_users_list = fetch_users_from_api()
-    save_users_to_context(updated_users_list=updated_users_list)
-    demisto.results("Successfully updated users to the Integration Context")
+    save_to_context(updated_list=updated_users_list, key='id', storage_key='users')
+    demisto.results(f"Successfully updated users to the Integration Context. "
+                    f"Total found was - {len(updated_users_list)}")
 
 
 def long_running_main():

@@ -3406,13 +3406,14 @@ def test_get_user_by_name_paging_rate_limit(mocker):
 
 
 def test_get_user_by_name_paging_rate_limit_error(mocker):
-    from SlackV3 import get_user_by_name, init_globals
+
     from slack_sdk.errors import SlackApiError
     from slack_sdk.web.slack_response import SlackResponse
     import time
+    import SlackV3
 
     # Set
-    init_globals()
+    SlackV3.init_globals()
     err_response: SlackResponse = SlackResponse(api_url='', client=None, http_verb='GET', req_args={},
                                                 data={'ok': False}, status_code=429, headers={'Retry-After': 40})
     first_call = {'members': js.loads(USERS), 'response_metadata': {'next_cursor': 'dGVhbTpDQ0M3UENUTks='}}
@@ -3425,7 +3426,8 @@ def test_get_user_by_name_paging_rate_limit_error(mocker):
     mocker.patch.object(time, 'sleep')
 
     # Arrange
-    get_user_by_name('alexios')
+    SlackV3.MAX_LIMIT_TIME = 90
+    SlackV3.get_user_by_name('alexios')
 
     args = slack_sdk.WebClient.users_list.call_args_list
     first_args = args[0][1]
@@ -3962,7 +3964,7 @@ def test_fetch_channels(mocker):
     SLACK_RESPONSE = SlackResponse(client=None, http_verb='', api_url='', req_args={}, data=channel_response, headers={},
                                    status_code=0)
 
-    expected_body = ("Successfully updated channels to the Integration Context")
+    expected_body = ("Successfully updated channels to the Integration Context. Total found was - 2")
 
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(slack_sdk.WebClient, 'conversations_list', side_effect=SLACK_RESPONSE)
@@ -3987,13 +3989,13 @@ def test_fetch_channels_rate_limited(mocker):
         Expect a successful response and appended context after successfully handling the rate limit and waiting the
         indicated amount of time
     """
-    from SlackV3 import fetch_channels_command, init_globals
     from slack_sdk.errors import SlackApiError
     from slack_sdk.web.slack_response import SlackResponse
     import time
+    import SlackV3
 
     # Set
-    init_globals()
+    SlackV3.init_globals()
     err_response: SlackResponse = SlackResponse(api_url='', client=None, http_verb='GET', req_args={},
                                                 data={'ok': False}, status_code=429, headers={'Retry-After': 40})
     first_call = {'channels': js.loads(CONVERSATIONS), 'response_metadata': {'next_cursor': 'dGVhbTpDQ0M3UENUTks='}}
@@ -4005,8 +4007,9 @@ def test_fetch_channels_rate_limited(mocker):
     mocker.patch.object(slack_sdk.WebClient, 'conversations_list', side_effect=[first_call, second_call, second_call, third_call])
     mocker.patch.object(time, 'sleep')
 
+    SlackV3.MAX_LIMIT_TIME = 90
     # Arrange
-    fetch_channels_command()
+    SlackV3.fetch_channels_command()
     args = slack_sdk.WebClient.conversations_list.call_args_list
     first_args = args[0][1]
     second_args = args[1][1]
@@ -4195,13 +4198,13 @@ def test_fetch_users_rate_limited(mocker):
         Expect a successful response and appended context after successfully handling the rate limit and waiting the
         indicated amount of time
     """
-    from SlackV3 import fetch_users_command, init_globals
     from slack_sdk.errors import SlackApiError
     from slack_sdk.web.slack_response import SlackResponse
     import time
+    import SlackV3
 
     # Set
-    init_globals()
+    SlackV3.init_globals()
     err_response: SlackResponse = SlackResponse(api_url='', client=None, http_verb='GET', req_args={},
                                                 data={'ok': False}, status_code=429, headers={'Retry-After': 40})
     first_call = {'users': js.loads(USERS), 'response_metadata': {'next_cursor': 'dGVhbTpDQ0M3UENUTks='}}
@@ -4214,7 +4217,8 @@ def test_fetch_users_rate_limited(mocker):
     mocker.patch.object(time, 'sleep')
 
     # Arrange
-    fetch_users_command()
+    SlackV3.MAX_LIMIT_TIME = 90
+    SlackV3.fetch_users_command()
     args = slack_sdk.WebClient.users_list.call_args_list
     first_args = args[0][1]
     second_args = args[1][1]
@@ -4241,13 +4245,21 @@ def test_fetch_users(mocker):
     """
     import SlackV3
 
-    users_response = {'users': js.loads(USERS), 'response_metadata': {
-    }}
+    users_response = {'members': js.loads(USERS)}
+    new_user = {
+        'name': 'perikles',
+        'profile': {
+            'email': 'perikles@acropoli.com',
+        },
+        'id': 'U012B3CUI'
+    }
+
+    users_response['members'].append(new_user)
     # Set
     SLACK_RESPONSE = SlackResponse(client=None, http_verb='', api_url='', req_args={}, data=users_response, headers={},
                                    status_code=0)
 
-    expected_body = ("Successfully updated users to the Integration Context")
+    expected_body = ("Successfully updated users to the Integration Context. Total found was - 3")
 
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(slack_sdk.WebClient, 'users_list', side_effect=SLACK_RESPONSE)
