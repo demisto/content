@@ -101,9 +101,12 @@ script:
         - contextPath: VMWare.MACAddress
           description: MAC address of VM.
           type: String
-        - contextPath: VMWare.Snapshot
-          description: Last snapshot info of the VM.
-          type: Unknown
+        - contextPath: VMWare.SnapshotCreateDate
+          description: Create date of the last snapshot of the VM.
+          type: String
+        - contextPath: VMWare.SnapshotUUID
+          description: UUID of the last snapshot of the VM.
+          type: String
         - contextPath: VMWare.Deleted
           description: If set to true, the VM was deleted.
           type: Boolean
@@ -253,10 +256,42 @@ script:
         - description: VM UUID of virtual machine to get events of.
           name: vm-uuid
           required: true
-        - defaultValue: VmGuestRebootEvent,VmGuestShutdownEvent,VmPoweredOnEvent,VmPoweredOffEvent,VmSuspendedEvent
+        - name: event-type
           description: Type of events to get, given in CSV
             (i.e.,  VmGuestRebootEvent,VmGuestShutdownEvent).
-          name: event-type
+          required: false
+          isArray: false
+          defaultValue: VmGuestRebootEvent,VmGuestShutdownEvent,VmPoweredOnEvent,VmPoweredOffEvent,VmSuspendedEvent
+          predefined:
+            - ""
+        - name: start-date
+          description: Event's start date.
+          required: false
+          isArray: false
+          defaultValue: ""
+          predefined:
+            - ""
+        - name: end-date
+          description: Event's end date
+          required: false
+          isArray: false
+          defaultValue: ""
+          predefined:
+            - ""
+        - name: user
+          description: User name.
+          required: false
+          isArray: false
+          defaultValue: ""
+          predefined:
+            - ""
+        - name: limit
+          description: Number of events to return.
+          required: false
+          isArray: false
+          defaultValue: "50"
+          predefined:
+            - ""
       description: Gets events of VM.
       name: vmware-get-events
       outputs: []
@@ -357,10 +392,19 @@ script:
           description: The tag to be queried.
           required: true
           isArray: false
-          defaultValue: VMWare.Tag
+          defaultValue: ""
           predefined:
             - ""
-      outputs: []
+      outputs:
+        - contextPath: VMware.Tag.TagName
+          description: The tag that was queried.
+          type: String
+        - contextPath: VMware.Tag.Category
+          description: The category to which the tag belongs.
+          type: String
+        - contextPath: VMware.Tag.VM
+          description: VM name which the tag attached to.
+          type: String
     - name: vmware-create-vm
       description: Creates a new virtual machine in the current folder and attaches it
         to the specified resource pool. This operation creates a virtual
@@ -451,9 +495,12 @@ script:
         - contextPath: VMWare.MACAddress
           description: MAC address of VM.
           type: String
-        - contextPath: VMWare.Snapshot
-          description: Last snapshot info of the VM.
-          type: Unknown
+        - contextPath: VMWare.SnapshotCreateDate
+          description: Create date of the last snapshot of the VM.
+          type: String
+        - contextPath: VMWare.SnapshotUUID
+          description: UUID of the last snapshot of the VM.
+          type: String
         - contextPath: VMWare.Deleted
           description: If set to true, the VM was deleted.
           type: Boolean
@@ -548,9 +595,12 @@ script:
         - contextPath: VMWare.MACAddress
           description: MAC address of VM.
           type: String
-        - contextPath: VMWare.Snapshot
-          description: Last snapshot info of the VM.
-          type: Unknown
+        - contextPath: VMWare.SnapshotCreateDate
+          description: Create date of the last snapshot of the VM.
+          type: String
+        - contextPath: VMWare.SnapshotUUID
+          description: UUID of the last snapshot of the VM.
+          type: String
         - contextPath: VMWare.Deleted
           description: If set to true, the VM was deleted.
           type: Boolean
@@ -609,7 +659,8 @@ script:
           defaultValue: ""
           predefined:
             - ""
-        - name: priority
+        - auto: PREDEFINED
+          name: priority
           description: The task priorityץ
           required: true
           isArray: false

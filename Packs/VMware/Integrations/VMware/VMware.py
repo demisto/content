@@ -10,6 +10,8 @@ from pyvim.task import WaitForTask
 from pyVmomi import vim, vmodl
 from vmware.vapi.vsphere.client import create_vsphere_client
 from com.vmware.vapi.std_client import DynamicID
+from com.vmware.cis.tagging_client import CategoryModel
+from com.vmware.vcenter_client import VM
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -27,11 +29,10 @@ def login():
     s.verify_mode = ssl.CERT_NONE
     session = requests.session()
     session.verify = False
-    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+    # urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
     # Connect to a vCenter Server using username and password
     vsphere_client = create_vsphere_client(server=FULL_URL, username=USERNAME, password=PASSWORD, session=session)
-
     try:
         si = SmartConnect(host=URL,
                           user=USERNAME,
@@ -57,6 +58,24 @@ def get_vm(uuid):
     return vm
 
 
+def get_tag(args):
+    relevant_category = None
+    relevant_tag = None
+    categories = vsphere_client.tagging.Category.list()
+    for category in categories:
+        cat_details = vsphere_client.tagging.Category.get(category)
+        if cat_details.name == args.get('category'):
+            relevant_category = cat_details.id
+            break
+    tags = vsphere_client.tagging.Tag.list_tags_for_category(relevant_category)
+    for tag in tags:
+        tag_details = vsphere_client.tagging.Tag.get(tag)
+        if tag_details.name == args.get('tag'):
+            relevant_tag = tag_details.id
+            break
+    return relevant_tag
+
+
 def search_for_obj(content, vim_type, name, folder=None, recurse=True):
     if folder is None:
         folder = content.rootFolder
@@ -78,7 +97,7 @@ def search_for_obj(content, vim_type, name, folder=None, recurse=True):
 def create_vm_config_creator(host, args):
     spec = vim.vm.ConfigSpec()
     files = vim.vm.FileInfo()
-    files.vmPathName = "["+host.datastore[0].name+"]" + args.get('name')
+    files.vmPathName = "[" + host.datastore[0].name + "]" + args.get('name')
     resource_allocation_spec = vim.ResourceAllocationInfo()
     resource_allocation_info = vim.ResourceAllocationInfo()
     resource_allocation_spec.limit = arg_to_number(args.get('cpu-allocation'))
@@ -89,7 +108,7 @@ def create_vm_config_creator(host, args):
     spec.memoryAllocation = resource_allocation_info
     spec.memoryMB = arg_to_number(args.get('virtual-memory'))
     # spec.guestId = args.get('guestId')
-    spec.files=files
+    spec.files = files
     return spec
 
 
@@ -100,13 +119,13 @@ def create_rellocation_locator_spec(vm, datastore):
     for device in vm.config.hardware.device:
         if type(device).__name__ == "vim.vm.device.VirtualDisk" and hasattr(device.backing, 'fileName'):
             template_disks.append(device)
-    
+
     # construct locator for the disks
     for disk in template_disks:
         locator = vim.vm.RelocateSpec.DiskLocator()
         locator.diskBackingInfo = disk.backing  # Backing information for the virtual disk at the destination
         locator.diskId = int(disk.key)
-        locator.datastore = datastore # Destination datastore
+        locator.datastore = datastore  # Destination datastore
         disk_locators.append(locator)
 
     return disk_locators
@@ -118,11 +137,21 @@ def apply_get_vms_filters(args, vm_summery):
     uuids = argToList(args.get('uuid'))
 
     ip = not vm_summery.guest.ipAddress or not args.get('ip') or vm_summery.guest.ipAddress in ips
-    hostname = not vm_summery.guest.hostName or not args.get('hostname') or vm_summery.guest.ipAddress == args.get('hostName')
+    hostname = not vm_summery.guest.hostName or not args.get('hostname') or vm_summery.guest.ipAddress == args.get(
+        'hostName')
     name = not args.get('name') or vm_summery.config.name in names
     uuid = not args.get('uuid') or vm_summery.config.instanceUuid in uuids
 
     return ip and hostname and name and uuid
+
+
+def get_priority(priority):
+    if priority == 'highPriority':
+        return vim.VirtualMachine.MovePriority().highPriority
+    elif priority == 'lowPriority':
+        return vim.VirtualMachine.MovePriority().lowPriority
+    else:
+        return vim.VirtualMachine.MovePriority().defaultPriority
 
 
 def get_vms(args):
@@ -133,9 +162,12 @@ def get_vms(args):
     recursive = True
     container_view = content.viewManager.CreateContainerView(container, view_type, recursive)
     children = container_view.view
-    
+
     for child in children:
         summary = child.summary
+        snapshot_create_date = datetime_to_string(
+            child.snapshot.currentSnapshot.config.createDate) if child.snapshot else ' '
+        snapshot_uuid = child.snapshot.currentSnapshot.config.uuid if child.snapshot else ' '
         if apply_get_vms_filters(args, summary):
             mac_address = ''
             try:
@@ -145,7 +177,7 @@ def get_vms(args):
                         break
             except Exception:  # noqa
                 pass
-            
+
             data.append({
                 'Name': summary.config.name,
                 'Template': summary.config.template,
@@ -156,7 +188,8 @@ def get_vms(args):
                 'State': summary.runtime.powerState,
                 'HostName': summary.guest.hostName if summary.guest.hostName else ' ',
                 'MACAddress': mac_address,
-                'Snapshot': child.snapshot.currentSnapshot if child.snapshot else ' ',
+                'SnapshotCreateDate': snapshot_create_date,
+                'SnapshotUUID': snapshot_uuid,
                 'Deleted': 'False'
             })
     ec = {
@@ -371,16 +404,22 @@ def get_snapshots(snapshots, snapname):
     return snapObj
 
 
-def get_events(uuid, event_type):
-    vm = get_vm(uuid)
+def get_events(args):
+    vm = get_vm(args.get('uuid'))
     hr = []
     content = si.RetrieveServiceContent()  # type: ignore
     eventManager = content.eventManager
+    time = vim.event.EventFilterSpec.ByTime()
+    time.beginTime = arg_to_datetime(args.get('start-date'))
+    time.endTime = arg_to_datetime(args.get('end-date'))
     filter = vim.event.EventFilterSpec.ByEntity(entity=vm, recursion="self")  # type: ignore
     filterSpec = vim.event.EventFilterSpec()
-    ids = event_type.split(',')
+    ids = args.get('event-type').split(',')
     filterSpec.eventTypeId = ids  # type: ignore
     filterSpec.entity = filter  # type: ignore
+    filterSpec.time = time
+    filterSpec.userName = args.get('user')
+    filterSpec.maxCount = arg_to_number(args.get('limit', 50))
     eventRes = eventManager.QueryEvents(filterSpec)
     for e in eventRes:
         hr.append({
@@ -461,8 +500,54 @@ def change_nic_state(args):
 
 def list_vm_tags(uuid):
     dynamic_id = DynamicID(type='VirtualMachine', id=uuid)
-    tags = vsphere_client.tagging.TagAssociation.list_attached_tags(dynamic_id)
+    categories = vsphere_client.tagging.Category.list()
+    x = vsphere_client.tagging.Category.get(categories[0])
+    # test = vsphere_client.tagging.TagAssociation.list_attached_tags(dynamic_id)
+    tags = vsphere_client.tagging.Tag.list()
+    tag = vsphere_client.tagging.Tag.get(tags[0])
+    y = vsphere_client.tagging.TagAssociation.list_attached_objects(tag.id)
+    te = vsphere_client.vcenter.VM.list()
+    z = vsphere_client.vcenter.VM.get(dynamic_id.id)
     x = 2
+
+
+def add_tag(args):
+    dynamic_id = DynamicID(type='VirtualMachine', id=args.get('uuid'))
+    relevant_tag = get_tag(args)
+    vsphere_client.tagging.TagAssociation.attach(relevant_tag, dynamic_id)
+    return {
+        'ContentsFormat': formats['json'],
+        'Type': entryTypes['note'],
+        'Contents': {},
+        'ReadableContentsFormat': formats['text'],
+        'HumanReadable': 'Tag {} was added successfully.'.format(args.get('tag')),
+        'EntryContext': {}
+    }
+
+
+def list_vms_by_tag(args):
+    relevant_tag = get_tag(args)
+    vms = vsphere_client.tagging.TagAssociation.list_attached_objects(relevant_tag)
+    vms = filter(lambda vm: vm.type == 'VirtualMachine', vms)
+    vms_details = vsphere_client.vcenter.VM.list(VM.FilterSpec(vms=set([str(vm.id) for vm in vms])))
+    data = []
+    for vm in vms_details:
+        data.append({
+            'TagName': args.get('tag'),
+            'Category': args.get('category'),
+            'VM': vms_details.name
+        })
+    ec = {
+        'VMWare.Tag(val.Tag && val.Category && val.TagName === obj.TagName && va.Category == obj.Category)': data
+    }
+    return {
+        'ContentsFormat': formats['json'],
+        'Type': entryTypes['note'],
+        'Contents': data,
+        'ReadableContentsFormat': formats['text'],
+        'HumanReadable': tableToMarkdown('Virtual Machines with Tag {}'.format(args.get('tag')), data),
+        'EntryContext': ec
+    }
 
 
 def create_vm(args):
@@ -572,22 +657,21 @@ def clone_vm(args):
 
 
 def relocate_vm(args):
-    vm = get_vm(args.get('uuid'))
     content = si.RetrieveContent()
-    priority = vim.VirtualMachine.MovePriority(args.get('priority'))
-    service = vim.ServiceLocator()
-    service.sslThumbprint = args.get('service')
-    spec = vim.vm.RelocateSpec()
+    vm = get_vm(args.get('uuid'))
+
+    priority = get_priority(args.get('priority'))
+    spec = vim.VirtualMachineRelocateSpec()
     spec.folder = search_for_obj(content, [vim.Folder], args.get('folder'))
     spec.host = search_for_obj(content, [vim.HostSystem], args.get('host'))
     spec.pool = search_for_obj(content, [vim.ResourcePool], args.get('pool'))
-    spec.service = service
-    datastore =  search_for_obj(content, [vim.Datastore], args.get('datastore'))
+    datastore = search_for_obj(content, [vim.Datastore], args.get('datastore'))
+
     if datastore:
         spec.datastore = datastore
         spec.disks = create_rellocation_locator_spec(vm, datastore)
-
-    task = vm.RelocateVM_Task(spec, priority.args.get('priority'))
+    # check_task = vim.vm.check.ProvisioningChecker.CheckRelocate_Task(vm=vm, spec=spec, testType=[])
+    task = vm.RelocateVM_Task(spec, priority)
     wait_for_tasks(si, [task])
 
     if task.info.state == 'success':
@@ -650,7 +734,7 @@ def register_vm(args):
 
 
 def unregister_vm(args):
-    vm = get_vm(args.get('uuisd'))
+    vm = get_vm(args.get('uuid'))
     vm.UnregisterVM()
     return {
         'ContentsFormat': formats['json'],
@@ -690,13 +774,15 @@ try:
     if demisto.command() == 'vmware-revert-snapshot':
         result = revert_snapshot(demisto.args()['snapshot-name'], demisto.args()['vm-uuid'])
     if demisto.command() == 'vmware-get-events':
-        result = get_events(demisto.args()['uuid'], demisto.args()['event-type'])
+        result = get_events(demisto.args())
     if demisto.command() == 'vmware-change-nic-state':
         result = change_nic_state(demisto.args())
     if demisto.command() == 'vmware-list-vm-tags':
         result = list_vm_tags(demisto.args()['uuid'])
     if demisto.command() == 'vmware-add-tag':
-        result = list_vm_tags(demisto.args()['vm-uuid'], demisto.args()['parent-category-name'])
+        result = add_tag(demisto.args())
+    if demisto.command() == 'vmware-list-vms-by-tag':
+        result = list_vms_by_tag(demisto.args())
     if demisto.command() == 'vmware-create-vm':
         result = create_vm(demisto.args())
     if demisto.command() == 'vmware-clone-vm':
