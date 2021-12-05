@@ -3,6 +3,7 @@ from CommonServerPython import *
 
 ''' IMPORTS '''
 import requests
+import dateparser
 import tempfile
 from typing import Tuple
 
@@ -307,23 +308,20 @@ def update_query_params_names(names: List[Tuple[str, str]], args: dict) -> None:
             args[new_name] = args.pop(old_name)
 
 
-def parse_date_string_format(
-    date_string: str, date_string_format: str = '%Y-%m-%dT%H:%M:%S.%fZ', new_format: str = "%B %d, %Y %H:%M:%S %p"
-) -> str:
+def parse_date_string_format(date_string: str, new_format: str = "%B %d, %Y %H:%M:%S %p") -> str:
     """
     Parses a date string format to a different date string format.
 
     Args:
         date_string (str): the date in string representation.
-        date_string_format (str): the current format of the string date.
         new_format (str): the new requested format for the date string.
 
     Returns:
         str: date as a new format, in case of a failure returns the original date string.
     """
     try:
-        return parse_date_string(date_string=date_string, date_format=date_string_format).strftime(new_format)
-    except ValueError:
+        return dateparser.parse(date_string=date_string).strftime(new_format)
+    except AttributeError:
         return date_string
 
 
