@@ -35,7 +35,7 @@
 <li><a href="#h_4be7bcf4-cba4-4762-beae-54a901e2eedd" target="_self">Get a single ANC policy: cisco-ise-get-policy</a></li>
 <li><a href="#h_a62bd46e-8b18-4f75-9215-2c1305374a47" target="_self">Create an ANC policy: cisco-ise-create-policy</a></li>
 <li><a href="#h_19abc45f-7827-416c-bbc4-2f2be27c6453" target="_self">Assign an ANC policy to an endpoint: cisco-ise-assign-policy</a></li>
-<li><a href="#h_f60063f9-8c7f-4198-945e-829c34c16fcb" target="_self">Get all blacklisted endpoints: cisco-ise-get-blacklist-endpoints</a></li>
+<li><a href="#h_f60063f9-8c7f-4198-945e-829c34c16fcb" target="_self">Get all endpoints on block list: cisco-ise-get-blacklist-endpoints</a></li>
 </ol>
 <h3 id="h_5bf25414-e9b3-41fe-a855-1bf7de70d143">1. Get an endpoint ID</h3>
 <hr>
@@ -1123,7 +1123,7 @@
 <pre>!cisco-ise-assign-policy mac_address=50080fc0-a07a-11e8-808e-000c295fdd32 policy_name=policy3</pre>
 <h5>Human Readable Output</h5>
 <h3>The policy "policy3" has been applied successfully</h3>
-<h3 id="h_f60063f9-8c7f-4198-945e-829c34c16fcb">12. Get all blacklisted endpoints</h3>
+<h3 id="h_f60063f9-8c7f-4198-945e-829c34c16fcb">12. Get all endpoints on block list.</h3>
 <hr>
 <p>Returns all blacklisted endpoints.</p>
 <h5>Base Command</h5>
