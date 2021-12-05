@@ -1860,6 +1860,13 @@
         {
             "integrations": "Recorded Future",
             "playbookID": "Recorded Future Test",
+            "instance_names": "recorded_future_feed",
+            "nightly": true
+        },
+        {
+            "integrations": "Recorded Future",
+            "playbookID": "Recorded Future Test",
+            "instance_names": "recorded_future_feed_with_risk_rules",
             "nightly": true
         },
         {
