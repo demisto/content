@@ -47,8 +47,19 @@ def create_email_html(email_html='', entry_id_list=None):
 
     # Replacing the images' sources
     for image_name, image_entry_id in entry_id_list:
-        email_html = re.sub(f'src="[^>]+"(?=[^>]+alt="{image_name}")', f'src=entry/download/{image_entry_id}',
-                            email_html)
+        if re.search(f'src="[^>]+"(?=[^>]+alt="{image_name}")', email_html):
+            email_html = re.sub(f'src="[^>]+"(?=[^>]+alt="{image_name}")',
+                                f'src=entry/download/{image_entry_id}',
+                                email_html
+                                )
+        # Handling inline attachments from Outlook mailboxes
+        # Note: when tested, entry id list and inline attachments were in the same order, so there was no need in
+        # special validation that the right src was being replaced.
+        else:
+            email_html = re.sub('(src="cid(.*?"))',
+                                f'src=entry/download/{image_entry_id}',
+                                email_html, count=1,
+                                )
     return email_html
 
 
