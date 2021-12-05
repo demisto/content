@@ -314,29 +314,41 @@ def parse_date_string_format(
         return date_string
 
 
-def perform_api_request(
-    client: PrismaCloudComputeClient, url_suffix: str, args: dict = None, method: str = 'GET', json_data: dict = None
-):
+def capitalize_api_response(api_response: Union[List[dict], dict]) -> Union[List[dict], dict]:
     """
-    Perform api request for the PrismaCloudCompute client.
+    Capitalize an api response.
 
     Args:
-        client (PrismaCloudComputeClient): prisma-cloud-compute client.
-        method (str): the api method type. e.g.: 'GET,POST,PUT'
-        url_suffix (str): url suffix of the base api url.
-        args (dict): any command arguments if exist.
-        json_data (dict): body request for the http request.
+        api_response (list/dict): The api response.
 
     Returns:
-        list/dict: api response.
+        list/dict where its keys are capitalized.
     """
-    return client.api_request(
-        method=method, url_suffix=url_suffix, params=assign_params(**args) if args else {}, json_data=json_data
-    )
+    if isinstance(api_response, dict):
+        return capitalize_dict_keys(dictionary=api_response)
+    return [capitalize_dict_keys(dictionary=response) for response in api_response]
+
+
+def capitalize_dict_keys(dictionary):
+    """
+    Capitalize dict keys.
+
+    Args:
+        dictionary (dict): any dictionary where its keys are strings.
+
+    Returns:
+        Capitalized dict keys.
+    """
+    return {key[0].upper() + key[1:] if "_" not in key else key.title(): val for key, val in dictionary.items()}
 
 
 def get_api_filtered_response(
-    client: PrismaCloudComputeClient, url_suffix: str, offset: int, limit: int, args: dict = None
+    client: PrismaCloudComputeClient,
+        url_suffix: str,
+        offset: int,
+        limit: int,
+        args: dict = None,
+        capitalize: bool = True
 ):
     """
     Filter the api response according to the offset/limit, used in case the api doesn't support limit/offset
@@ -347,11 +359,20 @@ def get_api_filtered_response(
         offset (int): the offset from which to begin listing the response.
         limit (int): the maximum limit of records in the response to fetch.
         args (dict): any command arguments if exist.
+        capitalize (bool): whether or not to capitalize the response keys.
 
     Returns:
         list: api filtered response, empty list in case there aren't any records in the api response.
     """
-    response = perform_api_request(client=client, url_suffix=url_suffix, args=args)
+    if not args:
+        args = {}
+
+    if capitalize:
+        response = capitalize_api_response(
+            api_response=client.api_request(method='GET', url_suffix=url_suffix, params=assign_params(**args))
+        )
+    else:
+        response = client.api_request(method='GET', url_suffix=url_suffix, params=assign_params(**args))
 
     start = min(offset, len(response))
     end = min(offset + limit, len(response))
@@ -380,7 +401,7 @@ def build_profile_host_table_response(full_response: List[dict]) -> str:
         for app in response.get('apps', []):
             apps_table.append(
                 {
-                    'HostId': response.get('_id'),
+                    'HostId': response.get('_Id'),
                     'AppName': app.get('name'),
                     'StartupProcess': app.get('startupProcess').get('path'),
                     'User': app.get('startupProcess').get('user'),
@@ -388,10 +409,10 @@ def build_profile_host_table_response(full_response: List[dict]) -> str:
 
                 }
             )
-        for event in response.get('sshEvents', []):
+        for event in response.get('SshEvents', []):
             ssh_events_table.append(
                 {
-                    'HostId': response.get('_id'),
+                    'HostId': response.get('_Id'),
                     'User': event.get('user'),
                     'Ip': event.get('ip'),
                     'ProcessPath': event.get('path'),
@@ -423,13 +444,16 @@ def get_profile_host_list(client: PrismaCloudComputeClient, args: dict) -> Comma
     Returns:
         CommandResults: command-results object.
     """
-    full_response = perform_api_request(client=client, args=args, url_suffix='/profiles/host')
+
+    full_response = capitalize_api_response(
+        api_response=client.api_request(method='GET', url_suffix='/profiles/host', params=assign_params(**args))
+    )
 
     return CommandResults(
-        outputs_prefix='prismaCloudCompute.profileHost',
-        outputs_key_field='_id',
+        outputs_prefix='PrismaCloudCompute.ProfileHost',
+        outputs_key_field='_Id',
         outputs=full_response if full_response else None,
-        readable_output=build_profile_host_table_response(full_response=full_response),
+        readable_output=build_profile_host_table_response(full_response=full_response),  # type:ignore
         raw_response=full_response
     )
 
@@ -454,11 +478,11 @@ def build_profile_container_table_response(full_response: List[dict]) -> str:
     for response in full_response:
         container_details.append(
             {
-                "ContainerID": response.get("_id"),
-                "Image": response.get("image"),
-                "OS": response.get("os"),
-                "State": response.get("state"),
-                "Created": parse_date_string_format(date_string=response.get("created"))  # type:ignore
+                "ContainerID": response.get("_Id"),
+                "Image": response.get("Image"),
+                "OS": response.get("Os"),
+                "State": response.get("State"),
+                "Created": parse_date_string_format(date_string=response.get("Created"))  # type:ignore
             }
         )
 
@@ -500,13 +524,15 @@ def get_container_profile_list(client: PrismaCloudComputeClient, args: dict) -> 
     Returns:
         CommandResults: command-results object.
     """
-    full_response = perform_api_request(client=client, args=args, url_suffix='/profiles/container')
+    full_response = capitalize_api_response(
+        api_response=client.api_request(method='GET', params=assign_params(**args), url_suffix='/profiles/container')
+    )
 
     return CommandResults(
-        outputs_prefix='prismaCloudCompute.profileContainer',
-        outputs_key_field='_id',
+        outputs_prefix='PrismaCloudCompute.ProfileContainer',
+        outputs_key_field='_Id',
         outputs=full_response if full_response else None,
-        readable_output=build_profile_container_table_response(full_response=full_response),
+        readable_output=build_profile_container_table_response(full_response=full_response),  # type:ignore
         raw_response=full_response
     )
 
@@ -529,7 +555,12 @@ def build_container_hosts_response(
     limit, offset = args.pop("limit"), args.pop("offset")
 
     hosts_ids = get_api_filtered_response(
-        client=client, url_suffix=f"profiles/container/{container_id}/hosts", offset=offset, limit=limit, args=args
+        client=client,
+        url_suffix=f"profiles/container/{container_id}/hosts",
+        offset=offset,
+        limit=limit,
+        args=args,
+        capitalize=False
     )
 
     if hosts_ids:
@@ -560,7 +591,7 @@ def get_container_hosts_list(client: PrismaCloudComputeClient, args: dict) -> Co
     context, table = build_container_hosts_response(client=client, container_id=container_id, args=args)
 
     return CommandResults(
-        outputs_prefix="prismaCloudCompute.profileContainerHost",
+        outputs_prefix="PrismaCloudCompute.ProfileContainerHost",
         outputs=context if context else None,
         readable_output=table,
         outputs_key_field="ContainerID"
@@ -637,7 +668,7 @@ def get_profile_container_forensic_list(client: PrismaCloudComputeClient, args: 
     )
 
     return CommandResults(
-        outputs_prefix='prismaCloudCompute.containerForensic',
+        outputs_prefix='PrismaCloudCompute.ContainerForensic',
         outputs=context if context else None,
         readable_output=table,
         outputs_key_field=["ContainerID", "Hostname"]
@@ -698,7 +729,7 @@ def get_profile_host_forensic_list(client: PrismaCloudComputeClient, args: dict)
     context, table = build_host_forensic_response(client=client, host_id=host_id, args=args)
 
     return CommandResults(
-        outputs_prefix='prismaCloudCompute.hostForensic',
+        outputs_prefix='PrismaCloudCompute.HostForensic',
         outputs=context if context else None,
         readable_output=table,
         outputs_key_field="HostID"
@@ -716,12 +747,12 @@ def get_console_version(client: PrismaCloudComputeClient) -> CommandResults:
     Returns:
         CommandResults: command-results object.
     """
-    version = perform_api_request(client=client, url_suffix="/version")
+    version = client.api_request(method="GET", url_suffix="/version").upper()
 
     return CommandResults(
-        outputs_prefix="prismaCloudCompute.console.version",
+        outputs_prefix="PrismaCloudCompute.Console.Version",
         outputs=version,
-        readable_output=tableToMarkdown(name="Console version", t={"version": version}, headers=["version"])
+        readable_output=tableToMarkdown(name="Console version", t={"Version": version}, headers=["Version"])
     )
 
 
@@ -736,16 +767,16 @@ def get_custom_feeds_ip_list(client: PrismaCloudComputeClient) -> CommandResults
     Returns:
         CommandResults: command-results object.
     """
-    feeds = perform_api_request(client=client, url_suffix="/feeds/custom/ips")
+    feeds = capitalize_api_response(api_response=client.api_request(method='GET', url_suffix="/feeds/custom/ips"))
 
-    if feeds and "modified" in feeds:
-        feeds["modified"] = parse_date_string_format(date_string=feeds["modified"])
+    if feeds and "Modified" in feeds:
+        feeds["Modified"] = parse_date_string_format(date_string=feeds.get("Modified", ""))  # type:ignore
 
     return CommandResults(
-        outputs_prefix="prismaCloudCompute.customFeedIP",
+        outputs_prefix="PrismaCloudCompute.CustomFeedIP",
         outputs=feeds,
         readable_output=tableToMarkdown(name="IP Feeds", t=feeds, headers=["modified", "feed"]),
-        outputs_key_field="digest"
+        outputs_key_field="Digest"
     )
 
 
@@ -761,20 +792,21 @@ def add_custom_ip_feeds(client: PrismaCloudComputeClient, args: dict) -> Command
     Returns:
         CommandResults: command-results object.
     """
-    current_ip_feeds = perform_api_request(client=client, url_suffix="/feeds/custom/ips").get("feed", [])
+    current_ip_feeds = client.api_request(method="GET", url_suffix="/feeds/custom/ips").get("feed", [])
     new_ip_feeds = argToList(arg=args.pop("IP"))
 
     # remove duplicates, the api doesn't give error on duplicate IPs
     combined_feeds = list(set(current_ip_feeds + new_ip_feeds))
 
-    perform_api_request(
-        client=client,
+    client.api_request(
         url_suffix="/feeds/custom/ips",
         method='PUT',
         json_data={"feed": combined_feeds}
     )
 
-    combined_feeds = perform_api_request(client=client, url_suffix="/feeds/custom/ips").get("feed", [])
+    combined_feeds = capitalize_api_response(
+        api_response=client.api_request(method='GET', url_suffix="/feeds/custom/ips").get("feed", [])
+    )
 
     return CommandResults(
         readable_output=tableToMarkdown(name="IP Feeds", t={"Feeds": combined_feeds}, headers=["Feeds"])

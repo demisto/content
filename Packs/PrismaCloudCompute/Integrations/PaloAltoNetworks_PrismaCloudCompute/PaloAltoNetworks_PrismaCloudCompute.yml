@@ -92,34 +92,34 @@ script:
       isArray: false
       defaultValue: "0"
     outputs:
-    - contextPath: prismaCloudCompute.profileHost_.id
+    - contextPath: PrismaCloudCompute.ProfileHost._Id
       description: ID is the profile ID (hostname)
       type: Unknown
-    - contextPath: prismaCloudCompute.profileHost.accountID
+    - contextPath: PrismaCloudCompute.ProfileHost.AccountID
       description: AccountID is the cloud account ID associated with the profile
       type: String
-    - contextPath: prismaCloudCompute.profileHost.apps
+    - contextPath: PrismaCloudCompute.ProfileHost.Apps
       description: Apps are the host's apps metadata
       type: Unknown
-    - contextPath: prismaCloudCompute.profileHost.collections
+    - contextPath: PrismaCloudCompute.ProfileHost.Collections
       description: Collections is a list of collections to which this profile applies
       type: String
-    - contextPath: prismaCloudCompute.profileHost.created
+    - contextPath: PrismaCloudCompute.ProfileHost.Created
       description: Created is the profile creation time
       type: Date
-    - contextPath: prismaCloudCompute.profileHost.hash
+    - contextPath: PrismaCloudCompute.ProfileHost.Hash
       description: Hash is an uint32 hash associated with the profile
       type: Unknown
-    - contextPath: prismaCloudCompute.profileHost.labels
+    - contextPath: PrismaCloudCompute.ProfileHost.Labels
       description: Labels are the labels associated with the profile
       type: String
-    - contextPath: prismaCloudCompute.profileHost.sshEvents
+    - contextPath: PrismaCloudCompute.ProfileHost.SshEvents
       description: SSHEvents represents a list SSH events occurred on the host
       type: Unknown
-    - contextPath: prismaCloudCompute.profileHost.time
+    - contextPath: PrismaCloudCompute.ProfileHost.Time
       description: Time is the last time when this profile was modified
       type: Date
-    - contextPath: prismaCloudCompute.profileHost.geoip
+    - contextPath: PrismaCloudCompute.ProfileHost.Geoip
       description: geoip is the list of countries
       type: Unknown
   - name: prisma-cloud-compute-profile-container-list
@@ -173,95 +173,95 @@ script:
       isArray: false
       defaultValue: "0"
     outputs:
-    - contextPath: prismaCloudCompute.profileContainer._id
+    - contextPath: PrismaCloudCompute.ProfileContainer._Id
       description: Id is the profile ID
       type: Unknown
-    - contextPath: prismaCloudCompute.profileContainer.accountsIDs
+    - contextPath: PrismaCloudCompute.ProfileContainer.AccountsIDs
       description: AccountIDs are the cloud account IDs associated with the container
         runtime profile
       type: String
-    - contextPath: prismaCloudCompute.profileContainer.archived
+    - contextPath: PrismaCloudCompute.ProfileContainer.Archived
       description: Archive indicates whether this profile is archived
       type: Boolean
-    - contextPath: prismaCloudCompute.profileContainer.capabilities
+    - contextPath: PrismaCloudCompute.ProfileContainer.Capabilities
       description: Capabilities are extended capabilities that are added to the profile
         based on static analysis
       type: Unknown
-    - contextPath: prismaCloudCompute.profileContainer.cluster
+    - contextPath: PrismaCloudCompute.ProfileContainer.Cluster
       description: Cluster is the provided cluster name
       type: String
-    - contextPath: prismaCloudCompute.profileContainer.collections
+    - contextPath: PrismaCloudCompute.ProfileContainer.Collections
       description: Collections are collections to which this profile applies
       type: String
-    - contextPath: prismaCloudCompute.profileContainer.created
+    - contextPath: PrismaCloudCompute.ProfileContainer.Created
       description: Created is the profile creation time
       type: Date
-    - contextPath: prismaCloudCompute.profileContainer.entrypoint
+    - contextPath: PrismaCloudCompute.ProfileContainer.Entrypoint
       description: Entrypoint is the image entrypoint
       type: String
-    - contextPath: prismaCloudCompute.profileContainer.events
+    - contextPath: PrismaCloudCompute.ProfileContainer.Events
       description: Events are the last historical interactive process events for this
         profile, they are updated in a designated flow
       type: Unknown
-    - contextPath: prismaCloudCompute.profileContainer.filesystem
+    - contextPath: PrismaCloudCompute.ProfileContainer.Filesystem
       description: Filesystem is the profile filesystem metadata
       type: Unknown
-    - contextPath: prismaCloudCompute.profileContainer.hash
+    - contextPath: PrismaCloudCompute.ProfileContainer.Hash
       description: Hash is an uint32 hash associated with the profile
       type: Unknown
-    - contextPath: prismaCloudCompute.profileContainer.hostNetwork
+    - contextPath: PrismaCloudCompute.ProfileContainer.HostNetwork
       description: HostNetwork whether the instance share the network namespace with
         the host
       type: Boolean
-    - contextPath: prismaCloudCompute.profileContainer.hostPid
+    - contextPath: PrismaCloudCompute.ProfileContainer.HostPid
       description: HostPid indicates whether the instance share the pid namespace
         with the host
       type: Boolean
-    - contextPath: prismaCloudCompute.profileContainer.image
+    - contextPath: PrismaCloudCompute.ProfileContainer.Image
       description: description
       type: Boolean
-    - contextPath: prismaCloudCompute.profileContainer.imageID
+    - contextPath: PrismaCloudCompute.ProfileContainer.ImageID
       description: ImageID is the profile's image ID
       type: String
-    - contextPath: prismaCloudCompute.profileContainer.infra
+    - contextPath: PrismaCloudCompute.ProfileContainer.Infra
       description: InfraContainer indicates this is an infrastructure container
       type: Boolean
-    - contextPath: prismaCloudCompute.profileContainer.istio
+    - contextPath: PrismaCloudCompute.ProfileContainer.Istio
       description: Istio states whether it is an istio-monitored profile
       type: Boolean
-    - contextPath: prismaCloudCompute.profileContainer.k8s
+    - contextPath: PrismaCloudCompute.ProfileContainer.K8s
       description: K8s holds Kubernetes related data
       type: Unknown
-    - contextPath: prismaCloudCompute.profileContainer.label
+    - contextPath: PrismaCloudCompute.ProfileContainer.Label
       description: Label is the profile's label
       type: String
-    - contextPath: prismaCloudCompute.profileContainer.lastUpdate
+    - contextPath: PrismaCloudCompute.ProfileContainer.LastUpdate
       description: Modified is the last time when this profile was modified
       type: Date
-    - contextPath: prismaCloudCompute.profileContainer.learnedStartup
+    - contextPath: PrismaCloudCompute.ProfileContainer.LearnedStartup
       description: LearnedStartup indicates that startup events were learned
       type: Boolean
-    - contextPath: prismaCloudCompute.profileContainer.namespace
+    - contextPath: PrismaCloudCompute.ProfileContainer.Namespace
       description: Namespace is the k8s deployment namespace
       type: String
-    - contextPath: prismaCloudCompute.profileContainer.network
+    - contextPath: PrismaCloudCompute.ProfileContainer.Network
       description: Network is the profile networking metadata
       type: Unknown
-    - contextPath: prismaCloudCompute.profileContainer.os
+    - contextPath: PrismaCloudCompute.ProfileContainer.OS
       description: OS is the profile image OS
       type: Strubg
-    - contextPath: prismaCloudCompute.profileContainer.processes
+    - contextPath: PrismaCloudCompute.ProfileContainer.Processes
       description: Processes is the profile processes metadata
       type: Unknown
-    - contextPath: prismaCloudCompute.profileContainer.relearningCause
+    - contextPath: PrismaCloudCompute.ProfileContainer.RelearningCause
       description: RelearningCause is a string that describes the reasoning for a
         profile to enter the learning mode afterbeing activated
       type: String
-    - contextPath: prismaCloudCompute.profileContainer.remainingLearningDurationSec
+    - contextPath: PrismaCloudCompute.ProfileContainer.RemainingLearningDurationSec
       description: RemainingLearningDurationSec represents the total time left that
         the system need to finish learning this image
       type: Number
-    - contextPath: prismaCloudCompute.profileContainer.state
+    - contextPath: PrismaCloudCompute.ProfileContainer.State
       description: State is the current state of the profile.
       type: Unknown
   - name: prisma-cloud-compute-profile-container-hosts-list
@@ -284,10 +284,10 @@ script:
       isArray: false
       defaultValue: "0"
     outputs:
-    - contextPath: prismaCloudCompute.profileContainerHost.ContainerID
+    - contextPath: PrismaCloudCompute.ProfileContainerHost.ContainerID
       description: Container ID
       type: String
-    - contextPath: prismaCloudCompute.profileContainerHost.HostsIDs
+    - contextPath: PrismaCloudCompute.ProfileContainerHost.HostsIDs
       description: The container's host IDs.
       type: Unknown
   - name: prisma-cloud-compute-profile-container-forensic-list
@@ -332,83 +332,83 @@ script:
       isArray: false
       defaultValue: "0"
     outputs:
-    - contextPath: prismaCloudCompute.containerForensic.ContainerID
+    - contextPath: PrismaCloudCompute.ContainerForensic.ContainerID
       description: The container ID.
       type: String
-    - contextPath: prismaCloudCompute.containerForensic.Hostname
+    - contextPath: PrismaCloudCompute.ContainerForensic.Hostname
       description: The Hostname.
       type: String
-    - contextPath: prismaCloudCompute.containerForensic.Forensics.allPorts
+    - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.AllPorts
       description: AllPorts indicates all listening ports are allowed
       type: Boolean
-    - contextPath: prismaCloudCompute.containerForensic.Forensics.attack
+    - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.Attack
       description: Attack is the event attack type.
       type: Unknown
-    - contextPath: prismaCloudCompute.containerForensic.Forensics.category
+    - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.Category
       description: Category is the incident category.
       type: Unknown
-    - contextPath: prismaCloudCompute.containerForensic.Forensics.command
+    - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.Command
       description: Command is the event command
       type: String
-    - contextPath: prismaCloudCompute.containerForensic.Forensics.containerId
+    - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.ContainerId
       description: ContainerID is the event container id
       type: Unknown
-    - contextPath: prismaCloudCompute.containerForensic.Forensics.dstIP
+    - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.DstIP
       description: DstIP is the destination IP of the connection
       type: String
-    - contextPath: prismaCloudCompute.containerForensic.Forensics.dstPort
+    - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.DstPort
       description: DstPort is the destination port
       type: Unknown
-    - contextPath: prismaCloudCompute.containerForensic.Forensics.dstProfileID
+    - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.DstProfileID
       description: DstProfileID is the profile ID of the connection destination
       type: String
-    - contextPath: prismaCloudCompute.containerForensic.Forensics.effect
+    - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.Effect
       description: Effect is the runtime audit effect
       type: String
-    - contextPath: prismaCloudCompute.containerForensic.Forensics.listeningStartTime
+    - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.ListeningStartTime
       description: listeningStartTime is the port listening start time
       type: Date
-    - contextPath: prismaCloudCompute.containerForensic.Forensics.message
+    - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.Message
       description: Message is the runtime audit message
       type: String
-    - contextPath: prismaCloudCompute.containerForensic.Forensics.networkCollectionType
+    - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.NetworkCollectionType
       description: NetworkCollectionType is the type of the network collection method
       type: Unknown
-    - contextPath: prismaCloudCompute.containerForensic.Forensics.outbound
+    - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.Outbound
       description: Outbound indicates if the port is outbound
       type: Boolean
-    - contextPath: prismaCloudCompute.containerForensic.Forensics.path
+    - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.Path
       description: Path is the event path
       type: String
-    - contextPath: prismaCloudCompute.containerForensic.Forensics.pid
+    - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.Pid
       description: Pid is the event process id
       type: Number
-    - contextPath: prismaCloudCompute.containerForensic.Forensics.port
+    - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.Port
       description: Port is the listening port
       type: Number
-    - contextPath: prismaCloudCompute.containerForensic.Forensics.ppid
+    - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.Ppid
       description: PPid is the event parent process id
       type: Number
-    - contextPath: prismaCloudCompute.containerForensic.Forensics.process
+    - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.Process
       description: Process is the event processdescription
       type: String
-    - contextPath: prismaCloudCompute.containerForensic.Forensics.srcIP
+    - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.SrcIP
       description: SrcIP is the source IP of the connection
       type: String
-    - contextPath: prismaCloudCompute.containerForensic.Forensics.srcProfileID
+    - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.SrcProfileID
       description: SrcProfileID is the profile ID of the connection source
       type: String
-    - contextPath: prismaCloudCompute.containerForensic.Forensics.static
+    - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.Static
       description: Static indicates the event was added to the profile without behavioral
         indication
       type: Boolean
-    - contextPath: prismaCloudCompute.containerForensic.Forensics.type
+    - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.Type
       description: Type is the event type.
       type: Unknown
-    - contextPath: prismaCloudCompute.containerForensic.Forensics.timestamp
+    - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.Timestamp
       description: Timestamp is the event timestamp
       type: Boolean
-    - contextPath: prismaCloudCompute.containerForensic.Forensics.user
+    - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.User
       description: User is the event user
       type: Unknown
   - name: prisma-cloud-compute-host-forensic-list
@@ -447,64 +447,64 @@ script:
       isArray: false
       defaultValue: "0"
     outputs:
-    - contextPath: prismaCloudCompute.hostForensic.Forensics.app
+    - contextPath: PrismaCloudCompute.HostForensic.Forensics.App
       description: App is the application associated with the event
       type: String
-    - contextPath: prismaCloudCompute.hostForensic.Forensics.attack
+    - contextPath: PrismaCloudCompute.HostForensic.Forensics.Attack
       description: Attack is the event attack type
       type: Unknown
-    - contextPath: prismaCloudCompute.hostForensic.Forensics.category
+    - contextPath: PrismaCloudCompute.HostForensic.Forensics.Category
       description: Category is the incident category.
       type: Unknown
-    - contextPath: prismaCloudCompute.hostForensic.Forensics.command
+    - contextPath: PrismaCloudCompute.HostForensic.Forensics.Command
       description: Command is the event command
       type: String
-    - contextPath: prismaCloudCompute.hostForensic.Forensics.country
+    - contextPath: PrismaCloudCompute.HostForensic.Forensics.Country
       description: Country is the country associated with the event
       type: String
-    - contextPath: prismaCloudCompute.hostForensic.Forensics.effect
+    - contextPath: PrismaCloudCompute.HostForensic.Forensics.Effect
       description: Effect is the runtime audit effect
       type: String
-    - contextPath: prismaCloudCompute.hostForensic.Forensics.interactive
+    - contextPath: PrismaCloudCompute.HostForensic.Forensics.Interactive
       description: Interactive indicates if the event is interactive
       type: Boolean
-    - contextPath: prismaCloudCompute.hostForensic.Forensics.ip
+    - contextPath: PrismaCloudCompute.HostForensic.Forensics.Ip
       description: IP is the IP address associated with the event
       type: String
-    - contextPath: prismaCloudCompute.hostForensic.Forensics.listeningStartTime
+    - contextPath: PrismaCloudCompute.HostForensic.Forensics.ListeningStartTime
       description: ListeningStartTime is the listening port start time
       type: Date
-    - contextPath: prismaCloudCompute.hostForensic.Forensics.message
+    - contextPath: PrismaCloudCompute.HostForensic.Forensics.Message
       description: Message is the runtime audit message
       type: String
-    - contextPath: prismaCloudCompute.hostForensic.Forensics.path
+    - contextPath: PrismaCloudCompute.HostForensic.Forensics.Path
       description: Path is the event path
       type: String
-    - contextPath: prismaCloudCompute.hostForensic.Forensics.pid
+    - contextPath: PrismaCloudCompute.HostForensic.Forensics.PID
       description: Pid is the event process id
       type: Number
-    - contextPath: prismaCloudCompute.hostForensic.Forensics.port
+    - contextPath: PrismaCloudCompute.HostForensic.Forensics.Port
       description: Port is the listening port
       type: Number
-    - contextPath: prismaCloudCompute.hostForensic.Forensics.ppath
+    - contextPath: PrismaCloudCompute.HostForensic.Forensics.Ppath
       description: P-path is the event parent path
       type: String
-    - contextPath: prismaCloudCompute.hostForensic.Forensics.ppid
+    - contextPath: PrismaCloudCompute.HostForensic.Forensics.Ppid
       description: PPid is the event parent process id
       type: Number
-    - contextPath: prismaCloudCompute.hostForensic.Forensics.process
+    - contextPath: PrismaCloudCompute.HostForensic.Forensics.Process
       description: Process is the event process
       type: String
-    - contextPath: prismaCloudCompute.hostForensic.Forensics.timestamp
+    - contextPath: PrismaCloudCompute.HostForensic.Forensics.Timestamp
       description: Timestamp is the event timestamp
       type: Date
-    - contextPath: prismaCloudCompute.hostForensic.Forensics.type
+    - contextPath: PrismaCloudCompute.HostForensic.Forensics.Type
       description: Type is the event type.
       type: Unknown
-    - contextPath: prismaCloudCompute.hostForensic.Forensics.user
+    - contextPath: PrismaCloudCompute.HostForensic.Forensics.User
       description: User is the event user
       type: Unknown
-    - contextPath: prismaCloudCompute.hostForensic.HostID
+    - contextPath: PrismaCloudCompute.HostForensic.HostID
       description: The host ID that was analyzed
       type: String
   - name: prisma-cloud-compute-console-version-info
@@ -512,7 +512,7 @@ script:
     deprecated: false
     arguments: []
     outputs:
-    - contextPath: prismaCloudCompute.console.version
+    - contextPath: PrismaCloudCompute.Console.Version
       description: The console version
       type: String
   - name: prisma-cloud-compute-custom-feeds-ip-list
@@ -520,16 +520,16 @@ script:
     deprecated: false
     arguments: []
     outputs:
-    - contextPath: prismaCloudCompute.customFeedIP._id
+    - contextPath: PrismaCloudCompute.CustomFeedIP._Id
       description: ID is the custom feed id
       type: String
-    - contextPath: prismaCloudCompute.customFeedIP.digest
+    - contextPath: PrismaCloudCompute.CustomFeedIP.Digest
       description: Digest is an internal digest of the custom ip feed
       type: String
-    - contextPath: prismaCloudCompute.customFeedIP.feed
+    - contextPath: PrismaCloudCompute.CustomFeedIP.Feed
       description: Feed is the list of custom ips
       type: Unknown
-    - contextPath: prismaCloudCompute.customFeedIP.modified
+    - contextPath: PrismaCloudCompute.CustomFeedIP.Modified
       description: Modified is the last time the custom feed was modified
       type: Date
   - name: prisma-cloud-compute-custom-feeds-ip-add
