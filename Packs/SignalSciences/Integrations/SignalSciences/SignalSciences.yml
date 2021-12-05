@@ -112,7 +112,7 @@ script:
       description: The site that holds the allow list you want to add an IP address to.
     - name: ip
       required: true
-      description: The IP address to add to the site's allow list.
+      description: The IP address to add to the site's allow list in CSV format.
     - name: note
       required: true
       description: The note associated with the tag.
@@ -145,7 +145,7 @@ script:
       description: The site that holds the block list you wish to add to
     - name: ip
       required: true
-      description: The IP address to add to the site's block list.
+      description: The IP address to add to the site's block list in CSV format.
     - name: note
       required: true
       description: The note associated with the tag.

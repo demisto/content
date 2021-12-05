@@ -152,7 +152,7 @@ script:
       secret: false
     - default: false
       description: The CIDR range address of a new particular threatening IP address
-        object (i.e IP address/ mask). For example, "1.2.3.4/32". In case only IP
+        object (i.e IP address/ mask) in CSV format. For example, "1.2.3.4/32,2.3.4.5". In case only IP
         address is given, the default mask is 32.
       isArray: true
       name: cidr_range
