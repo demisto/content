@@ -1,12 +1,11 @@
-# import demistomock as demisto
+import demistomock as demisto
 import dateparser
 from datetime import datetime, timezone
 
 
 def date_to_epoch(date, formatter=None):
     epoch = datetime(1970, 1, 1, tzinfo=timezone.utc)
-    date_obj = dateparser.parse(date_string=date)
-    # date_obj = datetime.strptime(date, formatter)
+    date_obj = datetime.strptime(date, formatter) if formatter else dateparser.parse(date)
     return int(date_obj.strftime('%s') if date_obj.tzinfo is None else (date_obj - epoch).total_seconds())
 
 
