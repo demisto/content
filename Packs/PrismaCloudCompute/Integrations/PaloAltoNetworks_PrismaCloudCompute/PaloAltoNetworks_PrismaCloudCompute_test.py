@@ -549,17 +549,19 @@ def test_http_request_url_with_query_params_is_valid(requests_mock, args, func, 
 HTTP_REQUEST_URL = [
     (
         get_console_version,
-        "/version"
+        "/version",
+        ""
     ),
     (
         get_custom_feeds_ip_list,
-        "/feeds/custom/ips"
+        "/feeds/custom/ips",
+        {}
     )
 ]
 
 
-@pytest.mark.parametrize("func, url_suffix", HTTP_REQUEST_URL)
-def test_http_request_url_is_valid(requests_mock, func, url_suffix, client):
+@pytest.mark.parametrize("func, url_suffix, json", HTTP_REQUEST_URL)
+def test_http_request_url_is_valid(requests_mock, func, url_suffix, json, client):
     """
     Given:
         - url endpoint.
@@ -571,7 +573,7 @@ def test_http_request_url_is_valid(requests_mock, func, url_suffix, client):
         - Verify that the full URL of the http request is sent correctly.
     """
     full_url = BASE_URL + url_suffix
-    mocker = requests_mock.get(url=full_url, json={})
+    mocker = requests_mock.get(url=full_url, json=json)
     func(client=client)
 
     assert full_url == mocker.last_request._url_parts.geturl()
@@ -622,6 +624,7 @@ HTTP_FILTERING_BODY_RESPONSE_PARAMS = [
         },
         "/profiles/container/123/hosts",
         ["host1", "host2", "host3", "host4", "host5"],
+        False
     ),
     (
         {
@@ -631,26 +634,27 @@ HTTP_FILTERING_BODY_RESPONSE_PARAMS = [
         "/profiles/container/123/forensic",
         [
             {
-                "type": "Binary created",
-                "containerId": "123",
+                "Type": "Binary created",
+                "ContainerId": "123",
             },
             {
-                "type": "Binary created",
-                "containerId": "1234",
+                "Type": "Binary created",
+                "ContainerId": "1234",
             },
             {
-                "type": "Binary created",
-                "containerId": "12345",
+                "Type": "Binary created",
+                "ContainerId": "12345",
             },
             {
-                "type": "Binary created",
-                "containerId": "123456",
+                "Type": "Binary created",
+                "ContainerId": "123456",
             },
             {
-                "type": "Binary created",
-                "containerId": "1234567",
+                "Type": "Binary created",
+                "ContainerId": "1234567",
             }
-        ]
+        ],
+        True
     ),
     (
         {
@@ -660,26 +664,27 @@ HTTP_FILTERING_BODY_RESPONSE_PARAMS = [
         "/profiles/host/123/forensic",
         [
             {
-                "type": "Process spawned",
-                "app": "ffdd78ae",
+                "Type": "Process spawned",
+                "App": "ffdd78ae",
             },
             {
-                "type": "Listening port",
-                "app": "ffdd78ae",
+                "Type": "Listening port",
+                "App": "ffdd78ae",
             },
             {
-                "type": "Listening port",
-                "app": "ffdd78ae",
+                "Type": "Listening port",
+                "App": "ffdd78ae",
             },
             {
-                "type": "Listening port",
-                "app": "ffdd78ae",
+                "Type": "Listening port",
+                "App": "ffdd78ae",
             },
             {
-                "type": "Listening port",
-                "app": "ffdd78ae",
+                "Type": "Listening port",
+                "App": "ffdd78ae",
             }
-        ]
+        ],
+        True
     ),
     (
         {
@@ -687,7 +692,8 @@ HTTP_FILTERING_BODY_RESPONSE_PARAMS = [
             "offset": "2"
         },
         "/profiles/container/123/hosts",
-        ["host1"]
+        ["host1"],
+        False
     ),
     (
         {
@@ -695,7 +701,8 @@ HTTP_FILTERING_BODY_RESPONSE_PARAMS = [
             "offset": "1"
         },
         "/profiles/container/123/hosts",
-        ["host1, host2"]
+        ["host1, host2"],
+        False
     ),
     (
         {
@@ -703,7 +710,8 @@ HTTP_FILTERING_BODY_RESPONSE_PARAMS = [
             "offset": "1"
         },
         "/profiles/container/123/hosts",
-        ["host1, host2", "host3", "host4", "host5"]
+        ["host1, host2", "host3", "host4", "host5"],
+        False
     ),
     (
         {
@@ -711,7 +719,8 @@ HTTP_FILTERING_BODY_RESPONSE_PARAMS = [
             "offset": "4"
         },
         "/profiles/container/123/hosts",
-        ["host1, host2", "host3"]
+        ["host1, host2", "host3"],
+        False
     ),
     (
         {
@@ -719,13 +728,14 @@ HTTP_FILTERING_BODY_RESPONSE_PARAMS = [
             "offset": "4"
         },
         "/profiles/container/123/hosts",
-        ["host1, host2", "host3", "host4", "host5", "host6", "host7"]
+        ["host1, host2", "host3", "host4", "host5", "host6", "host7"],
+        False
     )
 ]
 
 
-@pytest.mark.parametrize("args, url_suffix, response", HTTP_FILTERING_BODY_RESPONSE_PARAMS)
-def test_http_body_response_filtering_is_valid(requests_mock, args, url_suffix, response, client):
+@pytest.mark.parametrize("args, url_suffix, response, capitalize", HTTP_FILTERING_BODY_RESPONSE_PARAMS)
+def test_http_body_response_filtering_is_valid(requests_mock, args, url_suffix, response, capitalize, client):
     """
     Given:
         - http body response.
@@ -742,7 +752,7 @@ def test_http_body_response_filtering_is_valid(requests_mock, args, url_suffix, 
 
     requests_mock.get(url=full_url, json=response)
     body_response = get_api_filtered_response(
-        client=client, url_suffix=url_suffix, offset=offset, limit=limit, args=args
+        client=client, url_suffix=url_suffix, offset=offset, limit=limit, args=args, capitalize=capitalize
     )
 
     assert len(body_response) == len(response[offset:limit + offset])
@@ -787,12 +797,12 @@ EXPECTED_CONTEXT_OUTPUT_DATA = [
         "/profiles/host",
         [
             {
-                "_id": "1",
-                "hash": 1
+                "_Id": "1",
+                "Hash": 1
             },
             {
-                "_id": "2",
-                "hash": 2
+                "_Id": "2",
+                "Hash": 2
             }
         ],
         ""
@@ -806,19 +816,19 @@ EXPECTED_CONTEXT_OUTPUT_DATA = [
         "/profiles/container",
         [
             {
-                "state": "active",
-                "_id": "1",
-                "created": "2021-09-02T11:05:08.931Z"
+                "State": "active",
+                "_Id": "1",
+                "Created": "2021-09-02T11:05:08.931Z"
             },
             {
-                "state": "down",
-                "_id": "2",
-                "created": "2020-09-02T11:05:08.931Z"
+                "State": "down",
+                "_Id": "2",
+                "Created": "2020-09-02T11:05:08.931Z"
             },
             {
-                "state": "active",
-                "_id": "3",
-                "created": "2019-09-02T11:05:08.931Z"
+                "State": "active",
+                "_Id": "3",
+                "Created": "2019-09-02T11:05:08.931Z"
             }
         ],
         ""
@@ -848,20 +858,20 @@ EXPECTED_CONTEXT_OUTPUT_DATA = [
         "/profiles/container/123/forensic?hostname=hostname",
         [
             {
-                "type": "Runtime profile networking",
-                "timestamp": "2021-09-02T11:05:17.697083555Z",
-                "containerId": "",
-                "listeningStartTime": "0001-01-01T00:00:00Z",
-                "port": 8000,
-                "outbound": True
+                "Type": "Runtime profile networking",
+                "Timestamp": "2021-09-02T11:05:17.697083555Z",
+                "ContainerId": "",
+                "ListeningStartTime": "0001-01-01T00:00:00Z",
+                "Port": 8000,
+                "Outbound": True
             },
             {
-                "type": "Runtime profile networking",
-                "timestamp": "2021-09-02T11:05:11.188517918Z",
-                "containerId": "",
-                "listeningStartTime": "0001-01-01T00:00:00Z",
-                "port": 6789,
-                "process": "some_process"
+                "Type": "Runtime profile networking",
+                "Timestamp": "2021-09-02T11:05:11.188517918Z",
+                "ContainerId": "",
+                "ListeningStartTime": "0001-01-01T00:00:00Z",
+                "Port": 6789,
+                "Process": "some_process"
             }
         ],
         {
@@ -869,20 +879,20 @@ EXPECTED_CONTEXT_OUTPUT_DATA = [
             "Hostname": "hostname",
             "Forensics": [
                 {
-                    "type": "Runtime profile networking",
-                    "timestamp": "2021-09-02T11:05:17.697083555Z",
-                    "containerId": "",
-                    "listeningStartTime": "0001-01-01T00:00:00Z",
-                    "port": 8000,
-                    "outbound": True
+                    "Type": "Runtime profile networking",
+                    "Timestamp": "2021-09-02T11:05:17.697083555Z",
+                    "ContainerId": "",
+                    "ListeningStartTime": "0001-01-01T00:00:00Z",
+                    "Port": 8000,
+                    "Outbound": True
                 },
                 {
-                    "type": "Runtime profile networking",
-                    "timestamp": "2021-09-02T11:05:11.188517918Z",
-                    "containerId": "",
-                    "listeningStartTime": "0001-01-01T00:00:00Z",
-                    "port": 6789,
-                    "process": "some_process"
+                    "Type": "Runtime profile networking",
+                    "Timestamp": "2021-09-02T11:05:11.188517918Z",
+                    "ContainerId": "",
+                    "ListeningStartTime": "0001-01-01T00:00:00Z",
+                    "Port": 6789,
+                    "Process": "some_process"
                 }
             ],
         }
@@ -897,28 +907,28 @@ EXPECTED_CONTEXT_OUTPUT_DATA = [
         "/profiles/host/123/forensic",
         [
             {
-                "type": "Process spawned",
-                "command": "docker-runc --version",
-                "listeningStartTime": "0001-01-01T00:00:00Z"
+                "Type": "Process spawned",
+                "Command": "docker-runc --version",
+                "ListeningStartTime": "0001-01-01T00:00:00Z"
             },
             {
-                "type": "Process spawned",
-                "command": "docker ps -a",
-                "listeningStartTime": "0001-01-01T00:00:00Z"
+                "Type": "Process spawned",
+                "Command": "docker ps -a",
+                "ListeningStartTime": "0001-01-01T00:00:00Z"
             }
         ],
         {
             "HostID": "123",
             "Forensics": [
                 {
-                    "type": "Process spawned",
-                    "command": "docker-runc --version",
-                    "listeningStartTime": "0001-01-01T00:00:00Z"
+                    "Type": "Process spawned",
+                    "Command": "docker-runc --version",
+                    "ListeningStartTime": "0001-01-01T00:00:00Z"
                 },
                 {
-                    "type": "Process spawned",
-                    "command": "docker ps -a",
-                    "listeningStartTime": "0001-01-01T00:00:00Z"
+                    "Type": "Process spawned",
+                    "Command": "docker ps -a",
+                    "ListeningStartTime": "0001-01-01T00:00:00Z"
                 }
             ]
         }
@@ -935,28 +945,28 @@ EXPECTED_CONTEXT_OUTPUT_DATA = [
         get_custom_feeds_ip_list,
         "/feeds/custom/ips",
         {
-            "_id": "",
-            "modified": "2021-12-01T11:50:50.882Z",
-            "feed": [
+            "_Id": "",
+            "Modified": "2021-12-01T11:50:50.882Z",
+            "Feed": [
                 "1.1.1.1",
                 "5.5.5.5",
                 "2.2.2.2",
                 "4.4.4.4",
                 "3.3.3.3"
             ],
-            "digest": "1234"
+            "Digest": "1234"
         },
         {
-            "_id": "",
-            "modified": "December 01, 2021 11:50:50 AM",
-            "feed": [
+            "_Id": "",
+            "Modified": "December 01, 2021 11:50:50 AM",
+            "Feed": [
                 "1.1.1.1",
                 "5.5.5.5",
                 "2.2.2.2",
                 "4.4.4.4",
                 "3.3.3.3"
             ],
-            "digest": "1234"
+            "Digest": "1234"
         }
     )
 ]
