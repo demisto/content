@@ -1,4 +1,4 @@
-from urllib.parse import urlparse, ParseResult
+from urllib.parse import urlparse
 
 import pytest
 
@@ -75,10 +75,6 @@ PROOF_POINT_REDIRECTS = [
 
 REDIRECT_TEST_DATA = ATP_REDIRECTS + PROOF_POINT_REDIRECTS
 
-NORMALIZE_TEST_DATA = [('ftps://foo.bar/baz%20%21%22%23%24%25%26', 'ftps://foo.bar/baz !"#$%&'),
-                       ('ftps://foo.bar/baz%27%28%29%2A%2B,', "ftps://foo.bar/baz'()*+,"),
-                       ]
-
 FORMAT_URL_ADDITIONAL_TEST_CASES = [
     ('https://test.co.uk/test.html', 'https://test.co.uk/test.html'),
     ('www.test.test.com/test.html?paramaters=testagain', 'www.test.test.com/test.html?paramaters=testagain'),
@@ -98,11 +94,12 @@ FORMAT_URL_ADDITIONAL_TEST_CASES = [
     ('http://223.255.255.254', 'http://223.255.255.254'),
     ('ftp://foo.bar/baz', 'ftp://foo.bar/baz'),
     ('ftps://foo.bar/baz', 'ftps://foo.bar/baz'),
-    ('hxxps://www[.]cortex-xsoar[.]com', 'https://www.cortex-xsoar.com')
+    ('hxxps://www[.]cortex-xsoar[.]com', 'https://www.cortex-xsoar.com'),
+    ('ftps://foo.bar/baz%20%21%22%23%24%25%26', 'ftps://foo.bar/baz !"#$%&'),
+    ('ftps://foo.bar/baz%27%28%29%2A%2B,', "ftps://foo.bar/baz'()*+,"),
 ]
 
-FORMAT_URL_TEST_DATA = NOT_FORMAT_TO_FORMAT + PROOF_POINT_REDIRECTS + FORMAT_URL_ADDITIONAL_TEST_CASES + \
-                       NORMALIZE_TEST_DATA
+FORMAT_URL_TEST_DATA = NOT_FORMAT_TO_FORMAT + PROOF_POINT_REDIRECTS + FORMAT_URL_ADDITIONAL_TEST_CASES
 
 
 @pytest.mark.parametrize('non_formatted_url, expected', NOT_FORMAT_TO_FORMAT)

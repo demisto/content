@@ -67,14 +67,14 @@ def get_redirect_url_from_query(non_formatted_url: str, parse_results: ParseResu
     Returns:
         (str): The URL the ATP Safe Link points to.
     """
-    query_params_dict: dict[str, list[str]] = parse_qs(parse_results.query)
-    if not (url_ := query_params_dict.get(redirect_param_name)):
+    query_params_dict: Dict[str, List[str]] = parse_qs(parse_results.query)
+    if not (query_urls := query_params_dict.get(redirect_param_name, [])):
         demisto.error(f'Could not find redirected URL. Returning the original URL: {non_formatted_url}')
         return non_formatted_url
-    if len(url_) > 1:
+    if len(query_urls) > 1:
         demisto.debug(f'Found more than one URL query parameters for redirect in the given URL {non_formatted_url}\n'
-                      f'Returning the first URL: {url_[0]}')
-    url_ = url_[0]
+                      f'Returning the first URL: {query_urls[0]}')
+    url_: str = query_urls[0]
     return url_
 
 
