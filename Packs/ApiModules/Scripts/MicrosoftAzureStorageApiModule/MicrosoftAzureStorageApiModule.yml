@@ -5,7 +5,7 @@ name: MicrosoftAzureStorageApiModule
 script: ''
 type: python
 subtype: python3
-tags:
+tags: []
 comment: Common Microsoft Azure Storage code that will be appended into each Microsoft Azure Storage integration.
 system: true
 scripttarget: 0
