@@ -4871,7 +4871,8 @@
         "VMWare Test": "Issue 43823",
         "Google-Vault-Generic-Test": "Issue 24347",
         "Google_Vault-Search_And_Display_Results_test": "Issue 24348",
-        "Tenable.io Scan Test": "Issue 26728"
+        "Tenable.io Scan Test": "Issue 26728",
+        "Zscaler Test": "Issue 40157, API subscription currently Expired"
     },
     "skipped_integrations": {
         "AutoFocus V2": "Issue 26464",
