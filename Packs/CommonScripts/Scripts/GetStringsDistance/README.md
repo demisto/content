@@ -6,7 +6,7 @@ Gets the string distance between `inputString` and `compareString` (can be a com
 | **Name** | **Description** |
 | --- | --- |
 | Script Type | python |
-| Tags | server, phishing, Condition |
+| Tags | server, phishing |
 
 
 ## Inputs
