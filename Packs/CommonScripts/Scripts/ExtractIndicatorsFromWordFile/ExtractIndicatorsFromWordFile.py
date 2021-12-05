@@ -31,7 +31,7 @@ class WordParser:
         else:  # Got file path:
             self.file_path = file_res.get('Contents').get('path')
             self.file_name = file_res.get('Contents').get('name')
-            file = demisto.dt(demisto.context(), "File(val.EntryID === '{}')".format(demisto.args().get('entryID')))
+            file = demisto.dt(self.get_context(), "File(val.EntryID === '{}')".format(demisto.args().get('entryID')))
             if isinstance(file, list):
                 file = file[0]
 
@@ -106,6 +106,13 @@ class WordParser:
             self.extract_indicators()
         else:
             return_error("Input file is not a doc file.")
+
+    def get_context(self):
+        incident_id = demisto.incidents()[0]['id']
+        res = demisto.executeCommand('getContext', {'id': incident_id})
+        if isError(res):
+            return_error('Error occurred while trying to get the incident context: {}'.format(get_error(res)))
+        return demisto.get(res[0], 'Contents.context')
 
 
 def main():
