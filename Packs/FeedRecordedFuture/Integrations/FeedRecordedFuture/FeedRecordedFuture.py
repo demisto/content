@@ -71,7 +71,7 @@ class Client(BaseClient):
         self.tlp_color = tlp_color
         super().__init__(self.BASE_URL, proxy=proxy, verify=not insecure)
 
-    def _build_request(self, service, indicator_type, risk_rule):
+    def _build_request(self, service, indicator_type, risk_rule: Optional[str] = None):
         """Builds the request for the Recorded Future feed.
         Args:
             service (str): The service from recorded future. Can be 'connectApi' or 'fusion'
@@ -113,7 +113,7 @@ class Client(BaseClient):
             raise DemistoException(f'Service unknown: {service}')
         return response.prepare()
 
-    def build_iterator(self, service, indicator_type, risk_rule):
+    def build_iterator(self, service, indicator_type, risk_rule: Optional[str] = None):
         """Retrieves all entries from the feed.
         Args:
             service (str): The service from recorded future. Can be 'connectApi' or 'fusion'
@@ -327,7 +327,7 @@ def format_risk_string(risk_string):
     return f'{splitted_risk_string[0]} of {splitted_risk_string[1]} Risk Rules Triggered'
 
 
-def fetch_and_create_indicators(client, risk_rule=None):
+def fetch_and_create_indicators(client, risk_rule: Optional[str] = None):
     """Fetches indicators from the Recorded Future feeds,
     and from each fetched indicator creates an indicator in XSOAR.
 
@@ -343,7 +343,7 @@ def fetch_and_create_indicators(client, risk_rule=None):
         demisto.createIndicators(indicators)
 
 
-def fetch_indicators_command(client, indicator_type, risk_rule=None, limit: Optional[int] = None):
+def fetch_indicators_command(client, indicator_type, risk_rule: Optional[str] = None, limit: Optional[int] = None):
     """Fetches indicators from the Recorded Future feeds.
     Args:
         client(Client): Recorded Future Feed client

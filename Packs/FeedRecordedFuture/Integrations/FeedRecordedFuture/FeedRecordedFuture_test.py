@@ -1,5 +1,6 @@
 import pytest
 from collections import OrderedDict
+from FeedRecordedFuture import get_indicator_type, get_indicators_command, Client, fetch_indicators_command
 from csv import DictReader
 from CommonServerPython import argToList
 
@@ -28,7 +29,6 @@ GET_INDICATOR_TYPE_INPUTS = [
 
 @pytest.mark.parametrize('indicator_type, csv_item, answer', GET_INDICATOR_TYPE_INPUTS)
 def test_get_indicator_type(indicator_type, csv_item, answer):
-    from FeedRecordedFuture import get_indicator_type
     returned_indicator_type = get_indicator_type(indicator_type, csv_item)
     assert returned_indicator_type == answer
 
@@ -100,7 +100,6 @@ GET_INDICATOR_INPUTS = [
 
 @pytest.mark.parametrize('indicator_type, build_iterator_answer, value, type', GET_INDICATOR_INPUTS)
 def test_get_indicators_command(mocker, indicator_type, build_iterator_answer, value, type):
-    from FeedRecordedFuture import get_indicators_command, Client
     client = Client(indicator_type=indicator_type, api_token='123', services='fusion')
     args = {
         'indicator_type': indicator_type,
@@ -139,7 +138,6 @@ def test_get_indicators_command_by_risk_rules(mocker, indicator_type, risk_rules
      - Verify the raw response and the human readable output of the command are correct, and include fetched indicators
       of all the defined risk rules.
     """
-    from FeedRecordedFuture import get_indicators_command, Client
     client = Client(indicator_type=indicator_type, api_token='123', risk_rule=risk_rules, services='ConnectApi')
     args = {
         'indicator_type': indicator_type,
@@ -169,7 +167,6 @@ CALCULATE_DBOT_SCORE_INPUTS = [
 
 @pytest.mark.parametrize('risk_from_feed, threshold, expected_score', CALCULATE_DBOT_SCORE_INPUTS)
 def test_calculate_dbot_score(risk_from_feed, threshold, expected_score):
-    from FeedRecordedFuture import Client
     client = Client(indicator_type='ip', api_token='123', services=['fusion'], threshold=threshold)
     score = client.calculate_indicator_score(risk_from_feed)
     assert score == expected_score
@@ -187,7 +184,6 @@ def test_fetch_indicators_command(mocker):
     Then:
      - Verify the fetch runs successfully.
     """
-    from FeedRecordedFuture import Client, fetch_indicators_command
     indicator_type = 'ip'
     client = Client(indicator_type=indicator_type, api_token='dummytoken', services=['fusion'])
     mocker.patch('FeedRecordedFuture.Client.build_iterator')
@@ -219,7 +215,6 @@ def test_feed_tags(mocker, tags):
     Then:
     - Validate the tags supplied exists in the indicators
     """
-    from FeedRecordedFuture import Client, fetch_indicators_command
     client = Client(indicator_type='ip', api_token='dummytoken', services='fusion', tags=tags)
     mocker.patch('FeedRecordedFuture.Client.build_iterator')
     mocker.patch('FeedRecordedFuture.Client.get_batches_from_file', return_value=[[{'Name': '192.168.1.1'}]])
@@ -269,21 +264,11 @@ def test_risk_rule_validations(mocker, indicator_type, risk_rules, service, expe
      2. Error message for invalid risk rule.
      3. Error message for invalid risk rule on the second risk rule in the risk rules list.
     """
-    mocker.patch('FeedRecordedFuture.return_error', side_effect=mock_return_error)
-    from FeedRecordedFuture import Client
-    client = Client(indicator_type=indicator_type, api_token='123', risk_rule=risk_rules, services=service)
-
     mocker.patch('FeedRecordedFuture.Client.get_risk_rules',
                  return_value={'data': {'results': [{'name': 'dhsAis'}, {'name': 'phishingUrl'}]}})
-    with pytest.raises(Exception) as e:
-        Client.run_parameters_validations(client)
-    assert expected_err_msg in str(e.value)
 
+    client = Client(indicator_type=indicator_type, api_token='123', risk_rule=risk_rules, services=service)
 
-def mock_return_error(err_msg: str):
-    """
-    A mocker for CommonServerPython.return_error function which returns the error message that is passed as an input to
-    the 'real' return_error function during the integration's parameter validation flow.
-    A mocker is needed because the 'real' CommonServerPython.return_error function executes sys.exit(0).
-    """
-    raise Exception(err_msg)
+    return_error_result = mocker.patch('FeedRecordedFuture.return_error')
+    Client.run_parameters_validations(client)
+    assert expected_err_msg in return_error_result.call_args[0][0]

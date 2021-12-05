@@ -105,9 +105,9 @@ configuration:
   required: true
   type: 16
 - additionalinfo: |-
-    A comma-separated list of risk rules which limit the indicators list to a specific risk rule.
+    A comma-separated list of risk rules which limits the indicators list to a specific risk rule.
     For example: 'dhsAis,phishingUrl'.
-    If more than one risk rule is setted, the 'fetch-indicators' and 'rf-feed-get-indicators' commands will be executed for each risk rule.
+    If more than one risk rule is set, the indicators fetching and the 'rf-feed-get-indicators' command will be executed for each risk rule.
     To see available risk rules run the rf-feed-get-risk-rules command.
     This parameter will only be used for the 'connectApi' service.
     Using the 'large' risk rule is not recommended.
