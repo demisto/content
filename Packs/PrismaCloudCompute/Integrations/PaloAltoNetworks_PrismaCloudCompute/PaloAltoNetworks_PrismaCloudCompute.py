@@ -294,6 +294,19 @@ def validate_limit_and_offset(func):
     return wrapper
 
 
+def update_query_params_names(names: List[Tuple[str, str]], args: dict) -> None:
+    """
+    Update the query parameters names.
+
+    Args:
+        names (list): a list of old name and new names to replace.
+        args (dict): a dict to replace its old key names with new key names.
+    """
+    for old_name, new_name in names:
+        if old_name in args:
+            args[new_name] = args.pop(old_name)
+
+
 def parse_date_string_format(
     date_string: str, date_string_format: str = '%Y-%m-%dT%H:%M:%S.%fZ', new_format: str = "%B %d, %Y %H:%M:%S %p"
 ) -> str:
@@ -444,6 +457,7 @@ def get_profile_host_list(client: PrismaCloudComputeClient, args: dict) -> Comma
     Returns:
         CommandResults: command-results object.
     """
+    update_query_params_names(names=[("hostname", "hostName")], args=args)
 
     full_response = capitalize_api_response(
         api_response=client.api_request(method='GET', url_suffix='/profiles/host', params=assign_params(**args))
@@ -524,6 +538,8 @@ def get_container_profile_list(client: PrismaCloudComputeClient, args: dict) -> 
     Returns:
         CommandResults: command-results object.
     """
+    update_query_params_names(names=[("image_id", "imageID")], args=args)
+
     full_response = capitalize_api_response(
         api_response=client.api_request(method='GET', params=assign_params(**args), url_suffix='/profiles/container')
     )
@@ -662,7 +678,8 @@ def get_profile_container_forensic_list(client: PrismaCloudComputeClient, args: 
     Returns:
         CommandResults: command-results object.
     """
-    container_id = args.get("id")
+    container_id = args.pop("id")
+    update_query_params_names(names=[("incident_id", "incidentID")], args=args)
     context, table = build_containers_forensic_response(
         client=client, container_id=container_id, args=args  # type:ignore
     )
@@ -726,6 +743,7 @@ def get_profile_host_forensic_list(client: PrismaCloudComputeClient, args: dict)
         CommandResults: command-results object.
     """
     host_id = args.pop("id")
+    update_query_params_names(names=[("incident_id", "incidentID"), ("event_time", "eventTime")], args=args)
     context, table = build_host_forensic_response(client=client, host_id=host_id, args=args)
 
     return CommandResults(
@@ -793,7 +811,7 @@ def add_custom_ip_feeds(client: PrismaCloudComputeClient, args: dict) -> Command
         CommandResults: command-results object.
     """
     current_ip_feeds = client.api_request(method="GET", url_suffix="/feeds/custom/ips").get("feed", [])
-    new_ip_feeds = argToList(arg=args.pop("IP"))
+    new_ip_feeds = argToList(arg=args.pop("ip"))
 
     # remove duplicates, the api doesn't give error on duplicate IPs
     combined_feeds = list(set(current_ip_feeds + new_ip_feeds))

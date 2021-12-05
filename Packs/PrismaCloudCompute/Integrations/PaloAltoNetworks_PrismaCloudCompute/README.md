@@ -85,7 +85,7 @@ Get information about the hosts and their profile events.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | cluster | Clusters is the runtime profile k8s cluster filter. | Optional | 
-| hostName | Hosts is the runtime profile hostname filter. | Optional |  
+| hostname | Hosts is the runtime profile hostname filter. | Optional |  
 | limit | The maximum number of hosts and their profile events to return. Default is 15. . Default is 15. | Optional | 
 | offset | The offset number to begin listing hosts and their profile events. Default is 0. Default is 0. | Optional | 
 
@@ -170,7 +170,7 @@ Get information about the containers and their profile events.
 | cluster | Clusters is the runtime profile k8s cluster filter. | Optional | 
 | id | IDs is the runtime profile id filter. | Optional | 
 | image | Images is the runtime profile image filter. | Optional | 
-| imageID | ImageIDs is the runtime profile image id filter. | Optional | 
+| image_id | ImageIDs is the runtime profile image id filter. | Optional | 
 | namespace | Namespaces is the runtime profile k8s namespace filter. | Optional | 
 | os | OS is the service runtime profile OS filter. | Optional | 
 | state | States is the runtime profile state filter. | Optional | 
@@ -301,8 +301,8 @@ Get runtime forensics data for a specific container on a specific host
 | id | The container ID. | Required | 
 | collections | Collections are collections scoping the query. | Optional | 
 | hostname | Hostname is the hostname for which data should be fetched. | Required | 
-| incidentID | IncidentID is the incident ID in case the request kind is an incident. | Optional | 
-| eventTime | EventTime is the forensic event pivot time in milliseconds (used to fetch events). | Optional | 
+| incident_id | IncidentID is the incident ID in case the request kind is an incident. | Optional | 
+| event_time | EventTime is the forensic event pivot time in milliseconds (used to fetch events). | Optional | 
 | limit | maximum of forensics data records to return. Default is 20. | Optional | 
 | offset | The offset number to begin listing records from . Default is 0. | Optional | 
 
@@ -380,7 +380,7 @@ Get forensics on a specific host
 | --- | --- | --- |
 | id | host ID. | Required | 
 | collections | Collections are collections scoping the query. | Optional | 
-| incidentID | IncidentID is the incident ID in case the request kind is an incident. | Optional | 
+| incident_id | IncidentID is the incident ID in case the request kind is an incident. | Optional | 
 | eventTime | EventTime is the forensic event pivot time in milliseconds (used to fetch events). | Optional | 
 | limit | maximum of forensics data records to return. Default is 20. | Optional | 
 | offset | The offset number to begin listing host forensics from . Default is 0. | Optional | 
@@ -496,7 +496,7 @@ Add a list of banned IPs to be blocked by the system
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| IP | List of custom ips to add to the banned IPs list that will be blocked. | Required | 
+| ip | List of custom ips to add to the banned IPs list that will be blocked. | Required | 
 
 
 #### Context Output

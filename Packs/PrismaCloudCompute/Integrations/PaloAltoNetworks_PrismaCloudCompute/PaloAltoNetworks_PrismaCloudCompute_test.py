@@ -432,102 +432,84 @@ HTTP_REQUEST_URL_WITH_QUERY_PARAMS = [
     (
         OrderedDict(cluster="cluster", hostname="hostname", limit="10", offset="0"),
         get_profile_host_list,
-        "/profiles/host"
+        "/profiles/host",
+        "https://test.com/profiles/host?cluster=cluster&limit=10&offset=0&hostname=hostname"
     ),
     (
         OrderedDict(cluster="cluster", hostname="hostname", limit="100", offset="0"),
         get_profile_host_list,
-        "/profiles/host"
+        "/profiles/host",
+        "https://test.com/profiles/host?cluster=cluster&limit=50&offset=0&hostname=hostname"
     ),
     (
         OrderedDict(
-            cluster="cluster", id="1", image="image", imageid="1", namespace="namespace", os="os",
+            cluster="cluster", id="1", image="image", image_id="1", namespace="namespace", os="os",
             state="state", limit="10", offset="0"
         ),
         get_container_profile_list,
-        "/profiles/container"
+        "/profiles/container",
+        "https://test.com/profiles/container?cluster=cluster&id=1&image=image"
+        "&namespace=namespace&os=os&state=state&limit=10&offset=0&imageid=1"
     ),
     (
         OrderedDict(
-            cluster="cluster", id="1", image="image", imageid="1", namespace="namespace", os="os",
+            cluster="cluster", id="1", image="image", image_id="1", namespace="namespace", os="os",
             state="state", limit="100", offset="0"
         ),
         get_container_profile_list,
-        "/profiles/container"
+        "/profiles/container",
+        "https://test.com/profiles/container?cluster=cluster&id=1&image=image"
+        "&namespace=namespace&os=os&state=state&limit=50&offset=0&imageid=1"
     ),
     (
         OrderedDict(limit="10", offset="0", id="123"),
         get_container_hosts_list,
-        "/profiles/container/123/hosts"
+        "/profiles/container/123/hosts",
+        "https://test.com/profiles/container/123/hosts"
     ),
     (
         OrderedDict(limit="100", offset="0", id="123"),
         get_container_hosts_list,
-        "/profiles/container/123/hosts"
+        "/profiles/container/123/hosts",
+        "https://test.com/profiles/container/123/hosts"
     ),
     (
         OrderedDict(
             collections="collections", hostname="hostname", limit="10", offset="0", id="123"
         ),
         get_profile_container_forensic_list,
-        "/profiles/container/123/forensic"
+        "/profiles/container/123/forensic",
+        "https://test.com/profiles/container/123/forensic?collections=collections&hostname=hostname&limit=10"
     ),
     (
         OrderedDict(
             collections="collections", hostname="hostname", limit="100", offset="0", id="123"
         ),
         get_profile_container_forensic_list,
-        "/profiles/container/123/forensic"
+        "/profiles/container/123/forensic",
+        "https://test.com/profiles/container/123/forensic?collections=collections&hostname=hostname&limit=50"
     ),
     (
         OrderedDict(
             collections="collections", limit="10", offset="0", id="123"
         ),
         get_profile_host_forensic_list,
-        "/profiles/host/123/forensic"
+        "/profiles/host/123/forensic",
+        "https://test.com/profiles/host/123/forensic?collections=collections&limit=10"
     ),
     (
         OrderedDict(
             collections="collections", limit="100", offset="0", id="123"
         ),
         get_profile_host_forensic_list,
-        "/profiles/host/123/forensic"
+        "/profiles/host/123/forensic",
+        "https://test.com/profiles/host/123/forensic?collections=collections&limit=50"
     )
 ]
 
 
-def query_params_to_str(params: OrderedDict) -> str:
-    """
-    Transform params dict to a string http request query.
-
-    Args:
-        params (dict): query http parameters.
-
-    For example,
-    {
-        'limit': "10",
-        'offset': '0'
-    } ---> '?limit=10&offset=0'
-
-    Returns:
-        str: query URL params.
-    """
-    if not params:
-        return ""
-
-    query_params = '?'
-
-    if int(params.get('limit')) > 50:
-        params['limit'] = '50'
-
-    for key, val in params.items():
-        query_params += f'{key}={val}&'
-
-    return query_params[:len(query_params) - 1]
-
-
-@pytest.mark.parametrize("args, func, url_suffix", HTTP_REQUEST_URL_WITH_QUERY_PARAMS)
-def test_http_request_url_with_query_params_is_valid(requests_mock, args, func, url_suffix, client):
+@pytest.mark.parametrize("args, func, url_suffix, expected_url", HTTP_REQUEST_URL_WITH_QUERY_PARAMS)
+def test_http_request_url_with_query_params_is_valid(requests_mock, args, func, url_suffix, expected_url, client):
     """
     Given:
         - query command arguments.
@@ -538,12 +520,10 @@ def test_http_request_url_with_query_params_is_valid(requests_mock, args, func, 
     Then:
         - Verify that the full URL of the http request is sent with the correct query/uri params.
     """
-    full_url = BASE_URL + url_suffix
-
-    mocker = requests_mock.get(url=full_url, json=[])
+    mocker = requests_mock.get(url=BASE_URL + url_suffix, json=[])
     func(client=client, args=args)
 
-    assert full_url + query_params_to_str(params=args) == mocker.last_request._url_parts.geturl()
+    assert expected_url == mocker.last_request._url_parts.geturl()
 
 
 HTTP_REQUEST_URL = [
@@ -584,7 +564,7 @@ HTTP_BODY_REQUEST_PARAMS = [
         add_custom_ip_feeds,
         "/feeds/custom/ips",
         {
-            "IP": [
+            "ip": [
                 "1.1.1.1",
             ]
         }
@@ -609,7 +589,7 @@ def test_http_request_body_request_is_valid(requests_mock, func, url_suffix, arg
     requests_mock.get(url=full_url, json={})
     mocker = requests_mock.put(url=full_url, json={})
 
-    expected_body_request = {"feed": args.get("IP")}
+    expected_body_request = {"feed": args.get("ip")}
 
     func(client=client, args=args)
 
