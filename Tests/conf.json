@@ -1860,13 +1860,6 @@
         {
             "integrations": "Recorded Future",
             "playbookID": "Recorded Future Test",
-            "instance_names": "recorded_future_feed",
-            "nightly": true
-        },
-        {
-            "integrations": "Recorded Future",
-            "playbookID": "Recorded Future Test",
-            "instance_names": "recorded_future_feed_with_risk_rules",
             "nightly": true
         },
         {
@@ -2983,6 +2976,15 @@
         {
             "integrations": "Recorded Future Feed",
             "playbookID": "RecordedFutureFeed - Test",
+            "instance_names": "recorded_future_feed",
+            "timeout": 1000,
+            "fromversion": "5.5.0",
+            "memory_threshold": 86
+        },
+        {
+            "integrations": "Recorded Future Feed",
+            "playbookID": "RecordedFutureFeed - Test",
+            "instance_names": "recorded_future_feed_with_risk_rules",
             "timeout": 1000,
             "fromversion": "5.5.0",
             "memory_threshold": 86
