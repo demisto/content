@@ -1,0 +1,528 @@
+id: TestEditServerConfig
+version: -1
+name: TestEditServerConfig
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8a5ab274-ae49-48ae-82bb-256eca4d5718
+    type: start
+    task:
+      id: 8a5ab274-ae49-48ae-82bb-256eca4d5718
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 2350d695-cdd4-4ab3-8e6e-ff8e164b9d86
+    type: regular
+    task:
+      id: 2350d695-cdd4-4ab3-8e6e-ff8e164b9d86
+      version: -1
+      name: Add a new server config
+      description: Edit the server configuration (under *settings/troubleshooting*).
+        You can either add a new configuration or update and remove an existing one.
+      scriptName: EditServerConfig
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      action:
+        simple: update
+      key:
+        simple: content.pack.verify
+      value:
+        simple: "false"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: b860bc2c-08fb-450c-8065-b10690465356
+    type: regular
+    task:
+      id: b860bc2c-08fb-450c-8065-b10690465356
+      version: -1
+      name: Get server config
+      description: send HTTP GET requests
+      script: '|||demisto-api-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      extend-context:
+        simple: config=
+      uri:
+        simple: /system/config
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 44fa58d8-bba1-4e90-8adf-d280a095410d
+    type: condition
+    task:
+      id: 44fa58d8-bba1-4e90-8adf-d280a095410d
+      version: -1
+      name: Verify the add command
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${config.response.sysConf.content\.pack\.verify}
+            iscontext: true
+          right:
+            value:
+              simple: "false"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 83c447df-6082-4352-8143-ac854b2e80ed
+    type: title
+    task:
+      id: 83c447df-6082-4352-8143-ac854b2e80ed
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: bf7fa05f-7184-4df0-89da-20770d338ca6
+    type: regular
+    task:
+      id: bf7fa05f-7184-4df0-89da-20770d338ca6
+      version: -1
+      name: Remove server config
+      description: Edit the server configuration (under *settings/troubleshooting*).
+        You can either add a new configuration or update and remove an existing one.
+      scriptName: EditServerConfig
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      action:
+        simple: remove
+      key:
+        simple: content.pack.verify
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 0b486190-b6f0-4755-8d14-50207e31d00c
+    type: regular
+    task:
+      id: 0b486190-b6f0-4755-8d14-50207e31d00c
+      version: -1
+      name: Get server config
+      description: send HTTP GET requests
+      script: '|||demisto-api-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      extend-context:
+        simple: config=
+      uri:
+        simple: /system/config
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 816ef008-3a69-40eb-8e6f-9ddb6ff80ba3
+    type: condition
+    task:
+      id: 816ef008-3a69-40eb-8e6f-9ddb6ff80ba3
+      version: -1
+      name: Verify the remove command
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: ${config.response.sysConf.content\.pack\.verify}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: ddf0e02f-560d-4331-8f66-0eadcdd7e335
+    type: regular
+    task:
+      id: ddf0e02f-560d-4331-8f66-0eadcdd7e335
+      version: -1
+      name: Update an existing server config
+      description: Edit the server configuration (under *settings/troubleshooting*).
+        You can either add a new configuration or update and remove an existing one.
+      scriptName: EditServerConfig
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      action:
+        simple: update
+      key:
+        simple: content.pack.verify
+      value:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 81f7dee3-e0ef-4962-856c-344f3ea411e2
+    type: regular
+    task:
+      id: 81f7dee3-e0ef-4962-856c-344f3ea411e2
+      version: -1
+      name: Get server config
+      description: send HTTP GET requests
+      script: '|||demisto-api-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      extend-context:
+        simple: config=
+      uri:
+        simple: /system/config
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 5197417f-0ce4-49f2-8c2f-456b4035babe
+    type: condition
+    task:
+      id: 5197417f-0ce4-49f2-8c2f-456b4035babe
+      version: -1
+      name: Verify the update command
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${config.response.sysConf.content\.pack\.verify}
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 675773d7-2cf2-4b67-8098-f59ccfea39c0
+    type: regular
+    task:
+      id: 675773d7-2cf2-4b67-8098-f59ccfea39c0
+      version: -1
+      name: 'DeleteContext '
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: config
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 6a0e3e17-512d-4956-8765-5fd63c80ccaa
+    type: regular
+    task:
+      id: 6a0e3e17-512d-4956-8765-5fd63c80ccaa
+      version: -1
+      name: 'DeleteContext '
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: config
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 05bcecfa-4041-45c8-869d-35bb3b6e88a4
+    type: condition
+    task:
+      id: 05bcecfa-4041-45c8-869d-35bb3b6e88a4
+      version: -1
+      name: Is Demisto Rest API Instance Available
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "4"
+      "yes":
+      - "1"
+    scriptarguments:
+      brandname:
+        simple: Demisto REST API
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2310,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.0.0
+description: Test EditServerConfig script

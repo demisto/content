@@ -131,7 +131,7 @@ def construct_entities_block(entities_data: dict) -> str:
 
 def get_pack_entities(pack_path):
     logging.info(f'Processing "{pack_path}" files:')
-    pack_entities = sum([
+    pack_entities: list = sum([
         glob.glob(f'{pack_path}/*/*.json'),
         glob.glob(f'{pack_path}/*/*.yml'),
         glob.glob(f'{pack_path}/*/*/*.yml')], [])
@@ -243,8 +243,8 @@ def get_release_notes_dict(release_notes_files):
         (dict) A mapping from pack names to dictionaries of pack versions to release notes.
         (dict) A mapping from pack name to the pack metadata object
     """
-    release_notes_dict = {}
-    packs_metadata_dict = {}
+    release_notes_dict: dict = {}
+    packs_metadata_dict: dict = {}
     for file_path in release_notes_files:
         pack_path = get_pack_path_from_release_note(file_path)
         pack_metadata = get_pack_metadata(pack_path)
@@ -311,7 +311,7 @@ def merge_version_blocks(pack_versions_dict: dict) -> Tuple[str, str]:
 
     """
     latest_version = '1.0.0'
-    entities_data = {}
+    entities_data: dict = {}
     for pack_version, version_release_notes in sorted(pack_versions_dict.items(),
                                                       key=lambda pack_item: LooseVersion(pack_item[0])):
         latest_version = pack_version

@@ -1,3 +1,5 @@
+import json
+
 import pytest
 
 import demistomock as demisto
@@ -605,6 +607,25 @@ def test_validate_search_time():
         assert validate_search_time('219/10/35')
 
 
+def test_show_user_id_interface_config_command():
+    """
+    Given:
+     - missing template and template_stack arguments for the show_user_id_interface_config_command command
+
+    When:
+     - running the show_user_id_interface_config_request function
+
+    Then:
+     - a proper exception is raised
+    """
+    from Panorama import show_user_id_interface_config_command
+    args = {}
+    str_match = 'In order to show the User Interface configuration in your Panorama, ' \
+                'supply either the template or the template_stack arguments.'
+    with pytest.raises(DemistoException, match=str_match):
+        show_user_id_interface_config_command(args)
+
+
 def test_prettify_user_interface_config():
     from Panorama import prettify_user_interface_config
     raw_response = [{'@name': 'internal', 'network': {'layer3': {'member': 'ethernet1/2'},
@@ -616,6 +637,26 @@ def test_prettify_user_interface_config():
     expected = [{'Name': 'ethernet1/2', 'Zone': 'internal', 'EnableUserIdentification': 'yes'},
                 {'Name': 'ethernet1/1', 'Zone': 'External', 'EnableUserIdentification': 'no'}]
     assert response == expected
+
+
+def test_list_configured_user_id_agents_command(mocker):
+    """
+    Given:
+     - missing template and template_stack arguments for the list_configured_user_id_agents_command command
+
+    When:
+     - running the list_configured_user_id_agents_request function
+
+    Then:
+     - a proper exception is raised
+    """
+    from Panorama import list_configured_user_id_agents_command
+    mocker.patch('Panorama.get_pan_os_major_version', return_value=9)
+    args = {}
+    str_match = 'In order to show the the User ID Agents in your Panorama, ' \
+                'supply either the template or the template_stack arguments.'
+    with pytest.raises(DemistoException, match=str_match):
+        list_configured_user_id_agents_command(args)
 
 
 def test_prettify_configured_user_id_agents__multi_result():
@@ -644,3 +685,80 @@ def test_prettify_configured_user_id_agents__single_result():
                 'CollectorName': 'demisto', 'Secret': 'secret', 'EnableHipCollection': 'no', 'SerialNumber': None,
                 'IpUserMapping': 'yes', 'Disabled': 'no'}
     assert response == expected
+
+
+def test_prettify_rule():
+    from Panorama import prettify_rule
+    with open("test_data/rule.json") as f:
+        rule = json.load(f)
+
+    with open("test_data/prettify_rule.json") as f:
+        expected_prettify_rule = json.load(f)
+
+    prettify_rule = prettify_rule(rule)
+
+    assert prettify_rule == expected_prettify_rule
+
+
+class TestPanoramaEditRuleCommand:
+    EDIT_SUCCESS_RESPONSE = {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+
+    @staticmethod
+    def test_sanity(mocker):
+        import Panorama
+        args = {
+            'rulename': 'TestRule',
+            'element_to_change': 'source',
+            'element_value': '2.3.4.5,3.3.3.3',
+            'behaviour': 'add',
+        }
+        commited_rule_item = {
+            'response': {
+                '@status': 'success',
+                '@code': '19',
+                'result': {
+                    '@total-count': '1',
+                    '@count': '1',
+                    'source': {
+                         'member': ['1.1.1.1', '3.3.3.3', '2.3.4.5'],
+                    }
+                }
+            }
+        }
+        mocker.patch('Panorama.http_request', return_value=commited_rule_item)
+        Panorama.panorama_edit_rule_command(args)
+
+    @staticmethod
+    def test_add_to_element_on_uncommited_rule(mocker):
+        import Panorama
+        args = {
+            'rulename': 'TestRule',
+            'element_to_change': 'source',
+            'element_value': '2.3.4.5',
+            'behaviour': 'add',
+        }
+        uncommited_rule_item = {
+            'response': {
+                '@status': 'success',
+                '@code': '19',
+                'result': {
+                    '@total-count': '1',
+                    '@count': '1',
+                    'source': {
+                        '@admin': 'admin',
+                        '@dirtyId': '1616',
+                        '@time': '2021/11/27 10:55:18',
+                        'member': {
+                            '@admin': 'admin',
+                            '@dirtyId': '1616',
+                            '@time': '2021/11/27 10:55:18',
+                            '#text': '3.3.3.3',
+                        }
+                    }
+                }
+            }
+        }
+        mocker.patch('Panorama.http_request', return_value=uncommited_rule_item)
+
+        with pytest.raises(DemistoException):
+            Panorama.panorama_edit_rule_command(args)

@@ -14,3 +14,6 @@ ignore=IF100
 
 [file:incidentfield-Case_TLP.json]
 ignore=IF100
+
+[file:TheHiveProject.yml]
+ignore=IN145

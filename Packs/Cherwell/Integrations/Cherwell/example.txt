@@ -1,0 +1,17 @@
+!cherwell-create-business-object type=incident json=`{"Priority": "3", "CustomerDisplayName": "demisto", "Description": "This incident was created by Cherwell test playbook","Service":"Enterprise Apps","Category":"PeopleSoft","Subcategory":"Submit Incident"}`
+!cherwell-get-business-object type=incident id_type=public_id id_value=102383
+!cherwell-update-business-object type=incident id_type=public_id id_value=102383 json=`{"Priority": "1"}`
+!cherwell-upload-attachment file_entry_id=13570@f0716e08-9825-481c-8938-8e0a91a20557 type=incident id_type=public_id id_value=102383
+!cherwell-get-attachments-info attachment_type=imported type=incident id_type=public_id id_value=102383
+!cherwell-download-attachments type=incident id_type=public_id id_value=102383
+!cherwell-query-business-object type=incident query=`[["Description","eq","This incident was created by Cherwell test playbook"]]`
+!cherwell-remove-attachment type=incident id_type=public_id id_value=102383 attachment_id=9475718f7e153c3d751b5046b389eeba6df7d6d778
+!cherwell-get-business-object-id business_object_name=incident
+!cherwell-get-field-info type=incident field_property=`Customer Display Name`
+!cherwell-get-business-object-summary name=task
+!cherwell-delete-business-object id_type=record_id id_value=94757184cce46253b3ab694ae58289b64d0cd867ce type=incident
+!cherwell-link-business-objects parent_type=incident child_type=task relationship_id=9369187528b417b4a17aaa4646b7f7a78b3c821be9 child_record_id=94757210152427ef6ff98741a9a1c01d9fbe80545d parent_record_id=94757184cce46253b3ab694ae58289b64d0cd867ce
+!cherwell-unlink-business-objects parent_type=incident child_type=task relationship_id=9369187528b417b4a17aaa4646b7f7a78b3c821be9 child_record_id=94757210152427ef6ff98741a9a1c01d9fbe80545d parent_record_id=94757184cce46253b3ab694ae58289b64d0cd867ce
+!cherwell-get-one-step-actions-for-business-object busobjectid=6dd53665c0c24cab86870a21cf6434ae
+!cherwell-run-one-step-action-on-business-object busobjectid=6dd53665c0c24cab86870a21cf6434ae busobrecid=94757184cce46253b3ab694ae58289b64d0cd867ce oneStepAction_StandInKey=DefType:OneStepDef#Scope:Global#Id:947509fc528a451570e6c14223a9a8ca12b0856fc2#Owner:6dd53665c0c24cab86870a21cf6434ae prompt_values=`[{"promptDefId": "947509fe4c84176152bcaa472b929d556b47c5df6d","value": "This is from the REST API"}]`
+!cherwell-run-saved-search association_id=6dd53665c0c24cab86870a21cf6434ae scope=Global scope_owner=(None) search_name=`Test FCR`

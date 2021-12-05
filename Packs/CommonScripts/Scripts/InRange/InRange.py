@@ -23,18 +23,21 @@ def parse_range(rangeStr):
     return to_float(splitted[0]), to_float(splitted[1])
 
 
-leftArg = demisto.args()["left"]
-rightArg = demisto.args()["right"]
+def main():
+    leftArg = demisto.args()["left"]
+    rightArg = demisto.args()["right"]
 
-left = to_float(leftArg)
-fromRange, toRange = parse_range(rightArg)
+    left = to_float(leftArg)
+    fromRange, toRange = parse_range(rightArg)
 
-if INVALID_ARG in [left, fromRange, toRange]:
-    demisto.error(
-        "InRange - invalid arguments. left shuld be a number, right should be from,to (e.g. '1,8'). "
-        "got left - %s, right - %s" % (leftArg, rightArg))
-    demisto.results(False)
-else:
-    demisto.results(left >= fromRange and left <= toRange)
+    if INVALID_ARG in [left, fromRange, toRange]:
+        demisto.error(
+            "InRange - invalid arguments. left shuld be a number, right should be from,to (e.g. '1,8'). "
+            "got left - %s, right - %s" % (leftArg, rightArg))
+        demisto.results(False)
+    else:
+        demisto.results(left >= fromRange and left <= toRange)
 
-sys.exit(0)
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()

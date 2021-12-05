@@ -73,3 +73,40 @@ def test_get_user_command_404_response(mocker):
     mocker.patch.object(MicrosoftClient, 'get_access_token')
     hr, _, _ = get_user_command(client, {'user': 'NotExistingUser'})  # client.get_user('user', 'properties')
     assert 'User NotExistingUser was not found' in hr
+
+
+def test_get_user_command_url_saved_chars(mocker):
+    """
+    Given:
+        - The get_user_command
+    When:
+        - The returned response is a 404 - not found error.
+    Then:
+        - Validate that the error is handled and that the human readable indicates an error.
+    """
+    from MicrosoftGraphUser import MsGraphClient, get_user_command
+    from MicrosoftApiModule import MicrosoftClient, BaseClient
+
+    user_name = "dbot^"
+    client = MsGraphClient('tenant_id', 'auth_id', 'enc_key', 'app_name', 'http://base_url', 'verify', 'proxy',
+                           'self_deployed', 'redirect_uri', 'auth_code')
+    http_mock = mocker.patch.object(BaseClient, '_http_request')
+    mocker.patch.object(MicrosoftClient, 'get_access_token')
+    hr, _, _ = get_user_command(client, {'user': user_name})
+    assert 'users/dbot%5E' == http_mock.call_args[1]["url_suffix"]
+
+
+def test_get_unsupported_chars_in_user():
+    """
+    Given:
+        - User with unsupported characters
+    When:
+        - Calling get_unsupported_chars_in_user
+    Then:
+        - Validate special characters were extracted
+    """
+    from MicrosoftGraphUser import get_unsupported_chars_in_user
+    invalid_chars = '%&*+/=?`{|}'
+    invalid_user = f'demi{invalid_chars}sto'
+
+    assert len(get_unsupported_chars_in_user(invalid_user).difference(set(invalid_chars))) == 0

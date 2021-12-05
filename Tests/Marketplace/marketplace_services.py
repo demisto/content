@@ -2,7 +2,6 @@ import base64
 import fnmatch
 import glob
 import json
-import logging
 import os
 import re
 import shutil
@@ -26,6 +25,7 @@ import Tests.Marketplace.marketplace_statistics as mp_statistics
 from Tests.Marketplace.marketplace_constants import PackFolders, Metadata, GCPConfig, BucketUploadFlow, PACKS_FOLDER, \
     PackTags, PackIgnored, Changelog
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace
+from Tests.scripts.utils import logging_wrapper as logging
 
 
 class Pack(object):
@@ -151,7 +151,7 @@ class Pack(object):
         """
         self._is_feed = is_feed
 
-    @status.setter
+    @status.setter  # type: ignore[attr-defined,no-redef]
     def status(self, status_value):
         """ setter of pack current status.
         """
@@ -229,7 +229,7 @@ class Pack(object):
         """
         return self._user_metadata
 
-    @display_name.setter
+    @display_name.setter  # type: ignore[attr-defined,no-redef]
     def display_name(self, display_name_value):
         """ setter of display name property of the pack.
         """
@@ -398,7 +398,7 @@ class Pack(object):
             list: collection of integration display name and it's path in gcs.
 
         """
-        dependencies_integration_images_dict = {}
+        dependencies_integration_images_dict: dict = {}
         additional_dependencies_data = {k: v for k, v in dependencies_data.items() if k in display_dependencies_images}
 
         for dependency_data in additional_dependencies_data.values():
@@ -587,7 +587,7 @@ class Pack(object):
             Metadata.VERSION_INFO: build_number,
             Metadata.COMMIT: commit_hash,
             Metadata.DOWNLOADS: self._downloads_count,
-            Metadata.TAGS: list(self._tags),
+            Metadata.TAGS: list(self._tags or []),
             Metadata.CATEGORIES: self._categories,
             Metadata.CONTENT_ITEMS: self._content_items,
             Metadata.SEARCH_RANK: self._search_rank,
@@ -963,7 +963,7 @@ class Pack(object):
         finally:
             return task_status, modified_rn_files_paths, pack_was_modified
 
-    def upload_to_storage(self, zip_pack_path, latest_version, storage_bucket, override_pack,
+    def upload_to_storage(self, zip_pack_path, latest_version, storage_bucket, override_pack, storage_base_path,
                           private_content=False, pack_artifacts_path=None):
         """ Manages the upload of pack zip artifact to correct path in cloud storage.
         The zip pack will be uploaded to following path: /content/packs/pack_name/pack_latest_version.
@@ -986,7 +986,7 @@ class Pack(object):
         task_status = True
 
         try:
-            version_pack_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, latest_version)
+            version_pack_path = os.path.join(storage_base_path, self._pack_name, latest_version)
             existing_files = [f.name for f in storage_bucket.list_blobs(prefix=version_pack_path)]
 
             if existing_files and not override_pack:
@@ -1034,7 +1034,8 @@ class Pack(object):
             logging.exception(f"Failed in uploading {self._pack_name} pack to gcs.")
             return task_status, True, None
 
-    def copy_and_upload_to_storage(self, production_bucket, build_bucket, successful_packs_dict):
+    def copy_and_upload_to_storage(self, production_bucket, build_bucket, successful_packs_dict, storage_base_path,
+                                   build_bucket_base_path):
         """ Manages the copy of pack zip artifact from the build bucket to the production bucket.
         The zip pack will be copied to following path: /content/packs/pack_name/pack_latest_version if
         the pack exists in the successful_packs_dict from Prepare content step in Create Instances job.
@@ -1043,7 +1044,8 @@ class Pack(object):
             production_bucket (google.cloud.storage.bucket.Bucket): google cloud production bucket.
             build_bucket (google.cloud.storage.bucket.Bucket): google cloud build bucket.
             successful_packs_dict (dict): the dict of all packs were uploaded in prepare content step
-
+            storage_base_path (str): The target destination of the upload in the target bucket.
+            build_bucket_base_path (str): The path of the build bucket in gcp.
         Returns:
             bool: Status - whether the operation succeeded.
             bool: Skipped pack - true in case of pack existence at the targeted path and the copy process was skipped,
@@ -1059,7 +1061,7 @@ class Pack(object):
         latest_version = successful_packs_dict[self._pack_name][BucketUploadFlow.LATEST_VERSION]
         self._latest_version = latest_version
 
-        build_version_pack_path = os.path.join(GCPConfig.BUILD_BASE_PATH, self._pack_name, latest_version)
+        build_version_pack_path = os.path.join(build_bucket_base_path, self._pack_name, latest_version)
 
         # Verifying that the latest version of the pack has been uploaded to the build bucket
         existing_bucket_version_files = [f.name for f in build_bucket.list_blobs(prefix=build_version_pack_path)]
@@ -1069,7 +1071,7 @@ class Pack(object):
             return False, False
 
         # We upload the pack zip object taken from the build bucket into the production bucket
-        prod_version_pack_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, latest_version)
+        prod_version_pack_path = os.path.join(storage_base_path, self._pack_name, latest_version)
         prod_pack_zip_path = os.path.join(prod_version_pack_path, f'{self._pack_name}.zip')
         build_pack_zip_path = os.path.join(build_version_pack_path, f'{self._pack_name}.zip')
         build_pack_zip_blob = build_bucket.blob(build_pack_zip_path)
@@ -1193,7 +1195,8 @@ class Pack(object):
 
         """
         lowest_version = [LooseVersion(Pack.PACK_INITIAL_VERSION)]
-        lower_versions, higher_versions = [], []
+        lower_versions: list = []
+        higher_versions: list = []
         same_block_versions_dict: dict = dict()
         for item in changelog.keys():  # divide the versions into lists of lower and higher than given version
             (lower_versions if LooseVersion(item) < version else higher_versions).append(LooseVersion(item))
@@ -1273,7 +1276,7 @@ class Pack(object):
             changelog: The changelog from the production bucket.
             latest_release_notes: The latest release notes version string in the current branch
         """
-        changelog_latest_release_notes = max(changelog, key=lambda k: LooseVersion(k))
+        changelog_latest_release_notes = max(changelog, key=lambda k: LooseVersion(k))  # pylint: disable=W0108
         assert LooseVersion(latest_release_notes) >= LooseVersion(changelog_latest_release_notes), \
             f'{self._pack_name}: Version mismatch detected between upload bucket and current branch\n' \
             f'Upload bucket version: {changelog_latest_release_notes}\n' \
@@ -1340,7 +1343,6 @@ class Pack(object):
                         release_notes_dir, new_release_notes_versions, changelog, rn_files_names)
 
                     if self._current_version != latest_release_notes:
-                        # TODO Need to implement support for pre-release versions
                         logging.error(f"Version mismatch detected between current version: {self._current_version} "
                                       f"and latest release notes version: {latest_release_notes}")
                         task_status = False
@@ -1464,7 +1466,7 @@ class Pack(object):
             .
         """
         task_status = False
-        content_items_result = {}
+        content_items_result: dict = {}
 
         try:
             # the format is defined in issue #19786, may change in the future
@@ -1481,12 +1483,13 @@ class Pack(object):
                 PackFolders.LAYOUTS.value: "layoutscontainer",
                 PackFolders.CLASSIFIERS.value: "classifier",
                 PackFolders.WIDGETS.value: "widget",
-                PackFolders.GENERIC_DEFINITIONS.value: "GenericDefinitions",
-                PackFolders.GENERIC_FIELDS.value: "GenericFields",
-                PackFolders.GENERIC_MODULES.value: "GenericModules",
-                PackFolders.GENERIC_TYPES.value: "GenericTypes",
+                PackFolders.GENERIC_DEFINITIONS.value: "genericdefinition",
+                PackFolders.GENERIC_FIELDS.value: "genericfield",
+                PackFolders.GENERIC_MODULES.value: "genericmodule",
+                PackFolders.GENERIC_TYPES.value: "generictype",
                 PackFolders.LISTS.value: "list",
                 PackFolders.PREPROCESS_RULES.value: "preprocessrule",
+                PackFolders.JOBS.value: "job",
             }
 
             for root, pack_dirs, pack_files_names in os.walk(self._pack_path, topdown=False):
@@ -1639,6 +1642,7 @@ class Pack(object):
                         folder_collected_items.append({
                             'name': content_item.get('name', ""),
                             'description': content_item.get('description', ""),
+                            'type': content_item.get('type', ""),
                         })
                     elif current_directory == PackFolders.GENERIC_MODULES.value:
                         folder_collected_items.append({
@@ -1654,6 +1658,12 @@ class Pack(object):
                         folder_collected_items.append({
                             'name': content_item.get('name', ""),
                             'description': content_item.get('description', ""),
+                        })
+                    elif current_directory == PackFolders.JOBS.value:
+                        folder_collected_items.append({
+                            # note that `name` may technically be blank, but shouldn't pass validations
+                            'name': content_item.get('name', ""),
+                            'details': content_item.get('details', ""),
                         })
 
                 if current_directory in PackFolders.pack_displayed_items():
@@ -1694,7 +1704,7 @@ class Pack(object):
             self.current_version = user_metadata.get(Metadata.CURRENT_VERSION, '')
             self.hidden = user_metadata.get(Metadata.HIDDEN, False)
             self.description = user_metadata.get(Metadata.DESCRIPTION, False)
-            self.display_name = user_metadata.get(Metadata.NAME, '')
+            self.display_name = user_metadata.get(Metadata.NAME, '')  # type: ignore[misc]
             self._user_metadata = user_metadata
             self.eula_link = user_metadata.get(Metadata.EULA_LINK, Metadata.EULA_URL)
 
@@ -1824,7 +1834,7 @@ class Pack(object):
 
         try:
             self.set_pack_dependencies(packs_dependencies_mapping)
-            if Metadata.DISPLAYED_IMAGES not in self.user_metadata:
+            if Metadata.DISPLAYED_IMAGES not in self.user_metadata and self._user_metadata:
                 self._user_metadata[Metadata.DISPLAYED_IMAGES] = packs_dependencies_mapping.get(
                     self._pack_name, {}).get(Metadata.DISPLAYED_IMAGES, [])
                 logging.info(f"Adding auto generated display images for {self._pack_name} pack")
@@ -1880,7 +1890,7 @@ class Pack(object):
 
         if metadata:
             if metadata.get(Metadata.CREATED):
-                created_time = metadata.get(Metadata.CREATED)
+                created_time = metadata.get(Metadata.CREATED, '')
             else:
                 raise Exception(f'The metadata file of the {pack_name} pack does not contain "{Metadata.CREATED}" time')
 
@@ -1906,7 +1916,7 @@ class Pack(object):
 
     def set_pack_dependencies(self, packs_dependencies_mapping):
         pack_dependencies = packs_dependencies_mapping.get(self._pack_name, {}).get(Metadata.DEPENDENCIES, {})
-        if Metadata.DEPENDENCIES not in self.user_metadata:
+        if Metadata.DEPENDENCIES not in self.user_metadata and self._user_metadata:
             self._user_metadata[Metadata.DEPENDENCIES] = {}
 
         # If it is a core pack, check that no new mandatory packs (that are not core packs) were added
@@ -1921,7 +1931,8 @@ class Pack(object):
                                 f'found in the core pack {self._pack_name}')
 
         pack_dependencies.update(self.user_metadata[Metadata.DEPENDENCIES])
-        self._user_metadata[Metadata.DEPENDENCIES] = pack_dependencies
+        if self._user_metadata:
+            self._user_metadata[Metadata.DEPENDENCIES] = pack_dependencies
 
     def prepare_for_index_upload(self):
         """ Removes and leaves only necessary files in pack folder.
@@ -1968,7 +1979,7 @@ class Pack(object):
         for pack_file in target_folder_files:
             if pack_file.startswith('.'):
                 continue
-            elif pack_file.endswith('_image.png'):
+            if pack_file.endswith('_image.png'):
                 image_data['repo_image_path'] = os.path.join(root, pack_file)
             elif pack_file.endswith('.yml'):
                 with open(os.path.join(root, pack_file), 'r') as integration_file:
@@ -2102,7 +2113,7 @@ class Pack(object):
             integration_path_basename in unified_integrations
         ])
 
-    def upload_integration_images(self, storage_bucket, diff_files_list=None, detect_changes=False):
+    def upload_integration_images(self, storage_bucket, storage_base_path, diff_files_list=None, detect_changes=False):
         """ Uploads pack integrations images to gcs.
 
         The returned result of integration section are defined in issue #19786.
@@ -2138,7 +2149,7 @@ class Pack(object):
             if not pack_local_images:
                 return True  # return empty list if no images were found
 
-            pack_storage_root_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name)
+            pack_storage_root_path = os.path.join(storage_base_path, self._pack_name)
 
             for image_data in pack_local_images:
                 image_path = image_data.get('image_path')
@@ -2183,7 +2194,7 @@ class Pack(object):
             self._displayed_integration_images = integration_images
             return task_status
 
-    def copy_integration_images(self, production_bucket, build_bucket, images_data):
+    def copy_integration_images(self, production_bucket, build_bucket, images_data, storage_base_path, build_bucket_base_path):
         """ Copies all pack's integration images from the build bucket to the production bucket
 
         Args:
@@ -2201,7 +2212,7 @@ class Pack(object):
         pc_uploaded_integration_images = images_data.get(self._pack_name, {}).get(BucketUploadFlow.INTEGRATIONS, [])
 
         for image_name in pc_uploaded_integration_images:
-            build_bucket_image_path = os.path.join(GCPConfig.BUILD_BASE_PATH, self._pack_name, image_name)
+            build_bucket_image_path = os.path.join(build_bucket_base_path, self._pack_name, image_name)
             build_bucket_image_blob = build_bucket.blob(build_bucket_image_path)
 
             if not build_bucket_image_blob.exists():
@@ -2213,7 +2224,7 @@ class Pack(object):
                 try:
                     copied_blob = build_bucket.copy_blob(
                         blob=build_bucket_image_blob, destination_bucket=production_bucket,
-                        new_name=os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, image_name)
+                        new_name=os.path.join(storage_base_path, self._pack_name, image_name)
                     )
                     if not copied_blob.exists():
                         logging.error(f"Copy {self._pack_name} integration image: {build_bucket_image_blob.name} "
@@ -2236,7 +2247,7 @@ class Pack(object):
 
         return task_status
 
-    def upload_author_image(self, storage_bucket, diff_files_list=None, detect_changes=False):
+    def upload_author_image(self, storage_bucket, storage_base_path, diff_files_list=None, detect_changes=False):
         """ Uploads pack author image to gcs.
 
         Searches for `Author_image.png` and uploads author image to gcs. In case no such image was found,
@@ -2244,6 +2255,7 @@ class Pack(object):
 
         Args:
             storage_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where author image will be uploaded.
+            storage_base_path (str): the path under the bucket to upload to.
             diff_files_list (list): The list of all modified/added files found in the diff
             detect_changes (bool): Whether to detect changes or upload the author image in any case.
 
@@ -2259,7 +2271,7 @@ class Pack(object):
             author_image_path = os.path.join(self._pack_path, Pack.AUTHOR_IMAGE_NAME)  # disable-secrets-detection
 
             if os.path.exists(author_image_path):
-                image_to_upload_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name,
+                image_to_upload_storage_path = os.path.join(storage_base_path, self._pack_name,
                                                             Pack.AUTHOR_IMAGE_NAME)  # disable-secrets-detection
                 pack_author_image_blob = storage_bucket.blob(image_to_upload_storage_path)
 
@@ -2299,7 +2311,7 @@ class Pack(object):
             self._author_image = author_image_storage_path
             return task_status
 
-    def copy_author_image(self, production_bucket, build_bucket, images_data):
+    def copy_author_image(self, production_bucket, build_bucket, images_data, storage_base_path, build_bucket_base_path):
         """ Copies pack's author image from the build bucket to the production bucket
 
         Searches for `Author_image.png`, In case no such image was found, default Base pack image path is used and
@@ -2316,15 +2328,15 @@ class Pack(object):
         """
         if images_data.get(self._pack_name, {}).get(BucketUploadFlow.AUTHOR, False):
 
-            build_author_image_path = os.path.join(GCPConfig.BUILD_BASE_PATH, self._pack_name, Pack.AUTHOR_IMAGE_NAME)
+            build_author_image_path = os.path.join(build_bucket_base_path, self._pack_name, Pack.AUTHOR_IMAGE_NAME)
             build_author_image_blob = build_bucket.blob(build_author_image_path)
 
             if build_author_image_blob.exists():
                 try:
                     copied_blob = build_bucket.copy_blob(
                         blob=build_author_image_blob, destination_bucket=production_bucket,
-                        new_name=os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, Pack.AUTHOR_IMAGE_NAME)
-                    )
+                        new_name=os.path.join(storage_base_path, self._pack_name,
+                                              Pack.AUTHOR_IMAGE_NAME))
                     if not copied_blob.exists():
                         logging.error(f"Failed copying {self._pack_name} pack author image.")
                         return False
@@ -2444,7 +2456,7 @@ class Pack(object):
         if not os.path.exists(release_notes_dir):
             return
         bc_version_to_text: Dict[str, Optional[str]] = self._breaking_changes_versions_to_text(release_notes_dir)
-        loose_versions: List[LooseVersion] = [LooseVersion(bc_ver) for bc_ver in bc_version_to_text.keys()]
+        loose_versions: List[LooseVersion] = [LooseVersion(bc_ver) for bc_ver in bc_version_to_text]
         predecessor_version: LooseVersion = LooseVersion('0.0.0')
         for changelog_entry in sorted(changelog.keys(), key=LooseVersion):
             rn_loose_version: LooseVersion = LooseVersion(changelog_entry)
@@ -2486,7 +2498,7 @@ class Pack(object):
         else:
             # Important: Currently, implementation of aggregating BCs was decided to concat between them
             # In the future this might be needed to re-thought.
-            return '\n'.join(bc_version_to_text.values())
+            return '\n'.join(bc_version_to_text.values())  # type: ignore[arg-type]
 
     def _handle_many_bc_versions_some_with_text(self, release_notes_dir: str, text_of_bc_versions: List[str],
                                                 bc_versions_without_text: List[str], ) -> str:
@@ -2616,11 +2628,11 @@ def get_upload_data(packs_results_file_path: str, stage: str) -> Tuple[dict, dic
     """
     if os.path.exists(packs_results_file_path):
         packs_results_file = load_json(packs_results_file_path)
-        stage = packs_results_file.get(stage, {})
-        successful_packs_dict = stage.get(BucketUploadFlow.SUCCESSFUL_PACKS, {})
-        failed_packs_dict = stage.get(BucketUploadFlow.FAILED_PACKS, {})
-        successful_private_packs_dict = stage.get(BucketUploadFlow.SUCCESSFUL_PRIVATE_PACKS, {})
-        images_data_dict = stage.get(BucketUploadFlow.IMAGES, {})
+        stage_data: dict = packs_results_file.get(stage, {})
+        successful_packs_dict = stage_data.get(BucketUploadFlow.SUCCESSFUL_PACKS, {})
+        failed_packs_dict = stage_data.get(BucketUploadFlow.FAILED_PACKS, {})
+        successful_private_packs_dict = stage_data.get(BucketUploadFlow.SUCCESSFUL_PRIVATE_PACKS, {})
+        images_data_dict = stage_data.get(BucketUploadFlow.IMAGES, {})
         return successful_packs_dict, failed_packs_dict, successful_private_packs_dict, images_data_dict
     return {}, {}, {}, {}
 
@@ -2671,7 +2683,7 @@ def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: s
         logging.debug(f"Successful packs {successful_packs_dict}")
 
     if updated_private_packs:
-        successful_private_packs_dict = {
+        successful_private_packs_dict: dict = {
             BucketUploadFlow.SUCCESSFUL_PRIVATE_PACKS: {pack_name: {} for pack_name in updated_private_packs}
         }
         packs_results[stage].update(successful_private_packs_dict)

@@ -15,13 +15,13 @@ Exchange Web Services and Office 365 Email sender.
     | proxy | Use system proxy settings | False |
     | impersonation | Has impersonation rights | False |
     | mailbox | Sender Mailbox | False |
-    | Single engine | If relevant, select the engine that acts as a proxy to the server. Engines are used when you need to access a remote network segments and there are network devices such as proxies, firewalls, etc.  that prevent the Cortex XSOAR server from accessing the remote networks. For more information on Cortex XSOAR engines see: https://support.demisto.com/hc/en-us/articles/226274727-Settings-Integrations-Engines| False |
+    | Single engine | If relevant, select the engine that acts as a proxy to the server. Engines are used when you need to access a remote network segments and there are network devices such as proxies, firewalls, etc.  that prevent the Cortex XSOAR server from accessing the remote networks. For more information on Cortex XSOAR engines see: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/engines| False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Top Use-cases:
 - Send notifications to external users.
-- Send an email asking for a response to be returned as part of a playbook. See [Receiving an email reply](https://support.demisto.com/hc/en-us/articles/115005287087-Automation-Receiving-an-email-reply)
+- Send an email asking for a response to be returned as part of a playbook. See [Receiving an email reply](https://xsoar.pan.dev/docs/reference/scripts/email-ask-user)
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.

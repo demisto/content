@@ -1,1780 +1,2019 @@
+---
 category: Analytics & SIEM
 commonfields:
   id: LogRhythmRest
   version: -1
 configuration:
-- display: Hostname, IP address, or server URL
-  name: url
-  required: true
-  type: 0
-- display: API Token
-  name: token
-  required: true
-  type: 4
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
-- display: Search API cluster ID
-  name: cluster-id
-  required: false
-  type: 0
-- display: Entity ID
-  name: entity-id
-  required: false
-  type: 0
-- display: Fetch incidents
-  name: isFetch
-  required: false
-  type: 8
-- defaultvalue: '1'
-  display: Incidents Fetch Interval
-  name: incidentFetchInterval
-  required: false
-  type: 19
-- display: Incident type
-  name: incidentType
-  required: false
-  type: 13
+  - display: Hostname, IP address, or server URL
+    name: url
+    required: true
+    type: 0
+  - display: API Token
+    name: token
+    required: true
+    type: 4
+  - display: Trust any certificate (not secure)
+    name: insecure
+    required: false
+    type: 8
+  - display: Use system proxy settings
+    name: proxy
+    required: false
+    type: 8
+  - display: Search API cluster ID
+    name: cluster-id
+    required: false
+    type: 0
+  - display: Entity ID
+    name: entity-id
+    required: false
+    type: 0
+  - display: Fetch incidents
+    name: isFetch
+    required: false
+    type: 8
+  - defaultvalue: '1'
+    display: Incidents Fetch Interval
+    name: incidentFetchInterval
+    required: false
+    type: 19
+  - display: Incident type
+    name: incidentType
+    required: false
+    type: 13
 description: LogRhythm security intelligence.
 display: LogRhythmRest
 name: LogRhythmRest
 script:
   commands:
-  - arguments:
-    - default: false
-      description: The value by which to filter log messages.
-      isArray: false
-      name: keyword
-      required: true
-      secret: false
-    - default: false
-      defaultValue: '100'
-      description: Number of logs to return.
-      isArray: false
-      name: page-size
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: Custom
-      description: 'The time range from which to return log messages. If time_frame is "Custom", specify the start and end time for the time range. Possible values: "Today", "Last2Days", "LastWeek", "LastMonth", and "Custom".'
-      isArray: false
-      name: time-frame
-      predefined:
-      - Today
-      - Last2Days
-      - LastWeek
-      - LastMonth
-      - Custom
-      required: false
-      secret: false
-    - default: false
-      description: 'Start date for the data query, for example: "2018-04-20". Only use this argument if the time-frame argument is "Custom".'
-      isArray: false
-      name: start-date
-      required: false
-      secret: false
-    - default: false
-      description: 'End date for the data query, for example: "2018-04-20". Only use this argument if the time-frame argument is "Custom".'
-      isArray: false
-      name: end-date
-      required: false
-      secret: false
-    deprecated: false
-    description: Executes a query for logs that match the query parameters.
-    execution: false
-    name: lr-execute-query
-    outputs:
-    - contextPath: Logrhythm.Log.Channel
-      description: Channel of the log.
-      type: string
-    - contextPath: Logrhythm.Log.Computer
-      description: Computer for the log
-      type: string
-    - contextPath: Logrhythm.Log.EventData
-      description: Event data of the log.
-      type: string
-    - contextPath: Logrhythm.Log.EventID
-      description: Event ID of the log.
-      type: string
-    - contextPath: Logrhythm.Log.Keywords
-      description: Keywords of the log.
-      type: string
-    - contextPath: Logrhythm.Log.Level
-      description: Log level.
-      type: string
-    - contextPath: Logrhythm.Log.Opcode
-      description: Opcode of the log.
-      type: string
-    - contextPath: Logrhythm.Log.Task
-      description: Task of the log.
-      type: string
-  - arguments:
-    - default: false
-      description: The entity name.
-      isArray: false
-      name: entity-name
-      required: true
-      secret: false
-    - default: false
-      defaultValue: '100'
-      description: Number of hosts to return.
-      isArray: false
-      name: count
-      required: false
-      secret: false
-    deprecated: false
-    description: Retrieves a list of hosts for a given entity, or an empty list if none is found.
-    execution: false
-    name: lr-get-hosts-by-entity
-    outputs:
-    - contextPath: Logrhythm.Host.EntityId
-      description: The entity ID.
-      type: String
-    - contextPath: Logrhythm.Host.EntityName
-      description: The entity name.
-      type: String
-    - contextPath: Logrhythm.Host.OS
-      description: The host operating system.
-      type: String
-    - contextPath: Logrhythm.Host.ThreatLevel
-      description: The host threat level.
-      type: String
-    - contextPath: Logrhythm.Host.UseEventlogCredentials
-      description: Whether to use the event log credentials.
-      type: String
-    - contextPath: Logrhythm.Host.Name
-      description: The name of the host.
-      type: String
-    - contextPath: Logrhythm.Host.DateUpdated
-      description: The last update date of the host.
-      type: String
-    - contextPath: Logrhythm.Host.HostZone
-      description: The host zone.
-      type: String
-    - contextPath: Logrhythm.Host.RiskLevel
-      description: The risk level.
-      type: String
-    - contextPath: Logrhythm.Host.Location
-      description: The host location.
-      type: String
-    - contextPath: Logrhythm.Host.Status
-      description: The host status.
-      type: String
-    - contextPath: Logrhythm.Host.ID
-      description: The unique ID of the host object.
-      type: String
-    - contextPath: Logrhythm.Host.OSType
-      description: The type of the host operating system.
-      type: String
-  - arguments:
-    - default: false
-      description: The entity ID.
-      isArray: false
-      name: entity-id
-      required: true
-      secret: false
-    - default: false
-      description: The entity name.
-      isArray: false
-      name: entity-name
-      required: true
-      secret: false
-    - default: false
-      description: The LogRhythm host name.
-      isArray: false
-      name: name
-      required: true
-      secret: false
-    - default: false
-      defaultValue: None
-      description: A short description of the host.
-      isArray: false
-      name: short-description
-      required: false
-      secret: false
-    - default: false
-      defaultValue: None
-      description: A long description of the host.
-      isArray: false
-      name: long-description
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: None
-      description: 'The host risk level. Possible values: "None", "Low-Low", "Low-Medium", "Low-High", "Medium-Low", "Medium-Medium", "Medium-High", "High-Low", "High-Medium", and "High-High".'
-      isArray: false
-      name: risk-level
-      predefined:
-      - None
-      - Low-Low
-      - Low-Medium
-      - Low-High
-      - Medium-Low
-      - Medium-Medium
-      - Medium-High
-      - High-Low
-      - High-Medium
-      - High-High
-      required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: None
-      description: 'The host threat level. Possible values: "None", "Low-Low", "Low-Medium", "Low-High", "Medium-Low", "Medium-Medium", "Medium-High", "High-Low", "High-Medium", and "High-High".'
-      isArray: false
-      name: threat-level
-      predefined:
-      - None
-      - Low-Low
-      - Low-Medium
-      - Low-High
-      - Medium-Low
-      - Medium-Medium
-      - Medium-High
-      - High-Low
-      - High-Medium
-      - High-High
-      required: false
-      secret: false
-    - default: false
-      defaultValue: None
-      description: Comments for the host threat level.
-      isArray: false
-      name: threat-level-comments
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: 'The host status. Possible values: "New", "Retired", and "Active".'
-      isArray: false
-      name: host-status
-      predefined:
-      - New
-      - Retired
-      - Active
-      required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: 'The host zone. Possible values: "Unknown", "Internal", "DMZ", and "External".'
-      isArray: false
-      name: host-zone
-      predefined:
-      - Unknown
-      - Internal
-      - DMZ
-      - External
-      required: true
-      secret: false
-    - default: false
-      description: The host operating system.
-      isArray: false
-      name: os
-      required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: 'Whether to use the event log credentials. Possible values: "true" and "false".'
-      isArray: false
-      name: use-eventlog-credentials
-      predefined:
-      - 'true'
-      - 'false'
-      required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: Unknown
-      description: The host operating system type.
-      isArray: false
-      name: os-type
-      predefined:
-      - Unknown
-      - Other
-      - WindowsNT4
-      - Windows2000Professional
-      - Windows2000Server
-      - Windows2003Standard
-      - Windows2003Enterprise
-      - Windows95
-      - WindowsXP
-      - WindowsVista
-      - Linux
-      - Solaris
-      - AIX
-      - HPUX
-      - Windows
-      required: false
-      secret: false
-    deprecated: false
-    description: Add a new host to an entity.
-    execution: false
-    name: lr-add-host
-    outputs:
-    - contextPath: Logrhythm.Host.EntityId
-      description: The entity ID for the host.
-      type: string
-    - contextPath: Logrhythm.Host.EntityName
-      description: The entity name for the host.
-      type: string
-    - contextPath: Logrhythm.Host.OS
-      description: The host operating system.
-      type: string
-    - contextPath: Logrhythm.Host.ThreatLevel
-      description: The host threat level.
-      type: string
-    - contextPath: Logrhythm.Host.UseEventlogCredentials
-      description: Whether to use the event log credentials.
-      type: string
-    - contextPath: Logrhythm.Host.Name
-      description: The name of the host.
-      type: string
-    - contextPath: Logrhythm.Host.DateUpdated
-      description: The last update date of the host.
-      type: string
-    - contextPath: Logrhythm.Host.HostZone
-      description: The host zone.
-      type: string
-    - contextPath: Logrhythm.Host.RiskLevel
-      description: The risk level of the host.
-      type: string
-    - contextPath: Logrhythm.Host.Location
-      description: The host location.
-      type: string
-    - contextPath: Logrhythm.Host.Status
-      description: The host status.
-      type: string
-    - contextPath: Logrhythm.Host.ID
-      description: The unique ID of the host object.
-      type: string
-    - contextPath: Logrhythm.Host.OSType
-      description: The type of the host operating system.
-      type: string
-  - arguments:
-    - default: false
-      description: The unique ID of the host.
-      isArray: false
-      name: host-id
-      required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: 'The enumeration status of the host. Possible values: "Retired" and "Active".'
-      isArray: false
-      name: status
-      predefined:
-      - Retired
-      - Active
-      required: true
-      secret: false
-    deprecated: false
-    description: Updates a host status.
-    execution: false
-    name: lr-update-host-status
-    outputs:
-    - contextPath: Logrhythm.Host.EntityId
-      description: The entity ID of the host.
-      type: string
-    - contextPath: Logrhythm.Host.EntityName
-      description: The entity name of the host.
-      type: string
-    - contextPath: Logrhythm.Host.OS
-      description: The host operating system.
-      type: string
-    - contextPath: Logrhythm.Host.ThreatLevel
-      description: The host threat level.
-      type: string
-    - contextPath: Logrhythm.Host.UseEventlogCredentials
-      description: Whether to use the event log credentials.
-      type: string
-    - contextPath: Logrhythm.Host.Name
-      description: The name of the host.
-      type: string
-    - contextPath: Logrhythm.Host.DateUpdated
-      description: The last update date of the host.
-      type: string
-    - contextPath: Logrhythm.Host.HostZone
-      description: The host zone.
-      type: string
-    - contextPath: Logrhythm.Host.RiskLevel
-      description: The risk level of the host.
-      type: string
-    - contextPath: Logrhythm.Host.Location
-      description: The host location.
-      type: string
-    - contextPath: Logrhythm.Host.Status
-      description: The host status.
-      type: string
-    - contextPath: Logrhythm.Host.ID
-      description: The unique ID of the host object.
-      type: string
-    - contextPath: Logrhythm.Host.OSType
-      description: The type of the host operating system.
-      type: string
-  - arguments:
-    - default: false
-      description: The LogRhythm person ID.
-      isArray: false
-      name: person-id
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '30'
-      description: Number of persons to return. 
-      isArray: false
-      name: count
-      required: false
-      secret: false
-    deprecated: false
-    description: Retrieves a list of LogRhythm persons.
-    execution: false
-    name: lr-get-persons
-    outputs:
-    - contextPath: Logrhythm.Person.DateUpdated
-      description: Date that the person was updated.
-      type: String
-    - contextPath: Logrhythm.Person.FirstName
-      description: First name of the LogRhythm person.
-      type: String
-    - contextPath: Logrhythm.Person.LastName
-      description: Last name of the LogRhythm person.
-      type: String
-    - contextPath: Logrhythm.Person.HostStatus
-      description: Host status of the LogRhythm person.
-      type: string
-    - contextPath: Logrhythm.Person.ID
-      description: Logrhythm person ID.
-      type: String
-    - contextPath: Logrhythm.Person.IsAPIPerson
-      description: Whether the API is a person.
-      type: Boolean
-    - contextPath: Logrhythm.Person.UserID
-      description: User ID of the LogRhythm person.
-      type: String
-    - contextPath: Logrhythm.Person.UserLogin
-      description: User login of the LogRhythm person.
-      type: String
-  - arguments:
-    - default: false
-      description: The LogRhythm network ID.
-      isArray: false
-      name: network-id
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '30'
-      description: Number of networks to return.
-      isArray: false
-      name: count
-      required: false
-      secret: false
-    deprecated: false
-    description: Retrieves a list of networks.
-    execution: false
-    name: lr-get-networks
-    outputs:
-    - contextPath: Logrhythm.Network.BIP
-      description: Beginning IP address of the network.
-      type: String
-    - contextPath: Logrhythm.Network.ThreatLevel
-      description: Threat level of the network.
-      type: String
-    - contextPath: Logrhythm.Network.Name
-      description: Network name.
-      type: String
-    - contextPath: Logrhythm.Network.EIP
-      description: End IP address of the network.
-      type: String
-    - contextPath: Logrhythm.Network.DateUpdated
-      description: Date network was updated.
-      type: String
-    - contextPath: Logrhythm.Network.EntityName
-      description: Entity name of the network.
-      type: String
-    - contextPath: Logrhythm.Network.HostZone
-      description: Host zone of the network.
-      type: String
-    - contextPath: Logrhythm.Network.RiskLevel
-      description: Risk level of the network.
-      type: String
-    - contextPath: Logrhythm.Network.Location
-      description: Network location.
-      type: String
-    - contextPath: Logrhythm.Network.HostStatus
-      description: Host status of the network.
-      type: String
-    - contextPath: Logrhythm.Network.ID
-      description: Network ID.
-      type: String
-    - contextPath: Logrhythm.Network.EntityId
-      description: Entity ID of the network.
-      type: String
-  - arguments:
-    - default: false
-      description: The LogRhythm host ID.
-      isArray: false
-      name: host-id
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '30'
-      description: Number of hosts to return.
-      isArray: false
-      name: count
-      required: false
-      secret: false
-    deprecated: false
-    description: Returns a list of hosts.
-    execution: false
-    name: lr-get-hosts
-    outputs:
-    - contextPath: Logrhythm.Host.EntityId
-      description: The entity ID.
-      type: String
-    - contextPath: Logrhythm.Host.EntityName
-      description: The entity name.
-      type: String
-    - contextPath: Logrhythm.Host.OS
-      description: The host operating system.
-      type: String
-    - contextPath: Logrhythm.Host.ThreatLevel
-      description: The host threat level.
-      type: String
-    - contextPath: Logrhythm.Host.UseEventlogCredentials
-      description: Whether to use the event log credentials.
-      type: String
-    - contextPath: Logrhythm.Host.Name
-      description: The name of the host.
-      type: String
-    - contextPath: Logrhythm.Host.DateUpdated
-      description: Date that the host was last updated.
-      type: String
-    - contextPath: Logrhythm.Host.HostZone
-      description: The host zone.
-      type: String
-    - contextPath: Logrhythm.Host.RiskLevel
-      description: The risk level of the host.
-      type: String
-    - contextPath: Logrhythm.Host.Location
-      description: The host location.
-      type: String
-    - contextPath: Logrhythm.Host.Status
-      description: The host status.
-      type: String
-    - contextPath: Logrhythm.Host.ID
-      description: The unique ID of the host object.
-      type: String
-    - contextPath: Logrhythm.Host.OSType
-      description: Host operating system type.
-      type: String
-  - arguments:
-    - default: false
-      description: The alarm ID.
-      isArray: false
-      name: alarm-id
-      required: true
-      secret: false
-    deprecated: false
-    description: Returns data for an alarm.
-    execution: false
-    name: lr-get-alarm-data
-    outputs:
-    - contextPath: Logrhythm.Alarm.Status
-      description: The alarm status.
-      type: String
-    - contextPath: Logrhythm.Alarm.EventID
-      description: The alarm event ID.
-      type: String
-    - contextPath: Logrhythm.Alarm.LastDxTimeStamp
-      description: The timestamp when the drilldown returned new results from the Data Indexer.
-      type: String
-    - contextPath: Logrhythm.Alarm.DateInserted
-      description: The alarm date inserted.
-      type: String
-    - contextPath: Logrhythm.Alarm.AIERuleName
-      description: The alarm AI engine (AIE) rule.
-      type: String
-    - contextPath: Logrhythm.Alarm.Priority
-      description: The alarm priority.
-      type: String
-    - contextPath: Logrhythm.Alarm.AIERuleID
-      description: The alarm AI engine (AIE) rule ID.
-      type: String
-    - contextPath: Logrhythm.Alarm.ID
-      description: The alarm ID.
-      type: String
-    - contextPath: Logrhythm.Alarm.NotificationSent
-      description: Whether an alarm notification was sent.
-      type: Boolean
-    - contextPath: Logrhythm.Alarm.AlarmGuid
-      description: The alarm GUID.
-      type: String
-    - contextPath: Logrhythm.Alarm.RetryCount
-      description: The alarm retry count.
-      type: String
-    - contextPath: Logrhythm.Alarm.NormalMessageDate
-      description: The alarm message date.
-      type: String
-    - contextPath: Logrhythm.Alarm.WebConsoleIds
-      description: The alarm web console IDs.
-      type: String
-    - contextPath: Logrhythm.Alarm.Summary.PIFType
-      description: Alarm Primary Inspection Field (the original name for "Summary Field").
-      type: String
-    - contextPath: Logrhythm.Alarm.Summary.DrillDownSummaryLogs
-      description: Drilldown summary logs.
-      type: String
-  - arguments:
-    - default: false
-      description: The alarm ID.
-      isArray: false
-      name: alarm-id
-      required: true
-      secret: false
-    - default: false
-      defaultValue: '10'
-      description: Number of events to return. 
-      isArray: false
-      name: count
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of fields (outputs) to return to the context. If empty, all fields are returned.
-      isArray: false
-      name: fields
-      predefined:
-      - ''
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'False'
-      description: 'Whether to return the log message from the event. Possible values: "True" and "False".'
-      isArray: false
-      name: get-log-message
-      predefined:
-      - 'True'
-      - 'False'
-      required: false
-      secret: false
-    deprecated: false
-    description: Returns a list of events, by alarm ID.
-    execution: false
-    name: lr-get-alarm-events
-    outputs:
-    - contextPath: Logrhythm.Alarm.Event
-      description: Alarm event information.
-      type: String
-    - contextPath: Logrhythm.Alarm.ID
-      description: The alarm ID.
-      type: String
-  - name: lr-get-query-result
-    description: Get search query result for the specified task ID. The task ID can be retrieved from the lr-execute-search-query command.
-    arguments:
-      - name: task_id
-        description: Task ID. The task ID can be retrieved from the lr-execute-search-query command.
-        required: true
-    outputs:
-    - contextPath: Logrhythm.Search.Results.TaskStatus
-      description: Task status.
-      type: String
-    - contextPath: Logrhythm.Search.Results.TaskID
-      description: Task ID.
-      type: String
-    - contextPath: Logrhythm.Search.Results.Items.originEntityId
-      description: Entity ID.
-      type: Number
-    - contextPath: Logrhythm.Search.Results.Items.impactedIp
-      description: Impacted IP.
-      type: String
-    - contextPath: Logrhythm.Search.Results.Items.classificationTypeName
-      description: Classification name.
-      type: String
-    - contextPath: Logrhythm.Search.Results.Items.logSourceName
-      description: Log source name.
-      type: String
-    - contextPath: Logrhythm.Search.Results.Items.entityName
-      description: Entity name.
-      type: String
-    - contextPath: Logrhythm.Search.Results.Items.normalDate
-      description: Date.
-      type: Date
-    - contextPath: Logrhythm.Search.Results.Items.vendorMessageId
-      description: Vendor log message.
-      type: String
-    - contextPath: Logrhythm.Search.Results.Items.priority
-      description: Log priority.
-      type: Number
-    - contextPath: Logrhythm.Search.Results.Items.sequenceNumber
-      description: Sequence number.
-      type: String
-    - contextPath: Logrhythm.Search.Results.Items.originHostId
-      description: Origin host ID.
-      type: Number
-    - contextPath: Logrhythm.Search.Results.Items.mpeRuleId
-      description: Logrhythm rule ID.
-      type: Number
-    - contextPath: Logrhythm.Search.Results.Items.originIp
-      description: Origin IP.
-      type: String
-    - contextPath: Logrhythm.Search.Results.Items.mpeRuleName
-      description: Logrhythm rule name.
-      type: String
-    - contextPath: Logrhythm.Search.Results.Items.logSourceHostId
-      description: Log source host ID.
-      type: Number
-    - contextPath: Logrhythm.Search.Results.Items.originHost
-      description: Origin host.
-      type: String
-    - contextPath: Logrhythm.Search.Results.Items.logDate
-      description: Log date.
-      type: Date
-    - contextPath: Logrhythm.Search.Results.Items.classificationName
-      description: Log classification name.
-      type: String
-  - arguments:
-    - name: case_id
-      description: The case ID.
-      required: true
-    description: Execute evidence query for a specific case ID.
-    name: lr-get-case-evidence
-    outputs:
-    - contextPath: Logrhythm.Search.Evidence.status
-      description: Evidence status.
-      type: String
-    - contextPath: Logrhythm.Search.Evidence.text
-      description: Evidence text.
-      type: String
-    - contextPath: Logrhythm.Search.Evidence.number
-      description: Evidence ID.
-      type: Number
-    - contextPath: Logrhythm.Search.Evidence.dateCreated
-      description: Date the evidence was created.
-      type: Date
-    - contextPath: Logrhythm.Search.Evidence.pinned
-      description: Whether evidence is pinned.
-      type: Boolean
-    - contextPath: Logrhythm.Search.Evidence.lastUpdatedBy.name
-      description: The name of the person who last updated the evidence.
-      type: String
-    - contextPath: Logrhythm.Search.Evidence.createdBy.name
-      description: The name of the person who created the evidence.
-      type: String
-    - contextPath: Logrhythm.Search.Evidence.dateUpdated
-      description: The date the evidence was last updated.
-      type: Date
-    - contextPath: Logrhythm.Search.Evidence.type
-      description: Evidence type.
-      type: String
-  - arguments:
-    - description: Number of days to search.
-      name: number_of_days
-      required: true
-    - auto: PREDEFINED
-      description: Log source type.
-      name: source_type
-      predefined:
-      - API_-_AWS_CloudTrail
-      - API_-_AWS_CloudWatch_Alarm
-      - API_-_AWS_Config_Event
-      - API_-_AWS_S3_Flat_File
-      - API_-_AWS_S3_Server_Access_Event
-      - API_-_BeyondTrust_Retina_Vulnerability_Management
-      - API_-_Box_Event
-      - API_-_Cisco_IDS/IPS
-      - API_-_Cradlepoint_ECM
-      - API_-_IP360_Vulnerability_Scanner
-      - API_-_Metasploit_Penetration_Scanner
-      - API_-_Nessus_Vulnerability_Scanner
-      - API_-_NetApp_CIFS_Security_Audit_Event_Log
-      - API_-_NeXpose_Vulnerability_Scanner
-      - API_-_Office_365_Management_Activity
-      - API_-_Office_365_Message_Tracking
-      - API_-_Okta_Event
-      - API_-_Qualys_Vulnerability_Scanner
-      - API_-_Salesforce_EventLogFile
-      - API_-_Sourcefire_eStreamer
-      - API_-_Tenable_SecurityCenter
-      - API_-_Tenable.io_Scanner
-      - Flat_File_-_ActivIdentity_CMS
-      - Flat_File_-_Airwatch_MDM
-      - Flat_File_-_Alfresco
-      - Flat_File_-_AllScripts
-      - Flat_File_-_Apache_Access_Log
-      - Flat_File_-_Apache_Error_Log
-      - Flat_File_-_Apache_SSL_Access_Log
-      - Flat_File_-_Apache_SSL_Error_Log
-      - Flat_File_-_Apache_Tomcat_Access_Log
-      - Flat_File_-_Apache_Tomcat_Console_Log
-      - Flat_File_-_Avaya_Secure_Access_Link_Remote_Access_Log
-      - Flat_File_-_Avaya_Voice_Mail_Log
-      - Flat_File_-_Axway_SFTP
-      - Flat_File_-_Beacon_Endpoint_Profiler
-      - Flat_File_-_Bind_9
-      - Flat_File_-_BlackBerry_Enterprise_Server
-      - Flat_File_-_Blue_Coat_Proxy_BCREPORTERMAIN_Format
-      - Flat_File_-_Blue_Coat_Proxy_CSV_Format
-      - Flat_File_-_Blue_Coat_Proxy_SQUID-1_Format
-      - Flat_File_-_Blue_Coat_Proxy_W3C_Format
-      - Flat_File_-_Bro_IDS_Critical_Stack_Intel_Log
-      - Flat_File_-_Broadcom_SiteMinder
-      - Flat_File_-_CA_ACF2_for_z/OS_-_ACFRPTDS
-      - Flat_File_-_CA_ACF2_for_z/OS_-_ACFRPTEL
-      - Flat_File_-_CA_ACF2_for_z/OS_-_ACFRPTJL
-      - Flat_File_-_CA_ACF2_for_z/OS_-_ACFRPTLL
-      - Flat_File_-_CA_ACF2_for_z/OS_-_ACFRPTNV
-      - Flat_File_-_CA_ACF2_for_z/OS_-_ACFRPTOM
-      - Flat_File_-_CA_ACF2_for_z/OS_-_ACFRPTPW
-      - Flat_File_-_CA_ACF2_for_z/OS_-_ACFRPTRL
-      - Flat_File_-_CA_ACF2_for_z/OS_-_ACFRPTRV
-      - Flat_File_-_CA_ControlMinder
-      - Flat_File_-_Cerberus_FTP_Server
-      - Flat_File_-_Cerner
-      - Flat_File_-_Cisco_AMP_for_Endpoints
-      - Flat_File_-_Cisco_Email_Security_Appliance
-      - Flat_File_-_Cisco_LMS_(cwcli)
-      - Flat_File_-_Cisco_LMS_(Syslog)
-      - Flat_File_-_Cisco_NGFW
-      - Flat_File_-_Cisco_Secure_ACS_CSV_File
-      - Flat_File_-_Cisco_Security_Agent
-      - Flat_File_-_Cisco_Umbrella_DNS
-      - Flat_File_-_Cisco_Web_Security_aclog
-      - Flat_File_-_Citrix_Access_Gateway_IIS_Format
-      - Flat_File_-_Citrix_Access_Gateway_NCSA_Common_Format
-      - Flat_File_-_Citrix_Access_Gateway_W3C_Format
-      - Flat_File_-_Citrix_Presentation_Server
-      - Flat_File_-_Citrix_Secure_Gateway
-      - Flat_File_-_ClamAV_Anti-Virus
-      - Flat_File_-_ColdFusion_Application_Log
-      - Flat_File_-_ColdFusion_Exception_Log
-      - Flat_File_-_ColdFusion_Mail_Log
-      - Flat_File_-_ColdFusion_Mailsent_Log
-      - Flat_File_-_ColdFusion_Server_Log
-      - Flat_File_-_Cornerstone_Managed_File_Transfer
-      - Flat_File_-_Coyote_Point_Equalizer
-      - Flat_File_-_DB2_Audit_Log
-      - Flat_File_-_DB2_via_BMC_Log_Master
-      - Flat_File_-_Defender_Server
-      - Flat_File_-_DocWorks
-      - Flat_File_-_eClinicalWorks_Audit_Log
-      - Flat_File_-_EMC_Isilon
-      - Flat_File_-_Epicor_Coalition
-      - Flat_File_-_FairWarning_Ready-For-Healthcare
-      - Flat_File_-_FileZilla_System_Log
-      - Flat_File_-_FireEye_Web_MPS
-      - Flat_File_-_Forcepoint_Web_Security_CEF_Cloud_Format
-      - Flat_File_-_Forescout_CounterACT
-      - Flat_File_-_FoxT_BoKS_Server_Access_Control
-      - Flat_File_-_FundsXpress
-      - Flat_File_-_Gene6_FTP
-      - Flat_File_-_GlobalSCAPE_EFT
-      - Flat_File_-_Hadoop
-      - Flat_File_-_HMC
-      - Flat_File_-_HP-UX_Audit_Log
-      - Flat_File_-_IBM_4690_POS
-      - Flat_File_-_IBM_Informix_Application_Log
-      - Flat_File_-_IBM_Informix_Audit_Log
-      - Flat_File_-_IBM_Tivoli_Storage_Manager
-      - Flat_File_-_IBM_WebSphere_App_Server_v7_Audit_Log
-      - Flat_File_-_IBM_WebSphere_Cast_Iron_Cloud_Integration
-      - Flat_File_-_IBM_ZOS_Batch_Decryption_Log
-      - Flat_File_-_IBM_ZOS_CICS_Decryption_Log
-      - Flat_File_-_IBM_ZOS_RACF_Access_Log
-      - Flat_File_-_IBM_ZOS_RACF_SMF_Type_80
-      - Flat_File_-_IPSwitch_WS_FTP
-      - Flat_File_-_Irix_Audit_Logs
-      - Flat_File_-_IT-CUBE_AgileSI
-      - Flat_File_-_JBoss_Log_File
-      - Flat_File_-_Juniper_Steel_Belted_Radius_Server
-      - Flat_File_-_Kerio_Mail_Server
-      - Flat_File_-_KERISYS_Doors_Event_Export_Format
-      - Flat_File_-_Kippo_Honeypot
-      - Flat_File_-_Linux_Audit_ASCII
-      - Flat_File_-_Linux_Audit_Log
-      - Flat_File_-_Linux_Host_Secure_Log
-      - Flat_File_-_LOGbinder_EX
-      - Flat_File_-_LogRhythm_Alarm_Reingest
-      - Flat_File_-_LogRhythm_Data_Indexer_Monitor
-      - Flat_File_-_LogRhythm_Oracle_Log
-      - Flat_File_-_LogRhythm_System_Monitor
-      - Flat_File_-_LogRhythm_System_Monitor_Log_File
-      - Flat_File_-_LogRhythm_Trebek_Log
-      - Flat_File_-_LogRhythm_Zeus_Log
-      - Flat_File_-_Lotus_Domino_Client_Log
-      - Flat_File_-_McAfee_Cloud_Proxy_do_not_use
-      - Flat_File_-_McAfee_ePO_HIPS
-      - Flat_File_-_McAfee_Foundstone
-      - Flat_File_-_McAfee_Proxy_Cloud
-      - Flat_File_-_McAfee_SaaS_Web_Protection
-      - Flat_File_-_McAfee_Web_Gateway_Audit_Log
-      - Flat_File_-_Merak
-      - Flat_File_-_Meridian
-      - Flat_File_-_Microsoft_ActiveSync_2010
-      - Flat_File_-_Microsoft_CRM
-      - Flat_File_-_Microsoft_DHCP_Server_Log
-      - Flat_File_-_Microsoft_Forefront_TMG
-      - Flat_File_-_Microsoft_Forefront_TMG_Web_Proxy
-      - Flat_File_-_Microsoft_IIS_(IIS_Format)_File
-      - Flat_File_-_Microsoft_IIS_7.x_W3C_Extended_Format
-      - Flat_File_-_Microsoft_IIS_Error_Log_V6
-      - Flat_File_-_Microsoft_IIS_FTP_IIS_Log_File_Format
-      - Flat_File_-_Microsoft_IIS_FTP_W3C_Extended_Format
-      - Flat_File_-_Microsoft_IIS_NCSA_Common_Format_File
-      - Flat_File_-_Microsoft_IIS_SMTP_W3C_Format
-      - Flat_File_-_Microsoft_IIS_URL_Scan_Log
-      - Flat_File_-_Microsoft_IIS_W3C_File
-      - Flat_File_-_Microsoft_ISA_Server_2004
-      - Flat_File_-_Microsoft_ISA_Server_W3C_File
-      - Flat_File_-_Microsoft_Netlogon
-      - Flat_File_-_Microsoft_Port_Reporter_PR-PORTS_Log
-      - Flat_File_-_Microsoft_Semantic_Logging
-      - Flat_File_-_Microsoft_SQL_Server_2000_Error_Log
-      - Flat_File_-_Microsoft_SQL_Server_2005_Error_Log
-      - Flat_File_-_Microsoft_SQL_Server_2008_Error_Log
-      - Flat_File_-_Microsoft_SQL_Server_2012_Error_Log
-      - Flat_File_-_Microsoft_SQL_Server_2014_Error_Log
-      - Flat_File_-_Microsoft_Windows_2003_DNS
-      - Flat_File_-_Microsoft_Windows_2008_DNS
-      - Flat_File_-_Microsoft_Windows_2012_DNS
-      - Flat_File_-_Microsoft_Windows_Firewall
-      - Flat_File_-_MicroStrategy
-      - Flat_File_-_Mimecast_Audit
-      - Flat_File_-_Mimecast_Email
-      - Flat_File_-_Monetra
-      - Flat_File_-_MongoDB
-      - Flat_File_-_MS_Exchange_2003_Message_Tracking_Log
-      - Flat_File_-_MS_Exchange_2007_Message_Tracking_Log
-      - Flat_File_-_MS_Exchange_2010_Message_Tracking_Log
-      - Flat_File_-_MS_Exchange_2013_Message_Tracking_Log
-      - Flat_File_-_MS_Exchange_2016_Message_Tracking_Log
-      - Flat_File_-_MS_Exchange_RPC_Client_Access
-      - Flat_File_-_MS_IAS/RAS_Server_NPS_DB_Log_Format
-      - Flat_File_-_MS_IAS/RAS_Server_Standard_Log_Format
-      - Flat_File_-_MS_ISA_Server_2006_ISA_All_Fields
-      - Flat_File_-_MS_ISA_Server_2006_W3C_All_Fields
-      - Flat_File_-_MS_SQL_Server_Reporting_Services_2008
-      - Flat_File_-_MySQL
-      - Flat_File_-_MySQL_error.log
-      - Flat_File_-_MySQL_mysql.log
-      - Flat_File_-_MySQL_mysql-slow.log
-      - Flat_File_-_Nessus_System_Log
-      - Flat_File_-_NetApp_Cluster
-      - Flat_File_-_Nginx_Log
-      - Flat_File_-_Novell_Audit
-      - Flat_File_-_Novell_GroupWise
-      - Flat_File_-_Novell_LDAP
-      - Flat_File_-_ObserveIT_Enterprise
-      - Flat_File_-_Office_365_Message_Tracking
-      - Flat_File_-_OpenDJ
-      - Flat_File_-_OpenVMS
-      - Flat_File_-_OpenVPN
-      - Flat_File_-_Oracle_11g_Fine_Grained_Audit_Trail
-      - Flat_File_-_Oracle_9i
-      - Flat_File_-_Oracle_BRM_CM_Log
-      - Flat_File_-_Oracle_BRM_DM_Log
-      - Flat_File_-_Oracle_Listener_Audit_Trail
-      - Flat_File_-_Oracle_SunOne_Directory_Server
-      - Flat_File_-_Oracle_SunOne_Web_Server_Access_Log
-      - Flat_File_-_Oracle_Virtual_Directory
-      - Flat_File_-_Oracle_WebLogic_11g_Access_Log
-      - Flat_File_-_Other
-      - Flat_File_-_PeopleSoft
-      - Flat_File_-_PhpMyAdmin_Honeypot
-      - Flat_File_-_Postfix
-      - Flat_File_-_PowerBroker_Servers
-      - Flat_File_-_Princeton_Card_Secure
-      - Flat_File_-_ProFTPD
-      - Flat_File_-_PureMessage_For_Exchange_SMTP_Log
-      - Flat_File_-_PureMessage_For_UNIX_Blocklist_Log
-      - Flat_File_-_PureMessage_For_UNIX_Message_Log
-      - Flat_File_-_RACF_(SMF)
-      - Flat_File_-_Radmin
-      - Flat_File_-_Restic_Backup_Log
-      - Flat_File_-_RL_Patient_Feedback
-      - Flat_File_-_RSA_Adaptive_Authentication
-      - Flat_File_-_RSA_Authentication_Manager_6.1
-      - Flat_File_-_S2_Badge_Reader
-      - Flat_File_-_Safenet
-      - Flat_File_-_Sendmail_File
-      - Flat_File_-_Sharepoint_ULS
-      - Flat_File_-_ShoreTel_VOIP
-      - Flat_File_-_Siemens_Radiology_Information_System
-      - Flat_File_-_Snort_Fast_Alert_File
-      - Flat_File_-_Solaris_-_Sulog
-      - Flat_File_-_Solaris_Audit_Log
-      - Flat_File_-_SpamAssassin
-      - Flat_File_-_Squid_Proxy
-      - Flat_File_-_Subversion
-      - Flat_File_-_Sudo.Log
-      - Flat_File_-_Swift_Alliance
-      - Flat_File_-_Symantec_Antivirus_10.x_Corporate_Edtn
-      - Flat_File_-_Symantec_Antivirus_12.x_Corporate_Edtn
-      - Flat_File_-_Symitar_Episys_Console_Log
-      - Flat_File_-_Symitar_Episys_Sysevent_Log
-      - Flat_File_-_Tandem_EMSOUT_Log_File
-      - Flat_File_-_Tandem_XYGATE
-      - Flat_File_-_Tectia_SSH_Server
-      - Flat_File_-_Trade_Innovations_CSCS
-      - Flat_File_-_Trend_Micro_IMSS
-      - Flat_File_-_Trend_Micro_Office_Scan
-      - Flat_File_-_Tumbleweed_Mailgate_Server
-      - Flat_File_-_Verint_Audit_Trail_File
-      - Flat_File_-_VMWare_Virtual_Machine
-      - Flat_File_-_Voltage_Securemail
-      - Flat_File_-_Vormetric_Log_File
-      - Flat_File_-_vsFTP_Daemon_Log
-      - Flat_File_-_Vyatta_Firewall_Kernel_Log
-      - Flat_File_-_WordPot_Honeypot
-      - Flat_File_-_X-NetStat_Log
-      - Flat_File_-_XPient_POS_CCA_Manager
-      - Flat_File_-_XPIENT_POS_POSLOG
-      - Flat_File_-_XPIENT_POS_Shell_Log
-      - IPFIX_-_IP_Flow_Information_Export
-      - J-Flow_-_Juniper_J-Flow_Version_5
-      - J-Flow_-_Juniper_J-Flow_Version_9
-      - LogRhythm_CloudAI
-      - LogRhythm_Data_Loss_Defender
-      - LogRhythm_Demo_File_-_Application_Server_Log
-      - LogRhythm_Demo_File_-_Content_Inspection_Log
-      - LogRhythm_Demo_File_-_Database_Audit_Log
-      - LogRhythm_Demo_File_-_Ecom_Server_Log
-      - LogRhythm_Demo_File_-_File_Server_Log
-      - LogRhythm_Demo_File_-_Firewall_Log
-      - LogRhythm_Demo_File_-_FTP_Log
-      - LogRhythm_Demo_File_-_IDS_Alarms_Log
-      - LogRhythm_Demo_File_-_Mail_Server_Log
-      - LogRhythm_Demo_File_-_Netflow_Log
-      - LogRhythm_Demo_File_-_Network_Device_Log
-      - LogRhythm_Demo_File_-_Network_Server_Log
-      - LogRhythm_Demo_File_-_VPN_Log
-      - LogRhythm_Demo_File_-_Web_Access_Log
-      - LogRhythm_File_Monitor_(AIX)
-      - LogRhythm_File_Monitor_(HP-UX)
-      - LogRhythm_File_Monitor_(Linux)
-      - LogRhythm_File_Monitor_(Solaris)
-      - LogRhythm_File_Monitor_(Windows)
-      - LogRhythm_Filter
-      - LogRhythm_Network_Connection_Monitor_(AIX)
-      - LogRhythm_Network_Connection_Monitor_(HP-UX)
-      - LogRhythm_Network_Connection_Monitor_(Linux)
-      - LogRhythm_Network_Connection_Monitor_(Solaris)
-      - LogRhythm_Network_Connection_Monitor_(Windows)
-      - LogRhythm_Process_Monitor_(AIX)
-      - LogRhythm_Process_Monitor_(HP-UX)
-      - LogRhythm_Process_Monitor_(Linux)
-      - LogRhythm_Process_Monitor_(Solaris)
-      - LogRhythm_Process_Monitor_(Windows)
-      - LogRhythm_Registry_Integrity_Monitor
-      - LogRhythm_SQL_Server_2000_C2_Audit_Log
-      - LogRhythm_SQL_Server_2005_C2_Audit_Log
-      - LogRhythm_SQL_Server_2008_C2_Audit_Log
-      - LogRhythm_SQL_Server_2012+_C2_Audit_Log
-      - LogRhythm_User_Activity_Monitor_(AIX)
-      - LogRhythm_User_Activity_Monitor_(HP-UX)
-      - LogRhythm_User_Activity_Monitor_(Linux)
-      - LogRhythm_User_Activity_Monitor_(Solaris)
-      - LogRhythm_User_Activity_Monitor_(Windows)
-      - MS_Event_Log_for_XP/2000/2003_-_Application
-      - MS_Event_Log_for_XP/2000/2003_-_Application_-_Espaniol
-      - MS_Event_Log_for_XP/2000/2003_-_BioPassword
-      - MS_Event_Log_for_XP/2000/2003_-_DFS
-      - MS_Event_Log_for_XP/2000/2003_-_Directory_Service
-      - MS_Event_Log_for_XP/2000/2003_-_DNS
-      - MS_Event_Log_for_XP/2000/2003_-_DotDefender
-      - MS_Event_Log_for_XP/2000/2003_-_EMC_Celerra_NAS
-      - MS_Event_Log_for_XP/2000/2003_-_File_Rep_Service
-      - MS_Event_Log_for_XP/2000/2003_-_HA
-      - MS_Event_Log_for_XP/2000/2003_-_Kaspersky
-      - MS_Event_Log_for_XP/2000/2003_-_Micros_POS
-      - MS_Event_Log_for_XP/2000/2003_-_PatchLink
-      - MS_Event_Log_for_XP/2000/2003_-_SafeWord_2008
-      - MS_Event_Log_for_XP/2000/2003_-_SCE
-      - MS_Event_Log_for_XP/2000/2003_-_Security
-      - MS_Event_Log_for_XP/2000/2003_-_Security_-_Espaniol
-      - MS_Event_Log_for_XP/2000/2003_-_SMS_2003
-      - MS_Event_Log_for_XP/2000/2003_-_System
-      - MS_Event_Log_for_XP/2000/2003_-_System_-_Espaniol
-      - MS_Event_Log_for_XP/2000/2003_-_Virtual_Server
-      - MS_Windows_Event_Logging_-_ADFS_Admin
-      - MS_Windows_Event_Logging_-_Application
-      - MS_Windows_Event_Logging_-_AppLockerApp
-      - MS_Windows_Event_Logging_-_Backup
-      - MS_Windows_Event_Logging_-_Citrix_Delivery_Services
-      - MS_Windows_Event_Logging_-_Citrix_XenApp
-      - MS_Windows_Event_Logging_-_DFS
-      - MS_Windows_Event_Logging_-_DHCP_Admin
-      - MS_Windows_Event_Logging_-_DHCP_Operational
-      - MS_Windows_Event_Logging_-_Diagnosis-PLA
-      - MS_Windows_Event_Logging_-_Digital_Persona
-      - MS_Windows_Event_Logging_-_Dir_Service
-      - MS_Windows_Event_Logging_-_DNS
-      - MS_Windows_Event_Logging_-_Dot_Defender
-      - MS_Windows_Event_Logging_-_ESD_Data_Flow_Track
-      - MS_Windows_Event_Logging_-_Exchange_Mailbox_DB_Failures
-      - MS_Windows_Event_Logging_-_FailoverClustering/Operational
-      - MS_Windows_Event_Logging_-_Firewall_With_Advanced_Security
-      - MS_Windows_Event_Logging_-_Forefront_AV
-      - MS_Windows_Event_Logging_-_Group_Policy_Operational
-      - MS_Windows_Event_Logging_-_Hyper-V_Hvisor
-      - MS_Windows_Event_Logging_-_Hyper-V_IMS
-      - MS_Windows_Event_Logging_-_Hyper-V_Network
-      - MS_Windows_Event_Logging_-_Hyper-V_SynthSt
-      - MS_Windows_Event_Logging_-_Hyper-V_VMMS
-      - MS_Windows_Event_Logging_-_Hyper-V_Worker
-      - MS_Windows_Event_Logging_-_Kaspersky
-      - MS_Windows_Event_Logging_-_Kernel_PnP_Configuration
-      - MS_Windows_Event_Logging_-_Lync_Server
-      - MS_Windows_Event_Logging_-_MSExchange_Management
-      - MS_Windows_Event_Logging_-_Operations_Manager
-      - MS_Windows_Event_Logging_-_PowerShell
-      - MS_Windows_Event_Logging_-_Print_Services
-      - MS_Windows_Event_Logging_-_Quest_ActiveRoles_EDM_Server
-      - MS_Windows_Event_Logging_-_Replication
-      - MS_Windows_Event_Logging_-_SafeWord_2008
-      - MS_Windows_Event_Logging_-_Security
-      - MS_Windows_Event_Logging_-_Setup
-      - MS_Windows_Event_Logging_-_Sysmon
-      - MS_Windows_Event_Logging_-_System
-      - MS_Windows_Event_Logging_-_Task_Scheduler
-      - MS_Windows_Event_Logging_-_TS_Gateway
-      - MS_Windows_Event_Logging_-_TS_Licensing
-      - MS_Windows_Event_Logging_-_TS_Local_Session_Manager
-      - MS_Windows_Event_Logging_-_TS_Remote_Connection_Manager
-      - MS_Windows_Event_Logging_-_TS_Session_Broker
-      - MS_Windows_Event_Logging_-_TS_Session_Broker_Client
-      - MS_Windows_Event_Logging_-_VisualSVN
-      - MS_Windows_Event_Logging_:_Deutsch_-_Security
-      - MS_Windows_Event_Logging_:_Espaniol_-_Application
-      - MS_Windows_Event_Logging_:_Espaniol_-_Security
-      - MS_Windows_Event_Logging_:_Espaniol_-_System
-      - MS_Windows_Event_Logging_:_Francais_-_System
-      - MS_Windows_Event_Logging_:_Francais_-_Security
-      - MS_Windows_Event_Logging_XML_-_ADFS
-      - MS_Windows_Event_Logging_XML_-_Application
-      - MS_Windows_Event_Logging_XML_-_Forwarded_Events
-      - MS_Windows_Event_Logging_XML_-_Generic
-      - MS_Windows_Event_Logging_XML_-_Microsoft-Windows-NTLM/Operational
-      - MS_Windows_Event_Logging_XML_-_Security
-      - MS_Windows_Event_Logging_XML_-_Sysmon
-      - MS_Windows_Event_Logging_XML_-_Sysmon_7.01
-      - MS_Windows_Event_Logging_XML_-_Sysmon_8/9/10
-      - MS_Windows_Event_Logging_XML_-_System
-      - MS_Windows_Event_Logging_XML_-_Unisys_Stealth
-      - MS_Windows_Event_Logging_XML_-_Windows_Defender
-      - Netflow_-_Cisco_Netflow_Version_1
-      - Netflow_-_Cisco_Netflow_Version_5
-      - Netflow_-_Cisco_Netflow_Version_9
-      - Netflow_-_Palo_Alto_Version_9
-      - Netflow_-_SonicWALL_Version_5
-      - Netflow_-_SonicWALL_Version_9
-      - OPSEC_LEA_-_Checkpoint_Firewall
-      - OPSEC_LEA_-_Checkpoint_Firewall_Audit_Log
-      - OPSEC_LEA_-_Checkpoint_For_LR_7.4.1+
-      - OPSEC_LEA_-_Checkpoint_Log_Server
-      - sFlow_-_Version_5
-      - SNMP_Trap_-_Audiolog
-      - SNMP_Trap_-_Autoregistered
-      - SNMP_Trap_-_Brocade_Switch
-      - SNMP_Trap_-_Cisco_5508_Wireless_Controller
-      - SNMP_Trap_-_Cisco_IP_SLA
-      - SNMP_Trap_-_Cisco_Prime
-      - SNMP_Trap_-_Cisco_Router-Switch
-      - SNMP_Trap_-_CyberArk
-      - SNMP_Trap_-_Dell_OpenManage
-      - SNMP_Trap_-_HP_Network_Node_Manager
-      - SNMP_Trap_-_IBM_TS3000_Series_Tape_Drive
-      - SNMP_Trap_-_Riverbed_SteelCentral_NetShark
-      - SNMP_Trap_-_RSA_Authentication_Manager
-      - SNMP_Trap_-_Swift_Alliance
-      - SNMP_Trap_-_Trend_Micro_Control_Manager
-      - Syslog_-_3Com_Switch
-      - Syslog_-_A10_Networks_AX1000_Load_Balancer
-      - Syslog_-_A10_Networks_Web_Application_Firewall
-      - Syslog_-_Accellion_Secure_File_Transfer_Application
-      - Syslog_-_Active_Scout_IPS
-      - Syslog_-_Adallom
-      - Syslog_-_Adtran_Switch
-      - Syslog_-_Aerohive_Access_Point
-      - Syslog_-_Aerohive_Firewall
-      - Syslog_-_AIMIA_Tomcat
-      - Syslog_-_AirDefense_Enterprise
-      - Syslog_-_Airmagnet_Wireless_IDS
-      - Syslog_-_AirTight_IDS/IPS
-      - Syslog_-_AirWatch_MDM
-      - Syslog_-_Airwave_Management_System_Log
-      - Syslog_-_AIX_Host
-      - Syslog_-_Alcatel-Lucent_Switch
-      - Syslog_-_Alcatel-Lucent_Wireless_Controller
-      - Syslog_-_AlertLogic
-      - Syslog_-_AMX_AV_Controller
-      - Syslog_-_Apache_Access_Log
-      - Syslog_-_Apache_Error_Log
-      - Syslog_-_Apache_Tomcat_Request_Parameters
-      - Syslog_-_Apache_Tomcat_Service_Clients_Log
-      - Syslog_-_APC_ATS
-      - Syslog_-_APC_NetBotz_Environmental_Monitoring
-      - Syslog_-_APC_PDU
-      - Syslog_-_APC_UPS
-      - Syslog_-_Apcon_Network_Monitor
-      - Syslog_-_Apex_One
-      - Syslog_-_Arbor_Networks_Peakflow
-      - Syslog_-_Arbor_Networks_Spectrum
-      - Syslog_-_Arbor_Pravail_APS
-      - Syslog_-_Arista_Switch
-      - Syslog_-_Array_TMX_Load_Balancer
-      - Syslog_-_Arris_CMTS
-      - Syslog_-_Aruba_Clear_Pass
-      - Syslog_-_Aruba_Mobility_Controller
-      - Syslog_-_Aruba_Wireless_Access_Point
-      - Syslog_-_AS/400_via_Powertech_Interact
-      - Syslog_-_Asus_WRT_Router
-      - Syslog_-_Avatier_Identity_Management_Suite_(AIMS)
-      - Syslog_-_Avaya_Communications_Manager
-      - Syslog_-_Avaya_Ethernet_Routing_Switch
-      - Syslog_-_Avaya_G450_Media_Gateway
-      - Syslog_-_Avaya_Router
-      - Syslog_-_Aventail_SSL/VPN
-      - Syslog_-_Avocent_Cyclades_Terminal_Server
-      - Syslog_-_Azul_Java_Appliance
-      - Syslog_-_Barracuda_Load_Balancer
-      - Syslog_-_Barracuda_Mail_Archiver
-      - Syslog_-_Barracuda_NG_Firewall
-      - Syslog_-_Barracuda_NG_Firewall_6.x
-      - Syslog_-_Barracuda_Spam_Firewall
-      - Syslog_-_Barracuda_Web_Application_Firewall
-      - Syslog_-_Barracuda_Webfilter
-      - Syslog_-_BeyondTrust_BeyondInsight_LEEF
-      - Syslog_-_Bind_DNS
-      - Syslog_-_Bit9_Parity_Suite
-      - Syslog_-_Bit9_Security_Platform_CEF
-      - Syslog_-_Bit9+Carbon_Black_(Deprecated)
-      - Syslog_-_BitDefender
-      - Syslog_-_Black_Diamond_Switch
-      - Syslog_-_Blue_Coat_CAS
-      - Syslog_-_Blue_Coat_Forward_Proxy
-      - Syslog_-_Blue_Coat_PacketShaper
-      - Syslog_-_Blue_Coat_ProxyAV_ISA_W3C_Format
-      - Syslog_-_Blue_Coat_ProxyAV_MS_Proxy_2.0_Format
-      - Syslog_-_Blue_Coat_ProxySG
-      - Syslog_-_Blue_Socket_Wireless_Controller
-      - Syslog_-_Bluecat_Adonis
-      - Syslog_-_BlueCedar
-      - Syslog_-_BluVector
-      - Syslog_-_Bomgar
-      - Syslog_-_Bradford_Networks_NAC
-      - Syslog_-_Bradford_Remediation_&_Registration_Svr
-      - Syslog_-_Bro_IDS
-      - Syslog_-_Brocade_Switch
-      - Syslog_-_Bromium_vSentry_CEF
-      - Syslog_-_BSD_Host
-      - Syslog_-_CA_Privileged_Access_Manager
-      - Syslog_-_Cb_Defense_CEF
-      - Syslog_-_Cb_Protection_CEF
-      - Syslog_-_Cb_Response_LEEF
-      - Syslog_-_Cell_Relay
-      - Syslog_-_Certes_Networks_CEP
-      - Syslog_-_Check_Point_Log_Exporter
-      - Syslog_-_Checkpoint_Site-to-Site_VPN
-      - Syslog_-_Cisco_ACS
-      - Syslog_-_Cisco_Aironet_WAP
-      - Syslog_-_Cisco_APIC
-      - Syslog_-_Cisco_Application_Control_Engine
-      - Syslog_-_Cisco_ASA
-      - Syslog_-_Cisco_Clean_Access_(CCA)_Appliance
-      - Syslog_-_Cisco_CSS_Load_Balancer
-      - Syslog_-_Cisco_Email_Security_Appliance
-      - Syslog_-_Cisco_FirePOWER
-      - Syslog_-_Cisco_Firepower_Threat_Defense
-      - Syslog_-_Cisco_FireSIGHT
-      - Syslog_-_Cisco_FWSM
-      - Syslog_-_Cisco_Global_Site_Selector
-      - Syslog_-_Cisco_ISE
-      - Syslog_-_Cisco_Meraki
-      - Syslog_-_Cisco_Nexus_Switch
-      - Syslog_-_Cisco_PIX
-      - Syslog_-_Cisco_Prime_Infrastructure
-      - Syslog_-_Cisco_Router
-      - Syslog_-_Cisco_Secure_ACS_5
-      - Syslog_-_Cisco_Session_Border_Controller
-      - Syslog_-_Cisco_Switch
-      - Syslog_-_Cisco_Telepresence_Video_Communications_Server
-      - Syslog_-_Cisco_UCS
-      - Syslog_-_Cisco_Unified_Comm_Mgr_(Call_Mgr)
-      - Syslog_-_Cisco_VPN_Concentrator
-      - Syslog_-_Cisco_WAAS
-      - Syslog_-_Cisco_Web_Security
-      - Syslog_-_Cisco_Wireless_Access_Point
-      - Syslog_-_Cisco_Wireless_Control_System
-      - Syslog_-_CiscoWorks
-      - Syslog_-_Citrix_Access_Gateway_Server
-      - Syslog_-_Citrix_Netscaler
-      - Syslog_-_Citrix_XenServer
-      - Syslog_-_Claroty_CTD_CEF
-      - Syslog_-_Clearswift_Secure_Email_Gateway
-      - Syslog_-_CloudLock
-      - Syslog_-_CodeGreen_Data_Loss_Prevention
-      - Syslog_-_Cofense_Triage_CEF
-      - Syslog_-_Consentry_NAC
-      - Syslog_-_Corero_IPS
-      - Syslog_-_Corero_SmartWall_DDoS
-      - Syslog_-_CoyotePoint_Equalizer
-      - Syslog_-_Crowdstrike_Falconhost_CEF
-      - Syslog_-_CyberArk
-      - Syslog_-_CyberArk_Privileged_Threat_Analytics
-      - Syslog_-_Cylance_CEF
-      - Syslog_-_CylancePROTECT
-      - Syslog_-_DarkTrace_CEF
-      - Syslog_-_Dell_Force_10
-      - Syslog_-_Dell_PowerConnect_Switch
-      - Syslog_-_Dell_Remote_Access_Controller
-      - Syslog_-_Dell_SecureWorks_iSensor_IPS
-      - Syslog_-_Dialogic_Media_Gateway
-      - Syslog_-_Digital_Guardian_CEF
-      - Syslog_-_D-Link_Switch
-      - Syslog_-_Don_not_use
-      - Syslog_-_Dragos_Platform_CEF
-      - Syslog_-_Ecessa_ShieldLink
-      - Syslog_-_EfficientIP
-      - Syslog_-_EMC_Avamar
-      - Syslog_-_EMC_Centera
-      - Syslog_-_EMC_Data_Domain
-      - Syslog_-_EMC_Isilon
-      - Syslog_-_EMC_Unity_Array
-      - Syslog_-_EMC_VNX
-      - Syslog_-_Ensilo_NGAV
-      - Syslog_-_Enterasys_Dragon_IDS
-      - Syslog_-_Enterasys_Router
-      - Syslog_-_Enterasys_Switch
-      - Syslog_-_Entrust_Entelligence_Messaging_Server
-      - Syslog_-_Entrust_IdentityGuard
-      - Syslog_-_Epic_Hyperspace_CEF
-      - Syslog_-_EqualLogic_SAN
-      - Syslog_-_eSafe_Email_Security
-      - Syslog_-_ESET_Remote_Administrator_(ERA)_LEEF
-      - Syslog_-_Event_Reporter_(Win_2000/XP/2003)
-      - Syslog_-_Exabeam
-      - Syslog_-_Exchange_Message_Tracking
-      - Syslog_-_ExtraHop
-      - Syslog_-_Extreme_Wireless_LAN
-      - Syslog_-_ExtremeWare
-      - Syslog_-_ExtremeXOS
-      - Syslog_-_F5_BIG-IP_Access_Policy_Manager
-      - Syslog_-_F5_BIG-IP_AFM
-      - Syslog_-_F5_BIG-IP_ASM
-      - Syslog_-_F5_BIG-IP_ASM_Key-Value_Pairs
-      - Syslog_-_F5_BIG-IP_ASM_v12
-      - Syslog_-_F5_Big-IP_GTM_&_DNS
-      - Syslog_-_F5_Big-IP_LTM
-      - Syslog_-_F5_FirePass_Firewall
-      - Syslog_-_F5_Silverline_DDoS_Protection
-      - Syslog_-_Fargo_HDP_Card_Printer_and_Encoder
-      - Syslog_-_Fat_Pipe_Load_Balancer
-      - Syslog_-_Fidelis_XPS
-      - Syslog_-_FireEye_E-Mail_MPS
-      - Syslog_-_FireEye_EX
-      - Syslog_-_FireEye_Web_MPS/CMS/ETP/HX
-      - Syslog_-_Forcepoint_DLP
-      - Syslog_-_Forcepoint_Email_Security_Gateway
-      - Syslog_-_Forcepoint_Stonesoft_NGFW
-      - Syslog_-_Forcepoint_SureView_Insider_Threat
-      - Syslog_-_Forcepoint_Web_Security
-      - Syslog_-_Forcepoint_Web_Security_CEF_Format
-      - Syslog_-_Forescout_CounterACT_NAC
-      - Syslog_-_Fortinet_FortiAnalyzer
-      - Syslog_-_Fortinet_FortiAuthenticator
-      - Syslog_-_Fortinet_FortiDDoS
-      - Syslog_-_Fortinet_FortiGate
-      - Syslog_-_Fortinet_FortiGate_v4.0
-      - Syslog_-_Fortinet_FortiGate_v5.0
-      - Syslog_-_Fortinet_FortiGate_v5.2
-      - Syslog_-_Fortinet_FortiGate_v5.4/v5.6
-      - Syslog_-_Fortinet_FortiGate_v5.6_CEF
-      - Syslog_-_Fortinet_Fortigate_v6.0
-      - Syslog_-_Fortinet_FortiMail
-      - Syslog_-_Fortinet_FortiWeb
-      - Syslog_-_Foundry_Switch
-      - Syslog_-_Gene6_FTP
-      - Syslog_-_Generic_CEF
-      - Syslog_-_Generic_ISC_DHCP
-      - Syslog_-_Generic_LEEF
-      - Syslog_-_Guardium_Database_Activity_Monitor
-      - Syslog_-_H3C_Router
-      - Syslog_-_Hitachi_Universal_Storage_Platform
-      - Syslog_-_HP_BladeSystem
-      - Syslog_-_HP_iLO
-      - Syslog_-_HP_Procurve_Switch
-      - Syslog_-_HP_Router
-      - Syslog_-_HP_Switch
-      - Syslog_-_HP_Unix_Tru64
-      - Syslog_-_HP_Virtual_Connect_Switch
-      - Syslog_-_HP-UX_Host
-      - Syslog_-_Huawei_Access_Router
-      - Syslog_-_IBM_Blade_Center
-      - Syslog_-_IBM_Security_Network_Protection
-      - Syslog_-_IBM_Virtual_Tape_Library_Server
-      - Syslog_-_IBM_WebSphere_DataPower_Integration
-      - Syslog_-_IBM_zSecure_Alert_for_ACF2_2.1.0
-      - Syslog_-_IceWarp_Server
-      - Syslog_-_Imperva_Incapsula_CEF
-      - Syslog_-_Imperva_SecureSphere
-      - Syslog_-_Imprivata_OneSign_SSO
-      - Syslog_-_InfoBlox
-      - Syslog_-_Invincea_(LEEF)
-      - Syslog_-_iPrism_Proxy_Log
-      - Syslog_-_IPSWITCH_MOVEit_Server
-      - Syslog_-_IPTables
-      - Syslog_-_IRIX_Host
-      - Syslog_-_iSeries_via_Powertech_Interact
-      - Syslog_-_Ivanti_FileDirector
-      - Syslog_-_JetNexus_Load_Balancer
-      - Syslog_-_Juniper_DX_Application_Accelerator
-      - Syslog_-_Juniper_Firewall
-      - Syslog_-_Juniper_Firewall_3400
-      - Syslog_-_Juniper_Host_Checker
-      - Syslog_-_Juniper_IDP
-      - Syslog_-_Juniper_NSM
-      - Syslog_-_Juniper_Router
-      - Syslog_-_Juniper_SSL_VPN
-      - Syslog_-_Juniper_SSL_VPN_WELF_Format
-      - Syslog_-_Juniper_Switch
-      - Syslog_-_Juniper_Trapeze
-      - Syslog_-_Juniper_vGW_Virtual_Gateway
-      - Syslog_-_Kaspersky_Security_Center
-      - Syslog_-_Kea_DHCP_Server
-      - Syslog_-_Kemp_Load_Balancer
-      - Syslog_-_KFSensor_Honeypot
-      - Syslog_-_KFSensor_Honeypot_CEF
-      - Syslog_-_Lancope_StealthWatch
-      - Syslog_-_Lancope_StealthWatch_CEF
-      - Syslog_-_Layer_7_SecureSpan_SOA_Gateway
-      - Syslog_-_Legacy_Checkpoint_Firewall_(Not_Log_Exporter)
-      - Syslog_-_Legacy_Checkpoint_IPS_(Not_Log_Exporter)
-      - Syslog_-_Lieberman_Enterprise_Random_Password_Manager
-      - Syslog_-_Linux_Audit
-      - Syslog_-_Linux_Host
-      - Syslog_-_Linux_TACACS_Plus
-      - Syslog_-_LOGbinder_EX
-      - Syslog_-_LOGbinder_SP
-      - Syslog_-_LOGbinder_SQL
-      - Syslog_-_LogRhythm_Data_Indexer_Monitor
-      - Syslog_-_LogRhythm_Inter_Deployment_Data_Sharing
-      - Syslog_-_LogRhythm_Log_Distribution_Services
-      - Syslog_-_LogRhythm_Network_Monitor
-      - Syslog_-_LogRhythm_Syslog_Generator
-      - Syslog_-_Lumension
-      - Syslog_-_MacOS_X
-      - Syslog_-_Malwarebytes_Endpoint_Security_CEF
-      - Syslog_-_Mandiant_MIR
-      - Syslog_-_McAfee_Advanced_Threat_Defense
-      - Syslog_-_McAfee_Email_And_Web_Security
-      - Syslog_-_McAfee_ePO
-      - Syslog_-_McAfee_Firewall_Enterprise
-      - Syslog_-_McAfee_Network_Security_Manager
-      - Syslog_-_McAfee_Secure_Internet_Gateway
-      - Syslog_-_McAfee_SecureMail
-      - Syslog_-_McAfee_Skyhigh_for_Shadow_IT_LEEF
-      - Syslog_-_McAfee_Web_Gateway
-      - Syslog_-_mGuard_Firewall
-      - Syslog_-_Microsoft_Advanced_Threat_Analytics_(ATA)_CEF
-      - Syslog_-_Microsoft_Azure_Log_Integration
-      - Syslog_-_Microsoft_Azure_MFA
-      - Syslog_-_Microsoft_Forefront_UAG
-      - Syslog_-_Mirapoint
-      - Syslog_-_MobileIron
-      - Syslog_-_Motorola_Access_Point
-      - Syslog_-_MS_IIS_Web_Log_W3C_Format_(Snare)
-      - Syslog_-_MS_Windows_Event_Logging_XML_-_Application
-      - Syslog_-_MS_Windows_Event_Logging_XML_-_Security
-      - Syslog_-_MS_Windows_Event_Logging_XML_-_System
-      - Syslog_-_Nagios
-      - Syslog_-_nCircle_Configuration_Compliance_Manager
-      - Syslog_-_NetApp_Filer
-      - Syslog_-_NETASQ_Firewall
-      - Syslog_-_NetGate_Router
-      - Syslog_-_NetMotion_VPN
-      - Syslog_-_Netscout_nGenius_InfiniStream
-      - Syslog_-_NetScreen_Firewall
-      - Syslog_-_Netskope
-      - Syslog_-_Netskope_CEF
-      - Syslog_-_Network_Chemistry_RFprotect
-      - Syslog_-_Nginx_Web_Log
-      - Syslog_-_Nimble_Storage
-      - Syslog_-_Nortel_8600_Switch
-      - Syslog_-_Nortel_BayStack_Switch
-      - Syslog_-_Nortel_Contivity
-      - Syslog_-_Nortel_Firewall
-      - Syslog_-_Nortel_IP_1220
-      - Syslog_-_Nortel_Passport_Switch
-      - Syslog_-_Nozomi_Networks_Guardian_CEF
-      - Syslog_-_NuSecure_Gateway
-      - Syslog_-_Nutanix
-      - Syslog_-_Open_Collector
-      - Syslog_-_Open_Collector_-_AWS_CloudTrail
-      - Syslog_-_Open_Collector_-_AWS_CloudWatch
-      - Syslog_-_Open_Collector_-_AWS_Config_Events
-      - Syslog_-_Open_Collector_-_AWS_Guard_Duty
-      - Syslog_-_Open_Collector_-_AWS_S3
-      - Syslog_-_Open_Collector_-_Azure_Event_Hub
-      - Syslog_-_Open_Collector_-_Carbon_Black_Cloud
-      - Syslog_-_Open_Collector_-_CarbonBlackBeat_Heartbeat
-      - Syslog_-_Open_Collector_-_Cisco_AMP
-      - Syslog_-_Open_Collector_-_Cisco_Umbrella
-      - Syslog_-_Open_Collector_-_CiscoAMPBeat_Heartbeat
-      - Syslog_-_Open_Collector_-_Duo_Authentication_Security
-      - Syslog_-_Open_Collector_-_DuoBeat_Heartbeat
-      - Syslog_-_Open_Collector_-_EventHubBeat_Heartbeat
-      - Syslog_-_Open_Collector_-_GCP_Audit
-      - Syslog_-_Open_Collector_-_GCP_Cloud_Key_Management_Service
-      - Syslog_-_Open_Collector_-_GCP_Http_Load_Balancer
-      - Syslog_-_Open_Collector_-_GCP_Pub_Sub
-      - Syslog_-_Open_Collector_-_GCP_Security_Command_Center
-      - Syslog_-_Open_Collector_-_GCP_Virtual_Private_Cloud
-      - Syslog_-_Open_Collector_-_Gmail_Message_Tracking
-      - Syslog_-_Open_Collector_-_GMTBeat_Heartbeat
-      - Syslog_-_Open_Collector_-_GSuite
-      - Syslog_-_Open_Collector_-_GSuiteBeat_Heartbeat
-      - Syslog_-_Open_Collector_-_Metricbeat
-      - Syslog_-_Open_Collector_-_Okta_System_Log
-      - Syslog_-_Open_Collector_-_OktaSystemLogBeat_Heartbeat
-      - Syslog_-_Open_Collector_-_PubSubBeat_Heartbeat
-      - Syslog_-_Open_Collector_-_S3Beat_Heartbeat
-      - Syslog_-_Open_Collector_-_Sophos_Central
-      - Syslog_-_Open_Collector_-_SophosCentralBeat_Heartbeat
-      - Syslog_-_Open_Collector_-_Webhook
-      - Syslog_-_Open_Collector_-_Webhook_OneLogin
-      - Syslog_-_Open_Collector_-_Webhook_Zoom
-      - Syslog_-_Open_Collector_-_WebhookBeat_Heartbeat
-      - Syslog_-_Opengear_Console
-      - Syslog_-_OpenLDAP
-      - Syslog_-_Oracle_10g_Audit_Trail
-      - Syslog_-_Oracle_11g_Audit_Trail
-      - Syslog_-_OSSEC_Alerts
-      - Syslog_-_Other
-      - Syslog_-_Outpost24
-      - Syslog_-_Palo_Alto_Cortex_XDR
-      - Syslog_-_Palo_Alto_Custom_Pipe
-      - Syslog_-_Palo_Alto_Firewall
-      - Syslog_-_Palo_Alto_Traps_CEF
-      - Syslog_-_Palo_Alto_Traps_Management_Service
-      - Syslog_-_Password_Manager_Pro
-      - Syslog_-_pfSense_Firewall
-      - Syslog_-_PingFederate_7.2
-      - Syslog_-_PingFederate_CEF
-      - Syslog_-_Polycom
-      - Syslog_-_Postfix
-      - Syslog_-_Procera_PacketLogic
-      - Syslog_-_Proofpoint_Spam_Firewall
-      - Syslog_-_Protegrity_Defiance_DPS
-      - Syslog_-_QLogic_Infiniband_Switch
-      - Syslog_-_Quest_Defender
-      - Syslog_-_Radiator_Radius
-      - Syslog_-_RADiFlow_3180_Switch
-      - Syslog_-_Radware_Alteon_Load_Balancer
-      - Syslog_-_Radware_DefensePro
-      - Syslog_-_Radware_Web_Server_Director_Audit_Log
-      - Syslog_-_Raritan_KVM
-      - Syslog_-_Raz-Lee
-      - Syslog_-_RedSeal
-      - Syslog_-_Riverbed
-      - Syslog_-_RSA_ACE
-      - Syslog_-_RSA_Authentication_Manager_v7.1
-      - Syslog_-_RSA_Authentication_Manager_v8.x
-      - Syslog_-_RSA_Web_Threat_Detection
-      - Syslog_-_RSA_Web_Threat_Detection_5.1
-      - Syslog_-_RuggedRouter
-      - Syslog_-_Safenet
-      - Syslog_-_Sailpoint
-      - Syslog_-_Sauce_Labs
-      - Syslog_-_SecureAuth_IdP
-      - Syslog_-_SecureAuth_IdP_v9
-      - Syslog_-_SecureLink
-      - Syslog_-_SecureTrack
-      - Syslog_-_SEL_3610_Port_Switch
-      - Syslog_-_SEL_3620_Ethernet_Security_Gateway
-      - Syslog_-_Sentinel_IPS
-      - Syslog_-_SentinelOne_CEF
-      - Syslog_-_Sguil
-      - Syslog_-_Siemens_Scalance_X400
-      - Syslog_-_Smoothwall_Firewall
-      - Syslog_-_SnapGear_Firewall
-      - Syslog_-_Snare_Windows_2003_Event_Log
-      - Syslog_-_Snare_Windows_2008_Event_Log
-      - Syslog_-_Snort_IDS
-      - Syslog_-_Solaris_(Snare)
-      - Syslog_-_Solaris_Host
-      - Syslog_-_SonicWALL
-      - Syslog_-_SonicWALL_SSL-VPN
-      - Syslog_-_Sophos_Email_Encryption_Appliance
-      - Syslog_-_Sophos_UTM
-      - Syslog_-_Sophos_Web_Proxy
-      - Syslog_-_Sophos_XG_Firewall
-      - Syslog_-_Sourcefire_IDS_3D
-      - Syslog_-_Sourcefire_RNA
-      - Syslog_-_Spectracom_Network_Time_Server
-      - Syslog_-_Splunk_API_-_Checkpoint_Firewall
-      - Syslog_-_Splunk_API_-_Cisco_Netflow_V9
-      - Syslog_-_Splunk_API_-_Nessus_Vulnerability_Scanner
-      - Syslog_-_Squid_Proxy
-      - Syslog_-_StealthBits_Activity_Monitor
-      - Syslog_-_STEALTHbits_StealthINTERCEPT
-      - Syslog_-_StoneGate_Firewall
-      - Syslog_-_Stonesoft_IPS
-      - Syslog_-_Stormshield_Network_Security_Firewall
-      - Syslog_-_Sycamore_Networks_DNX-88
-      - Syslog_-_Sygate_Firewall
-      - Syslog_-_Symantec_Advanced_Threat_Protection_(ATP)_CEF
-      - Syslog_-_Symantec_DLP_CEF
-      - Syslog_-_Symantec_Endpoint_Server
-      - Syslog_-_Symantec_Messaging_Gateway
-      - Syslog_-_Symantec_PGP_Gateway
-      - Syslog_-_Symbol_Wireless_Access_Point
-      - Syslog_-_Tanium
-      - Syslog_-_Temporary_LST-2
-      - Syslog_-_Tenable_SecurityCenter
-      - Syslog_-_Thycotic_Secret_Server
-      - Syslog_-_Tipping_Point_IPS
-      - Syslog_-_Tipping_Point_SSL_Reverse_Proxy
-      - Syslog_-_Top_Layer_IPS
-      - Syslog_-_Townsend_Alliance_LogAgent
-      - Syslog_-_Trend_Micro_Control_Manager_CEF
-      - Syslog_-_Trend_Micro_Deep_Discovery_Inspector
-      - Syslog_-_Trend_Micro_Deep_Security_CEF
-      - Syslog_-_Trend_Micro_Deep_Security_LEEF
-      - Syslog_-_Trend_Micro_IWSVA
-      - Syslog_-_Trend_Micro_Vulnerability_Protection_Manager
-      - Syslog_-_Tripwire
-      - Syslog_-_Trustwave_NAC
-      - Syslog_-_Trustwave_Secure_Web_Gateway
-      - Syslog_-_Trustwave_Web_Application_Firewall
-      - Syslog_-_Tufin
-      - Syslog_-_Tumbleweed_Mailgate_Server
-      - Syslog_-_Ubiquiti_UniFi_Security_Gateway
-      - Syslog_-_Ubiquiti_UniFi_Switch
-      - Syslog_-_Ubiquiti_UniFi_WAP
-      - Syslog_-_Untangle
-      - Syslog_-_Vamsoft_ORF
-      - Syslog_-_Vanguard_Active_Alerts
-      - Syslog_-_Varonis_DatAlert
-      - Syslog_-_Vasco_Digipass_Identikey_Server
-      - Syslog_-_Vectra_Networks
-      - Syslog_-_Versa_Networks_SD-WAN
-      - Syslog_-_VMWare_ESX/ESXi_Server
-      - Syslog_-_VMware_Horizon_View
-      - Syslog_-_VMWare_NSX/NSX-T
-      - Syslog_-_VMWare_Unified_Access_Gateway
-      - Syslog_-_VMWare_vCenter_Server
-      - Syslog_-_VMWare_vShield
-      - Syslog_-_Voltage_Securemail
-      - Syslog_-_Vormetric_CoreGuard
-      - Syslog_-_Vormetric_Data_Security_Manager
-      - Syslog_-_WALLIX_Bastion
-      - Syslog_-_Watchguard_FireBox
-      - Syslog_-_WS2000_Wireless_Access_Point
-      - Syslog_-_Wurldtech_SmartFirewall
-      - Syslog_-_Xirrus_Wireless_Array
-      - Syslog_-_Zimbra_System_Log
-      - Syslog_-_Zix_E-mail_Encryption
-      - Syslog_-_Zscaler_Nano_Streaming_Service
-      - Syslog_-_ZXT_Load_Balancer
-      - Syslog_-_ZyWALL_VPN_Firewall
-      - Syslog_Avaya_G450_Media_Gateway
-      - Syslog_File_-_AIX_Host
-      - Syslog_File_-_BSD_Format
-      - Syslog_File_-_HP-UX_Host
-      - Syslog_File_-_IRIX_Host
-      - Syslog_File_-_Linux_Host
-      - Syslog_File_-_LogRhythm_Syslog_Generator
-      - Syslog_File_-_MS_2003_Event_Log_(Snare)
-      - Syslog_File_-_Oracle_10g_Audit_Trail
-      - Syslog_File_-_Oracle_11g_Audit_Trail
-      - Syslog_File_-_Solaris_Host
-      - UDLA_-_CA_Single_Sign-On
-      - UDLA_-_Deepnet_DualShield
-      - UDLA_-_Drupal
-      - UDLA_-_Finacle_Core
-      - UDLA_-_Finacle_Treasury_Logs
-      - UDLA_-_Forcepoint
-      - UDLA_-_Gallagher_Command_Centre
-      - UDLA_-_iManage_Worksite
-      - UDLA_-_ISS_Proventia_SiteProtector_-_IPS
-      - UDLA_-_LogRhythm_Enterprise_Monitoring_Solution
-      - UDLA_-_LREnhancedAudit
-      - UDLA_-_McAfee_ePolicy_Orchestrator_-_Universal_ePOEvents
-      - UDLA_-_McAfee_ePolicy_Orchestrator_3.6_-_Events
-      - UDLA_-_McAfee_ePolicy_Orchestrator_4.0_-_ePOEvents
-      - UDLA_-_McAfee_ePolicy_Orchestrator_4.5_-_ePOEvents
-      - UDLA_-_McAfee_ePolicy_Orchestrator_5.0_-_ePOEvents
-      - UDLA_-_McAfee_ePolicy_Orchestrator_5.1_-_ePOEvents
-      - UDLA_-_McAfee_ePolicy_Orchestrator_5.3_-_ePOEvents
-      - UDLA_-_McAfee_ePolicy_Orchestrator_5.9_-_ePOEvents
-      - UDLA_-_McAfee_Network_Access_Control
-      - UDLA_-_McAfee_Network_Security_Manager
-      - UDLA_-_Microsoft_System_Center_2012_Endpoint_Protection
-      - UDLA_-_ObserveIT
-      - UDLA_-_Oracle_10g_Audit_Trail
-      - UDLA_-_Oracle_11g_Audit_Trail
-      - UDLA_-_Oracle_12C_Unified_Auditing
-      - UDLA_-_Oracle_9i_Audit_Trail
-      - UDLA_-_Other
-      - UDLA_-_SEL_3530_RTAC
-      - UDLA_-_SharePoint_2007_AuditData
-      - UDLA_-_SharePoint_2010_EventData
-      - UDLA_-_SharePoint_2013_EventData
-      - UDLA_-_Siemens_Invision
-      - UDLA_-_Sophos_Anti-Virus
-      - UDLA_-_Sophos_Endpoint_Security_and_Control
-      - UDLA_-_Symantec_CSP
-      - UDLA_-_Symantec_SEP
-      - UDLA_-_Symmetry_Access_Control
-      - UDLA_-_VMWare_vCenter_Server
-      - UDLA_-_VMWare_vCloud
-      - VLS_-_Syslog_-_Infoblox_-_DNS_RPZ
-      - VLS_-_Syslog_-_Infoblox_-_Threat_Protection
-    - description: Impacted host name.
-      name: host_name
-    - description: Username.
-      name: username
-    - description: Email subject.
-      name: subject
-    - description: Email sender.
-      name: sender
-    - description: Email recipient.
-      name: recipient
-    - description: Hash.
-      name: hash
-    - description: URL.
-      name: url
-    - description: Process name.
-      name: process_name
-    - description: Log object.
-      name: object
-    - description: IP address.
-      name: ip_address
-    - description: Maximum number of log message to query.
-      name: max_massage
-      defaultValue: "10"
-    - description: The query timeout in seconds.
-      name: query_timeout
-      defaultValue: "60"
-    description: Execute search query to LogRhythm log database.
-    name: lr-execute-search-query
-    outputs:
-    - contextPath: Logrhythm.Search.Task.TaskID
-      description: Task ID
-      type: String
+    - arguments:
+        - default: false
+          description: The value by which to filter log messages.
+          isArray: false
+          name: keyword
+          required: true
+          secret: false
+        - default: false
+          defaultValue: '100'
+          description: Number of logs to return.
+          isArray: false
+          name: page-size
+          required: false
+          secret: false
+        - auto: PREDEFINED
+          default: false
+          defaultValue: Custom
+          description: 'The time range from which to return log messages. If time_frame is "Custom", specify the start and end time for the time range. Possible values: "Today", "Last2Days", "LastWeek", "LastMonth", and "Custom".'
+          isArray: false
+          name: time-frame
+          predefined:
+            - Today
+            - Last2Days
+            - LastWeek
+            - LastMonth
+            - Custom
+          required: false
+          secret: false
+        - default: false
+          description: 'Start date for the data query, for example: "2018-04-20". Only use this argument if the time-frame argument is "Custom".'
+          isArray: false
+          name: start-date
+          required: false
+          secret: false
+        - default: false
+          description: 'End date for the data query, for example: "2018-04-20". Only use this argument if the time-frame argument is "Custom".'
+          isArray: false
+          name: end-date
+          required: false
+          secret: false
+      deprecated: false
+      description: Executes a query for logs that match the query parameters.
+      execution: false
+      name: lr-execute-query
+      outputs:
+        - contextPath: Logrhythm.Log.Channel
+          description: Channel of the log.
+          type: string
+        - contextPath: Logrhythm.Log.Computer
+          description: Computer for the log
+          type: string
+        - contextPath: Logrhythm.Log.EventData
+          description: Event data of the log.
+          type: string
+        - contextPath: Logrhythm.Log.EventID
+          description: Event ID of the log.
+          type: string
+        - contextPath: Logrhythm.Log.Keywords
+          description: Keywords of the log.
+          type: string
+        - contextPath: Logrhythm.Log.Level
+          description: Log level.
+          type: string
+        - contextPath: Logrhythm.Log.Opcode
+          description: Opcode of the log.
+          type: string
+        - contextPath: Logrhythm.Log.Task
+          description: Task of the log.
+          type: string
+    - arguments:
+        - default: false
+          description: The entity name.
+          isArray: false
+          name: entity-name
+          required: true
+          secret: false
+        - default: false
+          defaultValue: '100'
+          description: Number of hosts to return.
+          isArray: false
+          name: count
+          required: false
+          secret: false
+      deprecated: false
+      description: Retrieves a list of hosts for a given entity, or an empty list if none is found.
+      execution: false
+      name: lr-get-hosts-by-entity
+      outputs:
+        - contextPath: Logrhythm.Host.EntityId
+          description: The entity ID.
+          type: String
+        - contextPath: Logrhythm.Host.EntityName
+          description: The entity name.
+          type: String
+        - contextPath: Logrhythm.Host.OS
+          description: The host operating system.
+          type: String
+        - contextPath: Logrhythm.Host.ThreatLevel
+          description: The host threat level.
+          type: String
+        - contextPath: Logrhythm.Host.UseEventlogCredentials
+          description: Whether to use the event log credentials.
+          type: String
+        - contextPath: Logrhythm.Host.Name
+          description: The name of the host.
+          type: String
+        - contextPath: Logrhythm.Host.DateUpdated
+          description: The last update date of the host.
+          type: String
+        - contextPath: Logrhythm.Host.HostZone
+          description: The host zone.
+          type: String
+        - contextPath: Logrhythm.Host.RiskLevel
+          description: The risk level.
+          type: String
+        - contextPath: Logrhythm.Host.Location
+          description: The host location.
+          type: String
+        - contextPath: Logrhythm.Host.Status
+          description: The host status.
+          type: String
+        - contextPath: Logrhythm.Host.ID
+          description: The unique ID of the host object.
+          type: String
+        - contextPath: Logrhythm.Host.OSType
+          description: The type of the host operating system.
+          type: String
+    - arguments:
+        - default: false
+          description: The entity ID.
+          isArray: false
+          name: entity-id
+          required: true
+          secret: false
+        - default: false
+          description: The entity name.
+          isArray: false
+          name: entity-name
+          required: true
+          secret: false
+        - default: false
+          description: The LogRhythm host name.
+          isArray: false
+          name: name
+          required: true
+          secret: false
+        - default: false
+          defaultValue: None
+          description: A short description of the host.
+          isArray: false
+          name: short-description
+          required: false
+          secret: false
+        - default: false
+          defaultValue: None
+          description: A long description of the host.
+          isArray: false
+          name: long-description
+          required: false
+          secret: false
+        - auto: PREDEFINED
+          default: false
+          defaultValue: None
+          description: 'The host risk level. Possible values: "None", "Low-Low", "Low-Medium", "Low-High", "Medium-Low", "Medium-Medium", "Medium-High", "High-Low", "High-Medium", and "High-High".'
+          isArray: false
+          name: risk-level
+          predefined:
+            - None
+            - Low-Low
+            - Low-Medium
+            - Low-High
+            - Medium-Low
+            - Medium-Medium
+            - Medium-High
+            - High-Low
+            - High-Medium
+            - High-High
+          required: true
+          secret: false
+        - auto: PREDEFINED
+          default: false
+          defaultValue: None
+          description: 'The host threat level. Possible values: "None", "Low-Low", "Low-Medium", "Low-High", "Medium-Low", "Medium-Medium", "Medium-High", "High-Low", "High-Medium", and "High-High".'
+          isArray: false
+          name: threat-level
+          predefined:
+            - None
+            - Low-Low
+            - Low-Medium
+            - Low-High
+            - Medium-Low
+            - Medium-Medium
+            - Medium-High
+            - High-Low
+            - High-Medium
+            - High-High
+          required: false
+          secret: false
+        - default: false
+          defaultValue: None
+          description: Comments for the host threat level.
+          isArray: false
+          name: threat-level-comments
+          required: false
+          secret: false
+        - auto: PREDEFINED
+          default: false
+          description: 'The host status. Possible values: "New", "Retired", and "Active".'
+          isArray: false
+          name: host-status
+          predefined:
+            - New
+            - Retired
+            - Active
+          required: true
+          secret: false
+        - auto: PREDEFINED
+          default: false
+          description: 'The host zone. Possible values: "Unknown", "Internal", "DMZ", and "External".'
+          isArray: false
+          name: host-zone
+          predefined:
+            - Unknown
+            - Internal
+            - DMZ
+            - External
+          required: true
+          secret: false
+        - default: false
+          description: The host operating system.
+          isArray: false
+          name: os
+          required: true
+          secret: false
+        - auto: PREDEFINED
+          default: false
+          description: 'Whether to use the event log credentials. Possible values: "true" and "false".'
+          isArray: false
+          name: use-eventlog-credentials
+          predefined:
+            - 'true'
+            - 'false'
+          required: true
+          secret: false
+        - auto: PREDEFINED
+          default: false
+          defaultValue: Unknown
+          description: The host operating system type.
+          isArray: false
+          name: os-type
+          predefined:
+            - Unknown
+            - Other
+            - WindowsNT4
+            - Windows2000Professional
+            - Windows2000Server
+            - Windows2003Standard
+            - Windows2003Enterprise
+            - Windows95
+            - WindowsXP
+            - WindowsVista
+            - Linux
+            - Solaris
+            - AIX
+            - HPUX
+            - Windows
+          required: false
+          secret: false
+      deprecated: false
+      description: Add a new host to an entity.
+      execution: false
+      name: lr-add-host
+      outputs:
+        - contextPath: Logrhythm.Host.EntityId
+          description: The entity ID for the host.
+          type: string
+        - contextPath: Logrhythm.Host.EntityName
+          description: The entity name for the host.
+          type: string
+        - contextPath: Logrhythm.Host.OS
+          description: The host operating system.
+          type: string
+        - contextPath: Logrhythm.Host.ThreatLevel
+          description: The host threat level.
+          type: string
+        - contextPath: Logrhythm.Host.UseEventlogCredentials
+          description: Whether to use the event log credentials.
+          type: string
+        - contextPath: Logrhythm.Host.Name
+          description: The name of the host.
+          type: string
+        - contextPath: Logrhythm.Host.DateUpdated
+          description: The last update date of the host.
+          type: string
+        - contextPath: Logrhythm.Host.HostZone
+          description: The host zone.
+          type: string
+        - contextPath: Logrhythm.Host.RiskLevel
+          description: The risk level of the host.
+          type: string
+        - contextPath: Logrhythm.Host.Location
+          description: The host location.
+          type: string
+        - contextPath: Logrhythm.Host.Status
+          description: The host status.
+          type: string
+        - contextPath: Logrhythm.Host.ID
+          description: The unique ID of the host object.
+          type: string
+        - contextPath: Logrhythm.Host.OSType
+          description: The type of the host operating system.
+          type: string
+    - arguments:
+        - default: false
+          description: The unique ID of the host.
+          isArray: false
+          name: host-id
+          required: true
+          secret: false
+        - auto: PREDEFINED
+          default: false
+          description: 'The enumeration status of the host. Possible values: "Retired" and "Active".'
+          isArray: false
+          name: status
+          predefined:
+            - Retired
+            - Active
+          required: true
+          secret: false
+      deprecated: false
+      description: Updates a host status.
+      execution: false
+      name: lr-update-host-status
+      outputs:
+        - contextPath: Logrhythm.Host.EntityId
+          description: The entity ID of the host.
+          type: string
+        - contextPath: Logrhythm.Host.EntityName
+          description: The entity name of the host.
+          type: string
+        - contextPath: Logrhythm.Host.OS
+          description: The host operating system.
+          type: string
+        - contextPath: Logrhythm.Host.ThreatLevel
+          description: The host threat level.
+          type: string
+        - contextPath: Logrhythm.Host.UseEventlogCredentials
+          description: Whether to use the event log credentials.
+          type: string
+        - contextPath: Logrhythm.Host.Name
+          description: The name of the host.
+          type: string
+        - contextPath: Logrhythm.Host.DateUpdated
+          description: The last update date of the host.
+          type: string
+        - contextPath: Logrhythm.Host.HostZone
+          description: The host zone.
+          type: string
+        - contextPath: Logrhythm.Host.RiskLevel
+          description: The risk level of the host.
+          type: string
+        - contextPath: Logrhythm.Host.Location
+          description: The host location.
+          type: string
+        - contextPath: Logrhythm.Host.Status
+          description: The host status.
+          type: string
+        - contextPath: Logrhythm.Host.ID
+          description: The unique ID of the host object.
+          type: string
+        - contextPath: Logrhythm.Host.OSType
+          description: The type of the host operating system.
+          type: string
+    - arguments:
+        - default: false
+          description: The LogRhythm person ID.
+          isArray: false
+          name: person-id
+          required: false
+          secret: false
+        - default: false
+          defaultValue: '30'
+          description: Number of persons to return.
+          isArray: false
+          name: count
+          required: false
+          secret: false
+      deprecated: false
+      description: Retrieves a list of LogRhythm persons.
+      execution: false
+      name: lr-get-persons
+      outputs:
+        - contextPath: Logrhythm.Person.DateUpdated
+          description: Date that the person was updated.
+          type: String
+        - contextPath: Logrhythm.Person.FirstName
+          description: First name of the LogRhythm person.
+          type: String
+        - contextPath: Logrhythm.Person.LastName
+          description: Last name of the LogRhythm person.
+          type: String
+        - contextPath: Logrhythm.Person.HostStatus
+          description: Host status of the LogRhythm person.
+          type: string
+        - contextPath: Logrhythm.Person.ID
+          description: Logrhythm person ID.
+          type: String
+        - contextPath: Logrhythm.Person.IsAPIPerson
+          description: Whether the API is a person.
+          type: Boolean
+        - contextPath: Logrhythm.Person.UserID
+          description: User ID of the LogRhythm person.
+          type: String
+        - contextPath: Logrhythm.Person.UserLogin
+          description: User login of the LogRhythm person.
+          type: String
+    - arguments:
+        - default: false
+          description: The LogRhythm network ID.
+          isArray: false
+          name: network-id
+          required: false
+          secret: false
+        - default: false
+          defaultValue: '30'
+          description: Number of networks to return.
+          isArray: false
+          name: count
+          required: false
+          secret: false
+      deprecated: false
+      description: Retrieves a list of networks.
+      execution: false
+      name: lr-get-networks
+      outputs:
+        - contextPath: Logrhythm.Network.BIP
+          description: Beginning IP address of the network.
+          type: String
+        - contextPath: Logrhythm.Network.ThreatLevel
+          description: Threat level of the network.
+          type: String
+        - contextPath: Logrhythm.Network.Name
+          description: Network name.
+          type: String
+        - contextPath: Logrhythm.Network.EIP
+          description: End IP address of the network.
+          type: String
+        - contextPath: Logrhythm.Network.DateUpdated
+          description: Date network was updated.
+          type: String
+        - contextPath: Logrhythm.Network.EntityName
+          description: Entity name of the network.
+          type: String
+        - contextPath: Logrhythm.Network.HostZone
+          description: Host zone of the network.
+          type: String
+        - contextPath: Logrhythm.Network.RiskLevel
+          description: Risk level of the network.
+          type: String
+        - contextPath: Logrhythm.Network.Location
+          description: Network location.
+          type: String
+        - contextPath: Logrhythm.Network.HostStatus
+          description: Host status of the network.
+          type: String
+        - contextPath: Logrhythm.Network.ID
+          description: Network ID.
+          type: String
+        - contextPath: Logrhythm.Network.EntityId
+          description: Entity ID of the network.
+          type: String
+    - arguments:
+        - default: false
+          description: The LogRhythm host ID.
+          isArray: false
+          name: host-id
+          required: false
+          secret: false
+        - default: false
+          defaultValue: '30'
+          description: Number of hosts to return.
+          isArray: false
+          name: count
+          required: false
+          secret: false
+      deprecated: false
+      description: Returns a list of hosts.
+      execution: false
+      name: lr-get-hosts
+      outputs:
+        - contextPath: Logrhythm.Host.EntityId
+          description: The entity ID.
+          type: String
+        - contextPath: Logrhythm.Host.EntityName
+          description: The entity name.
+          type: String
+        - contextPath: Logrhythm.Host.OS
+          description: The host operating system.
+          type: String
+        - contextPath: Logrhythm.Host.ThreatLevel
+          description: The host threat level.
+          type: String
+        - contextPath: Logrhythm.Host.UseEventlogCredentials
+          description: Whether to use the event log credentials.
+          type: String
+        - contextPath: Logrhythm.Host.Name
+          description: The name of the host.
+          type: String
+        - contextPath: Logrhythm.Host.DateUpdated
+          description: Date that the host was last updated.
+          type: String
+        - contextPath: Logrhythm.Host.HostZone
+          description: The host zone.
+          type: String
+        - contextPath: Logrhythm.Host.RiskLevel
+          description: The risk level of the host.
+          type: String
+        - contextPath: Logrhythm.Host.Location
+          description: The host location.
+          type: String
+        - contextPath: Logrhythm.Host.Status
+          description: The host status.
+          type: String
+        - contextPath: Logrhythm.Host.ID
+          description: The unique ID of the host object.
+          type: String
+        - contextPath: Logrhythm.Host.OSType
+          description: Host operating system type.
+          type: String
+    - arguments:
+        - default: false
+          description: The alarm ID.
+          isArray: false
+          name: alarm-id
+          required: true
+          secret: false
+      deprecated: false
+      description: Returns data for an alarm.
+      execution: false
+      name: lr-get-alarm-data
+      outputs:
+        - contextPath: Logrhythm.Alarm.Status
+          description: The alarm status.
+          type: String
+        - contextPath: Logrhythm.Alarm.EventID
+          description: The alarm event ID.
+          type: String
+        - contextPath: Logrhythm.Alarm.LastDxTimeStamp
+          description: The timestamp when the drilldown returned new results from the Data Indexer.
+          type: String
+        - contextPath: Logrhythm.Alarm.DateInserted
+          description: The alarm date inserted.
+          type: String
+        - contextPath: Logrhythm.Alarm.AIERuleName
+          description: The alarm AI engine (AIE) rule.
+          type: String
+        - contextPath: Logrhythm.Alarm.Priority
+          description: The alarm priority.
+          type: String
+        - contextPath: Logrhythm.Alarm.AIERuleID
+          description: The alarm AI engine (AIE) rule ID.
+          type: String
+        - contextPath: Logrhythm.Alarm.ID
+          description: The alarm ID.
+          type: String
+        - contextPath: Logrhythm.Alarm.NotificationSent
+          description: Whether an alarm notification was sent.
+          type: Boolean
+        - contextPath: Logrhythm.Alarm.AlarmGuid
+          description: The alarm GUID.
+          type: String
+        - contextPath: Logrhythm.Alarm.RetryCount
+          description: The alarm retry count.
+          type: String
+        - contextPath: Logrhythm.Alarm.NormalMessageDate
+          description: The alarm message date.
+          type: String
+        - contextPath: Logrhythm.Alarm.WebConsoleIds
+          description: The alarm web console IDs.
+          type: String
+        - contextPath: Logrhythm.Alarm.Summary.PIFType
+          description: Alarm Primary Inspection Field (the original name for "Summary Field").
+          type: String
+        - contextPath: Logrhythm.Alarm.Summary.DrillDownSummaryLogs
+          description: Drilldown summary logs.
+          type: String
+    - arguments:
+        - default: false
+          description: The alarm ID.
+          isArray: false
+          name: alarm-id
+          required: true
+          secret: false
+        - default: false
+          defaultValue: '10'
+          description: Number of events to return.
+          isArray: false
+          name: count
+          required: false
+          secret: false
+        - default: false
+          description: A comma-separated list of fields (outputs) to return to the context. If empty, all fields are returned.
+          isArray: false
+          name: fields
+          predefined:
+            - ''
+          required: false
+          secret: false
+        - auto: PREDEFINED
+          default: false
+          defaultValue: 'False'
+          description: 'Whether to return the log message from the event. Possible values: "True" and "False".'
+          isArray: false
+          name: get-log-message
+          predefined:
+            - 'True'
+            - 'False'
+          required: false
+          secret: false
+      deprecated: false
+      description: Returns a list of events, by alarm ID.
+      execution: false
+      name: lr-get-alarm-events
+      outputs:
+        - contextPath: Logrhythm.Alarm.Event
+          description: Alarm event information.
+          type: String
+        - contextPath: Logrhythm.Alarm.ID
+          description: The alarm ID.
+          type: String
+    - name: lr-get-query-result
+      description: Get search query result for the specified task ID. The task ID can be retrieved from the lr-execute-search-query command.
+      arguments:
+        - name: task_id
+          description: Task ID. The task ID can be retrieved from the lr-execute-search-query command.
+          required: true
+      outputs:
+        - contextPath: Logrhythm.Search.Results.TaskStatus
+          description: Task status.
+          type: String
+        - contextPath: Logrhythm.Search.Results.TaskID
+          description: Task ID.
+          type: String
+        - contextPath: Logrhythm.Search.Results.Items.originEntityId
+          description: Entity ID.
+          type: Number
+        - contextPath: Logrhythm.Search.Results.Items.impactedIp
+          description: Impacted IP.
+          type: String
+        - contextPath: Logrhythm.Search.Results.Items.classificationTypeName
+          description: Classification name.
+          type: String
+        - contextPath: Logrhythm.Search.Results.Items.logSourceName
+          description: Log source name.
+          type: String
+        - contextPath: Logrhythm.Search.Results.Items.entityName
+          description: Entity name.
+          type: String
+        - contextPath: Logrhythm.Search.Results.Items.normalDate
+          description: Date.
+          type: Date
+        - contextPath: Logrhythm.Search.Results.Items.vendorMessageId
+          description: Vendor log message.
+          type: String
+        - contextPath: Logrhythm.Search.Results.Items.priority
+          description: Log priority.
+          type: Number
+        - contextPath: Logrhythm.Search.Results.Items.sequenceNumber
+          description: Sequence number.
+          type: String
+        - contextPath: Logrhythm.Search.Results.Items.originHostId
+          description: Origin host ID.
+          type: Number
+        - contextPath: Logrhythm.Search.Results.Items.mpeRuleId
+          description: Logrhythm rule ID.
+          type: Number
+        - contextPath: Logrhythm.Search.Results.Items.originIp
+          description: Origin IP.
+          type: String
+        - contextPath: Logrhythm.Search.Results.Items.mpeRuleName
+          description: Logrhythm rule name.
+          type: String
+        - contextPath: Logrhythm.Search.Results.Items.logSourceHostId
+          description: Log source host ID.
+          type: Number
+        - contextPath: Logrhythm.Search.Results.Items.originHost
+          description: Origin host.
+          type: String
+        - contextPath: Logrhythm.Search.Results.Items.logDate
+          description: Log date.
+          type: Date
+        - contextPath: Logrhythm.Search.Results.Items.classificationName
+          description: Log classification name.
+          type: String
+    - arguments:
+        - name: case_id
+          description: The case ID.
+          required: true
+      description: Execute evidence query for a specific case ID.
+      name: lr-get-case-evidence
+      outputs:
+        - contextPath: Logrhythm.Search.Evidence.status
+          description: Evidence status.
+          type: String
+        - contextPath: Logrhythm.Search.Evidence.text
+          description: Evidence text.
+          type: String
+        - contextPath: Logrhythm.Search.Evidence.number
+          description: Evidence ID.
+          type: Number
+        - contextPath: Logrhythm.Search.Evidence.dateCreated
+          description: Date the evidence was created.
+          type: Date
+        - contextPath: Logrhythm.Search.Evidence.pinned
+          description: Whether evidence is pinned.
+          type: Boolean
+        - contextPath: Logrhythm.Search.Evidence.lastUpdatedBy.name
+          description: The name of the person who last updated the evidence.
+          type: String
+        - contextPath: Logrhythm.Search.Evidence.createdBy.name
+          description: The name of the person who created the evidence.
+          type: String
+        - contextPath: Logrhythm.Search.Evidence.dateUpdated
+          description: The date the evidence was last updated.
+          type: Date
+        - contextPath: Logrhythm.Search.Evidence.type
+          description: Evidence type.
+          type: String
+    - arguments:
+        - description: Number of days to search.
+          name: number_of_days
+          required: true
+        - auto: PREDEFINED
+          description: Log source type.
+          name: source_type
+          predefined:
+            - API_-_AWS_CloudTrail
+            - API_-_AWS_CloudWatch_Alarm
+            - API_-_AWS_Config_Event
+            - API_-_AWS_S3_Flat_File
+            - API_-_AWS_S3_Server_Access_Event
+            - API_-_BeyondTrust_Retina_Vulnerability_Management
+            - API_-_Box_Event
+            - API_-_Cisco_IDS/IPS
+            - API_-_Cradlepoint_ECM
+            - API_-_IP360_Vulnerability_Scanner
+            - API_-_Metasploit_Penetration_Scanner
+            - API_-_Nessus_Vulnerability_Scanner
+            - API_-_NetApp_CIFS_Security_Audit_Event_Log
+            - API_-_NeXpose_Vulnerability_Scanner
+            - API_-_Office_365_Management_Activity
+            - API_-_Office_365_Message_Tracking
+            - API_-_Okta_Event
+            - API_-_Qualys_Vulnerability_Scanner
+            - API_-_Salesforce_EventLogFile
+            - API_-_Sourcefire_eStreamer
+            - API_-_Tenable_SecurityCenter
+            - API_-_Tenable.io_Scanner
+            - Flat_File_-_ActivIdentity_CMS
+            - Flat_File_-_Airwatch_MDM
+            - Flat_File_-_Alfresco
+            - Flat_File_-_AllScripts
+            - Flat_File_-_Apache_Access_Log
+            - Flat_File_-_Apache_Error_Log
+            - Flat_File_-_Apache_SSL_Access_Log
+            - Flat_File_-_Apache_SSL_Error_Log
+            - Flat_File_-_Apache_Tomcat_Access_Log
+            - Flat_File_-_Apache_Tomcat_Console_Log
+            - Flat_File_-_Avaya_Secure_Access_Link_Remote_Access_Log
+            - Flat_File_-_Avaya_Voice_Mail_Log
+            - Flat_File_-_Axway_SFTP
+            - Flat_File_-_Beacon_Endpoint_Profiler
+            - Flat_File_-_Bind_9
+            - Flat_File_-_BlackBerry_Enterprise_Server
+            - Flat_File_-_Blue_Coat_Proxy_BCREPORTERMAIN_Format
+            - Flat_File_-_Blue_Coat_Proxy_CSV_Format
+            - Flat_File_-_Blue_Coat_Proxy_SQUID-1_Format
+            - Flat_File_-_Blue_Coat_Proxy_W3C_Format
+            - Flat_File_-_Bro_IDS_Critical_Stack_Intel_Log
+            - Flat_File_-_Broadcom_SiteMinder
+            - Flat_File_-_CA_ACF2_for_z/OS_-_ACFRPTDS
+            - Flat_File_-_CA_ACF2_for_z/OS_-_ACFRPTEL
+            - Flat_File_-_CA_ACF2_for_z/OS_-_ACFRPTJL
+            - Flat_File_-_CA_ACF2_for_z/OS_-_ACFRPTLL
+            - Flat_File_-_CA_ACF2_for_z/OS_-_ACFRPTNV
+            - Flat_File_-_CA_ACF2_for_z/OS_-_ACFRPTOM
+            - Flat_File_-_CA_ACF2_for_z/OS_-_ACFRPTPW
+            - Flat_File_-_CA_ACF2_for_z/OS_-_ACFRPTRL
+            - Flat_File_-_CA_ACF2_for_z/OS_-_ACFRPTRV
+            - Flat_File_-_CA_ControlMinder
+            - Flat_File_-_Cerberus_FTP_Server
+            - Flat_File_-_Cerner
+            - Flat_File_-_Cisco_AMP_for_Endpoints
+            - Flat_File_-_Cisco_Email_Security_Appliance
+            - Flat_File_-_Cisco_LMS_(cwcli)
+            - Flat_File_-_Cisco_LMS_(Syslog)
+            - Flat_File_-_Cisco_NGFW
+            - Flat_File_-_Cisco_Secure_ACS_CSV_File
+            - Flat_File_-_Cisco_Security_Agent
+            - Flat_File_-_Cisco_Umbrella_DNS
+            - Flat_File_-_Cisco_Web_Security_aclog
+            - Flat_File_-_Citrix_Access_Gateway_IIS_Format
+            - Flat_File_-_Citrix_Access_Gateway_NCSA_Common_Format
+            - Flat_File_-_Citrix_Access_Gateway_W3C_Format
+            - Flat_File_-_Citrix_Presentation_Server
+            - Flat_File_-_Citrix_Secure_Gateway
+            - Flat_File_-_ClamAV_Anti-Virus
+            - Flat_File_-_ColdFusion_Application_Log
+            - Flat_File_-_ColdFusion_Exception_Log
+            - Flat_File_-_ColdFusion_Mail_Log
+            - Flat_File_-_ColdFusion_Mailsent_Log
+            - Flat_File_-_ColdFusion_Server_Log
+            - Flat_File_-_Cornerstone_Managed_File_Transfer
+            - Flat_File_-_Coyote_Point_Equalizer
+            - Flat_File_-_DB2_Audit_Log
+            - Flat_File_-_DB2_via_BMC_Log_Master
+            - Flat_File_-_Defender_Server
+            - Flat_File_-_DocWorks
+            - Flat_File_-_eClinicalWorks_Audit_Log
+            - Flat_File_-_EMC_Isilon
+            - Flat_File_-_Epicor_Coalition
+            - Flat_File_-_FairWarning_Ready-For-Healthcare
+            - Flat_File_-_FileZilla_System_Log
+            - Flat_File_-_FireEye_Web_MPS
+            - Flat_File_-_Forcepoint_Web_Security_CEF_Cloud_Format
+            - Flat_File_-_Forescout_CounterACT
+            - Flat_File_-_FoxT_BoKS_Server_Access_Control
+            - Flat_File_-_FundsXpress
+            - Flat_File_-_Gene6_FTP
+            - Flat_File_-_GlobalSCAPE_EFT
+            - Flat_File_-_Hadoop
+            - Flat_File_-_HMC
+            - Flat_File_-_HP-UX_Audit_Log
+            - Flat_File_-_IBM_4690_POS
+            - Flat_File_-_IBM_Informix_Application_Log
+            - Flat_File_-_IBM_Informix_Audit_Log
+            - Flat_File_-_IBM_Tivoli_Storage_Manager
+            - Flat_File_-_IBM_WebSphere_App_Server_v7_Audit_Log
+            - Flat_File_-_IBM_WebSphere_Cast_Iron_Cloud_Integration
+            - Flat_File_-_IBM_ZOS_Batch_Decryption_Log
+            - Flat_File_-_IBM_ZOS_CICS_Decryption_Log
+            - Flat_File_-_IBM_ZOS_RACF_Access_Log
+            - Flat_File_-_IBM_ZOS_RACF_SMF_Type_80
+            - Flat_File_-_IPSwitch_WS_FTP
+            - Flat_File_-_Irix_Audit_Logs
+            - Flat_File_-_IT-CUBE_AgileSI
+            - Flat_File_-_JBoss_Log_File
+            - Flat_File_-_Juniper_Steel_Belted_Radius_Server
+            - Flat_File_-_Kerio_Mail_Server
+            - Flat_File_-_KERISYS_Doors_Event_Export_Format
+            - Flat_File_-_Kippo_Honeypot
+            - Flat_File_-_Linux_Audit_ASCII
+            - Flat_File_-_Linux_Audit_Log
+            - Flat_File_-_Linux_Host_Secure_Log
+            - Flat_File_-_LOGbinder_EX
+            - Flat_File_-_LogRhythm_Alarm_Reingest
+            - Flat_File_-_LogRhythm_Data_Indexer_Monitor
+            - Flat_File_-_LogRhythm_Oracle_Log
+            - Flat_File_-_LogRhythm_System_Monitor
+            - Flat_File_-_LogRhythm_System_Monitor_Log_File
+            - Flat_File_-_LogRhythm_Trebek_Log
+            - Flat_File_-_LogRhythm_Zeus_Log
+            - Flat_File_-_Lotus_Domino_Client_Log
+            - Flat_File_-_McAfee_Cloud_Proxy_do_not_use
+            - Flat_File_-_McAfee_ePO_HIPS
+            - Flat_File_-_McAfee_Foundstone
+            - Flat_File_-_McAfee_Proxy_Cloud
+            - Flat_File_-_McAfee_SaaS_Web_Protection
+            - Flat_File_-_McAfee_Web_Gateway_Audit_Log
+            - Flat_File_-_Merak
+            - Flat_File_-_Meridian
+            - Flat_File_-_Microsoft_ActiveSync_2010
+            - Flat_File_-_Microsoft_CRM
+            - Flat_File_-_Microsoft_DHCP_Server_Log
+            - Flat_File_-_Microsoft_Forefront_TMG
+            - Flat_File_-_Microsoft_Forefront_TMG_Web_Proxy
+            - Flat_File_-_Microsoft_IIS_(IIS_Format)_File
+            - Flat_File_-_Microsoft_IIS_7.x_W3C_Extended_Format
+            - Flat_File_-_Microsoft_IIS_Error_Log_V6
+            - Flat_File_-_Microsoft_IIS_FTP_IIS_Log_File_Format
+            - Flat_File_-_Microsoft_IIS_FTP_W3C_Extended_Format
+            - Flat_File_-_Microsoft_IIS_NCSA_Common_Format_File
+            - Flat_File_-_Microsoft_IIS_SMTP_W3C_Format
+            - Flat_File_-_Microsoft_IIS_URL_Scan_Log
+            - Flat_File_-_Microsoft_IIS_W3C_File
+            - Flat_File_-_Microsoft_ISA_Server_2004
+            - Flat_File_-_Microsoft_ISA_Server_W3C_File
+            - Flat_File_-_Microsoft_Netlogon
+            - Flat_File_-_Microsoft_Port_Reporter_PR-PORTS_Log
+            - Flat_File_-_Microsoft_Semantic_Logging
+            - Flat_File_-_Microsoft_SQL_Server_2000_Error_Log
+            - Flat_File_-_Microsoft_SQL_Server_2005_Error_Log
+            - Flat_File_-_Microsoft_SQL_Server_2008_Error_Log
+            - Flat_File_-_Microsoft_SQL_Server_2012_Error_Log
+            - Flat_File_-_Microsoft_SQL_Server_2014_Error_Log
+            - Flat_File_-_Microsoft_Windows_2003_DNS
+            - Flat_File_-_Microsoft_Windows_2008_DNS
+            - Flat_File_-_Microsoft_Windows_2012_DNS
+            - Flat_File_-_Microsoft_Windows_Firewall
+            - Flat_File_-_MicroStrategy
+            - Flat_File_-_Mimecast_Audit
+            - Flat_File_-_Mimecast_Email
+            - Flat_File_-_Monetra
+            - Flat_File_-_MongoDB
+            - Flat_File_-_MS_Exchange_2003_Message_Tracking_Log
+            - Flat_File_-_MS_Exchange_2007_Message_Tracking_Log
+            - Flat_File_-_MS_Exchange_2010_Message_Tracking_Log
+            - Flat_File_-_MS_Exchange_2013_Message_Tracking_Log
+            - Flat_File_-_MS_Exchange_2016_Message_Tracking_Log
+            - Flat_File_-_MS_Exchange_RPC_Client_Access
+            - Flat_File_-_MS_IAS/RAS_Server_NPS_DB_Log_Format
+            - Flat_File_-_MS_IAS/RAS_Server_Standard_Log_Format
+            - Flat_File_-_MS_ISA_Server_2006_ISA_All_Fields
+            - Flat_File_-_MS_ISA_Server_2006_W3C_All_Fields
+            - Flat_File_-_MS_SQL_Server_Reporting_Services_2008
+            - Flat_File_-_MySQL
+            - Flat_File_-_MySQL_error.log
+            - Flat_File_-_MySQL_mysql.log
+            - Flat_File_-_MySQL_mysql-slow.log
+            - Flat_File_-_Nessus_System_Log
+            - Flat_File_-_NetApp_Cluster
+            - Flat_File_-_Nginx_Log
+            - Flat_File_-_Novell_Audit
+            - Flat_File_-_Novell_GroupWise
+            - Flat_File_-_Novell_LDAP
+            - Flat_File_-_ObserveIT_Enterprise
+            - Flat_File_-_Office_365_Message_Tracking
+            - Flat_File_-_OpenDJ
+            - Flat_File_-_OpenVMS
+            - Flat_File_-_OpenVPN
+            - Flat_File_-_Oracle_11g_Fine_Grained_Audit_Trail
+            - Flat_File_-_Oracle_9i
+            - Flat_File_-_Oracle_BRM_CM_Log
+            - Flat_File_-_Oracle_BRM_DM_Log
+            - Flat_File_-_Oracle_Listener_Audit_Trail
+            - Flat_File_-_Oracle_SunOne_Directory_Server
+            - Flat_File_-_Oracle_SunOne_Web_Server_Access_Log
+            - Flat_File_-_Oracle_Virtual_Directory
+            - Flat_File_-_Oracle_WebLogic_11g_Access_Log
+            - Flat_File_-_Other
+            - Flat_File_-_PeopleSoft
+            - Flat_File_-_PhpMyAdmin_Honeypot
+            - Flat_File_-_Postfix
+            - Flat_File_-_PowerBroker_Servers
+            - Flat_File_-_Princeton_Card_Secure
+            - Flat_File_-_ProFTPD
+            - Flat_File_-_PureMessage_For_Exchange_SMTP_Log
+            - Flat_File_-_PureMessage_For_UNIX_Blocklist_Log
+            - Flat_File_-_PureMessage_For_UNIX_Message_Log
+            - Flat_File_-_RACF_(SMF)
+            - Flat_File_-_Radmin
+            - Flat_File_-_Restic_Backup_Log
+            - Flat_File_-_RL_Patient_Feedback
+            - Flat_File_-_RSA_Adaptive_Authentication
+            - Flat_File_-_RSA_Authentication_Manager_6.1
+            - Flat_File_-_S2_Badge_Reader
+            - Flat_File_-_Safenet
+            - Flat_File_-_Sendmail_File
+            - Flat_File_-_Sharepoint_ULS
+            - Flat_File_-_ShoreTel_VOIP
+            - Flat_File_-_Siemens_Radiology_Information_System
+            - Flat_File_-_Snort_Fast_Alert_File
+            - Flat_File_-_Solaris_-_Sulog
+            - Flat_File_-_Solaris_Audit_Log
+            - Flat_File_-_SpamAssassin
+            - Flat_File_-_Squid_Proxy
+            - Flat_File_-_Subversion
+            - Flat_File_-_Sudo.Log
+            - Flat_File_-_Swift_Alliance
+            - Flat_File_-_Symantec_Antivirus_10.x_Corporate_Edtn
+            - Flat_File_-_Symantec_Antivirus_12.x_Corporate_Edtn
+            - Flat_File_-_Symitar_Episys_Console_Log
+            - Flat_File_-_Symitar_Episys_Sysevent_Log
+            - Flat_File_-_Tandem_EMSOUT_Log_File
+            - Flat_File_-_Tandem_XYGATE
+            - Flat_File_-_Tectia_SSH_Server
+            - Flat_File_-_Trade_Innovations_CSCS
+            - Flat_File_-_Trend_Micro_IMSS
+            - Flat_File_-_Trend_Micro_Office_Scan
+            - Flat_File_-_Tumbleweed_Mailgate_Server
+            - Flat_File_-_Verint_Audit_Trail_File
+            - Flat_File_-_VMWare_Virtual_Machine
+            - Flat_File_-_Voltage_Securemail
+            - Flat_File_-_Vormetric_Log_File
+            - Flat_File_-_vsFTP_Daemon_Log
+            - Flat_File_-_Vyatta_Firewall_Kernel_Log
+            - Flat_File_-_WordPot_Honeypot
+            - Flat_File_-_X-NetStat_Log
+            - Flat_File_-_XPient_POS_CCA_Manager
+            - Flat_File_-_XPIENT_POS_POSLOG
+            - Flat_File_-_XPIENT_POS_Shell_Log
+            - IPFIX_-_IP_Flow_Information_Export
+            - J-Flow_-_Juniper_J-Flow_Version_5
+            - J-Flow_-_Juniper_J-Flow_Version_9
+            - LogRhythm_CloudAI
+            - LogRhythm_Data_Loss_Defender
+            - LogRhythm_Demo_File_-_Application_Server_Log
+            - LogRhythm_Demo_File_-_Content_Inspection_Log
+            - LogRhythm_Demo_File_-_Database_Audit_Log
+            - LogRhythm_Demo_File_-_Ecom_Server_Log
+            - LogRhythm_Demo_File_-_File_Server_Log
+            - LogRhythm_Demo_File_-_Firewall_Log
+            - LogRhythm_Demo_File_-_FTP_Log
+            - LogRhythm_Demo_File_-_IDS_Alarms_Log
+            - LogRhythm_Demo_File_-_Mail_Server_Log
+            - LogRhythm_Demo_File_-_Netflow_Log
+            - LogRhythm_Demo_File_-_Network_Device_Log
+            - LogRhythm_Demo_File_-_Network_Server_Log
+            - LogRhythm_Demo_File_-_VPN_Log
+            - LogRhythm_Demo_File_-_Web_Access_Log
+            - LogRhythm_File_Monitor_(AIX)
+            - LogRhythm_File_Monitor_(HP-UX)
+            - LogRhythm_File_Monitor_(Linux)
+            - LogRhythm_File_Monitor_(Solaris)
+            - LogRhythm_File_Monitor_(Windows)
+            - LogRhythm_Filter
+            - LogRhythm_Network_Connection_Monitor_(AIX)
+            - LogRhythm_Network_Connection_Monitor_(HP-UX)
+            - LogRhythm_Network_Connection_Monitor_(Linux)
+            - LogRhythm_Network_Connection_Monitor_(Solaris)
+            - LogRhythm_Network_Connection_Monitor_(Windows)
+            - LogRhythm_Process_Monitor_(AIX)
+            - LogRhythm_Process_Monitor_(HP-UX)
+            - LogRhythm_Process_Monitor_(Linux)
+            - LogRhythm_Process_Monitor_(Solaris)
+            - LogRhythm_Process_Monitor_(Windows)
+            - LogRhythm_Registry_Integrity_Monitor
+            - LogRhythm_SQL_Server_2000_C2_Audit_Log
+            - LogRhythm_SQL_Server_2005_C2_Audit_Log
+            - LogRhythm_SQL_Server_2008_C2_Audit_Log
+            - LogRhythm_SQL_Server_2012+_C2_Audit_Log
+            - LogRhythm_User_Activity_Monitor_(AIX)
+            - LogRhythm_User_Activity_Monitor_(HP-UX)
+            - LogRhythm_User_Activity_Monitor_(Linux)
+            - LogRhythm_User_Activity_Monitor_(Solaris)
+            - LogRhythm_User_Activity_Monitor_(Windows)
+            - MS_Event_Log_for_XP/2000/2003_-_Application
+            - MS_Event_Log_for_XP/2000/2003_-_Application_-_Espaniol
+            - MS_Event_Log_for_XP/2000/2003_-_BioPassword
+            - MS_Event_Log_for_XP/2000/2003_-_DFS
+            - MS_Event_Log_for_XP/2000/2003_-_Directory_Service
+            - MS_Event_Log_for_XP/2000/2003_-_DNS
+            - MS_Event_Log_for_XP/2000/2003_-_DotDefender
+            - MS_Event_Log_for_XP/2000/2003_-_EMC_Celerra_NAS
+            - MS_Event_Log_for_XP/2000/2003_-_File_Rep_Service
+            - MS_Event_Log_for_XP/2000/2003_-_HA
+            - MS_Event_Log_for_XP/2000/2003_-_Kaspersky
+            - MS_Event_Log_for_XP/2000/2003_-_Micros_POS
+            - MS_Event_Log_for_XP/2000/2003_-_PatchLink
+            - MS_Event_Log_for_XP/2000/2003_-_SafeWord_2008
+            - MS_Event_Log_for_XP/2000/2003_-_SCE
+            - MS_Event_Log_for_XP/2000/2003_-_Security
+            - MS_Event_Log_for_XP/2000/2003_-_Security_-_Espaniol
+            - MS_Event_Log_for_XP/2000/2003_-_SMS_2003
+            - MS_Event_Log_for_XP/2000/2003_-_System
+            - MS_Event_Log_for_XP/2000/2003_-_System_-_Espaniol
+            - MS_Event_Log_for_XP/2000/2003_-_Virtual_Server
+            - MS_Windows_Event_Logging_-_ADFS_Admin
+            - MS_Windows_Event_Logging_-_Application
+            - MS_Windows_Event_Logging_-_AppLockerApp
+            - MS_Windows_Event_Logging_-_Backup
+            - MS_Windows_Event_Logging_-_Citrix_Delivery_Services
+            - MS_Windows_Event_Logging_-_Citrix_XenApp
+            - MS_Windows_Event_Logging_-_DFS
+            - MS_Windows_Event_Logging_-_DHCP_Admin
+            - MS_Windows_Event_Logging_-_DHCP_Operational
+            - MS_Windows_Event_Logging_-_Diagnosis-PLA
+            - MS_Windows_Event_Logging_-_Digital_Persona
+            - MS_Windows_Event_Logging_-_Dir_Service
+            - MS_Windows_Event_Logging_-_DNS
+            - MS_Windows_Event_Logging_-_Dot_Defender
+            - MS_Windows_Event_Logging_-_ESD_Data_Flow_Track
+            - MS_Windows_Event_Logging_-_Exchange_Mailbox_DB_Failures
+            - MS_Windows_Event_Logging_-_FailoverClustering/Operational
+            - MS_Windows_Event_Logging_-_Firewall_With_Advanced_Security
+            - MS_Windows_Event_Logging_-_Forefront_AV
+            - MS_Windows_Event_Logging_-_Group_Policy_Operational
+            - MS_Windows_Event_Logging_-_Hyper-V_Hvisor
+            - MS_Windows_Event_Logging_-_Hyper-V_IMS
+            - MS_Windows_Event_Logging_-_Hyper-V_Network
+            - MS_Windows_Event_Logging_-_Hyper-V_SynthSt
+            - MS_Windows_Event_Logging_-_Hyper-V_VMMS
+            - MS_Windows_Event_Logging_-_Hyper-V_Worker
+            - MS_Windows_Event_Logging_-_Kaspersky
+            - MS_Windows_Event_Logging_-_Kernel_PnP_Configuration
+            - MS_Windows_Event_Logging_-_Lync_Server
+            - MS_Windows_Event_Logging_-_MSExchange_Management
+            - MS_Windows_Event_Logging_-_Operations_Manager
+            - MS_Windows_Event_Logging_-_PowerShell
+            - MS_Windows_Event_Logging_-_Print_Services
+            - MS_Windows_Event_Logging_-_Quest_ActiveRoles_EDM_Server
+            - MS_Windows_Event_Logging_-_Replication
+            - MS_Windows_Event_Logging_-_SafeWord_2008
+            - MS_Windows_Event_Logging_-_Security
+            - MS_Windows_Event_Logging_-_Setup
+            - MS_Windows_Event_Logging_-_Sysmon
+            - MS_Windows_Event_Logging_-_System
+            - MS_Windows_Event_Logging_-_Task_Scheduler
+            - MS_Windows_Event_Logging_-_TS_Gateway
+            - MS_Windows_Event_Logging_-_TS_Licensing
+            - MS_Windows_Event_Logging_-_TS_Local_Session_Manager
+            - MS_Windows_Event_Logging_-_TS_Remote_Connection_Manager
+            - MS_Windows_Event_Logging_-_TS_Session_Broker
+            - MS_Windows_Event_Logging_-_TS_Session_Broker_Client
+            - MS_Windows_Event_Logging_-_VisualSVN
+            - MS_Windows_Event_Logging_:_Deutsch_-_Security
+            - MS_Windows_Event_Logging_:_Espaniol_-_Application
+            - MS_Windows_Event_Logging_:_Espaniol_-_Security
+            - MS_Windows_Event_Logging_:_Espaniol_-_System
+            - MS_Windows_Event_Logging_:_Francais_-_System
+            - MS_Windows_Event_Logging_:_Francais_-_Security
+            - MS_Windows_Event_Logging_XML_-_ADFS
+            - MS_Windows_Event_Logging_XML_-_Application
+            - MS_Windows_Event_Logging_XML_-_Forwarded_Events
+            - MS_Windows_Event_Logging_XML_-_Generic
+            - MS_Windows_Event_Logging_XML_-_Microsoft-Windows-NTLM/Operational
+            - MS_Windows_Event_Logging_XML_-_Security
+            - MS_Windows_Event_Logging_XML_-_Sysmon
+            - MS_Windows_Event_Logging_XML_-_Sysmon_7.01
+            - MS_Windows_Event_Logging_XML_-_Sysmon_8/9/10
+            - MS_Windows_Event_Logging_XML_-_System
+            - MS_Windows_Event_Logging_XML_-_Unisys_Stealth
+            - MS_Windows_Event_Logging_XML_-_Windows_Defender
+            - Netflow_-_Cisco_Netflow_Version_1
+            - Netflow_-_Cisco_Netflow_Version_5
+            - Netflow_-_Cisco_Netflow_Version_9
+            - Netflow_-_Palo_Alto_Version_9
+            - Netflow_-_SonicWALL_Version_5
+            - Netflow_-_SonicWALL_Version_9
+            - OPSEC_LEA_-_Checkpoint_Firewall
+            - OPSEC_LEA_-_Checkpoint_Firewall_Audit_Log
+            - OPSEC_LEA_-_Checkpoint_For_LR_7.4.1+
+            - OPSEC_LEA_-_Checkpoint_Log_Server
+            - sFlow_-_Version_5
+            - SNMP_Trap_-_Audiolog
+            - SNMP_Trap_-_Autoregistered
+            - SNMP_Trap_-_Brocade_Switch
+            - SNMP_Trap_-_Cisco_5508_Wireless_Controller
+            - SNMP_Trap_-_Cisco_IP_SLA
+            - SNMP_Trap_-_Cisco_Prime
+            - SNMP_Trap_-_Cisco_Router-Switch
+            - SNMP_Trap_-_CyberArk
+            - SNMP_Trap_-_Dell_OpenManage
+            - SNMP_Trap_-_HP_Network_Node_Manager
+            - SNMP_Trap_-_IBM_TS3000_Series_Tape_Drive
+            - SNMP_Trap_-_Riverbed_SteelCentral_NetShark
+            - SNMP_Trap_-_RSA_Authentication_Manager
+            - SNMP_Trap_-_Swift_Alliance
+            - SNMP_Trap_-_Trend_Micro_Control_Manager
+            - Syslog_-_3Com_Switch
+            - Syslog_-_A10_Networks_AX1000_Load_Balancer
+            - Syslog_-_A10_Networks_Web_Application_Firewall
+            - Syslog_-_Accellion_Secure_File_Transfer_Application
+            - Syslog_-_Active_Scout_IPS
+            - Syslog_-_Adallom
+            - Syslog_-_Adtran_Switch
+            - Syslog_-_Aerohive_Access_Point
+            - Syslog_-_Aerohive_Firewall
+            - Syslog_-_AIMIA_Tomcat
+            - Syslog_-_AirDefense_Enterprise
+            - Syslog_-_Airmagnet_Wireless_IDS
+            - Syslog_-_AirTight_IDS/IPS
+            - Syslog_-_AirWatch_MDM
+            - Syslog_-_Airwave_Management_System_Log
+            - Syslog_-_AIX_Host
+            - Syslog_-_Alcatel-Lucent_Switch
+            - Syslog_-_Alcatel-Lucent_Wireless_Controller
+            - Syslog_-_AlertLogic
+            - Syslog_-_AMX_AV_Controller
+            - Syslog_-_Apache_Access_Log
+            - Syslog_-_Apache_Error_Log
+            - Syslog_-_Apache_Tomcat_Request_Parameters
+            - Syslog_-_Apache_Tomcat_Service_Clients_Log
+            - Syslog_-_APC_ATS
+            - Syslog_-_APC_NetBotz_Environmental_Monitoring
+            - Syslog_-_APC_PDU
+            - Syslog_-_APC_UPS
+            - Syslog_-_Apcon_Network_Monitor
+            - Syslog_-_Apex_One
+            - Syslog_-_Arbor_Networks_Peakflow
+            - Syslog_-_Arbor_Networks_Spectrum
+            - Syslog_-_Arbor_Pravail_APS
+            - Syslog_-_Arista_Switch
+            - Syslog_-_Array_TMX_Load_Balancer
+            - Syslog_-_Arris_CMTS
+            - Syslog_-_Aruba_Clear_Pass
+            - Syslog_-_Aruba_Mobility_Controller
+            - Syslog_-_Aruba_Wireless_Access_Point
+            - Syslog_-_AS/400_via_Powertech_Interact
+            - Syslog_-_Asus_WRT_Router
+            - Syslog_-_Avatier_Identity_Management_Suite_(AIMS)
+            - Syslog_-_Avaya_Communications_Manager
+            - Syslog_-_Avaya_Ethernet_Routing_Switch
+            - Syslog_-_Avaya_G450_Media_Gateway
+            - Syslog_-_Avaya_Router
+            - Syslog_-_Aventail_SSL/VPN
+            - Syslog_-_Avocent_Cyclades_Terminal_Server
+            - Syslog_-_Azul_Java_Appliance
+            - Syslog_-_Barracuda_Load_Balancer
+            - Syslog_-_Barracuda_Mail_Archiver
+            - Syslog_-_Barracuda_NG_Firewall
+            - Syslog_-_Barracuda_NG_Firewall_6.x
+            - Syslog_-_Barracuda_Spam_Firewall
+            - Syslog_-_Barracuda_Web_Application_Firewall
+            - Syslog_-_Barracuda_Webfilter
+            - Syslog_-_BeyondTrust_BeyondInsight_LEEF
+            - Syslog_-_Bind_DNS
+            - Syslog_-_Bit9_Parity_Suite
+            - Syslog_-_Bit9_Security_Platform_CEF
+            - Syslog_-_Bit9+Carbon_Black_(Deprecated)
+            - Syslog_-_BitDefender
+            - Syslog_-_Black_Diamond_Switch
+            - Syslog_-_Blue_Coat_CAS
+            - Syslog_-_Blue_Coat_Forward_Proxy
+            - Syslog_-_Blue_Coat_PacketShaper
+            - Syslog_-_Blue_Coat_ProxyAV_ISA_W3C_Format
+            - Syslog_-_Blue_Coat_ProxyAV_MS_Proxy_2.0_Format
+            - Syslog_-_Blue_Coat_ProxySG
+            - Syslog_-_Blue_Socket_Wireless_Controller
+            - Syslog_-_Bluecat_Adonis
+            - Syslog_-_BlueCedar
+            - Syslog_-_BluVector
+            - Syslog_-_Bomgar
+            - Syslog_-_Bradford_Networks_NAC
+            - Syslog_-_Bradford_Remediation_&_Registration_Svr
+            - Syslog_-_Bro_IDS
+            - Syslog_-_Brocade_Switch
+            - Syslog_-_Bromium_vSentry_CEF
+            - Syslog_-_BSD_Host
+            - Syslog_-_CA_Privileged_Access_Manager
+            - Syslog_-_Cb_Defense_CEF
+            - Syslog_-_Cb_Protection_CEF
+            - Syslog_-_Cb_Response_LEEF
+            - Syslog_-_Cell_Relay
+            - Syslog_-_Certes_Networks_CEP
+            - Syslog_-_Check_Point_Log_Exporter
+            - Syslog_-_Checkpoint_Site-to-Site_VPN
+            - Syslog_-_Cisco_ACS
+            - Syslog_-_Cisco_Aironet_WAP
+            - Syslog_-_Cisco_APIC
+            - Syslog_-_Cisco_Application_Control_Engine
+            - Syslog_-_Cisco_ASA
+            - Syslog_-_Cisco_Clean_Access_(CCA)_Appliance
+            - Syslog_-_Cisco_CSS_Load_Balancer
+            - Syslog_-_Cisco_Email_Security_Appliance
+            - Syslog_-_Cisco_FirePOWER
+            - Syslog_-_Cisco_Firepower_Threat_Defense
+            - Syslog_-_Cisco_FireSIGHT
+            - Syslog_-_Cisco_FWSM
+            - Syslog_-_Cisco_Global_Site_Selector
+            - Syslog_-_Cisco_ISE
+            - Syslog_-_Cisco_Meraki
+            - Syslog_-_Cisco_Nexus_Switch
+            - Syslog_-_Cisco_PIX
+            - Syslog_-_Cisco_Prime_Infrastructure
+            - Syslog_-_Cisco_Router
+            - Syslog_-_Cisco_Secure_ACS_5
+            - Syslog_-_Cisco_Session_Border_Controller
+            - Syslog_-_Cisco_Switch
+            - Syslog_-_Cisco_Telepresence_Video_Communications_Server
+            - Syslog_-_Cisco_UCS
+            - Syslog_-_Cisco_Unified_Comm_Mgr_(Call_Mgr)
+            - Syslog_-_Cisco_VPN_Concentrator
+            - Syslog_-_Cisco_WAAS
+            - Syslog_-_Cisco_Web_Security
+            - Syslog_-_Cisco_Wireless_Access_Point
+            - Syslog_-_Cisco_Wireless_Control_System
+            - Syslog_-_CiscoWorks
+            - Syslog_-_Citrix_Access_Gateway_Server
+            - Syslog_-_Citrix_Netscaler
+            - Syslog_-_Citrix_XenServer
+            - Syslog_-_Claroty_CTD_CEF
+            - Syslog_-_Clearswift_Secure_Email_Gateway
+            - Syslog_-_CloudLock
+            - Syslog_-_CodeGreen_Data_Loss_Prevention
+            - Syslog_-_Cofense_Triage_CEF
+            - Syslog_-_Consentry_NAC
+            - Syslog_-_Corero_IPS
+            - Syslog_-_Corero_SmartWall_DDoS
+            - Syslog_-_CoyotePoint_Equalizer
+            - Syslog_-_Crowdstrike_Falconhost_CEF
+            - Syslog_-_CyberArk
+            - Syslog_-_CyberArk_Privileged_Threat_Analytics
+            - Syslog_-_Cylance_CEF
+            - Syslog_-_CylancePROTECT
+            - Syslog_-_DarkTrace_CEF
+            - Syslog_-_Dell_Force_10
+            - Syslog_-_Dell_PowerConnect_Switch
+            - Syslog_-_Dell_Remote_Access_Controller
+            - Syslog_-_Dell_SecureWorks_iSensor_IPS
+            - Syslog_-_Dialogic_Media_Gateway
+            - Syslog_-_Digital_Guardian_CEF
+            - Syslog_-_D-Link_Switch
+            - Syslog_-_Don_not_use
+            - Syslog_-_Dragos_Platform_CEF
+            - Syslog_-_Ecessa_ShieldLink
+            - Syslog_-_EfficientIP
+            - Syslog_-_EMC_Avamar
+            - Syslog_-_EMC_Centera
+            - Syslog_-_EMC_Data_Domain
+            - Syslog_-_EMC_Isilon
+            - Syslog_-_EMC_Unity_Array
+            - Syslog_-_EMC_VNX
+            - Syslog_-_Ensilo_NGAV
+            - Syslog_-_Enterasys_Dragon_IDS
+            - Syslog_-_Enterasys_Router
+            - Syslog_-_Enterasys_Switch
+            - Syslog_-_Entrust_Entelligence_Messaging_Server
+            - Syslog_-_Entrust_IdentityGuard
+            - Syslog_-_Epic_Hyperspace_CEF
+            - Syslog_-_EqualLogic_SAN
+            - Syslog_-_eSafe_Email_Security
+            - Syslog_-_ESET_Remote_Administrator_(ERA)_LEEF
+            - Syslog_-_Event_Reporter_(Win_2000/XP/2003)
+            - Syslog_-_Exabeam
+            - Syslog_-_Exchange_Message_Tracking
+            - Syslog_-_ExtraHop
+            - Syslog_-_Extreme_Wireless_LAN
+            - Syslog_-_ExtremeWare
+            - Syslog_-_ExtremeXOS
+            - Syslog_-_F5_BIG-IP_Access_Policy_Manager
+            - Syslog_-_F5_BIG-IP_AFM
+            - Syslog_-_F5_BIG-IP_ASM
+            - Syslog_-_F5_BIG-IP_ASM_Key-Value_Pairs
+            - Syslog_-_F5_BIG-IP_ASM_v12
+            - Syslog_-_F5_Big-IP_GTM_&_DNS
+            - Syslog_-_F5_Big-IP_LTM
+            - Syslog_-_F5_FirePass_Firewall
+            - Syslog_-_F5_Silverline_DDoS_Protection
+            - Syslog_-_Fargo_HDP_Card_Printer_and_Encoder
+            - Syslog_-_Fat_Pipe_Load_Balancer
+            - Syslog_-_Fidelis_XPS
+            - Syslog_-_FireEye_E-Mail_MPS
+            - Syslog_-_FireEye_EX
+            - Syslog_-_FireEye_Web_MPS/CMS/ETP/HX
+            - Syslog_-_Forcepoint_DLP
+            - Syslog_-_Forcepoint_Email_Security_Gateway
+            - Syslog_-_Forcepoint_Stonesoft_NGFW
+            - Syslog_-_Forcepoint_SureView_Insider_Threat
+            - Syslog_-_Forcepoint_Web_Security
+            - Syslog_-_Forcepoint_Web_Security_CEF_Format
+            - Syslog_-_Forescout_CounterACT_NAC
+            - Syslog_-_Fortinet_FortiAnalyzer
+            - Syslog_-_Fortinet_FortiAuthenticator
+            - Syslog_-_Fortinet_FortiDDoS
+            - Syslog_-_Fortinet_FortiGate
+            - Syslog_-_Fortinet_FortiGate_v4.0
+            - Syslog_-_Fortinet_FortiGate_v5.0
+            - Syslog_-_Fortinet_FortiGate_v5.2
+            - Syslog_-_Fortinet_FortiGate_v5.4/v5.6
+            - Syslog_-_Fortinet_FortiGate_v5.6_CEF
+            - Syslog_-_Fortinet_Fortigate_v6.0
+            - Syslog_-_Fortinet_FortiMail
+            - Syslog_-_Fortinet_FortiWeb
+            - Syslog_-_Foundry_Switch
+            - Syslog_-_Gene6_FTP
+            - Syslog_-_Generic_CEF
+            - Syslog_-_Generic_ISC_DHCP
+            - Syslog_-_Generic_LEEF
+            - Syslog_-_Guardium_Database_Activity_Monitor
+            - Syslog_-_H3C_Router
+            - Syslog_-_Hitachi_Universal_Storage_Platform
+            - Syslog_-_HP_BladeSystem
+            - Syslog_-_HP_iLO
+            - Syslog_-_HP_Procurve_Switch
+            - Syslog_-_HP_Router
+            - Syslog_-_HP_Switch
+            - Syslog_-_HP_Unix_Tru64
+            - Syslog_-_HP_Virtual_Connect_Switch
+            - Syslog_-_HP-UX_Host
+            - Syslog_-_Huawei_Access_Router
+            - Syslog_-_IBM_Blade_Center
+            - Syslog_-_IBM_Security_Network_Protection
+            - Syslog_-_IBM_Virtual_Tape_Library_Server
+            - Syslog_-_IBM_WebSphere_DataPower_Integration
+            - Syslog_-_IBM_zSecure_Alert_for_ACF2_2.1.0
+            - Syslog_-_IceWarp_Server
+            - Syslog_-_Imperva_Incapsula_CEF
+            - Syslog_-_Imperva_SecureSphere
+            - Syslog_-_Imprivata_OneSign_SSO
+            - Syslog_-_InfoBlox
+            - Syslog_-_Invincea_(LEEF)
+            - Syslog_-_iPrism_Proxy_Log
+            - Syslog_-_IPSWITCH_MOVEit_Server
+            - Syslog_-_IPTables
+            - Syslog_-_IRIX_Host
+            - Syslog_-_iSeries_via_Powertech_Interact
+            - Syslog_-_Ivanti_FileDirector
+            - Syslog_-_JetNexus_Load_Balancer
+            - Syslog_-_Juniper_DX_Application_Accelerator
+            - Syslog_-_Juniper_Firewall
+            - Syslog_-_Juniper_Firewall_3400
+            - Syslog_-_Juniper_Host_Checker
+            - Syslog_-_Juniper_IDP
+            - Syslog_-_Juniper_NSM
+            - Syslog_-_Juniper_Router
+            - Syslog_-_Juniper_SSL_VPN
+            - Syslog_-_Juniper_SSL_VPN_WELF_Format
+            - Syslog_-_Juniper_Switch
+            - Syslog_-_Juniper_Trapeze
+            - Syslog_-_Juniper_vGW_Virtual_Gateway
+            - Syslog_-_Kaspersky_Security_Center
+            - Syslog_-_Kea_DHCP_Server
+            - Syslog_-_Kemp_Load_Balancer
+            - Syslog_-_KFSensor_Honeypot
+            - Syslog_-_KFSensor_Honeypot_CEF
+            - Syslog_-_Lancope_StealthWatch
+            - Syslog_-_Lancope_StealthWatch_CEF
+            - Syslog_-_Layer_7_SecureSpan_SOA_Gateway
+            - Syslog_-_Legacy_Checkpoint_Firewall_(Not_Log_Exporter)
+            - Syslog_-_Legacy_Checkpoint_IPS_(Not_Log_Exporter)
+            - Syslog_-_Lieberman_Enterprise_Random_Password_Manager
+            - Syslog_-_Linux_Audit
+            - Syslog_-_Linux_Host
+            - Syslog_-_Linux_TACACS_Plus
+            - Syslog_-_LOGbinder_EX
+            - Syslog_-_LOGbinder_SP
+            - Syslog_-_LOGbinder_SQL
+            - Syslog_-_LogRhythm_Data_Indexer_Monitor
+            - Syslog_-_LogRhythm_Inter_Deployment_Data_Sharing
+            - Syslog_-_LogRhythm_Log_Distribution_Services
+            - Syslog_-_LogRhythm_Network_Monitor
+            - Syslog_-_LogRhythm_Syslog_Generator
+            - Syslog_-_Lumension
+            - Syslog_-_MacOS_X
+            - Syslog_-_Malwarebytes_Endpoint_Security_CEF
+            - Syslog_-_Mandiant_MIR
+            - Syslog_-_McAfee_Advanced_Threat_Defense
+            - Syslog_-_McAfee_Email_And_Web_Security
+            - Syslog_-_McAfee_ePO
+            - Syslog_-_McAfee_Firewall_Enterprise
+            - Syslog_-_McAfee_Network_Security_Manager
+            - Syslog_-_McAfee_Secure_Internet_Gateway
+            - Syslog_-_McAfee_SecureMail
+            - Syslog_-_McAfee_Skyhigh_for_Shadow_IT_LEEF
+            - Syslog_-_McAfee_Web_Gateway
+            - Syslog_-_mGuard_Firewall
+            - Syslog_-_Microsoft_Advanced_Threat_Analytics_(ATA)_CEF
+            - Syslog_-_Microsoft_Azure_Log_Integration
+            - Syslog_-_Microsoft_Azure_MFA
+            - Syslog_-_Microsoft_Forefront_UAG
+            - Syslog_-_Mirapoint
+            - Syslog_-_MobileIron
+            - Syslog_-_Motorola_Access_Point
+            - Syslog_-_MS_IIS_Web_Log_W3C_Format_(Snare)
+            - Syslog_-_MS_Windows_Event_Logging_XML_-_Application
+            - Syslog_-_MS_Windows_Event_Logging_XML_-_Security
+            - Syslog_-_MS_Windows_Event_Logging_XML_-_System
+            - Syslog_-_Nagios
+            - Syslog_-_nCircle_Configuration_Compliance_Manager
+            - Syslog_-_NetApp_Filer
+            - Syslog_-_NETASQ_Firewall
+            - Syslog_-_NetGate_Router
+            - Syslog_-_NetMotion_VPN
+            - Syslog_-_Netscout_nGenius_InfiniStream
+            - Syslog_-_NetScreen_Firewall
+            - Syslog_-_Netskope
+            - Syslog_-_Netskope_CEF
+            - Syslog_-_Network_Chemistry_RFprotect
+            - Syslog_-_Nginx_Web_Log
+            - Syslog_-_Nimble_Storage
+            - Syslog_-_Nortel_8600_Switch
+            - Syslog_-_Nortel_BayStack_Switch
+            - Syslog_-_Nortel_Contivity
+            - Syslog_-_Nortel_Firewall
+            - Syslog_-_Nortel_IP_1220
+            - Syslog_-_Nortel_Passport_Switch
+            - Syslog_-_Nozomi_Networks_Guardian_CEF
+            - Syslog_-_NuSecure_Gateway
+            - Syslog_-_Nutanix
+            - Syslog_-_Open_Collector
+            - Syslog_-_Open_Collector_-_AWS_CloudTrail
+            - Syslog_-_Open_Collector_-_AWS_CloudWatch
+            - Syslog_-_Open_Collector_-_AWS_Config_Events
+            - Syslog_-_Open_Collector_-_AWS_Guard_Duty
+            - Syslog_-_Open_Collector_-_AWS_S3
+            - Syslog_-_Open_Collector_-_Azure_Event_Hub
+            - Syslog_-_Open_Collector_-_Carbon_Black_Cloud
+            - Syslog_-_Open_Collector_-_CarbonBlackBeat_Heartbeat
+            - Syslog_-_Open_Collector_-_Cisco_AMP
+            - Syslog_-_Open_Collector_-_Cisco_Umbrella
+            - Syslog_-_Open_Collector_-_CiscoAMPBeat_Heartbeat
+            - Syslog_-_Open_Collector_-_Duo_Authentication_Security
+            - Syslog_-_Open_Collector_-_DuoBeat_Heartbeat
+            - Syslog_-_Open_Collector_-_EventHubBeat_Heartbeat
+            - Syslog_-_Open_Collector_-_GCP_Audit
+            - Syslog_-_Open_Collector_-_GCP_Cloud_Key_Management_Service
+            - Syslog_-_Open_Collector_-_GCP_Http_Load_Balancer
+            - Syslog_-_Open_Collector_-_GCP_Pub_Sub
+            - Syslog_-_Open_Collector_-_GCP_Security_Command_Center
+            - Syslog_-_Open_Collector_-_GCP_Virtual_Private_Cloud
+            - Syslog_-_Open_Collector_-_Gmail_Message_Tracking
+            - Syslog_-_Open_Collector_-_GMTBeat_Heartbeat
+            - Syslog_-_Open_Collector_-_GSuite
+            - Syslog_-_Open_Collector_-_GSuiteBeat_Heartbeat
+            - Syslog_-_Open_Collector_-_Metricbeat
+            - Syslog_-_Open_Collector_-_Okta_System_Log
+            - Syslog_-_Open_Collector_-_OktaSystemLogBeat_Heartbeat
+            - Syslog_-_Open_Collector_-_PubSubBeat_Heartbeat
+            - Syslog_-_Open_Collector_-_S3Beat_Heartbeat
+            - Syslog_-_Open_Collector_-_Sophos_Central
+            - Syslog_-_Open_Collector_-_SophosCentralBeat_Heartbeat
+            - Syslog_-_Open_Collector_-_Webhook
+            - Syslog_-_Open_Collector_-_Webhook_OneLogin
+            - Syslog_-_Open_Collector_-_Webhook_Zoom
+            - Syslog_-_Open_Collector_-_WebhookBeat_Heartbeat
+            - Syslog_-_Opengear_Console
+            - Syslog_-_OpenLDAP
+            - Syslog_-_Oracle_10g_Audit_Trail
+            - Syslog_-_Oracle_11g_Audit_Trail
+            - Syslog_-_OSSEC_Alerts
+            - Syslog_-_Other
+            - Syslog_-_Outpost24
+            - Syslog_-_Palo_Alto_Cortex_XDR
+            - Syslog_-_Palo_Alto_Custom_Pipe
+            - Syslog_-_Palo_Alto_Firewall
+            - Syslog_-_Palo_Alto_Traps_CEF
+            - Syslog_-_Palo_Alto_Traps_Management_Service
+            - Syslog_-_Password_Manager_Pro
+            - Syslog_-_pfSense_Firewall
+            - Syslog_-_PingFederate_7.2
+            - Syslog_-_PingFederate_CEF
+            - Syslog_-_Polycom
+            - Syslog_-_Postfix
+            - Syslog_-_Procera_PacketLogic
+            - Syslog_-_Proofpoint_Spam_Firewall
+            - Syslog_-_Protegrity_Defiance_DPS
+            - Syslog_-_QLogic_Infiniband_Switch
+            - Syslog_-_Quest_Defender
+            - Syslog_-_Radiator_Radius
+            - Syslog_-_RADiFlow_3180_Switch
+            - Syslog_-_Radware_Alteon_Load_Balancer
+            - Syslog_-_Radware_DefensePro
+            - Syslog_-_Radware_Web_Server_Director_Audit_Log
+            - Syslog_-_Raritan_KVM
+            - Syslog_-_Raz-Lee
+            - Syslog_-_RedSeal
+            - Syslog_-_Riverbed
+            - Syslog_-_RSA_ACE
+            - Syslog_-_RSA_Authentication_Manager_v7.1
+            - Syslog_-_RSA_Authentication_Manager_v8.x
+            - Syslog_-_RSA_Web_Threat_Detection
+            - Syslog_-_RSA_Web_Threat_Detection_5.1
+            - Syslog_-_RuggedRouter
+            - Syslog_-_Safenet
+            - Syslog_-_Sailpoint
+            - Syslog_-_Sauce_Labs
+            - Syslog_-_SecureAuth_IdP
+            - Syslog_-_SecureAuth_IdP_v9
+            - Syslog_-_SecureLink
+            - Syslog_-_SecureTrack
+            - Syslog_-_SEL_3610_Port_Switch
+            - Syslog_-_SEL_3620_Ethernet_Security_Gateway
+            - Syslog_-_Sentinel_IPS
+            - Syslog_-_SentinelOne_CEF
+            - Syslog_-_Sguil
+            - Syslog_-_Siemens_Scalance_X400
+            - Syslog_-_Smoothwall_Firewall
+            - Syslog_-_SnapGear_Firewall
+            - Syslog_-_Snare_Windows_2003_Event_Log
+            - Syslog_-_Snare_Windows_2008_Event_Log
+            - Syslog_-_Snort_IDS
+            - Syslog_-_Solaris_(Snare)
+            - Syslog_-_Solaris_Host
+            - Syslog_-_SonicWALL
+            - Syslog_-_SonicWALL_SSL-VPN
+            - Syslog_-_Sophos_Email_Encryption_Appliance
+            - Syslog_-_Sophos_UTM
+            - Syslog_-_Sophos_Web_Proxy
+            - Syslog_-_Sophos_XG_Firewall
+            - Syslog_-_Sourcefire_IDS_3D
+            - Syslog_-_Sourcefire_RNA
+            - Syslog_-_Spectracom_Network_Time_Server
+            - Syslog_-_Splunk_API_-_Checkpoint_Firewall
+            - Syslog_-_Splunk_API_-_Cisco_Netflow_V9
+            - Syslog_-_Splunk_API_-_Nessus_Vulnerability_Scanner
+            - Syslog_-_Squid_Proxy
+            - Syslog_-_StealthBits_Activity_Monitor
+            - Syslog_-_STEALTHbits_StealthINTERCEPT
+            - Syslog_-_StoneGate_Firewall
+            - Syslog_-_Stonesoft_IPS
+            - Syslog_-_Stormshield_Network_Security_Firewall
+            - Syslog_-_Sycamore_Networks_DNX-88
+            - Syslog_-_Sygate_Firewall
+            - Syslog_-_Symantec_Advanced_Threat_Protection_(ATP)_CEF
+            - Syslog_-_Symantec_DLP_CEF
+            - Syslog_-_Symantec_Endpoint_Server
+            - Syslog_-_Symantec_Messaging_Gateway
+            - Syslog_-_Symantec_PGP_Gateway
+            - Syslog_-_Symbol_Wireless_Access_Point
+            - Syslog_-_Tanium
+            - Syslog_-_Temporary_LST-2
+            - Syslog_-_Tenable_SecurityCenter
+            - Syslog_-_Thycotic_Secret_Server
+            - Syslog_-_Tipping_Point_IPS
+            - Syslog_-_Tipping_Point_SSL_Reverse_Proxy
+            - Syslog_-_Top_Layer_IPS
+            - Syslog_-_Townsend_Alliance_LogAgent
+            - Syslog_-_Trend_Micro_Control_Manager_CEF
+            - Syslog_-_Trend_Micro_Deep_Discovery_Inspector
+            - Syslog_-_Trend_Micro_Deep_Security_CEF
+            - Syslog_-_Trend_Micro_Deep_Security_LEEF
+            - Syslog_-_Trend_Micro_IWSVA
+            - Syslog_-_Trend_Micro_Vulnerability_Protection_Manager
+            - Syslog_-_Tripwire
+            - Syslog_-_Trustwave_NAC
+            - Syslog_-_Trustwave_Secure_Web_Gateway
+            - Syslog_-_Trustwave_Web_Application_Firewall
+            - Syslog_-_Tufin
+            - Syslog_-_Tumbleweed_Mailgate_Server
+            - Syslog_-_Ubiquiti_UniFi_Security_Gateway
+            - Syslog_-_Ubiquiti_UniFi_Switch
+            - Syslog_-_Ubiquiti_UniFi_WAP
+            - Syslog_-_Untangle
+            - Syslog_-_Vamsoft_ORF
+            - Syslog_-_Vanguard_Active_Alerts
+            - Syslog_-_Varonis_DatAlert
+            - Syslog_-_Vasco_Digipass_Identikey_Server
+            - Syslog_-_Vectra_Networks
+            - Syslog_-_Versa_Networks_SD-WAN
+            - Syslog_-_VMWare_ESX/ESXi_Server
+            - Syslog_-_VMware_Horizon_View
+            - Syslog_-_VMWare_NSX/NSX-T
+            - Syslog_-_VMWare_Unified_Access_Gateway
+            - Syslog_-_VMWare_vCenter_Server
+            - Syslog_-_VMWare_vShield
+            - Syslog_-_Voltage_Securemail
+            - Syslog_-_Vormetric_CoreGuard
+            - Syslog_-_Vormetric_Data_Security_Manager
+            - Syslog_-_WALLIX_Bastion
+            - Syslog_-_Watchguard_FireBox
+            - Syslog_-_WS2000_Wireless_Access_Point
+            - Syslog_-_Wurldtech_SmartFirewall
+            - Syslog_-_Xirrus_Wireless_Array
+            - Syslog_-_Zimbra_System_Log
+            - Syslog_-_Zix_E-mail_Encryption
+            - Syslog_-_Zscaler_Nano_Streaming_Service
+            - Syslog_-_ZXT_Load_Balancer
+            - Syslog_-_ZyWALL_VPN_Firewall
+            - Syslog_Avaya_G450_Media_Gateway
+            - Syslog_File_-_AIX_Host
+            - Syslog_File_-_BSD_Format
+            - Syslog_File_-_HP-UX_Host
+            - Syslog_File_-_IRIX_Host
+            - Syslog_File_-_Linux_Host
+            - Syslog_File_-_LogRhythm_Syslog_Generator
+            - Syslog_File_-_MS_2003_Event_Log_(Snare)
+            - Syslog_File_-_Oracle_10g_Audit_Trail
+            - Syslog_File_-_Oracle_11g_Audit_Trail
+            - Syslog_File_-_Solaris_Host
+            - UDLA_-_CA_Single_Sign-On
+            - UDLA_-_Deepnet_DualShield
+            - UDLA_-_Drupal
+            - UDLA_-_Finacle_Core
+            - UDLA_-_Finacle_Treasury_Logs
+            - UDLA_-_Forcepoint
+            - UDLA_-_Gallagher_Command_Centre
+            - UDLA_-_iManage_Worksite
+            - UDLA_-_ISS_Proventia_SiteProtector_-_IPS
+            - UDLA_-_LogRhythm_Enterprise_Monitoring_Solution
+            - UDLA_-_LREnhancedAudit
+            - UDLA_-_McAfee_ePolicy_Orchestrator_-_Universal_ePOEvents
+            - UDLA_-_McAfee_ePolicy_Orchestrator_3.6_-_Events
+            - UDLA_-_McAfee_ePolicy_Orchestrator_4.0_-_ePOEvents
+            - UDLA_-_McAfee_ePolicy_Orchestrator_4.5_-_ePOEvents
+            - UDLA_-_McAfee_ePolicy_Orchestrator_5.0_-_ePOEvents
+            - UDLA_-_McAfee_ePolicy_Orchestrator_5.1_-_ePOEvents
+            - UDLA_-_McAfee_ePolicy_Orchestrator_5.3_-_ePOEvents
+            - UDLA_-_McAfee_ePolicy_Orchestrator_5.9_-_ePOEvents
+            - UDLA_-_McAfee_Network_Access_Control
+            - UDLA_-_McAfee_Network_Security_Manager
+            - UDLA_-_Microsoft_System_Center_2012_Endpoint_Protection
+            - UDLA_-_ObserveIT
+            - UDLA_-_Oracle_10g_Audit_Trail
+            - UDLA_-_Oracle_11g_Audit_Trail
+            - UDLA_-_Oracle_12C_Unified_Auditing
+            - UDLA_-_Oracle_9i_Audit_Trail
+            - UDLA_-_Other
+            - UDLA_-_SEL_3530_RTAC
+            - UDLA_-_SharePoint_2007_AuditData
+            - UDLA_-_SharePoint_2010_EventData
+            - UDLA_-_SharePoint_2013_EventData
+            - UDLA_-_Siemens_Invision
+            - UDLA_-_Sophos_Anti-Virus
+            - UDLA_-_Sophos_Endpoint_Security_and_Control
+            - UDLA_-_Symantec_CSP
+            - UDLA_-_Symantec_SEP
+            - UDLA_-_Symmetry_Access_Control
+            - UDLA_-_VMWare_vCenter_Server
+            - UDLA_-_VMWare_vCloud
+            - VLS_-_Syslog_-_Infoblox_-_DNS_RPZ
+            - VLS_-_Syslog_-_Infoblox_-_Threat_Protection
+        - description: Impacted host name.
+          name: host_name
+        - description: Username.
+          name: username
+        - description: Email subject.
+          name: subject
+        - description: Email sender.
+          name: sender
+        - description: Email recipient.
+          name: recipient
+        - description: Hash.
+          name: hash
+        - description: URL.
+          name: url
+        - description: Process name.
+          name: process_name
+        - description: Log object.
+          name: object
+        - description: IP address.
+          name: ip_address
+        - description: Maximum number of log message to query.
+          name: max_massage
+          defaultValue: "10"
+        - description: The query timeout in seconds.
+          name: query_timeout
+          defaultValue: "60"
+      description: Execute search query to LogRhythm log database.
+      name: lr-execute-search-query
+      outputs:
+        - contextPath: Logrhythm.Search.Task.TaskID
+          description: Task ID
+          type: String
+    - name: lr-get-users
+      arguments:
+        - name: user_id
+          description: The LogRhythm user ID.
+        - name: count
+          description: Number of users to return.
+          defaultValue: "30"
+      outputs:
+        - contextPath: Logrhythm.User.ID
+          description: LogRhythm user ID
+          type: string
+        - contextPath: Logrhythm.User.DateUpdated
+          description: Date that the user was updated.
+          type: string
+        - contextPath: Logrhythm.User.HostStatus
+          description: Host status of the LogRhythm user.
+          type: string
+        - contextPath: Logrhythm.User.LastName
+          description: Last name of the LogRhythm user.
+          type: string
+        - contextPath: Logrhythm.User.FirstName
+          description: First name of the LogRhythm user.
+          type: string
+        - contextPath: Logrhythm.User.UserType
+          description: LogRhythm user type
+          type: string
+        - contextPath: Logrhythm.User.Entity
+          description: LogRhythm entity information
+          type: string
+        - contextPath: Logrhythm.User.Owner
+          description: LogRhythm owner information
+          type: string
+        - contextPath: Logrhythm.User.ReadAccess
+          description: Read Access of the LogRhythm user.
+          type: string
+        - contextPath: Logrhythm.User.WriteAccess
+          description: Write Access of the LogRhythm user.
+          type: string
+      description: Returns a list of users
+    - name: lr-get-logins
+      arguments:
+        - name: user_id
+          description: The LogRhythm user ID.
+        - name: count
+          description: Number of logins to return.
+          defaultValue: "30"
+      outputs:
+        - contextPath: Logrhythm.Login.Login
+          description: The login username
+          type: string
+        - contextPath: Logrhythm.Login.UserProfileId
+          description: The profile ID for the LogRhythm user
+          type: string
+        - contextPath: Logrhythm.Login.UserId
+          description: LogRhythm user ID
+          type: string
+        - contextPath: Logrhythm.Login.DefaultEntityId
+          description: The default entity ID of the login
+          type: string
+        - contextPath: Logrhythm.Login.HostStatus
+          description: Host status of the LogRhythm login.
+          type: string
+        - contextPath: Logrhythm.Login.DateUpdated
+          description: Date that the login was updated.
+          type: string
+        - contextPath: Logrhythm.Login.DateCreated
+          description: Date that the login was created.
+          type: string
+        - contextPath: Logrhythm.Login.Entities
+          description: LogRhythm entities information
+          type: string
+      description: Returns a list of logins
+    - name: lr-get-privileges
+      arguments:
+        - name: user_id
+          required: true
+          description: The LogRhythm user ID
+        - name: offset
+          description: 'The position to start at '
+          defaultValue: "0"
+        - name: count
+          description: Number of privileges to return
+          defaultValue: "30"
+      outputs:
+        - contextPath: Logrhythm.Privileges.ID
+          description: The LogRhythm user ID
+          type: string
+        - contextPath: Logrhythm.Privileges.Privileges
+          description: A list of the LogRhythm user's privileges.
+          type: string
+      description: Returns the privileges of a given user.
+    - name: lr-get-profiles
+      arguments:
+        - name: profile_id
+          description: The LogRhythm profile ID
+        - name: count
+          description: Number of profiles to return
+          defaultValue: "30"
+      outputs:
+        - contextPath: Logrhythm.Profile.ID
+          description: ID of the LogRhythm user profile
+          type: string
+        - contextPath: LogRhythm.Profile.Name
+          description: Name of the Logrhythm user profile
+          type: string
+        - contextPath: LogRhythm.Profile.ShortDescription
+          description: Short description of the profile
+          type: string
+        - contextPath: LogRhythm.Profile.LongDescription
+          description: Long description of the profile
+          type: string
+        - contextPath: LogRhythm.Profile.DataProcessorAccessMode
+          description: Data processor access mode
+          type: string
+        - contextPath: LogRhythm.Profile.SecurityRole
+          description: The user profile's security role
+          type: string
+        - contextPath: LogRhythm.Profile.ProfileType
+          description: The user profile's type
+          type: string
+        - contextPath: LogRhythm.Profile.DateUpdated
+          description: Date that the profile was updated.
+          type: string
+        - contextPath: LogRhythm.Profile.TotalAssociatedUsers
+          description: Total number of users with this profile
+          type: string
+        - contextPath: LogRhythm.Profile.NotificationGroupsPermissions
+          description: Permissions on notification groups
+          type: string
+        - contextPath: LogRhythm.Profile.ADGroupsPermissions
+          description: Active Directory group permissions
+          type: string
+        - contextPath: LogRhythm.Profile.EntityPermissions
+          description: Entity permissions for the profile
+          type: string
+        - contextPath: LogRhythm.Profile.DataProcessorsPermissions
+          description: Profile's data processor permissions
+          type: string
+        - contextPath: LogRhythm.Profile.LogsourceListPermissions
+          description: Profile's logsource list permissions
+          type: string
+        - contextPath: LogRhythm.Profile.LogSourcePermissions
+          description: Profile's permissions for log sources
+          type: string
+        - contextPath: LogRhythm.Profile.Privileges
+          description: Profile's privileges
+          type: string
+        - contextPath: LogRhythm.Profile.SmartResponsePluginsPermissions
+          description: Profile's smart response plugin permissions
+          type: string
+      description: Returns a list of user profiles
+    - name: lr-add-user
+      arguments:
+        - name: first_name
+          required: true
+          description: First name of the LogRhythm user
+        - name: last_name
+          required: true
+          description: Last name of the LogRhythm user
+        - name: abbreviation
+          description: Abbreviation of the user name. Defaults to first letter of first
+            name and then last name, all lowercase
+      outputs:
+        - contextPath: Logrhythm.User.ID
+          description: LogRhythm user ID
+          type: string
+        - contextPath: Logrhythm.User.DateUpdated
+          description: Date that the user was updated.
+          type: string
+        - contextPath: Logrhythm.User.HostStatus
+          description: Host status of the LogRhythm user.
+          type: string
+        - contextPath: Logrhythm.User.LastName
+          description: Last name of the LogRhythm user.
+          type: string
+        - contextPath: Logrhythm.User.FirstName
+          description: First name of the LogRhythm user.
+          type: string
+        - contextPath: Logrhythm.User.UserType
+          description: LogRhythm user type
+          type: string
+        - contextPath: Logrhythm.User.Entity
+          description: LogRhythm entity information
+          type: string
+        - contextPath: Logrhythm.User.Owner
+          description: LogRhythm owner information
+          type: string
+        - contextPath: Logrhythm.User.ReadAccess
+          description: Read Access of the LogRhythm user.
+          type: string
+        - contextPath: Logrhythm.User.WriteAccess
+          description: Write Access of the LogRhythm user.
+          type: string
+      description: Add a new user to the LogRhythm SIEM
+    - name: lr-add-login
+      arguments:
+        - name: user_id
+          required: true
+          description: ID of the user to attach the login to.
+        - name: login
+          required: true
+          description: Login name for the user
+        - name: profile_id
+          required: true
+          description: ID of the user profile to associate with the login
+        - name: password
+          required: true
+          description: 'Password for the user. '
+        - name: entity_id
+          description: ID of the entity to associate with the login. Defaults to 1.
+          defaultValue: "1"
+      outputs:
+        - contextPath: Logrhythm.Login.Login
+          description: The login username
+          type: string
+        - contextPath: Logrhythm.Login.UserProfileId
+          description: The profile ID for the LogRhythm user
+          type: string
+        - contextPath: Logrhythm.Login.UserId
+          description: LogRhythm user ID
+          type: string
+        - contextPath: Logrhythm.Login.DefaultEntityId
+          description: The default entity ID of the login
+          type: string
+        - contextPath: Logrhythm.Login.HostStatus
+          description: Host status of the LogRhythm login.
+          type: string
+        - contextPath: Logrhythm.Login.DateUpdated
+          description: Date that the login was updated.
+          type: string
+        - contextPath: Logrhythm.Login.DateCreated
+          description: Date that the login was created.
+          type: string
+        - contextPath: Logrhythm.Login.Entities
+          description: LogRhythm entities information
+          type: string
+      description: Add a new login to the LogRhythm user
+      execution: true
   isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
 tests:
-- LogRhythm REST test
+  - LogRhythm REST test
 fromversion: 5.0.0

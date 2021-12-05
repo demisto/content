@@ -59,10 +59,23 @@ Fetch all items for an incident by the given incident ID.
 | Radark.itemDetails.items.infection_type | string | The infection type of the item. | 
 | Radark.itemDetails.items.updated_date | string | The updated date of the item. | 
 | Radark.itemDetails.items.username | string | The username of the item. | 
-| Radark.itemDetails.items.password | string | The password of the item. | 
 | Radark.itemDetails.items.additional_data | string | The additional data of the item. | 
 | Radark.itemDetails.items.price | string | The price of the item. | 
 | Radark.itemDetails.items.isp | string | The ISP of the item. |
+| Radark.itemDetails.items.ip | string | The IP of the item. |
+| Radark.itemDetails.items.hostname | string | The hostname of the item. |
+| Radark.itemDetails.items.port | string | The port of the item. |
+| Radark.itemDetails.items.technology | string | The technology of the item. |
+| Radark.itemDetails.items.cve_details | string | The CVE details of the item. |
+| Radark.itemDetails.items.details | string | The details of the item. |
+| Radark.itemDetails.items.type | string | The type of the item. |
+| Radark.itemDetails.items.description | string | The description of the item. |
+| Radark.itemDetails.items.date | string | The date of the item. |
+| Radark.itemDetails.items.bin | string | The bin of the item. |
+| Radark.itemDetails.items.number | string | The number of the item. |
+| Radark.itemDetails.items.tags | string | The tags of the item. |
+| Radark.itemDetails.items.link | string | The link of the item. |
+| Radark.itemDetails.items.context | string | The context of the item. |
 | Radark.itemDetails.details | string | General details of the incident. | 
 
 

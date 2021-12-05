@@ -1,4 +1,7 @@
 <!-- HTML_DOC -->
+<h2>Devo (Deprecated)</h2>
+This integration is now deprecated. Please use the <b>Devo v2</b> integration instead.
+<hr>
 <h2>Overview</h2>
 <hr>
 <p>Use the Devo integration to query data in Devo.</p>

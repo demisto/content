@@ -9,6 +9,6 @@ This pack's purpose is provide a single interface for all those essential elemen
 - Providing SOC manager briefing for the team.
 - Managing out of the office users.
 
-For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/articles/Shift_management)
+For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/packs/Shift_management)
 
 ![Shift_management_layout](https://raw.githubusercontent.com/demisto/content/a80017bdd6a2c5aba73dd5940dfdcf42f559c655/Packs/ShiftManagement/doc_files/layout.PNG)

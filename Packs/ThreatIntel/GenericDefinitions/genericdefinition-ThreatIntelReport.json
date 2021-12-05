@@ -1,7 +1,0 @@
-{
-    "version": -1,
-    "fromVersion": "6.5.0",
-    "id": "ThreatIntelReport",
-    "name": "Threat Intel Report",
-    "auditable": false
-}

@@ -15,7 +15,7 @@
  "layout": [
   {
    "id": "a0e381e0-1c86-11e8-8581-45a91cd24d8e",
-   "forceRange": true,
+   "forceRange": false,
    "x": 8,
    "y": 0,
    "i": "a0e381e0-1c86-11e8-8581-45a91cd24d8e",
@@ -55,7 +55,7 @@
   },
   {
    "id": "d9955cc0-1c86-11e8-8581-45a91cd24d8e",
-   "forceRange": true,
+   "forceRange": false,
    "x": 0,
    "y": 0,
    "i": "d9955cc0-1c86-11e8-8581-45a91cd24d8e",
@@ -232,7 +232,7 @@
   },
   {
    "id": "0cce7c40-1c8f-11e8-b5cb-47979f799c06",
-   "forceRange": true,
+   "forceRange": false,
    "x": 4,
    "y": 1,
    "i": "0cce7c40-1c8f-11e8-b5cb-47979f799c06",

@@ -1,0 +1,7 @@
+### Domain(s)
+|Domain|WHOIS Server|Registrar|Contact Email|Name Servers|Registrant|Admin|Billing|Tech|Creation Date (GMT)|Expire Date (GMT)|Updated Date (GMT)|Last Scanned (GMT)|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| somedomain.com | whois.neulevel.biz | TUCOWS DOMAINS INC. | some@some.org | ns1.renewyourname.net, ns2.renewyourname.net | **Email:** some@some.org,<br>**Name:** fn ln,<br>**Organization:** fn ln,<br>**Street:** al1,<br>**City:** city,<br>**State:** on,<br>**PostalCode:** M5J 2R8,<br>**Country:** canada,<br>**Telephone:** 141645875 | **Email:** some@some.org,<br>**Name:** fn ln,<br>**Organization:** fn ln,<br>**Street:** al1,<br>**City:** city,<br>**State:** on,<br>**PostalCode:** M5J 2R8,<br>**Country:** canada,<br>**Telephone:** 141645875 | **Email:** some@some.org,<br>**Name:** fn ln,<br>**Organization:** fn ln,<br>**Street:** al1,<br>**City:** city,<br>**State:** on,<br>**PostalCode:** M5J 2R8,<br>**Country:** canada,<br>**Telephone:** 141645875 | **Email:** some@some.org,<br>**Name:** fn ln,<br>**Organization:** fn ln,<br>**Street:** al1,<br>**City:** city,<br>**State:** on,<br>**PostalCode:** M5J 2R8,<br>**Country:** canada,<br>**Telephone:** 141645875 | 2014-05-19T08:25:14.000-0700 | 2015-05-18T16:59:59.000-0700 | 2015-05-21T20:39:21.000-0700 | 2019-11-07T19:18:44.501-0800 |
+The reputation score for 'somedomain.com' is 0 and is classified as 'UNKNOWN'.
+### Reputation Rules
+**No entries.**

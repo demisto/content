@@ -14,7 +14,7 @@ that you can later submit to the [Cortex XSOAR support site](https://support.pal
 ## How to use 
 
 ---
-* Configure a [Demisto REST API integration](https://xsoar.pan.dev/docs/reference/articles/integrations-and-incident-health-check#1-demisto-rest-api-integration) instance.
+* Configure a [Demisto REST API integration](https://xsoar.pan.dev/docs/reference/packs/integrations-and-incident-health-check#1-demisto-rest-api-integration) instance.
 * Create a new incident of type "Integration Troubleshooting"
 * **Troubleshoot type**:
     * Use ***I'm unable to configure an instance*** if you fail to configure an integration (the test button returns an error). 

@@ -174,7 +174,7 @@ def test_fetch_all_incidents(mocker):
     assert len(incidents) == 3
     assert incidents[0].get(
         'name') == 'Azure AD: 17 newCountry adminDismissedAllRiskForUser'
-    assert last_item_time == dateparser.parse('2021-07-25T11:02:54Z')
+    assert last_item_time == dateparser.parse('2021-07-25T11:02:54Z').replace(tzinfo=None)
 
 
 def test_fetch_new_incidents(mocker):
@@ -194,4 +194,4 @@ def test_fetch_new_incidents(mocker):
     assert len(incidents) == 1
     assert incidents[0].get(
         'name') == 'Azure AD: 37 newCountry adminDismissedAllRiskForUser'
-    assert last_item_time == dateparser.parse('2021-07-25T11:02:54Z')
+    assert last_item_time == dateparser.parse('2021-07-25T11:02:54Z').replace(tzinfo=None)

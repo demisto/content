@@ -6,6 +6,7 @@ For more details about the authentication used in this integration, see [Microso
 ### Required Permissions
 * Mail.ReadWrite - Application
 * User.Read - Application
+* Mail.Send - Application
 
 ### OData Usage
 The OData parameter can be used to create different queries for the ***msgraph-mail-list-emails*** and ***msgraph-mail-get-email*** commands. Please see [OData Docs](https://docs.microsoft.com/en-us/graph/query-parameters) for detailed information.
@@ -960,6 +961,7 @@ Sends an email using Microsoft Graph.
 | attachNames | The comma-separated list of names of attachments to display in the email to send. It must have the same number of elements as attachIDs. | Optional |
 | attachCIDs | The comma-separated list of CIDs to embed attachments within the actual email. | Optional |
 | from | The email address from which to send the email. | Optional |
+| htmlBody | The content (body) of the email (in HTML format). | Optional |
 
 
 ##### Context Output

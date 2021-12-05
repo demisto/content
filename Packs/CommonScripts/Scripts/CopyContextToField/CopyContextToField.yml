@@ -31,7 +31,12 @@ args:
   name: listSeparator
   required: false
   secret: false
-comment: Copy a context key to an incident field of multiple incidents, based on an incident query.
+comment: |-
+  Copy a context key to an incident field of multiple incidents, based on an incident query.
+
+  This automation runs using the default Limited User role, unless you explicitly change the permissions.
+  For more information, see the section about permissions here:
+  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
 commonfields:
   id: CopyContextToField
   version: -1
@@ -43,10 +48,9 @@ tags:
 - Utility
 timeout: '0'
 type: python
-runas: DBotRole
 runonce: false
 subtype: python2
 fromversion: 5.0.0
-dockerimage: demisto/python:2.7.18.24066
+dockerimage: demisto/python:2.7.18.24398
 tests:
 - CopyContextToFieldTest

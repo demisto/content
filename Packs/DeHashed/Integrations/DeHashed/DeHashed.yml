@@ -148,7 +148,7 @@ script:
   - arguments:
     - default: true
       description: The email address to check.
-      isArray: false
+      isArray: true
       name: email
       required: true
       secret: false

@@ -10,6 +10,20 @@ from typing import List, Tuple, Optional
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
+INDICATOR_FIELDS_MAPPER = {
+    'stixid': 'id',
+    'stixaliases': 'known_as',
+    'stixdescription': 'short_description',
+    'stixprimarymotivation': 'motivations',
+    'aliases': 'known_as',
+    'description': 'short_description',
+    'primarymotivation': 'motivations',
+    'creationdate': 'created_date',
+    'updateddate': 'last_modified_date',
+    'geocountry': 'origins',
+    'region': 'region'
+}
+
 
 class Client(BaseClient):
 
@@ -50,24 +64,22 @@ class Client(BaseClient):
         indicator = {}
         for actor in response['resources']:
             if actor:
+
+                fields = {field: actor.get(actor_key) for field, actor_key in INDICATOR_FIELDS_MAPPER.items()}
+                fields['tags'] = feed_tags
+                if tlp_color:
+                    fields['trafficlightprotocol'] = tlp_color
+
                 indicator = {
-                    "type": "STIX Threat Actor",
+                    "type": FeedIndicatorType.indicator_type_by_server_version('STIX Threat Actor'),
                     "value": actor.get('name'),
                     "rawJSON": {
                         'type': 'STIX Threat Actor',
                         'value': actor.get('name'),
                         'service': 'List Actors Feed'
                     },
-                    'fields': {'tags': feed_tags, 'stixid': actor.get('id'), 'stixaliases': actor.get('known_as'),
-                               'stixdescription': actor.get('short_description'),
-                               'stixprimarymotivation': actor.get('motivations'),
-                               'creationdate': actor.get('created_date'),
-                               'updateddate': actor.get('last_modified_date'),
-                               'geocountry': actor.get('origins'),
-                               'region': actor.get('region')}
+                    'fields': fields
                 }
-                if tlp_color:
-                    indicator['fields']['trafficlightprotocol'] = tlp_color
 
                 indicator['rawJSON'].update(actor)
             parsed_indicators.append(indicator)

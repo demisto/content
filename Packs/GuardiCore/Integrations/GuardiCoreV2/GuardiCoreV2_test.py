@@ -5,6 +5,7 @@ import io
 import pytest
 from pytest import raises
 
+from freezegun import freeze_time
 from dateparser import parse
 from pytz import utc
 
@@ -93,7 +94,8 @@ def test_calculate_fetch_start_time(last_fetch, first_fetch, output):
     assert calculate_fetch_start_time(last_fetch, first_fetch) == output
 
 
-def test_calculate_fetch_start_time_dynamic():
+@freeze_time("2021-01-15")
+def test_calculate_fetch_start_time_dynamic(mocker):
     """Unit test
     Given
     - no last_fetch time no first_fetch
@@ -340,6 +342,7 @@ def test_get_incidents(mocker, requests_mock):
     assert response.raw_response == mock_response.get('objects')
 
 
+@freeze_time("2021-10-26 10:12:03")
 def test_fetch_incidents_no_first(mocker, requests_mock):
     """Unit test
     Given
@@ -368,6 +371,7 @@ def test_fetch_incidents_no_first(mocker, requests_mock):
     assert last_fetch == last_three
 
 
+@freeze_time("2021-01-22 15:30:22.222")
 def test_fetch_incidents(mocker, requests_mock):
     """Unit test
     Given

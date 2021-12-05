@@ -5,3 +5,6 @@ ignore=IF100
 
 [file:incidentfield-Cyberint_CyberInt_Ticket_ID.json]
 ignore=IF100
+
+[file:Cyberint.yml]
+ignore=IN145

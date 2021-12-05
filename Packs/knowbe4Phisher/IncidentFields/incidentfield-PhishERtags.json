@@ -1,0 +1,62 @@
+{
+    "id": "incident_phishertags",
+    "version": -1,
+    "modified": "2021-08-16T16:51:23.78964024Z",
+    "name": "PhishER Tags",
+    "ownerOnly": false,
+    "description": "A collection of tags associated with this message.",
+    "cliName": "phishertags",
+    "type": "grid",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "PhishER"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "columns": [
+        {
+            "key": "name",
+            "displayName": "Name",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 489,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "type",
+            "displayName": "Type",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        }
+    ],
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

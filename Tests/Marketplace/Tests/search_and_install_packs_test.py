@@ -286,8 +286,8 @@ def test_install_nightly_packs_endless_loop(mocker):
 
 
 @pytest.mark.parametrize('path, latest_version', [
-    (f'{GCPConfig.STORAGE_BASE_PATH}/TestPack/1.0.1/TestPack.zip', '1.0.1'),
-    (f'{GCPConfig.STORAGE_BASE_PATH}/Blockade.io/1.0.1/Blockade.io.zip', '1.0.1')
+    (f'{GCPConfig.CONTENT_PACKS_PATH}/TestPack/1.0.1/TestPack.zip', '1.0.1'),
+    (f'{GCPConfig.CONTENT_PACKS_PATH}/Blockade.io/1.0.1/Blockade.io.zip', '1.0.1')
 ])
 def test_pack_path_version_regex(path, latest_version):
     """
@@ -311,8 +311,8 @@ def test_get_latest_version_from_bucket(mocker):
            - Validate that the version is the one we expect for.
    """
     dummy_prod_bucket = mocker.MagicMock()
-    first_blob = Blob(f'{GCPConfig.STORAGE_BASE_PATH}/TestPack/1.0.0/TestPack.zip', dummy_prod_bucket)
-    second_blob = Blob(f'{GCPConfig.STORAGE_BASE_PATH}/TestPack/1.0.1/TestPack.zip', dummy_prod_bucket)
+    first_blob = Blob(f'{GCPConfig.CONTENT_PACKS_PATH}/TestPack/1.0.0/TestPack.zip', dummy_prod_bucket)
+    second_blob = Blob(f'{GCPConfig.CONTENT_PACKS_PATH}/TestPack/1.0.1/TestPack.zip', dummy_prod_bucket)
     dummy_prod_bucket.list_blobs.return_value = [first_blob, second_blob]
     assert script.get_latest_version_from_bucket('TestPack', dummy_prod_bucket) == '1.0.1'
 

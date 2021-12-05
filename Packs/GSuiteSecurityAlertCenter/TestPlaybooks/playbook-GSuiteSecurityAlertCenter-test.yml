@@ -7,10 +7,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 6bd5e634-2c0b-48ce-8029-d6e451ceb44e
+    taskid: b472daad-de99-4649-89e3-ff9229f2edac
     type: start
     task:
-      id: 6bd5e634-2c0b-48ce-8029-d6e451ceb44e
+      id: b472daad-de99-4649-89e3-ff9229f2edac
       version: -1
       name: ""
       iscommand: false
@@ -32,12 +32,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: b7a41c6d-3576-444e-85e7-c2d3e26c9915
+    taskid: c68b947f-6b4d-4088-8338-ce54547ad38e
     type: regular
     task:
-      id: b7a41c6d-3576-444e-85e7-c2d3e26c9915
+      id: c68b947f-6b4d-4088-8338-ce54547ad38e
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -63,12 +65,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 7f71b1ff-a8cc-4d14-81d9-59eb933fff69
+    taskid: db8b73bc-cc7c-4ee2-8899-6732e54e2fd4
     type: condition
     task:
-      id: 7f71b1ff-a8cc-4d14-81d9-59eb933fff69
+      id: db8b73bc-cc7c-4ee2-8899-6732e54e2fd4
       version: -1
       name: Verify Outputs
       type: condition
@@ -168,12 +172,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 9163bb07-da1e-49ac-8ef0-2e38d461688c
+    taskid: 2482ad8e-12a6-4433-82df-898ec671524c
     type: condition
     task:
-      id: 9163bb07-da1e-49ac-8ef0-2e38d461688c
+      id: 2482ad8e-12a6-4433-82df-898ec671524c
       version: -1
       name: Verify Outputs
       type: condition
@@ -273,12 +279,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 0139d324-c3c2-4852-8518-d88e74fe71e0
+    taskid: a0988908-fa55-43a5-8784-b387b9d12d84
     type: condition
     task:
-      id: 0139d324-c3c2-4852-8518-d88e74fe71e0
+      id: a0988908-fa55-43a5-8784-b387b9d12d84
       version: -1
       name: Verify Outputs
       type: condition
@@ -314,11 +322,6 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GSuiteSecurityAlert.Feedback.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
               simple: GSuiteSecurityAlert.Feedback.email
             iscontext: true
     view: |-
@@ -333,12 +336,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 306caec1-328b-42fc-8d49-cf6a876459e9
+    taskid: d300eade-830e-4de3-8af3-ce028115e354
     type: condition
     task:
-      id: 306caec1-328b-42fc-8d49-cf6a876459e9
+      id: d300eade-830e-4de3-8af3-ce028115e354
       version: -1
       name: Verify Outputs
       type: condition
@@ -368,12 +373,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 93ce29cd-31cd-4e1f-8545-1fdad398efce
+    taskid: ae52634f-207b-466b-84e9-023625d4a939
     type: condition
     task:
-      id: 93ce29cd-31cd-4e1f-8545-1fdad398efce
+      id: ae52634f-207b-466b-84e9-023625d4a939
       version: -1
       name: Verify Outputs
       type: condition
@@ -403,12 +410,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: cd9b625f-a67b-4d29-8b5c-cd3f4965f404
+    taskid: 663f8e2b-ab02-4e73-87e1-5e016c35b7db
     type: title
     task:
-      id: cd9b625f-a67b-4d29-8b5c-cd3f4965f404
+      id: 663f8e2b-ab02-4e73-87e1-5e016c35b7db
       version: -1
       name: Test Done
       type: title
@@ -428,12 +437,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 04defe93-fc13-4cac-850e-46ed8a96a108
+    taskid: b77fc717-82bb-4b32-862b-a57dc52cf1d0
     type: regular
     task:
-      id: 04defe93-fc13-4cac-850e-46ed8a96a108
+      id: b77fc717-82bb-4b32-862b-a57dc52cf1d0
       version: -1
       name: Set single Alert ID in context
       description: Set a value of alert id in context under the key you entered.
@@ -445,10 +456,8 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      append: {}
       key:
         simple: GSuiteSecurityAlertTestPlayBook.AlertId
-      stringify: {}
       value:
         simple: ${GSuiteSecurityAlert.Alert.[0].alertId}
     separatecontext: false
@@ -464,12 +473,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 8f62a584-9a78-41fb-84b9-c734e30b90b7
+    taskid: 2e7b2847-72e1-4158-818b-3213c4e0bd5f
     type: regular
     task:
-      id: 8f62a584-9a78-41fb-84b9-c734e30b90b7
+      id: 2e7b2847-72e1-4158-818b-3213c4e0bd5f
       version: -1
       name: DeleteContext GSuiteSecurityAlert
       description: Delete field from context
@@ -483,12 +494,10 @@ tasks:
     scriptarguments:
       all:
         simple: "no"
-      index: {}
       key:
         simple: GSuiteSecurityAlert
       keysToKeep:
         simple: GSuiteSecurityAlertTestPlayBook
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -502,12 +511,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 2fd76170-8727-47fd-8c17-2581951ac84b
+    taskid: 55dca442-8b0e-41db-860d-9cc5dad72a19
     type: regular
     task:
-      id: 2fd76170-8727-47fd-8c17-2581951ac84b
+      id: 55dca442-8b0e-41db-860d-9cc5dad72a19
       version: -1
       name: DeleteContext GSuiteSecurityAlertTestPlayBook
       description: Delete field from context
@@ -521,12 +532,10 @@ tasks:
     scriptarguments:
       all:
         simple: "no"
-      index: {}
       key:
         simple: GSuiteSecurityAlertTestPlayBook
       keysToKeep:
         simple: GSuiteSecurityAlert
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -540,12 +549,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: b178b851-e67c-4df6-8a81-24e9a905d2d2
+    taskid: 505d9452-dbaf-4a5a-8677-a346420ca517
     type: regular
     task:
-      id: b178b851-e67c-4df6-8a81-24e9a905d2d2
+      id: 505d9452-dbaf-4a5a-8677-a346420ca517
       version: -1
       name: gsac-alert-list
       description: 'Lists the alerts. Use the filter to filter it by various alert
@@ -558,11 +569,6 @@ tasks:
     nexttasks:
       '#none#':
       - "15"
-    scriptarguments:
-      filter: {}
-      order_by: {}
-      page_size: {}
-      page_token: {}
     separatecontext: false
     view: |-
       {
@@ -576,12 +582,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: d8b2052a-8829-4e99-8fb5-37d67f4af4a8
+    taskid: 38c38a16-665f-4617-871a-ff56116db6a1
     type: regular
     task:
-      id: d8b2052a-8829-4e99-8fb5-37d67f4af4a8
+      id: 38c38a16-665f-4617-871a-ff56116db6a1
       version: -1
       name: gsac-alert-get
       description: "Gets the specified alert. \nNote: To get the alert_id, execute\
@@ -611,12 +619,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: f5cafb66-46a4-45c3-81d2-70822cf870d3
+    taskid: 1873c268-2e57-4a29-85de-139383a15953
     type: regular
     task:
-      id: f5cafb66-46a4-45c3-81d2-70822cf870d3
+      id: 1873c268-2e57-4a29-85de-139383a15953
       version: -1
       name: gsac-alert-feedback-list
       description: Lists all the feedback for an alert.
@@ -630,8 +640,6 @@ tasks:
     scriptarguments:
       alert_id:
         simple: '-'
-      filter: {}
-      page_size: {}
     separatecontext: false
     view: |-
       {
@@ -645,12 +653,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 131295f7-82ca-42f2-881d-84593fb2eb7d
+    taskid: da07f6a3-d9e1-4e02-8f20-26e431a74353
     type: regular
     task:
-      id: 131295f7-82ca-42f2-881d-84593fb2eb7d
+      id: da07f6a3-d9e1-4e02-8f20-26e431a74353
       version: -1
       name: gsac-alert-delete
       description: 'Performs delete operation on alerts. Note: The alerts that are
@@ -680,12 +690,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: e176a131-9c08-4fe6-88c3-508d4729be4c
+    taskid: a6fed797-d5cc-4000-83b3-ab2ccca7da97
     type: regular
     task:
-      id: e176a131-9c08-4fe6-88c3-508d4729be4c
+      id: a6fed797-d5cc-4000-83b3-ab2ccca7da97
       version: -1
       name: gsac-alert-recover
       description: |-
@@ -716,6 +728,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {

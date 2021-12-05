@@ -1,0 +1,85 @@
+{
+	"defaultIncidentType": "",
+	"description": "Maps a User Profile data to the ExceedLMS user data.",
+	"id": "User Profile - ExceedLMS (Outgoing)",
+	"mapping": {
+		"User Profile - Create": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"city": {
+					"complex": null,
+					"simple": "city"
+				},
+				"first_name": {
+					"complex": null,
+					"simple": "givenname"
+				},
+				"last_name": {
+					"complex": null,
+					"simple": "surname"
+				},
+				"email": {
+					"complex": null,
+					"simple": "email"
+				},
+				"login": {
+					"complex": null,
+					"simple": "username"
+				},
+				"code": {
+					"complex": null,
+					"simple": "employeeid"
+				},
+				"hired_on": {
+					"complex": null,
+					"simple": "hiredate"
+				},
+				"manager_email": {
+					"complex": null,
+					"simple": "manageremailaddress"
+				}
+			}
+		},
+		"User Profile - Update": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"city": {
+					"complex": null,
+					"simple": "city"
+				},
+				"first_name": {
+					"complex": null,
+					"simple": "givenname"
+				},
+				"last_name": {
+					"complex": null,
+					"simple": "surname"
+				},
+				"login": {
+					"complex": null,
+					"simple": "username"
+				},
+				"email": {
+					"complex": null,
+					"simple": "email"
+				},
+				"code": {
+					"complex": null,
+					"simple": "employeeid"
+				},
+				"hired_on": {
+					"complex": null,
+					"simple": "hiredate"
+				},
+				"manager_email": {
+					"complex": null,
+					"simple": "manageremailaddress"
+				}
+			}
+		}
+	},
+	"name": "User Profile - ExceedLMS (Outgoing)",
+	"type": "mapping-outgoing",
+	"version": -1,
+	"fromVersion": "6.0.0"
+}

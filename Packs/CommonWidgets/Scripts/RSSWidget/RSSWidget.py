@@ -1,10 +1,9 @@
 import email.utils
-from datetime import datetime
 from time import mktime
 
 import feedparser
 from feedparser.util import FeedParserDict
-
+from markdownify import markdownify
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -72,7 +71,7 @@ def collect_entries_data_from_response(parsed_feed_data: FeedParserDict, limit: 
                     'timestamp': published_formatted,
                     'link': entry.get('link'),
                     'title': entry.get('title'),
-                    'summary': entry.get('summary'),
+                    'summary': markdownify(entry.get('summary')),
                     'author': entry.get('author'),
                 }
             )

@@ -22,7 +22,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 360
+          "y": 50
         }
       }
     note: false
@@ -55,7 +55,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 550
+          "y": 195
         }
       }
     note: false
@@ -85,7 +85,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 370
         }
       }
     note: false
@@ -115,7 +115,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 890
+          "y": 545
         }
       }
     note: false
@@ -272,7 +272,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1040
+          "y": 720
         }
       }
     note: false
@@ -302,7 +302,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1240
+          "y": 895
         }
       }
     note: false
@@ -379,7 +379,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1380
+          "y": 1070
         }
       }
     note: false
@@ -412,7 +412,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1610
+          "y": 1245
         }
       }
     note: false
@@ -489,7 +489,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1760
+          "y": 1420
         }
       }
     note: false
@@ -521,8 +521,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 2020
+          "x": 50,
+          "y": 1595
         }
       }
     note: false
@@ -554,8 +554,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 2190
+          "x": 50,
+          "y": 1770
         }
       }
     note: false
@@ -567,10 +567,50 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 10ec4f9e-09fd-4bf6-8c35-c893b056769c
+    taskid: f3625c56-735d-4180-8564-42b306cc9ca9
+    type: playbook
+    task:
+      id: f3625c56-735d-4180-8564-42b306cc9ca9
+      version: -1
+      name: Fetch Incidents Test
+      playbookName: Fetch Incidents Test
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      searchfield:
+        simple: CustomFields.azureactivedirectoryidentityandaccessalerttype
+      sourcebrand:
+        simple: Azure Active Directory Identity Protection
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: a9c2c9c8-5340-402d-8974-0c96fb7955fe
     type: title
     task:
-      id: 10ec4f9e-09fd-4bf6-8c35-c893b056769c
+      id: a9c2c9c8-5340-402d-8974-0c96fb7955fe
       version: -1
       name: Test Done
       type: title
@@ -580,8 +620,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 2390
+          "x": 50,
+          "y": 2120
         }
       }
     note: false
@@ -596,10 +636,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2095,
-        "width": 390,
-        "x": 40,
-        "y": 360
+        "height": 2135,
+        "width": 380,
+        "x": 50,
+        "y": 50
       }
     }
   }

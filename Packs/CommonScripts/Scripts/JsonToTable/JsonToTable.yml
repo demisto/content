@@ -17,10 +17,18 @@ args:
   description: The json to transform to a markdown table.
 - name: title
   description: The markdown title.
+- name: headers
+  description: Comma-separated list of table header values. Default will include
+    all available table headers.
+- name: is_auto_json_transform
+  description: Try transforming complex JSON automatically.
+- name: json_transform_properties
+  description: "Transformation JSON from value to strings. The syntax is: `{\"header_key\"\
+    : {\"keys\": [<item1>, ...], \"is_nested\": true/false}}` "
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.9.8.24399
 runas: DBotWeakRole
 tests:
-  - No test.
+- JsonToTable - Test Playbook

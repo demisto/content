@@ -2,9 +2,10 @@ commonfields:
   id: Devo
   version: -1
 name: Devo
-display: Devo
+display: Devo (Deprecated)
 category: Analytics & SIEM
-description: Query data from Devo
+deprecated: true
+description: Deprecated. Use the Devo v2 integration instead.
 configuration:
 - display: Server URL (e.g https://api-us.logtrust.com/)
   name: url

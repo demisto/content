@@ -6,3 +6,6 @@ ignore=RM106
 
 [file:classifier-Box_Incoming_Mapper.json]
 ignore=BA101
+
+[file:BoxV2.yml]
+ignore=IN145

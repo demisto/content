@@ -40,6 +40,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
     taskid: 401e2d9a-11db-45ed-82e9-734db5db3ca8
@@ -79,6 +81,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
     taskid: f341c194-b500-4f99-8f3e-cd3885b51711
@@ -104,6 +108,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
     taskid: 326e36dd-d7cb-4001-85e4-061ec01226ef
@@ -140,6 +146,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "16":
     id: "16"
     taskid: 413cef08-8ba6-43b8-8f51-aeb1ecf602f1
@@ -178,12 +186,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: a4757abb-ddc7-493b-8879-c0e0710ce8f0
+    taskid: ee1c4f90-23cb-401e-8d09-e5d45bbdf8c2
     type: playbook
     task:
-      id: a4757abb-ddc7-493b-8879-c0e0710ce8f0
+      id: ee1c4f90-23cb-401e-8d09-e5d45bbdf8c2
       version: -1
       name: O365 - Security And Compliance - Search
       description: |-
@@ -222,6 +232,10 @@ tasks:
       kql:
         complex:
           root: inputs.kql
+      polling_interval:
+        simple: ${inputs.search_action_polling_interval}
+      polling_timeout:
+        simple: ${inputs.search_action_polling_timeout}
       preview:
         simple: "false"
       search_name:
@@ -349,10 +363,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: b69e032a-dc04-4c3a-837f-c49b4ef10939
+    taskid: bd72040e-b521-4e2f-831c-c04cceaa84dd
     type: playbook
     task:
-      id: b69e032a-dc04-4c3a-837f-c49b4ef10939
+      id: bd72040e-b521-4e2f-831c-c04cceaa84dd
       version: -1
       name: O365 - Security And Compliance - Search Action - Preview
       description: |-
@@ -368,6 +382,10 @@ tasks:
       '#none#':
       - "25"
     scriptarguments:
+      polling_interval:
+        simple: ${inputs.search_action_polling_interval}
+      polling_timeout:
+        simple: ${inputs.search_action_polling_timeout}
       search_name:
         complex:
           root: O365.SecurityAndCompliance.ContentSearch.Search
@@ -497,10 +515,10 @@ tasks:
     quietmode: 0
   "28":
     id: "28"
-    taskid: e3f49938-386d-4310-8ef9-55fa8529f584
+    taskid: c5606169-c166-4c31-8072-203b88e3197b
     type: playbook
     task:
-      id: e3f49938-386d-4310-8ef9-55fa8529f584
+      id: c5606169-c166-4c31-8072-203b88e3197b
       version: -1
       name: O365 - Security And Compliance - Search Action - Delete
       description: |-
@@ -518,6 +536,10 @@ tasks:
     scriptarguments:
       delete_type:
         simple: Soft
+      polling_interval:
+        simple: ${inputs.search_action_polling_timeout}
+      polling_timeout:
+        simple: ${inputs.search_action_polling_interval}
       search_name:
         complex:
           root: O365.SecurityAndCompliance.ContentSearch.Search
@@ -542,10 +564,10 @@ tasks:
     quietmode: 0
   "29":
     id: "29"
-    taskid: c6b58231-3264-4c5a-84c1-88d3fbc62c2d
+    taskid: c9aa0f2c-455e-4e63-88a2-9ccc4f31d547
     type: playbook
     task:
-      id: c6b58231-3264-4c5a-84c1-88d3fbc62c2d
+      id: c9aa0f2c-455e-4e63-88a2-9ccc4f31d547
       version: -1
       name: O365 - Security And Compliance - Search Action - Delete
       description: |-
@@ -563,6 +585,10 @@ tasks:
     scriptarguments:
       delete_type:
         simple: Hard
+      polling_interval:
+        simple: ${inputs.search_action_polling_interval}
+      polling_timeout:
+        simple: ${inputs.search_action_polling_timeout}
       search_name:
         complex:
           root: O365.SecurityAndCompliance.ContentSearch.Search
@@ -820,43 +846,43 @@ inputs:
   value: {}
   required: false
   description: The name of the compliance search.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: case
   value: {}
   required: false
   description: The name of a Core eDiscovery case to associate with the new compliance
     search.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: kql
   value: {}
   required: true
   description: Text search string or a query that is formatted using the Keyword Query
     Language (KQL).
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: description
   value: {}
   required: false
   description: Description of the compliance search.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: allow_not_found_exchange_locations
   value:
     simple: "true"
   required: false
   description: Whether to include mailboxes other than regular user mailboxes in the
     compliance search. Default is "false".
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: exchange_location
   value: {}
   required: false
   description: Comma-separated list of mailboxes/distribution groups to include, or
     use the value "All" to include all.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: exchange_location_exclusion
   value: {}
   required: false
   description: Comma-separated list of mailboxes/distribution groups to exclude when
     you use the value "All" for the exchange_location parameter.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: force
   value:
     simple: "false"
@@ -864,21 +890,48 @@ inputs:
   description: Whether to replace the existing search. If "true", the existing search
     will be removed and a new search will be created. If "false", the existing search
     will be used and any new search configurations will be ignored.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: preview
   value:
     simple: "true"
   required: true
   description: 'Whether to preview the results using the search action "Preview".
     Possible values are: "true" and "false" or leave empty to select manually.'
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: delete_type
   value: {}
   required: false
   description: Specify the delete type to perform on the search results. Possible
     values are Hard and Soft or leave empty to select manually. (Hard = Unrecoverable,
     Soft=Recoverable)
-  playbookInputQuery:
+  playbookInputQuery: null
+- key: search_polling_timeout
+  value:
+    simple: "45"
+  required: false
+  description: Amount of time to poll before declaring a timeout for the compliance
+    search and resuming the playbook (in minutes).
+  playbookInputQuery: null
+- key: search_polling_interval
+  value:
+    simple: "3"
+  required: false
+  description: The frequency that the polling command will run for compliance search.
+  playbookInputQuery: null
+- key: search_action_polling_timeout
+  value:
+    simple: "45"
+  required: false
+  description: Amount of time to poll before declaring a timeout for the search action
+    and resuming the playbook (in minutes).
+  playbookInputQuery: null
+- key: search_action_polling_interval
+  value:
+    simple: "3"
+  required: false
+  description: The frequency that the polling command will run for the search action
+    that was chosen.
+  playbookInputQuery: null
 outputs: []
 tests:
 - O365-SecurityAndCompliance-Test

@@ -1,0 +1,32 @@
+{
+    "evidence": {
+        "uuid": "1",
+        "username": "host\\administrator",
+        "created": "2020-03-17 20:56:16",
+        "recorderId": "111",
+        "hostname": "host",
+        "eventType": "ProcessEvent",
+        "summary": "CreateProcess: System",
+        "data": {
+            "create_time": "2020-03-08 11:25:52.489",
+            "create_time_raw": -1176179735,
+            "domain": "ADMIN",
+            "exit_code": 0,
+            "process_command_line": "System",
+            "process_id": 4,
+            "process_name": "System",
+            "process_table_id": 1,
+            "sid": "S1",
+            "username": "SYSTEM",
+            "type": "Process",
+            "id": 1,
+            "timestamp": "2020-03-08 11:25:52.489",
+            "operation": "CreateProcess",
+            "ProcessId": 1,
+            "CommandLine": "System",
+            "UtcTimeCreated": "2020-03-08 11:25:52.489",
+            "User": "SYSTEM"
+        },
+        "evidenceType": "event"
+    }
+}

@@ -461,7 +461,7 @@ script:
       the targeted user's risk level to none.
     execution: false
     name: azure-ad-identity-protection-risky-user-dismiss
-  dockerimage: demisto/crypto:1.0.0.24037
+  dockerimage: demisto/crypto:1.0.0.24380
   feed: false
   isfetch: true
   longRunning: false
@@ -472,5 +472,7 @@ script:
   type: python
 fromversion: 6.0.0
 beta: true
+defaultmapperin: Azure Active Directory Identity and Access Incoming Mapper
+defaultclassifier: Azure Active Directory Identity and Access
 tests:
 -  AzureADTest

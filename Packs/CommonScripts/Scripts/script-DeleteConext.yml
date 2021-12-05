@@ -137,7 +137,12 @@ script: >
 type: javascript
 tags:
 - Utility
-comment: Delete field from context
+comment: |-
+  Delete field from context.
+
+  This automation runs using the default Limited User role, unless you explicitly change the permissions.
+  For more information, see the section about permissions here:
+  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
 enabled: true
 args:
 - name: key
@@ -161,7 +166,6 @@ args:
 - name: index
   description: index to delete in case 'key' argument was specified
 scripttarget: 0
-runas: DBotRole
 runonce: false
 sensitive: true
 fromversion: 5.0.0

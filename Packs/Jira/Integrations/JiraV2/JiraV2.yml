@@ -15,16 +15,19 @@ configuration:
   name: password
   required: false
   type: 4
-- display: API token
-  name: APItoken
+- displaypassword: API token (Recommended)
+  name: credentials
   required: false
-  type: 4
+  type: 9
+  hiddenusername: true
 - defaultvalue: OauthKey
+  additionalinfo: Will be ignored if other required fields are not provided (for example both the Access Token and the Private Key).
   display: Consumer key (OAuth 1.0)
   name: consumerKey
   required: false
   type: 0
-- display: Access token
+- display: Access Token
+  additionalinfo: Used for both OAuth 1.0 and Personal Access Token authentication methods.
   name: accessToken
   required: false
   type: 0
@@ -102,6 +105,11 @@ configuration:
   name: fetch_attachments
   required: false
   type: 8
+- display: API token (Deprecated)
+  name: APItoken
+  required: false
+  type: 4
+  additionalinfo: Use the "API Token (Recommended)" parameter instead.
 description: Use the Jira integration to manage issues and create Cortex XSOAR incidents
   from the Jira projects. From Cortex XSOAR version 6.0 and above mirror issues to
   existing issue incidents in Cortex XSOAR.
