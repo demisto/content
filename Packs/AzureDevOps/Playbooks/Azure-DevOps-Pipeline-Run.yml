@@ -1,16 +1,11 @@
-id: Azure_DevOps - Pipeline Run
+id: Azure-DevOps-Pipeline-Run
 version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    itemVersion: 1.2.1
-    fromServerVersion: ""
-    toServerVersion: ""
-vcShouldKeepItemLegacyProdMachine: false
-name: Azure_DevOps - Pipeline Run
+  contentitemfields: {}
+name: Azure-DevOps-Pipeline-Run
 description: This playbook runs a pipeline on Azure DevOps Environment
 starttaskid: "0"
-tasks:demisto-sdk
+tasks:
   "0":
     id: "0"
     taskid: 230a5fa5-ffb2-4d27-857f-647083ec27dc
@@ -320,25 +315,25 @@ inputs:
     simple: xsoar
   required: true
   description: The name of the pipeline project.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Pipeline ID
   value:
     simple: "1"
   required: true
   description: The ID of the pipeline.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Branch Name
   value:
     simple: main
   required: true
   description: The name of the repository branch which runs the pipeline.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: interval
   value:
     simple: "1"
   required: true
   description: Indicates how long to wait between each poll.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Timeout
   value:
     simple: "60"
@@ -346,7 +341,7 @@ inputs:
   description: The amount of time until the playbook stops waiting for the process
     to finish. After this time has passed, the playbook finishes its run, even if
     it didn't receive confirmation that the remote process completed.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: AzureDevOps.Project
   description: The result of the search
@@ -356,3 +351,6 @@ outputs:
 - contextPath: AzureDevOps.Project.Pipeline.Run
   description: AzureDevOps Pipeling Run
   type: unknown
+tests:
+- playbook-AzureDevOps-Test
+fromversion: 6.0.0
