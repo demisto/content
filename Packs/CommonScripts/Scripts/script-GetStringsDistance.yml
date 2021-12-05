@@ -70,7 +70,6 @@ subtype: python2
 tags:
 - server
 - phishing
-- Condition
 comment: Get the string distance between inputString and compareString (could be a comma separated list) based on Levenshtein Distance algorithm.
 system: true
 args:
