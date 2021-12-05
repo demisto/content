@@ -11,7 +11,7 @@
         }
       },
       "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/pipelines/2?revision=1",
-      "id": 2,
+      "id": "2",
       "revision": 1,
       "name": "xsoar (1)",
       "folder": "\\"
@@ -26,7 +26,7 @@
         }
       },
       "url": "https: //dev.azure.com/xsoar-organization/xsoar-project/_apis/pipelines/1?revision=1",
-      "id": 1,
+      "id": "1",
       "revision": 1,
       "name": "xsoar",
       "folder": "\\"
