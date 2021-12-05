@@ -121,7 +121,7 @@ Returns host information for the specified IP address.
                 "postal_code": "",
                 "registered_country": "United States",
                 "registered_country_code": "US",
-                "timezone": "America/Chicago"
+                "timezone": "America/LA"
             },
             "location_updated_at": "2021-11-26T17:14:23.038540Z",
             "services": [
