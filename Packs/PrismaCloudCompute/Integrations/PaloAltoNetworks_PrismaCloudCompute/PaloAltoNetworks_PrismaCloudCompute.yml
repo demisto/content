@@ -74,7 +74,7 @@ script:
       required: false
       isArray: false
       defaultValue: ""
-    - name: hostName
+    - name: hostname
       description: Hosts is the runtime profile hostname filter
       required: false
       isArray: true
@@ -141,7 +141,7 @@ script:
       required: false
       isArray: true
       defaultValue: ""
-    - name: imageID
+    - name: image_id
       description: ImageIDs is the runtime profile image id filter
       required: false
       isArray: true
@@ -310,7 +310,7 @@ script:
       required: true
       isArray: false
       defaultValue: ""
-    - name: incidentID
+    - name: incident_id
       description: IncidentID is the incident ID in case the request kind is an incident
       required: false
       isArray: true
@@ -425,12 +425,12 @@ script:
       required: false
       isArray: true
       defaultValue: ""
-    - name: incidentID
+    - name: incident_id
       description: IncidentID is the incident ID in case the request kind is an incident
       required: false
       isArray: true
       defaultValue: ""
-    - name: eventTime
+    - name: event_time
       description: EventTime is the forensic event pivot time in milliseconds (used
         to fetch events)
       required: false
@@ -536,7 +536,7 @@ script:
     description: Add a list of banned IPs to be blocked by the system
     deprecated: false
     arguments:
-    - name: IP
+    - name: ip
       description: List of custom ips to add to the banned IPs list that will be blocked.
       required: true
       isArray: true
