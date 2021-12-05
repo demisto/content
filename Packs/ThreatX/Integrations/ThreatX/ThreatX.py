@@ -550,17 +550,8 @@ def add_entity_note_command(args):
 
 
 @logger
-def test_module():
-    commands = {
-        'command': 'list'
-    }
-
-    return http_request('/users', commands)
-
-
-@logger
-def test_module_command():
-    results = test_module()
+def command_test_module():
+    results = http_request('/users', {'command': 'list'})
 
     if not isinstance(results, list):
         raise DemistoException('Unrecognized response from ThreatX.')
@@ -596,7 +587,7 @@ def main():
         handle_proxy()
         initialize()
         if command == 'test-module':
-            test_module_command()
+            command_test_module()
         elif command == 'threatx-block-ip':
             block_ip_command(args)
         elif command == 'threatx-unblock-ip':
