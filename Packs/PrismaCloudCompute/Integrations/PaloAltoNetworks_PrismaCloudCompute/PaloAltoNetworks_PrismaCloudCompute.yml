@@ -79,8 +79,7 @@ script:
       isArray: true
       defaultValue: ""
     - name: limit
-      description: "The maximum number of hosts and their profile events to return.\
-        \ Default is 15. "
+      description: The maximum number of hosts and their profile events to return
       required: false
       isArray: false
       defaultValue: "15"
@@ -273,7 +272,7 @@ script:
       isArray: false
       defaultValue: ""
     - name: limit
-      description: The maximum number of hosts to return. Default is 50.
+      description: The maximum number of hosts to return.
       required: false
       isArray: false
       defaultValue: "50"
@@ -326,7 +325,7 @@ script:
       isArray: false
       defaultValue: "20"
     - name: offset
-      description: "The offset number to begin listing records from "
+      description: The offset number to begin listing records from
       required: false
       isArray: false
       defaultValue: "0"
@@ -441,7 +440,7 @@ script:
       isArray: false
       defaultValue: "20"
     - name: offset
-      description: "The offset number to begin listing host forensics from "
+      description: The offset number to begin listing host forensics from
       required: false
       isArray: false
       defaultValue: "0"
