@@ -156,12 +156,10 @@ script:
           api_key = qParams['api_key'];
           full_api_key = 'Bearer ' + api_key;
         }
-
         res = http(
             url,
             {
-                Method: 'GET',
-                'Authorization': full_api_key
+                Method: 'GET'
             },
             qParams['insecure'],
             qParams['proxy']
@@ -193,12 +191,15 @@ script:
         url = fixUrl(qParams['server']) + suffix;
         username = qParams['authentication'] ? qParams['authentication']['identifier'] : '';
         password = qParams['authentication'] ? qParams['authentication']['password'] : '';
-        api_key = qParams['api_key'] ? 'Bearer ' + qParams['api_key'] : '';
+        if (qParams['api_key']){
+          api_key = qParams['api_key'];
+          full_api_key = 'Bearer ' + api_key;
+        }
         res = http(
             url,
             {
                 Method: 'GET',
-                Authorization: api_key,
+                Authorization: full_api_key,
                 SaveToFile: true
             },
             qParams.insecure,
@@ -223,7 +224,10 @@ script:
         url = fixUrl(qParams.server) + suffix;
         username = qParams['authentication'] ? qParams['authentication']['identifier'] : '';
         password = qParams['authentication'] ? qParams['authentication']['password'] : '';
-        api_key = qParams['api_key'] ? 'Bearer ' + qParams['api_key'] : '';
+        if (qParams['api_key']){
+          api_key = qParams['api_key'];
+          full_api_key = 'Bearer ' + api_key;
+        }
         console.log("text");
         console.log(api_key);
         res = httpMultipart(
@@ -231,7 +235,7 @@ script:
             '', // Optional - FilePath / EntryID
             { // HTTP Request Headers
                 Method: 'POST',
-                Authorization: api_key
+                Authorization: full_api_key
             },
             { // Multipart Contents
                 url: qArgs['url']
