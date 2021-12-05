@@ -41,6 +41,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "CensysV2",
+            "playbookID": "CensysV2-Test",
+            "fromversion": "6.0.0"
+        },
+        {
             "playbookID": "Generic Polling Test",
             "timeout": 250
         },
