@@ -430,14 +430,12 @@ def test_get_headers():
 
 HTTP_REQUEST_URL_WITH_QUERY_PARAMS = [
     (
-        OrderedDict(
-            cluster="cluster", hostname="hostname", id="1", limit="10", offset="0"
-        ),
+        OrderedDict(cluster="cluster", hostname="hostname", limit="10", offset="0"),
         get_profile_host_list,
         "/profiles/host"
     ),
     (
-        OrderedDict(cluster="cluster", hostname="hostname", id="1", limit="100", offset="0"),
+        OrderedDict(cluster="cluster", hostname="hostname", limit="100", offset="0"),
         get_profile_host_list,
         "/profiles/host"
     ),
@@ -542,7 +540,7 @@ def test_http_request_url_with_query_params_is_valid(requests_mock, args, func, 
     """
     full_url = BASE_URL + url_suffix
 
-    mocker = requests_mock.get(url=full_url, json={})
+    mocker = requests_mock.get(url=full_url, json=[])
     func(client=client, args=args)
 
     assert full_url + query_params_to_str(params=args) == mocker.last_request._url_parts.geturl()
@@ -627,7 +625,8 @@ HTTP_FILTERING_BODY_RESPONSE_PARAMS = [
     ),
     (
         {
-            "offset": "1"
+            "offset": "1",
+            "limit": "3"
         },
         "/profiles/container/123/forensic",
         [
@@ -655,7 +654,8 @@ HTTP_FILTERING_BODY_RESPONSE_PARAMS = [
     ),
     (
         {
-            "offset": "1"
+            "offset": "1",
+            "limit": "2"
         },
         "/profiles/host/123/forensic",
         [
@@ -680,6 +680,46 @@ HTTP_FILTERING_BODY_RESPONSE_PARAMS = [
                 "app": "ffdd78ae",
             }
         ]
+    ),
+    (
+        {
+            "limit": "4",
+            "offset": "2"
+        },
+        "/profiles/container/123/hosts",
+        ["host1"]
+    ),
+    (
+        {
+            "limit": "5",
+            "offset": "1"
+        },
+        "/profiles/container/123/hosts",
+        ["host1, host2"]
+    ),
+    (
+        {
+            "limit": "3",
+            "offset": "1"
+        },
+        "/profiles/container/123/hosts",
+        ["host1, host2", "host3", "host4", "host5"]
+    ),
+    (
+        {
+            "limit": "1",
+            "offset": "4"
+        },
+        "/profiles/container/123/hosts",
+        ["host1, host2", "host3"]
+    ),
+    (
+        {
+            "limit": "1",
+            "offset": "4"
+        },
+        "/profiles/container/123/hosts",
+        ["host1, host2", "host3", "host4", "host5", "host6", "host7"]
     )
 ]
 
@@ -698,20 +738,15 @@ def test_http_body_response_filtering_is_valid(requests_mock, args, url_suffix, 
     """
     full_url = BASE_URL + url_suffix
 
-    offset, limit = int(args.pop("offset")), args.pop("limit", None)
-    limit = int(limit) if limit else limit
+    offset, limit = int(args.pop("offset")), int(args.pop("limit", None))
 
     requests_mock.get(url=full_url, json=response)
     body_response = get_api_filtered_response(
         client=client, url_suffix=url_suffix, offset=offset, limit=limit, args=args
     )
 
-    if limit:
-        assert len(body_response) == len(response[offset:limit])
-        assert body_response == response[offset:limit]
-    else:
-        assert len(body_response) == len(response[offset:])
-        assert body_response == response[offset:]
+    assert len(body_response) == len(response[offset:limit + offset])
+    assert body_response == response[offset:limit + offset]
 
 
 def test_date_string_format_conversion_is_successful():
@@ -740,3 +775,215 @@ def test_date_string_conversion_is_failing():
         - verify that the format does not succeed.
     """
     assert parse_date_string_format(date_string='2020-11-10T09:37:42.301Z-341') == '2020-11-10T09:37:42.301Z-341'
+
+
+EXPECTED_CONTEXT_OUTPUT_DATA = [
+    (
+        {
+            "limit": "15",
+            "offset": "0"
+        },
+        get_profile_host_list,
+        "/profiles/host",
+        [
+            {
+                "_id": "1",
+                "hash": 1
+            },
+            {
+                "_id": "2",
+                "hash": 2
+            }
+        ],
+        ""
+    ),
+    (
+        {
+            "limit": "15",
+            "offset": "0"
+        },
+        get_container_profile_list,
+        "/profiles/container",
+        [
+            {
+                "state": "active",
+                "_id": "1",
+                "created": "2021-09-02T11:05:08.931Z"
+            },
+            {
+                "state": "down",
+                "_id": "2",
+                "created": "2020-09-02T11:05:08.931Z"
+            },
+            {
+                "state": "active",
+                "_id": "3",
+                "created": "2019-09-02T11:05:08.931Z"
+            }
+        ],
+        ""
+    ),
+    (
+        {
+            "limit": "10",
+            "offset": "0",
+            "id": "123"
+        },
+        get_container_hosts_list,
+        "/profiles/container/123/hosts",
+        ["host1", "host2"],
+        {
+            "ContainerID": "123",
+            "HostsIDs": ["host1", "host2"]
+        }
+    ),
+    (
+        {
+            "limit": "10",
+            "offset": "0",
+            "id": "123",
+            "hostname": "hostname"
+        },
+        get_profile_container_forensic_list,
+        "/profiles/container/123/forensic?hostname=hostname",
+        [
+            {
+                "type": "Runtime profile networking",
+                "timestamp": "2021-09-02T11:05:17.697083555Z",
+                "containerId": "",
+                "listeningStartTime": "0001-01-01T00:00:00Z",
+                "port": 8000,
+                "outbound": True
+            },
+            {
+                "type": "Runtime profile networking",
+                "timestamp": "2021-09-02T11:05:11.188517918Z",
+                "containerId": "",
+                "listeningStartTime": "0001-01-01T00:00:00Z",
+                "port": 6789,
+                "process": "some_process"
+            }
+        ],
+        {
+            "ContainerID": "123",
+            "Hostname": "hostname",
+            "Forensics": [
+                {
+                    "type": "Runtime profile networking",
+                    "timestamp": "2021-09-02T11:05:17.697083555Z",
+                    "containerId": "",
+                    "listeningStartTime": "0001-01-01T00:00:00Z",
+                    "port": 8000,
+                    "outbound": True
+                },
+                {
+                    "type": "Runtime profile networking",
+                    "timestamp": "2021-09-02T11:05:11.188517918Z",
+                    "containerId": "",
+                    "listeningStartTime": "0001-01-01T00:00:00Z",
+                    "port": 6789,
+                    "process": "some_process"
+                }
+            ],
+        }
+    ),
+    (
+        {
+            "limit": "10",
+            "offset": "0",
+            "id": "123"
+        },
+        get_profile_host_forensic_list,
+        "/profiles/host/123/forensic",
+        [
+            {
+                "type": "Process spawned",
+                "command": "docker-runc --version",
+                "listeningStartTime": "0001-01-01T00:00:00Z"
+            },
+            {
+                "type": "Process spawned",
+                "command": "docker ps -a",
+                "listeningStartTime": "0001-01-01T00:00:00Z"
+            }
+        ],
+        {
+            "HostID": "123",
+            "Forensics": [
+                {
+                    "type": "Process spawned",
+                    "command": "docker-runc --version",
+                    "listeningStartTime": "0001-01-01T00:00:00Z"
+                },
+                {
+                    "type": "Process spawned",
+                    "command": "docker ps -a",
+                    "listeningStartTime": "0001-01-01T00:00:00Z"
+                }
+            ]
+        }
+    ),
+    (
+        {},
+        get_console_version,
+        "/version",
+        "21.04",
+        ""
+    ),
+    (
+        {},
+        get_custom_feeds_ip_list,
+        "/feeds/custom/ips",
+        {
+            "_id": "",
+            "modified": "2021-12-01T11:50:50.882Z",
+            "feed": [
+                "1.1.1.1",
+                "5.5.5.5",
+                "2.2.2.2",
+                "4.4.4.4",
+                "3.3.3.3"
+            ],
+            "digest": "1234"
+        },
+        {
+            "_id": "",
+            "modified": "December 01, 2021 11:50:50 AM",
+            "feed": [
+                "1.1.1.1",
+                "5.5.5.5",
+                "2.2.2.2",
+                "4.4.4.4",
+                "3.3.3.3"
+            ],
+            "digest": "1234"
+        }
+    )
+]
+
+
+@pytest.mark.parametrize("args, func, url_suffix, json, expected_context_output", EXPECTED_CONTEXT_OUTPUT_DATA)
+def test_context_data_output_is_valid(requests_mock, args, func, url_suffix, json, expected_context_output, client):
+    """
+    Given:
+        - command arguments
+
+    When:
+        - building the context output
+
+    Then:
+        - verify that the context output is created as expected.
+
+    Note:
+        if expected_context_output is empty string,
+        it means we expect the context output to be the same as the raw response.
+    """
+    if not expected_context_output:
+        expected_context_output = json
+
+    full_url = BASE_URL + url_suffix
+
+    requests_mock.get(url=full_url, json=json)
+    command_results = func(client=client, args=args) if args else func(client=client)
+
+    assert command_results.outputs == expected_context_output

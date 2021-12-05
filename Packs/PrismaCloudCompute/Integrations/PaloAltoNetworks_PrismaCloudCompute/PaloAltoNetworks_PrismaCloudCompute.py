@@ -336,7 +336,7 @@ def perform_api_request(
 
 
 def get_api_filtered_response(
-    client: PrismaCloudComputeClient, url_suffix: str, offset: int, limit: int = None, args: dict = None
+    client: PrismaCloudComputeClient, url_suffix: str, offset: int, limit: int, args: dict = None
 ):
     """
     Filter the api response according to the offset/limit, used in case the api doesn't support limit/offset
@@ -353,10 +353,10 @@ def get_api_filtered_response(
     """
     response = perform_api_request(client=client, url_suffix=url_suffix, args=args)
 
-    if response:
-        return response[offset:limit] if limit else response[offset:]
+    start = min(offset, len(response))
+    end = min(offset + limit, len(response))
 
-    return response
+    return response[start:end]
 
 
 def build_profile_host_table_response(full_response: List[dict]) -> str:
@@ -463,7 +463,7 @@ def build_profile_container_table_response(full_response: List[dict]) -> str:
         )
 
         for process_type in ["static", "behavioral"]:
-            for static_process in response.get("processes", {}).get(process_type):
+            for static_process in response.get("processes", {}).get(process_type, ""):
                 processes.append(
                     {
                         "ContainerID": response.get("_id"),
@@ -560,9 +560,10 @@ def get_container_hosts_list(client: PrismaCloudComputeClient, args: dict) -> Co
     context, table = build_container_hosts_response(client=client, container_id=container_id, args=args)
 
     return CommandResults(
-        outputs_prefix='prismaCloudCompute.profileContainerHost',
+        outputs_prefix="prismaCloudCompute.profileContainerHost",
         outputs=context if context else None,
-        readable_output=table
+        readable_output=table,
+        outputs_key_field="ContainerID"
     )
 
 
@@ -585,10 +586,11 @@ def build_containers_forensic_response(
     offset = args.pop("offset")
     # because the api supports only limit, it is necessary to add the requested offset to the limit be able to take the
     # correct offset:limit after the api call.
+    limit = args.get("limit", 20)
     args["limit"] = offset + args["limit"]
 
     container_forensics = get_api_filtered_response(
-        client=client, url_suffix=f"profiles/container/{container_id}/forensic", offset=offset, args=args
+        client=client, url_suffix=f"profiles/container/{container_id}/forensic", offset=offset, limit=limit, args=args
     )
 
     if container_forensics:
@@ -637,13 +639,14 @@ def get_profile_container_forensic_list(client: PrismaCloudComputeClient, args: 
     return CommandResults(
         outputs_prefix='prismaCloudCompute.containerForensic',
         outputs=context if context else None,
-        readable_output=table
+        readable_output=table,
+        outputs_key_field=["ContainerID", "Hostname"]
     )
 
 
 def build_host_forensic_response(
     client: PrismaCloudComputeClient, host_id: str, args: dict
-) -> Tuple[List[dict], str]:
+) -> Tuple[dict, str]:
     """
     Build a table and a context response for the 'prisma-cloud-compute-host-forensic-list' command.
 
@@ -653,21 +656,29 @@ def build_host_forensic_response(
         args (dict): prisma-cloud-compute-profile-container-forensic-list command arguments.
 
     Returns:
-        Tuple[list, str]: Context and table response.
+        Tuple[dict, str]: Context and table response.
     """
     # api request does not support offset only, but does support limit.
     offset = args.pop("offset")
+    limit = args.get("limit", 20)
+    # because the api supports only limit, it is necessary to add the requested offset to the limit be able to take the
+    # correct offset:limit after the api call.
     args["limit"] = offset + args["limit"]
 
     host_forensics = get_api_filtered_response(
-        client=client, url_suffix=f"/profiles/host/{host_id}/forensic", offset=offset, args=args
+        client=client, url_suffix=f"/profiles/host/{host_id}/forensic", offset=offset, limit=limit, args=args
     )
 
     if host_forensics:
-        return host_forensics, tableToMarkdown(
+        context_output = {
+            "HostID": host_id,
+            "Forensics": host_forensics
+        }
+
+        return context_output, tableToMarkdown(
             name="Host forensics report", t=host_forensics, headers=["type", "app", "path", "command"], removeNull=True
         )
-    return [], tableToMarkdown(name="Host forensics report", t=[])
+    return {}, tableToMarkdown(name="Host forensics report", t=[])
 
 
 @validate_limit_and_offset
@@ -689,7 +700,8 @@ def get_profile_host_forensic_list(client: PrismaCloudComputeClient, args: dict)
     return CommandResults(
         outputs_prefix='prismaCloudCompute.hostForensic',
         outputs=context if context else None,
-        readable_output=table
+        readable_output=table,
+        outputs_key_field="HostID"
     )
 
 
@@ -732,13 +744,14 @@ def get_custom_feeds_ip_list(client: PrismaCloudComputeClient) -> CommandResults
     return CommandResults(
         outputs_prefix="prismaCloudCompute.customFeedIP",
         outputs=feeds,
-        readable_output=tableToMarkdown(name="IP Feeds", t=feeds, headers=["modified", "feed"])
+        readable_output=tableToMarkdown(name="IP Feeds", t=feeds, headers=["modified", "feed"]),
+        outputs_key_field="digest"
     )
 
 
 def add_custom_ip_feeds(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
     """
-    Adda list of banned IPs to be blocked by the system.
+    Add a list of banned IPs to be blocked by the system.
     Implement the command 'prisma-cloud-compute-custom-feeds-ip-add'
 
     Args:
