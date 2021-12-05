@@ -65,8 +65,8 @@ def test_azure_devops_pipeline_run_command(requests_mock):
     assert result.outputs_prefix == 'AzureDevOps.PipelineRun'
     assert result.outputs.get('project') == project
     assert result.outputs.get('pipeline').get('name') == 'xsoar'
-    assert result.outputs.get('pipeline').get('id') == 1
-    assert result.outputs.get('run_id') == 12
+    assert result.outputs.get('pipeline').get('id') == "1"
+    assert result.outputs.get('run_id') == "12"
 
 
 def test_azure_devops_user_add_command(requests_mock):

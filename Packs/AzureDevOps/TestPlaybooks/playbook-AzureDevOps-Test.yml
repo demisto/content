@@ -164,7 +164,7 @@ tasks:
       project_id:
         simple: ${AzureDevOps.Project.id}
       user_email:
-        simple: ofekm@qmasters.co
+        simple: user@xsoar.com
     separatecontext: false
     view: |-
       {
@@ -234,7 +234,7 @@ tasks:
       - "32"
     scriptarguments:
       user_id:
-        simple: 5f2ec357-2831-63b8-955f-2dddc69ef387
+        simple: 11111-11111
     separatecontext: false
     view: |-
       {
@@ -271,9 +271,9 @@ tasks:
       project:
         simple: xsoar
       repository_id:
-        simple: bbd1bda1-b58e-41de-930a-59c92d852dcd
+        simple: xsoar-repository-id
       reviewers_ids:
-        simple: 9a49bd6e-422a-4f8d-8e2b-4bd271596d45
+        simple: xsoar-reviewer-id
       source_branch:
         simple: xsoar-test
       target_branch:
@@ -981,7 +981,7 @@ tasks:
       - "23"
     scriptarguments:
       query:
-        simple: yehudap@qmasters
+        simple: user@xsoar.com
     separatecontext: false
     view: |-
       {
