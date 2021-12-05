@@ -858,7 +858,7 @@ def get_domain_command():
                 'EntryContext': context
             })
         except RequestException as r:
-            if '404' in r.message:
+            if r.response.status_code == 404:
                 human_readable = '### Umbrella Investigate Domain for: ' + domain + '\n' \
                     + "Failed to find " + domain + ", reason: " + r.message
 
