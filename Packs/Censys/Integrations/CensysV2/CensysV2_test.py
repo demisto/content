@@ -17,7 +17,7 @@ SEARCH_HOST_OUTPUTS = [{
 
 SEARCH_CERTS_OUTPUTS = [{
     'parsed':
-        {'fingerprint_sha256': 'f3ade17dffcadd9532aeb2514f10d66e22941393725aa65366ac286df9b442ec',
+        {'fingerprint_sha256': 'f3ade17dffcadd9532aeb2514f10d66e22941393725aa65366ac286df9b41234',
          'issuer': {'organization': ["Let's Encrypt"]},
          'issuer_dn': "C=US, O=Let's Encrypt, CN=Let's Encrypt Authority X3",
          'names': ['*.45g4rg43g4fr3434g.gb.net', '45g4rg43g4fr3434g.gb.net'],

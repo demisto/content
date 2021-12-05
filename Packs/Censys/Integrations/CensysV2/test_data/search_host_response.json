@@ -35,46 +35,6 @@
                         "transport_protocol": "TCP"
                     }
                 ]
-            },
-            {
-                "autonomous_system": {
-                    "asn": 13335,
-                    "bgp_prefix": "1.0.0.0/24",
-                    "country_code": "US",
-                    "description": "CLOUDFLARENET",
-                    "name": "CLOUDFLARENET"
-                },
-                "ip": "1.0.0.1",
-                "location": {
-                    "continent": "Oceania",
-                    "coordinates": {
-                        "latitude": -33.494,
-                        "longitude": 143.2104
-                    },
-                    "country": "Australia",
-                    "country_code": "AU",
-                    "registered_country": "Australia",
-                    "registered_country_code": "AU",
-                    "timezone": "Australia/Sydney"
-                },
-                "services": [
-                    {
-                        "port": 53,
-                        "service_name": "DNS",
-                        "transport_protocol": "UDP"
-                    },
-                    {
-                        "port": 80,
-                        "service_name": "HTTP",
-                        "transport_protocol": "TCP"
-                    },
-                    {
-                        "certificate": "c93386adf01223e637a3aca7c68988bb8240c4afd5d204c206bc35d7a4351234",
-                        "port": 443,
-                        "service_name": "HTTP",
-                        "transport_protocol": "TCP"
-                    }
-                ]
             }
         ],
         "links": {

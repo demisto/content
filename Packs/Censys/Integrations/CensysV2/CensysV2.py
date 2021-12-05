@@ -19,7 +19,7 @@ class Client(BaseClient):
         url_suffix = f'v2/hosts/{query}'
         res = self._http_request('GET', url_suffix)
         return res
-    
+
     def censys_view_cert_request(self, query: str):
         url_suffix = f'v1/view/certificates/{query}'
         res = self._http_request('GET', url_suffix)
@@ -35,7 +35,7 @@ class Client(BaseClient):
         res = self._http_request('GET', url_suffix, params=params)
         return res
 
-    def search_pagination(self, query, page_size, cursor):
+    def search_pagination(self, query: str, page_size: int, cursor: Optional[str]):
         url_suffix = 'v2/hosts/search'
         params = {
             'q': query,
@@ -46,7 +46,7 @@ class Client(BaseClient):
         res = self._http_request('GET', url_suffix, params=params)
         return res
 
-    def censys_search_certs_request(self, data):
+    def censys_search_certs_request(self, data: Dict):
         url_suffix = 'v1/search/certificates'
         res = self._http_request('POST', url_suffix, json_data=data)
         return res
@@ -56,9 +56,8 @@ class Client(BaseClient):
 
 
 def test_module(client: Client) -> str:
-    res = client.censys_view_host_request('8.8.8.8')
-    if res:
-        return 'ok'
+    client.censys_view_host_request('8.8.8.8')
+    return 'ok'
 
 
 def censys_view_host_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -66,7 +65,7 @@ def censys_view_host_command(client: Client, args: Dict[str, Any]) -> CommandRes
     Returns host information for the specified IP address or structured certificate data for the specified SHA-256
     """
 
-    query = args.get('query')
+    query = args.get('query', '')
     res = client.censys_view_host_request(query)
     result = res.get('result', {})
     content = {
@@ -91,7 +90,10 @@ def censys_view_host_command(client: Client, args: Dict[str, Any]) -> CommandRes
 
 
 def censys_view_cert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    query = args.get('query')
+    """
+    Returns structured certificate data for the specified SHA-256.
+    """
+    query = args.get('query', '')
     res = client.censys_view_cert_request(query)
     metadata = res.get('metadata')
     content = {
@@ -102,7 +104,7 @@ def censys_view_cert_command(client: Client, args: Dict[str, Any]) -> CommandRes
         'Updated': metadata.get('updated_at')
     }
 
-    human_readable = tableToMarkdown(f'Information for certificate ', content)
+    human_readable = tableToMarkdown('Information for certificate ', content)
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='Censys.CertificateView',
@@ -112,9 +114,12 @@ def censys_view_cert_command(client: Client, args: Dict[str, Any]) -> CommandRes
 
 
 def censys_search_hosts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    query = args.get('query')
+    """
+    Returns previews of hosts matching a specified search query.
+    """
+    query = args.get('query', '')
     page_size = args.get('page_size', 50)
-    limit = int(args.get('limit'))
+    limit = int(args.get('limit', 50))
     contents = []
 
     res = client.censys_search_ip_request(query, page_size)
@@ -147,8 +152,11 @@ def censys_search_hosts_command(client: Client, args: Dict[str, Any]) -> Command
 
 
 def censys_search_certs_command(client: Client, args: Dict[str, Any]):
+    """
+    Returns a list of certificates that match the given query.
+    """
     limit = int(args.get('limit', 50))
-    query = args.get('query')
+    query = args.get('query', '')
     fields = ["parsed.fingerprint_sha256", "parsed.subject_dn", "parsed.issuer_dn", "parsed.issuer.organization",
               "parsed.validity.start", "parsed.validity.end", "parsed.names"]
     search_fields = argToList(args.get('fields'))
