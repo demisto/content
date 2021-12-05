@@ -222,7 +222,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retruns a list of certificates that match the given query.
+    description: Returns a list of certificates that match the given query.
     execution: false
     name: censys-certificates-search
     outputs:
@@ -230,6 +230,7 @@ script:
       description: SHA 256 fingerprint.
       type: String
     - contextPath: Censys.CertificateSearch.parsed.issuer.organization
+      description: The organization name.
       type: Unknown
     - contextPath: Censys.CertificateSearch.parsed.issuer_dn
       description: Distinguished name of the entity that has signed and issued the
@@ -331,5 +332,5 @@ script:
   subtype: python3
   type: python
 tests:
-- No tests (auto formatted)
+- CensysV2-Test
 fromversion: 6.0.0

@@ -21,29 +21,79 @@ name: CensysV2
 script:
   commands:
   - arguments:
-    - auto: PREDEFINED
-      default: false
-      description: The index from which to retrieve data.
-      isArray: false
-      name: index
-      predefined:
-      - Ipv4
-      - certificates
-      required: true
-      secret: false
     - default: false
-      description: The IP Address of the requested host or the SHA-256 fingerprint of the requested certificate.
+      description: The IP Address of the requested host.
       isArray: false
       name: query
       required: true
       secret: false
     deprecated: false
-    description: Returns host information for the specified IP address or structured certificate data for the specified SHA-256
+    description: Returns host information for the specified IP address.
     execution: false
-    name: censys-view
+    name: censys-host-view
     outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
+    - contextPath: Censys.HostView.autonomous_system.asn
+      description: The autonomous system number (ASN) that the host is in.
+      type: Number
+    - contextPath: Censys.HostView.autonomous_system.bgp_prefix
+      description: The autonomous system's CIDR.
+      type: String
+    - contextPath: Censys.HostView.autonomous_system.country_code
+      description: The autonomous system's two-letter, ISO 3166-1 alpha-2 country code (e.g., US, CN, GB, RU).
+      type: String
+    - contextPath: Censys.HostView.autonomous_system.description
+      description: A brief description of the autonomous system.
+      type: String
+    - contextPath: Censys.HostView.autonomous_system.name
+      description: The friendly name of the autonomous system.
+      type: String
+    - contextPath: Censys.HostView.autonomous_system_updated_at
+      description: When the autonomous system was updated.
+      type: Date
+    - contextPath: Censys.HostView.location.continent
+      description: The continent of the host's detected location (e.g., North America, Europe, Asia, South America, Africa, Oceania).
+      type: String
+    - contextPath: Censys.HostView.location.coordinates
+      description: The estimated coordinates of the host's detected location
+      type: Unknown
+    - contextPath: Censys.HostView.location.country
+      description: The name of the country of the host's detected location.
+      type: String
+    - contextPath: Censys.HostView.location.country_code
+      description: The two-letter ISO 3166-1 alpha-2 country code of the host's detected location (e.g., US, CN, GB, RU).
+      type: String
+    - contextPath: Censys.HostView.location.postal_code
+      description: The postal code (if applicable) of the host's detected location.
+      type: String
+    - contextPath: Censys.HostView.location.registered_country
+      description: The name of the host's registered country.
+      type: String
+    - contextPath: Censys.HostView.location.registered_country_code
+      description: The registered country's two-letter, ISO 3166-1 alpha-2 country code (e.g., US, CN, GB, RU).
+      type: String
+    - contextPath: Censys.HostView.location.timezone
+      description: The IANA time zone database name of the host's detected location.
+      type: String
+    - contextPath: Censys.HostView.services.port
+      description: The port the service was reached at.
+      type: Number
+    - contextPath: Censys.HostView.services.observed_at
+      description: The UTC timestamp of when Censys scanned the service.
+      type: Date
+    - contextPath: Censys.HostView.services.source_ip
+      description: The IP address from which Censys scanned the service.
+      type: String
+    - contextPath: Censys.HostView.services.transport_protocol
+      description: The transport protocol (known in OSI model as L4) used to contact this service (i.e., UDP or TCP).
+      type: String
+    - contextPath: Censys.HostView.services.service_name
+      description: The name of the service on the port. This is typically the L7 protocol (e.g., “HTTP”); however, in the case that a more specific HTTP-based protocol is found (e.g., Kubernetes or Prometheus), the field will show that. This field indicates where protocol-specific data will be located.
+      type: String
+    - contextPath: Censys.HostView.services.extended_service_name
+      description: The service name with the TLS encryption indicator if the service is using it. For example, "SMTP" will have an extended_serivce_name of "SMTPS" if it's running over tls.
+      type: String
+    - contextPath: Censys.HostView.services.perspective_id
+      description: 'The upstream Internet service provider Censys peered with to scan the service: NTT Communications, TATA, Telia Carrier, or Hurricane Electric.'
       type: String
   - arguments:
     - default: false
@@ -70,6 +120,55 @@ script:
     description: Returns previews of hosts matching a specified search query.
     execution: false
     name: censys-hosts-search
+    outputs:
+    - contextPath: Censys.HostSearch.autonomous_system.asn
+      description: The autonomous system number (ASN) that the host is in.
+      type: Number
+    - contextPath: Censys.HostSearch.autonomous_system.bgp_prefix
+      description: The autonomous system's CIDR.
+      type: String
+    - contextPath: Censys.HostSearch.autonomous_system.country_code
+      description: The autonomous system's two-letter, ISO 3166-1 alpha-2 country code (e.g., US, CN, GB, RU).
+      type: String
+    - contextPath: Censys.HostSearch.autonomous_system.description
+      description: A brief description of the autonomous system.
+      type: String
+    - contextPath: Censys.HostSearch.autonomous_system.name
+      description: The friendly name of the autonomous system.
+      type: String
+    - contextPath: Censys.HostSearch.ip
+      description: The host’s IP address.
+      type: String
+    - contextPath: Censys.HostSearch.location.continent
+      description: The continent of the host's detected location (e.g., North America, Europe, Asia, South America, Africa, Oceania)
+      type: String
+    - contextPath: Censys.HostSearch.location.coordinates
+      description: The estimated coordinates of the host's detected location.
+      type: Unknown
+    - contextPath: Censys.HostSearch.location.country
+      description: The country of the host's detected location.
+      type: String
+    - contextPath: Censys.HostSearch.location.country_code
+      description: The two-letter ISO 3166-1 alpha-2 country code of the host's detected location (e.g., US, CN, GB, RU).
+      type: String
+    - contextPath: Censys.HostSearch.location.registered_country
+      description: The host's registered country.
+      type: String
+    - contextPath: Censys.HostSearch.location.registered_country_code
+      description: The registered country's two-letter, ISO 3166-1 alpha-2 country code (e.g., US, CN, GB, RU).
+      type: String
+    - contextPath: Censys.HostSearch.location.timezone
+      description: The IANA time zone database name of the host's detected location.
+      type: String
+    - contextPath: Censys.HostSearch.services.port
+      description: The port the service was reached at.
+      type: Number
+    - contextPath: Censys.HostSearch.services.service_name
+      description: The name of the service on the port. This is typically the L7 protocol (e.g., “HTTP”); however, in the case that a more specific HTTP-based protocol is found (e.g., Kubernetes or Prometheus), the field will show that. This field indicates where protocol-specific data will be located.
+      type: String
+    - contextPath: Censys.HostSearch.services.transport_protocol
+      description: The transport protocol (known in OSI model as L4) used to contact this service (i.e., UDP or TCP).
+      type: String
   - arguments:
     - default: false
       description: Query used to search for certificates with matching attributes. Uses the Censys Search Language.
@@ -101,6 +200,100 @@ script:
     description: Retruns a list of certificates that match the given query.
     execution: false
     name: censys-certificates-search
+    outputs:
+    - contextPath: Censys.CertificateSearch.parsed.fingerprint_sha256
+      description: SHA 256 fingerprint.
+      type: String
+    - contextPath: Censys.CertificateSearch.parsed.issuer.organization
+      description: The organization name.
+      type: Unknown
+    - contextPath: Censys.CertificateSearch.parsed.issuer_dn
+      description: Distinguished name of the entity that has signed and issued the certificate.
+      type: String
+    - contextPath: Censys.CertificateSearch.parsed.names
+      description: Common names for the entity.
+      type: Unknown
+    - contextPath: Censys.CertificateSearch.parsed.subject_dn
+      description: Distinguished name of the entity that the certificate belongs to.
+      type: String
+    - contextPath: Censys.CertificateSearch.parsed.validity.end
+      description: Validity end date.
+      type: String
+    - contextPath: Censys.CertificateSearch.parsed.validity.start
+      description: Validity start date.
+      type: String
+  - arguments:
+    - default: false
+      description: The SHA-256 fingerprint of the requested certificate.
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns structured certificate data for the specified SHA-256.
+    execution: false
+    name: censys-certificate-view
+    outputs:
+    - contextPath: Censys.CertificateView.fingerprint_sha256
+      description: The file SHA256.
+      type: String
+    - contextPath: Censys.CertificateView.parent_spki_subject_fingerprint
+      description: Parent spki subject fingerprint
+      type: String
+    - contextPath: Censys.CertificateView.parsed.fingerprint_sha1
+      description: Certificate SHA1.
+      type: String
+    - contextPath: Censys.CertificateView.parsed.fingerprint_md5
+      description: Certificate MD5.
+      type: String
+    - contextPath: Censys.CertificateView.parsed.names
+      description: A list of subject names in the certificate, including the Subject CommonName and SubjectAltName DNSNames, IPAddresses and URIs.
+      type: Unknown
+    - contextPath: Censys.CertificateView.parsed.subject.common_name
+      description: Common Name
+      type: String
+    - contextPath: Censys.CertificateView.parsed.subject.country
+      description: Country name.
+      type: String
+    - contextPath: Censys.CertificateView.parsed.subject.locality
+      description: Locality name.
+      type: String
+    - contextPath: Censys.CertificateView.parsed.subject.organization
+      description: Organization name.
+      type: String
+    - contextPath: Censys.CertificateView.parsed.subject.province
+      description: Province name.
+      type: String
+    - contextPath: Censys.CertificateView.parsed.issuer_dn
+      description: Issuer name.
+      type: String
+    - contextPath: Censys.CertificateView.parsed.validity.end
+      description: Timestamp of when certificate expires. Timezone is UTC.
+      type: Date
+    - contextPath: Censys.CertificateView.parsed.validity.start
+      description: Timestamp of when certificate is first valid. Timezone is UTC.
+      type: Date
+    - contextPath: Censys.CertificateView.parsed.extensions.subject_alt_name.dns_names
+      description: DNS Name entries.
+      type: Unknown
+    - contextPath: Censys.CertificateView.parsed.issuer.common_name
+      description: Common name.
+      type: String
+    - contextPath: Censys.CertificateView.parsed.issuer.country
+      description: Country name.
+      type: String
+    - contextPath: Censys.CertificateView.parsed.issuer.organization
+      description: Organization name.
+      type: String
+    - contextPath: Censys.CertificateView.parsed.subject_dn
+      description: A canonical string representation of the subject name.
+      type: String
+    - contextPath: Censys.CertificateView.parsed.validation_level
+      description: How the certificate is validated -- Domain validated (DV), Organization Validated (OV), Extended Validation (EV), or unknown.
+      type: String
+    - contextPath: Censys.CertificateView.tags
+      description: Tags
+      type: Unknown
   dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: false
@@ -131,16 +324,18 @@ script:
 
     class Client(BaseClient):
 
-        def censys_view_request(self, index: str, query: str):
-            if index == 'Ipv4':
-                url_suffix = f'v2/hosts/{query}'
-            else:
-                url_suffix = f'v1/view/certificates/{query}'
+        def censys_view_host_request(self, query: str):
+            url_suffix = f'v2/hosts/{query}'
+            res = self._http_request('GET', url_suffix)
+            return res
+        
+        def censys_view_cert_request(self, query: str):
+            url_suffix = f'v1/view/certificates/{query}'
             res = self._http_request('GET', url_suffix)
             return res
 
         def censys_search_ip_request(self, query: Dict, page_size: int):
-            url_suffix = f'v2/hosts/search'
+            url_suffix = 'v2/hosts/search'
             params = {
                 'q': query,
                 'per_page': page_size
@@ -150,7 +345,7 @@ script:
             return res
 
         def search_pagination(self, query, page_size, cursor):
-            url_suffix = f'v2/hosts/search'
+            url_suffix = 'v2/hosts/search'
             params = {
                 'q': query,
                 'per_page': page_size,
@@ -171,59 +366,59 @@ script:
 
 
     def test_module(client: Client) -> str:
-        res = client.censys_view_request('Ipv4', '8.8.8.8')
+        res = client.censys_view_host_request('8.8.8.8')
         if res:
             return 'ok'
 
 
-    def censys_view_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    def censys_view_host_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         """
         Returns host information for the specified IP address or structured certificate data for the specified SHA-256
         """
 
-        index = args.get('index')
         query = args.get('query')
+        res = client.censys_view_host_request(query)
+        result = res.get('result', {})
+        content = {
+            'Name': result.get('autonomous_system', {}).get('name'),
+            'Bgp Prefix': result.get('autonomous_system', {}).get('bgp_prefix'),
+            'ASN': result.get('autonomous_system', {}).get('asn'),
+            'Service': [{
+                'Port': service.get('port'),
+                'Service Name': service.get('service_name')
+            } for service in result.get('services', [])],
+            'Last Updated': result.get('last_updated_at')
+        }
 
-        res = client.censys_view_request(index, query)
-        if index == 'Ipv4':
-            result = res.get('result', {})
-            content = {
-                'Name': result.get('autonomous_system', {}).get('name'),
-                'Bgp Prefix': result.get('autonomous_system', {}).get('bgp_prefix'),
-                'ASN': result.get('autonomous_system', {}).get('asn'),
-                'Service': [{
-                    'Port': service.get('port'),
-                    'Service Name': service.get('service_name')
-                } for service in result.get('services', [])],
-                'Last Updated': result.get('last_updated_at')
-            }
+        human_readable = tableToMarkdown(f'Information for IP {query}', content)
+        return CommandResults(
+            readable_output=human_readable,
+            outputs_prefix='Censys.HostView',
+            outputs_key_field='ip',
+            outputs=result,
+            raw_response=res
+        )
 
-            human_readable = tableToMarkdown(f'Information for IP {query}', content)
-            return CommandResults(
-                readable_output=human_readable,
-                outputs_prefix='Censys.View',
-                outputs_key_field='ip',
-                outputs=result,
-                raw_response=res
-            )
 
-        else:
-            metadata = res.get('metadata')
-            content = {
-                'SHA 256': res.get('fingerprint_sha256'),
-                'Tags': res.get('tags'),
-                'Source': metadata.get('source'),
-                'Added': metadata.get('added_at'),
-                'Updated': metadata.get('updated_at')
-            }
+    def censys_view_cert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+        query = args.get('query')
+        res = client.censys_view_cert_request(query)
+        metadata = res.get('metadata')
+        content = {
+            'SHA 256': res.get('fingerprint_sha256'),
+            'Tags': res.get('tags'),
+            'Source': metadata.get('source'),
+            'Added': metadata.get('added_at'),
+            'Updated': metadata.get('updated_at')
+        }
 
-            human_readable = tableToMarkdown(f'Information for certificate ', content)
-            return CommandResults(
-                readable_output=human_readable,
-                outputs_prefix='Censys.View',
-                outputs_key_field='fingerprint_sha256',
-                outputs=res
-            )
+        human_readable = tableToMarkdown(f'Information for certificate ', content)
+        return CommandResults(
+            readable_output=human_readable,
+            outputs_prefix='Censys.CertificateView',
+            outputs_key_field='fingerprint_sha256',
+            outputs=res
+        )
 
 
     def censys_search_hosts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -328,8 +523,10 @@ script:
                 result = test_module(client)
                 return_results(result)
 
-            elif demisto.command() == 'censys-view':
-                return_results(censys_view_command(client, demisto.args()))
+            elif demisto.command() == 'censys-host-view':
+                return_results(censys_view_host_command(client, demisto.args()))
+            elif demisto.command() == 'censys-certificate-view':
+                return_results(censys_view_cert_command(client, demisto.args()))
             elif demisto.command() == 'censys-hosts-search':
                 return_results(censys_search_hosts_command(client, demisto.args()))
             elif demisto.command() == 'censys-certificates-search':
