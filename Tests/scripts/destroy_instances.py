@@ -4,7 +4,7 @@ import os
 import subprocess
 import sys
 
-import Tests.scripts.awsinstancetool.aws_functions as aws_functions
+import Tests.scripts.awsinstancetool.aws_functions as aws_functions  # pylint: disable=E0611,E0401
 
 from Tests.scripts.utils.log_util import install_logging
 

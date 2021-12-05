@@ -1,0 +1,12 @@
+{
+  "dataType": "scripts",
+  "widgetType": "text",
+  "params": {},
+  "name": "My ToDo Tasks",
+  "query": "MyToDoTasksWidget",
+  "fromVersion": "6.1.0",
+  "isPredefined": true,
+  "version": -1,
+  "id": "My ToDo Tasks",
+  "description": "A widget that presents a table of all the ToDo tasks assigned to the current user."
+}
