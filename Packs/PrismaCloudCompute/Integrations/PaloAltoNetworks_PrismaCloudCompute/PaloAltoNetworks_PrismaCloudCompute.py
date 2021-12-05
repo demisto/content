@@ -358,9 +358,9 @@ def get_api_filtered_response(
         url_suffix: str,
         offset: int,
         limit: int,
-        args: dict = None,
+        args: Optional[dict] = None,
         capitalize: bool = True
-):
+) -> list:
     """
     Filter the api response according to the offset/limit, used in case the api doesn't support limit/offset
 
@@ -378,37 +378,36 @@ def get_api_filtered_response(
     if not args:
         args = {}
 
-    if capitalize:
-        response = capitalize_api_response(
-            api_response=client.api_request(method='GET', url_suffix=url_suffix, params=assign_params(**args))
-        )
-    else:
-        response = client.api_request(method='GET', url_suffix=url_suffix, params=assign_params(**args))
+    response = client.api_request(method='GET', url_suffix=url_suffix, params=assign_params(**args))
 
-    start = min(offset, len(response))
-    end = min(offset + limit, len(response))
+    if response:
+        if capitalize:
+            response = capitalize_api_response(api_response=response)
+        start = min(offset, len(response))
+        end = min(offset + limit, len(response))
+        return response[start:end]
 
-    return response[start:end]
+    return []
 
 
-def build_profile_host_table_response(full_response: List[dict]) -> str:
+def build_profile_host_table_response(hosts_info: List[dict]) -> str:
     """
     Build a table from the api response of the profile host
     list for the command 'prisma-cloud-compute-profile-host-list'
 
     Args:
-        full_response (list[dict]): the api raw response.
+        hosts_info (list[dict]): the api raw response.
 
     Returns:
         str: markdown table output for the apps and ssh events of a host.
     """
-    if not full_response:
-        return tableToMarkdown(name="Hosts profile events", t=[])
+    if not hosts_info:
+        return tableToMarkdown(name="No results found", t={})
 
     apps_table = []
     ssh_events_table = []
 
-    for response in full_response:
+    for response in hosts_info:
         for app in response.get('apps', []):
             apps_table.append(
                 {
@@ -456,53 +455,56 @@ def get_profile_host_list(client: PrismaCloudComputeClient, args: dict) -> Comma
         CommandResults: command-results object.
     """
     update_query_params_names(names=[("hostname", "hostName")], args=args)
-
-    full_response = capitalize_api_response(
-        api_response=client.api_request(method='GET', url_suffix='/profiles/host', params=assign_params(**args))
+    hosts_profile_info_raw_response = client.api_request(
+        method='GET', url_suffix='/profiles/host', params=assign_params(**args)
     )
+    hosts_profile_info = None
+
+    if hosts_profile_info_raw_response:
+        hosts_profile_info = capitalize_api_response(api_response=hosts_profile_info_raw_response)
 
     return CommandResults(
         outputs_prefix='PrismaCloudCompute.ProfileHost',
         outputs_key_field='_Id',
-        outputs=full_response if full_response else None,
-        readable_output=build_profile_host_table_response(full_response=full_response),  # type:ignore
-        raw_response=full_response
+        outputs=hosts_profile_info,
+        readable_output=build_profile_host_table_response(hosts_info=hosts_profile_info),  # type:ignore
+        raw_response=hosts_profile_info_raw_response
     )
 
 
-def build_profile_container_table_response(full_response: List[dict]) -> str:
+def build_profile_container_table_response(containers_info: List[dict]) -> str:
     """
     Build a table from the api response of the profile container
     list for the command 'prisma-cloud-compute-profile-container-list'
 
     Args:
-        full_response (list[dict]): the api raw response.
+        containers_info (list[dict]): the api raw response.
 
     Returns:
         str: markdown table output.
     """
-    if not full_response:
-        return tableToMarkdown(name="Containers profile events", t=[])
+    if not containers_info:
+        return tableToMarkdown(name="No results found", t={})
 
     container_details = []
     processes = []
 
-    for response in full_response:
+    for container_info in containers_info:
         container_details.append(
             {
-                "ContainerID": response.get("_Id"),
-                "Image": response.get("Image"),
-                "OS": response.get("Os"),
-                "State": response.get("State"),
-                "Created": parse_date_string_format(date_string=response.get("Created"))  # type:ignore
+                "ContainerID": container_info.get("_Id"),
+                "Image": container_info.get("Image"),
+                "OS": container_info.get("Os"),
+                "State": container_info.get("State"),
+                "Created": parse_date_string_format(date_string=container_info.get("Created"))  # type:ignore
             }
         )
 
         for process_type in ["static", "behavioral"]:
-            for static_process in response.get("processes", {}).get(process_type, ""):
+            for static_process in container_info.get("processes", {}).get(process_type, ""):
                 processes.append(
                     {
-                        "ContainerID": response.get("_id"),
+                        "ContainerID": container_info.get("_id"),
                         "Type": process_type,
                         "Path": static_process.get("path"),
                         "DetectionTime": parse_date_string_format(date_string=static_process.get("time"))
@@ -537,17 +539,20 @@ def get_container_profile_list(client: PrismaCloudComputeClient, args: dict) -> 
         CommandResults: command-results object.
     """
     update_query_params_names(names=[("image_id", "imageID")], args=args)
-
-    full_response = capitalize_api_response(
-        api_response=client.api_request(method='GET', params=assign_params(**args), url_suffix='/profiles/container')
+    containers_info_raw_response = client.api_request(
+        method='GET', params=assign_params(**args), url_suffix='/profiles/container'
     )
+    containers_info = None
+
+    if containers_info_raw_response:
+        containers_info = capitalize_api_response(api_response=containers_info_raw_response)
 
     return CommandResults(
         outputs_prefix='PrismaCloudCompute.ProfileContainer',
         outputs_key_field='_Id',
-        outputs=full_response if full_response else None,
-        readable_output=build_profile_container_table_response(full_response=full_response),  # type:ignore
-        raw_response=full_response
+        outputs=containers_info,
+        readable_output=build_profile_container_table_response(containers_info=containers_info),  # type:ignore
+        raw_response=containers_info_raw_response
     )
 
 
@@ -585,7 +590,7 @@ def build_container_hosts_response(
         return context_output, tableToMarkdown(
             name="Containers hosts list", t=context_output, headers=["ContainerID", "HostsIDs"]
         )
-    return {}, tableToMarkdown(name="Containers hosts list", t=[])
+    return {}, tableToMarkdown(name="No results found", t=[])
 
 
 @validate_limit_and_offset
@@ -660,7 +665,7 @@ def build_containers_forensic_response(
             headers=["ContainerID", "Type", "Path", "Process"],
             removeNull=True
         )
-    return {}, tableToMarkdown(name="Container forensic report", t=[])
+    return {}, tableToMarkdown(name="No results found", t=[])
 
 
 @validate_limit_and_offset
@@ -724,7 +729,7 @@ def build_host_forensic_response(
         return context_output, tableToMarkdown(
             name="Host forensics report", t=host_forensics, headers=["type", "app", "path", "command"], removeNull=True
         )
-    return {}, tableToMarkdown(name="Host forensics report", t=[])
+    return {}, tableToMarkdown(name="No results found", t=[])
 
 
 @validate_limit_and_offset
@@ -785,13 +790,17 @@ def get_custom_feeds_ip_list(client: PrismaCloudComputeClient) -> CommandResults
     """
     feeds = capitalize_api_response(api_response=client.api_request(method='GET', url_suffix="/feeds/custom/ips"))
 
-    if feeds and "Modified" in feeds:
-        feeds["Modified"] = parse_date_string_format(date_string=feeds.get("Modified", ""))  # type:ignore
+    if feeds:
+        if "Modified" in feeds:
+            feeds["Modified"] = parse_date_string_format(date_string=feeds.get("Modified", ""))  # type:ignore
+        table = tableToMarkdown(name="IP Feeds", t=feeds, headers=["modified", "feed"])
+    else:
+        table = tableToMarkdown(name="No results found", t=[])
 
     return CommandResults(
         outputs_prefix="PrismaCloudCompute.CustomFeedIP",
         outputs=feeds,
-        readable_output=tableToMarkdown(name="IP Feeds", t=feeds, headers=["modified", "feed"]),
+        readable_output=table,
         outputs_key_field="Digest"
     )
 
