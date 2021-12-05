@@ -60,7 +60,7 @@ description: This integration provides TAXII2 Services for system indicators (Ou
 display: TAXII2 Server
 name: TAXII2 Server
 script:
-  dockerimage: demisto/taxii-server:1.0.0.23674
+  dockerimage: demisto/flask-nginx:1.0.0.23674
   feed: false
   isfetch: false
   longRunning: true
