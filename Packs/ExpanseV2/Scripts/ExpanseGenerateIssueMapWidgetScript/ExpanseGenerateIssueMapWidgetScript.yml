@@ -1,7 +1,3 @@
-comment: >
-  This widget script generates a map of the Open Expanse Issue Incidents with provider
-  On Prem.
-  The map is generated as a static PNG file embedded in Markdown.
 args:
 - default: false
   description: The end date for searching incidents.
@@ -15,6 +11,13 @@ args:
   name: from
   required: false
   secret: false
+comment: |-
+  This widget script generates a map of the Open Expanse Issue Incidents with provider On Prem.
+  The map is generated as a static PNG file embedded in Markdown.
+
+  This automation runs using the default Limited User role, unless you explicitly change the permissions.
+  For more information, see the section about permissions here:
+  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
 commonfields:
   id: ExpanseGenerateIssueMapWidgetScript
   version: -1

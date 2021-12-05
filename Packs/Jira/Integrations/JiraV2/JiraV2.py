@@ -9,7 +9,7 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 BASE_URL = demisto.getParam('url').rstrip('/') + '/'
-API_TOKEN = demisto.getParam('APItoken')
+API_TOKEN = demisto.getParam('APItoken') or (demisto.getParam('credentials') or {}).get('password')
 USERNAME = demisto.getParam('username')
 PASSWORD = demisto.getParam('password')
 COMMAND_NOT_IMPELEMENTED_MSG = 'Command not implemented'

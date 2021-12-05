@@ -480,3 +480,93 @@ def test_fetch_incidents_last_alert_ids(mocker):
     assert len(incidents) == 0
     # trim miliseconds to avoid glitches such as 2021-05-19T10:21:52.121+00:00 != 2021-05-19T10:21:52.123+00:00
     assert next_run.get('time')[:-9] == last_run.get('time')[:-9]
+
+
+def test_module_test(mocker):
+    """
+    Given:
+        -
+
+    When:
+        - Run the test-module command
+
+    Then:
+        - Validate the get_alerts_request was called with the start_time argument
+    """
+
+    # prepare
+    mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
+    mocker.patch.object(FireEyeClient, 'get_alerts_request')
+    client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
+
+    # run
+    run_test_module(client=client)
+
+    # validate
+
+    # take the date from the whole fe_datetime by split by the T
+    start_time = to_fe_datetime_converter('1 day').split('T')[0]
+    call_args_dict = FireEyeClient.get_alerts_request.call_args[0][0]
+    assert start_time in call_args_dict['start_time']
+    assert call_args_dict['duration'] == '24_hours'
+
+
+@pytest.mark.parametrize(argnames='status_code', argvalues=OK_CODES)
+def test_ok_status_codes_in_fe_response(mocker, status_code):
+    """
+    Given:
+        - ok status codes defined in FireEyeApiModule
+
+    When:
+        - Run any FireEye request
+
+    Then:
+        - Validate the response consider ok and return the data
+    """
+
+    # prepare
+    mocked_response = requests.Response()
+    mocked_response.status_code = status_code
+    mocked_response._content = json.dumps({'request_status': 'success'}).encode('utf-8')
+    mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
+    mocker.patch('requests.sessions.Session.request', return_value=mocked_response)
+    client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
+
+    # run
+    res = client.fe_client.get_alerts_request({
+        'info_level': 'concise',
+        'start_time': to_fe_datetime_converter('1 day'),
+        'duration': '24_hours',
+    })
+
+    # validate
+    assert res['request_status'] == 'success'
+
+
+def test_wrong_status_codes_in_fe_response(mocker):
+    """
+    Given:
+        - wrong status codes not defined as ok_codes in FireEyeApiModule
+
+    When:
+        - Run any FireEye request
+
+    Then:
+        - Validate the request was failed
+    """
+
+    # prepare
+    mocked_response = requests.Response()
+    mocked_response.status_code = 300
+    mocked_response._content = json.dumps({'request_status': 'failed'}).encode('utf-8')
+    mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
+    mocker.patch('requests.sessions.Session.request', return_value=mocked_response)
+    client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
+
+    # run
+    with pytest.raises(DemistoException, match='Error in API call'):
+        client.fe_client.get_alerts_request({
+            'info_level': 'concise',
+            'start_time': to_fe_datetime_converter('1 day'),
+            'duration': '24_hours',
+        })
