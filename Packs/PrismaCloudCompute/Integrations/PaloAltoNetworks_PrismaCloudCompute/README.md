@@ -390,25 +390,26 @@ Get forensics on a specific host
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| prismaCloudCompute.hostForensic.app | String | App is the application associated with the event | 
-| prismaCloudCompute.hostForensic.attack | Unknown | Attack is the event attack type | 
-| prismaCloudCompute.hostForensic.category | Unknown | Category is the incident category. | 
-| prismaCloudCompute.hostForensic command | String | Command is the event command | 
-| prismaCloudCompute.hostForensic.country | String | Country is the country associated with the event | 
-| prismaCloudCompute.hostForensic.effect | String | Effect is the runtime audit effect | 
-| prismaCloudCompute.hostForensic.interactive | Boolean | Interactive indicates if the event is interactive | 
-| prismaCloudCompute.hostForensic.ip | String | IP is the IP address associated with the event | 
-| prismaCloudCompute.hostForensic.listeningStartTime | Date | ListeningStartTime is the listening port start time | 
-| prismaCloudCompute.hostForensic.message | String | Message is the runtime audit message | 
-| prismaCloudCompute.hostForensic.path | String | Path is the event path | 
-| prismaCloudCompute.hostForensic.pid | Number | Pid is the event process id | 
-| prismaCloudCompute.hostForensic.port | Number | Port is the listening port | 
-| prismaCloudCompute.hostForensic.ppath | String | P-path is the event parent path | 
-| prismaCloudCompute.hostForensic.ppid | Number | PPid is the event parent process id | 
-| prismaCloudCompute.hostForensic.process | String | Process is the event process | 
-| prismaCloudCompute.hostForensic.timestamp | Date | Timestamp is the event timestamp | 
-| prismaCloudCompute.hostForensic.type | Unknown | Type is the event type. | 
-| prismaCloudCompute.hostForensic.user | Unknown | User is the event user | 
+| prismaCloudCompute.hostForensic.Forensics.app | String | App is the application associated with the event | 
+| prismaCloudCompute.hostForensic.Forensics.attack | Unknown | Attack is the event attack type | 
+| prismaCloudCompute.hostForensic.Forensics.category | Unknown | Category is the incident category. | 
+| prismaCloudCompute.hostForensic.Forensics.command | String | Command is the event command | 
+| prismaCloudCompute.hostForensic.Forensics.country | String | Country is the country associated with the event | 
+| prismaCloudCompute.hostForensic.Forensics.effect | String | Effect is the runtime audit effect | 
+| prismaCloudCompute.hostForensic.Forensics.interactive | Boolean | Interactive indicates if the event is interactive | 
+| prismaCloudCompute.hostForensic.Forensics.ip | String | IP is the IP address associated with the event | 
+| prismaCloudCompute.hostForensic.Forensics.listeningStartTime | Date | ListeningStartTime is the listening port start time | 
+| prismaCloudCompute.hostForensic.Forensics.message | String | Message is the runtime audit message | 
+| prismaCloudCompute.hostForensic.Forensics.path | String | Path is the event path | 
+| prismaCloudCompute.hostForensic.Forensics.pid | Number | Pid is the event process id | 
+| prismaCloudCompute.hostForensic.Forensics.port | Number | Port is the listening port | 
+| prismaCloudCompute.hostForensic.Forensics.ppath | String | P-path is the event parent path | 
+| prismaCloudCompute.hostForensic.Forensics.ppid | Number | PPid is the event parent process id | 
+| prismaCloudCompute.hostForensic.Forensics.process | String | Process is the event process | 
+| prismaCloudCompute.hostForensic.Forensics.timestamp | Date | Timestamp is the event timestamp | 
+| prismaCloudCompute.hostForensic.Forensics.type | Unknown | Type is the event type. | 
+| prismaCloudCompute.hostForensic.Forensics.user | String | User is the event user | 
+| prismaCloudCompute.hostForensic.HostID | String | The host ID that was analyzed | 
 
 
 #### Command Example

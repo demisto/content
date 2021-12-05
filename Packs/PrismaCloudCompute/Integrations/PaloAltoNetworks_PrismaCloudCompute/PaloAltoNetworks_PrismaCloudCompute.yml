@@ -447,63 +447,66 @@ script:
       isArray: false
       defaultValue: "0"
     outputs:
-    - contextPath: prismaCloudCompute.hostForensic.app
+    - contextPath: prismaCloudCompute.hostForensic.Forensics.app
       description: App is the application associated with the event
       type: String
-    - contextPath: prismaCloudCompute.hostForensic.attack
+    - contextPath: prismaCloudCompute.hostForensic.Forensics.attack
       description: Attack is the event attack type
       type: Unknown
-    - contextPath: prismaCloudCompute.hostForensic.category
+    - contextPath: prismaCloudCompute.hostForensic.Forensics.category
       description: Category is the incident category.
       type: Unknown
-    - contextPath: prismaCloudCompute.hostForensic command
+    - contextPath: prismaCloudCompute.hostForensic.Forensics.command
       description: Command is the event command
       type: String
-    - contextPath: prismaCloudCompute.hostForensic.country
+    - contextPath: prismaCloudCompute.hostForensic.Forensics.country
       description: Country is the country associated with the event
       type: String
-    - contextPath: prismaCloudCompute.hostForensic.effect
+    - contextPath: prismaCloudCompute.hostForensic.Forensics.effect
       description: Effect is the runtime audit effect
       type: String
-    - contextPath: prismaCloudCompute.hostForensic.interactive
+    - contextPath: prismaCloudCompute.hostForensic.Forensics.interactive
       description: Interactive indicates if the event is interactive
       type: Boolean
-    - contextPath: prismaCloudCompute.hostForensic.ip
+    - contextPath: prismaCloudCompute.hostForensic.Forensics.ip
       description: IP is the IP address associated with the event
       type: String
-    - contextPath: prismaCloudCompute.hostForensic.listeningStartTime
+    - contextPath: prismaCloudCompute.hostForensic.Forensics.listeningStartTime
       description: ListeningStartTime is the listening port start time
       type: Date
-    - contextPath: prismaCloudCompute.hostForensic.message
+    - contextPath: prismaCloudCompute.hostForensic.Forensics.message
       description: Message is the runtime audit message
       type: String
-    - contextPath: prismaCloudCompute.hostForensic.path
+    - contextPath: prismaCloudCompute.hostForensic.Forensics.path
       description: Path is the event path
       type: String
-    - contextPath: prismaCloudCompute.hostForensic.pid
+    - contextPath: prismaCloudCompute.hostForensic.Forensics.pid
       description: Pid is the event process id
       type: Number
-    - contextPath: prismaCloudCompute.hostForensic.port
+    - contextPath: prismaCloudCompute.hostForensic.Forensics.port
       description: Port is the listening port
       type: Number
-    - contextPath: prismaCloudCompute.hostForensic.ppath
+    - contextPath: prismaCloudCompute.hostForensic.Forensics.ppath
       description: P-path is the event parent path
       type: String
-    - contextPath: prismaCloudCompute.hostForensic.ppid
+    - contextPath: prismaCloudCompute.hostForensic.Forensics.ppid
       description: PPid is the event parent process id
       type: Number
-    - contextPath: prismaCloudCompute.hostForensic.process
+    - contextPath: prismaCloudCompute.hostForensic.Forensics.process
       description: Process is the event process
       type: String
-    - contextPath: prismaCloudCompute.hostForensic.timestamp
+    - contextPath: prismaCloudCompute.hostForensic.Forensics.timestamp
       description: Timestamp is the event timestamp
       type: Date
-    - contextPath: prismaCloudCompute.hostForensic.type
+    - contextPath: prismaCloudCompute.hostForensic.Forensics.type
       description: Type is the event type.
       type: Unknown
-    - contextPath: prismaCloudCompute.hostForensic.user
+    - contextPath: prismaCloudCompute.hostForensic.Forensics.user
       description: User is the event user
       type: Unknown
+    - contextPath: prismaCloudCompute.hostForensic.Forensics.HostID
+      description: The host ID that was analyzed
+      type: String
   - name: prisma-cloud-compute-console-version-info
     description: Get the console version
     deprecated: false
