@@ -12,7 +12,6 @@ configuration:
     Prisma Cloud Compute Console URL and Port
     (e.g., https://example.net:1234)
   required: true
-  defaultvalue: https://example.net:1234
   type: 0
   additionalinfo:
 - name: project
@@ -34,7 +33,7 @@ configuration:
   type: 8
   additionalinfo:
 - name: credentials
-  display: Credentials
+  display: Username
   required: true
   defaultvalue:
   type: 9
@@ -269,7 +268,7 @@ script:
     deprecated: false
     arguments:
     - name: id
-      description: Container profile ID
+      description: Container profile ID, can be retrieved from 'prisma-cloud-compute-profile-container-list' command.
       required: true
       isArray: false
       defaultValue: ""
@@ -296,7 +295,7 @@ script:
     deprecated: false
     arguments:
     - name: id
-      description: The container ID.
+      description: The container ID, can be retrieved from 'prisma-cloud-compute-profile-container-list' command.
       required: true
       isArray: false
       defaultValue: ""
@@ -416,7 +415,7 @@ script:
     deprecated: false
     arguments:
     - name: id
-      description: host ID
+      description: host ID, can be retrieved from 'prisma-cloud-compute-profile-host-list' command.
       required: true
       isArray: false
       defaultValue: ""
