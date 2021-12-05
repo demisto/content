@@ -22,9 +22,9 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| QRadarBlackListUrlReferenceSetName | The name of the QRadar black list Url reference set to insert the data in to. |  | Optional |
+| QRadarBlackListUrlReferenceSetName | The name of the QRadar block list Url reference set to insert the data in to. |  | Optional |
 | Indicator Query | Indicators matching the indicator query will be used as playbook input |  | Optional |
-| QRadarWhiteListUrlReferenceSetName | The name of the QRadar white list Url reference set to insert the data in to. |  | Optional |
+| QRadarWhiteListUrlReferenceSetName | The name of the QRadar allow list Url reference set to insert the data in to. |  | Optional |
 | QRadarWatchListUrlReferenceSetName | The name of the QRadar watch list Url reference set to insert the data in to. |  | Optional |
 
 ## Playbook Outputs
