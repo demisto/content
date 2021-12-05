@@ -1553,8 +1553,8 @@ def fetch_incidents(client, project: str, repository: str, integration_instance:
 def main() -> None:
     params: Dict[str, Any] = demisto.params()
     args: Dict[str, Any] = demisto.args()
-    client_id = params['credentials']['password']
-    organization = params['credentials']['identifier']
+    client_id = params['client_id']
+    organization = params['organization']
     verify_certificate: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     is_mirroring = params.get('is_mirroring', False)

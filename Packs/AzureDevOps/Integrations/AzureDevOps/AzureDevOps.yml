@@ -3,11 +3,17 @@ commonfields:
   id: AzureDevOps
   version: -1
 configuration:
-- display: Organizaion name
-  displaypassword: App Registration Client ID
-  name: credentials
+- additionalinfo: App Registration Client ID
+  defaultvalue: '8f8ed6e7-3207-4ebd-885d-6413b601088c'
+  display: Client ID
+  name: client_id
   required: true
-  type: 9
+  type: 0
+- additionalinfo: Organizaion name
+  display: Organization
+  name: organization
+  required: true
+  type: 0
 - additionalinfo: Default is 50. Maximum is 200.
   defaultvalue: '50'
   display: Maximum incidents for one fetch.
