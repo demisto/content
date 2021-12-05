@@ -167,7 +167,7 @@ def block_ip_command(args):
             errors.append('Failed to block ip: {} error: {}'.format(ip, error))
         else:
             results.append(ip_result)
-    if ip_result:
+    if results:
         readable_outputs = tableToMarkdown('Block IP',
                                            results,
                                            ['Result'],
@@ -236,21 +236,19 @@ def blacklist_ip_command(args):
         except Exception as error:
             demisto.error('failed adding ip: {} to balcklist\n{}'.format(ip, traceback.format_exc()))
             errors.append('Failed to add ip: {} to blacklist error: {}'.format(ip, error))
-        except SystemExit:
-            # exception was handled with return_error
-            pass
         else:
             results.append(ip_result)
 
-    readable_outputs = tableToMarkdown('Blacklist IP',
-                                       results,
-                                       ['Result'],
-                                       removeNull=True)
+    if results:
+        readable_outputs = tableToMarkdown('Blacklist IP',
+                                           results,
+                                           ['Result'],
+                                           removeNull=True)
 
-    return_results(CommandResults(
-        outputs=results, readable_output=readable_outputs,
-        outputs_prefix='IP(val.Address === obj.Address).Address'
-    ))
+        return_results(CommandResults(
+            outputs=results, readable_output=readable_outputs,
+            outputs_prefix='IP(val.Address === obj.Address).Address'
+        ))
     if errors:
         return_error('\n'.join(errors))
 

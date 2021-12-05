@@ -418,7 +418,7 @@ def adjust_alert_human_readable(entry_context_with_spaces, entry_context):
 
 def check_ip_is_valid(ip):
     if not is_ip_valid(ip):
-        return_error(f"Error: {ip} is invalid IP. Please enter a valid IP address")
+        return_error("Error: {} is invalid IP. Please enter a valid IP address".format(ip))
 
 
 def gen_entries_data_for_update_list_request(entries_list, method):
