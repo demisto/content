@@ -812,6 +812,8 @@ class MsGraphClient:
         if attachments:
             parsed_email['Attachments'] = attachments
 
+        parsed_email['Mailbox'] = self._mailbox_to_fetch
+
         incident = {
             'name': parsed_email['Subject'],
             'details': email.get('bodyPreview', '') or parsed_email['Body'],
