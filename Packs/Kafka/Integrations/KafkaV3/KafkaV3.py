@@ -665,7 +665,7 @@ def get_fetch_topic_partitions(kafka: KafkaCommunicator, topic: str, offset: Uni
 
     topic_partitions_in_system = []
 
-    demisto.debug(f"Going over last fetched offsets")
+    demisto.debug("Going over last fetched offsets")
     for partition in last_fetched_offsets.keys():
         specific_offset = last_fetched_offsets.get(partition, offset)
         topic_partitions_in_system += get_topic_partition_if_relevant(kafka, topic, partition, specific_offset)
