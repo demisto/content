@@ -125,10 +125,16 @@ def format_url(non_formatted_url: str) -> str:
     return formatted_url
 
 
+# def unshorten_url(url):
+#     return requests.head(url, allow_redirects=True).url
 def main():
     try:
-        non_formatted_urls: List[str] = [format_url(url_.strip()) for url_ in argToList(demisto.args().get('input'))]
-        return_results(CommandResults(outputs_prefix='URL', outputs=non_formatted_urls))
+        non_formatted_urls: List[Dict] = [{
+            "Type": entryTypes["note"],
+            "ContentsFormat": formats["json"],
+            "Contents": [format_url(url_.strip())]
+        } for url_ in argToList(demisto.args().get('input'))]
+        demisto.results(non_formatted_urls)
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute ExtractURL. Error: {str(e)}')
