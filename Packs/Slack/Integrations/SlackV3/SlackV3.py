@@ -1168,17 +1168,20 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
                 investigation_id = mirror['investigation_id']
                 # Post to the warroom
                 if event.get('subtype') == 'file_share':
-                    for file_obj in event.get('files', []):
-                        data = await get_file(ASYNC_CLIENT, file_obj.get('url_private'))
-                        name = file_obj.get('name')
-                        file_ = fileResult(name, data, investigation_id=investigation_id)
-                        demisto.debug('after file result')
-                        demisto.debug(f'{file_=}')
-                        await handle_file(
-                            investigation_id,
-                            file_,
-                            user  # type: ignore
-                        )
+                    if is_demisto_version_ge('7.0.0'):  # Feature supported on version 7 and up
+                        files = event.get('files', [])
+                        demisto.debug(f'Found {len(files)=} in file_share')
+                        for file_obj in files:
+                            data = await get_file(ASYNC_CLIENT, file_obj.get('url_private'))
+                            name = file_obj.get('name')
+                            file_ = fileResult(name, data, investigation_id=investigation_id)
+                            await handle_file(
+                                investigation_id,
+                                file_,
+                                user  # type: ignore
+                            )
+                    else:
+                        demisto.debug('Found files but server version is below 7.0.0')
 
                 else:
                     await handle_text(ASYNC_CLIENT, investigation_id, text, user)  # type: ignore
