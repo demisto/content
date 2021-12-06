@@ -173,6 +173,16 @@ script:
   - arguments:
     - description: Commit description.
       name: description
+    - description: To commit admin-level changes on a firewall, include the administrator
+        name in the request.
+      name: admin_name
+    - description: (True/False) Force Commit
+      name: force_commit
+    - description: Partial commit while excluding shared objects and device and network configuration.
+      name: exclude_device_network_configuration
+    - description: (True/False) Partial commit while excluding shared objects and
+        device and network configuration.
+      name: exclude_shared_objects
     description: Commits a configuration to the Palo Alto firewall or Panorama, but
       does not validate if the commit was successful. Committing to Panorama does
       not push the configuration to the firewalls. To push the configuration, run
@@ -205,7 +215,10 @@ script:
       - 'false'
     - description: Push description.
       name: description
-    description: Pushes rules from PAN-OS to the configured device group. In order to push the configuration to Prisma Access managed tenants (single or multi tenancy), use the device group argument with the device group which is associated with the tenant ID.
+    description: Pushes rules from PAN-OS to the configured device group. In order
+      to push the configuration to Prisma Access managed tenants (single or multi
+      tenancy), use the device group argument with the device group which is associated
+      with the tenant ID.
     name: panorama-push-to-device-group
     outputs:
     - contextPath: Panorama.Push.DeviceGroup
@@ -925,7 +938,7 @@ script:
       description: URL to check.
       isArray: true
       name: url
-      required: false
+      required: true
     description: Gets a URL category from URL filtering.
     execution: false
     name: url
@@ -1869,7 +1882,8 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: Timeout value to automatically unregister the IPs. Only applicable to PAN-OS 9.x and higher. Can not be used with persistent as true.
+    - description: Timeout value to automatically unregister the IPs. Only applicable
+        to PAN-OS 9.x and higher. Can not be used with persistent as true.
       name: timeout
     description: Registers IP addresses to a tag.
     name: panorama-register-ip-tag

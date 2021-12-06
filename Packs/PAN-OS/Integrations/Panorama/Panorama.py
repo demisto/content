@@ -497,13 +497,37 @@ def panorama_command(args: dict):
 @logger
 def panorama_commit(args):
     command: str = ''
+    is_partial = False
     if device_group := args.get('device-group'):
         command += f'<device-group><entry name="{device_group}"/></device-group>'
+
+    admin_name = args.get('admin_name')
+    if admin_name:
+        is_partial = True
+        command += f'<partial><admin><member>{admin_name}</member></admin></partial>'
+
+    force_commit = argToBoolean(args.get('force_commit'))
+    if force_commit:
+        command += '<force></force>'
+
+    exclude_device_network_configuration = args.get('exclude_device_network_configuration')
+    if exclude_device_network_configuration:
+        is_partial = True
+        command += '<partial><device-and-network>excluded</device-and-network></partial>'
+
+    exclude_shared_objects = args.get('exclude_shared_objects')
+    if exclude_shared_objects:
+        is_partial = True
+        command += '<partial><shared-object>excluded</shared-object></partial>'
+
     params = {
         'type': 'commit',
         'cmd': f'<commit>{command}</commit>',
         'key': API_KEY
     }
+    if is_partial:
+        params['action'] = 'partial'
+
     result = http_request(
         URL,
         'POST',

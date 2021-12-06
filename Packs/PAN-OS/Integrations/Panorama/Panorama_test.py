@@ -762,3 +762,4 @@ class TestPanoramaEditRuleCommand:
 
         with pytest.raises(DemistoException):
             Panorama.panorama_edit_rule_command(args)
+
