@@ -4,7 +4,7 @@
     "priority": "first_match",
     "context": null,
     "flags": "",
-    "comparison_fields": "",
+    "compare_fields": "",
     "mappings": {
       "Unknown": 0,
       "Informational|Info": 0.5,
@@ -27,7 +27,7 @@
     "priority": "first_match",
     "context": null,
     "flags": "",
-    "comparison_fields": "",
+    "compare_fields": "",
     "mappings": [{
         "Unknown": 0,
         "Informational|Info": 0.5,
@@ -51,7 +51,7 @@
     "priority": "first_match",
     "context": null,
     "flags": "",
-    "comparison_fields": "",
+    "compare_fields": "",
     "mappings": {
       "*Low*": "low",
       "*Medium*": "medium",
@@ -72,7 +72,7 @@
     "priority": "first_match",
     "context": null,
     "flags": "",
-    "comparison_fields": "",
+    "compare_fields": "",
     "mappings": {
       "( *(Re: *|Fw: *)*)(.*)": "\\3"
     },
@@ -90,7 +90,7 @@
     "priority": "first_match",
     "context": null,
     "flags": "",
-    "comparison_fields": "",
+    "compare_fields": "",
     "mappings": {
       "([^@]+)@.+": "\\1",
       "[^\\\\]+\\\\(.+)": "\\1",
@@ -117,7 +117,7 @@
     "priority": "first_match",
     "context": null,
     "flags": "",
-    "comparison_fields": "",
+    "compare_fields": "",
     "mappings": {
       "\"(.*)\"": {
         "output": "\\1",
@@ -162,7 +162,7 @@
     "priority": "first_match",
     "context": null,
     "flags": "",
-    "comparison_fields": "",
+    "compare_fields": "",
     "mappings":
     [{
         "([^.]+)\\.([^@]+)@.+": {
@@ -191,7 +191,7 @@
     "priority": "first_match",
     "context": null,
     "flags": "",
-    "comparison_fields": "",
+    "compare_fields": "",
     "mappings": {
       "(\\d{4})-(\\d{2})-(\\d{2})T(\\d{2}):(\\d{2}):(\\d{2})(\\.\\d+)?Z": "\\1-\\2-\\3 \\4:\\5:\\6 GMT",
       "[^,]+, (\\d{1,2}) ([^ ]+) (\\d{4}) (\\d{2}):(\\d{2}):(\\d{2}) ([^ ]+)": {
@@ -301,7 +301,7 @@
     "priority": "first_match",
     "context": null,
     "flags": "",
-    "comparison_fields": "IP, Host",
+    "compare_fields": "true",
     "mappings": {
       "IP": {
         "127.*": "localhost"
@@ -334,9 +334,9 @@
     "priority": "first_match",
     "context": null,
     "flags": "",
-    "comparison_fields": "I\\.P, Host",
+    "compare_fields": "true",
     "mappings": {
-      "I.P": {
+      "I\\.P": {
         "127.*": "localhost"
       },
       "Host": {
@@ -367,7 +367,7 @@
     "priority": "first_match",
     "context": {},
     "flags": "",
-    "comparison_fields": "score",
+    "compare_fields": "true",
     "mappings": {
       "score": {
         "1": "low - ${.value}",
@@ -396,12 +396,12 @@
     "priority": "first_match",
     "context": {},
     "flags": "",
-    "comparison_fields": "a",
+    "compare_fields": "true",
     "mappings": {
       "a": {
         "aaa": {
           "output": null,
-          "comparison_fields": "b",
+          "compare_fields": true,
           "next": {
             "b": {
               "bbb": "xxx"
