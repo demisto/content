@@ -84,11 +84,11 @@ def test_convert_to_incident():
 
 
 @pytest.mark.parametrize(
-    'time_to_fetch_from, mail_service, permitted_from_addresses, permitted_from_domains, uid_to_fetch_from, expected_query',
+    'time_to_fetch_from, with_header, permitted_from_addresses, permitted_from_domains, uid_to_fetch_from, expected_query',
     [
         (
             datetime(year=2020, month=10, day=1),
-            'Gmail',
+            False,
             ['test1@mail.com', 'test2@mail.com'],
             ['test1.com', 'domain2.com'],
             4,
@@ -112,7 +112,7 @@ def test_convert_to_incident():
         ),
         (
             datetime(year=2020, month=10, day=1),
-            'Office365',
+            True,
             ['test1@mail.com', 'test2@mail.com'],
             ['test1.com', 'domain2.com'],
             4,
@@ -152,7 +152,7 @@ def test_convert_to_incident():
     ]
 )
 def test_generate_search_query(
-        time_to_fetch_from, mail_service, permitted_from_addresses, permitted_from_domains, uid_to_fetch_from, expected_query
+        time_to_fetch_from, with_header, permitted_from_addresses, permitted_from_domains, uid_to_fetch_from, expected_query
 ):
     """
     Given:
@@ -170,7 +170,7 @@ def test_generate_search_query(
     """
     from MailListenerV2 import generate_search_query
     assert generate_search_query(
-        time_to_fetch_from, mail_service, permitted_from_addresses, permitted_from_domains, uid_to_fetch_from
+        time_to_fetch_from, with_header, permitted_from_addresses, permitted_from_domains, uid_to_fetch_from
     ) == expected_query
 
 
