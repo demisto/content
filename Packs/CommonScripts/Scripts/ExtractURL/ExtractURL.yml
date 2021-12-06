@@ -1,26 +1,24 @@
 args:
 - default: false
-  description: '[Enter a description of the argument, including any important information
-    users need to know, for example, default values.]'
-  isArray: false
-  name: dummy
+  description: URL inputs. Comma separated list.
+  isArray: true
+  name: input
   required: true
   secret: false
-comment: '[Enter a description of the script, including what function it performs
-  and any important information users need to know, for example required permissions.]'
+comment: Formats URL to indicator. Expands short URLs, extracts redirect URL from Proof Point or ATP URLs. Strips and unquotes and unescapes URLs
 commonfields:
   id: ExtractURL
   version: -1
 enabled: false
 name: ExtractURL
 outputs:
-- contextPath: BaseScript.Output
-  description: '[Enter a description of the data returned in this output.]'
-  type: String
+- contextPath: URL
+  description: URLs formatted.
+  type: Unknown
 script: '-'
 system: false
 tags:
-- basescript
+- indicator-format
 timeout: '0'
 type: python
 subtype: python3
