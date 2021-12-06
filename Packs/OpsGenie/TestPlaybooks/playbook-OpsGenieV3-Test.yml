@@ -67,10 +67,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 8316e3ef-b750-434b-823b-36b5db7052f1
+    taskid: 8404464c-d453-4581-84ac-cd9cc87223d4
     type: regular
     task:
-      id: 8316e3ef-b750-434b-823b-36b5db7052f1
+      id: 8404464c-d453-4581-84ac-cd9cc87223d4
       version: -1
       name: opsgenie-create-alert
       script: OpsGenieV3|||opsgenie-create-alert
@@ -85,6 +85,7 @@ tasks:
         simple: "5"
       message:
         simple: test_playbook
+    continueonerror: true
     separatecontext: false
     view: |-
       {
@@ -102,10 +103,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 318c2689-c4ec-4035-84c2-28e6795c9519
+    taskid: 47868cf0-7e9b-4aea-8af4-24f4bbec3739
     type: condition
     task:
-      id: 318c2689-c4ec-4035-84c2-28e6795c9519
+      id: 47868cf0-7e9b-4aea-8af4-24f4bbec3739
       version: -1
       name: Verify Outputs
       type: condition
@@ -170,14 +171,6 @@ tasks:
           right:
             value:
               simple: error
-      - - operator: containsString
-          left:
-            value:
-              simple: incident.errormessage
-            iscontext: true
-          right:
-            value:
-              simple: '"Request not found. It might not be processed, yet."'
     view: |-
       {
         "position": {
@@ -216,7 +209,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 275,
           "y": 1595
         }
       }
@@ -338,7 +331,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 275,
           "y": 1770
         }
       }
@@ -371,7 +364,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 275,
           "y": 3345
         }
       }
@@ -443,7 +436,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 275,
           "y": 3520
         }
       }
@@ -476,7 +469,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 275,
           "y": 895
         }
       }
@@ -548,7 +541,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 275,
           "y": 1070
         }
       }
@@ -581,7 +574,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 275,
           "y": 2995
         }
       }
@@ -653,7 +646,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 275,
           "y": 3170
         }
       }
@@ -688,7 +681,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 275,
           "y": 1245
         }
       }
@@ -762,7 +755,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 275,
           "y": 1420
         }
       }
@@ -797,7 +790,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 275,
           "y": 1945
         }
       }
@@ -843,7 +836,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 275,
           "y": 2120
         }
       }
@@ -878,7 +871,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 275,
           "y": 2295
         }
       }
@@ -950,7 +943,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 275,
           "y": 2470
         }
       }
@@ -985,7 +978,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 275,
           "y": 2645
         }
       }
@@ -1057,7 +1050,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 275,
           "y": 2820
         }
       }
@@ -1104,10 +1097,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 332c11f3-c834-4e29-8b9b-f44f0b9beba6
+    taskid: aebf19e4-b2ac-4ec8-8725-30d752cf9c1c
     type: condition
     task:
-      id: 332c11f3-c834-4e29-8b9b-f44f0b9beba6
+      id: aebf19e4-b2ac-4ec8-8725-30d752cf9c1c
       version: -1
       name: Verify Outputs
       type: condition
@@ -1167,14 +1160,6 @@ tasks:
           right:
             value:
               simple: error
-      - - operator: containsString
-          left:
-            value:
-              simple: incident.errormessage
-            iscontext: true
-          right:
-            value:
-              simple: '"Request not found. It might not be processed, yet."'
     view: |-
       {
         "position": {
@@ -1211,7 +1196,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 50,
           "y": 6145
         }
       }
@@ -1273,7 +1258,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 50,
           "y": 6320
         }
       }
@@ -1306,7 +1291,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 50,
           "y": 5095
         }
       }
@@ -1378,7 +1363,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 50,
           "y": 5270
         }
       }
@@ -1411,7 +1396,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 50,
           "y": 5795
         }
       }
@@ -1473,7 +1458,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 50,
           "y": 5970
         }
       }
@@ -1506,7 +1491,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 50,
           "y": 5445
         }
       }
@@ -1568,7 +1553,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 50,
           "y": 5620
         }
       }
@@ -1603,7 +1588,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 50,
           "y": 4045
         }
       }
@@ -1665,7 +1650,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 50,
           "y": 4220
         }
       }
@@ -1700,7 +1685,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 50,
           "y": 4395
         }
       }
@@ -1762,7 +1747,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 50,
           "y": 4570
         }
       }
@@ -1797,7 +1782,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 50,
           "y": 4745
         }
       }
@@ -1859,7 +1844,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 50,
           "y": 4920
         }
       }
@@ -1916,7 +1901,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 275,
           "y": 720
         }
       }
