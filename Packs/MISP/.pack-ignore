@@ -6,3 +6,5 @@ ignore=RM106
 
 [file:playbook-MISP_V2-Test.yml]
 ignore=auto-test
+[file:1_0_1.md]
+ignore=RM104
