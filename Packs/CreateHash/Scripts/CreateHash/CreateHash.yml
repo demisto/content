@@ -1,0 +1,44 @@
+args:
+- name: text
+  required: true
+- auto: PREDEFINED
+  defaultValue: sha256
+  name: type
+  predefined:
+  - sha256
+  - md5
+  - sha1
+  - blake
+  required: true
+comment: |
+  Creating a hash of a given input, support sha1, sha256, md5 and blake. Wrapper for https://docs.python.org/3/library/hashlib.html
+commonfields:
+  id: 9cccda25-915e-4caa-8bc6-de52520c94db
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 0fb72607-efcd-42c4-8d13-10dc82acd9a7
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dockerimage: demisto/python3:3.9.8.24399
+enabled: true
+engineinfo: {}
+name: CreateHash
+outputs:
+- contextPath: CreateHash
+  type: string
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- transformer
+- Utilities
+- hash
+type: python
