@@ -444,6 +444,7 @@ function trigger_circle_ci {
 # :packs: CSV list of pack IDs.
 # :slack_channel: A slack channel to send notifications to.
 function trigger_gitlab_ci {
+  git push gitlab "${new_content_branch}"
   trigger_build_url="https://code.pan.run/api/v4/projects/2596/trigger/pipeline"  # disable-secrets-detection
 
   variables="variables[BUCKET_UPLOAD]=true"
@@ -546,6 +547,7 @@ done
 cd "${CONTENT_PATH}" || fail
 
 check_arguments
+git remote add gitlab https://code.pan.run/xsoar/content.git
 
 # If production flag is set - upload master branch
 if [ -n "$production" ]; then
