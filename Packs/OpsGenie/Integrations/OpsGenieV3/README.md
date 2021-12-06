@@ -17,7 +17,7 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
     | Fetch incidents |  | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
     | Max Fetch |  | False |
-    | Event types | Fetch only events with selected event types. | True |
+    | Event types | Fetch only events with selected event types. | False |
     | Status | Fetch only events with selected status. If query is used, this parameter will be overridden. | False |
     | Priority | Fetch only events with selected priority. If query is used, this parameter will be overridden. | False |
     | Tags | Fetch only events with selected tags. If query is used, this parameter will be overridden. | False |

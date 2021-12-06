@@ -35,7 +35,7 @@ configuration:
   - All
   - Alerts
   - Incidents
-  required: true
+  required: false
   type: 16
 - display: Status
   name: status
