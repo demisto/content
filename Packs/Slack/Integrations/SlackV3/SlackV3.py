@@ -132,29 +132,8 @@ def get_user_by_name(user_to_search: str, add_to_context: bool = True) -> dict:
     integration_context = get_integration_context(SYNC_CONTEXT)
     user: dict = {}
     users: list = []
+    user_to_context: dict = {}
     user_to_search = user_to_search.lower()
-    if re.match(emailRegex, user_to_search):
-        body = {
-            'email': user_to_search
-        }
-        response = send_slack_request_sync(CLIENT, 'users.lookupByEmail', http_verb='GET', body=body)
-        user = response.get('user', {})
-        user_to_context = {
-            'name': user.get('name'),
-            'id': user.get('id'),
-            'real_name': user.get('real_name', ''),
-            'profile': {
-                'email': user.get('email', '')
-            }
-        }
-        if integration_context.get('users'):
-            users = json.loads(integration_context['users'])
-            users.append(user_to_context)
-
-        else:
-            users = [user_to_context]
-        set_to_integration_context_with_retries({'users': users}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
-        return user_to_context
     if integration_context.get('users'):
         users = json.loads(integration_context['users'])
         users_filter = list(filter(lambda u: u.get('name', '').lower() == user_to_search
@@ -162,6 +141,31 @@ def get_user_by_name(user_to_search: str, add_to_context: bool = True) -> dict:
                                              or u.get('real_name', '').lower() == user_to_search, users))
         if users_filter:
             user = users_filter[0]
+    if not user and re.match(emailRegex, user_to_search):
+        _body = {
+            'email': user_to_search
+        }
+        response = send_slack_request_sync(CLIENT, 'users.lookupByEmail', http_verb='GET', body=_body)
+        user = response.get('user', {})
+        if user:
+            user_to_context = {
+                'name': user.get('name'),
+                'id': user.get('id'),
+                'profile': {
+                    'email': user.get('profile', {}).get('email')
+                }
+            }
+            if integration_context.get('users'):
+                users = json.loads(integration_context['users'])
+                users.append(user_to_context)
+
+            else:
+                users = [user_to_context]
+            set_to_integration_context_with_retries({'users': users}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+        if user_to_context:
+            return user_to_context
+        else:
+            return {}
     if not user:
         body = {
             'limit': PAGINATED_COUNT
@@ -191,7 +195,7 @@ def get_user_by_name(user_to_search: str, add_to_context: bool = True) -> dict:
                     'id': user.get('id'),
                     'real_name': user.get('real_name', ''),
                     'profile': {
-                        'email': user.get('email', '')
+                        'email': user.get('profile', {}).get('email', '')
                     }
                 }
                 users.append(user_to_context)
@@ -2156,7 +2160,7 @@ def init_globals(command_name: str = ''):
     if common_channels:
         COMMON_CHANNELS = dict(item.split(':') for item in common_channels.split(','))
     else:
-        COMMON_CHANNELS = None
+        COMMON_CHANNELS = {}
 
 
 def print_thread_dump():

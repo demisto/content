@@ -411,7 +411,6 @@ def test_get_user_by_name(mocker):
     # Set
 
     def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
-        users = {'members': js.loads(USERS)}
         new_user = {
             'name': 'perikles',
             'profile': {
@@ -419,9 +418,12 @@ def test_get_user_by_name(mocker):
             },
             'id': 'U012B3CUI'
         }
-
-        users['members'].append(new_user)
-        return users
+        if method == 'users.list':
+            users = {'members': js.loads(USERS)}
+            users['members'].append(new_user)
+            return users
+        elif method == 'users.lookupByEmail':
+            return {'user': new_user}
 
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
@@ -1078,9 +1080,19 @@ def test_check_for_mirrors(mocker):
     }
 
     def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
-        users = {'members': js.loads(USERS)}
-        users['members'].append(new_user)
-        return users
+        new_user = {
+            'name': 'perikles',
+            'profile': {
+                'email': 'perikles@acropoli.com',
+            },
+            'id': 'U012B3CUI'
+        }
+        if method == 'users.list':
+            users = {'members': js.loads(USERS)}
+            users['members'].append(new_user)
+            return users
+        elif method == 'users.lookupByEmail':
+            return {'user': new_user}
 
     # Set
     mirrors = js.loads(MIRRORS)
@@ -1125,7 +1137,7 @@ def test_check_for_mirrors(mocker):
     check_for_mirrors()
 
     calls = slack_sdk.WebClient.api_call.call_args_list
-    users_call = [c for c in calls if c[0][0] == 'users.list']
+    users_call = [c for c in calls if c[0][0] == 'users.lookupByEmail']
     invite_call = [c for c in calls if c[0][0] == 'conversations.invite']
 
     mirror_id = demisto.mirrorInvestigation.call_args[0][0]
@@ -1148,7 +1160,7 @@ def test_check_for_mirrors(mocker):
     assert len(invite_call) == 2
     assert invited_users == ['U012A3CDE', 'U012B3CUI']
     assert channel == ['new_group', 'new_group']
-    assert demisto.setIntegrationContext.call_count == 1
+    assert demisto.setIntegrationContext.call_count == 2
     assert len(our_mirror_filter) == 1
     assert our_mirror == new_mirror
     assert len(our_user_filter) == 1
@@ -1178,7 +1190,6 @@ def test_check_for_mirrors_email_user_not_matching(mocker):
     from SlackV3 import check_for_mirrors
 
     def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
-        users = {'members': js.loads(USERS)}
         new_user = {
             'name': 'nope',
             'profile': {
@@ -1186,9 +1197,12 @@ def test_check_for_mirrors_email_user_not_matching(mocker):
             },
             'id': 'U012B3CUI'
         }
-
-        users['members'].append(new_user)
-        return users
+        if method == 'users.list':
+            users = {'members': js.loads(USERS)}
+            users['members'].append(new_user)
+            return users
+        elif method == 'users.lookupByEmail':
+            return {'user': new_user}
 
     # Set
     mirrors = js.loads(MIRRORS)
@@ -1222,12 +1236,12 @@ def test_check_for_mirrors_email_user_not_matching(mocker):
     check_for_mirrors()
 
     calls = slack_sdk.WebClient.api_call.call_args_list
-    users_call = [c for c in calls if c[0][0] == 'users.list']
+    users_call = [c for c in calls if c[0][0] == 'users.lookupByEmail']
     invite_call = [c for c in calls if c[0][0] == 'conversations.invite']
 
     invited_users = [c[1]['json']['users'] for c in invite_call]
     channel = [c[1]['json']['channel'] for c in invite_call]
-    assert demisto.setIntegrationContext.call_count == 1
+    assert demisto.setIntegrationContext.call_count == 2
 
     # Assert
     assert len(users_call) == 1
@@ -1302,7 +1316,6 @@ def test_check_for_mirrors_user_email_not_matching(mocker):
     from SlackV3 import check_for_mirrors
 
     def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
-        users = {'members': js.loads(USERS)}
         new_user = {
             'name': 'perikles',
             'profile': {
@@ -1310,9 +1323,12 @@ def test_check_for_mirrors_user_email_not_matching(mocker):
             },
             'id': 'U012B3CUI'
         }
-
-        users['members'].append(new_user)
-        return users
+        if method == 'users.list':
+            users = {'members': js.loads(USERS)}
+            users['members'].append(new_user)
+            return users
+        elif method == 'users.lookupByEmail':
+            return {'user': {}}
 
     # Set
     mirrors = js.loads(MIRRORS)
@@ -1347,7 +1363,7 @@ def test_check_for_mirrors_user_email_not_matching(mocker):
     check_for_mirrors()
 
     calls = slack_sdk.WebClient.api_call.call_args_list
-    users_call = [c for c in calls if c[0][0] == 'users.list']
+    users_call = [c for c in calls if c[0][0] == 'users.lookupByEmail']
     invite_call = [c for c in calls if c[0][0] == 'conversations.invite']
 
     invited_users = [c[1]['json']['users'] for c in invite_call]
@@ -1358,7 +1374,7 @@ def test_check_for_mirrors_user_email_not_matching(mocker):
     # Assert
     assert demisto.setIntegrationContext.call_count == 1
     assert error_results[0]['Contents'] == 'User 123 not found in Slack'
-    assert len(users_call) == 2
+    assert len(users_call) == 1
     assert len(invite_call) == 1
     assert invited_users == ['U012A3CDE']
     assert channel == ['new_group']
@@ -2877,7 +2893,7 @@ def test_get_conversation_by_name_paging(mocker):
 
     def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'conversations.list':
-            if len(params) == 2:
+            if len(params) == 3:
                 return {'channels': js.loads(CONVERSATIONS), 'response_metadata': {
                     'next_cursor': 'dGVhbTpDQ0M3UENUTks='
                 }}
@@ -2899,9 +2915,9 @@ def test_get_conversation_by_name_paging(mocker):
 
     # Assert
     assert args[0][0][0] == 'conversations.list'
-    assert len(first_args['params']) == 2
+    assert len(first_args['params']) == 3
     assert first_args['params']['limit'] == 200
-    assert len(second_args['params']) == 3
+    assert len(second_args['params']) == 4
     assert second_args['params']['cursor'] == 'dGVhbTpDQ0M3UENUTks='
     assert channel['id'] == 'C248918AB'
     assert slack_sdk.WebClient.api_call.call_count == 2
