@@ -3470,7 +3470,6 @@ def change_ctx_to_be_compatible_with_retry() -> None:
 
 
 def threads_dumper():
-    time.sleep(5.0)
     code = []
     for threadId, stack in sys._current_frames().items():
         code.append("\n# ThreadID: %s" % threadId)
@@ -3479,9 +3478,8 @@ def threads_dumper():
             if line:
                 code.append("  %s" % (line.strip()))
 
-    with open('/var/tmp/thread_dump.txt', 'a') as thread_dump_file:
-        thread_dump_msg = '\n\n--- ' + datetime.today().strftime('%Y-%m-%d-%H:%M:%S') + ' Start Threads Dump ---\n' + '\n'.join(code) + '\n\n--- End Threads Dump ---\n'
-        thread_dump_file.write(thread_dump_msg)
+    thread_dump_msg = '\n\n--- ' + datetime.today().strftime('%Y-%m-%d-%H:%M:%S') + ' Start Threads Dump ---\n' + '\n'.join(code) + '\n\n--- End Threads Dump ---\n'
+    demisto.info(thread_dump_msg)
 
 
 def signal_handler(sig, frame):
@@ -3655,6 +3653,6 @@ def main() -> None:
 ''' ENTRY POINT '''
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
-    main()
     register_signal_handler()
+    main()
     change_ctx_to_be_compatible_with_retry()
