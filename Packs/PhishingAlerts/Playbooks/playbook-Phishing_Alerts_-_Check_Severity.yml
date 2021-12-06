@@ -187,7 +187,7 @@ tasks:
       id: 623fb688-3b61-4f36-8ad5-03e3c85edce9
       version: -1
       name: Set incident severity to "High"
-      description: Sets the incident severity to "Critical".
+      description: Sets the incident severity to "High".
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -197,7 +197,7 @@ tasks:
       - "6"
     scriptarguments:
       severity:
-        simple: critical
+        simple: high
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -409,8 +409,7 @@ tasks:
       id: 85dc6008-922c-4f8b-89f9-9794bfd6a728
       version: -1
       name: Set incident severity to "Critical"
-      description: Optionally increases the incident severity to the new value if
-        it is greater than the existing severity.
+      description: Set the incident severity to "Critical"
       scriptName: IncreaseIncidentSeverity
       type: regular
       iscommand: false
