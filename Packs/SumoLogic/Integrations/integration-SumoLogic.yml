@@ -271,20 +271,9 @@ script:
             setLastRun({time: currentFetch});
             return JSON.stringify(incidents);
         case 'search':
-            query = args.query
-            var httpIndex = query.indexOf('http')
-            if (httpIndex != -1) {
-                var httpSubstring = query.substring(httpIndex)
-                var whitespaceIndex = httpSubstring.indexOf(' ')
-                var url = httpSubstring.substring(0, whitespaceIndex)
-                url = url.replace(/=/g, '\\\\=')
-                var beforeHttp = query.substring(0, httpIndex)
-                var afterWhitespace = query.substring(httpIndex + whitespaceIndex)
-                query = beforeHttp + url + afterWhitespace
-            }
             var headers = 'headers' in args ? argToList(args.headers) : undefined;
             var waitForSearchComplete = args.waitForSearchComplete == 'true';
-            var s = search(query, args.from, args.to, a2i(args.limit, defaultLimit), a2i(args.offset, 0), args.timezone,
+            var s = search(args.query, args.from, args.to, a2i(args.limit, defaultLimit), a2i(args.offset, 0), args.timezone,
                 a2i(args.maxTimeToWaitForResults, defaultSearchTimeout) * 60, args.byReceiptTime, a2i(params.sleepBetweenChecks, defaultSleep),
                 waitForSearchComplete);
             var md = '';
