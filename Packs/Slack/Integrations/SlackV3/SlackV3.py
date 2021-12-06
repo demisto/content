@@ -74,7 +74,7 @@ MAX_LIMIT_TIME: int
 PAGINATED_COUNT: int
 ENABLE_DM: bool
 PERMITTED_NOTIFICATION_TYPES: List[str]
-
+COMMON_CHANNELS: dict
 
 ''' HELPER FUNCTIONS '''
 
@@ -129,12 +129,32 @@ def get_user_by_name(user_to_search: str, add_to_context: bool = True) -> dict:
     Returns:
         A slack user object
     """
-
+    integration_context = get_integration_context(SYNC_CONTEXT)
     user: dict = {}
     users: list = []
-    integration_context = get_integration_context(SYNC_CONTEXT)
-
     user_to_search = user_to_search.lower()
+    if re.match(emailRegex, user_to_search):
+        body = {
+            'email': user_to_search
+        }
+        response = send_slack_request_sync(CLIENT, 'users.lookupByEmail', http_verb='GET', body=body)
+        user = response.get('user', {})
+        user_to_context = {
+            'name': user.get('name'),
+            'id': user.get('id'),
+            'real_name': user.get('real_name', ''),
+            'profile': {
+                'email': user.get('email', '')
+            }
+        }
+        if integration_context.get('users'):
+            users = json.loads(integration_context['users'])
+            users.append(user_to_context)
+
+        else:
+            users = [user_to_context]
+        set_to_integration_context_with_retries({'users': users}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+        return user_to_context
     if integration_context.get('users'):
         users = json.loads(integration_context['users'])
         users_filter = list(filter(lambda u: u.get('name', '').lower() == user_to_search
@@ -166,7 +186,15 @@ def get_user_by_name(user_to_search: str, add_to_context: bool = True) -> dict:
         if users_filter:
             user = users_filter[0]
             if add_to_context:
-                users.append(user)
+                user_to_context = {
+                    'name': user.get('name'),
+                    'id': user.get('id'),
+                    'real_name': user.get('real_name', ''),
+                    'profile': {
+                        'email': user.get('email', '')
+                    }
+                }
+                users.append(user_to_context)
                 set_to_integration_context_with_retries({'users': users}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
         else:
             return {}
@@ -493,7 +521,7 @@ def mirror_investigation():
                                                    body=body).get('channel', {})
             conversation_name = conversation.get('name')
             conversation_id = conversation.get('id')
-            conversations.append(conversation)
+            conversations.append({'name': conversation_name, 'id': conversation_id})
 
             # Get the bot ID so we can invite him
             if integration_context.get('bot_id'):
@@ -648,11 +676,8 @@ def answer_question(text: str, question: dict, email: str = ''):
 def check_for_unanswered_questions():
     integration_context = get_integration_context(SYNC_CONTEXT)
     questions = integration_context.get('questions', [])
-    users = integration_context.get('users', [])
     if questions:
         questions = json.loads(questions)
-    if users:
-        users = json.loads(users)
     now = get_current_utc_time()
     now_string = datetime.strftime(now, DATE_FORMAT)
     updated_questions = []
@@ -681,7 +706,7 @@ def check_for_unanswered_questions():
         question['last_poll_time'] = now_string
         updated_questions.append(question)
     if updated_questions:
-        set_to_integration_context_with_retries({'users': users, 'questions': questions}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+        set_to_integration_context_with_retries({'questions': questions}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
 
 
 def check_for_mirrors():
@@ -795,6 +820,7 @@ class SlackLogger:
 
     Essentially this converts Logger.info() to demisto.info()
     """
+
     def __init__(self):
         """
         Set the base level as debug. The server will handle the filtering as needed.
@@ -1175,7 +1201,15 @@ async def get_user_by_id_async(client: AsyncWebClient, user_id: str) -> dict:
         user = (
             await send_slack_request_async(client, 'users.info', http_verb='GET', body=body)).get(
             'user', {})
-        users.append(user)
+        user_to_context = {
+            'name': user.get('name'),
+            'id': user.get('id'),
+            'real_name': user.get('real_name', ''),
+            'profile': {
+                'email': user.get('email', '')
+            }
+        }
+        users.append(user_to_context)
         set_to_integration_context_with_retries({'users': users}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
 
     return user
@@ -1256,9 +1290,14 @@ def get_conversation_by_name(conversation_name: str) -> dict:
     Returns:
         The slack conversation
     """
-    integration_context = get_integration_context(SYNC_CONTEXT)
 
     conversation_to_search = conversation_name.lower()
+
+    if len(COMMON_CHANNELS) > 0:
+        if conversation_to_search in COMMON_CHANNELS:
+            return {'name': conversation_to_search, 'id': COMMON_CHANNELS[conversation_to_search]}
+
+    integration_context = get_integration_context(SYNC_CONTEXT)
     # Find conversation in the cache
     conversations = integration_context.get('conversations')
     if conversations:
@@ -1276,11 +1315,13 @@ def get_conversation_by_name(conversation_name: str) -> dict:
     # If not found in cache, search for it
     body = {
         'types': 'private_channel,public_channel',
+        'exclude_archived': True,
         'limit': PAGINATED_COUNT
     }
     response = send_slack_request_sync(CLIENT, 'conversations.list', http_verb='GET', body=body)
 
     conversation: dict = {}
+    conversation_to_context: dict = {}
     while True:
         conversations = response['channels'] if response and response.get('channels') else []
         cursor = response.get('response_metadata', {}).get('next_cursor')
@@ -1296,15 +1337,19 @@ def get_conversation_by_name(conversation_name: str) -> dict:
         response = send_slack_request_sync(CLIENT, 'conversations.list', http_verb='GET', body=body)
     if conversation_filter:
         conversation = conversation_filter[0]
+        conversation_to_context = {
+            'name': conversation.get('name'),
+            'id': conversation.get('id')
+        }
 
     # Save conversations to cache
-    if conversation:
+    if conversation_to_context:
         conversations = integration_context.get('conversations')
         if conversations:
             conversations = json.loads(conversations)
-            conversations.append(conversation)
+            conversations.append(conversation_to_context)
         else:
-            conversations = [conversation]
+            conversations = [conversation_to_context]
         set_to_integration_context_with_retries({'conversations': conversations}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
     return conversation
 
@@ -2074,7 +2119,7 @@ def init_globals(command_name: str = ''):
     global BOT_TOKEN, PROXY_URL, PROXIES, DEDICATED_CHANNEL, CLIENT
     global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, INCIDENT_TYPE, VERIFY_CERT, ENABLE_DM
     global BOT_NAME, BOT_ICON_URL, MAX_LIMIT_TIME, PAGINATED_COUNT, SSL_CONTEXT, APP_TOKEN, ASYNC_CLIENT
-    global PERMITTED_NOTIFICATION_TYPES
+    global PERMITTED_NOTIFICATION_TYPES, COMMON_CHANNELS
 
     VERIFY_CERT = not demisto.params().get('unsecure', False)
     if not VERIFY_CERT:
@@ -2107,6 +2152,11 @@ def init_globals(command_name: str = ''):
     PAGINATED_COUNT = int(demisto.params().get('paginated_count', '200'))
     ENABLE_DM = demisto.params().get('enable_dm', True)
     PERMITTED_NOTIFICATION_TYPES = demisto.params().get('permitted_notifications', [])
+    common_channels = demisto.params().get('common_channels', None)
+    if common_channels:
+        COMMON_CHANNELS = dict(item.split(':') for item in common_channels.split(','))
+    else:
+        COMMON_CHANNELS = None
 
 
 def print_thread_dump():
@@ -2175,7 +2225,6 @@ def main() -> None:
 
 
 ''' ENTRY POINT '''
-
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

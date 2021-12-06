@@ -101,6 +101,12 @@ configuration:
   name: enable_dm
   required: false
   type: 8
+- display: Common Channels
+  name: common_channels
+  type: 12
+  required: false
+  additionalinfo: For workspaces where a handful of channels are consistently being
+    used, you may add them as a CSV in the format ChannelName:ChannelID.
 description: Send messages and notifications to your Slack team.
 display: Slack v3
 name: SlackV3
