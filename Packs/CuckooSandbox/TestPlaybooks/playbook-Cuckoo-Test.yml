@@ -1,5 +1,13 @@
 id: CuckooTest
-version: -1
+version: 19
+contentitemexportablefields:
+  contentitemfields:
+    packID: CuckooSandbox
+    itemVersion: 1.0.3
+    fromServerVersion: 5.0.0
+    toServerVersion: ""
+    definitionid: ""
+vcShouldKeepItemLegacyProdMachine: false
 name: CuckooTest
 description: '-'
 starttaskid: "0"
@@ -22,7 +30,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 50
         }
       }
@@ -31,49 +39,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "1":
-    id: "1"
-    taskid: d7ceae7e-c3c3-49e0-8732-4bba92b898a1
-    type: regular
-    task:
-      id: d7ceae7e-c3c3-49e0-8732-4bba92b898a1
-      version: -1
-      name: Get file
-      description: getting file using get
-      scriptName: http
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      body: {}
-      filename: {}
-      headers: {}
-      insecure: {}
-      method:
-        simple: GET
-      password: {}
-      proxy: {}
-      saveAsFile: {}
-      unsecure: {}
-      url:
-        simple: https://github.com/demisto/content/raw/master/TestData/pdf_noeof.pdf
-      username: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
     taskid: 75939497-5b75-4c8f-8b16-bf477fef1cf8
@@ -90,19 +57,14 @@ tasks:
     nexttasks:
       '#none#':
       - "11"
-      - "1"
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 195
         }
       }
@@ -111,6 +73,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
     taskid: cbdc7b57-0b41-4899-8052-b213497c8ba2
@@ -143,8 +107,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 250,
-          "y": 570
+          "x": 50,
+          "y": 545
         }
       }
     note: false
@@ -152,6 +116,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
     taskid: 3c3292df-928f-4f76-8420-7e807943d127
@@ -168,8 +134,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 250,
-          "y": 1680
+          "x": 50,
+          "y": 1710
         }
       }
     note: false
@@ -177,6 +143,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
     taskid: 524dea14-df28-4eb1-80c8-b7942750e31f
@@ -205,8 +173,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 250,
-          "y": 1500
+          "x": 50,
+          "y": 1535
         }
       }
     note: false
@@ -214,6 +182,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
     taskid: 1b03ea0c-f492-46e4-8826-9461c12653af
@@ -233,8 +203,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 250,
-          "y": 740
+          "x": 50,
+          "y": 720
         }
       }
     note: false
@@ -242,6 +212,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
     taskid: 4841607b-bff5-4e59-8fcd-7c3f33b8ad7a
@@ -261,16 +233,12 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 250,
-          "y": 1330
+          "x": 50,
+          "y": 1360
         }
       }
     note: false
@@ -278,6 +246,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
     taskid: 80667489-737c-472c-8bb3-d833cdd69f29
@@ -295,25 +265,17 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      body: {}
-      filename: {}
-      headers: {}
-      insecure: {}
       method:
         simple: GET
-      password: {}
-      proxy: {}
       saveAsFile:
         simple: "yes"
-      unsecure: {}
       url:
         simple: https://github.com/demisto/content/raw/master/TestData/pdf-example-password.pdf
-      username: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 370
         }
       }
@@ -322,6 +284,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
     taskid: 4036a882-386c-47e5-864f-d47ca59a9638
@@ -349,7 +313,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 250,
+          "x": 50,
           "y": 865
         }
       }
@@ -358,6 +322,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
     taskid: 055ac125-4241-4e63-86ae-51de87ff3a77
@@ -384,8 +350,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 250,
-          "y": 1035
+          "x": 50,
+          "y": 1040
         }
       }
     note: false
@@ -393,6 +359,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
     taskid: 4696d91b-9baa-491c-872e-e58842ce7d10
@@ -404,7 +372,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -412,8 +379,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 250,
-          "y": 1190
+          "x": 50,
+          "y": 1215
         }
       }
     note: false
@@ -421,13 +388,16 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1695,
-        "width": 810,
+        "height": 1725,
+        "width": 380,
         "x": 50,
         "y": 50
       }

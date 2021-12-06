@@ -1,8 +1,15 @@
 id: Detonate File - Cuckoo
-version: -1
+version: 16
+contentitemexportablefields:
+  contentitemfields:
+    packID: CuckooSandbox
+    itemVersion: 1.0.3
+    fromServerVersion: 5.0.0
+    toServerVersion: ""
+    definitionid: ""
+vcShouldKeepItemLegacyProdMachine: false
 name: Detonate File - Cuckoo
-description: "Detonating file with Cuckoo"
-fromversion: "5.0.0"
+description: Detonating file with Cuckoo
 starttaskid: "0"
 tasks:
   "0":
@@ -10,10 +17,10 @@ tasks:
     taskid: c1de2f2b-64cb-4df5-8490-07c49e7255b6
     type: start
     task:
-      description: start
       id: c1de2f2b-64cb-4df5-8490-07c49e7255b6
       version: -1
       name: ""
+      description: start
       iscommand: false
       brand: ""
     nexttasks:
@@ -28,64 +35,21 @@ tasks:
         }
       }
     note: false
-  "1":
-    id: "1"
-    taskid: edb32e9f-570f-4418-8522-b121f7bd5233
-    type: playbook
-    task:
-      id: edb32e9f-570f-4418-8522-b121f7bd5233
-      version: -1
-      name: GenericPolling
-      description: |-
-        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
-        This playbook implements polling by continually running the command in Step #2 until the operation completes.
-        The remote action should have the following structure:
-
-        1. Initiate the operation.
-        2. Poll to check if the operation completed.
-        3. (optional) Get the results of the operation.
-      playbookName: GenericPolling
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      Ids:
-        simple: ${Cuckoo.Task.ID}
-      Interval:
-        simple: ${inputs.interval}
-      PollingCommandArgName:
-        simple: id
-      PollingCommandName:
-        simple: cuckoo-view-task
-      Timeout:
-        simple: ${inputs.timeout}
-      dt:
-        simple: Cuckoo.Task(val.CompletedOn == null).ID
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 275,
-          "y": 1070
-        }
-      }
-    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
     taskid: c8400cff-bb6a-4ba7-8032-69e0322c54cf
     type: condition
     task:
-      description: Check for active instance
       id: c8400cff-bb6a-4ba7-8032-69e0322c54cf
       version: -1
       name: Is there any active Cuckoo instance?
+      description: Check for active instance
       type: condition
       iscommand: false
       brand: ""
@@ -130,15 +94,21 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
     taskid: 087ea815-c0b4-4604-8b43-099927639fa9
     type: condition
     task:
-      description: Check if file exist
       id: 087ea815-c0b4-4604-8b43-099927639fa9
       version: -1
       name: Is there any file to detonate?
+      description: Check if file exist
       type: condition
       iscommand: false
       brand: ""
@@ -164,15 +134,21 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
     taskid: 4d966bd6-db01-4c5f-8cb3-da14e5f1058b
     type: regular
     task:
-      description: send file to Cuckoo
       id: 4d966bd6-db01-4c5f-8cb3-da14e5f1058b
       version: -1
       name: Send file to Cuckoo
+      description: send file to Cuckoo
       script: '|||cuckoo-create-task-from-file'
       type: regular
       iscommand: true
@@ -181,17 +157,8 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
-      enforce_timeout: {}
       entryID:
         simple: ${inputs.File.EntryID}
-      fileID: {}
-      machine: {}
-      memory: {}
-      options: {}
-      package: {}
-      platform: {}
-      tags: {}
-      timeout: {}
     separatecontext: false
     view: |-
       {
@@ -201,15 +168,21 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
     taskid: b5eb756b-903d-4f8e-8b09-f8bcad28627c
     type: title
     task:
-      description: Done
       id: b5eb756b-903d-4f8e-8b09-f8bcad28627c
       version: -1
       name: Done
+      description: Done
       type: title
       iscommand: false
       brand: ""
@@ -218,19 +191,25 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1420
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: f1f53022-58b9-4d86-82f1-89ef2b0d7da2
+    taskid: cfa91b01-30c7-4e21-851d-ba48c50d5004
     type: regular
     task:
-      description: get task report
-      id: f1f53022-58b9-4d86-82f1-89ef2b0d7da2
+      id: cfa91b01-30c7-4e21-851d-ba48c50d5004
       version: -1
       name: Get task report
+      description: get task report
       script: '|||cuckoo-get-task-report'
       type: regular
       iscommand: true
@@ -241,24 +220,34 @@ tasks:
     scriptarguments:
       id:
         simple: ${Cuckoo.Task.ID}
+      retry-count:
+        simple: "5"
+      retry-interval:
+        simple: "120"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 275,
-          "y": 1245
+          "y": 1070
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: d2d7357c-0e0f-472f-89fd-e2ac9d46bcc4
+    taskid: 80453b5e-60ef-431d-8cff-2b3bc7619da2
     type: regular
     task:
-      description: sleep
-      id: d2d7357c-0e0f-472f-89fd-e2ac9d46bcc4
+      id: 80453b5e-60ef-431d-8cff-2b3bc7619da2
       version: -1
       name: Sleep (let the sandbox create the task)
+      description: sleep
       scriptName: Sleep
       type: regular
       iscommand: false
@@ -268,7 +257,7 @@ tasks:
       - "10"
     scriptarguments:
       seconds:
-        simple: "5"
+        simple: "10"
     separatecontext: false
     view: |-
       {
@@ -278,22 +267,28 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
     taskid: fb2f1eb0-0d65-4367-8df7-40a015704047
     type: regular
     task:
-      description: view task
       id: fb2f1eb0-0d65-4367-8df7-40a015704047
       version: -1
       name: View task
+      description: view task
       script: '|||cuckoo-view-task'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "8"
     scriptarguments:
       id:
         simple: ${Cuckoo.Task.ID}
@@ -306,6 +301,12 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
     taskid: c530de05-cebe-438a-81f8-9c19f317cbbe
@@ -314,10 +315,10 @@ tasks:
       id: c530de05-cebe-438a-81f8-9c19f317cbbe
       version: -1
       name: Get Screenshots
+      description: Get screenshots from the machine running the file
       script: '|||cuckoo-task-screenshot'
       type: regular
       iscommand: true
-      description: "Get screenshots from the machine running the file"
       brand: ""
     nexttasks:
       '#none#':
@@ -325,16 +326,22 @@ tasks:
     scriptarguments:
       id:
         simple: ${Cuckoo.Task.ID}
-      screenshot: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 275,
-          "y": 1420
+          "y": 1245
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -342,7 +349,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1610,
+        "height": 1435,
         "width": 605,
         "x": 50,
         "y": 50
@@ -355,16 +362,19 @@ inputs:
     simple: ${File}
   required: false
   description: The file to detonate
+  playbookInputQuery: null
 - key: interval
   value:
     simple: "1"
   required: false
   description: How often to poll for results
+  playbookInputQuery: null
 - key: timeout
   value:
     simple: "10"
   required: false
   description: How long to wait before giving up waiting for results
+  playbookInputQuery: null
 outputs:
 - contextPath: Cuckoo.Task.Category
   description: Category of task
