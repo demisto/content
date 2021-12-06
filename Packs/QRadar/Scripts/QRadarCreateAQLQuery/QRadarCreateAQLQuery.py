@@ -70,7 +70,7 @@ def prepare_section(args: Dict, section_prefix: str) -> Dict:
 
 
 def prepare_args(args: Dict) -> Dict:
-    for key in list(args.keys()):
+    for key in list(args):
         if not args[key]:
             args.pop(key)
     for original_key, new_key in REPLACE_KEYS:
