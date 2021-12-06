@@ -101,7 +101,7 @@ outputs:
   type: string
 subtype: python3
 dockerimage: demisto/python3:3.9.8.24399
-runas: DBotRole
+runas: DBotWeakRole
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
