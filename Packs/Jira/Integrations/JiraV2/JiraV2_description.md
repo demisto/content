@@ -2,6 +2,8 @@ For fetching incidents, please update the query param according to [JQL document
 Update the project you want to fetch from, using:  `project = soc AND status = open`.
 This will fetch all tickets in your system (including past tickets) that are in Open status and in project soc. After the first run, it will create incidents only for new tickets.
 
+When creating Jira issues through XSOAR, using the mirroring function, make sure that you exclude those issues when fetching incidents. To exclude these issues, tag the relevant issues with a dedicated label and exclude that label from the JQL query (Labels!=).
+
 If you wish the first run to start from a specific time, use "Issue index to start fetching incidents from" param.
 
 Fetching incidents by creation time (using the Created field), instead of using IDs, is done by checking the "Use created field to fetch incidents" checkbox.

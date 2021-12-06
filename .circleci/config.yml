@@ -348,10 +348,7 @@ references:
           exit 0
         fi
 
-        # Run flake8 on all excluding Packs (Integraions and Scripts) - they will be handled in linting
-        ./Tests/scripts/pyflake.sh *.py
-        find . -maxdepth 1 -type d -not \( -path . -o -path ./Packs -o -path ./venv \) | xargs ./Tests/scripts/pyflake.sh
-
+        ./Tests/scripts/linters_runner.sh
         ./Tests/scripts/validate.sh
 
   run_unit_testing_and_lint: &run_unit_testing_and_lint
@@ -401,7 +398,7 @@ references:
         python3 -m pytest ./Tests/Marketplace/Tests/ -v
         python3 -m pytest ./Tests/scripts/utils/tests -v
         python3 -m pytest ./Tests/tests -v
-        python3 -m pytest ./Tests/private_build/ -v
+        python3 -m pytest ./Tests/private_build/tests -v
         python3 -m pytest Utils -v
 
         if [ -n "${DEMISTO_SDK_NIGHTLY}" ] ; then

@@ -144,9 +144,9 @@ def create_py_documentation(path, origin, language):
 
     code = compile(py_script, '<string>', 'exec')
     ns = {'demisto': demistomock}
-    exec(code, ns)  # guardrails-disable-line
+    exec(code, ns)  # guardrails-disable-line # pylint: disable=W0122
 
-    x = []
+    x: list = []
 
     for a in ns:
         a_object = ns.get(a)
@@ -216,7 +216,7 @@ def create_ps_documentation(path, origin, language):
 
         for parameter in parameters[1:]:
 
-            split_param = list(filter(None, parameter.split('\n')))
+            split_param: list = list(filter(None, parameter.split('\n')))
             required = False
             param_name = split_param[0].strip()
             if 'required' in param_name:
