@@ -1,0 +1,17 @@
+{
+    "name": "indicatorTypeTest",
+    "description": "test",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "MyNewTest",
+    "url": "",
+    "email": "",
+    "created": "2021-12-06T10:25:16Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "barchen1"
+    ]
+}
