@@ -1,7 +1,14 @@
 import io
+import json
+
+import pytest
+
 from CofenseIntelligenceV2 import *
+from typing import Dict
+import base64
 
 mock_params = {'url_threshold': 'Major', 'file_threshold': 'Major', 'email_threshold': 'Major', 'ip_threshold': 'Major',
+               'domain_threshold': 'Major',
                'days_back': 90}
 
 mock_base_url = 'mock_base_url'
@@ -11,11 +18,67 @@ mock_password = 'mock_password'
 headers: Dict = {
     "Authorization": f"Basic {base64.b64encode(':'.join([mock_username, mock_password]).encode()).decode().strip()}"
 }
+DOMAIN_RELATIONSHIP = [
+    {'brand': 'Cofense Intelligence', 'entityA': 'domain', 'entityAFamily': 'Indicator', 'entityAType': 'Domain',
+     'entityB': 'stun2.l.google.com', 'entityBFamily': 'Indicator', 'entityBType': 'Domain', 'fields': {},
+     'name': 'related-to', 'reverseName': 'related-to', 'type': 'IndicatorToIndicator'},
+    {'brand': 'Cofense Intelligence', 'entityA': 'domain', 'entityAFamily': 'Indicator', 'entityAType': 'Domain',
+     'entityB': '506b0267b19d58dc7354a0386d3d6f15', 'entityBFamily': 'Indicator', 'entityBType': 'File',
+     'fields': {}, 'name': 'related-to', 'reverseName': 'related-to', 'type': 'IndicatorToIndicator'}]
+
+FILE_RELATIONSHIP = [
+    {'brand': 'Cofense Intelligence', 'entityA': 'file', 'entityAFamily': 'Indicator', 'entityAType': 'File',
+     'entityB': 'com', 'entityBFamily': 'Indicator', 'entityBType': 'Domain', 'fields': {}, 'name': 'related-to',
+     'reverseName': 'related-to', 'type': 'IndicatorToIndicator'},
+    {'brand': 'Cofense Intelligence', 'entityA': 'file', 'entityAFamily': 'Indicator', 'entityAType': 'File',
+     'entityB': '127.0.0.1', 'entityBFamily': 'Indicator', 'entityBType': 'IP', 'fields': {}, 'name': 'related-to',
+     'reverseName': 'related-to', 'type': 'IndicatorToIndicator'},
+    {'brand': 'Cofense Intelligence', 'entityA': 'file', 'entityAFamily': 'Indicator', 'entityAType': 'File',
+     'entityB': 'md5', 'entityBFamily': 'Indicator', 'entityBType': 'File', 'fields': {}, 'name': 'related-to',
+     'reverseName': 'related-to', 'type': 'IndicatorToIndicator'},
+    {'brand': 'Cofense Intelligence', 'entityA': 'file', 'entityAFamily': 'Indicator', 'entityAType': 'File',
+     'entityB': 'md5', 'entityBFamily': 'Indicator', 'entityBType': 'File', 'fields': {}, 'name': 'related-to',
+     'reverseName': 'related-to', 'type': 'IndicatorToIndicator'}
+]
+
+EMAIL_RELATIONSHIP = [
+    {'brand': 'Cofense Intelligence', 'entityA': 'email@email.com', 'entityAFamily': 'Indicator',
+     'entityAType': 'Email', 'entityB': 'email@email.com', 'entityBFamily': 'Indicator',
+     'entityBType': 'Email', 'fields': {}, 'name': 'related-to', 'reverseName': 'related-to',
+     'type': 'IndicatorToIndicator'},
+    {'brand': 'Cofense Intelligence', 'entityA': 'email@email.com', 'entityAFamily': 'Indicator',
+     'entityAType': 'Email', 'entityB': 'md5', 'entityBFamily': 'Indicator', 'entityBType': 'File', 'fields': {},
+     'name': 'related-to', 'reverseName': 'related-to', 'type': 'IndicatorToIndicator'}]
+
+URL_RELATIONSHIP = [
+    {'brand': 'Cofense Intelligence', 'entityA': 'url', 'entityAFamily': 'Indicator', 'entityAType': 'URL',
+     'entityB': 'dummy.com', 'entityBFamily': 'Indicator', 'entityBType': 'Domain', 'fields': {}, 'name': 'related-to',
+     'reverseName': 'related-to', 'type': 'IndicatorToIndicator'},
+    {'brand': 'Cofense Intelligence', 'entityA': 'url', 'entityAFamily': 'Indicator', 'entityAType': 'URL',
+     'entityB': 'dummy.com', 'entityBFamily': 'Indicator', 'entityBType': 'Domain', 'fields': {}, 'name': 'related-to',
+     'reverseName': 'related-to', 'type': 'IndicatorToIndicator'},
+    {'brand': 'Cofense Intelligence', 'entityA': 'url',
+     'entityAFamily': 'Indicator', 'entityAType': 'URL', 'entityB': '127.0.0.1', 'entityBFamily': 'Indicator',
+     'entityBType': 'IP', 'fields': {}, 'name': 'related-to', 'reverseName': 'related-to',
+     'type': 'IndicatorToIndicator'}]
+
+IP_RELATIONSHIP = [
+    {'brand': 'Cofense Intelligence', 'entityA': '127.0.0.1', 'entityAFamily': 'Indicator', 'entityAType': 'IP',
+     'entityB': 'https://www.dummy.com', 'entityBFamily': 'Indicator', 'entityBType': 'URL', 'fields': {}, 'name': 'related-to',
+     'reverseName': 'related-to', 'type': 'IndicatorToIndicator'},
+    {'brand': 'Cofense Intelligence', 'entityA': '127.0.0.1', 'entityAFamily': 'Indicator', 'entityAType': 'IP',
+     'entityB': 'md5', 'entityBFamily': 'Indicator', 'entityBType': 'File', 'fields': {}, 'name': 'related-to',
+     'reverseName': 'related-to', 'type': 'IndicatorToIndicator'},
+    {'brand': 'Cofense Intelligence',
+     'entityA': '127.0.0.1', 'entityAFamily': 'Indicator', 'entityAType': 'IP', 'entityB': 'md5',
+     'entityBFamily': 'Indicator', 'entityBType': 'File', 'fields': {}, 'name': 'related-to',
+     'reverseName': 'related-to', 'type': 'IndicatorToIndicator'}]
 client = Client(
     base_url=mock_base_url,
     verify=True,
     headers=headers,
-    proxy=False)
+    proxy=False,
+    score_mapping="None:0, Minor:1, Moderate:2, Major:3")
 
 
 def util_load_json(path):
@@ -38,7 +101,7 @@ def test_threats_analysis():
     mock_threats = util_load_json('test_data/test_threats.json').get('threats')
     mock_md_data = util_load_json('test_data/test_threats.json').get('mock_md_data')
     mock_dbot_score = util_load_json('test_data/test_threats.json').get('mock_dbot_score')
-    md_data, dbot_score = threats_analysis(mock_threats, indicator, threshold)
+    md_data, dbot_score = threats_analysis(client.severity_score, mock_threats, indicator, threshold)
     assert mock_dbot_score == dbot_score
     assert mock_md_data == md_data
 
@@ -75,7 +138,7 @@ def test_extracted_string(mocker):
     test_data = util_load_json('test_data/test_extracted_string.json')
 
     return_value = test_data.get('string_search_response')
-    mocker.patch.object(client, 'threat_search_call', return_value=return_value)
+    mocker.patch.object(client, 'search_cofense', return_value=return_value)
     response = extracted_string(client, mock_args, mock_params)
     mock_outputs = test_data.get('mock_outputs')
     mock_readable_outputs = test_data.get('mock_readable')
@@ -103,6 +166,7 @@ def test_search_url_command(mocker):
     mock_readable_outputs = test_data.get('mock_readable')
     assert mock_outputs == str(response[0].outputs)
     assert mock_readable_outputs == response[0].readable_output
+    assert URL_RELATIONSHIP == (response[0].to_context())['Relationships']
 
 
 def test_check_email_command(mocker):
@@ -123,6 +187,7 @@ def test_check_email_command(mocker):
     response = check_email_command(client, mock_args, mock_params)
     mock_readable_outputs = test_data.get('mock_readable')
     assert mock_readable_outputs == response[0].readable_output
+    assert EMAIL_RELATIONSHIP == (response[0].to_context())['Relationships']
 
 
 def test_check_ip_command(mocker):
@@ -136,7 +201,7 @@ def test_check_ip_command(mocker):
             - verify response readable output
     """
 
-    mock_args = {'ip': '1.1.1.1'}
+    mock_args = {'ip': '127.0.0.1'}
     test_data = util_load_json('test_data/test_search_ip.json')
     return_value = test_data.get('ip_search_response')
     mocker.patch.object(client, 'threat_search_call', return_value=return_value)
@@ -145,6 +210,7 @@ def test_check_ip_command(mocker):
     mock_readable_outputs = test_data.get('mock_readable')
     assert mock_outputs == str(response[0].outputs)
     assert mock_readable_outputs == response[0].readable_output
+    assert IP_RELATIONSHIP == (response[0].to_context())['Relationships']
 
 
 def test_check_md5_command(mocker):
@@ -167,3 +233,42 @@ def test_check_md5_command(mocker):
     mock_readable_outputs = test_data.get('mock_readable')
     assert mock_outputs == str(response[0].outputs)
     assert mock_readable_outputs == response[0].readable_output
+    assert FILE_RELATIONSHIP == (response[0].to_context())['Relationships']
+
+
+def test_check_domain_command(mocker):
+    """
+        Given:
+            - domain command args
+        When:
+            - run check_domain_command
+        Then:
+            - Verify response outputs
+            - verify response readable output
+    """
+
+    mock_args = {'domain': 'domain'}
+    test_data = util_load_json('test_data/test_search_domain.json')
+    return_value = test_data.get('domain_search_response')
+    mocker.patch.object(client, 'threat_search_call', return_value=return_value)
+    response = check_domain_command(client, mock_args, mock_params)
+    mock_outputs = test_data.get('mock_output')
+    mock_readable_outputs = test_data.get('mock_readable')
+    assert mock_outputs == str(response[0].outputs)
+    assert mock_readable_outputs == response[0].readable_output
+    assert response[0].indicator.domain == "domain"
+    assert DOMAIN_RELATIONSHIP == (response[0].to_context())['Relationships']
+
+
+def test_when_domain_not_specified():
+    """
+        Given:
+            - invalid domain command args
+        When:
+            - run check_domain_command
+        Then:
+            - Returns the response message of invalid input arguments
+    """
+    with pytest.raises(ValueError) as de:
+        check_domain_command(client, {'domain': []}, mock_params)
+    assert str(de.value) == "Domain not specified"

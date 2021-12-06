@@ -6,5 +6,5 @@ ignore=BA101
 
 [file:UnifiVideo.yml]
 ignore=IN145
-[file:UnifiVideoNVR]
+[file:pack_metadata.json]
 ignore=PA129
