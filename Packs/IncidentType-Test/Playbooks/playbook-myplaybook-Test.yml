@@ -1,0 +1,87 @@
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: a17f4f42-a7e7-4bff-8d4a-b8e769c1f206
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: 773d6c24-e84d-4404-8642-595f70dd6d66
+inputs: []
+name: myplaybook-Test
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 43befde4-d778-4174-8712-cc706b6817f1
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 43befde4-d778-4174-8712-cc706b6817f1
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: test
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: 38c27cbc-b8bb-4687-8c52-6ab037173cda
+      iscommand: false
+      name: Untitled Task
+      scriptName: Print
+      type: regular
+      version: -1
+    taskid: 38c27cbc-b8bb-4687-8c52-6ab037173cda
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 200
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 245,
+        "width": 390,
+        "x": 440,
+        "y": 50
+      }
+    }
+  }

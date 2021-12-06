@@ -1,0 +1,37 @@
+{
+	"autorun": false,
+	"closureScript": "",
+	"color": "#3D8EB3",
+	"days": 0,
+	"daysR": 0,
+	"default": false,
+	"definitionId": "",
+	"detached": false,
+	"disabled": false,
+	"extractSettings": {
+		"fieldCliNameToExtractSettings": {},
+		"mode": "Specific"
+	},
+	"fromServerVersion": "",
+	"hours": 0,
+	"hoursR": 0,
+	"id": "mytest",
+	"itemVersion": "",
+	"layout": "",
+	"locked": false,
+	"name": "mytest",
+	"onChangeRepAlg": 0,
+	"packID": "a17f4f42-a7e7-4bff-8d4a-b8e769c1f206",
+	"playbookId": "773d6c24-e84d-4404-8642-595f70dd6d66",
+	"preProcessingScript": "",
+	"propagationLabels": [
+		"all"
+	],
+	"readonly": false,
+	"reputationCalc": 0,
+	"system": false,
+	"toServerVersion": "",
+	"version": -1,
+	"weeks": 0,
+	"weeksR": 0
+}
