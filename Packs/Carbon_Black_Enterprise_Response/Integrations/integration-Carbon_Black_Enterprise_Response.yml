@@ -1538,14 +1538,14 @@ script:
     arguments:
     - name: md5hash
       required: true
-      description: the blacklisted hash
+      description: the hash on the block list
     - name: text
       required: true
-      description: text description of blacklist
+      description: text description of block list
     - name: lastBanTime
       description: the last time the hash was blocked or prevented from being executed
     - name: banCount
-      description: total number of blocks on this blacklist
+      description: total number of blocks on this block list
     - name: lastBanHost
       description: last hostname to block this hash
     outputs:
@@ -1579,7 +1579,7 @@ script:
       description: Last block hostname
     - contextPath: CbResponse.BlockedHashes.LastBlock.CbSensorID
       description: Last block sensor ID
-    description: Returns a list of blacklisted hashes, with each list entry describing one blacklisted hash
+    description: Returns a list of hashes on block list, with each list entry describing one hash on block list.
   - name: cb-get-process
     arguments:
     - name: pid
@@ -1853,10 +1853,10 @@ script:
     arguments:
     - name: md5hash
       required: true
-      description: the blacklisted hash
+      description: the hash on block list
     - name: text
       required: true
-      description: text description of blacklist
+      description: text description of block list
     outputs:
     - contextPath: File.LastAction
       description: Last action taken on this file

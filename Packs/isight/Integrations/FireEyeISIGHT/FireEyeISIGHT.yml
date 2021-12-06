@@ -1,0 +1,160 @@
+commonfields:
+  id: FireEye iSIGHT
+  version: -1
+name: FireEye iSIGHT
+display: FireEye iSIGHT
+category: Data Enrichment & Threat Intelligence
+description: FireEye cyber threat intelligence
+configuration:
+- display: Public Key
+  name: publicKey
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Private Key
+  name: privateKey
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Version
+  name: version
+  defaultvalue: "2.5"
+  type: 0
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: ip
+    arguments:
+    - name: ip
+      required: true
+      default: true
+      description: ip to search by
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+    - contextPath: IP.Address
+      description: The IP address
+    - contextPath: Report.ID
+      description: Report ID
+    - contextPath: Report.title
+      description: Report title
+    - contextPath: Report.publishDate
+      description: Report publish date
+    - contextPath: Report.intelligenceType
+      description: Report intelligence type (overview, vulnerability, malware, threat)
+    description: basic search reports by ip
+  - name: domain
+    arguments:
+    - name: domain
+      required: true
+      default: true
+      description: domain to search by
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+    - contextPath: Domain.Name
+      description: The domain name.
+    - contextPath: Report.ID
+      description: Report ID
+    - contextPath: Report.title
+      description: Report title
+    - contextPath: Report.publishDate
+      description: Report publish date
+    - contextPath: Report.intelligenceType
+      description: Report intelligence type (overview, vulnerability, malware, threat)
+    description: basic search reports by domain
+  - name: file
+    arguments:
+    - name: file
+      description: md5 or sha1 to search by
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+    - contextPath: Report.ID
+      description: Report ID
+    - contextPath: Report.title
+      description: Report title
+    - contextPath: Report.publishDate
+      description: Report publish date
+    - contextPath: Report.intelligenceType
+      description: Report intelligence type (overview, vulnerability, malware, threat)
+    description: basic search file report by md5/sha1. NOTE - specify only one of
+      md5/sha1 arguments
+  - name: isight-get-report
+    arguments:
+    - name: reportID
+      required: true
+      default: true
+      description: Report ID to search by
+    outputs:
+    - contextPath: Report.ID
+      description: Report ID
+    - contextPath: Report.title
+      description: Report title
+    - contextPath: Report.publishDate
+      description: Report publish date
+    - contextPath: Report.intelligenceType
+      description: Report intelligence type (overview, vulnerability, malware, threat)
+    - contextPath: Report.audience
+      description: Report audience
+    - contextPath: Report.ThreatScape
+      description: Report threat scape
+    - contextPath: Report.operatingSystems
+      description: Report operating systems
+    - contextPath: Report.riskRating
+      description: Report risk rating
+    - contextPath: Report.version
+      description: Report version
+    - contextPath: Report.tagSection
+      description: Report tag section
+    description: Get specific report
+  - name: isight-submit-file
+    arguments:
+    - name: entryID
+      required: true
+      default: true
+      description: entry-id of the file to submit (e.g. 41@18)
+    - name: description
+      required: true
+      description: file description
+    - name: type
+      description: "Type of the given file"
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - malware
+      - other
+    description: Submission of malware and other files for community sharing
+tests:
+- No test
+fromversion: 5.0.0

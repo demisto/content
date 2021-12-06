@@ -82,18 +82,18 @@ script:
       secret: false
     - default: false
       defaultValue: 'Added by ThreatX Demisto Integration'
-      description: 'The description of the IP record in the blacklist.'
+      description: 'The description of the IP record in the block list.'
       isArray: false
       name: description
       required: false
       secret: false
     deprecated: false
-    description: Adds an IP address or CIDR to the blacklist.
+    description: Adds an IP address or CIDR to the block list.
     execution: true
     name: threatx-blacklist-ip
     outputs:
     - contextPath: IP.Address
-      description: IP address or CIDR that was added to the blacklist.
+      description: IP address or CIDR that was added to the block list.
       type: string
   - arguments:
     - default: false
@@ -103,12 +103,12 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Removes an IP or CIDR from the blacklist.
+    description: Removes an IP or CIDR from the block list.
     execution: true
     name: threatx-unblacklist-ip
     outputs:
     - contextPath: IP.Address
-      description: IP address or CIDR that was removed from the blacklist.
+      description: IP address or CIDR that was removed from the block list.
       type: string
   - arguments:
     - default: false
@@ -119,18 +119,18 @@ script:
       secret: false
     - default: false
       defaultValue: 'Added by ThreatX Demisto Integration'
-      description: 'The description of the IP record in the whitelist.'
+      description: 'The description of the IP record in the allow list.'
       isArray: false
       name: description
       required: false
       secret: false
     deprecated: false
-    description: Adds an IP address or CIDR to the whitelist.
+    description: Adds an IP address or CIDR to the allow list.
     execution: true
     name: threatx-whitelist-ip
     outputs:
     - contextPath: IP.Address
-      description: IP address or CIDR was added to the whitelist.
+      description: IP address or CIDR was added to the allow list.
       type: string
   - arguments:
     - default: false
@@ -140,12 +140,12 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Removes an IP address or CIDR from the whitelist.
+    description: Removes an IP address or CIDR from the allow list.
     execution: true
     name: threatx-unwhitelist-ip
     outputs:
     - contextPath: IP.Address
-      description: IP address or CIDR that was removed from the whitelist.
+      description: IP address or CIDR that was removed from the allow list.
       type: string
   - arguments:
     - default: false
@@ -246,5 +246,5 @@ script:
   script: '-'
   type: python
   subtype: python2
-  dockerimage: demisto/python:2.7.18.24066
+  dockerimage: demisto/python:2.7.18.24398
 fromversion: 5.0.0

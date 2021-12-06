@@ -148,7 +148,7 @@
                 "prevName": "Cortex XDR Unassigned Incidents",
                 "dataType": "incidents",
                 "widgetType": "number",
-                "query": "type:\"Cortex XDR Incident\" and status:Active and owner:",
+                "query": "type:\"Cortex XDR Incident\" and status:Active and owner:\"\"",
                 "sort": null,
                 "isPredefined": false,
                 "dateRange": {
