@@ -42,24 +42,20 @@ def test_getting_file_from_context(mocker):
         - Call to get_file_details
 
     Then:
-        - Validate the context comes from incident by calling demisto.executeCommand('getContext')
+        - Validate the context comes from incident by calling execute_command('getContext')
         instead of demisto.context witch is missed in context of sub-playbook
 
     """
 
     # prepare
     parser = WordParser()
-    # mocker.patch.object(parser, 'get_file_details')
-    mocker.patch('ExtractIndicatorsFromWordFile.isError', return_value=False)
     mocker.patch.object(demisto, 'dt')
     mocker.patch.object(demisto, 'args', return_value={})
-    mocker.patch.object(demisto, 'incidents', return_value=[{'id': 1}])
-    mocker.patch.object(demisto, 'executeCommand', return_value=[{'Contents': {}}])
+    mocker.patch.object(demisto, 'incident', return_value={'id': 1})
+    mocked_method = mocker.patch('ExtractIndicatorsFromWordFile.execute_command', return_value={'context': {}})
 
     # run
     parser.get_file_details()
 
     # validate
-    assert demisto.executeCommand.call_count == 2  # for getFilePath and getContext
-    assert demisto.executeCommand.call_args_list[0][0][0] == 'getFilePath'
-    assert demisto.executeCommand.call_args_list[1][0][0] == 'getContext'
+    assert mocked_method.call_args[0][0] == 'getContext'
