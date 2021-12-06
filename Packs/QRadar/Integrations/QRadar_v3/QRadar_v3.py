@@ -1280,8 +1280,6 @@ def test_module_command(client: Client, params: Dict) -> str:
         - raises DemistoException if something had failed the test.
     """
     try:
-        change_ctx_to_be_compatible_with_retry()
-
         ctx = extract_context_data(get_integration_context(), include_id=True)
         print_mirror_events_stats(ctx, "Test Module")
         is_long_running = params.get('longRunning')
@@ -3096,6 +3094,7 @@ def json_loads_inner(json_dumps_list: List[str]) -> list:
             python_object_list.append(json.loads(json_dump))
         except Exception as e:
             demisto.info(f'Exception {e} when trying to json parse {json_dump}, as part of {json_dumps_list}')
+            raise e
 
     return python_object_list
 
@@ -3465,7 +3464,7 @@ def change_ctx_to_be_compatible_with_retry() -> None:
 
     if not extract_works:
         cleared_ctx = clear_integration_ctx(new_ctx)
-        print_mirror_events_stats(cleared_ctx, "Cleared ctx")
+        print_debug_msg(f"Change ctx context data was cleared and changing to {cleared_ctx}")
         set_integration_context(cleared_ctx)
         print_debug_msg(f"Change ctx context data was cleared and changed to {cleared_ctx}")
 
@@ -3656,6 +3655,6 @@ def main() -> None:
 ''' ENTRY POINT '''
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
-    # main()
+    main()
     register_signal_handler()
     change_ctx_to_be_compatible_with_retry()
