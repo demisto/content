@@ -39,7 +39,7 @@ When unmatched or the input value is structured (dict or list), it will simply r
 | priority | The option to choose which value matched to return. Available options: `first_match` (default) and `last_match`. |
 | context | \`demisto\` context: Input . \(single dot\) on \`From previous tasks\` to enable to extract the context data. |
 | flags | The comma separated flags for pattern matching in regex. `dotall` (s), `multiline` (m), `ignorecase` (i) and `unicode` (u) are supported. This will apply to all the algorithms. |
-| comparison_fields | The name of the field to pattern matching for the value given in dictionary. |
+| compare_fields | Set to true if you want pattern matching for each field, otherwise false. |
 
 ## Outputs
 ---
@@ -50,7 +50,7 @@ There are no outputs for this script.
 ## Syntax for `mappings`
     
     mappings ::= pattern-mapping | field-mapping
-                 # `field-mapping` must be used when you set `comparison_fields`. `pattern-mapping` is used if it is not set.
+                 # `field-mapping` must be used when you set `compare_fields` to true. `pattern-mapping` is used if it is not set.
 
     pattern-mapping ::= list-pattern-mapping | base-pattern-mapping
 
@@ -88,8 +88,6 @@ There are no outputs for this script.
                   "output": output-any,                 # (Optional) The data to replace to the value by the pattern.
                   "exclude": pattern | List[pattern],   # (Optional) Patterns to exclude in the pattern matching.
                   "next": mappings                      # (Optional) Subsequent conditions to do the pattern matching with the value taken from the output.
-                  "comparison_fields": comp-fields      # (Optional) A list of comparison fields. The list is required when `output` is `null` and
-                                                        #           `comparison_fields` is given in the input arguments
               }
 
 
@@ -109,7 +107,7 @@ Transform a severity name to the corresponding number.
 
 > flags:
 
-> comparison_fields:
+> compare_fields:
 
 #### mappings:
 
@@ -144,7 +142,7 @@ Normalize a human readable phrase to a cannonical name.
 
 > flags:
 
-> comparison_fields:
+> compare_fields:
 
 #### mappings:
 
@@ -177,7 +175,7 @@ Remove all the heading "Re:" or "Fw:" from an email subject.
 
 > flags:
 
-> comparison_fields:
+> compare_fields:
 
 #### mappings:
 
@@ -205,7 +203,7 @@ Extract the user name field from an text in an Active Directory user account for
 
 > flags:
 
-> comparison_fields:
+> compare_fields:
 
 #### mappings:
 
@@ -238,7 +236,7 @@ Extract the user name field from an quoted text in an Active Directory user acco
 
 > flags:
 
-> comparison_fields:
+> compare_fields:
 
 #### mappings:
 
@@ -284,7 +282,7 @@ Extract first name and last name from an email address in `firstname.lastname@do
 
 > flags:
 
-> comparison_fields:
+> compare_fields:
 
 #### mappings:
 
@@ -324,7 +322,7 @@ Normalize a date/time text to `YYYY-MM-DD HH:mm:ss TZ`.
 
 > flags:
 
-> comparison_fields:
+> compare_fields:
 
 #### mappings:
 
@@ -444,7 +442,7 @@ Pattern matching for different nodes
 
 > flags:
 
-> comparison_fields: IP, Host
+> compare_fields: true
 
 #### mappings:
 
@@ -481,7 +479,7 @@ Make a text with the `value` field corresponding to the `score` field.
 
 > flags:
 
-> comparison_fields: score
+> compare_fields: true
 
 #### mappings:
 
