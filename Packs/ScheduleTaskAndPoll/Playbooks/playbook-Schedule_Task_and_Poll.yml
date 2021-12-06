@@ -1,0 +1,273 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+description: This playbook will schedule a specified command and monitor for completion
+  by looking for output in context. Make the playbook context shared globally if you
+  have a command that returns to Context automatically and you have a specific key
+  to monitor. The key monitored must be a single field value and not an array.
+id: Schedule Task and Poll
+inputs:
+- description: Command to Schedule
+  key: Command
+  playbookInputQuery:
+  required: true
+  value:
+    simple: '!Print value="The command has executed"'
+- description: |-
+    In the format
+    * * * * *
+    Min Hour Day(Month) Month Day(Week)
+
+    i.e.
+    1 9 * * *
+    9:01 AM
+    - (server time) run !GetTime to see server time
+  key: Cron
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: How many times to run before stopping (based on cron as well)
+  key: Number of Times to Run
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: Provide the Key of the value that will be output from the command to
+    poll for completion. If specifying a context value of a command that already outputs
+    to Context set context for sub-playbook to be shared globally.
+  key: OutputContextValue
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Frequency to run polling command to check context (in minutes)
+  key: FrequencyToPoll
+  playbookInputQuery:
+  required: true
+  value:
+    simple: "1"
+- description: The regex to check the field for. By default the regex contains .+,
+    which matches anything other than None.
+  key: RegExVal
+  playbookInputQuery:
+  required: true
+  value:
+    simple: .+
+name: Schedule Task and Poll
+outputs:
+- contextPath: SchedulingTask.schedResults
+  description: Results from command executed
+  type: unknown
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c56f5f8c-37f1-49c5-82e1-97c7a3c823b4
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: c56f5f8c-37f1-49c5-82e1-97c7a3c823b4
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      command:
+        simple: ${inputs.Command} extend-context=SchedulingTask.schedResults=.
+      cron:
+        simple: ${inputs.Cron}
+      extend-context:
+        simple: scheduledCommand=.
+      times:
+        simple: ${inputs.Number of Times to Run}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Schedule a command to run inside the war room at a future time
+        (once or reoccurring)
+      id: 152cc28d-780a-4932-8b17-1490c23b56c5
+      iscommand: false
+      name: Schedule Command
+      scriptName: ScheduleCommand
+      type: regular
+      version: -1
+    taskid: 152cc28d-780a-4932-8b17-1490c23b56c5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    note: false
+    quietmode: 0
+    scriptarguments:
+      frequency:
+        simple: ${inputs.FrequencyToPoll}
+      key:
+        simple: SchedulingTask.schedResults
+      timeout:
+        simple: "10"
+      value:
+        simple: ${inputs.RegExVal}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This playbook polls a context key to check if a specific value
+        exists.
+      id: a13841ea-5c32-4168-8efe-a55d91c04003
+      iscommand: false
+      name: Context Polling - Generic - Single Output
+      playbookId: Context Polling - Generic
+      type: playbook
+      version: -1
+    taskid: a13841ea-5c32-4168-8efe-a55d91c04003
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -190,
+          "y": 580
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.OutputContextValue
+          operator: isNotEmpty
+      label: "yes"
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 698c6d46-b2bb-44a9-8b29-227d56496f28
+      iscommand: false
+      name: Specific Output Key?
+      type: condition
+      version: -1
+      description: Whether the output key is a single value (rather than an array).
+    taskid: 698c6d46-b2bb-44a9-8b29-227d56496f28
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 360
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    note: false
+    quietmode: 0
+    scriptarguments:
+      frequency:
+        simple: ${inputs.FrequencyToPoll}
+      key:
+        simple: ${inputs.OutputContextValue}
+      timeout:
+        simple: "10"
+      value:
+        simple: ${inputs.RegExVal}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This playbook polls a context key to check if a specific value
+        exists.
+      id: f8bf3ac5-76e9-40f2-8640-d1238eba8b39
+      iscommand: false
+      name: Context Polling - Generic - Array Output
+      playbookId: Context Polling - Generic
+      type: playbook
+      version: -1
+    taskid: f8bf3ac5-76e9-40f2-8640-d1238eba8b39
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 580
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 625,
+        "width": 850,
+        "x": -190,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
