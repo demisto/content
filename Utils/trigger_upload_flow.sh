@@ -445,6 +445,7 @@ function trigger_circle_ci {
 # :slack_channel: A slack channel to send notifications to.
 function trigger_gitlab_ci {
   git push gitlab "${new_content_branch}"
+  sleep 60
   trigger_build_url="https://code.pan.run/api/v4/projects/2596/trigger/pipeline"  # disable-secrets-detection
 
   variables="variables[BUCKET_UPLOAD]=true"
