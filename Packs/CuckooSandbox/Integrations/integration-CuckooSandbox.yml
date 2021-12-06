@@ -150,61 +150,103 @@ script:
 
     var cuckooGet = function(qArgs, qParams, suffix) {
         url = fixUrl(qParams['server']) + suffix;
-        username = qParams['authentication'] ? qParams['authentication']['identifier'] : '';
-        password = qParams['authentication'] ? qParams['authentication']['password'] : '';
         if (qParams['api_key']){
           api_key = qParams['api_key'];
           full_api_key = 'Bearer ' + api_key;
+          res = http(
+              url,
+              {
+                  Method: 'GET',
+                  Headers: {
+                      'Authorization': [full_api_key]
+                  }
+              },
+              qParams['insecure'],
+              qParams['proxy']
+          );
+        } else {
+          username = qParams['authentication'] ? qParams['authentication']['identifier'] : '';
+          password = qParams['authentication'] ? qParams['authentication']['password'] : '';
+          res = http(
+              url,
+              {
+              Method: 'GET',
+              Username: username,
+              Password: password
+              },
+              qParams['insecure'],
+              qParams['proxy']
+          );
         }
-        res = http(
-            url,
-            {
-                Method: 'GET'
-            },
-            qParams['insecure'],
-            qParams['proxy']
-        );
         return result =  parseResponse(res);
     };
 
     var cuckooGetRaw = function(qArgs, qParams, suffix) {
         url = fixUrl(qParams['server']) + suffix;
-        username = qParams['authentication'] ? qParams['authentication']['identifier'] : '';
-        password = qParams['authentication'] ? qParams['authentication']['password'] : '';
         if (qParams['api_key']){
           api_key = qParams['api_key'];
           full_api_key = 'Bearer ' + api_key;
+          res = http(
+              url,
+              {
+                  Method: 'GET',
+                  Headers: {
+                      'Authorization': [full_api_key]
+                  }
+              },
+              qParams['insecure'],
+              qParams['proxy']
+          );
+        } else {
+          username = qParams['authentication'] ? qParams['authentication']['identifier'] : '';
+          password = qParams['authentication'] ? qParams['authentication']['password'] : '';
+          res = http(
+              url,
+              {
+              Method: 'GET',
+              Username: username,
+              Password: password
+              },
+              qParams['insecure'],
+              qParams['proxy']
+          );
         }
-        res = http(
-            url,
-            {
-                Method: 'GET',
-                Authorization: full_api_key
-            },
-            qParams['insecure'],
-            qParams['proxy']
-        );
         return res;
     };
 
     var cuckooGetFile = function(qArgs, qParams, suffix, filename) {
         url = fixUrl(qParams['server']) + suffix;
-        username = qParams['authentication'] ? qParams['authentication']['identifier'] : '';
-        password = qParams['authentication'] ? qParams['authentication']['password'] : '';
         if (qParams['api_key']){
-          api_key = qParams['api_key'];
-          full_api_key = 'Bearer ' + api_key;
-        }
-        res = http(
-            url,
-            {
-                Method: 'GET',
-                Authorization: full_api_key,
-                SaveToFile: true
-            },
-            qParams.insecure,
-            qParams.proxy
-        );
+              api_key = qParams['api_key'];
+              full_api_key = 'Bearer ' + api_key;
+              res = http(
+                  url,
+                  {
+                      Method: 'GET',
+                      Headers: {
+                            'Authorization': [full_api_key]
+                      },
+                      SaveToFile: true
+                  },
+                  qParams['insecure'],
+                  qParams['proxy']
+              );
+            } else {
+              username = qParams['authentication'] ? qParams['authentication']['identifier'] : '';
+              password = qParams['authentication'] ? qParams['authentication']['password'] : '';
+              res = http(
+                  url,
+                  {
+                    Method: 'GET',
+                    Username: username,
+                    Password: password,
+                    SaveToFile: true
+                  },
+                  qParams['insecure'],
+                  qParams['proxy']
+              );
+            }
+
         if (res.StatusCode !== 200) {
             err = res.Status;
             if (res.Body) {
@@ -222,54 +264,82 @@ script:
 
     var cuckooPost = function(qArgs, qParams, suffix) {
         url = fixUrl(qParams.server) + suffix;
-        username = qParams['authentication'] ? qParams['authentication']['identifier'] : '';
-        password = qParams['authentication'] ? qParams['authentication']['password'] : '';
         if (qParams['api_key']){
           api_key = qParams['api_key'];
           full_api_key = 'Bearer ' + api_key;
-        }
-        console.log("text");
-        console.log(api_key);
-        res = httpMultipart(
-            url, // URL
-            '', // Optional - FilePath / EntryID
-            { // HTTP Request Headers
+          res = httpMultipart(
+              url,
+              '',// Optional - FilePath / EntryID
+              {
+                  Method: 'POST',
+                  Headers: {
+                      'Authorization': [full_api_key]
+                  }
+              },
+              { // Multipart Contents
+                  url: qArgs['url']
+              },
+              qParams['insecure'],
+              qParams['proxy']
+          );
+        } else {
+          username = qParams['authentication'] ? qParams['authentication']['identifier'] : '';
+          password = qParams['authentication'] ? qParams['authentication']['password'] : '';
+          res = httpMultipart(
+              url,
+              '',// Optional - FilePath / EntryID
+              {
                 Method: 'POST',
-                Authorization: full_api_key
-            },
-            { // Multipart Contents
+                Username: username,
+                Password: password
+              },
+              { // Multipart Contents
                 url: qArgs['url']
-            },
-            qParams['insecure'],
-            qParams['proxy']
-        );
+              },
+              qParams['insecure'],
+              qParams['proxy']
+          );
+        }
         return parseResponse(res);
     };
 
     var fetchFiles = function(qArgs, qParams) {
         url = fixUrl(qParams['server']) + 'tasks/create/file';
         fileParam = qArgs['entryID'] ? qArgs['entryID'] : qArgs['fileID'];
-        username = qParams['authentication'] ? qParams['authentication']['identifier'] : '';
-        password = qParams['authentication'] ? qParams['authentication']['password'] : '';
-        console.log("im here");
-        if (qParams['api_key']) {
+        delete qArgs.entryID;
+        if (qParams['api_key']){
           api_key = qParams['api_key'];
           full_api_key = 'Bearer ' + api_key;
-        }
-        console.log("im here");
-        console.log(full_api_key);
-        delete qArgs.entryID;
-        res = httpMultipart(
+          res = httpMultipart(
             url,
             fileParam,
-            { // HTTP Request Headers
+            {
                 Method: 'POST',
-                Authorization: api_key
+                Headers: {
+                    'Authorization': [full_api_key]
+                }
             },
             qArgs,
             qParams['insecure'],
             qParams['proxy']
-        );
+          );
+        } else {
+          username = qParams['authentication'] ? qParams['authentication']['identifier'] : '';
+          password = qParams['authentication'] ? qParams['authentication']['password'] : '';
+          res = httpMultipart(
+            url,
+            fileParam,
+            {
+              Method: 'POST',
+              Username: username,
+              Password: password
+            },
+            qArgs,
+            qParams['insecure'],
+            qParams['proxy']
+          );
+        }
+
         return parseResponse(res);
     };
 
