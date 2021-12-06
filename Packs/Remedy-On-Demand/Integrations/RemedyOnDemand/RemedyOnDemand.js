@@ -217,7 +217,7 @@ var fetchIncidentsToDemisto = function() {
             value: (new Date(nowDate.getTime() - 10*60*1000)).toISOString()
         };
     }
-    var query =  "'Create Date'>" + '"' + lastRun.value + '"';
+    var query =  '\"Create Date\">' + '\"' + lastRun.value + '\"';
     var url = baseUrl + '/api/arsys/v1/entry/HPD:IncidentInterface/' + '?q=' + encodeURIComponent(query);
     var token = login();
     var res = sendRequest(url, token);
