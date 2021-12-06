@@ -252,32 +252,33 @@ def azure_ad_identity_protection_risky_users_dismiss_command(client: AADClient, 
     return client.azure_ad_identity_protection_risky_users_dismiss(**kwargs)
 
 
-def detections_to_incidents(risk_detections: List[Dict[str, str]], last_fetch_datetime: datetime) -> \
+def detection_to_incident(detection, detection_date):
+    detection_id: str = detection.get('id', '')
+    detection_type: str = detection.get('riskEventType', '')
+    detection_detail: str = detection.get('riskDetail', '')
+    incident = {
+        'name': f'Azure AD:'
+                f' {detection_id} {detection_type} {detection_detail}',
+        'occurred': f'{detection_date}Z',
+        'rawJSON': json.dumps(detection)
+    }
+    return incident
+
+
+def detections_to_incidents(detections: List[Dict[str, str]], last_fetch_datetime: datetime) -> \
         Tuple[List[Dict[str, str]], datetime]:
     incidents: List[Dict[str, str]] = []
     latest_incident_time = last_fetch_datetime
 
-    for detection in risk_detections:
+    for detection in detections:
         # 'activityDateTime': '2021-07-15T11:02:54Z' / 'activityDateTime': '2021-07-15T11:02:54.12345Z'
-        detection_date_str: str = detection.get('detectedDateTime', '')
-        demisto.debug(f'1- DEMISTO STR DATE: {detection_date_str}')
-        detection_date_str = date_str_to_azure_format(detection_date_str)
-        demisto.debug(f'2- DEMISTO STR DATE: {detection_date_str}')
-        detection_date = datetime.strptime(detection_date_str, DATE_FORMAT)
-
-        risk_detection_id: str = detection.get('id', '')
-        risk_detection_type: str = detection.get('riskEventType', '')
-        risk_detection_detail: str = detection.get('riskDetail', '')
-        incident = {
-            'name': f'Azure AD:'
-                    f' {risk_detection_id} {risk_detection_type} {risk_detection_detail}',
-            'occurred': f'{detection_date_str}Z',
-            'rawJSON': json.dumps(detection)
-        }
+        detection_date = date_str_to_azure_format(detection.get('detectedDateTime', ''))
+        incident = detection_to_incident(detection, detection_date)
         incidents.append(incident)
 
-        if detection_date > latest_incident_time:
-            latest_incident_time = detection_date
+        detection_datetime = datetime.strptime(detection_date, DATE_FORMAT)
+        if detection_datetime > latest_incident_time:
+            latest_incident_time = detection_datetime
 
     return incidents, latest_incident_time
 
@@ -317,16 +318,6 @@ def date_str_to_azure_format(date_str):
     return date_str
 
 
-def azure_date_to_datetime(date_str):
-    date_str = date_str_to_azure_format(date_str)
-    date_datetime = datetime.strptime(date_str, DATE_FORMAT)
-    return date_datetime
-
-
-def datetime_to_azure_date(datetime_obj):
-    return datetime.strftime(datetime_obj, DATE_FORMAT)
-
-
 def fetch_incidents(client: AADClient, params: Dict[str, str]):
     last_run: Dict[str, str] = demisto.getLastRun()
     demisto.debug(f'[AzureIdentityProtection] last run: {last_run}')
@@ -342,17 +333,18 @@ def fetch_incidents(client: AADClient, params: Dict[str, str]):
         user_principal_name=params.get('fetch_user_principal_name', ''),
     )
 
-    risk_detections: list = risk_detection_list_raw.get('value', [])
+    detections: list = risk_detection_list_raw.get('value', [])
 
-    incidents, latest_detection_time = detections_to_incidents(risk_detections, last_fetch_datetime=last_fetch_datetime)
+    incidents, latest_detection_time = detections_to_incidents(detections, last_fetch_datetime=last_fetch_datetime)
     demisto.debug(f'[AzureIdentityProtection] Fetched {len(incidents)} incidents')
-    demisto.debug(
-        f'[AzureIdentityProtection] next run latest_detection_found: {latest_detection_time.strftime(DATE_FORMAT)}')
 
-    demisto.incidents(incidents)
-    demisto.setLastRun({
-        'latest_detection_found': latest_detection_time.strftime(DATE_FORMAT)
-    })
+    latest_detection_time = latest_detection_time.strftime(DATE_FORMAT)
+    demisto.debug(f'[AzureIdentityProtection] next run latest_detection_found: {latest_detection_time}')
+    last_run = {
+        'latest_detection_found': latest_detection_time
+    }
+
+    return incidents, last_run
 
 
 def start_auth(client: AADClient) -> CommandResults:
@@ -414,7 +406,9 @@ def main() -> None:
         elif command == 'azure-ad-identity-protection-risky-user-dismiss':
             return_results(azure_ad_identity_protection_risky_users_dismiss_command(client, **args))
         elif command == 'fetch-incidents':
-            return_results(fetch_incidents(client, params))
+            incidents, last_run = fetch_incidents(client, params)
+            demisto.incidents(incidents)
+            demisto.setLastRun(last_run)
 
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')

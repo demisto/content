@@ -1,10 +1,13 @@
+import copy
 import io
 import json
+import random
 import time
 
 from freezegun import freeze_time
 import dateparser
 from datetime import datetime, timedelta
+import demistomock as demisto
 
 import pytest
 from AzureADIdentityProtection import (AADClient, OUTPUTS_PREFIX,
@@ -166,17 +169,20 @@ def test_fetch_all_incidents(mocker):
         When
             mock the Client's http_request.
         Then
-            validate fetch incidents command using the Client gets all 3 relevant incidents
+            validate fetch incidents command using the Client gets all relevant incidents
     """
-    from AzureADIdentityProtection import detections_to_incidents
+    from AzureADIdentityProtection import detections_to_incidents, get_last_fetch_time
     test_incidents = util_load_json('test_data/incidents.json')
-    last_fetch_datetime: datetime = dateparser.parse('2021-07-10T11:02:54Z')
+    last_run = {
+        'latest_detection_found': '2021-07-10T11:02:54Z'
+    }
+    last_fetch, last_fetch_datetime = get_last_fetch_time(last_run, {})
     incidents, last_item_time = detections_to_incidents(
         test_incidents.get('value', []), last_fetch_datetime=last_fetch_datetime)
-    assert len(incidents) == 3
+    assert len(incidents) == 10
     assert incidents[0].get(
         'name') == 'Azure AD: 17 newCountry adminDismissedAllRiskForUser'
-    assert last_item_time == dateparser.parse('2021-07-25T11:02:54Z').replace(tzinfo=None)
+    assert last_item_time == dateparser.parse('2021-07-17T14:11:57Z').replace(tzinfo=None)
 
 
 def test_fetch_new_incidents(mocker):
@@ -186,17 +192,20 @@ def test_fetch_new_incidents(mocker):
         When
             mock the Client's http_request.
         Then
-            validate fetch incidents command using the Client gets all 3 relevant incidents
+            validate fetch incidents command using the Client gets all relevant incidents
     """
-    from AzureADIdentityProtection import detections_to_incidents
+    from AzureADIdentityProtection import detections_to_incidents, get_last_fetch_time
     test_incidents = util_load_json('test_data/incidents.json')
-    last_fetch_datetime: datetime = dateparser.parse('2021-07-20T11:02:54Z')
+    last_run = {
+        'latest_detection_found': '2021-07-20T11:02:54Z'
+    }
+    last_fetch, last_fetch_datetime = get_last_fetch_time(last_run, {})
     incidents, last_item_time = detections_to_incidents(
         test_incidents.get('value', []), last_fetch_datetime=last_fetch_datetime)
-    assert len(incidents) == 1
+    assert len(incidents) == 10
     assert incidents[0].get(
-        'name') == 'Azure AD: 37 newCountry adminDismissedAllRiskForUser'
-    assert last_item_time == dateparser.parse('2021-07-25T11:02:54Z').replace(tzinfo=None)
+        'name') == 'Azure AD: 17 newCountry adminDismissedAllRiskForUser'
+    assert last_item_time == dateparser.parse('2021-07-20T11:02:54Z').replace(tzinfo=None)
 
 
 # set time to 2021-07-29 11:10:00
@@ -222,21 +231,121 @@ def test_non_first_fetch_start_time():
         "first_fetch": "2 days"
     }
     last_fetch, last_fetch_datetime = get_last_fetch_time(last_run, params)
-    assert last_fetch == '2021-07-28T00:10:00.000Z'
+    assert last_fetch == '2021-07-28T00:10:00.000'
 
 
-def mock_list_detections(limit, filter_expression):
-    from AzureADIdentityProtection import DATE_FORMAT_WITH_MS, DATE_FORMAT_WITHOUT_MS
+def test_filter_creation_with_user_filter():
+    from AzureADIdentityProtection import build_filter
+    last_fetch = '2021-07-28T00:10:00.000'
+    params = {
+        "first_fetch": "2 days",
+        "fetch_filter_expression": "id gt 1234"
+    }
+
+    user_filter = params['fetch_filter_expression']
+    constructed_filter = build_filter(last_fetch, params)
+    assert constructed_filter == f"{user_filter} and detectedDateTime gt {last_fetch}Z"
+
+
+def test_filter_creation_without_user_filter():
+    from AzureADIdentityProtection import build_filter
+    last_fetch = '2021-07-28T00:10:00.000'
+    params = {
+        "first_fetch": "2 days",
+        "fetch_filter_expression": ""
+    }
+
+    constructed_filter = build_filter(last_fetch, params)
+    assert constructed_filter == f"detectedDateTime gt {last_fetch}Z"
+
+    params = {
+        "first_fetch": "2 days",
+    }
+
+    constructed_filter = build_filter(last_fetch, params)
+    assert constructed_filter == f"detectedDateTime gt {last_fetch}Z"
+
+
+@pytest.mark.parametrize('date_to_test', [('2021-07-28T00:10:00.000Z'), ('2021-07-28T00:10:00Z')])
+def test_date_str_to_azure_format_z_suffix(date_to_test):
+    """
+    Given:
+    - A date string that includes a Z at the end
+
+    When:
+    - The date string is moved to Azure format
+
+    Then:
+    - The result will be a string without a Z at the end
+    """
+    from AzureADIdentityProtection import date_str_to_azure_format
+    assert date_str_to_azure_format(date_to_test)[-1].lower() != 'z'
+
+
+@pytest.mark.parametrize('date_to_test, expected', [
+    ('2021-07-28T00:10:00.123456Z', '2021-07-28T00:10:00.123456'),
+    ('2021-07-28T00:10:00.123456789Z', '2021-07-28T00:10:00.123456'),
+    ('2021-07-28T00:10:00.123Z', '2021-07-28T00:10:00.123'),
+    ('2021-07-28T00:10:00.123456', '2021-07-28T00:10:00.123456'),
+    ('2021-07-28T00:10:00.123456789', '2021-07-28T00:10:00.123456'),
+    ('2021-07-28T00:10:00.123', '2021-07-28T00:10:00.123')
+])
+def test_date_str_to_azure_format_with_ms(date_to_test, expected):
+    """
+    Given:
+    - A date string that includes miliseconds, that are less than 6 digits long.
+
+    When:
+    - The date string is moved to Azure format
+
+    Then:
+    - The result will be a string that contains the same digits as exp
+    """
+    from AzureADIdentityProtection import date_str_to_azure_format
+    assert date_str_to_azure_format(date_to_test) == expected
+
+
+@pytest.mark.parametrize('date_to_test, expected', [
+    ('2021-07-28T00:10:00Z', '2021-07-28T00:10:00.000'),
+    ('2021-07-28T00:10:00', '2021-07-28T00:10:00.000'),
+])
+def test_date_str_to_azure_format_without_ms(date_to_test, expected):
+    from AzureADIdentityProtection import date_str_to_azure_format
+    assert date_str_to_azure_format(date_to_test) == expected
+
+
+def test_detections_to_incident():
+    from AzureADIdentityProtection import detections_to_incidents, DATE_FORMAT
+    detections_in_order = util_load_json('test_data/incidents.json')['value']
+    detections_out_of_order = copy.deepcopy(detections_in_order)
+    random.shuffle(detections_out_of_order)
+    last_fetch_datetime = datetime.strptime('2019-07-28T00:10:00.123456', DATE_FORMAT)
+    incidents, latest_incident_time = detections_to_incidents(detections_in_order, last_fetch_datetime)
+    latest_incident_time = latest_incident_time.strftime(DATE_FORMAT)
+
+    assert len(incidents) == 10
+    assert latest_incident_time == '2021-07-17T14:11:57.000000'
+
+    incidents, latest_incident_time = detections_to_incidents(detections_out_of_order, last_fetch_datetime)
+    latest_incident_time = latest_incident_time.strftime(DATE_FORMAT)
+
+    assert len(incidents) == 10
+    assert latest_incident_time == '2021-07-17T14:11:57.000000'
+
+
+def mock_list_detections(limit, filter_expression, user_id, user_principal_name):
+    from AzureADIdentityProtection import DATE_FORMAT, date_str_to_azure_format
     test_incidents = util_load_json('test_data/incidents.json')
     all_possible_results = test_incidents.get('value')
 
     start_time = filter_expression.split('gt ')[-1]
-    start_time_datetime = datetime.strptime(start_time, DATE_FORMAT_WITH_MS)
+    start_time = date_str_to_azure_format(start_time)
+    start_time_datetime = datetime.strptime(start_time, DATE_FORMAT)
 
     incidents_compliant_with_filter = []
-    for detection in test_incidents:
-        detection_time = detection['detectedDateTime']
-        detection_datetime = datetime.strptime(detection_time, DATE_FORMAT_WITHOUT_MS)
+    for detection in all_possible_results:
+        detection_time = date_str_to_azure_format(detection['detectedDateTime'])
+        detection_datetime = datetime.strptime(detection_time, DATE_FORMAT)
         if detection_datetime > start_time_datetime:
             incidents_compliant_with_filter.append(detection)
 
@@ -249,33 +358,49 @@ def mock_list_detections(limit, filter_expression):
     return res
 
 
-def test_filter_creation():
-    from AzureADIdentityProtection import build_filter
-    last_fetch = '2021-07-28T00:10:00.000Z'
-    params = {
-        "first_fetch": "2 days",
-        "fetch_filter_expression": "id gt 1234"
-    }
-
-    user_filter = params['fetch_filter_expression']
-    constructed_filter = build_filter(last_fetch, params)
-    assert constructed_filter == f"{user_filter} and detectedDateTime gt {last_fetch}"
-
-
 def mock_get_last_fetch_time(last_run, params):
-    from AzureADIdentityProtection import DATE_FORMAT_WITH_MS
+    from AzureADIdentityProtection import DATE_FORMAT, date_str_to_azure_format
     last_fetch = last_run.get('latest_detection_found')
     if not last_fetch:
         # To handle the fact
-        days_ago = params.get('first_fetch').split(' ')[0]
-        default_fetch_datetime = time.
-        last_fetch = str(default_fetch_datetime.isoformat(timespec='milliseconds')) + 'Z'
+        last_fetch = "2021-07-16T11:08:55.000"
 
-    last_fetch_datetime: datetime = datetime.strptime(last_fetch, DATE_FORMAT_WITH_MS)
+    last_fetch = date_str_to_azure_format(last_fetch)
+    last_fetch_datetime: datetime = datetime.strptime(last_fetch, DATE_FORMAT)
     return last_fetch, last_fetch_datetime
 
 
-def test_first_fetch():
+def test_fetch_complete_flow(mocker, client):
     from AzureADIdentityProtection import fetch_incidents
 
-    mocker.patch('AzureADIdentityProtection.get_last_fetch_time', )
+    mocker.patch('AzureADIdentityProtection.get_last_fetch_time', side_effect=mock_get_last_fetch_time)
+    mocker.patch('AzureADIdentityProtection.MicrosoftClient.get_access_token', return_value='token')
+    mocker.patch('AzureADIdentityProtection.AADClient.azure_ad_identity_protection_risk_detection_list_raw',
+                 side_effect=mock_list_detections)
+
+    mock_params = {
+        'max_fetch': 5
+    }
+    last_run = {}
+    mocker.patch('demistomock.params', return_value=mock_params)
+    mocker.patch('demistomock.getLastRun', return_value=last_run)
+
+    incidents, last_run = fetch_incidents(client, mock_params)
+    first_incident = incidents[0].get('name')
+    assert first_incident == 'Azure AD: 37 newCountry adminDismissedAllRiskForUser'
+    assert len(incidents) == 5
+    assert last_run['latest_detection_found'] == '2021-07-17T14:09:54.000000'
+
+    mocker.patch('demistomock.getLastRun', return_value=last_run)
+
+    incidents, last_run = fetch_incidents(client, mock_params)
+    first_incident = incidents[0].get('name')
+    assert first_incident == 'Azure AD: 87 newCountry adminDismissedAllRiskForUser'
+    assert len(incidents) == 3
+    assert last_run['latest_detection_found'] == '2021-07-17T14:11:57.000000'
+
+    mocker.patch('demistomock.getLastRun', return_value=last_run)
+
+    incidents, last_run = fetch_incidents(client, mock_params)
+    assert len(incidents) == 0
+    assert last_run['latest_detection_found'] == '2021-07-17T14:11:57.000000'
