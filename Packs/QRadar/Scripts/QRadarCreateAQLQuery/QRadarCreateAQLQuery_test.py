@@ -178,7 +178,7 @@ class TestKeyErrors:
     def test_with_required_key(self, mocker):
         mock_return_error = self.mocks({}, mocker)
         main()
-        mock_return_error.assert_called_once_with('you should specify time_frame.')
+        mock_return_error.assert_called_once_with('Missing time_frame.')
 
     def test_with_base_key(self, mocker):
         args = {
@@ -190,7 +190,7 @@ class TestKeyErrors:
         }
         mock_return_error = self.mocks(args, mocker)
         main()
-        mock_return_error.assert_called_once_with('you should specify base_fields_to_search.')
+        mock_return_error.assert_called_once_with('Missing base_fields_to_search.')
 
     def test_with_other_key(self, mocker):
         args = {
@@ -206,7 +206,7 @@ class TestKeyErrors:
         }
         mock_return_error = self.mocks(args, mocker)
         main()
-        mock_return_error.assert_called_once_with('you should specify first_additional_fields.')
+        mock_return_error.assert_called_once_with('Missing first_additional_fields.')
 
 
 def test_main_general_exception(mocker):
