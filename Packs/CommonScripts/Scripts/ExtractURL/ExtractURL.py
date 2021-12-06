@@ -51,7 +51,6 @@ def get_redirect_url_proof_point_v3(non_formatted_url: str) -> str:
     url_regex = re.compile(r'v3/__(?P<url>.+?)__;(?P<enc_bytes>.*?)!')
     if match := url_regex.search(non_formatted_url):
         non_formatted_url = match.group('url')
-    #  TODO add test for else
     else:
         demisto.error(f'Could not parse Proof Point redirected URL. Returning original URL: {non_formatted_url}')
     return non_formatted_url
@@ -72,7 +71,6 @@ def get_redirect_url_from_query(non_formatted_url: str, parse_results: ParseResu
     if not (query_urls := query_params_dict.get(redirect_param_name, [])):
         demisto.error(f'Could not find redirected URL. Returning the original URL: {non_formatted_url}')
         return non_formatted_url
-    # TODO add test for case
     if len(query_urls) > 1:
         demisto.debug(f'Found more than one URL query parameters for redirect in the given URL {non_formatted_url}\n'
                       f'Returning the first URL: {query_urls[0]}')
@@ -110,7 +108,6 @@ def format_url(non_formatted_url: str) -> str:
         (str): Formatted URL.
     """
     parse_results: ParseResult = urlparse(non_formatted_url)
-    # ATP redirect URL
     if re.match(ATP_REGEX, non_formatted_url):
         non_formatted_url = get_redirect_url_from_query(non_formatted_url, parse_results, 'url')
     elif match := PROOF_POINT_URL_REG.search(non_formatted_url):
@@ -130,8 +127,8 @@ def format_url(non_formatted_url: str) -> str:
 
 def main():
     try:
-        non_formatted_urls: List[str] = [url_.trim() for url_ in argToList(demisto.args().get('input'))]
-        return_results(CommandResults(outputs=non_formatted_urls))
+        non_formatted_urls: List[str] = [format_url(url_.strip()) for url_ in argToList(demisto.args().get('input'))]
+        return_results(CommandResults(outputs_prefix='URL', outputs=non_formatted_urls))
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute ExtractURL. Error: {str(e)}')

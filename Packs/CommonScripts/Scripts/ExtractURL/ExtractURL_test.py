@@ -120,6 +120,16 @@ def test_replace_protocol(non_formatted_url: str, expected: str):
 
 @pytest.mark.parametrize('url_, expected', FORMAT_URL_TEST_DATA)
 def test_format_url(url_, expected):
+    """
+    Given:
+    - URL.
+
+    When:
+    - Given URL needs to be formatted.
+
+    Then:
+    - Ensure URL is formatted as expected
+    """
     from ExtractURL import format_url
     assert format_url(url_) == expected
 
@@ -133,6 +143,16 @@ def test_format_url(url_, expected):
      '%3DMTMwMjA1ODYzNQS2%26mt%3D1%26rt%3D0')
 ])
 def test_get_redirect_url_proof_point_v2(url_: str, expected: str):
+    """
+    Given:
+    - URL with redirect URL Proof Point v2.
+
+    When:
+    - Given URL with redirect URL is valid.
+
+    Then:
+    - Ensure redirected URL is returned.
+    """
     from ExtractURL import get_redirect_url_proof_point_v2
     assert get_redirect_url_proof_point_v2(url_, urlparse(url_)) == expected
 
@@ -146,6 +166,16 @@ def test_get_redirect_url_proof_point_v2(url_: str, expected: str):
      'https://google.com:443/search?q=a*test&gs=ps')
 ])
 def test_get_redirect_url_proof_point_v3(url_: str, expected: str):
+    """
+    Given:
+    - URL with redirect URL Proof Point v3.
+
+    When:
+    - Given URL with redirect URL is valid.
+
+    Then:
+    - Ensure redirected URL is returned.
+    """
     from ExtractURL import get_redirect_url_proof_point_v3
     assert get_redirect_url_proof_point_v3(url_) == expected
 
@@ -161,7 +191,102 @@ def test_get_redirect_url_proof_point_v3(url_: str, expected: str):
      '%2FACafNx8JAep8O9MdllcKCsHET2Ye%2B4%3D&reserved=0', 'url',
      'https://office.memoriesflower.com/Permission/office.php')
 ])
-def test_get_redirect_url_from_query(non_formatted_url: str, redirect_param_name: str,
-                                     expected: str):
+def test_get_redirect_url_from_query(non_formatted_url: str, redirect_param_name: str, expected: str):
+    """
+    Given:
+    - URL with redirect URL (Proof Point / ATP).
+
+    When:
+    - Given URL with redirect URL is valid.
+
+    Then:
+    - Ensure redirected URL is returned.
+    """
     from ExtractURL import get_redirect_url_from_query
     assert get_redirect_url_from_query(non_formatted_url, urlparse(non_formatted_url), redirect_param_name) == expected
+
+
+#  Invalid cases
+@pytest.mark.parametrize('url_', [
+    'https://urldefense.com/v3/__https://google.com:443/search?66ujQIQ$',
+    'https://urldefense.us/v3/__https://google.com:443/searchERujngZv9UWf66ujQIQ$'
+])
+def test_get_redirect_url_proof_point_v3_invalid(mocker, url_):
+    """
+    Given:
+    - Proof Point v3 URL.
+
+    When:
+    - Given URL is invalid and does not contain redirect URL.
+
+    Then:
+    - Ensure the full URL is returned.
+    - Ensure a call to demisto.error is made.
+    """
+    import demistomock as demisto
+    mocker.patch.object(demisto, 'error')
+    from ExtractURL import get_redirect_url_proof_point_v3
+    assert get_redirect_url_proof_point_v3(url_) == url_
+    assert demisto.error.called
+
+
+def test_get_redirect_url_from_query_no_url_query_param(mocker):
+    """
+    Given:
+    - Proof Point v1 URL.
+
+    When:
+    - Given URL is invalid and does not contain redirect URL query parameter.
+
+    Then:
+    - Ensure the full URL is returned.
+    - Ensure a call to demisto.error is made.
+    """
+    from ExtractURL import get_redirect_url_from_query
+    import demistomock as demisto
+    url_ = 'https://urldefense.proofpoint.com/v1/url?x=bla'
+    mocker.patch.object(demisto, 'error')
+    assert get_redirect_url_from_query(url_, urlparse(url_), 'q') == url_
+    assert demisto.error.called
+
+
+def test_get_redirect_url_from_query_duplicate_url_query_param(mocker):
+    """
+    Given:
+    - Proof Point v1 URL.
+
+    When:
+    - Given URL is invalid and contains duplicate redirect URL parameters.
+
+    Then:
+    - Ensure the full URL is returned.
+    - Ensure a call to demisto.debug is made.
+    """
+    from ExtractURL import get_redirect_url_from_query
+    import demistomock as demisto
+    url_ = 'https://urldefense.proofpoint.com/v1/url?u=url_1&u=url_2'
+    mocker.patch.object(demisto, 'debug')
+    assert get_redirect_url_from_query(url_, urlparse(url_), 'u') == 'url_1'
+    assert demisto.debug.called
+
+
+def test_main_flow_valid(mocker):
+    """
+    Given:
+    - Cortex XSOAR arguments.
+
+    When:
+    - Formatting URLs
+
+    Then:
+    - Ensure URL are formatted as expected.
+    """
+    from ExtractURL import main
+    from ExtractURL import CommandResults
+    import ExtractURL
+    import demistomock as demisto
+    mocker.patch.object(demisto, 'args', return_value={'input': f'{TEST_URL_HTTP},{TEST_URL_HTTPS}'})
+    mock_results: CommandResults = mocker.patch.object(ExtractURL, 'return_results')
+    main()
+    command_results = mock_results.call_args.args[0]
+    assert command_results.outputs == [TEST_URL_HTTP, TEST_URL_HTTPS]
