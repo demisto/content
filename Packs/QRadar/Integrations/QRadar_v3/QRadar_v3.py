@@ -3498,8 +3498,8 @@ def register_signal_handler():
 
 def main() -> None:
     params = demisto.params()
-    args = demisto.args()
     command = demisto.command()
+    args = demisto.args()
 
     # handle allowed advanced parameters
     adv_params = params.get('adv_params')
