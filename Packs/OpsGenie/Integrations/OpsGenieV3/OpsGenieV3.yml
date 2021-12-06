@@ -11,7 +11,7 @@ configuration:
 - displaypassword: API Token
   name: credentials
   type: 9
-  required: false
+  required: true
   hiddenusername: true
 - display: Fetch incidents
   name: isFetch
