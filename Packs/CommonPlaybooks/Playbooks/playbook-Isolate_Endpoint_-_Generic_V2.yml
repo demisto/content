@@ -71,6 +71,9 @@ outputs:
 - contextPath: MicrosoftATP.NonIsolateList
   description: Machine ID's which will not be isolated
   type: unknown
+- contextPath: MicrosoftATP.IncorrectIDs
+  description: Incorrect Device IDs entered
+  type: unknown
 starttaskid: '0'
 tasks:
   '0':
@@ -336,27 +339,5 @@ view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n
   \     \"height\": 385,\n      \"width\": 2530,\n      \"x\": 50,\n      \"y\": 50\n\
   \    }\n  }\n}"
 tests:
-- Field polling test
-- test-domain-indicator
-- Calculate Severity - Generic v2 - Test
-- Wait Until Datetime - Test
-- Calculate Severity - Standard - Test
-- Extract Indicators From File - Generic v2 - Test
-- URL Enrichment - Generic v2 - Test
-- File Enrichment - Generic v2 - Test
-- Domain Enrichment - Generic v2 - Test
-- Account Enrichment - Generic v2.1 - Test
-- IP Enrichment - Generic v2 - Test
-- Get endpoint details - Generic - test
-- Detonate URL - Generic Test
-- Email Address Enrichment - Generic v2.1 - Test
-- Generic Polling Test
-- Send Investigation Summary Reports - Test
-- Detonate File - No Files test
-- Test Convert file hash to corresponding hashes
-- Detonate File - Generic Test
-- Endpoint Enrichment - Generic v2.1 - Test
-- Retrieve File from Endpoint - Generic V2 Test
 - Isolate and unisolate endpoint - test
-- Block IP - Generic V3_Test
 fromversion: 5.5.0

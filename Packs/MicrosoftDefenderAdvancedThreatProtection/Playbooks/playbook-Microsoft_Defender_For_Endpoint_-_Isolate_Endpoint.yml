@@ -27,6 +27,9 @@ outputs:
 - contextPath: MicrosoftATP.NonIsolateList
   description: Machine ID's which will not be isolated
   type: unknown
+- contextPath: MicrosoftATP.IncorrectIDs
+  description: Incorrect Device IDs entered
+  type: unknown
 starttaskid: "0"
 tasks:
   "0":
@@ -54,8 +57,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 50
+          "x": 30,
+          "y": -170
         }
       }
   "1":
@@ -93,8 +96,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 195
+          "x": 30,
+          "y": -15
         }
       }
   "2":
@@ -108,20 +111,20 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 2d65723d-5bc8-4982-818d-eef2ffcb40c0
+      id: c46cde47-6b4c-49ef-8961-1d360f9ab86c
       iscommand: false
       name: Done
       type: title
       version: -1
       description: ''
-    taskid: 2d65723d-5bc8-4982-818d-eef2ffcb40c0
+    taskid: c46cde47-6b4c-49ef-8961-1d360f9ab86c
     timertriggers: []
     type: title
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1820
+          "x": 30,
+          "y": 1940
         }
       }
   "3":
@@ -150,8 +153,8 @@ tasks:
       brand: ""
       id: abc1a40e-2ae6-4928-8530-f9baf3ce7760
       iscommand: false
+      description: Is there Device ID?
       name: Is there Device ID?
-      description: Validating if there is any Device ID as an input
       type: condition
       version: -1
     taskid: abc1a40e-2ae6-4928-8530-f9baf3ce7760
@@ -160,11 +163,12 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 280,
-          "y": 370
+          "x": 290,
+          "y": 170
         }
       }
   "4":
+    continueonerror: true
     id: "4"
     ignoreworker: false
     isautoswitchedtoquietmode: false
@@ -172,6 +176,7 @@ tasks:
     nexttasks:
       '#none#':
       - "11"
+      - "19"
     note: false
     quietmode: 0
     scriptarguments:
@@ -189,20 +194,20 @@ tasks:
     task:
       brand: ""
       description: Get a machine's details by its identity.
-      id: ef007a16-7b8c-41d3-8e41-3b9dceee3564
+      id: 0a7f4dd0-9f2a-4285-8ded-2534641dff3a
       iscommand: true
       name: Get device info
       script: '|||microsoft-atp-get-machine-details'
       type: regular
       version: -1
-    taskid: ef007a16-7b8c-41d3-8e41-3b9dceee3564
+    taskid: 0a7f4dd0-9f2a-4285-8ded-2534641dff3a
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 510,
-          "y": 570
+          "x": 750,
+          "y": 390
         }
       }
   "5":
@@ -232,9 +237,8 @@ tasks:
       brand: ""
       id: 74b41d66-d1a8-486a-8d55-15c18d0a06aa
       iscommand: false
+      description: Is the device ready for isolation?
       name: Is the device ready for isolation?
-      description: Validating that the device IDs are not empty and the devices state
-        is active
       type: condition
       version: -1
     taskid: 74b41d66-d1a8-486a-8d55-15c18d0a06aa
@@ -243,8 +247,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 730,
-          "y": 1050
+          "x": 750,
+          "y": 1130
         }
       }
   "7":
@@ -282,8 +286,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 730,
-          "y": 1250
+          "x": 750,
+          "y": 1360
         }
       }
   "8":
@@ -308,20 +312,20 @@ tasks:
       description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
         to check the previous task entries. If array is provided, will return yes
         if one of the entries returned an error.
-      id: 6b5ceae5-8a48-49ab-8a67-2249a25f6011
+      id: 629fbf13-685b-4b59-809d-bba69156197e
       iscommand: false
       name: Check if Isolate Action Succeeded
       scriptName: isError
       type: condition
       version: -1
-    taskid: 6b5ceae5-8a48-49ab-8a67-2249a25f6011
+    taskid: 629fbf13-685b-4b59-809d-bba69156197e
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
-          "x": 730,
-          "y": 1430
+          "x": 750,
+          "y": 1530
         }
       }
   "9":
@@ -336,27 +340,45 @@ tasks:
     quietmode: 0
     scriptarguments:
       value:
-        simple: The Isolate Action did not succeed. Please validate your input or
-          check if the machine is already in an Isolate state.
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: MicrosoftATP.IsolateList
+              operator: notIn
+              right:
+                iscontext: true
+                value:
+                  simple: MicrosoftATP.MachineAction.MachineID
+          root: MicrosoftATP.IsolateList
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: |
+                    The Isolate Action did not succeed. Please validate your input or check if the machine is already in an Isolate state. The Device IDs that were not Isolated
+              suffix: {}
+            operator: concat
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: Prints text to war room (Markdown supported)
-      id: ea09c0b8-b71d-4f70-8f1f-7699ac3e8398
+      id: 893d6715-c337-4d55-886d-5c86a97ee3cd
       iscommand: false
       name: Print a warning to the war room - Device/s already isolated
       scriptName: Print
       type: regular
       version: -1
-    taskid: ea09c0b8-b71d-4f70-8f1f-7699ac3e8398
+    taskid: 893d6715-c337-4d55-886d-5c86a97ee3cd
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 730,
-          "y": 1650
+          "x": 750,
+          "y": 1760
         }
       }
   "10":
@@ -392,7 +414,7 @@ tasks:
       {
         "position": {
           "x": 310,
-          "y": 1250
+          "y": 1360
         }
       }
   "11":
@@ -446,8 +468,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
-          "y": 720
+          "x": 750,
+          "y": 775
         }
       }
   "12":
@@ -502,8 +524,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
-          "y": 870
+          "x": 750,
+          "y": 940
         }
       }
   "13":
@@ -532,9 +554,8 @@ tasks:
       brand: ""
       id: b4f85982-671c-461e-8698-2c81c61a9a8b
       iscommand: false
+      description: Are there any unactive devices?
       name: Are there any unactive devices?
-      description: Validating if there are any device IDs which there device state
-        is not active
       type: condition
       version: -1
     taskid: b4f85982-671c-461e-8698-2c81c61a9a8b
@@ -544,28 +565,190 @@ tasks:
       {
         "position": {
           "x": 310,
-          "y": 1050
+          "y": 1120
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: inputs.Device_id
+              operator: notIn
+              right:
+                iscontext: true
+                value:
+                  simple: MicrosoftATP.Machine.ID
+          root: inputs.Device_id
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: "Please note that the following IDs are incorrect. No action\
+                    \ was taken on the following Device IDs: \n"
+              suffix: {}
+            operator: concat
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: d3a22753-df6a-4b2f-89d7-97604fe961bb
+      iscommand: false
+      name: Print incorrect Device IDs
+      scriptName: Print
+      type: regular
+      version: -1
+    taskid: d3a22753-df6a-4b2f-89d7-97604fe961bb
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": 940
+        }
+      }
+  "19":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: inputs.Device_id
+                    operator: notIn
+                    right:
+                      iscontext: true
+                      value:
+                        simple: MicrosoftATP.Machine.ID
+                root: inputs.Device_id
+                transformers:
+                - operator: uniq
+          operator: isNotEmpty
+      label: "yes"
+    id: "19"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "20"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 944245f0-c5ec-4e17-8029-cb947f5e2630
+      iscommand: false
+      description: Check if there are any incorrect device IDs
+      name: Check if there are any incorrect device IDs
+      type: condition
+      version: -1
+    taskid: 944245f0-c5ec-4e17-8029-cb947f5e2630
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": 570
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: MicrosoftATP.IncorrectIDs
+      value:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: inputs.Device_id
+              operator: notIn
+              right:
+                iscontext: true
+                value:
+                  simple: MicrosoftATP.Machine.ID
+          root: inputs.Device_id
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      id: 1e9282d7-a726-4637-85d7-1e9e1f380467
+      iscommand: false
+      name: Set Incorrect IDs
+      scriptName: SetAndHandleEmpty
+      type: regular
+      version: -1
+    taskid: 1e9282d7-a726-4637-85d7-1e9e1f380467
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": 775
         }
       }
 version: -1
 view: |-
   {
     "linkLabelsPosition": {
-      "13_2_#default#": 0.12,
+      "13_10_yes": 0.67,
+      "13_2_#default#": 0.1,
+      "19_2_#default#": 0.21,
       "1_2_#default#": 0.1,
       "3_2_#default#": 0.1,
       "3_4_yes": 0.51,
       "5_2_#default#": 0.1,
       "5_7_yes": 0.66,
-      "8_2_#default#": 0.43,
+      "8_2_#default#": 0.1,
       "8_9_yes": 0.62
     },
     "paper": {
       "dimensions": {
-        "height": 1835,
-        "width": 1060,
-        "x": 50,
-        "y": 50
+        "height": 2175,
+        "width": 1100,
+        "x": 30,
+        "y": -170
       }
     }
   }
