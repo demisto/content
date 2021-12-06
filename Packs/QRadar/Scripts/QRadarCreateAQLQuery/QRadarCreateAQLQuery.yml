@@ -6,7 +6,7 @@ script: ''
 type: python
 tags:
 - Utility
-comment: Build QRadar AQL Query. (Available from Cortex XSOAR 6.0.0).
+comment: Build QRadar AQL Query.
 args:
 - name: base_values_to_search
   required: true
@@ -37,8 +37,7 @@ args:
     match. Valid options are exact or partial.
 - name: select_fields
   required: true
-  description: The list of fields to select within the AQL query The default fields
-    are DATEFORMAT(devicetime,'dd-MM-yyyy hh:mm'),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid),sourceip,destinationip,username
+  description: The list of fields to select within the AQL query.
   defaultValue: DATEFORMAT(devicetime,'dd-MM-yyyy hh:mm'),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid),sourceip,destinationip,username
 - name: time_frame
   required: true

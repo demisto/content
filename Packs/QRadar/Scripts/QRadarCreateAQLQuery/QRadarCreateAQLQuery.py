@@ -109,12 +109,12 @@ def main():
         aql_string = complete_query(
             select_fields=select_fields,
             combined_sections=create_sections_str(args),
-            time_frame=time_frame
+            time_frame=time_frame,
         )
         return_results(CommandResults(readable_output=aql_string, outputs={'QRadarQuery': aql_string}))
     except KeyError as key_error:
         key_name = original_key_name(key_error.args[0])
-        return_error(f'you should specify {key_name}.')
+        return_error(f'Missing {key_name}.')
     except Exception as error:
         return_error(str(error), error)
 

@@ -7,7 +7,7 @@ Build QRadar AQL Query. (Available from Cortex XSOAR 6.0.0).
 | --- | --- |
 | Script Type | python3 |
 | Tags | Utility |
-| Cortex XSOAR Version | 5.5.0 |
+| Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
 ---
