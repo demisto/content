@@ -41,8 +41,8 @@ configuration:
   required: false
   type: 0
 - additionalinfo: The initial offset to start fetching from, not including the value
-    set (e.g. if 3 is set, the first event that will be fetched will be with offset
-    4). If you want to start from the earliest or latest, type in 'earliest' or 'latest' accordingly.
+    set (e.g. if 3 is set, the first event that will be fetched will be from offset
+    4). If you want to start from the earliest or latest, type in 'earliest' or 'latest'.
   display: Offset to fetch messages from (Exclusive)
   name: first_fetch
   required: false
@@ -61,14 +61,14 @@ configuration:
   required: false
   type: 13
 - additionalinfo: |-
-    The max number of message bytes to retrieve in each attempted fetch request. Should be in multiples of 1024. If the fetching process is taking a long time, you should consider increasing this value. Default is '1048576'.
+    The max number of message bytes to retrieve in each attempted fetch request. Should be in multiples of 1024. If the fetching process takes a long time, consider increasing this value. Default is '1048576'.
   defaultvalue: '1048576'
   display: Max number of bytes per message
   hidden: false
   name: max_bytes_per_message
   required: false
   type: 0
-description: The Open source distributed streaming platform
+description: Kafka is an open source distributed streaming platform.
 display: Kafka v3
 name: KafkaV3
 script:
@@ -77,7 +77,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Whether to fetch topics available offsets or not.
+      description: Whether to include the first and last offset for a topic, when printing a list of topics and partitions.
       isArray: false
       name: include_offsets
       predefined:
@@ -86,7 +86,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Prints all partitions of a topic.
+    description: Prints all topics and their partitions.
     execution: false
     name: kafka-print-topics
     outputs:
@@ -104,7 +104,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: A topic to filter messages by
+      description: A topic to publish messages to
       isArray: false
       name: topic
       required: true
@@ -127,14 +127,14 @@ script:
     name: kafka-publish-msg
   - arguments:
     - default: false
-      description: A topic to filter by
+      description: A topic to get messages from
       isArray: false
       name: topic
       required: true
       secret: false
     - default: false
       defaultValue: Earliest
-      description: Message offset to filter by. Acceptable values are 'Earliest', 'Latest', or any other offest number.
+      description: Message offset to filter by. Acceptable values are 'Earliest', 'Latest', or an offest number. 
       isArray: false
       name: offset
       required: false
@@ -161,7 +161,7 @@ script:
       type: number
   - arguments:
     - default: false
-      description: A topic to filter by
+      description: A topic to fetch partitions for
       isArray: false
       name: topic
       required: true
