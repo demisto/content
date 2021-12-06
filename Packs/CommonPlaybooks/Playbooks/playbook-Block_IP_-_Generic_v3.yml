@@ -3450,8 +3450,8 @@ inputs:
   value: {}
   required: false
   description: Insert a tag name with which indicators will get tagged. This tag can
-    be used later in the External Dynamic Lists integration by using the tag for
-    filtering IPs in the indicator query.
+    be used later in the External Dynamic Lists integration by using the tag for filtering
+    IPs in the indicator query.
   playbookInputQuery:
 - key: DAG
   value: {}
