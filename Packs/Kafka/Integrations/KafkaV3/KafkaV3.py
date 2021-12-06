@@ -299,7 +299,8 @@ class KafkaCommunicator:
             for single_partition in partition:
                 try:
                     offset = self.get_offset_for_partition(topic, single_partition, offset)
-                    topic_partitions += [TopicPartition(topic=topic, partition=int(single_partition), offset=offset)]
+                    topic_partitions += [TopicPartition(topic=topic, partition=int(single_partition),
+                                                        offset=offset)]
                 except KafkaException as e:
                     # Sometimes listing topics can return uninitialized partitions.
                     # If that's the case, ignore them and continue.
@@ -312,7 +313,8 @@ class KafkaCommunicator:
             for metadata_partition in topic_metadata.partitions.values():
                 try:
                     offset = self.get_offset_for_partition(topic, metadata_partition.id, offset)
-                    topic_partitions += [TopicPartition(topic=topic, partition=metadata_partition.id, offset=offset)]
+                    topic_partitions += [TopicPartition(topic=topic, partition=metadata_partition.id,
+                                                        offset=offset)]
                 except KafkaException as e:
                     # Sometimes listing topics can return uninitialized partitions.
                     # If that's the case, ignore them and continue.
