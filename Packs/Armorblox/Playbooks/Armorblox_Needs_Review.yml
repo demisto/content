@@ -2,12 +2,11 @@ description: This playbook sends email alerts to admins for Armorblox incidents 
   need review.
 id: Armorblox Needs Review
 inputs:
-- description: "Receiver's mailing address."
+- description: Receiver's mailing address.
   key: recipient_mail_address
   playbookInputQuery:
   required: true
-  value:
-    simple: xyz@gmail.com
+  value: {}
 name: Armorblox Needs Review
 outputs:
 - contextPath: Armorblox.Threat.remediation_actions
@@ -29,12 +28,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 75f9948a-4330-4c25-86eb-2b4263af8761
+      id: cecebc00-e9a7-4238-8ee3-254fe6f9a58d
       iscommand: false
       name: ""
       version: -1
       description: ''
-    taskid: 75f9948a-4330-4c25-86eb-2b4263af8761
+    taskid: cecebc00-e9a7-4238-8ee3-254fe6f9a58d
     timertriggers: []
     type: start
     view: |-
@@ -62,13 +61,13 @@ tasks:
     task:
       brand: Armorblox
       description: 'Check the recommended remediation action for any incident '
-      id: 8c3d5112-83da-4163-85d7-d1b719441c02
+      id: 4f2885fc-4161-48e6-8b9d-f0ff38dd208b
       iscommand: true
       name: Get Remediation Action
       script: Armorblox|||armorblox-check-remediation-action
       type: regular
       version: -1
-    taskid: 8c3d5112-83da-4163-85d7-d1b719441c02
+    taskid: 4f2885fc-4161-48e6-8b9d-f0ff38dd208b
     timertriggers: []
     type: regular
     view: |-
@@ -99,22 +98,22 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: Mail Sender (New)
+      brand: ""
       description: Send an email
-      id: 1501c195-fc64-4e86-88db-cfd478bb631f
+      id: a999be99-a0f7-45fb-8644-59e868f8c437
       iscommand: true
       name: Send Email
-      script: Mail Sender (New)|||send-mail
+      script: '|||send-mail'
       type: regular
       version: -1
-    taskid: 1501c195-fc64-4e86-88db-cfd478bb631f
+    taskid: a999be99-a0f7-45fb-8644-59e868f8c437
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 710,
-          "y": 710
+          "x": 350,
+          "y": 570
         }
       }
   "3":
@@ -137,27 +136,27 @@ tasks:
       '#default#':
       - "4"
       "YES":
-      - "6"
+      - "2"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      description: ""
       brand: ""
-      id: fbcab54a-3258-4bcb-88f5-c3009593119f
+      description: Check whether a review is needed
+      id: 1b7e1042-8e54-4f9b-8d16-7b923311f95e
       iscommand: false
       name: Is Review Needed?
       type: condition
       version: -1
-    taskid: fbcab54a-3258-4bcb-88f5-c3009593119f
+    taskid: 1b7e1042-8e54-4f9b-8d16-7b923311f95e
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 360
+          "y": 370
         }
       }
   "4":
@@ -167,28 +166,24 @@ tasks:
     isoversize: false
     note: false
     quietmode: 0
-    scriptarguments:
-      value:
-        simple: Review Not Needed
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: Prints text to war room (Markdown supported)
-      id: 936feb4c-4726-472c-87e3-4e6bc341d1d8
+      id: 4c254bec-e5ef-4d22-81c5-f7b24be3afe7
       iscommand: false
       name: Done
-      script: Print
-      type: regular
+      type: title
       version: -1
-    taskid: 936feb4c-4726-472c-87e3-4e6bc341d1d8
+    taskid: 4c254bec-e5ef-4d22-81c5-f7b24be3afe7
     timertriggers: []
-    type: regular
+    type: title
     view: |-
       {
         "position": {
-          "x": -240,
-          "y": 530
+          "x": 50,
+          "y": 960
         }
       }
   "5":
@@ -196,6 +191,9 @@ tasks:
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
     note: false
     quietmode: 0
     scriptarguments:
@@ -206,88 +204,20 @@ tasks:
     task:
       brand: ""
       description: Prints text to war room (Markdown supported)
-      id: a1111d6d-6e09-4a04-89cd-65a1030040c4
+      id: 57a8db76-266f-4556-84d2-0c651bbc17bf
       iscommand: false
       name: Mail Sent Successful
       script: Print
       type: regular
       version: -1
-    taskid: a1111d6d-6e09-4a04-89cd-65a1030040c4
+    taskid: 57a8db76-266f-4556-84d2-0c651bbc17bf
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 710,
-          "y": 890
-        }
-      }
-  "6":
-    id: "6"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      "no":
-      - "7"
-      "yes":
-      - "2"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      brandname:
-        simple: Mail Sender (New)
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
-      id: 2f97dd0b-f541-471d-87a8-3a6951c1e506
-      iscommand: false
-      name: Is Mail Sender Integration Enabled?
-      script: IsIntegrationAvailable
-      type: condition
-      version: -1
-    taskid: 2f97dd0b-f541-471d-87a8-3a6951c1e506
-    timertriggers: []
-    type: condition
-    view: |-
-      {
-        "position": {
-          "x": 420,
-          "y": 530
-        }
-      }
-  "7":
-    id: "7"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    note: false
-    quietmode: 0
-    scriptarguments:
-      value:
-        simple: Please configure Mail Sender (New) Integration to enable this feature
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Prints text to war room (Markdown supported)
-      id: 7ec451fa-cf14-44a8-89d3-8097f63de061
-      iscommand: false
-      name: Error Sending Mail
-      script: Print
-      type: regular
-      version: -1
-    taskid: 7ec451fa-cf14-44a8-89d3-8097f63de061
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 150,
-          "y": 710
+          "x": 350,
+          "y": 755
         }
       }
 version: -1
@@ -296,9 +226,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 935,
-        "width": 1330,
-        "x": -240,
+        "height": 975,
+        "width": 680,
+        "x": 50,
         "y": 50
       }
     }

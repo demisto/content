@@ -7,11 +7,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* Mail Sender (New)
 * Armorblox
 
 ### Scripts
-* IsIntegrationAvailable
 * Print
 
 ### Commands
@@ -23,7 +21,7 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| recipient_mail_address | Receiver's mailing address. | xyz@gmail.com | Required |
+| recipient_mail_address | Receiver's mailing address. |  | Required |
 
 ## Playbook Outputs
 ---
