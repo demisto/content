@@ -1822,7 +1822,7 @@ def long_running_execution_command(client: Client, params: Dict):
                 f'Error while reseting mirroring variables, retring. Error details: {str(e)} \n'
                 f'{traceback.format_exc()}')
             demisto.info('Exception when calling reset_mirroring_events_variables')
-            break
+            raise e
 
     while True:
         try:
@@ -3455,7 +3455,6 @@ def change_ctx_to_be_compatible_with_retry() -> None:
     ctx = get_integration_context()
     new_ctx = ctx.copy()
     try:
-        print_mirror_events_stats(ctx, "Changing ctx")
         extracted_ctx = extract_context_data(ctx)
         print_mirror_events_stats(extracted_ctx, "Checking ctx")
         print_debug_msg("ctx was found to be compatible with retries")
