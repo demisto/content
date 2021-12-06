@@ -169,7 +169,7 @@ def check_incident_status(incident_details, email_related_incident):
 
 def get_attachments_using_instance(email_related_incident, labels):
     """Use the instance from which the email was received to fetch the attachments.
-        Only supported with: EWS V2, Gmail, MS Graph Mail
+        Only supported with: EWS V2, Gmail
 
     Args:
         email_related_incident (str): ID of the incident to attach the files to.
@@ -179,7 +179,6 @@ def get_attachments_using_instance(email_related_incident, labels):
     message_id = ''
     instance_name = ''
     integration_name = ''
-    mailbox = ''
 
     for label in labels:
         if label.get('type') == 'Email/ID':
@@ -188,8 +187,6 @@ def get_attachments_using_instance(email_related_incident, labels):
             instance_name = label.get('value')
         elif label.get('type') == 'Brand':
             integration_name = label.get('value')
-        elif label.get('type') == 'Mailbox':
-            mailbox = label.get('value')
 
     if integration_name == 'EWS v2':
         demisto.executeCommand("executeCommandAt",
@@ -201,14 +198,8 @@ def get_attachments_using_instance(email_related_incident, labels):
                                {'command': 'gmail-get-attachments', 'incidents': email_related_incident,
                                 'arguments': {'user-id': 'me', 'message-id': str(message_id), 'using': instance_name}})
 
-    elif integration_name == 'MicrosoftGraphMail':
-        demisto.executeCommand("executeCommandAt",
-                               {'command': 'msgraph-mail-list-attachments', 'incidents': email_related_incident,
-                                'arguments': {'user_id': mailbox, 'message_id': str(message_id),
-                                              'using': instance_name}})
-
     else:
-        demisto.debug('Attachments could only be retrieved from EWS v2, Gmail or Microsoft Graph Mail')
+        demisto.debug('Attachments could only be retrieved from EWS v2 or Gmail')
 
 
 def get_incident_related_files(incident_id):
