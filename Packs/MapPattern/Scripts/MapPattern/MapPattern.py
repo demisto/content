@@ -125,20 +125,18 @@ class ContextData:
 
 
 class Translator:
-    def __init__(self, context: Any, arg_value: Any, ):
+    def __init__(self, context: Any, arg_value: Any, fields_comp_mode: bool):
         """
         :param context: The demisto context.
         :param arg_value: The data of the `value` given in the argument parameters.
+        :param fields_comp_mode: True - Fields comp mode, otherwise False.
         """
         self.__arg_value = arg_value
+        self.__fields_comp_mode = fields_comp_mode
         self.__context = None
         if isinstance(context, dict):
             self.__context = ContextData(context=context,
                                          arg_value=arg_value if isinstance(arg_value, dict) else None)
-        self.__unescape_path_re = re.compile(r'\\(.)')
-
-    def __unescape_path(self, path: str) -> str:
-        return re.sub(self.__unescape_path_re, lambda m: m[1], path)
 
     def __extract_value(self,
                         source: str,
@@ -237,14 +235,13 @@ class Translator:
                 continue
 
             # Set the output
-            comparison_fields = None
+            fields_comp_mode = False
             output = mapping.get('output')
             next_mappings = mapping.get('next')
             if output is None:
                 output = self.__arg_value
                 if next_mappings and isinstance(output, dict):
-                    # `comparison_fields` is given
-                    comparison_fields = argToList(mapping['comparison_fields'])
+                    fields_comp_mode = self.__fields_comp_mode
 
             elif algorithm == 'regex' and isinstance(output, str):
                 output = match.expand(output.replace(r'\0', r'\g<0>'))
@@ -252,14 +249,13 @@ class Translator:
                 output = self.__extract_value(output, self.__extract_dt, self.__context)
 
             if next_mappings:
-                if comparison_fields is not None:
+                if fields_comp_mode:
                     mapping, output, matched = self.translate_fields(
                         obj_value=output,
                         field_mapping=next_mappings,
                         regex_flags=regex_flags,
                         priority=priority,
-                        algorithm=algorithm,
-                        comparison_fields=comparison_fields)
+                        algorithm=algorithm)
                 else:
                     mapping, output, matched = self.translate(
                         source=output,
@@ -286,8 +282,7 @@ class Translator:
                          field_mapping: Dict[str, Any],
                          regex_flags: int,
                          priority: str,
-                         algorithm: str,
-                         comparison_fields: List[str]) -> Tuple[Optional[List[str]], Any, bool]:
+                         algorithm: str) -> Tuple[Optional[List[str]], Any, bool]:
         """ Replace the string given with the field mapping.
 
         :param obj_value: The object whose values to be replaced.
@@ -295,17 +290,12 @@ class Translator:
         :param regex_flags: The regex flags for pattern matching.
         :param priority: The priority order (first_match, last_match or longest_pattern).
         :param algorithm: The default algorithm for pattern match.
-        :param comparison_fields: The comparison fields.
         :return: The mapping matched, a new value replaced by it, and a flag if a pattern has matched or not.
         """
         if not isinstance(field_mapping, dict):
             raise ValueError(f'field-mapping must be an array or an object in JSON: type={type(field_mapping)}')
 
-        for path in comparison_fields:
-            # Get pattern mapping
-            mapping = field_mapping.get(self.__unescape_path(path))
-            if mapping is None:
-                continue
+        for path, mapping in field_mapping.items():
             if not isinstance(mapping, (dict, list)):
                 raise ValueError(f'pattern-mapping must be an array or an object in JSON: type={type(mapping)}')
 
@@ -327,7 +317,7 @@ def main():
         algorithm = args.get('algorithm') or DEFAULT_ALGORITHM
         priority = args.get('priority') or DEFAULT_PRIORITY
         context = args.get('context')
-        comparison_fields = argToList(args.get('comparison_fields'))
+        fields_comp_mode = argToBoolean(args.get('compare_fields') or 'false')
         regex_flags = re.IGNORECASE if argToBoolean(args.get('caseless') or 'true') else 0
         for flag in argToList(args.get('flags', '')):
             if flag in ('dotall', 's'):
@@ -347,16 +337,15 @@ def main():
             except ValueError:
                 raise ValueError(f'Unable to decode mappings in JSON: {mappings}')
 
-        tr = Translator(context=context, arg_value=value)
-        if comparison_fields:
+        tr = Translator(context=context, arg_value=value, fields_comp_mode=fields_comp_mode)
+        if fields_comp_mode:
             if isinstance(value, dict):
                 _, value, matched = tr.translate_fields(
                     obj_value=value,
                     field_mapping=mappings,
                     regex_flags=regex_flags,
                     priority=priority,
-                    algorithm=algorithm,
-                    comparison_fields=comparison_fields)
+                    algorithm=algorithm)
         else:
             if not isinstance(value, (dict, list)):
                 _, value, _ = tr.translate(

@@ -25,7 +25,7 @@ def test_main(mocker):
                 'priority': t['priority'],
                 'context': t['context'],
                 'flags': t['flags'],
-                'comparison_fields': t['comparison_fields'],
+                'compare_fields': t['compare_fields'],
                 'mappings': t['mappings']
             })
         mocker.patch.object(demisto, 'results')
