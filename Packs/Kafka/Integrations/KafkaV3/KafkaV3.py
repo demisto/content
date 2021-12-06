@@ -35,7 +35,7 @@ class KafkaCommunicator:
     ca_path: Optional[str] = None
     client_cert_path: Optional[str] = None
     client_key_path: Optional[str] = None
-    logger: Optional[logging.Logger] = None
+    kafka_logger: Optional[logging.Logger] = None
 
     SESSION_TIMEOUT: int = 10000
     REQUESTS_TIMEOUT: float = 10.0
@@ -47,7 +47,7 @@ class KafkaCommunicator:
                  ca_cert: Optional[str] = None,
                  client_cert: Optional[str] = None, client_cert_key: Optional[str] = None,
                  ssl_password: Optional[str] = None, trust_any_cert: bool = False,
-                 logger: Optional[logging.Logger] = None):
+                 kafka_logger: Optional[logging.Logger] = None):
         """Set configuration dicts for consumer and producer.
 
         Args:
@@ -72,7 +72,7 @@ class KafkaCommunicator:
                               'group.id': group_id,
                               'enable.auto.commit': False}
 
-        self.logger = logger
+        self.kafka_logger = kafka_logger
 
         if trust_any_cert:
             self.conf_consumer.update({'ssl.endpoint.identification.algorithm': 'none',
@@ -108,14 +108,14 @@ class KafkaCommunicator:
             self.conf_consumer.update({'ssl.key.password': ssl_password})
 
     def get_kafka_consumer(self) -> KConsumer:
-        if self.logger:
-            return KConsumer(self.conf_consumer, logger=self.logger)
+        if self.kafka_logger:
+            return KConsumer(self.conf_consumer, logger=self.kafka_logger)
         else:
             return KConsumer(self.conf_consumer)
 
     def get_kafka_producer(self) -> KProducer:
-        if self.logger:
-            return KProducer(self.conf_producer, logger=self.logger)
+        if self.kafka_logger:
+            return KProducer(self.conf_producer, logger=self.kafka_logger)
         else:
             return KProducer(self.conf_producer)
 
@@ -278,6 +278,7 @@ class KafkaCommunicator:
                                        f'[{earliest_offset}, {oldest_offset})')
             return number_offset
 
+    @logger
     def get_topic_partitions(self, topic: str, partition: Union[int, list],
                              offset: Union[str, int], consumer: bool = False) -> list:
         """Get relevant TopicPartiton structures to specify for the consumer.
@@ -292,13 +293,15 @@ class KafkaCommunicator:
         """
         topic_partitions = []
         if partition != -1 and not isinstance(partition, list):
+            demisto.debug(f"Got single partition {partition}, getting offsets with offset {offset}")
             updated_offset = self.get_offset_for_partition(topic, int(partition), offset)
             topic_partitions = [TopicPartition(topic=topic, partition=int(partition), offset=updated_offset)]
 
         elif isinstance(partition, list):
+            demisto.debug(f"Got partition list {partition}, getting offsets with offset {offset}")
             for single_partition in partition:
                 try:
-                    updated_offset = self.get_offset_for_partition(topic, single_partition, offset)
+                    updated_offset = self.get_offset_for_partition(topic, int(single_partition), offset)
                     topic_partitions += [TopicPartition(topic=topic, partition=int(single_partition),
                                                         offset=updated_offset)]
                 except KafkaException as e:
@@ -310,6 +313,7 @@ class KafkaCommunicator:
         else:
             topics = self.get_topics(consumer=consumer)
             topic_metadata = topics[topic]
+            demisto.debug(f"Got no partition, getting all partitions and offsets with offset {offset}")
             for metadata_partition in topic_metadata.partitions.values():
                 try:
                     updated_offset = self.get_offset_for_partition(topic, metadata_partition.id, offset)
@@ -605,8 +609,9 @@ def check_params(kafka: KafkaCommunicator, topic: str, partitions: Optional[list
             if check_offset and checkable_offset:
                 earliest_offset, oldest_offset = kafka.get_partition_offsets(topic=topic, partition=int(partition))
                 if numerical_offset < int(earliest_offset) or numerical_offset >= int(oldest_offset):
-                    raise DemistoException(f'Offset {numerical_offset} for topic {topic} and partition {partition} '
-                                           f'is out of bounds [{earliest_offset}, {oldest_offset})')
+                    raise DemistoException(f'Error checking params: Offset {numerical_offset} for topic {topic} and '
+                                           f'partition {partition} is out of bounds [{earliest_offset}, '
+                                           f'{oldest_offset})')
 
     return True
 
@@ -652,6 +657,7 @@ def get_fetch_topic_partitions(kafka: KafkaCommunicator, topic: str, offset: Uni
 
     Return a list of topic partitions
     """
+    demisto.debug(f"Getting all topic partitions for topic {topic} and offset {offset}")
     all_topic_partitions = kafka.get_topic_partitions(topic=topic, partition=-1, offset=offset, consumer=True)
     if not last_fetched_offsets:
         demisto.debug("Did not fetch from this topic previously, returning all available topic partitions")
@@ -659,6 +665,7 @@ def get_fetch_topic_partitions(kafka: KafkaCommunicator, topic: str, offset: Uni
 
     topic_partitions_in_system = []
 
+    demisto.debug(f"Going over last fetched offsets")
     for partition in last_fetched_offsets.keys():
         specific_offset = last_fetched_offsets.get(partition, offset)
         topic_partitions_in_system += get_topic_partition_if_relevant(kafka, topic, partition, specific_offset)
@@ -750,7 +757,7 @@ def commands_manager(kafka_kwargs: dict, demisto_params: dict, demisto_args: dic
                      demisto_command: str, kafka_logger: Optional[logging.Logger] = None,
                      log_stream: Optional[StringIO] = None) -> None:
     """Start command function according to demisto command."""
-    kafka_kwargs['logger'] = kafka_logger
+    kafka_kwargs['kafka_logger'] = kafka_logger
     kafka = KafkaCommunicator(**kafka_kwargs)
 
     try:
