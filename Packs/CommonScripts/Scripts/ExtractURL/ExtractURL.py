@@ -6,7 +6,6 @@ from CommonServerPython import *
 
 ATP_REGEX = re.compile(r'(https://\w*|\w*)\.safelinks\.protection\.outlook\.com/.*\?url=')
 PROOF_POINT_URL_REG = re.compile(r'https://urldefense(?:\.proofpoint)?\.(com|us)/(v[0-9])/')
-HTTPS = 'https'
 HTTP = 'http'
 PREFIX_TO_NORMALIZE = {
     'hxxp',
@@ -52,6 +51,7 @@ def get_redirect_url_proof_point_v3(non_formatted_url: str) -> str:
     url_regex = re.compile(r'v3/__(?P<url>.+?)__;(?P<enc_bytes>.*?)!')
     if match := url_regex.search(non_formatted_url):
         non_formatted_url = match.group('url')
+    #  TODO add test for else
     else:
         demisto.error(f'Could not parse Proof Point redirected URL. Returning original URL: {non_formatted_url}')
     return non_formatted_url
@@ -68,9 +68,11 @@ def get_redirect_url_from_query(non_formatted_url: str, parse_results: ParseResu
         (str): The URL the ATP Safe Link points to.
     """
     query_params_dict: Dict[str, List[str]] = parse_qs(parse_results.query)
+    #  TODO add test for error
     if not (query_urls := query_params_dict.get(redirect_param_name, [])):
         demisto.error(f'Could not find redirected URL. Returning the original URL: {non_formatted_url}')
         return non_formatted_url
+    # TODO add test for case
     if len(query_urls) > 1:
         demisto.debug(f'Found more than one URL query parameters for redirect in the given URL {non_formatted_url}\n'
                       f'Returning the first URL: {query_urls[0]}')
@@ -80,28 +82,7 @@ def get_redirect_url_from_query(non_formatted_url: str, parse_results: ParseResu
 
 def replace_protocol(url_: str) -> str:
     """
-    Replaces URL protocol with expected protocol.
-    Examples:
-    1)  http:/www.test.com
-        > http://www.test.com
-    2)  https:/www.test.com
-        > https://www.test.com
-    3)  http:\\www.test.com
-        > http://www.test.com
-    4)  https:\\www.test.com
-        > https://www.test.com
-    5)  http:\www.test.com
-        > http://www.test.com
-    6)  https:\www.test.com
-        > https://www.test.com
-    7)  hxxp://www.test.com
-        > http://www.test.com
-    8)  hXXp://www.test.com
-        > http://www.test.com
-    9)  hxxps://www.test.com
-        > https://www.test.com
-    10)  hXXps://www.test.com
-        > https://www.test.com
+    Replaces URL protocol with expected protocol. Examples can be found in tests.
     Args:
         url_ (str): URL to replace the protocol by the given examples above.
 
@@ -110,26 +91,13 @@ def replace_protocol(url_: str) -> str:
     """
     for prefix_to_normalize in PREFIX_TO_NORMALIZE:
         if url_.startswith(prefix_to_normalize):
-            url_ = url_.replace(prefix_to_normalize, 'http')
+            url_ = url_.replace(prefix_to_normalize, HTTP)
     lowercase_url = url_.lower()
     for starts_with, does_not_start_with, to_replace in PREFIX_CHANGES:
         if lowercase_url.startswith(starts_with) and (
                 not does_not_start_with or not lowercase_url.startswith(does_not_start_with)):
             url_ = url_.replace(starts_with, to_replace)
     return url_
-
-
-def normalize_url(non_normalized_url: str) -> str:
-    """
-    Normalizes a URL.
-    Args:
-        non_normalized_url (str): URL to normalize.
-
-    Returns:
-        (str): Normalized URL.
-    """
-    non_normalized_url = unescape(non_normalized_url.replace('[.]', '.'))
-    return non_normalized_url
 
 
 def format_url(non_formatted_url: str) -> str:
