@@ -11,6 +11,11 @@ from CommonServerUserPython import *  # noqa
 
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 
+import signal
+from datetime import datetime
+import sys
+import traceback
+
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
 
@@ -3466,13 +3471,36 @@ def change_ctx_to_be_compatible_with_retry() -> None:
         print_debug_msg(f"Change ctx context data was cleared and changed to {cleared_ctx}")
 
 
+def threads_dumper():
+    time.sleep(5.0)
+    code = []
+    for threadId, stack in sys._current_frames().items():
+        code.append("\n# ThreadID: %s" % threadId)
+        for filename, lineno, name, line in traceback.extract_stack(stack):
+            code.append('File: "%s", line %d, in %s' % (filename, lineno, name))
+            if line:
+                code.append("  %s" % (line.strip()))
+
+    with open('/var/tmp/thread_dump.txt', 'a') as thread_dump_file:
+        thread_dump_msg = '\n\n--- ' + datetime.today().strftime('%Y-%m-%d-%H:%M:%S') + ' Start Threads Dump ---\n' + '\n'.join(code) + '\n\n--- End Threads Dump ---\n'
+        thread_dump_file.write(thread_dump_msg)
+
+
+def signal_handler(sig, frame):
+    threads_dumper()
+
+
+def register_signal_handler():
+    signal.signal(signal.SIGUSR1, signal_handler)
+
+
 ''' MAIN FUNCTION '''
 
 
 def main() -> None:
     params = demisto.params()
-    command = demisto.command()
     args = demisto.args()
+    command = demisto.command()
 
     # handle allowed advanced parameters
     adv_params = params.get('adv_params')
@@ -3630,4 +3658,5 @@ def main() -> None:
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     # main()
+    register_signal_handler()
     change_ctx_to_be_compatible_with_retry()
