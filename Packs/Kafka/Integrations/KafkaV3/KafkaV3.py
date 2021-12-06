@@ -292,15 +292,15 @@ class KafkaCommunicator:
         """
         topic_partitions = []
         if partition != -1 and not isinstance(partition, list):
-            offset = self.get_offset_for_partition(topic, int(partition), offset)
-            topic_partitions = [TopicPartition(topic=topic, partition=int(partition), offset=offset)]
+            updated_offset = self.get_offset_for_partition(topic, int(partition), offset)
+            topic_partitions = [TopicPartition(topic=topic, partition=int(partition), offset=updated_offset)]
 
         elif isinstance(partition, list):
             for single_partition in partition:
                 try:
-                    offset = self.get_offset_for_partition(topic, single_partition, offset)
+                    updated_offset = self.get_offset_for_partition(topic, single_partition, offset)
                     topic_partitions += [TopicPartition(topic=topic, partition=int(single_partition),
-                                                        offset=offset)]
+                                                        offset=updated_offset)]
                 except KafkaException as e:
                     # Sometimes listing topics can return uninitialized partitions.
                     # If that's the case, ignore them and continue.
@@ -312,9 +312,9 @@ class KafkaCommunicator:
             topic_metadata = topics[topic]
             for metadata_partition in topic_metadata.partitions.values():
                 try:
-                    offset = self.get_offset_for_partition(topic, metadata_partition.id, offset)
+                    updated_offset = self.get_offset_for_partition(topic, metadata_partition.id, offset)
                     topic_partitions += [TopicPartition(topic=topic, partition=metadata_partition.id,
-                                                        offset=offset)]
+                                                        offset=updated_offset)]
                 except KafkaException as e:
                     # Sometimes listing topics can return uninitialized partitions.
                     # If that's the case, ignore them and continue.
