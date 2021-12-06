@@ -440,5 +440,3 @@ outputs:
   description: File's MD5
 - contextPath: File.Extension
   description: File's Extension
-tests:
-- CuckooTest
