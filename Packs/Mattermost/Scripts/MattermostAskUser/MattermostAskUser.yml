@@ -1,0 +1,43 @@
+commonfields:
+  id: MattermostAskUser
+  version: -1
+name: MattermostAskUser
+type: python
+subtype: python2
+script: ''
+tags:
+- mattermost
+comment: Ask a user a question on Mattermost and expect a response. The response can also close a task (might be conditional) in a playbook.
+enabled: true
+args:
+- name: user
+  required: true
+  default: true
+  description: The mattermost user to ask - can be either email or mattermost username
+- name: message
+  required: true
+  description: The message ask the user
+- name: option1
+  description: First option for a user reply. "yes" is the default.
+- name: option2
+  description: Second option for the user reply. "no" is the default.
+- name: task
+  description: Which task should we close with the reply. If none then no playbook tasks will be closed.
+- name: replyEntriesTag
+  description: Tag to add on email reply entries
+- name: persistent
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Indicates whether to use one-time entitlement or a persistent one
+  defaultValue: "false"
+scripttarget: 0
+runonce: false
+dependson:
+  must:
+  - mattermost-send
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.24398
+tests:
+- No tests (auto formatted)

@@ -23,6 +23,6 @@ def test_configure_old_and_new_integrations(mocker):
         build=mocker.MagicMock(servers=['server1']),
         modified_integrations_to_configure=['old_integration1', 'old_integration2'],
         new_integrations_to_configure=['new_integration1', 'new_integration2'],
-        demisto_client=None
+        demisto_client_=None,
     )
     assert not set(old_modules_instances).intersection(new_modules_instances)
