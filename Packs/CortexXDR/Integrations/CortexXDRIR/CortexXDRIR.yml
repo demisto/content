@@ -505,7 +505,7 @@ script:
       description: Firewall app id.
       type: Unknown
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.is_whitelisted
-      description: 'Is the alert whitelisted. Valid values are: "Yes" "No"'
+      description: 'Is the alert on allow list. Valid values are: "Yes" "No"'
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.starred
       description: Alert starred.
@@ -1613,7 +1613,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: String that represents a list of hashed files you want to blacklist.
+      description: String that represents a list of hashed files you want to block list.
         Must be a valid SHA256 hash.
       isArray: true
       name: hash_list
@@ -1626,8 +1626,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Blacklists requested files which have not already been blacklisted
-      or whitelisted.
+    description: Block lists requested files which have not already been block listed
+      or added to allow list.
     execution: false
     name: xdr-blacklist-files
   - arguments:
@@ -1638,7 +1638,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: String that represents a list of hashed files you want to whitelist.
+      description: String that represents a list of hashed files you want to add to allow list.
         Must be a valid SHA256 hash.
       isArray: true
       name: hash_list
@@ -1651,8 +1651,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Whitelists requested files which have not already been blacklisted
-      or whitelisted.
+    description: Adds requested files to allow list if they are not already on block list or allow list.
     execution: false
     name: xdr-whitelist-files
   - arguments:
@@ -3112,7 +3111,7 @@ script:
     - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.ingestion_time
       description: Ingestion time.
       type: String
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   feed: false
   isfetch: true
   longRunning: false
