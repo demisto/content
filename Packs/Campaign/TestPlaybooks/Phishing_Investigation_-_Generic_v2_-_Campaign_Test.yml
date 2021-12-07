@@ -1,6 +1,6 @@
-id: Phishing Investigation - Generic v2 - Campaign Test
+id: Phishing Investigation - Generic v2 - Campaign Test 3
 version: -1
-name: Phishing Investigation - Generic v2 - Campaign Test
+name: Phishing Investigation - Generic v2 - Campaign Test 3
 description: Tests that similar phishing incidents create a phishing campaign incident.
 starttaskid: "0"
 tasks:
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: f33fa92e-4fcd-46dc-80b7-16e8306005dd
+    taskid: 58b526c0-5b64-4dd5-859e-c68eab242a4d
     type: regular
     task:
-      id: f33fa92e-4fcd-46dc-80b7-16e8306005dd
+      id: 58b526c0-5b64-4dd5-859e-c68eab242a4d
       version: -1
       name: Delete context
       description: Delete field from context
@@ -48,14 +48,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "57"
-      - "61"
-      - "58"
       - "59"
       - "60"
-      - "62"
       - "66"
       - "67"
+      - "57"
+      - "58"
+      - "61"
+      - "62"
     scriptarguments:
       all:
         simple: "yes"
@@ -65,7 +65,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 180
+          "y": 210
         }
       }
     note: false
@@ -108,7 +108,7 @@ tasks:
       ignore-outputs:
         simple: "false"
       labels:
-        simple: '[{"Email/from":"test_reporter@demistodev.onmicrosoft.com.com"}]'
+        simple: '[{"Email/from":"ivandijk@paloaltonetworks.com.com"}]'
       name:
         complex:
           root: incident
@@ -248,7 +248,7 @@ tasks:
       ignore-outputs:
         simple: "false"
       labels:
-        simple: '[{"Email/from":"test_reporter@demistodev.onmicrosoft.com.com"}]'
+        simple: '[{"Email/from":"ivandijk@paloaltonetworks.com.com"}]'
       name:
         complex:
           root: incident
@@ -312,7 +312,7 @@ tasks:
       emailto:
         simple: victim-test7@demistodev.onmicrosoft.com
       labels:
-        simple: '[{"Email/from":"test_reporter@demistodev.onmicrosoft.com.com"}]'
+        simple: '[{"Email/from":"ivandijk@paloaltonetworks.com.com"}]'
       name:
         complex:
           root: incident
@@ -375,7 +375,7 @@ tasks:
       emailto:
         simple: victim-test5@demistodev.onmicrosoft.com
       labels:
-        simple: '[{"Email/from":"test_reporter@demistodev.onmicrosoft.com.com"}]'
+        simple: '[{"Email/from":"ivandijk@paloaltonetworks.com.com"}]'
       name:
         complex:
           root: incident
@@ -406,12 +406,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "59":
     id: "59"
-    taskid: 343b0114-e8ab-44fe-83c6-482f1b1c06eb
+    taskid: 69c21df8-a658-4415-864f-19a3e3cae037
     type: regular
     task:
-      id: 343b0114-e8ab-44fe-83c6-482f1b1c06eb
+      id: 69c21df8-a658-4415-864f-19a3e3cae037
       version: -1
-      name: Create new incident victim 4
+      name: Create new incident victim 4 (different sender)
       description: commands.local.cmd.create.inc
       script: Builtin|||createNewIncident
       type: regular
@@ -427,7 +427,7 @@ tasks:
           Dear user,
           We've detected suspicious activity originating from your PayPal account. Please take action and verify your account immediately: www.paypal.com/account/verify
       emailfrom:
-        simple: paypalsupport@paypaI.com
+        simple: paypal-support@paypaI.com
       emailhtml:
         simple: '<div><h2 style="color: #2e6c80;">You should verify your paypal account
           immediately</h2></div><div><p> Dear user,<br>We''ve detected suspicious
@@ -438,7 +438,7 @@ tasks:
       emailto:
         simple: victim-test4@demistodev.onmicrosoft.com
       labels:
-        simple: '[{"Email/from":"test_reporter@demistodev.onmicrosoft.com.com"}]'
+        simple: '[{"Email/from":"ivandijk@paloaltonetworks.com.com"}]'
       name:
         complex:
           root: incident
@@ -469,12 +469,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: 0ac3ecf7-6707-4a22-8b9e-adbf7119b9e6
+    taskid: a3a6b154-2d68-46e2-8444-b20d287b089c
     type: regular
     task:
-      id: 0ac3ecf7-6707-4a22-8b9e-adbf7119b9e6
+      id: a3a6b154-2d68-46e2-8444-b20d287b089c
       version: -1
-      name: Create new incident victim 3
+      name: Create new incident victim 3 (different sender)
       description: commands.local.cmd.create.inc
       script: Builtin|||createNewIncident
       type: regular
@@ -490,7 +490,7 @@ tasks:
           Dear user,
           We've detected suspicious activity originating from your PayPal account. Please take action and verify your account immediately: www.paypal.com/account/verify
       emailfrom:
-        simple: paypalsupport@paypaI.com
+        simple: support@paypaI.com
       emailhtml:
         simple: '<div><h2 style="color: #2e6c80;">You should verify your paypal account
           immediately</h2></div><div><p> Dear user,<br>We''ve detected suspicious
@@ -501,7 +501,7 @@ tasks:
       emailto:
         simple: victim-test3@demistodev.onmicrosoft.com
       labels:
-        simple: '[{"Email/from":"test_reporter@demistodev.onmicrosoft.com.com"}]'
+        simple: '[{"Email/from":"ivandijk@paloaltonetworks.com.com"}]'
       name:
         complex:
           root: incident
@@ -564,7 +564,7 @@ tasks:
       emailto:
         simple: victim-test8@demistodev.onmicrosoft.com
       labels:
-        simple: '[{"Email/from":"test_reporter@demistodev.onmicrosoft.com.com"}]'
+        simple: '[{"Email/from":"ivandijk@paloaltonetworks.com.com"}]'
       name:
         complex:
           root: incident
@@ -627,7 +627,7 @@ tasks:
       emailto:
         simple: victim-test9@demistodev.onmicrosoft.com
       labels:
-        simple: '[{"Email/from":"test_reporter@demistodev.onmicrosoft.com.com"}]'
+        simple: '[{"Email/from":"ivandijk@paloaltonetworks.com.com"}]'
       name:
         complex:
           root: incident
@@ -799,7 +799,7 @@ tasks:
       emailto:
         simple: victim-test9@demistodev.onmicrosoft.com
       labels:
-        simple: '[{"Email/from":"test_reporter@demistodev.onmicrosoft.com.com"}]'
+        simple: '[{"Email/from":"ivandijk@paloaltonetworks.com.com"}]'
       name:
         complex:
           root: incident
@@ -861,7 +861,7 @@ tasks:
       emailto:
         simple: victim-test10@demistodev.onmicrosoft.com
       labels:
-        simple: '[{"Email/from":"test_reporter@demistodev.onmicrosoft.com.com"}]'
+        simple: '[{"Email/from":"ivandijk@paloaltonetworks.com.com"}]'
       name:
         complex:
           root: incident
