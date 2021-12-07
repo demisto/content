@@ -229,19 +229,19 @@ class Client(BaseClient):
                 if raw_response.get('is_success'):
                     collection_dict = raw_response.get('data', {}).get(collection_name, {})
                     raw_indicators_list = collection_dict.get('collection_data_list', [])
-                    collection_date = collection_dict.get('collection_date')
+                    collection_date_str = collection_dict.get('collection_date')
                     collection_feed_type = collection_dict.get('collection_feed_type')
                     if not raw_indicators_list:
                         break
                     if is_check_last_fetch:
                         if last_fetch := last_fetch_dict.get(collection_name):
-                            collection_date = datetime.strptime(collection_date, '%Y-%m-%d').date()
+                            collection_date = datetime.strptime(collection_date_str, '%Y-%m-%d').date()
                             last_fetch = datetime.strptime(last_fetch, '%Y-%m-%d').date()
                             if last_fetch >= collection_date:
                                 break
-                            else:
-                                last_fetch_dict[collection_name] = collection_date.strftime('%Y-%m-%d')
-                                demisto.setIntegrationContext({'last_fetch': last_fetch_dict})  # type:ignore
+                        last_fetch_dict[collection_name] = collection_date_str
+                        demisto.setIntegrationContext({'last_fetch': last_fetch_dict})  # type:ignore
+
                     parsed_indicators.extend(self.parse_raw_indicators(raw_indicators_list,
                                                                        collection_feed_type))  # list of dict of indicators
                     if len(raw_indicators_list) < batch_size:
