@@ -1,6 +1,5 @@
 id: CensysV2-Test
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: CensysV2-Test
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -68,14 +68,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 3f10b5ab-3eb5-4991-85df-7b5e588ab2f3
+    taskid: 9551c808-8e0e-47b4-8865-788625ca916c
     type: regular
     task:
-      id: 3f10b5ab-3eb5-4991-85df-7b5e588ab2f3
+      id: 9551c808-8e0e-47b4-8865-788625ca916c
       version: -1
       name: Censys View Host
-      description: Returns host information for the specified IP address.
-      script: '|||censys-host-view'
+      description: Returns detailed information for an IP address or SHA256 within
+        the specified index.
+      script: '|||cen-view'
       type: regular
       iscommand: true
       brand: ""
@@ -83,6 +84,8 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
+      index:
+        simple: ipv4
       query:
         simple: 8.8.8.8
     separatecontext: false
@@ -102,10 +105,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 0b1636fd-ace3-4e3c-886f-8edff7849e8f
+    taskid: 2e3b2466-aec0-4c2a-8665-54499c5fedd7
     type: condition
     task:
-      id: 0b1636fd-ace3-4e3c-886f-8edff7849e8f
+      id: 2e3b2466-aec0-4c2a-8665-54499c5fedd7
       version: -1
       name: Check Outputs
       type: condition
@@ -121,12 +124,12 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Censys.HostView.autonomous_system
+              simple: Censys.View.autonomous_system
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Censys.HostView.services
+              simple: Censys.View.services
             iscontext: true
     view: |-
       {
@@ -144,14 +147,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 1240c118-35f5-41d6-892d-2daaa0b48bd5
+    taskid: 08cffc3a-c662-48e8-8030-af21aa29fb1d
     type: regular
     task:
-      id: 1240c118-35f5-41d6-892d-2daaa0b48bd5
+      id: 08cffc3a-c662-48e8-8030-af21aa29fb1d
       version: -1
       name: Censys Certs View
-      description: Returns structured certificate data for the specified SHA-256.
-      script: '|||censys-certificate-view'
+      description: Returns detailed information for an IP address or SHA256 within
+        the specified index.
+      script: '|||cen-view'
       type: regular
       iscommand: true
       brand: ""
@@ -159,6 +163,8 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
+      index:
+        simple: certificates
       query:
         simple: 9d3b51a6b80daf76e074730f19dc01e643ca0c3127d8f48be64cf3302f6622cc
     separatecontext: false
@@ -178,10 +184,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: b577617c-126e-4755-82f0-1fbe5442c00e
+    taskid: 8d2b1a3d-cf1a-4a1b-888b-4990c687f2c1
     type: condition
     task:
-      id: b577617c-126e-4755-82f0-1fbe5442c00e
+      id: 8d2b1a3d-cf1a-4a1b-888b-4990c687f2c1
       version: -1
       name: Check Outputs
       type: condition
@@ -197,12 +203,12 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Censys.CertificateView.parsed
+              simple: Censys.View.parsed
             iscontext: true
       - - operator: isEqualString
           left:
             value:
-              simple: Censys.CertificateView.fingerprint_sha256
+              simple: Censys.View.fingerprint_sha256
             iscontext: true
           right:
             value:
@@ -223,14 +229,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 782758e3-bb4c-4d25-85b0-cfee2d49aa2f
+    taskid: c471549e-2109-449f-82ac-5f448c509b84
     type: regular
     task:
-      id: 782758e3-bb4c-4d25-85b0-cfee2d49aa2f
+      id: c471549e-2109-449f-82ac-5f448c509b84
       version: -1
       name: Censys search host
-      description: Returns previews of hosts matching a specified search query.
-      script: '|||censys-hosts-search'
+      description: Returns previews of hosts matching a specified search query or
+        a list of certificates that match the given query.
+      script: '|||cen-search'
       type: regular
       iscommand: true
       brand: ""
@@ -238,6 +245,8 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
+      index:
+        simple: ipv4
       limit:
         simple: "1"
       query:
@@ -259,10 +268,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 808fa858-4159-4387-8831-e032ef97a8dc
+    taskid: a8935a5c-f3fe-4c81-8f4d-ea0f4ee4b051
     type: condition
     task:
-      id: 808fa858-4159-4387-8831-e032ef97a8dc
+      id: a8935a5c-f3fe-4c81-8f4d-ea0f4ee4b051
       version: -1
       name: Check Outputs
       type: condition
@@ -278,12 +287,12 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Censys.HostSearch.services
+              simple: Censys.Search.autonomous_system
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Censys.HostSearch.autonomous_system
+              simple: Censys.Search.location
             iscontext: true
     view: |-
       {
@@ -301,14 +310,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: d4288226-3cac-4eb8-8d84-27ef9bc60ece
+    taskid: a8c5e304-34e8-466d-8c60-88ba16cdf9bc
     type: regular
     task:
-      id: d4288226-3cac-4eb8-8d84-27ef9bc60ece
+      id: a8c5e304-34e8-466d-8c60-88ba16cdf9bc
       version: -1
       name: Censys Certs Search
-      description: Retruns a list of certificates that match the given query.
-      script: '|||censys-certificates-search'
+      description: Returns previews of hosts matching a specified search query or
+        a list of certificates that match the given query.
+      script: '|||cen-search'
       type: regular
       iscommand: true
       brand: ""
@@ -316,6 +326,8 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
+      index:
+        simple: certificates
       limit:
         simple: "1"
       query:
@@ -337,10 +349,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 2e10086f-23e6-484f-89d2-cbb216612b33
+    taskid: 0c33078e-b17e-45d8-884c-0a815af48f11
     type: condition
     task:
-      id: 2e10086f-23e6-484f-89d2-cbb216612b33
+      id: 0c33078e-b17e-45d8-884c-0a815af48f11
       version: -1
       name: Check Outputs
       type: condition
@@ -356,12 +368,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Censys.CertificateSearch.parsed
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Censys.CertificateSearch.parsed.issuer
+              simple: Censys.Search.parsed
             iscontext: true
     view: |-
       {
@@ -420,3 +427,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 6.0.0
+description: ''

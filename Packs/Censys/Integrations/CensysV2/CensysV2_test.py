@@ -39,18 +39,19 @@ def test_censys_host_search(mocker):
     Then:
         Validate the output compared to the mock output
     """
-    from CensysV2 import Client, censys_search_hosts_command
+    from CensysV2 import Client, censys_search_command
 
     client = Client(base_url='https://search.censys.io/api/', auth=('test', '1234'), verify=True, proxy=False)
 
     args = {
+        'index': 'ipv4',
         'query': 'services.service_name:HTTP',
         'limit': 1
     }
 
     mock_response = util_load_json('test_data/search_host_response.json')
     mocker.patch.object(client, 'censys_search_ip_request', return_value=mock_response)
-    response = censys_search_hosts_command(client, args)
+    response = censys_search_command(client, args)
     assert "### Search results for query \"services.service_name:HTTP\"" in response.readable_output
     assert response.outputs == SEARCH_HOST_OUTPUTS
 
@@ -64,18 +65,19 @@ def test_censys_certs_search(mocker):
     Then:
         Validate the output compared to the mock output
     """
-    from CensysV2 import Client, censys_search_certs_command
+    from CensysV2 import Client, censys_search_command
 
     client = Client(base_url='https://search.censys.io/api/', auth=('test', '1234'), verify=True, proxy=False)
 
     args = {
+        'index': 'certificates',
         'query': "parsed.issuer.common_name: \"Let's Encrypt\"",
         'limit': 1
     }
 
     mock_response = util_load_json('test_data/search_certs_response.json')
     mocker.patch.object(client, 'censys_search_certs_request', return_value=mock_response)
-    response = censys_search_certs_command(client, args)
+    response = censys_search_command(client, args)
     assert "### Search results for query \"parsed.issuer.common_name: \"Let's Encrypt\"" in response.readable_output
     assert response.outputs == SEARCH_CERTS_OUTPUTS
 
@@ -89,15 +91,16 @@ def test_censys_view_host(mocker):
     Then:
         Validate the output compared to the mock output
     """
-    from CensysV2 import Client, censys_view_host_command
+    from CensysV2 import Client, censys_view_command
 
     client = Client(base_url='https://search.censys.io/api/', auth=('test', '1234'), verify=True, proxy=False)
 
     args = {
+        'index': 'ipv4',
         'query': "8.8.8.8"
     }
     mock_response = util_load_json('test_data/view_host_response.json')
-    mocker.patch.object(client, 'censys_view_host_request', return_value=mock_response)
-    response = censys_view_host_command(client, args)
+    mocker.patch.object(client, 'censys_view_request', return_value=mock_response)
+    response = censys_view_command(client, args)
     assert '### Information for IP 8.8.8.8' in response.readable_output
     assert response.outputs == mock_response.get('result')
