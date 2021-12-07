@@ -20,24 +20,17 @@ comment: 'Given a list of objects and a key found in each of those objects, retu
   a unique list of values associated with that key. Returns error if the objects provided
   do not contain the key of interest. '
 commonfields:
-  id: df9ec950-3519-4304-8e10-af1a95236720
+  id: DeduplicateValuesbyKey
   version: -1
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-    itemVersion: ""
-    packID: 797d59fa-b7b2-4f4b-8006-7cf3726926c9
-    propagationLabels:
-    - all
-    toServerVersion: ""
 dockerimage: demisto/python3:3.9.8.24399
 enabled: true
-engineinfo: {}
 name: DeduplicateValuesbyKey
 outputs:
 - contextPath: DeduplicatedValues
   description: List of unique values for the specified key
-pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''
@@ -45,3 +38,6 @@ scripttarget: 0
 subtype: python3
 tags: []
 type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
