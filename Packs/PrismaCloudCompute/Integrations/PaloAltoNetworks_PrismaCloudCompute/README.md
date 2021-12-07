@@ -343,28 +343,28 @@ Get runtime forensics data for a specific container on a specific host
 
 #### Human Readable Output
 ### Containers forensic report
-|ContainerID|Type|Path|
+|ContainerID|Type|Path|User|Pid
 |---|---|---|
-| 123 | Process spawned | /usr/local/bin/defender |
-| 123 | Process spawned | /usr/local/bin/defender |
-| 123 | Process spawned | /bin/sed |
-| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/solvers/dump |
-| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/solvers/apt |
-| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/methods/store |
-| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/methods/rsh |
-| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/methods/rred |
-| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/methods/mirror |
-| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/methods/https |
-| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/methods/http |
-| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/methods/gpgv |
-| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/methods/ftp |
-| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/methods/file |
-| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/methods/copy |
-| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/methods/cdrom |
-| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/apt-helper |
-| 123 | Process spawned | /usr/local/bin/defender |
-| 123 | Process spawned | /usr/local/bin/defender |
-| 123 | Process spawned | /usr/local/bin/defender |
+| 123 | Process spawned | /usr/local/bin/defender | root | 5045
+| 123 | Process spawned | /usr/local/bin/defender | root | 5045
+| 123 | Process spawned | /bin/sed | root | 5045
+| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/solvers/dump | root | 4358
+| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/solvers/apt | root | 5045
+| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/methods/store | root | 5045
+| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/methods/rsh | root | 5045
+| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/methods/rred | root | 5045
+| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/methods/mirror | root | 4358
+| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/methods/https | root | 5045
+| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/methods/http | root | 15512
+| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/methods/gpgv | root | 4358
+| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/methods/ftp | root | 15512
+| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/methods/file | root | 5045
+| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/methods/copy | root | 5045
+| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/methods/cdrom | root | 15512
+| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/apt-helper | root | 5045
+| 123 | Process spawned | /usr/local/bin/defender | root | 5045
+| 123 | Process spawned | /usr/local/bin/defender | root | 5045
+| 123 | Process spawned | /usr/local/bin/defender | root | 5045
 ### prisma-cloud-compute-host-forensic-list
 ***
 Get forensics on a specific host
