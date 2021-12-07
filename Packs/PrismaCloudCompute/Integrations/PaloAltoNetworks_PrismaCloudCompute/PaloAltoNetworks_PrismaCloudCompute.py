@@ -664,7 +664,7 @@ def build_containers_forensic_response(
         return context_output, tableToMarkdown(
             name="Containers forensic report",
             t=context_output["Forensics"],
-            headers=["ContainerID", "Type", "Path"],
+            headers=["ContainerID", "Type", "Path", "User", "Pid"],
             removeNull=True
         )
     return None, tableToMarkdown(name="No results found", t=[])
