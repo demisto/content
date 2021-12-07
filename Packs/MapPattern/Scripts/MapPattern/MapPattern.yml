@@ -69,9 +69,10 @@ args:
   description: The comma separated flags for pattern matching in regex. "dotall" (s),
     "multiline" (m), "ignorecase" (i) and "unicode" (u) are supported. This will apply
     to all the algorithms.
-- name: comparison_fields
-  description: A list of names of the fields to pattern matching for the value given
-    in dictionary
+- name: compare_fields
+  description: Set to true if you want pattern matching for each field, otherwise
+    false.
+  defaultValue: "false"
 scripttarget: 0
 subtype: python3
 runonce: false

@@ -77,7 +77,45 @@
       "vulnerabilities": []
     },
     "type": "Domain",
-    "value": "abc"
+    "value": "abc",
+    "relationships": [
+      {
+        "entityA": "abc",
+        "entityAFamily": "Indicator",
+        "entityAType": "Domain",
+        "entityB": "CSA-123",
+        "entityBFamily": "Indicator",
+        "entityBType": "Report",
+        "fields": {},
+        "name": "indicator-of",
+        "reverseName": "indicated-by",
+        "type": "IndicatorToIndicator"
+      },
+      {
+        "entityA": "abc",
+        "entityAFamily": "Indicator",
+        "entityAType": "Domain",
+        "entityB": "GOBLINPANDA",
+        "entityBFamily": "Indicator",
+        "entityBType": "Threat Actor",
+        "fields": {},
+        "name": "indicator-of",
+        "reverseName": "indicated-by",
+        "type": "IndicatorToIndicator"
+      },
+      {
+        "entityA": "abc",
+        "entityAFamily": "Indicator",
+        "entityAType": "Domain",
+        "entityB": "1.1.1.1",
+        "entityBFamily": "Indicator",
+        "entityBType": "IP",
+        "fields": {},
+        "name": "related-to",
+        "reverseName": "related-to",
+        "type": "IndicatorToIndicator"
+      }
+    ]
   },
   {
     "fields": {
@@ -151,7 +189,33 @@
       "vulnerabilities": []
     },
     "type": "Domain",
-    "value": "abc1"
+    "value": "abc1",
+    "relationships": [
+      {
+        "entityA": "abc1",
+        "entityAFamily": "Indicator",
+        "entityAType": "Domain",
+        "entityB": "Gootkit",
+        "entityBFamily": "Indicator",
+        "entityBType": "Malware",
+        "fields": {},
+        "name": "indicator-of",
+        "reverseName": "indicated-by",
+        "type": "IndicatorToIndicator"
+      },
+      {
+        "entityA": "abc1",
+        "entityAFamily": "Indicator",
+        "entityAType": "Domain",
+        "entityB": "1234567890",
+        "entityBFamily": "Indicator",
+        "entityBType": "File",
+        "fields": {},
+        "name": "related-to",
+        "reverseName": "related-to",
+        "type": "IndicatorToIndicator"
+      }
+    ]
   },
   {
     "fields": {
@@ -225,6 +289,32 @@
       "vulnerabilities": []
     },
     "type": "File",
-    "value": "abc1"
+    "value": "abc1",
+    "relationships": [
+      {
+        "entityA": "abc1",
+        "entityAFamily": "Indicator",
+        "entityAType": "File",
+        "entityB": "Gootkit",
+        "entityBFamily": "Indicator",
+        "entityBType": "Malware",
+        "fields": {},
+        "name": "indicator-of",
+        "reverseName": "indicated-by",
+        "type": "IndicatorToIndicator"
+      },
+      {
+        "entityA": "abc1",
+        "entityAFamily": "Indicator",
+        "entityAType": "File",
+        "entityB": "1234567890",
+        "entityBFamily": "Indicator",
+        "entityBType": "File",
+        "fields": {},
+        "name": "related-to",
+        "reverseName": "related-to",
+        "type": "IndicatorToIndicator"
+      }
+    ]
   }
 ]
