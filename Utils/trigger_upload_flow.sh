@@ -14,8 +14,8 @@
 function fail {
   echo "$1"
   if [ -z $2 ]; then
-    git checkout --quiet "${content_branch_name}"
-    git branch --quiet -D "${new_content_branch}" # delete local branch
+    git checkout "${content_branch_name}"
+    git branch -D "${new_content_branch}" # delete local branch
   fi
   exit 1
 }
@@ -26,7 +26,7 @@ function check_arguments {
   echo " Running - check_arguments"
 
   if [ -z "$content_branch_name" ]; then
-    content_branch_name=$(git branch --quiet --show-current)
+    content_branch_name=$(git branch --show-current)
   fi
 
   if [ -z "$gitlab_token" ] && [ -z "$circle_token" ]; then
@@ -81,9 +81,9 @@ function create_new_pack {
   update_pack_version "${new_pack_path}/pack_metadata.json" "1.0.0"
 
   cd "${original_path}" || fail
-  git add --quiet "$new_pack_path"
+  git add "$new_pack_path"
 
-  git commit --quiet --untracked-files=no -am  "Created new pack - $new_pack_name"
+  git commit --untracked-files=no -am  "Created new pack - $new_pack_name"
 
 }
 
@@ -185,7 +185,7 @@ function add_dependency {
   pack_path="${CONTENT_PATH}/Packs/${source_pack}/pack_metadata.json"
 
   sed -i "" "s/\"dependencies\": {/\"dependencies\": {\n\t\t\"${pack_name}\": {\n\t\t\t\"mandatory\": true,\n\t\t\t\"display_name\": \"${pack_name}\"\n\t\t},/g" "${pack_path}" || fail
-  git commit --quiet --untracked-files=no -am  "Added dependency for - $pack_name to $source_pack pack"
+  git commit --untracked-files=no -am  "Added dependency for - $pack_name to $source_pack pack"
 
 }
 
@@ -203,8 +203,8 @@ function add_author_image {
   local pack_name=$1
   cp "${CONTENT_PATH}/Packs/Base/Author_image.png" "${CONTENT_PATH}/Packs/${pack_name}" || fail
 
-  git add --quiet "${CONTENT_PATH}/Packs/${pack_name}/Author_image.png"
-  git commit --quiet --untracked-files=no -am  "Added author image for - $pack_name"
+  git add "${CONTENT_PATH}/Packs/${pack_name}/Author_image.png"
+  git commit --untracked-files=no -am  "Added author image for - $pack_name"
 
 }
 
@@ -223,10 +223,10 @@ function add_1_0_0_release_note {
   cd "${CONTENT_PATH}/Packs/${pack_name}/ReleaseNotes" || fail
   current_latest_note=$(ls -t | head -1)
   cp "${current_latest_note}" 1_0_0.md
-  git add --quiet 1_0_0.md
+  git add 1_0_0.md
   cd "${CONTENT_PATH}" || fail
 
-  git commit --quiet --untracked-files=no -am  "Added release note 1_0_0.md to - $pack_name"
+  git commit --untracked-files=no -am  "Added release note 1_0_0.md to - $pack_name"
 
 }
 
@@ -246,7 +246,7 @@ function change_sdk_requirements {
 
   sed -i "" "s#demisto-sdk.*#git+https://github.com/demisto/demisto-sdk.git@${sdk_branch}#g" "${requirements_file_name}"
 
-  git commit --quiet --untracked-files=no -am  "Change sdk in $requirements_file_name to be $sdk_branch"
+  git commit --untracked-files=no -am  "Change sdk in $requirements_file_name to be $sdk_branch"
 
 }
 
@@ -264,7 +264,7 @@ function enhancement_release_notes {
   local pack_path="${CONTENT_PATH}/Packs/${pack_name}"
   demisto-sdk update-release-notes -i "${pack_path}" --force --text "Adding release notes to check the upload flow"
 
-  git commit --quiet --untracked-files=no -am  "Added release note $pack_name"
+  git commit --untracked-files=no -am  "Added release note $pack_name"
 
 }
 
@@ -286,7 +286,7 @@ function change_integration_image {
   local dest_integration_path="${CONTENT_PATH}/Packs/${dest_pack_name}/Integrations/${dest_pack_name}/${dest_pack_name}_image.png"
   cp "${source_integration_path}" "${dest_integration_path}"
 
-  git commit --quiet --untracked-files=no -am  "Copied integration image from  $source_pack_name to $dest_pack_name"
+  git commit --untracked-files=no -am  "Copied integration image from  $source_pack_name to $dest_pack_name"
 
 }
 
@@ -309,7 +309,7 @@ function updating_old_release_notes {
   printf "\n#### Upload flow\n - Test\n" >>"${2}.md"
   cd "${CONTENT_PATH}" || return
 
-  git commit --quiet --untracked-files=no -am "Updated release note - ${2}"
+  git commit --untracked-files=no -am "Updated release note - ${2}"
 
 }
 
@@ -336,7 +336,7 @@ function set_pack_hidden {
     sed -i "" "s/{/{\n\t\"hidden\": true,\n/g" "${pack_metadata}"
   fi
 
-  git commit --quiet --untracked-files=no -am "Set pack - $current_latest_note to be hidden"
+  git commit --untracked-files=no -am "Set pack - $current_latest_note to be hidden"
 
 }
 
@@ -355,7 +355,7 @@ function update_integration_readme {
 
   printf "\n#### Upload flow\n - Test\n" >>"${readme_file}"
 
-  git commit --quiet --untracked-files=no -am "Updated integration - $pack_name README.md file"
+  git commit --untracked-files=no -am "Updated integration - $pack_name README.md file"
 
 }
 
@@ -375,7 +375,7 @@ function update_pack_ignore {
 
   printf "\n[file:1_0_1.md]\nignore=RM104\n" >>"${pack_ignore_file}"
 
-  git commit --quiet --untracked-files=no -am "Updated to pack ignore - $pack_name"
+  git commit --untracked-files=no -am "Updated to pack ignore - $pack_name"
 
 
 }
@@ -396,7 +396,7 @@ function add_pack_to_landing_page {
   sed -i "" "s/\"Getting Started\":\[/\"Getting Started\":\[\n\"${pack_name}\",\n/g" "${json_file}" || fail
   sed -i "" "s/\"Featured\":\[/\"Featured\":\[\n\"${pack_name}\",\n/g" "${json_file}" || fail
 
-  git commit --quiet --untracked-files=no -am "Added $pack_name to landing page"
+  git commit --untracked-files=no -am "Added $pack_name to landing page"
 
 }
 
@@ -573,11 +573,11 @@ else
 fi
 new_content_branch="${sdk_hash}_${content_hash}_UploadFlow_test"
 
-git checkout --quiet "$content_branch_name" || fail
+git checkout "$content_branch_name" || fail
 git pull
 
 existed_in_remote=$(git ls-remote --heads origin "${new_content_branch}")
-existed_in_local=$(git branch --quiet --list "${new_content_branch}")
+existed_in_local=$(git branch --list "${new_content_branch}")
 
 # Deletes the remote branch if exists
 if [ -n "${existed_in_remote}" ]; then
@@ -585,13 +585,13 @@ if [ -n "${existed_in_remote}" ]; then
 fi
 # Deletes the local branch if exists
 if [ -n "${existed_in_local}" ]; then
-  git branch --quiet -D "${new_content_branch}" # delete local branch
+  git branch -D "${new_content_branch}" # delete local branch
 fi
 
 ##############################################################
 ##                   Branch Changes - start                 ##
 ##############################################################
-git checkout --quiet -b "${new_content_branch}" || fail "" "skip"
+git checkout -b "${new_content_branch}" > || fail "" "skip"
 
 if [ -n "$sdk_branch_name" ]; then
   change_sdk_requirements "${sdk_branch_name}" "dev-requirements-py3.txt"
@@ -632,8 +632,8 @@ if [ -n "$gitlab_token" ]; then
 fi
 echo ""
 
-git checkout --quiet "${content_branch_name}"
-git branch --quiet -D "${new_content_branch}"
+git checkout "${content_branch_name}"
+git branch -D "${new_content_branch}"
 
 if [ -d "$new_pack_path" ]; then
   rm -r "$new_pack_path"
