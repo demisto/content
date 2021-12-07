@@ -17,7 +17,7 @@ configuration:
   name: message_regex
   required: false
   type: 0
-  additionalinfo: Will create an incident in Cortex XSOAR for every received log message that matches this regex.
+  additionalinfo: Creates an incident in Cortex XSOAR for every received log message that matches this regex.
 - defaultvalue: '514'
   display: Port mapping (<port> or <host port>:<docker port>)
   name: longRunningPort
@@ -29,14 +29,14 @@ configuration:
   required: false
   type: 8
   hidden: true
-description: A Syslog server provides the ability to automatically open incidents from Syslog clients. This integration provides the ability to filter which logs are to be converted to incidents (or choose to convert all logs).
+description: A Syslog server enables automatically opening incidents from Syslog clients. This integration supports filtering logs to convert to incidents, or alternatively converting all logs.
 display: Syslog v2
 name: Syslog v2
 script:
   commands:
   - name: get-mapping-fields
     description: Returns the list of fields for an incident type. This command should
-      be used for debugging purposes.
+      be used for debugging.
   isfetch: false
   runonce: false
   script: '-'
