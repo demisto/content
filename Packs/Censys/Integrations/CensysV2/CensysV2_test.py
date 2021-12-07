@@ -128,3 +128,11 @@ def test_censys_view_cert(mocker):
     response = censys_view_command(client, args)
     assert '### Information for certificate' in response.readable_output
     assert response.outputs == mock_response
+
+
+def test_test_module_valid(requests_mock):
+    from CensysV2 import Client, test_module
+    client = Client(base_url='https://search.censys.io/api/', auth=('test', '1234'), verify=True, proxy=False)
+    requests_mock.get(url='https://search.censys.io/api/v2/hosts/8.8.8.8', status_code=200, json="{}")
+
+    assert test_module(client) == 'ok'
