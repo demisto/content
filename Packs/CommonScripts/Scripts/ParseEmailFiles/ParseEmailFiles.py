@@ -1,3 +1,4 @@
+from typing import *  # noqa: F401
 #!/usr/bin/env python2
 # coding=utf-8
 # PEP0263  https://www.python.org/dev/peps/pep-0263/
@@ -3658,6 +3659,9 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                                                outputs=None)
                         finally:
                             os.remove(f.name)
+
+                    if not file_content:
+                        attachment_internal_path.append(None)
                     attachment_names.append(attachment_file_name)
                     attachment_content_ids.append(attachment_content_id)
                     attachment_content_dispositions.append(attachment_content_disposition)
@@ -3687,6 +3691,8 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
 
                     else:
                         file_content = part.get_payload(decode=True)
+                        if attachment_file_name.endswith('.p7s') or not file_content:
+                            attachment_internal_path.append(None)
                         # fileResult will return an error if file_content is None.
                         if file_content and not attachment_file_name.endswith('.p7s'):
                             createdFile = fileResult(attachment_file_name, file_content)
