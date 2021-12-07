@@ -1,8 +1,8 @@
 id: CuckooTest
-version: 19
+version: 22
 contentitemexportablefields:
   contentitemfields:
-    packID: CuckooSandbox
+    packID: ""
     itemVersion: 1.0.3
     fromServerVersion: 5.0.0
     toServerVersion: ""
@@ -14,10 +14,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 561ffa9d-52d5-4347-8f87-7ee2af21bf7c
+    taskid: 3377ab05-9d2e-4b73-8c4b-878e1c976bd3
     type: start
     task:
-      id: 561ffa9d-52d5-4347-8f87-7ee2af21bf7c
+      id: 3377ab05-9d2e-4b73-8c4b-878e1c976bd3
       version: -1
       name: ""
       description: '-'
@@ -43,10 +43,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 75939497-5b75-4c8f-8b16-bf477fef1cf8
+    taskid: eb4cdcef-bbe4-4dea-8d97-e96d859c595c
     type: regular
     task:
-      id: 75939497-5b75-4c8f-8b16-bf477fef1cf8
+      id: eb4cdcef-bbe4-4dea-8d97-e96d859c595c
       version: -1
       name: Delete Context
       description: delete context
@@ -56,7 +56,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
+      - "16"
     scriptarguments:
       all:
         simple: "yes"
@@ -77,10 +77,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: cbdc7b57-0b41-4899-8052-b213497c8ba2
+    taskid: 470910be-6c1b-4e52-8fc2-1627f909def6
     type: playbook
     task:
-      id: cbdc7b57-0b41-4899-8052-b213497c8ba2
+      id: 470910be-6c1b-4e52-8fc2-1627f909def6
       version: -1
       name: Detonate File - Cuckoo
       description: Detonating file with Cuckoo
@@ -120,10 +120,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 3c3292df-928f-4f76-8420-7e807943d127
+    taskid: 764f01e6-ea15-4558-8533-8cf24ccd6f95
     type: title
     task:
-      id: 3c3292df-928f-4f76-8420-7e807943d127
+      id: 764f01e6-ea15-4558-8533-8cf24ccd6f95
       version: -1
       name: Done
       description: done file
@@ -147,10 +147,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 524dea14-df28-4eb1-80c8-b7942750e31f
+    taskid: d0a8e923-63fc-4169-8b38-2ecc410fbfa3
     type: playbook
     task:
-      id: 524dea14-df28-4eb1-80c8-b7942750e31f
+      id: d0a8e923-63fc-4169-8b38-2ecc410fbfa3
       version: -1
       name: Detonate URL - Cuckoo
       description: url detonation playbook
@@ -186,10 +186,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 1b03ea0c-f492-46e4-8826-9461c12653af
+    taskid: 172d1123-1935-468b-8261-0ab227047b2d
     type: title
     task:
-      id: 1b03ea0c-f492-46e4-8826-9461c12653af
+      id: 172d1123-1935-468b-8261-0ab227047b2d
       version: -1
       name: FileDetonate Done
       description: done file detonate
@@ -216,10 +216,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 4841607b-bff5-4e59-8fcd-7c3f33b8ad7a
+    taskid: 4d516618-235d-44f1-8c96-f8d4b8e48f8f
     type: regular
     task:
-      id: 4841607b-bff5-4e59-8fcd-7c3f33b8ad7a
+      id: 4d516618-235d-44f1-8c96-f8d4b8e48f8f
       version: -1
       name: Delete Context
       description: delete context
@@ -250,10 +250,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 80667489-737c-472c-8bb3-d833cdd69f29
+    taskid: 4bc9757f-1144-48b7-8f5f-07ba592b50a1
     type: regular
     task:
-      id: 80667489-737c-472c-8bb3-d833cdd69f29
+      id: 4bc9757f-1144-48b7-8f5f-07ba592b50a1
       version: -1
       name: Get file
       description: getting file using get
@@ -261,9 +261,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
     scriptarguments:
       method:
         simple: GET
@@ -275,7 +272,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": -400,
           "y": 370
         }
       }
@@ -288,10 +285,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 4036a882-386c-47e5-864f-d47ca59a9638
+    taskid: a01b6fc8-d029-43c3-8504-9ed32b8ef0b2
     type: regular
     task:
-      id: 4036a882-386c-47e5-864f-d47ca59a9638
+      id: a01b6fc8-d029-43c3-8504-9ed32b8ef0b2
       version: -1
       name: cuckoo-get-task-report
       description: Retrieve report
@@ -326,10 +323,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 055ac125-4241-4e63-86ae-51de87ff3a77
+    taskid: eafbf591-58b7-4fc5-8043-a4e73ed7765d
     type: condition
     task:
-      id: 055ac125-4241-4e63-86ae-51de87ff3a77
+      id: eafbf591-58b7-4fc5-8043-a4e73ed7765d
       version: -1
       name: Check if file's data is in output
       type: condition
@@ -363,10 +360,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 4696d91b-9baa-491c-872e-e58842ce7d10
+    taskid: e5f7a64d-8039-4895-805b-c2c2f35d7201
     type: title
     task:
-      id: 4696d91b-9baa-491c-872e-e58842ce7d10
+      id: e5f7a64d-8039-4895-805b-c2c2f35d7201
       version: -1
       name: File data output check done
       type: title
@@ -390,6 +387,43 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: dd5e2d62-b34a-4533-8b45-a04478328bdb
+    type: regular
+    task:
+      id: dd5e2d62-b34a-4533-8b45-a04478328bdb
+      version: -1
+      name: FileCreateAndUpload
+      description: |
+        Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      data:
+        simple: abcd
+      filename:
+        simple: test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
@@ -397,12 +431,11 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1725,
-        "width": 380,
-        "x": 50,
+        "width": 830,
+        "x": -400,
         "y": 50
       }
     }
   }
 inputs: []
 outputs: []
-fromversion: 5.0.0
