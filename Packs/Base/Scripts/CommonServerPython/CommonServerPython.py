@@ -26,6 +26,8 @@ from threading import Lock
 import demistomock as demisto
 import warnings
 
+import signal
+
 
 class WarningsHandler(object):
     #    Wrapper to handle warnings. We use a class to cleanup after execution
@@ -8325,3 +8327,27 @@ def indicators_value_to_clickable(indicators):
             indicator_url = os.path.join('#', 'indicator', indicator_id)
             res[indicator] = '[{indicator}]({indicator_url})'.format(indicator=indicator, indicator_url=indicator_url)
     return res
+
+
+def threads_dumper():
+    code = []
+    for threadId, stack in sys._current_frames().items():
+        code.append("\n# ThreadID: %s" % threadId)
+        for filename, lineno, name, line in traceback.extract_stack(stack):
+            code.append('File: "%s", line %d, in %s' % (filename, lineno, name))
+            if line:
+                code.append("  %s" % (line.strip()))
+
+    thread_dump_msg = '\n\n--- '\
+        + datetime.today().strftime('%Y-%m-%d-%H:%M:%S')\
+        + ' Start Threads Dump ---\n' + '\n'.join(code)\
+        + '\n\n--- End Threads Dump ---\n'
+    demisto.info(thread_dump_msg)
+
+
+def signal_handler(_sig, _frame):
+    threads_dumper()
+
+
+def register_signal_handler(signal_type=signal.SIGUSR1):
+    signal.signal(signal_type, signal_handler)

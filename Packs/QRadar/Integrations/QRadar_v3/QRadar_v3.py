@@ -1,5 +1,6 @@
 import concurrent.futures
 import secrets
+import signal
 from enum import Enum
 from ipaddress import ip_address
 from typing import Tuple, Set, Dict, Callable
@@ -10,11 +11,6 @@ import urllib3
 from CommonServerUserPython import *  # noqa
 
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-
-import signal
-from datetime import datetime
-import sys
-import traceback
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -3469,30 +3465,6 @@ def change_ctx_to_be_compatible_with_retry() -> None:
         print_debug_msg(f"Change ctx context data was cleared and changed to {cleared_ctx}")
 
 
-def threads_dumper():
-    code = []
-    for threadId, stack in sys._current_frames().items():
-        code.append("\n# ThreadID: %s" % threadId)
-        for filename, lineno, name, line in traceback.extract_stack(stack):
-            code.append('File: "%s", line %d, in %s' % (filename, lineno, name))
-            if line:
-                code.append("  %s" % (line.strip()))
-
-    thread_dump_msg = '\n\n--- '\
-        + datetime.today().strftime('%Y-%m-%d-%H:%M:%S')\
-        + ' Start Threads Dump ---\n' + '\n'.join(code)\
-        + '\n\n--- End Threads Dump ---\n'
-    demisto.info(thread_dump_msg)
-
-
-def signal_handler(_sig, _frame):
-    threads_dumper()
-
-
-def register_signal_handler():
-    signal.signal(signal.SIGUSR1, signal_handler)
-
-
 ''' MAIN FUNCTION '''
 
 
@@ -3656,5 +3628,5 @@ def main() -> None:
 ''' ENTRY POINT '''
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
-    register_signal_handler()
+    register_signal_handler(signal_type=signal.SIGUSR1)
     main()
