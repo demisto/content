@@ -1,54 +1,83 @@
 import functools
 import uuid
-from copy import copy
+from ssl import SSLContext, PROTOCOL_TLSv1_2
 from tempfile import NamedTemporaryFile
-from typing import Callable
+from flask import Flask, request, make_response, jsonify
+from gevent.pywsgi import WSGIServer
 from urllib.parse import ParseResult, urlparse
-from fastapi.responses import JSONResponse
-from fastapi.security import HTTPBasicCredentials, HTTPBasic, APIKeyHeader
 from secrets import compare_digest
-
-from uvicorn.logging import AccessFormatter
 
 import demistomock as demisto
 from CommonServerPython import *
-from fastapi import FastAPI, Response, Depends, status, Request
-import uvicorn
 
 ''' GLOBAL VARIABLES '''
+HTTP_200_OK = 200
+HTTP_400_BAD_REQUEST = 400
+HTTP_401_UNAUTHORIZED = 401
 INTEGRATION_NAME: str = 'TAXII Server'
 API_ROOT = 'threatintel'
-APP: FastAPI = FastAPI()
+APP: Flask = Flask('demisto-taxii2Z')
 NAMESPACE_URI = 'https://www.paloaltonetworks.com/cortex'
-MEDIA_TYPE_TAXII_ANY = "application/taxii+json"
-MEDIA_TYPE_STIX_ANY = "application/stix+json"
+MEDIA_TYPE_TAXII_ANY = 'application/taxii+json'
+MEDIA_TYPE_STIX_ANY = 'application/stix+json'
 MEDIA_TYPE_TAXII_V21 = 'application/taxii+json;version=2.1'
 MEDIA_TYPE_STIX_V21 = 'application/stix+json;version=2.1'
 MEDIA_TYPE_TAXII_V20 = 'application/vnd.oasis.taxii+json; version=2.0'
-MEDIA_TYPE_STIX_V20 = "application/vnd.oasis.stix+json; version=2.0"
+MEDIA_TYPE_STIX_V20 = 'application/vnd.oasis.stix+json; version=2.0'
 ACCEPT_TYPE_ALL = '*/*'
-TAXII_VER_2_0 = "2.0"
-TAXII_VER_2_1 = "2.1"
+TAXII_VER_2_0 = '2.0'
+TAXII_VER_2_1 = '2.1'
 PAWN_UUID = uuid.uuid5(uuid.NAMESPACE_URL, 'https://www.paloaltonetworks.com')
-SCO_DET_ID_NAMESPACE = uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7")
+SCO_DET_ID_NAMESPACE = uuid.UUID('00abedb4-aa42-466c-9c01-fed23315a9b7')
 
+XSOAR_TYPES_TO_STIX_SCO = {
+    FeedIndicatorType.CIDR: 'ipv4-addr',
+    FeedIndicatorType.DomainGlob: 'domain-name',
+    FeedIndicatorType.IPv6: 'ipv6-addr',
+    FeedIndicatorType.IPv6CIDR: 'ipv6-addr',
+    FeedIndicatorType.Account: 'user-account',
+    FeedIndicatorType.Domain: 'domain-name',
+    FeedIndicatorType.Email: 'email-addr',
+    FeedIndicatorType.Host: '?????',  # TODO: Check what to do.
+    FeedIndicatorType.IP: 'ipv4-addr',
+    FeedIndicatorType.Registry: 'windows-registry-key',
+    FeedIndicatorType.File: 'file',
+    FeedIndicatorType.URL: 'url',
+}
 
-class TAXII2ServerAccessFormatter(AccessFormatter):
-    def get_user_agent(self, scope: Dict) -> str:
-        headers = scope.get('headers', [])
-        user_agent_header = list(filter(lambda header: header[0].decode() == 'user-agent', headers))
-        user_agent = ''
-        if len(user_agent_header) == 1:
-            user_agent = user_agent_header[0][1].decode()
-        return user_agent
+XSOAR_TYPES_TO_STIX_SDO = {
+    ThreatIntel.ObjectsNames.ATTACK_PATTERN: 'attack-pattern',
+    ThreatIntel.ObjectsNames.CAMPAIGN: 'campaign',
+    ThreatIntel.ObjectsNames.COURSE_OF_ACTION: 'course-of-action',
+    ThreatIntel.ObjectsNames.INFRASTRUCTURE: 'infrastructure',
+    ThreatIntel.ObjectsNames.INTRUSION_SET: 'instruction-set',
+    ThreatIntel.ObjectsNames.REPORT: 'report',
+    ThreatIntel.ObjectsNames.THREAT_ACTOR: 'threat-actor',
+    ThreatIntel.ObjectsNames.TOOL: 'tool',
+    ThreatIntel.ObjectsNames.MALWARE: 'malware',
+    FeedIndicatorType.CVE: 'vulnerability',
+}
 
-    def formatMessage(self, record):
-        recordcopy = copy(record)
-        scope = recordcopy.__dict__['scope']
-        user_agent = self.get_user_agent(scope)
-        recordcopy.__dict__.update({'user_agent': user_agent})
-        return super().formatMessage(recordcopy)
-
+STIX2_TYPES_TO_XSOAR = {
+    'campaign': ThreatIntel.ObjectsNames.CAMPAIGN,
+    'attack-pattern': ThreatIntel.ObjectsNames.ATTACK_PATTERN,
+    'report': ThreatIntel.ObjectsNames.REPORT,
+    'malware': ThreatIntel.ObjectsNames.MALWARE,
+    'course-of-action': ThreatIntel.ObjectsNames.COURSE_OF_ACTION,
+    'intrusion-set': ThreatIntel.ObjectsNames.INTRUSION_SET,
+    'tool': ThreatIntel.ObjectsNames.TOOL,
+    'threat-actor': ThreatIntel.ObjectsNames.THREAT_ACTOR,
+    'infrastructure': ThreatIntel.ObjectsNames.INFRASTRUCTURE,
+    'vulnerability': FeedIndicatorType.CVE,
+    "ipv4-addr": FeedIndicatorType.IP,
+    "ipv6-addr": FeedIndicatorType.IPv6,
+    "domain-name": [FeedIndicatorType.DomainGlob, FeedIndicatorType.Domain],
+    'user-account': FeedIndicatorType.Account,
+    'email-addr': FeedIndicatorType.Email,
+    "url": FeedIndicatorType.URL,
+    "file": FeedIndicatorType.File,
+    'windows-registry-key': FeedIndicatorType.Registry,
+}
 
 ''' TAXII2 Server '''
 
@@ -86,7 +115,7 @@ class TAXII2Server:
                             f'Possible values: {TAXII_VER_2_0}, {TAXII_VER_2_1}.')
         self._collections_resource = []
         self._collections_by_id = dict()
-        self._seed = uuid.uuid5(PAWN_UUID, demisto.getLicenseID())
+        self.namespace_uuid = uuid.uuid5(PAWN_UUID, demisto.getLicenseID())
         self.create_collections(collections)
 
     @property
@@ -129,7 +158,7 @@ class TAXII2Server:
         collections_resource = []
         collections_by_id = dict()
         for name, query in collections.items():
-            collection_uuid = str(uuid.uuid5(self._seed, 'Collection_' + name))
+            collection_uuid = str(uuid.uuid5(self.namespace_uuid, 'Collection_' + name))
             collection = {
                 'id': collection_uuid,
                 'title': name,
@@ -206,8 +235,8 @@ class TAXII2Server:
                             f'Use "/{api_root}/collections/" to get all existing collections.')
         return found_collection
 
-    def get_objects(self, api_root: str, collection_id: str, added_after, limit: int, offset: int,):
-        # TODO: change added after to timestamp param
+    def get_objects(self, api_root: str, collection_id: str, added_after, limit: int, offset: int, ids: list,
+                    types: list, versions: list):
         if not api_root == self._api_root:
             raise Exception(f"Unknown API Root {api_root}. Check possible API Roots using '{self.discovery_route}'")
         found_collection = self._collections_by_id.get(collection_id)
@@ -217,45 +246,61 @@ class TAXII2Server:
                             f'Use "/{api_root}/collections/" to get all existing collections.')
 
         query = found_collection.get('description')
-
-        # TODO: change limit to requested limit
         new_limit = offset + limit
-        ios = find_indicators(query, added_after, new_limit)
-        return ios, '', ''
+        new_query = create_query(query, ids, types, versions)
+        ios = find_indicators(query=new_query, added_after=added_after, limit=new_limit)
+
+        first_added = None
+        last_added = None
+        objects = ios[offset:offset + limit]
+
+        if objects:
+            first_added = objects[0].get('created')
+            last_added = objects[-1].get('created')
+
+        bundle = {
+            'type': 'bundle',
+            'objects': objects,
+            'id': '123'  # TODO: what is a bundle id?
+        }
+        response = bundle
+        if self.version == TAXII_VER_2_1:
+            response = {
+                'data': bundle
+            }
+
+        return response, first_added, last_added
 
 
 SERVER: TAXII2Server
-basic_auth = HTTPBasic()
-token_auth = APIKeyHeader(auto_error=False, name='Authorization')
 
 ''' HELPER FUNCTIONS '''
 
 
 def taxii_validate_request(f):
     @functools.wraps(f)
-    async def validate_request(*args, **kwargs):
+    def validate_request(*args, **kwargs):
         """
         function of HTTP requests to validate authentication and Accept headers.
         """
-        request: Request = kwargs.get('request')
-        credentials: HTTPBasicCredentials = kwargs.get('credentials')
         accept_headers = [MEDIA_TYPE_TAXII_ANY, MEDIA_TYPE_TAXII_V20, MEDIA_TYPE_TAXII_V21,
                           MEDIA_TYPE_STIX_V20, ACCEPT_TYPE_ALL]
+        credentials = request.authorization
         if SERVER.auth:
             auth_success = (compare_digest(credentials.username, SERVER.auth[0])
                             and compare_digest(credentials.password, SERVER.auth[1]))
             if not auth_success:
                 handle_long_running_error('Authorization failed')
-                return handle_response(status.HTTP_401_UNAUTHORIZED, {'title': 'Authorization failed'})
+                return handle_response(HTTP_401_UNAUTHORIZED, {'title': 'Authorization failed'})
         request_headers = request.headers
         if (accept_header := request_headers.get('Accept')) not in accept_headers:
             handle_long_running_error('Invalid TAXII Headers')
-            return handle_response(status.HTTP_400_BAD_REQUEST,
+            return handle_response(HTTP_400_BAD_REQUEST,
                                    {'title': 'Invalid TAXII Headers',
                                     'description': f'Invalid Accept header: {accept_header}, '
                                                    f'please use one ot the following Accept headers: '
                                                    f'{accept_headers}'})
-        return await f(*args, **kwargs)
+        return f(*args, **kwargs)
 
     return validate_request
 
@@ -289,26 +334,93 @@ def handle_response(status_code, content, date_added_first=None, date_added_last
     headers = {
         'Content-Type': content_type,
     }
-    if status_code == status.HTTP_401_UNAUTHORIZED:
+    if status_code == HTTP_401_UNAUTHORIZED:
         headers['WWW-Authenticate'] = f'Basic realm="Authentication Required"'
     if date_added_first:
         headers['X-TAXII-Date-Added-First'] = date_added_first
     if date_added_last:
         headers['X-TAXII-Date-Added-Last'] = date_added_last
 
-    return JSONResponse(
-        status_code=status_code,
-        content=content,
-        media_type=content_type,
-        headers=headers
+    return make_response(jsonify(content), status_code, headers)
+
+
+def create_query(query, ids, types, versions):
+    new_query = query + ' '
+    if ids:
+        # TODO: add filtering by id.
+        pass
+    if types:
+        try:
+            xsoar_types = [STIX2_TYPES_TO_XSOAR[t] for t in types]
+        except KeyError as e:
+            raise Exception(f'Unsupported object type: {e}.')
+        new_query += ' or '.join(['type:' + x for x in xsoar_types])
+    if versions:
+        # TODO: check if we have versions. options: [last, first, all, <value>]
+        pass
+    return new_query
+
+
+def find_indicators(query: str, added_after, limit: int) -> list:
+    iocs: List[dict] = []
+    indicator_searcher = IndicatorsSearcher(
+        query=query,
+        limit=limit,
+        from_date=added_after
     )
+    for ioc in indicator_searcher:
+        found_indicators = ioc.get('iocs') or []
+        for xsoar_indicator in found_indicators:
+            xsoar_type = xsoar_indicator.get('indicator_type')
+            stix_ioc = FUNCTIONS_FOR_XSOAR_TYPES[xsoar_type](xsoar_indicator, xsoar_type)
+            iocs.append(stix_ioc)
+
+    return iocs
 
 
-def find_indicators(indicator_query: str) -> list:
-    # TODO: create indicator searcher
-    # TODO: parse all queries
-    # TODO: build functions for each indicator type
-    pass
+def create_sco_stix_uuid(value, stix_type):
+    unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, value)
+    stix_id = f'{stix_type}--{unique_id}'
+    return stix_id
+
+
+def create_sdo_stix_uuid(value, stix_type):
+    unique_id = uuid.uuid5(SERVER.namespace_uuid, value)
+    stix_id = f'{stix_type}--{unique_id}'
+    return stix_id
+
+
+def create_stix_ip(xsoar_indicator, xsoar_type):
+    stix_type = XSOAR_TYPES_TO_STIX_SCO.get(xsoar_type)
+    value = xsoar_indicator.get('value')
+    stix_id = create_sco_stix_uuid('{"value":"' + value + '"}', stix_type)
+    # TODO: create mapping
+    ipv4 = {
+        'id': stix_id,
+        'value': value,
+        'type': stix_type,
+        'created': xsoar_indicator.get('firstSeen'),
+        'modified': xsoar_indicator.get('modified'),
+    }
+    return ipv4
+
+
+# TODO: build functions for each indicator type
+
+
+def parse_content_range(content_range):
+    range_type, range_count = content_range.split(' ', 1)
+
+    if range_type != 'items':
+        raise Exception(f'Bad Content-Range header: {content_range}.')
+
+    range_count, _ = range_count.split('/', 1)
+    range_begin, range_end = range_count.split('-', 1)
+
+    offset = int(range_begin)
+    limit = int(range_end)
+
+    return offset, limit
 
 
 def get_collections(params: dict = demisto.params()) -> dict:
@@ -325,13 +437,38 @@ def get_collections(params: dict = demisto.params()) -> dict:
     return collections
 
 
+FUNCTIONS_FOR_XSOAR_TYPES = {
+    FeedIndicatorType.CIDR: create_stix_ip,
+    FeedIndicatorType.DomainGlob: 'domain-name',
+    FeedIndicatorType.IPv6: create_stix_ip,
+    FeedIndicatorType.IPv6CIDR: create_stix_ip,
+    FeedIndicatorType.Account: 'user-account',
+    FeedIndicatorType.Domain: 'domain-name',  # TODO: Maybe domain?
+    FeedIndicatorType.Email: 'email-addr',
+    FeedIndicatorType.Host: '?????',  # TODO: Check what to do.
+    FeedIndicatorType.IP: create_stix_ip,
+    FeedIndicatorType.Registry: 'windows-registry-key',
+    FeedIndicatorType.File: 'file',
+    FeedIndicatorType.URL: 'url',
+    ThreatIntel.ObjectsNames.ATTACK_PATTERN: 'attack-pattern',
+    ThreatIntel.ObjectsNames.CAMPAIGN: 'campaign',
+    ThreatIntel.ObjectsNames.COURSE_OF_ACTION: 'course-of-action',
+    ThreatIntel.ObjectsNames.INFRASTRUCTURE: 'infrastructure',
+    ThreatIntel.ObjectsNames.INTRUSION_SET: 'instruction-set',
+    ThreatIntel.ObjectsNames.REPORT: 'report',
+    ThreatIntel.ObjectsNames.THREAT_ACTOR: 'threat-actor',
+    ThreatIntel.ObjectsNames.TOOL: 'tool',
+    ThreatIntel.ObjectsNames.MALWARE: 'malware',
+    FeedIndicatorType.CVE: 'vulnerability',
+}
+
 ''' ROUTE FUNCTIONS '''
 
 
-@APP.get('/taxii/')  # TAXII v2.0
-@APP.get('/taxii2/')  # TAXII v2.1
+@APP.route('/taxii/', methods=['GET'])  # TAXII v2.0
+@APP.route('/taxii2/', methods=['GET'])  # TAXII v2.1
 @taxii_validate_request
-async def taxii2_server_discovery(request: Request, credentials: HTTPBasicCredentials = Depends(basic_auth)):
+def taxii2_server_discovery():
     """
     Defines TAXII API - Server Information:
     Server Discovery section (4.1) `here  for v2.1 <https://docs.oasis-open.org/cti/taxii/v2.1/cs01/taxii-v2.1-cs01.html#_Toc31107526>`__
@@ -344,21 +481,19 @@ async def taxii2_server_discovery(request: Request, credentials: HTTPBasicCreden
     except Exception as e:
         error = f'Could not perform the discovery request: {str(e)}'
         handle_long_running_error(error)
-        return handle_response(status.HTTP_400_BAD_REQUEST, {'title': 'Discovery Request Error',
-                                                             'description': error})
+        return handle_response(HTTP_400_BAD_REQUEST, {'title': 'Discovery Request Error',
+                                                      'description': error})
 
-    return handle_response(status.HTTP_200_OK, discovery_response)
+    return handle_response(HTTP_200_OK, discovery_response)
 
 
-@APP.get('/{api_root}/')
+@APP.route('/<api_root>/', methods=['GET'])
 @taxii_validate_request
-async def taxii2_api_root(api_root, request: Request, credentials: HTTPBasicCredentials = Depends(basic_auth)):
+def taxii2_api_root(api_root):
     """
      Defines TAXII API - Server Information:
      Get API Root Information section (4.2) `here <https://docs.oasis-open.org/cti/taxii/v2.1/cs01/taxii-v2.1-cs01.html#_Toc31107528>`__
      Args:
-         credentials:
-         request:
          api_root (str): the base URL of the API Root
      Returns:
          api-root: An API Root Resource upon successful requests.
@@ -368,28 +503,26 @@ async def taxii2_api_root(api_root, request: Request, credentials: HTTPBasicCred
     except Exception as e:
         error = f'Could not perform the API Root request: {str(e)}'
         handle_long_running_error(error)
-        return handle_response(status.HTTP_400_BAD_REQUEST, {'title': 'API Root Request Error',
-                                                             'description': error})
+        return handle_response(HTTP_400_BAD_REQUEST, {'title': 'API Root Request Error',
+                                                      'description': error})
 
-    return handle_response(status.HTTP_200_OK, api_root_response)
+    return handle_response(HTTP_200_OK, api_root_response)
 
 
-@APP.get('/{api_root}/status/{status_id}/')
+@APP.route('/<api_root>/status/<status_id>/', methods=['GET'])
 @taxii_validate_request
-async def taxii2_status(api_root, status_id, request: Request, credentials: HTTPBasicCredentials = Depends(basic_auth)):
+def taxii2_status(api_root, status_id):
     # TODO: Not allowed
     pass
 
 
-@APP.get('/{api_root}/collections/')
+@APP.route('/<api_root>/collections/', methods=['GET'])
 @taxii_validate_request
-async def taxii2_collections(request: Request, api_root: str, credentials: HTTPBasicCredentials = Depends(basic_auth)):
+def taxii2_collections(api_root: str):
     """
     Defines TAXII API - Collections:
     Get Collection section (5.1) `here for v.2 <https://docs.oasis-open.org/cti/taxii/v2.1/csprd01/taxii-v2.1-csprd01.html#_Toc532988049>`__
     Args:
-        request:
-        credentials:
         api_root (str): the base URL of the API Root
     Returns:
         collections: A Collections Resource upon successful requests. Additional information
@@ -400,23 +533,20 @@ async def taxii2_collections(request: Request, api_root: str, credentials: HTTPB
     except Exception as e:
         error = f'Could not perform the collections request: {str(e)}'
         handle_long_running_error(error)
-        return handle_response(status.HTTP_400_BAD_REQUEST, {'title': 'Collections Request Error',
-                                                             'description': error})
-    return handle_response(status.HTTP_200_OK, collections_response)
+        return handle_response(HTTP_400_BAD_REQUEST, {'title': 'Collections Request Error',
+                                                      'description': error})
+    return handle_response(HTTP_200_OK, collections_response)
 
 
-@APP.get('/{api_root}/collections/{collection_id}')
+@APP.route('/<api_root>/collections/<collection_id>/', methods=['GET'])
 @taxii_validate_request
-async def taxii2_collection_by_id(request: Request, api_root: str, collection_id: str,
-                                  credentials: HTTPBasicCredentials = Depends(basic_auth)):
+def taxii2_collection_by_id(api_root: str, collection_id: str):
     """
     Defines TAXII API - Collections:
     Get Collection section (5.2) `here for v.2.0 <http://docs.oasis-open.org/cti/taxii/v2.0/cs01/taxii-v2.0-cs01.html#_Toc496542736>`__
     and `here for v.2.1 <https://docs.oasis-open.org/cti/taxii/v2.1/csprd01/taxii-v2.1-csprd01.html#_Toc532988051>`__
     Args:
-        request:
         collection_id:
-        credentials:
         api_root (str): the base URL of the API Root
     Returns:
         collections: A Collection Resource with given id upon successful requests.
@@ -426,60 +556,74 @@ async def taxii2_collection_by_id(request: Request, api_root: str, collection_id
     except Exception as e:
         error = f'Could not perform the collection request: {str(e)}'
         handle_long_running_error(error)
-        return handle_response(status.HTTP_400_BAD_REQUEST, {'title': 'Collection Request Error',
-                                                             'description': error})
-    return handle_response(status.HTTP_200_OK, collection_response)
+        return handle_response(HTTP_400_BAD_REQUEST, {'title': 'Collection Request Error',
+                                                      'description': error})
+    return handle_response(HTTP_200_OK, collection_response)
 
 
-@APP.get('/{api_root}/collections/{collection_id}/manifest/')
+@APP.route('/<api_root>/collections/<collection_id>/manifest/', methods=['GET'])
 @taxii_validate_request
-async def taxii2_manifest(request: Request, api_root: str, collection_id: str, added_after: int = None,
-                          limit: int = 500,
-                          credentials: HTTPBasicCredentials = Depends(basic_auth)):
+def taxii2_manifest(api_root: str, collection_id: str):
     # TODO: implement
     pass
 
 
-@APP.get('/{api_root}/collections/{collection_id}/objects/')
+@APP.route('/<api_root>/collections/<collection_id>/objects/', methods=['GET'])
 @taxii_validate_request
-async def taxii2_objects(request: Request, api_root: str, collection_id: str, added_after: int = None, limit: int = 500,
-                         offset: int = 0, credentials: HTTPBasicCredentials = Depends(basic_auth)):
+def taxii2_objects(api_root: str, collection_id: str):
     """
     Defines TAXII API - Collections Objects:
     Get Collection section (5.4) `here <https://docs.oasis-open.org/cti/taxii/v2.1/csprd01/taxii-v2.1-csprd01.html#_Toc532988055>`__
     Args:
-        offset:
-        credentials:
-        limit:
-        added_after:
         collection_id:
         api_root (str): the base URL of the API Root
     Returns:
         envelope: A Envelope Resource upon successful requests. Additional information
         `here <https://docs.oasis-open.org/cti/taxii/v2.1/csprd01/taxii-v2.1-csprd01.html#_Toc532988038>`__.
     """
-    # TODO: Parse match arguments
-    ids = request.query_params.get('match[id]'),
-    types = request.query_params.get('match[type]'),
-    versions = request.query_params.get('match[version]'),
-    spec_versions = request.query_params.get('match[spec_version]')
-    # TODO: get limit and offset for v2.0 or v2.1
     try:
+        # TODO: Parse match arguments
+        added_after = request.args.get('added_after')
+        ids = argToList(request.args.get('match[id]'))  # TODO: Maybe not supported
+        types = argToList(request.args.get('match[type]'))
+        versions = argToList(request.args.get('match[version]'))
+        limit = 500  # TODO: should limit have default param?
+        offset = 0
+
+        try:
+            if added_after:
+                datetime.strptime(added_after, '%Y-%m-%dT%H:%M:%S.%fZ')
+        except ValueError as e:
+            raise Exception(f'Added after time format should be YYYY-MM-DDTHH:mm:ss.[s+]Z. {e}')
+
+        if SERVER.version == TAXII_VER_2_0:
+            if content_range := request.headers.get('Content-Range'):
+                offset, limit = parse_content_range(content_range)
+            elif range := request.headers.get('Range'):
+                offset, limit = parse_content_range(range)
+
+        elif SERVER.version == TAXII_VER_2_1:
+            limit = request.args.get('limit')
+            limit = int(limit) if limit else None
+
         objects_response, date_added_first, date_added_last = SERVER.get_objects(
             api_root=api_root,
             collection_id=collection_id,
             added_after=added_after,
             offset=offset,
             limit=limit,
+            ids=ids,
+            types=types,
+            versions=versions,
         )
     except Exception as e:
         error = f'Could not perform the objects request: {str(e)}'
         handle_long_running_error(error)
-        return handle_response(status.HTTP_400_BAD_REQUEST, {'title': 'Objects Request Error',
-                                                             'description': error})
+        return handle_response(HTTP_400_BAD_REQUEST, {'title': 'Objects Request Error',
+                                                      'description': error})
 
     return handle_response(
-        status_code=status.HTTP_200_OK,
+        status_code=HTTP_200_OK,
         content=objects_response,
         date_added_first=date_added_first,
         date_added_last=date_added_last,
@@ -490,7 +634,7 @@ async def taxii2_objects(request: Request, api_root: str, collection_id: str, ad
 ''' COMMAND FUNCTIONS '''
 
 
-def run_server(taxii_server: TAXII2Server, port: int, certificate: str, private_key: str):
+def run_server(port: int, certificate: str, private_key: str):
     """
     Start the taxii server.
     """
@@ -500,29 +644,22 @@ def run_server(taxii_server: TAXII2Server, port: int, certificate: str, private_
         certificate_path = certificate_file.name
         certificate_file.write(bytes(certificate, 'utf-8'))
         certificate_file.close()
-        ssl_args['ssl_certfile'] = certificate_path
 
         private_key_file = NamedTemporaryFile(delete=False)
         private_key_path = private_key_file.name
         private_key_file.write(bytes(private_key, 'utf-8'))
         private_key_file.close()
-        ssl_args['ssl_keyfile'] = private_key_path
-
+        context = SSLContext(PROTOCOL_TLSv1_2)
+        context.load_cert_chain(certificate_path, private_key_path)
+        ssl_args['ssl_context'] = context
         demisto.debug('Starting HTTPS Server')
     else:
         demisto.debug('Starting HTTP Server')
 
-    # integration_logger = IntegrationLogger()
-    # integration_logger.buffering = False
-    # log_config = dict(uvicorn.config.LOGGING_CONFIG)
-    # log_config['handlers']['default']['stream'] = integration_logger
-    # log_config['handlers']['access']['stream'] = integration_logger
-    # log_config['formatters']['access'] = {
-    #     '()': TAXII2ServerAccessFormatter,
-    #     'fmt': '%(levelprefix)s %(client_addr)s - "%(request_line)s" %(status_code)s "%(user_agent)s"'
-    # }
-
-    uvicorn.run(APP, host='0.0.0.0', port=port, **ssl_args)
+    # log=DEMISTO_LOGGER
+    wsgi_server = WSGIServer(('0.0.0.0', port), APP, **ssl_args)
+    demisto.updateModuleHealth('')
+    wsgi_server.serve_forever()
 
 
 def main():
@@ -569,7 +706,7 @@ def main():
                               certificate, private_key, http_server, credentials, version, service_address)
 
         if command == 'long-running-execution':
-            run_server(SERVER, port, certificate, private_key)
+            run_server(port, certificate, private_key)
 
         elif command == 'test-module':
             return_results('ok')
@@ -578,6 +715,8 @@ def main():
         err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
         return_error(err_msg)
 
+
+from NGINXApiModule import *  # noqa: E402
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()
