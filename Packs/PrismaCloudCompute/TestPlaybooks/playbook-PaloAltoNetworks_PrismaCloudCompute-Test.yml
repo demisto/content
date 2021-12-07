@@ -142,7 +142,7 @@ tasks:
       '#default#':
       - "6"
       "yes":
-      - "24"
+      - "5"
     note: false
     quietmode: 0
     separatecontext: false
@@ -956,40 +956,6 @@ tasks:
         "position": {
           "x": -840,
           "y": 590
-        }
-      }
-  "24":
-    id: "24"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - "5"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      seconds:
-        simple: "60"
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Sleep for X seconds
-      id: 3cbeaad2-389e-4f14-84ff-6b7d7e06a9a1
-      iscommand: false
-      name: Sleep
-      script: Sleep
-      type: regular
-      version: -1
-    taskid: 3cbeaad2-389e-4f14-84ff-6b7d7e06a9a1
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 990,
-          "y": 1060
         }
       }
 version: -1
