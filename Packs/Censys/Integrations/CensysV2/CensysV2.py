@@ -24,14 +24,12 @@ class Client(BaseClient):
         res = self._http_request('GET', url_suffix)
         return res
 
-    def censys_search_ip_request(self, query: Dict, page_size: int, cursor: Optional[str]):
+    def censys_search_ip_request(self, query: Dict, page_size: int):
         url_suffix = 'v2/hosts/search'
         params = {
             'q': query,
-            'per_page': page_size,
-            'cursor': cursor
+            'per_page': page_size
         }
-        params = assign_params(**params)
         res = self._http_request('GET', url_suffix, params=params)
         return res
 
@@ -103,22 +101,16 @@ def censys_search_command(client: Client, args: Dict[str, Any]) -> CommandResult
     index = args.get('index')
     query = args.get('query', '')
     page_size = int(args.get('page_size', 50))
-    limit = int(args.get('limit', 50))
-    cursor = None
+    limit = args.get('limit')
     contents = []
 
     if index == 'ipv4':
-        if limit < page_size:
+        if limit and int(limit) < page_size:
             page_size = limit
-        res = client.censys_search_ip_request(query, page_size, cursor)
+        res = client.censys_search_ip_request(query, page_size)
         hits = res.get('result', {}).get('hits', [])
-        while len(hits) < limit:
-            next_page = res.get('result', {}).get('links', {}).get('next')
-            response = client.censys_search_ip_request(query, page_size, next_page)
-            response_hits = response.get('result', {}).get('hits', [])
-            hits.extend(response_hits)
 
-        for hit in hits[:limit]:
+        for hit in hits:
             contents.append({
                 'IP': hit.get('ip'),
                 'Services': hit.get('services'),
