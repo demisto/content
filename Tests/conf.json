@@ -236,11 +236,6 @@
             "fromversion": "5.5.0"
         },
         {
-            "integrations": "MITRE ATT&CK",
-            "playbookID": "Mitre Attack List 10 Indicators Feed Test",
-            "fromversion": "5.5.0"
-        },
-        {
             "integrations": "URLhaus",
             "playbookID": "Test_URLhaus",
             "timeout": 1000
@@ -2976,6 +2971,15 @@
         {
             "integrations": "Recorded Future Feed",
             "playbookID": "RecordedFutureFeed - Test",
+            "instance_names": "recorded_future_feed",
+            "timeout": 1000,
+            "fromversion": "5.5.0",
+            "memory_threshold": 86
+        },
+        {
+            "integrations": "Recorded Future Feed",
+            "playbookID": "RecordedFutureFeed - Test",
+            "instance_names": "recorded_future_feed_with_risk_rules",
             "timeout": 1000,
             "fromversion": "5.5.0",
             "memory_threshold": 86
@@ -4860,8 +4864,6 @@
         "Phishing v2 - Test - Actual Incident": "Issue 41322",
         "Kaspersky Security Center - Test": "Issue 36487",
         "carbonBlackEndpointStandardTestPlaybook": "Issue 36936",
-        "RecordedFutureFeed - Test": "Quota issue. Need to unskip in 1.12.21",
-        "Recorded Future Test": "Quota issue. Need to unskip in 1.12.21",
         "test_Qradar_v2": "the integration is deprecated as we released Qradar V3",
         "XsoarPowershellTesting-Test": "Issue 32689",
         "Unit42 Intel Objects Feed - Test": "Issue 44100",
@@ -4871,10 +4873,15 @@
         "VMWare Test": "Issue 43823",
         "Google-Vault-Generic-Test": "Issue 24347",
         "Google_Vault-Search_And_Display_Results_test": "Issue 24348",
-        "Tenable.io Scan Test": "Issue 26728"
+        "Tenable.io Scan Test": "Issue 26728",
+        "Zscaler Test": "Issue 40157, API subscription currently Expired",
+        "Cisco Firepower - Test": "Issue 32412",
+        "cisco-ise-test-playbook": "Issue 44351"
     },
     "skipped_integrations": {
         "AutoFocus V2": "Issue 26464",
+        "AutoFocus Daily Feed": "Issue 26464",
+        "AutoFocus Feed": "Issue 26464",
         "_comment1": "~~~ NO INSTANCE ~~~",
         "Ipstack": "Usage limit reached (Issue 38063)",
         "AnsibleAlibabaCloud": "No instance - issue 40447",
