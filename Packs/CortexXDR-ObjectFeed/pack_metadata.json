@@ -1,0 +1,17 @@
+{
+    "name": "Cortex XDR - Object Feed",
+    "description": "The Cortex XDR Object Feed allows you to populate Threat Intelligence items from XQL Queries run in XDR.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Adam Burt",
+    "url": "",
+    "email": "",
+    "created": "2021-12-07T16:09:36Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "aburt-demisto"
+    ]
+}
