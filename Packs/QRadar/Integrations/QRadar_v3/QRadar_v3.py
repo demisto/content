@@ -3485,7 +3485,7 @@ def threads_dumper():
     demisto.info(thread_dump_msg)
 
 
-def signal_handler(sig, frame):
+def signal_handler(_sig, _frame):
     threads_dumper()
 
 
