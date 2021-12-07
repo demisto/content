@@ -289,21 +289,23 @@ class Client(BaseClient):
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client) -> str:
-    """Tests API connectivity and authentication'
-
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
+def test_module(client: Client, collections_to_fetch: List) -> str:
+    """Tests by building the iterator to check that a proper connection can be established and the feed is
+    accessible with the given parameters.
 
     :type client: ``Client``
     :param client: client to use
+
+     :type collections_to_fetch: ``list``
+    :param collections_to_fetch: Collection names list to fetch indicators from SOCRadar.
 
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
     """
     client.check_auth()
-    return "ok"
+    for collection in collections_to_fetch:
+        client.build_iterator(collection, 1, is_check_last_fetch=False)
+    return 'ok'
 
 
 def get_indicators_command(client: Client, args: Dict[str, str]) -> CommandResults:
@@ -408,7 +410,7 @@ def main() -> None:
             verify=verify_certificate,
             proxy=proxy)
         if command == 'test-module':
-            return_results(test_module(client))
+            return_results(test_module(client, collections_to_fetch))
         elif command == 'fetch-indicators':
             indicators = fetch_indicators(client, collections_to_fetch)
             # Submit indicators in batches

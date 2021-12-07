@@ -19,9 +19,17 @@ def test_test_module(requests_mock):
     from FeedSOCRadarThreatFeed import Client, test_module
 
     mock_socradar_api_key = "APIKey"
-    suffix = f'threat/intelligence/check/auth?key={mock_socradar_api_key}'
+    auth_suffix = f'threat/intelligence/check/auth?key={mock_socradar_api_key}'
     mock_response = util_load_json('test_data/check_auth_response.json')
-    requests_mock.get(f'{SOCRADAR_API_ENDPOINT}/{suffix}', json=mock_response)
+    requests_mock.get(f'{SOCRADAR_API_ENDPOINT}/{auth_suffix}', json=mock_response)
+
+    collection_name_list = ['MockCollectionName']
+    indicator_suffix = f'threat/intelligence/socradar_collections?key={mock_socradar_api_key}' \
+                       f'&collection_names={collection_name_list[0]}' \
+                       f'&limit=1' \
+                       f'&offset=0'
+    mock_response = util_load_json('test_data/get_indicators_response.json')
+    requests_mock.get(f'{SOCRADAR_API_ENDPOINT}/{indicator_suffix}', json=mock_response)
 
     client = Client(
         base_url=SOCRADAR_API_ENDPOINT,
@@ -32,7 +40,7 @@ def test_test_module(requests_mock):
         proxy=False
     )
 
-    response = test_module(client)
+    response = test_module(client, collection_name_list)
 
     assert response == 'ok'
 
@@ -55,7 +63,7 @@ def test_test_module_handles_authorization_error(requests_mock):
         proxy=False
     )
     with pytest.raises(DemistoException, match=MESSAGES['AUTHORIZATION_ERROR']):
-        test_module(client)
+        test_module(client, [])
 
 
 def test_fetch_indicators(requests_mock):
