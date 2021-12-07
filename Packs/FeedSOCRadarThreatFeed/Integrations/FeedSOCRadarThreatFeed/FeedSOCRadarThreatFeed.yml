@@ -109,8 +109,6 @@ configuration:
   name: feedTags
   required: false
   type: 0
-defaultmapperin: SOCRadar Indicator Mapper
-defaultclassifier: SOCRadar Indicator Classifier
 description: Retrieve indicators provided by collections via SOCRadar Threat Intelligence
   Feeds.
 display: SOCRadar Threat Feed
