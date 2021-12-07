@@ -241,14 +241,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 2b44fbc9-6829-4fc3-841d-8ce4081403f4
+    taskid: cdc4d170-de3d-45e0-8bac-70a669bf2191
     type: regular
     task:
-      id: 2b44fbc9-6829-4fc3-841d-8ce4081403f4
+      id: cdc4d170-de3d-45e0-8bac-70a669bf2191
       version: -1
       name: Update the campaign with new incident data
-      description: Copying EmailCampaign context from current incident to other existing
-        incident.
+      description: |-
+        Copying EmailCampaign context from current incident to other existing incident.
+        This script runs with elevated permissions.
+        Cortex XSOAR recommends using the built-in RBAC functionality to limit access to only those users requiring access to this script.
       scriptName: SetPhishingCampaignDetails
       type: regular
       iscommand: false
@@ -261,9 +263,9 @@ tasks:
         complex:
           root: CreatedIncidentID
       retry-count:
-        simple: "3"
+        simple: "0"
       retry-interval:
-        simple: "60"
+        simple: "10"
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -354,14 +356,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 8fbcf935-576a-4a7b-8fe9-34da96f6207c
+    taskid: dbac7d01-7029-4680-8853-f5f93e786cd7
     type: regular
     task:
-      id: 8fbcf935-576a-4a7b-8fe9-34da96f6207c
+      id: dbac7d01-7029-4680-8853-f5f93e786cd7
       version: -1
       name: Update the campaign with new incident data
-      description: Copying EmailCampaign context from current incident to other existing
-        incident.
+      description: |-
+        Copying EmailCampaign context from current incident to other existing incident.
+        This script runs with elevated permissions.
+        Cortex XSOAR recommends using the built-in RBAC functionality to limit access to only those users requiring access to this script.
       scriptName: SetPhishingCampaignDetails
       type: regular
       iscommand: false
@@ -1226,3 +1230,5 @@ outputs: []
 tests:
 - Phishing Investigation - Generic v2 - Campaign Test
 fromversion: 6.0.0
+tests:
+- Phishing Investigation - Generic v2 - Campaign Test
