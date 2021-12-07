@@ -67,10 +67,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: e19a6603-d8ef-40eb-8f3c-052558387f9d
+    taskid: 888175c3-24af-47f0-89ec-9c656bed7d70
     type: regular
     task:
-      id: e19a6603-d8ef-40eb-8f3c-052558387f9d
+      id: 888175c3-24af-47f0-89ec-9c656bed7d70
       version: -1
       name: opsgenie-create-alert
       script: OpsGenieV3|||opsgenie-create-alert
@@ -977,10 +977,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 137c3ddd-f65d-431a-8309-aad237d10fce
+    taskid: ae767650-f25c-490f-86c4-034909988369
     type: regular
     task:
-      id: 137c3ddd-f65d-431a-8309-aad237d10fce
+      id: ae767650-f25c-490f-86c4-034909988369
       version: -1
       name: opsgenie-create-incident
       script: OpsGenieV3|||opsgenie-create-incident
@@ -992,7 +992,7 @@ tasks:
       - "54"
     scriptarguments:
       message:
-        simple: ${OpsGenie.Alert.alertId}
+        simple: ${incident.id}
     continueonerror: true
     separatecontext: false
     view: |-
