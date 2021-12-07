@@ -198,6 +198,8 @@ def get_attachments_using_instance(email_related_incident, labels):
                                {'command': 'gmail-get-attachments', 'incidents': email_related_incident,
                                 'arguments': {'user-id': 'me', 'message-id': str(message_id), 'using': instance_name}})
 
+    # Note: attachments are downloaded by default when emails are fetched using the graph integrations,
+    # so this method isn't needed for them.
     else:
         demisto.debug('Attachments could only be retrieved from EWS v2 or Gmail')
 
