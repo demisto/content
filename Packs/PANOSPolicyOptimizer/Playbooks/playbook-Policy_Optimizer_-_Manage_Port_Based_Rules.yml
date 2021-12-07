@@ -182,6 +182,7 @@ tasks:
       id: 2bd0d222-f633-480f-8fc3-85febbeab4a3
       version: -1
       name: Are there any policies with no apps?
+      description: "Are there any policies with no application?"
       type: condition
       iscommand: false
       brand: ""
@@ -254,6 +255,7 @@ tasks:
       id: 2c28b017-a56f-4fa7-8c76-b5bb1d157912
       version: -1
       name: Is there an email address?
+      description: "Is there an email address input configured?"
       type: condition
       iscommand: false
       brand: ""
@@ -294,6 +296,7 @@ tasks:
       id: d055a0ae-8e0a-48c5-8e37-9598b7715782
       version: -1
       name: Is there a slack user?
+      description: "Is there a slack user input configured?"
       type: condition
       iscommand: false
       brand: ""
@@ -439,6 +442,7 @@ tasks:
       id: ac1a5f02-e7af-4edd-8525-1c0899b886a8
       version: -1
       name: Choose action to take
+      description: "Choose an action for the playbook"
       type: condition
       iscommand: false
       brand: ""
@@ -508,6 +512,7 @@ tasks:
       id: 55767f1f-c339-4de2-895a-53ccb41690aa
       version: -1
       name: Manually handle port based rules
+      description: "Since user didn't choose the automatic remediation, manually handle the port based rules."
       type: regular
       iscommand: false
       brand: ""
@@ -615,6 +620,7 @@ tasks:
       id: 746cd6cf-5d0e-4cc7-8e71-10c2626c3772
       version: -1
       name: Close the investigation?
+      description: "Choose whether to close the investigation."
       type: condition
       iscommand: false
       brand: ""
@@ -677,6 +683,7 @@ tasks:
       id: 2eae5616-fd92-4eb9-819d-2e73eaf78ac2
       version: -1
       name: Auto-commit configuration input enabled?
+      description: "Is the auto-commit configuration input enabled?"
       type: condition
       iscommand: false
       brand: ""
@@ -753,6 +760,7 @@ tasks:
       id: 37317367-3088-4665-887d-44744f4a1e79
       version: -1
       name: Automatically commit PAN-OS configuration?
+      description: "Should the playbook automatically commit configuration input enabled?"
       type: condition
       iscommand: false
       brand: ""
@@ -784,6 +792,7 @@ tasks:
       id: cd15a0b0-e16b-454c-8fa6-1b17d3c31190
       version: -1
       name: Manually commit PAN-OS configuration
+      description: "Manually commit PAN-OS configuration."
       type: regular
       iscommand: false
       brand: ""

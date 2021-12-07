@@ -82,6 +82,7 @@ tasks:
       id: 96436397-332f-4979-8dea-9ca9b53f5b84
       version: -1
       name: Choose app to add to the rule
+      description: "Choose application to add to the policy rule."
       type: collection
       iscommand: false
       brand: ""
@@ -150,7 +151,7 @@ tasks:
           the current application in the rule configuration.
         readonly: false
       title: Add applications to policy rules
-      description: ""
+      description: "Choose application to add to the rule."
       sender: ""
       expired: false
       totalanswers: 0
@@ -166,6 +167,7 @@ tasks:
       id: 22187f91-6d93-4703-89ff-d97d39c5a182
       version: -1
       name: Update rules automatically?
+      description: "Should XSOAR update the rules automatically?"
       type: condition
       iscommand: false
       brand: ""

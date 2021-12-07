@@ -137,6 +137,7 @@ tasks:
       id: a4ab8365-7487-44cd-8f88-93bb340faa7a
       version: -1
       name: Manage Unused Applications
+      description: "Manage Unused Applications?"
       type: condition
       iscommand: false
       brand: ""
@@ -208,6 +209,7 @@ tasks:
       id: 9609c78d-8150-43b0-82e8-b3c2b3839b3b
       version: -1
       name: Manage Port Based Rules
+      description: "Manage Port Based Rules?"
       type: condition
       iscommand: false
       brand: ""
@@ -252,6 +254,7 @@ tasks:
       id: 6f03341e-b8d1-4ce7-876d-cde730c496bb
       version: -1
       name: Manage Unused Rules
+      description: "Manage Unused Rules?"
       type: condition
       iscommand: false
       brand: ""
