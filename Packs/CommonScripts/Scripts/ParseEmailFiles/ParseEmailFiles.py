@@ -1,4 +1,3 @@
-from typing import *  # noqa: F401
 #!/usr/bin/env python2
 # coding=utf-8
 # PEP0263  https://www.python.org/dev/peps/pep-0263/
