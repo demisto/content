@@ -565,16 +565,16 @@ if [ -n "$production" ]; then
   exit 0
 fi
 
-content_hash=$(git rev-parse origin/${content_branch_name})
+content_hash=$(git rev-parse --short origin/${content_branch_name})
 if [ -n "$sdk_branch_name" ]; then
-  sdk_hash=$(git rev-parse origin/${sdk_branch_name})
+  sdk_hash=$(git rev-parse --short origin/${sdk_branch_name})
 else
   sdk_hash="sdk_release"
 fi
 new_content_branch="${sdk_hash}_${content_hash}_UploadFlow_test"
 
-git checkout "$content_branch_name" || fail
-git pull
+#git checkout "$content_branch_name" || fail
+git pull -q
 
 existed_in_remote=$(git ls-remote --heads origin "${new_content_branch}")
 existed_in_local=$(git branch --list "${new_content_branch}")
@@ -591,7 +591,7 @@ fi
 ##############################################################
 ##                   Branch Changes - start                 ##
 ##############################################################
-git checkout -b "${new_content_branch}" > || fail "" "skip"
+git checkout -b "${new_content_branch}" || fail "" "skip"
 
 if [ -n "$sdk_branch_name" ]; then
   change_sdk_requirements "${sdk_branch_name}" "dev-requirements-py3.txt"
@@ -611,7 +611,7 @@ enhancement_release_notes "Box" # Adding new release note.
 updating_old_release_notes "Base" "1_13_13" # Updating aggregated release note.
 add_1_0_0_release_note "BPA"
 set_pack_hidden "Microsoft365Defender"
-update_integration_readme "Malware"
+update_integration_readme "Maltiverse"
 update_pack_ignore "MISP"
 
 # External changes
