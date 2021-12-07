@@ -35,7 +35,7 @@ def test_censys_host_search(mocker):
     Given:
         Command arguments: query and limit
     When:
-        Running censys_search_hosts_command
+        Running cen_search_command
     Then:
         Validate the output compared to the mock output
     """
@@ -61,7 +61,7 @@ def test_censys_certs_search(mocker):
     Given:
         Command arguments: query and limit
     When:
-        Running censys_search_certs_command
+        Running cen_search_command
     Then:
         Validate the output compared to the mock output
     """
@@ -87,7 +87,7 @@ def test_censys_view_host(mocker):
     Given:
         Command arguments: query ip = 8.8.8.8
     When:
-        Running censys_view_host_command
+        Running cen_view_command
     Then:
         Validate the output compared to the mock output
     """
@@ -104,3 +104,27 @@ def test_censys_view_host(mocker):
     response = censys_view_command(client, args)
     assert '### Information for IP 8.8.8.8' in response.readable_output
     assert response.outputs == mock_response.get('result')
+
+
+def test_censys_view_cert(mocker):
+    """
+    Given:
+        Command arguments: sha-256
+    When:
+        Running cen_view_command
+    Then:
+        Validate the output compared to the mock output
+    """
+    from CensysV2 import Client, censys_view_command
+
+    client = Client(base_url='https://search.censys.io/api/', auth=('test', '1234'), verify=True, proxy=False)
+
+    args = {
+        'index': 'certificates',
+        'query': "9d3b51a6b80daf76e074730f19dc01e643ca0c3127d8f48be64cf3302f661234"
+    }
+    mock_response = util_load_json('test_data/view_cert_response.json')
+    mocker.patch.object(client, 'censys_view_request', return_value=mock_response)
+    response = censys_view_command(client, args)
+    assert '### Information for certificate' in response.readable_output
+    assert response.outputs == mock_response

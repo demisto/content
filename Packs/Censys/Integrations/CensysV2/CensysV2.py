@@ -63,7 +63,7 @@ def censys_view_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Returns host information for the specified IP address or structured certificate data for the specified SHA-256
     """
-    index = args.get('index')
+    index = args.get('index', '')
     query = args.get('query', '')
     res = client.censys_view_request(index, query)
     if index == 'ipv4':
@@ -151,7 +151,7 @@ def censys_search_command(client: Client, args: Dict[str, Any]) -> CommandResult
         return response
 
 
-def search_certs_command(client: Client, args: Dict[str, Any], query, limit):
+def search_certs_command(client: Client, args: Dict[str, Any], query: str, limit: int):
     fields = ["parsed.fingerprint_sha256", "parsed.subject_dn", "parsed.issuer_dn", "parsed.issuer.organization",
               "parsed.validity.start", "parsed.validity.end", "parsed.names"]
     search_fields = argToList(args.get('fields'))

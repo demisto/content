@@ -24,7 +24,7 @@ description: Deprecated. Use CensysV2 instead. Censys is a search engine that al
   the Internet. Driven by Internet-wide scanning, Censys lets researchers find specific
   hosts and create aggregate reports on how devices, websites, and certificates are
   configured and deployed.
-display: Censys
+display: Censys (Deprecated)
 name: Censys
 script:
   commands:
@@ -94,4 +94,3 @@ tests:
 - No test
 deprecated: true
 fromversion: 5.0.0
-comment: Deprecated. Use CensysV2 instead.
