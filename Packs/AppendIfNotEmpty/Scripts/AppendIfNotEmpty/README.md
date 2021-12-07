@@ -13,7 +13,7 @@ Append item(s) to the end of the list if they are not empty.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| value | The value to be appended. |
+| value | The list to which we will add the items. |
 | item | Item\(s\) to append. Comma separated supported. |
 | raw | Set to true if you want to append item\(s\) without separating them by comma |
 
