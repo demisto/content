@@ -134,7 +134,7 @@ def censys_search_command(client: Client, args: Dict[str, Any]) -> CommandResult
         return response
 
 
-def search_certs_command(client: Client, args: Dict[str, Any], query: str, limit: int):
+def search_certs_command(client: Client, args: Dict[str, Any], query: str, limit: Optional[int]):
     fields = ["parsed.fingerprint_sha256", "parsed.subject_dn", "parsed.issuer_dn", "parsed.issuer.organization",
               "parsed.validity.start", "parsed.validity.end", "parsed.names"]
     search_fields = argToList(args.get('fields'))
