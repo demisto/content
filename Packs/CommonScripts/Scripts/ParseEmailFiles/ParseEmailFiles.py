@@ -3752,9 +3752,8 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                         "Content-ID": attachment_content_ids[i],
                         "Content-Disposition": attachment_content_dispositions[i],
                         "FilePath": attachment_internal_path[i]
-                    }
-                    for i in range(len(attachment_names))
-                ],                
+                    } for i in range(len(attachment_names))
+                ],
                 'AttachmentNames': attachment_names if attachment_names else [],
                 'Format': eml.get_content_type(),
                 'Depth': MAX_DEPTH_CONST - max_depth
