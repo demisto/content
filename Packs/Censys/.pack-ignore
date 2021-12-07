@@ -1,2 +1,5 @@
 [file:Censys.yml]
 ignore=IN145
+
+[file:README.md]
+ignore=RM102

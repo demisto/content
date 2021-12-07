@@ -1,12 +1,13 @@
-Censys is a search engine that allows computer scientists to ask questions about the devices and networks that compose the Internet. Driven by Internet-wide scanning, Censys lets researchers find specific hosts and create aggregate reports on how devices, websites, and certificates are configured and deployed.
+Censys is a search engine that allows computer scientists to ask questions about the devices and networks that compose the Internet. Driven by Internet-wide scanning, Censys lets researchers find specific hosts and create aggregate reports on how devices, and certificates are configured and deployed.
+This integration was integrated and tested with version 2.0 of CensysV2
 
 Some changes have been made that might affect your existing content. 
-If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-censysv2).
+If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-censys-v2).
 
-## Configure CensysV2 on Cortex XSOAR
+## Configure Censys v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for CensysV2.
+2. Search for Censys v2.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Required** |
@@ -20,50 +21,104 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### censys-host-view
+### cen-view
 ***
-Returns host information for the specified IP address.
+Returns detailed information for an IP address or SHA256 within the specified index.
 
 
 #### Base Command
 
-`censys-host-view`
+`cen-view`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | The IP Address of the requested host. | Required | 
+| index | The index from which to retrieve data. Possible values are: ipv4, certificates. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Censys.HostView.autonomous_system.asn | Number | The autonomous system number \(ASN\) that the host is in. | 
-| Censys.HostView.autonomous_system.bgp_prefix | String | The autonomous system's CIDR. | 
-| Censys.HostView.autonomous_system.country_code | String | The autonomous system's two-letter, ISO 3166-1 alpha-2 country code \(e.g., US, CN, GB, RU\). | 
-| Censys.HostView.autonomous_system.description | String | A brief description of the autonomous system. | 
-| Censys.HostView.autonomous_system.name | String | The friendly name of the autonomous system. | 
-| Censys.HostView.autonomous_system_updated_at | Date | When the autonomous system was updated. | 
-| Censys.HostView.location.continent | String | The continent of the host's detected location \(e.g., North America, Europe, Asia, South America, Africa, Oceania\). | 
-| Censys.HostView.location.coordinates | Unknown | The estimated coordinates of the host's detected location | 
-| Censys.HostView.location.country | String | The name of the country of the host's detected location. | 
-| Censys.HostView.location.country_code | String | The two-letter ISO 3166-1 alpha-2 country code of the host's detected location \(e.g., US, CN, GB, RU\). | 
-| Censys.HostView.location.postal_code | String | The postal code \(if applicable\) of the host's detected location. | 
-| Censys.HostView.location.registered_country | String | The name of the host's registered country. | 
-| Censys.HostView.location.registered_country_code | String | The registered country's two-letter, ISO 3166-1 alpha-2 country code \(e.g., US, CN, GB, RU\). | 
-| Censys.HostView.location.timezone | String | The IANA time zone database name of the host's detected location. | 
-| Censys.HostView.services.port | Number | The port the service was reached at. | 
-| Censys.HostView.services.observed_at | Date | The UTC timestamp of when Censys scanned the service. | 
-| Censys.HostView.services.source_ip | String | The IP address from which Censys scanned the service. | 
-| Censys.HostView.services.transport_protocol | String | The transport protocol \(known in OSI model as L4\) used to contact this service \(i.e., UDP or TCP\). | 
-| Censys.HostView.services.service_name | String | The name of the service on the port. This is typically the L7 protocol \(e.g., “HTTP”\); however, in the case that a more specific HTTP-based protocol is found \(e.g., Kubernetes or Prometheus\), the field will show that. This field indicates where protocol-specific data will be located. | 
-| Censys.HostView.services.extended_service_name | String | The service name with the TLS encryption indicator if the service is using it. For example, "SMTP" will have an extended_serivce_name of "SMTPS" if it's running over tls. | 
-| Censys.HostView.services.perspective_id | String | The upstream Internet service provider Censys peered with to scan the service: NTT Communications, TATA, Telia Carrier, or Hurricane Electric. | 
+| Censys.View.autonomous_system.asn | Number | The autonomous system number \(ASN\) that the host is in. | 
+| Censys.View.autonomous_system.bgp_prefix | String | The autonomous system's CIDR. | 
+| Censys.View.autonomous_system.country_code | String | The autonomous system's two-letter, ISO 3166-1 alpha-2 country code \(e.g., US, CN, GB, RU\). | 
+| Censys.View.autonomous_system.description | String | A brief description of the autonomous system. | 
+| Censys.View.autonomous_system.name | String | The friendly name of the autonomous system. | 
+| Censys.View.autonomous_system_updated_at | Date | When the autonomous system was updated. | 
+| Censys.View.dns.names | String | DNS Names. | 
+| Censys.View.dns.records | Unknown | DNS records. | 
+| Censys.View.dns.reverse_dns.names | String | Reverse DNS names. | 
+| Censys.View.ip | String | The host’s IP address. | 
+| Censys.View.last_updated_at | Date | When the host was last updated. | 
+| Censys.View.location.continent | String | The continent of the host's detected location \(e.g., North America, Europe, Asia, South America, Africa, Oceania\). | 
+| Censys.View.location.coordinates | Unknown | The estimated coordinates of the host's detected location. | 
+| Censys.View.location.country | String | The name of the country of the host's detected location. | 
+| Censys.View.location.country_code | String | The two-letter ISO 3166-1 alpha-2 country code of the host's detected location \(e.g., US, CN, GB, RU\). | 
+| Censys.View.location.postal_code | String | The postal code \(if applicable\) of the host's detected location. | 
+| Censys.View.location.registered_country | String | The English name of the host's registered country. | 
+| Censys.View.location.registered_country_code | String | The registered country's two-letter, ISO 3166-1 alpha-2 country code \(e.g., US, CN, GB, RU\). | 
+| Censys.View.location.timezone | String | The IANA time zone database name of the host's detected location. | 
+| Censys.View.services.dns | Unknown | DNS information. | 
+| Censys.View.services.extended_service_name | String | The service name with the TLS encryption indicator if the service is using it. | 
+| Censys.View.services.observed_at | Date | The UTC timestamp of when Censys scanned the service. | 
+| Censys.View.services.perspective_id | String | The upstream Internet service provider Censys peered with to scan the service - NTT Communications, TATA, Telia Carrier, or Hurricane Electric. | 
+| Censys.View.services.port | Number | The port the service was reached at. | 
+| Censys.View.services.service_name | String | The name of the service on the port. This is typically the L7 protocol \(e.g., “HTTP”\); however, in the case that a more specific HTTP-based protocol is found \(e.g., Kubernetes or Prometheus\), the field will show that. This field indicates where protocol-specific data will be located. | 
+| Censys.View.services.source_ip | String | The IP address from which Censys scanned the service. | 
+| Censys.View.services.transport_protocol | String | The transport protocol \(known in OSI model as L4\) used to contact this service \(i.e., UDP or TCP\). | 
+| Censys.View.services.banner | String | The banner as a part of the protocol scan. That field will be nested in the protocol-specific data under the service_name field. | 
+| Censys.View.services.tls.certificates | Unknown | A subset of the parsed details of the certificate, including the issuer, subject, fingerprint, names, public keys, and signature | 
+| Censys.View.services.tls.session_ticket | Unknown | Details about the session ticket provided by the server at the end of the TLS handshake. | 
+| Censys.View.ct | Unknown | When a certificate was added to a CT log. | 
+| Censys.View.fingerprint_sha256 | String | The SHA2-256 digest over the DER encoding of the certificate. | 
+| Censys.View.metadata | Unknown | Whether the certificate was \(ever\) seen during a Censys scan of the Internet | 
+| Censys.View.parent_spki_subject_fingerprint | String | Parent spki subject fingerprint. | 
+| Censys.View.parsed.extensions | Unknown | Additional fields that extend the X.509 spec. | 
+| Censys.View.parsed.fingerprint_md5 | String | The MD5 digest over the DER encoding of the certificate. | 
+| Censys.View.parsed.fingerprint_sha1 | String | The SHA1 digest over the DER encoding of the certificate. | 
+| Censys.View.parsed.fingerprint_sha256 | String | The SHA2-256 digest over the DER encoding of the certificate. | 
+| Censys.View.parsed.issuer.common_name | String | Common name. | 
+| Censys.View.parsed.issuer.country | String | Country name. | 
+| Censys.View.parsed.issuer.organization | String | Organization name. | 
+| Censys.View.parsed.issuer_dn | String | Information about the certificate authority that issued the certificate. | 
+| Censys.View.parsed.names | String | Any names for which the certificate can be used for identity verification. | 
+| Censys.View.parsed.redacted | Boolean | Was the certificate redacted. | 
+| Censys.View.parsed.serial_number | String | The issuer-specific identifier of the certificate. | 
+| Censys.View.parsed.signature.self_signed | Boolean | Indicates whether the subject key was also used to sign the certificate. | 
+| Censys.View.parsed.signature.signature_algorithm.name | String | Name of signature algorithm, e.g., SHA1-RSA or ECDSA-SHA512. Unknown algorithms get an integer id. | 
+| Censys.View.parsed.signature.signature_algorithm.oid | String | The OBJECT IDENTIFIER of the signature algorithm, in dotted-decimal notation. | 
+| Censys.View.parsed.signature.valid | Boolean | Is the signature valid. | 
+| Censys.View.parsed.signature.value | String | Contents of the signature BIT STRING. | 
+| Censys.View.parsed.signature_algorithm.name | String | Name of signature algorithm, e.g., SHA1-RSA or ECDSA-SHA512. Unknown algorithms get an integer id. | 
+| Censys.View.parsed.signature_algorithm.oid | String | The OBJECT IDENTIFIER of the signature algorithm, in dotted-decimal notation. | 
+| Censys.View.parsed.spki_subject_fingerprint | String | The SHA2-256 digest over the DER encoding of the certificate's SubjectPublicKeyInfo, as a hexadecimal string. | 
+| Censys.View.parsed.subject.common_name | String | Common name. | 
+| Censys.View.parsed.subject.country | String | Country name. | 
+| Censys.View.parsed.subject.locality | String | Locality name. | 
+| Censys.View.parsed.subject.organization | String | The name of the organization to which the certificate was issued, if available. | 
+| Censys.View.parsed.subject.province | String | State of province name. | 
+| Censys.View.parsed.subject_dn | String | Information about the entity that was issued the certificate. | 
+| Censys.View.parsed.subject_key_info.ecdsa_public_key | Unknown | The public portion of an ECDSA asymmetric key. | 
+| Censys.View.parsed.subject_key_info.fingerprint_sha256 | String | The SHA2-256 digest calculated over the certificate's DER-encoded. | 
+| Censys.View.parsed.subject_key_info.key_algorithm.name | String | Name of public key type, e.g., RSA or ECDSA. | 
+| Censys.View.parsed.tbs_fingerprint | String | The SHA2-256 digest over the DER encoding of the certificate's TBSCertificate. | 
+| Censys.View.parsed.tbs_noct_fingerprint | String | The SHA2-256 digest over the DER encoding of the certificate's TBSCertificate with any CT extensions omitted. | 
+| Censys.View.parsed.validation_level | String | How the certificate is validated -- Domain validated \(DV\), Organization Validated \(OV\), Extended Validation \(EV\), or unknown. | 
+| Censys.View.parsed.validity.end | Date | Timestamp of when certificate expires. Timezone is UTC. | 
+| Censys.View.parsed.validity.length | Number | The length of time, in seconds, that the certificate is valid. | 
+| Censys.View.parsed.validity.start | Date | Timestamp of when certificate is first valid. Timezone is UTC. | 
+| Censys.View.parsed.version | Number | The x.509 certificate version number. | 
+| Censys.View.precert | Boolean | Is the certificate is pre-cert or not. | 
+| Censys.View.raw | String | Certificate Raw. | 
+| Censys.View.tags | String | Tags applied to the certificate. | 
+| Censys.View.validation | Unknown | Whether the certificate is trusted by modern web browsers \(Mozilla NSS, Microsoft, and Apple\). | 
+| Censys.View.zlint | Unknown | Whether the certificate has any zlint errors. | 
 
 
 #### Command Example
-```!censys-host-view query=8.8.8.8```
+```!cen-view index=ipv4 query=8.8.8.8```
 
 #### Context Example
 ```json
@@ -72,20 +127,22 @@ Returns host information for the specified IP address.
         "View": {
             "autonomous_system": {
                 "asn": 15169,
-                "bgp_prefix": "1.2.3.4/24",
+                "bgp_prefix": "8.8.8.0/24",
                 "country_code": "US",
                 "description": "GOOGLE",
                 "name": "GOOGLE"
             },
-            "autonomous_system_updated_at": "2021-11-21T12:57:11.200575Z",
+            "autonomous_system_updated_at": "2021-12-06T16:40:32.741814Z",
             "dns": {
                 "names": [
-                    "wiki.leadership.com.",
+                    "test.com.",
                     "uuu.mkppy.site.",
                     "hisports.club.",
-                    "test.com.",
+                    "domain.com.",
                     "roidgames.de.",
-                    "svhasso.duckdns.org."
+                    "svhasso.duckdns.org.",
+                    "albertogozzi.it.",
+                    "prod.rialtic.app."
                 ],
                 "records": {
                     "1508cleveland.duckdns.org": {
@@ -105,11 +162,11 @@ Returns host information for the specified IP address.
                     "names": [
                         "dns.google"
                     ],
-                    "resolved_at": "2021-11-19T14:46:47.044806032Z"
+                    "resolved_at": "2021-12-06T20:10:26.799869407Z"
                 }
             },
             "ip": "8.8.8.8",
-            "last_updated_at": "2021-12-05T08:04:21.488Z",
+            "last_updated_at": "2021-12-07T10:00:28.435Z",
             "location": {
                 "continent": "North America",
                 "coordinates": {
@@ -157,8 +214,8 @@ Returns host information for the specified IP address.
                         "server_type": "FORWARDING"
                     },
                     "extended_service_name": "DNS",
-                    "observed_at": "2021-12-05T08:04:21.245587493Z",
-                    "perspective_id": "PERSPECTIVE_TATA",
+                    "observed_at": "2021-12-07T10:00:28.379350407Z",
+                    "perspective_id": "PERSPECTIVE_NTT",
                     "port": 53,
                     "service_name": "DNS",
                     "source_ip": "1.2.3.4",
@@ -172,9 +229,9 @@ Returns host information for the specified IP address.
                         "banner_hex": "DISPLAY_HEX",
                         "certificate": "DISPLAY_HEX"
                     },
-                    "banner": "Some banner",
+                    "banner": "banner",
                     "banner_hex": "485454502f312e312033303220466f756e640a5365727665723a2048545450207365727665722028756e6b6e6f776e290a436f6e74656e742d4c656e6774683a203231360a582d436f6e74656e742d547970652d4f7074696f6e733a206e6f736e6966660a436f6e74656e742d547970653a20746578742f68746d6c3b20636861727365743d5554462d380a446174653a203c52454441435445443e0a582d5873732d50726f74656374696f6e3a20300a4163636573732d436f6e74726f6c2d416c6c6f772d4f726967696e3a202a0a4c6f636174696f6e3a2068747470733a2f2f646e732e676f6f676c652f0a416c742d5376633a2068333d223a343433223b206d613d323539323030302c68332d32393d223a343433223b206d613d323539323030302c68332d513035303d223a343433223b206d613d323539323030302c68332d513034363d223a343433223b206d613d323539323030302c68332d513034333d223a343433223b206d613d323539323030302c717569633d223a343433223b206d613d323539323030303b20763d2234362c3433220a582d4672616d652d4f7074696f6e733a2053414d454f524947494e",
-                    "certificate": "bb9648a9935fe0d07ba4e1c341286382d54a75e79ac1564988bd78e123456",
+                    "certificate": "bb9648a9935fe0d07ba4e1c341286382d54a75e79ac1564988bd78e201234567",
                     "extended_service_name": "HTTPS",
                     "http": {
                         "request": {
@@ -201,14 +258,14 @@ Returns host information for the specified IP address.
                                 "html_title": "DISPLAY_UTF8"
                             },
                             "body": "<HTML><HEAD><meta http-equiv=\"content-type\" content=\"text/html;charset=utf-8\">\n<TITLE>302 Moved</TITLE></HEAD><BODY>\n<H1>302 Moved</H1>\nThe document has moved\n<A HREF=\"https://dns.google/\">here</A>.\r\n</BODY></HTML>\r\n",
-                            "body_hash": "sha1:1fd84b37b709256752fe1f865f86b5bec05c1234",
+                            "body_hash": "sha1:1fd84b37b709256752fe1f865f86b5bec0512345",
                             "body_size": 216,
                             "headers": {
                                 "Access_Control_Allow_Origin": [
                                     "*"
                                 ],
                                 "Alt_Svc": [
-                                    "some text"
+                                    "alt text"
                                 ],
                                 "Content_Length": [
                                     "216"
@@ -257,8 +314,8 @@ Returns host information for the specified IP address.
                             "status_reason": "Found"
                         }
                     },
-                    "observed_at": "2021-12-04T23:05:35.556566229Z",
-                    "perspective_id": "PERSPECTIVE_HE",
+                    "observed_at": "2021-12-07T06:23:41.581346512Z",
+                    "perspective_id": "PERSPECTIVE_TATA",
                     "port": 443,
                     "service_name": "HTTP",
                     "source_ip": "1.2.3.4",
@@ -319,7 +376,7 @@ Returns host information for the specified IP address.
                                         },
                                         "exponent": "AAEAAQ==",
                                         "length": 256,
-                                        "modulus": "longString"
+                                        "modulus": "modulus"
                                     }
                                 },
                                 "signature": {
@@ -336,7 +393,7 @@ Returns host information for the specified IP address.
                             },
                             "leaf_fp_sha_256": "bb9648a9935fe0d07ba4e1c341286382d54a75e79ac1564988bd78e20cb8103a"
                         },
-                        "cipher_selected": "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+                        "cipher_selected": "SELECTED_CIPHER",
                         "server_key_exchange": {
                             "ec_params": {
                                 "named_curve": 23
@@ -362,142 +419,68 @@ Returns host information for the specified IP address.
 >### Information for IP 8.8.8.8
 >|ASN|Bgp Prefix|Last Updated|Name|Service|
 >|---|---|---|---|---|
->| 15169 | 8.8.8.0/24 | 2021-12-05T08:04:21.488Z | GOOGLE | {'Port': 53, 'Service Name': 'DNS'},<br/>{'Port': 443, 'Service Name': 'HTTP'} |
+>| 15169 | 8.8.8.0/24 | 2021-12-07T10:00:28.435Z | GOOGLE | {'Port': 53, 'Service Name': 'DNS'},<br/>{'Port': 443, 'Service Name': 'HTTP'} |
 
 
-### censys-hosts-search
+### cen-search
 ***
-Return previews of hosts matching a specified search query.
+Return previews of hosts matching a specified search query, or a list of certificates that match the given query.
 
 
 #### Base Command
 
-`censys-hosts-search`
+`cen-search`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | Query used to search for hosts with matching attributes. Uses the Censys Search Language. | Required | 
-| page_size | The maximum number of hits to return in each response (minimum of 0, maximum of 100). Default is 50. Default is 50. | Optional | 
+| page_size | The maximum number of hits to return in each response (minimum of 0, maximum of 100). Default is 50. This arguments is for host serach. Default is 50. | Optional | 
 | limit | The number of results to return. Default is 50. Default is 50. | Optional | 
+| index | The index from which to retrieve data. Possible values are: ipv4, certificates. | Required | 
+| fields | The fields to return. (Applies for certificates search). | Optional | 
+| page | The page to return, default is 1 (applies to certificates search). Default is 1. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Censys.HostSearch.autonomous_system.asn | Number | The autonomous system number \(ASN\) that the host is in. | 
-| Censys.HostSearch.autonomous_system.bgp_prefix | String | The autonomous system's CIDR. | 
-| Censys.HostSearch.autonomous_system.country_code | String | The autonomous system's two-letter, ISO 3166-1 alpha-2 country code \(e.g., US, CN, GB, RU\). | 
-| Censys.HostSearch.autonomous_system.description | String | A brief description of the autonomous system. | 
-| Censys.HostSearch.autonomous_system.name | String | The friendly name of the autonomous system. | 
-| Censys.HostSearch.ip | String | The host’s IP address. | 
-| Censys.HostSearch.location.continent | String | The continent of the host's detected location \(e.g., North America, Europe, Asia, South America, Africa, Oceania\) | 
-| Censys.HostSearch.location.coordinates | Unknown | The estimated coordinates of the host's detected location. | 
-| Censys.HostSearch.location.country | String | The country of the host's detected location. | 
-| Censys.HostSearch.location.country_code | String | The two-letter ISO 3166-1 alpha-2 country code of the host's detected location \(e.g., US, CN, GB, RU\). | 
-| Censys.HostSearch.location.registered_country | String | The host's registered country. | 
-| Censys.HostSearch.location.registered_country_code | String | The registered country's two-letter, ISO 3166-1 alpha-2 country code \(e.g., US, CN, GB, RU\). | 
-| Censys.HostSearch.location.timezone | String | The IANA time zone database name of the host's detected location. | 
-| Censys.HostSearch.services.port | Number | The port the service was reached at. | 
-| Censys.HostSearch.services.service_name | String | The name of the service on the port. This is typically the L7 protocol \(e.g., “HTTP”\); however, in the case that a more specific HTTP-based protocol is found \(e.g., Kubernetes or Prometheus\), the field will show that. This field indicates where protocol-specific data will be located. | 
-| Censys.HostSearch.services.transport_protocol | String | The transport protocol \(known in OSI model as L4\) used to contact this service \(i.e., UDP or TCP\). | 
+| Censys.Search.autonomous_system.asn | Number | The autonomous system number \(ASN\) that the host is in. | 
+| Censys.Search.autonomous_system.bgp_prefix | String | The autonomous system's CIDR. | 
+| Censys.Search.autonomous_system.country_code | String | he autonomous system's two-letter, ISO 3166-1 alpha-2 country code \(e.g., US, CN, GB, RU\). | 
+| Censys.Search.autonomous_system.description | String | A brief description of the autonomous system. | 
+| Censys.Search.autonomous_system.name | String | The friendly name of the autonomous system. | 
+| Censys.Search.ip | String | The host’s IP address. | 
+| Censys.Search.location.continent | String | The continent of the host's detected location \(e.g., North America, Europe, Asia, South America, Africa, Oceania\) | 
+| Censys.Search.location.coordinates | Unknown | The estimated coordinates of the host's detected location. | 
+| Censys.Search.location.country | String | The country of the host's detected location. | 
+| Censys.Search.location.country_code | String | The two-letter ISO 3166-1 alpha-2 country code of the host's detected location \(e.g., US, CN, GB, RU\). | 
+| Censys.Search.location.registered_country | String | The host's registered country. | 
+| Censys.Search.location.registered_country_code | String | The registered country's two-letter, ISO 3166-1 alpha-2 country code \(e.g., US, CN, GB, RU\). | 
+| Censys.Search.location.timezone | String | The IANA time zone database name of the host's detected location. | 
+| Censys.Search.services.port | Number | The port the service was reached at. | 
+| Censys.Search.services.service_name | String | The name of the service on the port. This is typically the L7 protocol \(e.g., “HTTP”\); however, in the case that a more specific HTTP-based protocol is found \(e.g., Kubernetes or Prometheus\), the field will show that. This field indicates where protocol-specific data will be located. | 
+| Censys.Search.services.transport_protocol | String | The transport protocol \(known in OSI model as L4\) used to contact this service \(i.e., UDP or TCP\). | 
+| Censys.Search.parsed.fingerprint_sha256 | String | SHA 256 fingerprint. | 
+| Censys.Search.parsed.issuer.organization | Unknown | The organization name. | 
+| Censys.Search.parsed.names | Unknown | Common names for the entity. | 
+| Censys.Search.parsed.subject_dn | String | Distinguished name of the entity that the certificate belongs to. | 
+| Censys.Search.parsed.validity.end | Date | Timestamp of when certificate expires. Timezone is UTC. | 
+| Censys.Search.parsed.validity.start | Date | Timestamp of when certificate is first valid. Timezone is UTC. | 
+| Censys.Search.parsed.issuer_dn | String | Distinguished name of the entity that has signed and issued the certificate. | 
 
 
 #### Command Example
-```!censys-hosts-search query="services.service_name:HTTP" limit=1```
+```!cen-search index=certificates query="parsed.issuer.common_name: \"Let's Encrypt\"" limit=1```
 
 #### Context Example
 ```json
 {
     "Censys": {
-        "HostSearch": {
-            "autonomous_system": {
-                "asn": 13335,
-                "bgp_prefix": "1.0.0.0/24",
-                "country_code": "US",
-                "description": "CLOUDFLARENET",
-                "name": "CLOUDFLARENET"
-            },
-            "ip": "1.0.0.0",
-            "location": {
-                "continent": "Oceania",
-                "coordinates": {
-                    "latitude": -33.494,
-                    "longitude": 143.2104
-                },
-                "country": "Australia",
-                "country_code": "AU",
-                "registered_country": "Australia",
-                "registered_country_code": "AU",
-                "timezone": "Australia/Sydney"
-            },
-            "services": [
-                {
-                    "port": 80,
-                    "service_name": "HTTP",
-                    "transport_protocol": "TCP"
-                },
-                {
-                    "port": 443,
-                    "service_name": "HTTP",
-                    "transport_protocol": "TCP"
-                }
-            ]
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Search results for query "services.service_name:HTTP"
->|IP|Name|Description|ASN|Location Country code|Registered Country Code|Services|
->|---|---|---|---|---|---|---|
->| 1.0.0.0 | CLOUDFLARENET | CLOUDFLARENET | 13335 | AU | AU | {'port': 80, 'service_name': 'HTTP', 'transport_protocol': 'TCP'},<br/>{'port': 443, 'service_name': 'HTTP', 'transport_protocol': 'TCP'} |
-
-
-### censys-certificates-search
-***
-Returns a list of certificates that match the given query.
-
-
-#### Base Command
-
-`censys-certificates-search`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| query | Query used to search for certificates with matching attributes. Uses the Censys Search Language. | Required | 
-| page | The page tp return, Default is 1. Default is 1. | Optional | 
-| Fields | The fields to return. | Optional | 
-| limit | The number of results to return. Default is 50. Default is 50. | Optional | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Censys.CertificateSearch.parsed.fingerprint_sha256 | String | SHA 256 fingerprint. | 
-| Censys.CertificateSearch.parsed.issuer.organization | Unknown | The organization name. | 
-| Censys.CertificateSearch.parsed.issuer_dn | String | Distinguished name of the entity that has signed and issued the certificate. | 
-| Censys.CertificateSearch.parsed.names | Unknown | Common names for the entity. | 
-| Censys.CertificateSearch.parsed.subject_dn | String | Distinguished name of the entity that the certificate belongs to. | 
-| Censys.CertificateSearch.parsed.validity.end | String | Validity end date. | 
-| Censys.CertificateSearch.parsed.validity.start | String | Validity start date. | 
-
-
-#### Command Example
-```!censys-certificates-search query="parsed.issuer.common_name: \"Let's Encrypt\"" limit=1```
-
-#### Context Example
-```json
-{
-    "Censys": {
-        "CertificateSearch": {
+        "Search": {
             "parsed": {
-                "fingerprint_sha256": "f3ade17dffcadd9532aeb2514f10d66e22941393725aa65366ac286df9b442ec",
+                "fingerprint_sha256": "f3ade17dffcadd9532aeb2514f10d66e22941393725aa65366ac286df9b1234",
                 "issuer": {
                     "organization": [
                         "Let's Encrypt"
@@ -527,440 +510,5 @@ Returns a list of certificates that match the given query.
 >| organization: Let's Encrypt | C=US, O=Let's Encrypt, CN=Let's Encrypt Authority X3 | *.45g4rg43g4fr3434g.gb.net,<br/>45g4rg43g4fr3434g.gb.net | f3ade17dffcadd9532aeb2514f10d66e22941393725aa65366ac286df9b442ec | CN=45g4rg43g4fr3434g.gb.net | start: 2020-10-12T14:46:11Z<br/>end: 2021-01-10T14:46:11Z |
 
 
-### censys-certificate-view
-***
-Returns structured certificate data for the specified SHA-256.
-
-
-#### Base Command
-
-`censys-certificate-view`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| query | The SHA-256 fingerprint of the requested certificate. | Required | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Censys.CertificateView.fingerprint_sha256 | String | The file SHA256. | 
-| Censys.CertificateView.parent_spki_subject_fingerprint | String | Parent spki subject fingerprint | 
-| Censys.CertificateView.parsed.fingerprint_sha1 | String | Certificate SHA1. | 
-| Censys.CertificateView.parsed.fingerprint_md5 | String | Certificate MD5. | 
-| Censys.CertificateView.parsed.names | Unknown | A list of subject names in the certificate, including the Subject CommonName and SubjectAltName DNSNames, IPAddresses and URIs. | 
-| Censys.CertificateView.parsed.subject.common_name | String | Common Name | 
-| Censys.CertificateView.parsed.subject.country | String | Country name. | 
-| Censys.CertificateView.parsed.subject.locality | String | Locality name. | 
-| Censys.CertificateView.parsed.subject.organization | String | Organization name. | 
-| Censys.CertificateView.parsed.subject.province | String | Province name. | 
-| Censys.CertificateView.parsed.issuer_dn | String | Issuer name. | 
-| Censys.CertificateView.parsed.validity.end | Date | Timestamp of when certificate expires. Timezone is UTC. | 
-| Censys.CertificateView.parsed.validity.start | Date | Timestamp of when certificate is first valid. Timezone is UTC. | 
-| Censys.CertificateView.parsed.extensions.subject_alt_name.dns_names | Unknown | DNS Name entries. | 
-| Censys.CertificateView.parsed.issuer.common_name | String | Common name. | 
-| Censys.CertificateView.parsed.issuer.country | String | Country name. | 
-| Censys.CertificateView.parsed.issuer.organization | String | Organization name. | 
-| Censys.CertificateView.parsed.subject_dn | String | A canonical string representation of the subject name. | 
-| Censys.CertificateView.parsed.validation_level | String | How the certificate is validated -- Domain validated \(DV\), Organization Validated \(OV\), Extended Validation \(EV\), or unknown. | 
-| Censys.CertificateView.tags | Unknown | Tags | 
-
-
-#### Command Example
-```!censys-certificate-view query=9d3b51a6b80daf76e074730f19dc01e643ca0c3127d8f48be64cf3302f661234```
-
-#### Context Example
-```json
-{
-    "Censys": {
-        "CertificateView": {
-            "ct": {
-                "digicert_ct1": {
-                    "added_to_ct_at": "2015-09-29T19:55:46.232Z",
-                    "ct_to_censys_at": "2018-07-30T04:49:40.404877527Z",
-                    "index": 165790
-                },
-                "google_aviator": {
-                    "added_to_ct_at": "1970-01-01T00:00:00Z",
-                    "ct_to_censys_at": "1970-01-01T00:00:00Z",
-                    "index": 8713649
-                }
-            },
-            "fingerprint_sha256": "9d3b51a6b80daf76e074730f19dc01e643ca0c3127d8f48be64cf3302f661234",
-            "metadata": {
-                "added_at": "1970-01-01T00:00:00Z",
-                "parse_status": "success",
-                "parse_version": 1,
-                "post_processed": true,
-                "post_processed_at": "2021-06-22T01:40:32Z",
-                "seen_in_scan": true,
-                "source": "scan",
-                "updated_at": "2021-06-22T03:28:34Z"
-            },
-            "parent_spki_subject_fingerprint": "ec0c72ce7689150e4f62d04f51f0f19713f77cf27ff43cab4035e9e54e846aa9",
-            "parsed": {
-                "extensions": {
-                    "authority_info_access": {
-                        "issuer_urls": [
-                            "http://pki.google.com/GIAG2.crt"
-                        ],
-                        "ocsp_urls": [
-                            "http://clients1.google.com/ocsp"
-                        ]
-                    },
-                    "authority_key_id": "4add06161bbcf668b576f581b6bb621aba5a812f",
-                    "basic_constraints": {
-                        "is_ca": false
-                    },
-                    "certificate_policies": [
-                        {
-                            "id": "1.2.3.4.4.1.11129.2.5.1"
-                        },
-                        {
-                            "id": "5.6.7.8.2.2"
-                        }
-                    ],
-                    "crl_distribution_points": [
-                        "http://pki.google.com/GIAG2.crl"
-                    ],
-                    "extended_key_usage": {
-                        "client_auth": true,
-                        "server_auth": true
-                    },
-                    "key_usage": {
-                        "digital_signature": true,
-                        "value": 1
-                    },
-                    "subject_alt_name": {
-                        "dns_names": [
-                            "*.google.com",
-                            "*.android.com",
-                            "*.appengine.google.com",
-                            "*.cloud.google.com",
-                            "*.google-analytics.com",
-                            "*.google.ca",
-                            "*.google.cl",
-                            "*.google.co.in",
-                            "*.google.co.jp",
-                            "*.google.co.uk",
-                            "*.google.com.ar",
-                            "*.google.com.au",
-                            "*.google.com.br",
-                            "*.google.com.co",
-                            "*.google.com.mx",
-                            "*.google.com.tr",
-                            "*.google.com.vn",
-                            "*.google.de",
-                            "*.google.es",
-                            "*.google.fr",
-                            "*.google.hu",
-                            "*.google.it",
-                            "*.google.nl",
-                            "*.google.pl",
-                            "*.google.pt",
-                            "*.googleadapis.com",
-                            "*.googleapis.cn",
-                            "*.googlecommerce.com",
-                            "*.googlevideo.com",
-                            "*.gstatic.cn",
-                            "*.gstatic.com",
-                            "*.gvt1.com",
-                            "*.gvt2.com",
-                            "*.metric.gstatic.com",
-                            "*.urchin.com",
-                            "*.url.google.com",
-                            "*.youtube-nocookie.com",
-                            "*.youtube.com",
-                            "*.youtubeeducation.com",
-                            "*.ytimg.com",
-                            "android.com",
-                            "g.co",
-                            "goo.gl",
-                            "google-analytics.com",
-                            "google.com",
-                            "googlecommerce.com",
-                            "urchin.com",
-                            "youtu.be",
-                            "youtube.com",
-                            "youtubeeducation.com"
-                        ]
-                    },
-                    "subject_key_id": "19c6b145efc879529b4a57b15e0d543b011dce35"
-                },
-                "fingerprint_md5": "0f263d5e56288c37ade29f7b9977f38d",
-                "fingerprint_sha1": "8740f09afc54752b26b295cdc6393c6b8ffd9e6a",
-                "fingerprint_sha256": "9d3b51a6b80daf76e074730f19dc01e643ca0c3127d8f48be64cf3302f661234",
-                "issuer": {
-                    "common_name": [
-                        "Google Internet Authority G2"
-                    ],
-                    "country": [
-                        "US"
-                    ],
-                    "organization": [
-                        "Google Inc"
-                    ]
-                },
-                "issuer_dn": "C=US, O=Google Inc, CN=Google Internet Authority G2",
-                "names": [
-                    "*.android.com",
-                    "*.appengine.google.com",
-                    "*.cloud.google.com",
-                    "*.google-analytics.com",
-                    "*.google.ca",
-                    "*.google.cl",
-                    "*.google.co.in",
-                    "*.google.co.jp",
-                    "*.google.co.uk",
-                    "*.google.com",
-                    "*.google.com.ar",
-                    "*.google.com.au",
-                    "*.google.com.br",
-                    "*.google.com.co",
-                    "*.google.com.mx",
-                    "*.google.com.tr",
-                    "*.google.com.vn",
-                    "*.google.de",
-                    "*.google.es",
-                    "*.google.fr",
-                    "*.google.hu",
-                    "*.google.it",
-                    "*.google.nl",
-                    "*.google.pl",
-                    "*.google.pt",
-                    "*.googleadapis.com",
-                    "*.googleapis.cn",
-                    "*.googlecommerce.com",
-                    "*.googlevideo.com",
-                    "*.gstatic.cn",
-                    "*.gstatic.com",
-                    "*.gvt1.com",
-                    "*.gvt2.com",
-                    "*.metric.gstatic.com",
-                    "*.urchin.com",
-                    "*.url.google.com",
-                    "*.youtube-nocookie.com",
-                    "*.youtube.com",
-                    "*.youtubeeducation.com",
-                    "*.ytimg.com",
-                    "android.com",
-                    "g.co",
-                    "goo.gl",
-                    "google-analytics.com",
-                    "google.com",
-                    "googlecommerce.com",
-                    "urchin.com",
-                    "youtu.be",
-                    "youtube.com",
-                    "youtubeeducation.com"
-                ],
-                "redacted": false,
-                "serial_number": "5878999135690490607",
-                "signature": {
-                    "self_signed": false,
-                    "signature_algorithm": {
-                        "name": "SHA256-RSA",
-                        "oid": "1.2.840.113549.1.1.11"
-                    },
-                    "valid": false,
-                    "value": "longString"
-                },
-                "signature_algorithm": {
-                    "name": "SHA256-RSA",
-                    "oid": "1.2.840.113549.1.1.11"
-                },
-                "spki_subject_fingerprint": "5eb06b1c29ced84998d3d35a80fa17d3d39e4de96d25539485aecd6360f618dc",
-                "subject": {
-                    "common_name": [
-                        "*.google.com"
-                    ],
-                    "country": [
-                        "US"
-                    ],
-                    "locality": [
-                        "Mountain View"
-                    ],
-                    "organization": [
-                        "Google Inc"
-                    ],
-                    "province": [
-                        "California"
-                    ]
-                },
-                "subject_dn": "C=US, ST=California, L=Mountain View, O=Google Inc, CN=*.google.com",
-                "subject_key_info": {
-                    "ecdsa_public_key": {
-                        "b": "WsY12Ko6k+ez671VdpiGvGUdBrDMU7D2O848Pi1234567",
-                        "curve": "P-256",
-                        "gx": "axfR8uEsQkf4vOblY6RA8ncDfYEt6zOg9KE5Rd1234567",
-                        "gy": "T+NC4v4af5uO5+tKfA+eFivOM1drMV7Oy7ZAaD1234567",
-                        "length": 256,
-                        "n": "/////wAAAAD//////////7zm+q2nF56E87nKwv1234567",
-                        "p": "/////wAAAAEAAAAAAAAAAAAAAAD////////////12345",
-                        "pub": "BPaA0OXDoRYvJCAXYXat17qSfAzstSRTv6hKFsn+ViGbHsKzG88q4w1ftFxHXtx5clv1eImjsqduyUDVZ1234567",
-                        "x": "9oDQ5cOhFi8kIBdhdq3XupJ8DOy1JFO/qEoW1234567",
-                        "y": "HsKzG88q4w1ftFxHXtx5clv1eImjsqduyUDVZ123456"
-                    },
-                    "fingerprint_sha256": "3d4a4bd778be7965e90a13ac361e1ed7836d24c15cd5c093f9cc7e7857f51234",
-                    "key_algorithm": {
-                        "name": "ECDSA"
-                    }
-                },
-                "tbs_fingerprint": "1661b59eb7d8cda44f800fabc9ef69ba01506309eedf027f2270105afd161234",
-                "tbs_noct_fingerprint": "1661b59eb7d8cda44f800fabc9ef69ba01506309eedf027f2270105afd161234",
-                "validation_level": "OV",
-                "validity": {
-                    "end": "2015-12-28T00:00:00Z",
-                    "length": 7708840,
-                    "start": "2015-09-29T18:39:20Z"
-                },
-                "version": 3
-            },
-            "precert": false,
-            "raw": "MIIGzzCCBbegAwIBAgIIUZZmkM2pAu8wDQYJKoZIhvcNAQELBQAwSTELMAkGA1UEBhMCVVMxEzARBgNVBAoTCkdvb2dsZSBJbmMxJTAjBgNVBAMTHEdvb2dsZSBJbnRlcm5ldCBBdXRob3JpdHkgRzIwHhcNMTUwOTI5MTgzOTIwWhcNMTUxMjI4MDAwMDAwWjBmMQswCQYDVQQGEwJVUzETMBEGA1UECAwKQ2FsaWZvcm5pYTEWMBQGA1UEBwwNTW91bnRhaW4gVmlldzETMBEGA1UECgwKR29vZ2xlIEluYzEVMBMGA1UEAwwMKi5nb29nbGUuY29tMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE9oDQ5cOhFi8kIBdhdq3XupJ8DOy1JFO/qEoWyf5WIZsewrMbzyrjDV+0XEde3HlyW/V4iaOyp27JQNVn5m/Od6OCBGcwggRjMB0GA1UdJQQWMBQGCCsGAQUFBwMBBggrBgEFBQcDAjCCAyYGA1UdEQSCAx0wggMZggwqLmdvb2dsZS5jb22CDSouYW5kcm9pZC5jb22CFiouYXBwZW5naW5lLmdvb2dsZS5jb22CEiouY2xvdWQuZ29vZ2xlLmNvbYIWKi5nb29nbGUtYW5hbHl0aWNzLmNvbYILKi5nb29nbGUuY2GCCyouZ29vZ2xlLmNsgg4qLmdvb2dsZS5jby5pboIOKi5nb29nbGUuY28uanCCDiouZ29vZ2xlLmNvLnVrgg8qLmdvb2dsZS5jb20uYXKCDyouZ29vZ2xlLmNvbS5hdYIPKi5nb29nbGUuY29tLmJygg8qLmdvb2dsZS5jb20uY2+CDyouZ29vZ2xlLmNvbS5teIIPKi5nb29nbGUuY29tLnRygg8qLmdvb2dsZS5jb20udm6CCyouZ29vZ2xlLmRlggsqLmdvb2dsZS5lc4ILKi5nb29nbGUuZnKCCyouZ29vZ2xlLmh1ggsqLmdvb2dsZS5pdIILKi5nb29nbGUubmyCCyouZ29vZ2xlLnBsggsqLmdvb2dsZS5wdIISKi5nb29nbGVhZGFwaXMuY29tgg8qLmdvb2dsZWFwaXMuY26CFCouZ29vZ2xlY29tbWVyY2UuY29tghEqLmdvb2dsZXZpZGVvLmNvbYIMKi5nc3RhdGljLmNugg0qLmdzdGF0aWMuY29tggoqLmd2dDEuY29tggoqLmd2dDIuY29tghQqLm1ldHJpYy5nc3RhdGljLmNvbYIMKi51cmNoaW4uY29tghAqLnVybC5nb29nbGUuY29tghYqLnlvdXR1YmUtbm9jb29raWUuY29tgg0qLnlvdXR1YmUuY29tghYqLnlvdXR1YmVlZHVjYXRpb24uY29tggsqLnl0aW1nLmNvbYILYW5kcm9pZC5jb22CBGcuY2+CBmdvby5nbIIUZ29vZ2xlLWFuYWx5dGljcy5jb22CCmdvb2dsZS5jb22CEmdvb2dsZWNvbW1lcmNlLmNvbYIKdXJjaGluLmNvbYIIeW91dHUuYmWCC3lvdXR1YmUuY29tghR5b3V0dWJlZWR1Y2F0aW9uLmNvbTALBgNVHQ8EBAMCB4AwaAYIKwYBBQUHAQEEXDBaMCsGCCsGAQUFBzAChh9odHRwOi8vcGtpLmdvb2dsZS5jb20vR0lBRzIuY3J0MCsGCCsGAQUFBzABhh9odHRwOi8vY2xpZW50czEuZ29vZ2xlLmNvbS9vY3NwMB0GA1UdDgQWBBQZxrFF78h5UptKV7FeDVQ7AR3ONTAMBgNVHRMBAf8EAjAAMB8GA1UdIwQYMBaAFErdBhYbvPZotXb1gba7Yhq6WoEvMCEGA1UdIAQaMBgwDAYKKwYBBAHWeQIFATAIBgZngQwBAgIwMAYDVR0fBCkwJzAloCOgIYYfaHR0cDovL3BraS5nb29nbGUuY29tL0dJQUcyLmNybDANBgkqhkiG9w0BAQsFAAOCAQEAHjY1fHmswcmd3sMp0GoWlbLoLMbuiE1qaZ4DUhn8gE3z0JDn6RDYjZ8qOqMA3/Fqcywzd1vKB0snm2JRkk9ZfBYNO1aIsXpSXaCBjtFmVPeZarLIFietWe6bS+lLbC4FhzU5/bg7KAy7zPZHuh1E+ys76v4O/Jui5iWO+Amkywu+xU4J3SEjbKEJYubXsa5CMovNwl+le2UPiu/xqu+QchCYVj6KQGVnRiZ0s5MY86bKVPxlHRXKjuyt/2FISp48sHgQDmq5bZ1iB5h1Lc+DvdOyvmm738IsDoev8QziMF2FXGyaETPm/CB2AfE58Mj9s9rl0hNx7/m+Zt557crvag==",
-            "tags": [
-                "was-trusted",
-                "expired",
-                "ct",
-                "ov"
-            ],
-            "validation": {
-                "apple": {
-                    "blacklisted": false,
-                    "had_trusted_path": true,
-                    "in_revocation_set": false,
-                    "parents": [
-                        "c3f697a92a293d86f9a3ee7ccb970e20e0050b8728cc83ed1b996ce9005d4c36",
-                        "9f630426df1d8abfd80ace98871ba833ab9742cb34838de2b5285ed54c0c7dcc",
-                        "a4124fdaf9cac7baee1cab32e3225d746500c09f3cf3ebb253ef3fbb088afd34",
-                        "44336eb05c6c783dc177217a9f6fef75f4524e98045b390803ae9de69eb41234"
-                    ],
-                    "paths": [
-                        [
-                            "9d3b51a6b80daf76e074730f19dc01e643ca0c3127d8f48be64cf3302f661234",
-                            "a4124fdaf9cac7baee1cab32e3225d746500c09f3cf3ebb253ef3fbb088afd34",
-                            "ff856a2d251dcd88d36656f450126798cfabaade40799c722de4d2b5db36a73a"
-                        ],
-                        [
-                            "9d3b51a6b80daf76e074730f19dc01e643ca0c3127d8f48be64cf3302f661234",
-                            "44336eb05c6c783dc177217a9f6fef75f4524e98045b390803ae9de69eb41234",
-                            "ff856a2d251dcd88d36656f450126798cfabaade40799c722de4d2b5db36a73a"
-                        ]
-                    ],
-                    "trusted_path": false,
-                    "type": "leaf",
-                    "valid": false,
-                    "was_valid": true,
-                    "whitelisted": false
-                },
-                "google_ct_primary": {
-                    "blacklisted": false,
-                    "had_trusted_path": true,
-                    "in_revocation_set": false,
-                    "parents": [
-                        "c3f697a92a293d86f9a3ee7ccb970e20e0050b8728cc83ed1b996ce9005d4c36",
-                        "9f630426df1d8abfd80ace98871ba833ab9742cb34838de2b5285ed54c0c7dcc",
-                        "a4124fdaf9cac7baee1cab32e3225d746500c09f3cf3ebb253ef3fbb088afd34",
-                        "44336eb05c6c783dc177217a9f6fef75f4524e98045b390803ae9de69eb41234"
-                    ],
-                    "paths": [
-                        [
-                            "9d3b51a6b80daf76e074730f19dc01e643ca0c3127d8f48be64cf3302f661234",
-                            "a4124fdaf9cac7baee1cab32e3225d746500c09f3cf3ebb253ef3fbb088afd34",
-                            "ff856a2d251dcd88d36656f450126798cfabaade40799c722de4d2b5db36a73a"
-                        ],
-                        [
-                            "9d3b51a6b80daf76e074730f19dc01e643ca0c3127d8f48be64cf3302f661234",
-                            "44336eb05c6c783dc177217a9f6fef75f4524e98045b390803ae9de69eb41234",
-                            "ff856a2d251dcd88d36656f450126798cfabaade40799c722de4d2b5db36a73a"
-                        ]
-                    ],
-                    "trusted_path": false,
-                    "type": "leaf",
-                    "valid": false,
-                    "was_valid": true,
-                    "whitelisted": false
-                },
-                "microsoft": {
-                    "blacklisted": false,
-                    "had_trusted_path": true,
-                    "in_revocation_set": false,
-                    "parents": [
-                        "c3f697a92a293d86f9a3ee7ccb970e20e0050b8728cc83ed1b996ce9005d4c36",
-                        "9f630426df1d8abfd80ace98871ba833ab9742cb34838de2b5285ed54c0c7dcc",
-                        "a4124fdaf9cac7baee1cab32e3225d746500c09f3cf3ebb253ef3fbb088afd34",
-                        "44336eb05c6c783dc177217a9f6fef75f4524e98045b390803ae9de69eb41234"
-                    ],
-                    "paths": [
-                        [
-                            "9d3b51a6b80daf76e074730f19dc01e643ca0c3127d8f48be64cf3302f661234",
-                            "a4124fdaf9cac7baee1cab32e3225d746500c09f3cf3ebb253ef3fbb088afd34",
-                            "ff856a2d251dcd88d36656f450126798cfabaade40799c722de4d2b5db36a73a"
-                        ],
-                        [
-                            "9d3b51a6b80daf76e074730f19dc01e643ca0c3127d8f48be64cf3302f661234",
-                            "44336eb05c6c783dc177217a9f6fef75f4524e98045b390803ae9de69eb41234",
-                            "ff856a2d251dcd88d36656f450126798cfabaade40799c722de4d2b5db36a73a"
-                        ]
-                    ],
-                    "trusted_path": false,
-                    "type": "leaf",
-                    "valid": false,
-                    "was_valid": true,
-                    "whitelisted": false
-                },
-                "nss": {
-                    "blacklisted": false,
-                    "had_trusted_path": false,
-                    "in_revocation_set": false,
-                    "paths": [],
-                    "trusted_path": false,
-                    "type": "unknown",
-                    "valid": false,
-                    "was_valid": false,
-                    "whitelisted": false
-                },
-                "revoked": false
-            },
-            "zlint": {
-                "errors_present": false,
-                "fatals_present": false,
-                "lints": {
-                    "n_subject_common_name_included": true,
-                    "w_ext_key_usage_not_critical": true
-                },
-                "notices_present": true,
-                "version": 3,
-                "warnings_present": true
-            }
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Information for certificate 
->|Added|SHA 256|Source|Tags|Updated|
->|---|---|---|---|---|
->| 1970-01-01T00:00:00Z | 9d3b51a6b80daf76e074730f19dc01e643ca0c3127d8f48be64cf3302f661234 | scan | was-trusted,<br/>expired,<br/>ct,<br/>ov | 2021-06-22T03:28:34Z |
-
-
-## Breaking changes from the previous version of this integration - Censys
-This is a new version, the old version of the API is deprecated (by Censys).
-The following sections list the changes in this version.
-
-### Commands
-#### The following commands were removed in this version:
-* *cen-view* - this command was replaced by:
-    - censys-host-view
-    - censys-certificate-view
-* *cen-search* - this command was replaced by:
-    - censys-certificates-search
-    - censys-hosts-search
-
 ## Additional Considerations for this version
-* This API no longer supports *websites* searches.
-* The *limit* argument was added to all commands.
+* This version supports the new API version from Censys. Therefore, the integration do not support *websites* searches.

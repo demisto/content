@@ -318,7 +318,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The fields to return. (Apllies for certificates search)
+      description: The fields to return. (Applies for certificates search)
       isArray: false
       name: fields
       required: false
@@ -331,7 +331,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns previews of hosts matching a specified search query or a
+    description: Return previews of hosts matching a specified search query or a
       list of certificates that match the given query.
     execution: false
     name: cen-search
