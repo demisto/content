@@ -512,7 +512,8 @@ tasks:
       id: 55767f1f-c339-4de2-895a-53ccb41690aa
       version: -1
       name: Manually handle port based rules
-      description: "Since user didn't choose the automatic remediation, manually handle the port based rules."
+      description: "Since user didn't choose the automatic remediation, manually handle\
+        \ the port based rules."
       type: regular
       iscommand: false
       brand: ""
