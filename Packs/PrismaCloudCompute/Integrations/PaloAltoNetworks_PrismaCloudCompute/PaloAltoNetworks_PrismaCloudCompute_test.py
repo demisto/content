@@ -429,87 +429,61 @@ def test_get_headers():
 
 
 HTTP_REQUEST_URL_WITH_QUERY_PARAMS = [
-    (
-        OrderedDict(cluster="cluster", hostname="hostname", limit="10", offset="0"),
-        get_profile_host_list,
-        "/profiles/host",
-        "https://test.com/profiles/host?cluster=cluster&limit=10&offset=0&hostname=hostname"
-    ),
-    (
-        OrderedDict(cluster="cluster", hostname="hostname", limit="100", offset="0"),
-        get_profile_host_list,
-        "/profiles/host",
-        "https://test.com/profiles/host?cluster=cluster&limit=50&offset=0&hostname=hostname"
-    ),
-    (
-        OrderedDict(
-            cluster="cluster", id="1", image="image", image_id="1", namespace="namespace", os="os",
-            state="state", limit="10", offset="0"
-        ),
-        get_container_profile_list,
-        "/profiles/container",
-        "https://test.com/profiles/container?cluster=cluster&id=1&image=image"
-        "&namespace=namespace&os=os&state=state&limit=10&offset=0&imageid=1"
-    ),
-    (
-        OrderedDict(
-            cluster="cluster", id="1", image="image", image_id="1", namespace="namespace", os="os",
-            state="state", limit="100", offset="0"
-        ),
-        get_container_profile_list,
-        "/profiles/container",
-        "https://test.com/profiles/container?cluster=cluster&id=1&image=image"
-        "&namespace=namespace&os=os&state=state&limit=50&offset=0&imageid=1"
-    ),
-    (
-        OrderedDict(limit="10", offset="0", id="123"),
-        get_container_hosts_list,
-        "/profiles/container/123/hosts",
-        "https://test.com/profiles/container/123/hosts"
-    ),
-    (
-        OrderedDict(limit="100", offset="0", id="123"),
-        get_container_hosts_list,
-        "/profiles/container/123/hosts",
-        "https://test.com/profiles/container/123/hosts"
-    ),
+    # (
+    #     OrderedDict(cluster="cluster", hostname="hostname", limit="10", offset="0"),
+    #     get_profile_host_list,
+    #     "/profiles/host",
+    #     "https://test.com/profiles/host?cluster=cluster&limit=10&offset=0&hostname=hostname"
+    # ),
+    # (
+    #     OrderedDict(
+    #         cluster="cluster", id="1", image="image", image_id="1", namespace="namespace", os="os",
+    #         state="state", limit="10", offset="0"
+    #     ),
+    #     get_container_profile_list,
+    #     "/profiles/container",
+    #     "https://test.com/profiles/container?cluster=cluster&id=1&image=image"
+    #     "&namespace=namespace&os=os&state=state&limit=10&offset=0&imageid=1"
+    # ),
+    # (
+    #     OrderedDict(limit="10", offset="0", id="123"),
+    #     get_container_hosts_list,
+    #     "/profiles/container/123/hosts",
+    #     "https://test.com/profiles/container/123/hosts"
+    # ),
     (
         OrderedDict(
-            collections="collections", hostname="hostname", limit="10", offset="0", id="123"
+            collections="collections", hostname="hostname", limit="15", offset="2", id="123"
         ),
         get_profile_container_forensic_list,
         "/profiles/container/123/forensic",
-        "https://test.com/profiles/container/123/forensic?collections=collections&hostname=hostname&limit=10"
+        "https://test.com/profiles/container/123/forensic?collections=collections&hostname=hostname&limit=17"
     ),
     (
         OrderedDict(
-            collections="collections", hostname="hostname", limit="100", offset="0", id="123"
-        ),
-        get_profile_container_forensic_list,
-        "/profiles/container/123/forensic",
-        "https://test.com/profiles/container/123/forensic?collections=collections&hostname=hostname&limit=50"
-    ),
-    (
-        OrderedDict(
-            collections="collections", limit="10", offset="0", id="123"
+            collections="collections", limit="10", offset="3", id="123"
         ),
         get_profile_host_forensic_list,
         "/profiles/host/123/forensic",
-        "https://test.com/profiles/host/123/forensic?collections=collections&limit=10"
+        "https://test.com/profiles/host/123/forensic?collections=collections&limit=13"
     ),
     (
-        OrderedDict(
-            collections="collections", limit="100", offset="0", id="123"
-        ),
-        get_profile_host_forensic_list,
-        "/profiles/host/123/forensic",
-        "https://test.com/profiles/host/123/forensic?collections=collections&limit=50"
+        OrderedDict(),
+        get_console_version,
+        "/version",
+        "https://test.com/version"
+    ),
+    (
+        OrderedDict(),
+        get_custom_feeds_ip_list,
+        "/feeds/custom/ips",
+        "https://test.com/feeds/custom/ips"
     )
 ]
 
 
 @pytest.mark.parametrize("args, func, url_suffix, expected_url", HTTP_REQUEST_URL_WITH_QUERY_PARAMS)
-def test_http_request_url_with_query_params_is_valid(requests_mock, args, func, url_suffix, expected_url, client):
+def test_http_request_url_is_valid(requests_mock, args, func, url_suffix, expected_url, client):
     """
     Given:
         - query command arguments.
@@ -520,43 +494,70 @@ def test_http_request_url_with_query_params_is_valid(requests_mock, args, func, 
     Then:
         - Verify that the full URL of the http request is sent with the correct query/uri params.
     """
-    mocker = requests_mock.get(url=BASE_URL + url_suffix, json=[])
-    func(client=client, args=args)
+    mocker = requests_mock.get(url=BASE_URL + url_suffix, json={})
+    func(client=client, args=args) if args else func(client=client)
 
     assert expected_url == mocker.last_request._url_parts.geturl()
 
 
-HTTP_REQUEST_URL = [
+INVALID_LIMIT_OFFSET_ARGS = [
     (
-        get_console_version,
-        "/version",
-        ""
+        {"limit": "100", "offset": "0"},
+        get_profile_host_list,
     ),
     (
-        get_custom_feeds_ip_list,
-        "/feeds/custom/ips",
-        {}
+        {"limit": "not_a_number", "offset": "0"},
+        get_profile_host_list,
+    ),
+    (
+        {"limit": "30", "offset": "not_a_number"},
+        get_container_profile_list,
+    ),
+    (
+        {"limit": "-2", "offset": "-5"},
+        get_container_profile_list,
+    ),
+    (
+        {"limit": "0", "offset": "-1", "id": "123"},
+        get_container_hosts_list,
+    ),
+    (
+        {"limit": "-50", "offset": "3", "id": "123"},
+        get_profile_host_forensic_list,
+    ),
+    (
+        {"limit": "-51", "offset": "0", "id": "123"},
+        get_profile_container_forensic_list,
+    ),
+    (
+        {"limit": "51", "offset": "0", "id": "123"},
+        get_profile_container_forensic_list,
+    ),
+    (
+        {"limit": "51", "offset": "100", "id": "123"},
+        get_profile_host_forensic_list,
+    ),
+    (
+        {"limit": "0", "offset": "0", "id": "123"},
+        get_container_hosts_list,
     )
 ]
 
 
-@pytest.mark.parametrize("func, url_suffix, json", HTTP_REQUEST_URL)
-def test_http_request_url_is_valid(requests_mock, func, url_suffix, json, client):
+@pytest.mark.parametrize("args, func", INVALID_LIMIT_OFFSET_ARGS)
+def test_invalid_offset_and_limit(args, func, client):
     """
     Given:
-        - url endpoint.
+        - invalid offset/limit as command arguments.
 
     When:
-        - Calling the http-request for the command endpoint.
+        - executing a function for a specific api endpoint.
 
     Then:
-        - Verify that the full URL of the http request is sent correctly.
+        - Verify that ValueError is raised.
     """
-    full_url = BASE_URL + url_suffix
-    mocker = requests_mock.get(url=full_url, json=json)
-    func(client=client)
-
-    assert full_url == mocker.last_request._url_parts.geturl()
+    with pytest.raises(ValueError):
+        func(client=client, args=args)
 
 
 HTTP_BODY_REQUEST_PARAMS = [
@@ -573,7 +574,7 @@ HTTP_BODY_REQUEST_PARAMS = [
 
 
 @pytest.mark.parametrize("func, url_suffix, args", HTTP_BODY_REQUEST_PARAMS)
-def test_http_request_body_request_is_valid(requests_mock, func, url_suffix, args, client):
+def test_http_body_request_is_valid(requests_mock, func, url_suffix, args, client):
     """
     Given:
         - http body request to an api endpoint.
@@ -728,7 +729,7 @@ def test_http_body_response_filtering_is_valid(requests_mock, args, url_suffix, 
     """
     full_url = BASE_URL + url_suffix
 
-    offset, limit = int(args.pop("offset")), int(args.pop("limit", None))
+    offset, limit = int(args.pop("offset")), int(args.pop("limit"))
 
     requests_mock.get(url=full_url, json=response)
     body_response = get_api_filtered_response(
