@@ -569,6 +569,7 @@ Updates the specified ticket.
 | approval | Ticket approval. | Optional | 
 | additional_fields | Additional fields in the format: fieldname1=value;fieldname2=value; | Optional | 
 | input_display_value | Flag that indicates whether to set field values using the display value or the actual value. True will treat the input value as the display value. False treats the input values as actual values. The default setting is false. | Optional |
+| clear_fields | Comma-seperated list of fields to clear. | Optional | 
 
 For more information regarding the input_display_value Argument, please see: https://docs.servicenow.com/bundle/orlando-platform-administration/page/administer/exporting-data/concept/query-parameters-display-value.html
 
