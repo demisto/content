@@ -374,8 +374,8 @@ def get_ticket_fields(args: dict, template_name: dict = {}, ticket_type: str = '
 
         if arg in fields_to_clear:
             if input_arg:
-                raise DemistoException(f"Could not set a value for the argument '{arg}' and add it to the clear_fields. "
-                                        "You can either set or clear the field value.")
+                raise DemistoException(f"Could not set a value for the argument '{arg}' and add it to the clear_fields. \
+                You can either set or clear the field value.")
             ticket_fields[arg] = ""
             continue
 
