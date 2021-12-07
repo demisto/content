@@ -67,10 +67,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 8404464c-d453-4581-84ac-cd9cc87223d4
+    taskid: e19a6603-d8ef-40eb-8f3c-052558387f9d
     type: regular
     task:
-      id: 8404464c-d453-4581-84ac-cd9cc87223d4
+      id: e19a6603-d8ef-40eb-8f3c-052558387f9d
       version: -1
       name: opsgenie-create-alert
       script: OpsGenieV3|||opsgenie-create-alert
@@ -84,7 +84,7 @@ tasks:
       interval_in_seconds:
         simple: "5"
       message:
-        simple: test_playbook
+        simple: ${incident.id}
     continueonerror: true
     separatecontext: false
     view: |-
@@ -96,80 +96,6 @@ tasks:
       }
     note: false
     timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
-    taskid: 64e59846-9bf4-44ee-812a-dbd354edffdd
-    type: condition
-    task:
-      id: 64e59846-9bf4-44ee-812a-dbd354edffdd
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "52"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: OpsGenie.Alert.action
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: OpsGenie.Alert.alertId
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: OpsGenie.Alert.alias
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: OpsGenie.Alert.integrationId
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: OpsGenie.Alert.isSuccess
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: OpsGenie.Alert.processedAt
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: OpsGenie.Alert.status
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: OpsGenie.Alert.success
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers:
-    - fieldname: timetoassignment
-      action: start
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -198,7 +124,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 1595
         }
       }
     note: false
@@ -320,7 +246,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 1770
         }
       }
     note: false
@@ -353,7 +279,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3520
+          "y": 3345
         }
       }
     note: false
@@ -425,7 +351,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3695
+          "y": 3520
         }
       }
     note: false
@@ -458,7 +384,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 895
         }
       }
     note: false
@@ -530,7 +456,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1070
         }
       }
     note: false
@@ -563,7 +489,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3170
+          "y": 2995
         }
       }
     note: false
@@ -635,7 +561,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3345
+          "y": 3170
         }
       }
     note: false
@@ -670,7 +596,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1245
         }
       }
     note: false
@@ -744,7 +670,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1420
         }
       }
     note: false
@@ -779,7 +705,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 1945
         }
       }
     note: false
@@ -825,7 +751,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 2120
         }
       }
     note: false
@@ -860,7 +786,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2470
+          "y": 2295
         }
       }
     note: false
@@ -932,7 +858,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2645
+          "y": 2470
         }
       }
     note: false
@@ -967,7 +893,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2820
+          "y": 2645
         }
       }
     note: false
@@ -1039,7 +965,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2995
+          "y": 2820
         }
       }
     note: false
@@ -1073,84 +999,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 3870
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "33":
-    id: "33"
-    taskid: aebf19e4-b2ac-4ec8-8725-30d752cf9c1c
-    type: condition
-    task:
-      id: aebf19e4-b2ac-4ec8-8725-30d752cf9c1c
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "43"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: OpsGenie.Incident.action
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: OpsGenie.Incident.incidentId
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: OpsGenie.Incident.integrationId
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: OpsGenie.Incident.isSuccess
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: OpsGenie.Incident.processedAt
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: OpsGenie.Incident.status
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: OpsGenie.Incident.success
-            iscontext: true
-    - label: error
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: incident.runStatus
-            iscontext: true
-          right:
-            value:
-              simple: error
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 4220
+          "y": 3695
         }
       }
     note: false
@@ -1183,7 +1032,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6495
+          "y": 6145
         }
       }
     note: false
@@ -1245,7 +1094,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6670
+          "y": 6320
         }
       }
     note: false
@@ -1278,7 +1127,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5445
+          "y": 5095
         }
       }
     note: false
@@ -1350,7 +1199,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5620
+          "y": 5270
         }
       }
     note: false
@@ -1383,7 +1232,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6145
+          "y": 5795
         }
       }
     note: false
@@ -1445,7 +1294,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6320
+          "y": 5970
         }
       }
     note: false
@@ -1478,7 +1327,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5795
+          "y": 5445
         }
       }
     note: false
@@ -1540,7 +1389,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5970
+          "y": 5620
         }
       }
     note: false
@@ -1575,7 +1424,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4395
+          "y": 4045
         }
       }
     note: false
@@ -1637,7 +1486,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4570
+          "y": 4220
         }
       }
     note: false
@@ -1672,7 +1521,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4745
+          "y": 4395
         }
       }
     note: false
@@ -1734,7 +1583,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4920
+          "y": 4570
         }
       }
     note: false
@@ -1769,7 +1618,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5095
+          "y": 4745
         }
       }
     note: false
@@ -1831,7 +1680,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5270
+          "y": 4920
         }
       }
     note: false
@@ -1857,7 +1706,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 6845
+          "y": 6495
         }
       }
     note: false
@@ -1888,7 +1737,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 720
         }
       }
     note: false
@@ -1900,21 +1749,27 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: dc55c59e-06e8-4ffe-835b-50d53a0e7dae
+    taskid: 3df08617-96ea-4803-8bd2-7c18b0849256
     type: condition
     task:
-      id: dc55c59e-06e8-4ffe-835b-50d53a0e7dae
+      id: 3df08617-96ea-4803-8bd2-7c18b0849256
       version: -1
       name: error
-      scriptName: ValidateErrorExistence
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      scriptName: isError
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "3"
-      Error:
+      - "52"
+      "yes":
       - "32"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
     continueonerror: true
     separatecontext: false
     view: |-
@@ -1933,28 +1788,34 @@ tasks:
     isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: 466210db-8621-4d1e-8eed-8a8bc39498eb
+    taskid: 994051c6-1302-4a59-80e9-47c9046c127a
     type: condition
     task:
-      id: 466210db-8621-4d1e-8eed-8a8bc39498eb
+      id: 994051c6-1302-4a59-80e9-47c9046c127a
       version: -1
       name: error
-      scriptName: ValidateErrorExistence
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      scriptName: isError
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "33"
-      Error:
+      - "43"
+      "yes":
       - "51"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
     continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 4045
+          "y": 3870
         }
       }
     note: false
@@ -1969,7 +1830,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 6860,
+        "height": 6510,
         "width": 492.5,
         "x": 50,
         "y": 50

@@ -36,10 +36,7 @@ class Client(BaseClient):
                            f"{args.get('request_id')}"
             )
         except DemistoException as e:
-            if e.message == "Request not found. It might not be processed, yet.":
-                raise DemistoException(f"The command is still processing.", res=e.res)
-            else:
-                raise e
+            raise e
 
         if not demisto.get(res, "data.success"):
             status = demisto.get(res, "data.status")
