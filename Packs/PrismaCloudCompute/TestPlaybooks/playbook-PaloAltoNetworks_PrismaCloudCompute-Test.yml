@@ -328,7 +328,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - "11"
+      - "23"
     note: false
     quietmode: 0
     separatecontext: false
@@ -434,63 +434,6 @@ tasks:
         "position": {
           "x": -185,
           "y": 560
-        }
-      }
-  "11":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: PrismaCloudCompute.ProfileContainer._Id
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: PrismaCloudCompute.ProfileContainer.ImageID
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: PrismaCloudCompute.ProfileContainer.Processes
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: PrismaCloudCompute.ProfileContainer.State
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: PrismaCloudCompute.ProfileContainer.Events
-          operator: isNotEmpty
-      label: "yes"
-    id: "11"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      "yes":
-      - "12"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 9ca8ba02-b72f-4ec8-87af-9fb5e58e180d
-      iscommand: false
-      name: Verify Outputs
-      type: condition
-      version: -1
-    taskid: 9ca8ba02-b72f-4ec8-87af-9fb5e58e180d
-    timertriggers: []
-    type: condition
-    view: |-
-      {
-        "position": {
-          "x": -840,
-          "y": 620
         }
       }
   "12":
@@ -956,6 +899,63 @@ tasks:
         "position": {
           "x": 280,
           "y": 850
+        }
+      }
+  "23":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.ProfileContainer._Id
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.ProfileContainer.Image
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.ProfileContainer.ImageID
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.ProfileContainer.Processes
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.ProfileContainer.State
+          operator: isNotEmpty
+      label: "yes"
+    id: "23"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "yes":
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: cf9435a9-ad14-4dc5-825d-917823d36468
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: cf9435a9-ad14-4dc5-825d-917823d36468
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -840,
+          "y": 590
         }
       }
 version: -1
