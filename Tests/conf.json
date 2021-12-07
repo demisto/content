@@ -4890,8 +4890,7 @@
         "cisco-ise-test-playbook": "Issue 44351",
         "GuardiCoreV2-Test": "Issue 43822",
         "LogRhythm REST test": "Issue 40654",
-        "ExtractAttackPattern-Test": "Issue 44095",
-        "NetscoutAED-Test": "Issue 44455"
+        "ExtractAttackPattern-Test": "Issue 44095"
     },
     "skipped_integrations": {
         "AutoFocus V2": "Issue 26464",
