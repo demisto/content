@@ -3655,4 +3655,3 @@ def main() -> None:
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     register_signal_handler()
     main()
-    change_ctx_to_be_compatible_with_retry()
