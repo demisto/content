@@ -466,7 +466,7 @@ script:
     - contextPath: PrismaCloudCompute.HostForensic.Forensics.Path
       description: Path is the event path
       type: String
-    - contextPath: PrismaCloudCompute.HostForensic.Forensics.PID
+    - contextPath: PrismaCloudCompute.HostForensic.Forensics.Pid
       description: Pid is the event process id
       type: Number
     - contextPath: PrismaCloudCompute.HostForensic.Forensics.Port
