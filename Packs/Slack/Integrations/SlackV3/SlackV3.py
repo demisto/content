@@ -129,16 +129,16 @@ def get_user_by_name(user_to_search: str, add_to_context: bool = True) -> dict:
     Returns:
         A slack user object
     """
-    integration_context = get_integration_context(SYNC_CONTEXT)
     user: dict = {}
-    users: list = []
     user_to_context: dict = {}
+
+    integration_context = get_integration_context(SYNC_CONTEXT)
     user_to_search = user_to_search.lower()
     if integration_context.get('users'):
         users = json.loads(integration_context['users'])
         users_filter = list(filter(lambda u: u.get('name', '').lower() == user_to_search
-                                             or u.get('profile', {}).get('email', '').lower() == user_to_search
-                                             or u.get('real_name', '').lower() == user_to_search, users))
+                                   or u.get('profile', {}).get('email', '').lower() == user_to_search
+                                   or u.get('profile', {}).get('real_name', '').lower() == user_to_search, users))
         if users_filter:
             user = users_filter[0]
     if not user and re.match(emailRegex, user_to_search):
@@ -147,25 +147,6 @@ def get_user_by_name(user_to_search: str, add_to_context: bool = True) -> dict:
         }
         response = send_slack_request_sync(CLIENT, 'users.lookupByEmail', http_verb='GET', body=_body)
         user = response.get('user', {})
-        if user:
-            user_to_context = {
-                'name': user.get('name'),
-                'id': user.get('id'),
-                'profile': {
-                    'email': user.get('profile', {}).get('email')
-                }
-            }
-            if integration_context.get('users'):
-                users = json.loads(integration_context['users'])
-                users.append(user_to_context)
-
-            else:
-                users = [user_to_context]
-            set_to_integration_context_with_retries({'users': users}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
-        if user_to_context:
-            return user_to_context
-        else:
-            return {}
     if not user:
         body = {
             'limit': PAGINATED_COUNT
@@ -178,7 +159,8 @@ def get_user_by_name(user_to_search: str, add_to_context: bool = True) -> dict:
             cursor = response.get('response_metadata', {}).get('next_cursor')
             users_filter = list(filter(lambda u: u.get('name', '').lower() == user_to_search
                                        or u.get('profile', {}).get('email', '').lower() == user_to_search
-                                       or u.get('real_name', '').lower() == user_to_search, workspace_users))
+                                       or u.get('profile', {}).get('real_name', '').lower().lower() == user_to_search,
+                                       workspace_users))
             if users_filter:
                 break
             if not cursor:
@@ -189,21 +171,28 @@ def get_user_by_name(user_to_search: str, add_to_context: bool = True) -> dict:
 
         if users_filter:
             user = users_filter[0]
-            if add_to_context:
-                user_to_context = {
-                    'name': user.get('name'),
-                    'id': user.get('id'),
-                    'real_name': user.get('real_name', ''),
-                    'profile': {
-                        'email': user.get('profile', {}).get('email', '')
-                    }
-                }
+    if user:
+        user_to_context = {
+            'name': user.get('name'),
+            'id': user.get('id'),
+            'profile': {
+                'email': user.get('profile', {}).get('email'),
+                'real_name': user.get('profile', {}).get('real_name'),
+                'display_name': user.get('profile', {}).get('display_name'),
+            }
+        }
+        if add_to_context:
+            if integration_context.get('users'):
+                users = json.loads(integration_context['users'])
                 users.append(user_to_context)
-                set_to_integration_context_with_retries({'users': users}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
-        else:
-            return {}
 
-    return user
+            else:
+                users = [user_to_context]
+            set_to_integration_context_with_retries({'users': users}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+    if user_to_context:
+        return user_to_context
+    else:
+        return {}
 
 
 def search_slack_users(users: Union[list, str]) -> list:
@@ -300,10 +289,10 @@ def send_slack_request_sync(client: slack_sdk.WebClient, method: str, http_verb:
             else:
                 response = client.api_call(method, http_verb='GET', params=body)
         except SlackApiError as api_error:
-            demisto.debug(f'Got rate limit error (sync). Body is: {str(body)}\n{api_error}')
             response = api_error.response
             headers = response.headers  # type: ignore
             if 'Retry-After' in headers:
+                demisto.debug(f'Got rate limit error (sync). Body is: {str(body)}\n{api_error}')
                 retry_after = int(headers['Retry-After'])
                 total_try_time += retry_after
                 if total_try_time < MAX_LIMIT_TIME:
