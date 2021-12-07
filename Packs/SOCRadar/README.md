@@ -16,7 +16,6 @@ In addition to the incident management, this pack also provides an integration w
 - File SHA-1
 - File MD5
 
-Besides, SOCRadar Threat Feed module of this pack can be used to fetch indicators provided by SOCRadar Recommended Collections via SOCRadar Threat Intelligence Feeds.
 
 ## How to use it?
 You just need to install the pack and configure the SOCRadar integration instances in XSOAR. For the configuration phase you will need an active API key which can be obtained in the SOCRadar platform. For any further support and questions please feel free to contact with us via **operation@socradar.io**
