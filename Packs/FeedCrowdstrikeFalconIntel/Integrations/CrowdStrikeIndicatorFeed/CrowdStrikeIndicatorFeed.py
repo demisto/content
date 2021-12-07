@@ -408,7 +408,7 @@ def main() -> None:
     max_fetch = arg_to_number(params.get('max_indicator_to_fetch')) if params.get('max_indicator_to_fetch') else 10000
     max_fetch = min(max_fetch, 10000)
     feed_tags = argToList(params.get('feedTags'))
-    create_relationships = argToBoolean(params.get('create_relationships', True))
+    create_relationships = params.get('create_relationships', True)
 
     args = demisto.args()
 
