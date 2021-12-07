@@ -1095,8 +1095,7 @@ def test_eml_contains_attachment_with_unknown_encoded_file_name(mocker):
     """
     Given: An email containing an attachment with unknown encoded name.
     When: Parsing a valid email file with default parameters.
-    Then: Three entries will be returned to the war room. One containing the command results. Another
-          containing the empty file. The last contains the htm file.
+    Then: The file name is parsed as expected.
     """
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
     mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('MDG_Application.eml'))
