@@ -246,3 +246,6 @@ For additional information please visit: https://whatis.maltiverse.com/
   Please see https://maltiverse.com/plans for more information about the different plans.
 - URL command: When running the !url command, an URL may be followed by a '/' at the end. Maltiverse requires this 
   '/' but it might cause the indicator to not show in the war room. 
+
+#### Upload flow
+ - Test
