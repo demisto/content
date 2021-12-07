@@ -1,4 +1,6 @@
 {
+	"hidden": true,
+
     "name": "Microsoft 365 Defender",
     "description": "Microsoft 365 Defender is a unified pre- and post-breach enterprise defense suite that natively coordinates detection, prevention, investigation, and response across endpoints, identities, email, and applications to provide integrated protection against sophisticated attacks.",
     "support": "xsoar",
@@ -13,7 +15,11 @@
     "useCases": [],
     "keywords": [],
     "dependencies": {
+	"hidden": true,
+
         "EWS": {
+	"hidden": true,
+
             "mandatory": false,
             "display_name": "EWS"
         }
