@@ -6,7 +6,7 @@ import requests_mock
 from CommonServerPython import *
 from MicrosoftGraphMail import MsGraphClient, build_mail_object, assert_pages, build_folders_path, \
     add_second_to_str_date, list_mails_command, item_result_creator, create_attachment, reply_email_command, \
-    send_email_command
+    send_email_command, list_attachments_command
 from MicrosoftApiModule import MicrosoftClient
 import demistomock as demisto
 
@@ -418,6 +418,62 @@ def test_create_attachment(mocker, function_name, attachment_type):
     user_id = 'ex@example.com'
     create_attachment(raw_response, user_id)
     assert mocked_function.called
+
+
+@pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
+def test_list_attachments_with_name(mocker, client):
+    """
+    Given:
+        - list attachments command
+        - all attachments has a name
+
+    When:
+        - parsing email attachments
+
+    Then:
+        - Validate that the attachments are being parsed correctly
+
+    """
+    output_prefix = 'MSGraphMailAttachment(val.ID === obj.ID)'
+    with open('test_data/list_attachment_result') as attachment_result:
+        args = {"user_id": "example"}
+        raw_response = json.load(attachment_result)
+        mocker.patch.object(client, 'list_attachments', return_value=raw_response)
+        mocker.patch.object(demisto, 'results')
+        list_attachments_command(client, args)
+        context = demisto.results.call_args[0][0].get('EntryContext')
+
+        assert context.get(output_prefix).get('Attachment')[0].get('ID') == 'someID'
+        assert context.get(output_prefix).get('Attachment')[0].get('Name') == 'someName'
+        assert context.get(output_prefix).get('Attachment')[0].get('Type') == 'application/octet-stream'
+
+
+@pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
+def test_list_attachments_without_name(mocker, client):
+    """
+    Given:
+        - list attachments command
+        - there is an attachment without a name
+
+    When:
+        - parsing email attachments
+
+    Then:
+        - Validate that the attachments are being parsed correctly and the name is equal to the ID
+
+    """
+    output_prefix = 'MSGraphMailAttachment(val.ID === obj.ID)'
+    with open('test_data/list_attachment_result_no_name') as attachment_result:
+        args = {"user_id": "example"}
+        raw_response = json.load(attachment_result)
+        mocker.patch.object(client, 'list_attachments', return_value=raw_response)
+        mocker.patch.object(demisto, 'results')
+        list_attachments_command(client, args)
+        context = demisto.results.call_args[0][0].get('EntryContext')
+
+        assert context.get(output_prefix).get('Attachment')[0].get('ID') == 'someID'
+        assert context.get(output_prefix).get('Attachment')[0].get('Name') == 'someID'
+        assert context.get(output_prefix).get('Attachment')[0].get('Type') == 'application/octet-stream'
 
 
 @pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
