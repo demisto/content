@@ -1,13 +1,7 @@
 id: Detonate URL - Cuckoo
-version: 3
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: CuckooSandbox
-    itemVersion: 1.0.3
-    fromServerVersion: 5.0.0
-    toServerVersion: ""
-    definitionid: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Detonate URL - Cuckoo
 description: Detonating URL with Cuckoo
 starttaskid: "0"
@@ -328,19 +322,19 @@ inputs:
       accessor: Data
   required: false
   description: URL to detonate
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: interval
   value:
     simple: "1"
   required: false
   description: How often to poll for results
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: timeout
   value:
     simple: "10"
   required: false
   description: How long to wait before giving up waiting for results
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: Cuckoo.Task.Category
   description: Category of task
@@ -386,3 +380,6 @@ outputs:
   description: Reported score of the the task
 - contextPath: Cuckoo.Task.Monitor
   description: Monitor of the reported task
+tests:
+- CuckooTest
+fromversion: 5.0.0

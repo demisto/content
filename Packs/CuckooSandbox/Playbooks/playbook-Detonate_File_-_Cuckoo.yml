@@ -1,13 +1,7 @@
 id: Detonate File - Cuckoo
-version: 16
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: CuckooSandbox
-    itemVersion: 1.0.3
-    fromServerVersion: 5.0.0
-    toServerVersion: ""
-    definitionid: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Detonate File - Cuckoo
 description: Detonating file with Cuckoo
 starttaskid: "0"
@@ -362,19 +356,19 @@ inputs:
     simple: ${File}
   required: false
   description: The file to detonate
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: interval
   value:
     simple: "1"
   required: false
   description: How often to poll for results
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: timeout
   value:
     simple: "10"
   required: false
   description: How long to wait before giving up waiting for results
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: Cuckoo.Task.Category
   description: Category of task
@@ -440,3 +434,6 @@ outputs:
   description: File's MD5
 - contextPath: File.Extension
   description: File's Extension
+tests:
+- CuckooTest
+fromversion: 5.0.0
