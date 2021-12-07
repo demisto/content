@@ -8338,9 +8338,8 @@ def threads_dumper():
             if line:
                 code.append("  %s" % (line.strip()))
 
-    thread_dump_msg = '\n\n--- '\
-        + datetime.today().strftime('%Y-%m-%d-%H:%M:%S')\
-        + ' Start Threads Dump ---\n' + '\n'.join(code)\
+    thread_dump_msg = '\n\n--- Start Threads Dump ---\n'\
+        + '\n'.join(code)\
         + '\n\n--- End Threads Dump ---\n'
     demisto.info(thread_dump_msg)
 
