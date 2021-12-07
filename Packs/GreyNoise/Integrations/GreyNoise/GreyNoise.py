@@ -7,6 +7,7 @@ import traceback
 import requests
 import re
 import copy
+from distutils.version import StrictVersion
 from typing import Tuple, Dict, Any
 from greynoise import GreyNoise, exceptions, util  # type: ignore
 from greynoise.exceptions import RequestFailure, RateLimitError  # type: ignore
@@ -909,10 +910,13 @@ def main() -> None:
     :rtype:
     """
     # get pack version
-    response = demisto.internalHttpRequest("GET", "/contentpacks/metadata/installed")
-    packs = json.loads(response["body"])
+    if StrictVersion(demisto.demistoVersion()['version']) >= StrictVersion("6.1.0"):
+        response = demisto.internalHttpRequest("GET", "/contentpacks/metadata/installed")
+        packs = json.loads(response["body"])
+    else:
+        packs = []
 
-    pack_version = "1.1.0"
+    pack_version = "1.1.1"
     for pack in packs:
         if pack["name"] == "GreyNoise":
             pack_version = pack["currentVersion"]
