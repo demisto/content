@@ -1819,6 +1819,8 @@ def long_running_execution_command(client: Client, params: Dict):
             print_debug_msg(
                 f'Error while reseting mirroring variables, retring. Error details: {str(e)} \n'
                 f'{traceback.format_exc()}')
+            demisto.info('Exception when calling reset_mirroring_events_variables')
+            raise e
 
     while True:
         try:
@@ -3088,7 +3090,11 @@ def json_loads_inner(json_dumps_list: List[str]) -> list:
     """
     python_object_list = []
     for json_dump in json_dumps_list:
-        python_object_list.append(json.loads(json_dump))
+        try:
+            python_object_list.append(json.loads(json_dump))
+        except Exception as e:
+            demisto.info(f'Exception {e} when trying to json parse {json_dump}, as part of {json_dumps_list}')
+            raise e
 
     return python_object_list
 
@@ -3458,6 +3464,7 @@ def change_ctx_to_be_compatible_with_retry() -> None:
 
     if not extract_works:
         cleared_ctx = clear_integration_ctx(new_ctx)
+        print_debug_msg(f"Change ctx context data was cleared and changing to {cleared_ctx}")
         set_integration_context(cleared_ctx)
         print_debug_msg(f"Change ctx context data was cleared and changed to {cleared_ctx}")
 
