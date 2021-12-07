@@ -4718,6 +4718,17 @@
             "timeout": 2400
         },
         {
+            "integrations": [
+                "CrowdStrike Indicator Feed",
+                "Demisto REST API"
+            ],
+            "playbookID": "Fetch Indicators Test",
+            "fromversion": "6.0.0",
+            "is_mockable": false,
+            "instance_names": "CrowdStrike_feed_instance",
+            "timeout": 2400
+        },
+        {
             "playbookID": "Get Original Email - Microsoft Graph Mail - test",
             "fromversion": "6.1.0",
             "integrations": [
@@ -4876,12 +4887,18 @@
         "Tenable.io Scan Test": "Issue 26728",
         "Zscaler Test": "Issue 40157, API subscription currently Expired",
         "Cisco Firepower - Test": "Issue 32412",
-        "cisco-ise-test-playbook": "Issue 44351"
+        "cisco-ise-test-playbook": "Issue 44351",
+        "GuardiCoreV2-Test": "Issue 43822",
+        "LogRhythm REST test": "Issue 40654",
+        "Tanium Threat Response V2 Test": "Issue 44201",
+        "ExtractAttackPattern-Test": "Issue 44095",
+        "NetscoutAED-Test": "Issue 44455"
     },
     "skipped_integrations": {
         "AutoFocus V2": "Issue 26464",
         "AutoFocus Daily Feed": "Issue 26464",
         "AutoFocus Feed": "Issue 26464",
+        
         "_comment1": "~~~ NO INSTANCE ~~~",
         "Ipstack": "Usage limit reached (Issue 38063)",
         "AnsibleAlibabaCloud": "No instance - issue 40447",
