@@ -1112,7 +1112,6 @@ Get runtime forensics data for a specific container on a specific host
 | collections | Collections are collections scoping the query. | Optional | 
 | hostname | Hostname is the hostname for which data should be fetched. | Required | 
 | incident_id | IncidentID is the incident ID in case the request kind is an incident. | Optional | 
-| event_time | EventTime is the forensic event pivot time in milliseconds (used to fetch events). | Optional | 
 | limit | maximum of forensics data records to return. Default is 20. | Optional | 
 | offset | The offset number to begin listing records from . Default is 0. | Optional | 
 
@@ -1191,7 +1190,6 @@ Get forensics on a specific host
 | id | host ID. | Required | 
 | collections | Collections are collections scoping the query. | Optional | 
 | incident_id | IncidentID is the incident ID in case the request kind is an incident. | Optional | 
-| eventTime | EventTime is the forensic event pivot time in milliseconds (used to fetch events). | Optional | 
 | limit | maximum of forensics data records to return. Default is 20. | Optional | 
 | offset | The offset number to begin listing host forensics from . Default is 0. | Optional | 
 
@@ -1227,7 +1225,7 @@ Get forensics on a specific host
 
 #### Human Readable Output
 ### Host forensics report
-|type|app|path|command|
+|Type|App|Path|Command|
 |---|---|---|---|
 | Process spawned | demisto | /usr/bin/docker | docker ps -a |
 | Process spawned | demisto | /usr/bin/docker | docker ps -a |

@@ -65,7 +65,7 @@ script:
   type: python
   commands:
   - name: prisma-cloud-compute-profile-host-list
-    description: Get information about the hosts and their profile events.
+    description: Get information about the hosts and their profile events, this command supports asterisks which allows you to get host profiles that contain a specific substring
     deprecated: false
     arguments:
     - name: cluster
@@ -74,12 +74,12 @@ script:
       isArray: false
       defaultValue: ""
     - name: hostname
-      description: Hosts is the runtime profile hostname filter
+      description: Hosts is the runtime profile hostname filter, semi comma separated values, for example !prisma-cloud-compute-profile-host-list hostname="*149*,*257*"
       required: false
       isArray: true
       defaultValue: ""
     - name: limit
-      description: The maximum number of hosts and their profile events to return
+      description: The maximum number of hosts and their profile events to return, must be between 1-50.
       required: false
       isArray: false
       defaultValue: "15"
@@ -121,7 +121,7 @@ script:
       description: geoip is the list of countries
       type: Unknown
   - name: prisma-cloud-compute-profile-container-list
-    description: Get information about the containers and their profile events.
+    description: Get information about the containers and their profile events, this command supports asterisks which allows you to get container profiles that contain a specific substring
     deprecated: false
     arguments:
     - name: cluster
@@ -130,37 +130,37 @@ script:
       isArray: true
       defaultValue: ""
     - name: id
-      description: IDs is the runtime profile id filter
+      description: IDs is the runtime profile id filter, semi comma separated values, for example !prisma-cloud-compute-profile-container-list id="*256*,*148*"
       required: false
       isArray: true
       defaultValue: ""
     - name: image
-      description: Images is the runtime profile image filter
+      description: Images is the runtime profile image filter, semi comma separated values, for example !prisma-cloud-compute-profile-container-list image="*console*,*defender*"
       required: false
       isArray: true
       defaultValue: ""
     - name: image_id
-      description: ImageIDs is the runtime profile image id filter
+      description: ImageIDs is the runtime profile image id filter, semi comma separated values, for example !prisma-cloud-compute-profile-container-list image_id="*123*,*456*"
       required: false
       isArray: true
       defaultValue: ""
     - name: namespace
-      description: Namespaces is the runtime profile k8s namespace filter
+      description: Namespaces is the runtime profile k8s namespace filter, semi comma separated values, for example !prisma-cloud-compute-profile-container-list namespace="*namespace1*,*namespace2*"
       required: false
-      isArray: false
+      isArray: true
       defaultValue: ""
     - name: os
-      description: OS is the service runtime profile OS filter
+      description: OS is the service runtime profile OS filter, semi comma separated values, for example !prisma-cloud-compute-profile-container-list os="*Red Hat*,*Windows*"
       required: false
       isArray: true
       defaultValue: ""
     - name: state
-      description: States is the runtime profile state filter
+      description: States is the runtime profile state filter, semi comma separated values, for example !prisma-cloud-compute-profile-container-list state=*active*
       required: false
       isArray: true
       defaultValue: ""
     - name: limit
-      description: The maximum number of containers and their profile events
+      description: The maximum number of containers and their profile events, must be between 1-50.
       required: false
       isArray: false
       defaultValue: "15"
@@ -272,7 +272,7 @@ script:
       isArray: false
       defaultValue: ""
     - name: limit
-      description: The maximum number of hosts to return.
+      description: The maximum number of hosts to return, must be between 1-50.
       required: false
       isArray: false
       defaultValue: "50"
@@ -313,14 +313,8 @@ script:
       required: false
       isArray: true
       defaultValue: ""
-    - name: eventTime
-      description: EventTime is the forensic event pivot time in milliseconds (used
-        to fetch events)
-      required: false
-      isArray: false
-      defaultValue: ""
     - name: limit
-      description: maximum of forensics data records to return
+      description: maximum of forensics data records to return, must be between 1-50.
       required: false
       isArray: false
       defaultValue: "20"
@@ -428,14 +422,8 @@ script:
       required: false
       isArray: true
       defaultValue: ""
-    - name: event_time
-      description: EventTime is the forensic event pivot time in milliseconds (used
-        to fetch events)
-      required: false
-      isArray: false
-      defaultValue: ""
     - name: limit
-      description: maximum of forensics data records to return
+      description: maximum of forensics data records to return, must be between 1-50.
       required: false
       isArray: false
       defaultValue: "20"
@@ -535,7 +523,7 @@ script:
     deprecated: false
     arguments:
     - name: ip
-      description: List of custom ips to add to the banned IPs list that will be blocked.
+      description: List of custom ips to add to the banned IPs list that will be blocked, for example ip=1.1.1.1,2.2.2.2
       required: true
       isArray: true
       defaultValue: ""
