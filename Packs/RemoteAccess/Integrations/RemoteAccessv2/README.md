@@ -1,7 +1,7 @@
-File transfer between Cortex XSOAR to remote machine, and execution of commands on remote machine
+File transfer between Cortex XSOAR to a remote machine, and execution of commands on the remote machine.
 
 Some changes have been made that might affect your existing content. 
-If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-remoteaccess-v2).
+If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration---remoteaccess-v2).
 
 ## Configure RemoteAccess v2 on Cortex XSOAR
 
@@ -11,12 +11,12 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Default Hostname Or IP Address |  | True |
+    | Default Hostname or IP Address |  | True |
     | User | For example, "root". | False |
     | Password |  | False |
-    | Additional Password | Will require additional password as an argument to run any command of this module. | False |
-    | Ciphers | Comma separated list of ciphers to be used. Will return error with the supported ciphers by server if none of given ciphers were agreed by server. | False |
-    | Key Algorithms | Comma separated list of key algorithms to be used. Will return error with the supported key algorithms by server if none of given key algorithms were agreed by server. | False |
+    | Additional Password | Will require an additional password as an argument to run any command of this module. | False |
+    | Ciphers | A comma-separated list of ciphers to use. If none of the specified ciphers are agreed to by the server, an error message specifying the supported ciphers is returned. | False |
+    | Key Algorithms | A comma-separated list of key algorithms to use. If none of the specified key algorithms are agreed to by the server, an error specifying the supported key algorithms is returned. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -24,7 +24,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### remote-access-ssh
 ***
-Run command on remote system with ssh
+Run the specified command on the remote system with SSH.
 
 
 #### Base Command
@@ -34,18 +34,18 @@ Run command on remote system with ssh
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| command | Command to run on remote machine. | Required | 
-| additional_password | Password. Required to match the parameter Additional Password if was supplied in order to run the command. | Optional | 
+| command | Command to run on the remote machine. | Required | 
+| additional_password | Password. Required to match the Additional Password parameter if it was supplied in order to run the command. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| RemoteAccess.Command.output | String | STD output of the given command. | 
-| RemoteAccess.Command.error | String | STD error output of the given command. | 
-| RemoteAccess.Command.success | Boolean | Whether operation have been successful. | 
-| RemoteAccess.Command.command | String | Command that have been ran. | 
+| RemoteAccess.Command.output | String | Standard output of the specified command. | 
+| RemoteAccess.Command.error | String | Standard error output of the specified command. | 
+| RemoteAccess.Command.success | Boolean | Whether the operation was successful. | 
+| RemoteAccess.Command.command | String | Command that was run. | 
 
 
 #### Command Example
@@ -77,7 +77,8 @@ Run command on remote system with ssh
 
 ### remote-access-copy-to
 ***
-Run command on remote system with ssh
+Copies the given file from Cortex XSOAR to the remote machine.
+
 
 
 #### Base Command
@@ -87,9 +88,9 @@ Run command on remote system with ssh
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entry_id | Entry ID of the file to be copied from Cortex XSOAR to remote machine. | Required | 
-| destination_path | Destination of the path of the copied file in the remote machine. Defaults to the `entry_id` file path if not given. | Optional | 
-| additional_password | Password. Required to match the parameter Additional Password if was supplied in order to run the command. | Optional | 
+| entry_id | Entry ID of the file to be copied from Cortex XSOAR to the remote machine. | Required | 
+| destination_path | Destination of the path of the copied file in the remote machine. Defaults to the `entry_id` file path if not specified. | Optional | 
+| additional_password | Password. Required to match the Additional Password parameter if it was supplied in order to run the command. | Optional | 
 
 
 #### Context Output
@@ -105,7 +106,7 @@ There is no context output for this command.
 
 ### remote-access-copy-from
 ***
-Run command on remote system with ssh
+Copies the given file from the remote machine to Cortex XSOAR.
 
 
 #### Base Command
@@ -115,9 +116,9 @@ Run command on remote system with ssh
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file_path | Path of the file in remote machine to be copied to Cortex XSOAR. | Required | 
-| file_name | Name of the file to be saved in Cortex XSOAR. Defaults to the file name in `file_path` if not given. E.g, if `file_path` is "a/b/c.txt", the file name will be c.txt. | Optional | 
-| additional_password | Password. Required to match the parameter Additional Password if was supplied in order to run the command. | Optional | 
+| file_path | Path of the file in the remote machine to be copied to Cortex XSOAR. | Required | 
+| file_name | Name of the file to be copied to Cortex XSOAR. Defaults to the file name in `file_path` if not specified. For example, if `file_path` is "a/b/c.txt", the file name will be c.txt. | Optional | 
+| additional_password | Password. Required to match the Additional Password parameter if it was supplied in order to run the command. | Optional | 
 
 
 #### Context Output
@@ -162,11 +163,11 @@ Run command on remote system with ssh
 
 
 ## Breaking changes from the previous version of this integration - RemoteAccess v2
-- Stopped support of `Interactive terminal mode` instance parameter.
-- Stopped support of `Terminal Type` instance parameter.
+- Removed the *Interactive terminal mode* instance parameter.
+- Removed the *Terminal Type* instance parameter.
 
 ### Commands
-#### #### The following command names were changed in this version
+#### The following command names were changed in this version
 | Remote Access Command Name | Remote Access v2 Command Name |
 | --- | --- |
 | ssh | remote-access-ssh |
@@ -174,26 +175,26 @@ Run command on remote system with ssh
 | copy-from | remote-access-copy-from |
 
 ### Arguments
-#### #### The following argument names were changed, added or removed in this version
+#### The following argument names were changed, added, or removed in this version
 | Remote Access Command Name | Old Command Argument Name | Remote Access v2 Command Argument Name | New Command Name |
 | --- | --- | --- | --- |
 | ssh | cmd | remote-access-ssh | command |
-| ssh | timeout | remote-access-ssh | **Argument have been removed** |
-| ssh | system | remote-access-ssh | **Argument have been removed** |
+| ssh | timeout | remote-access-ssh | **Argument was removed** |
+| ssh | system | remote-access-ssh | **Argument was removed** |
 | copy-to | dest-dir | remote-access-copy-to | destination_path |
 | copy-to | entry | remote-access-copy-to | entry_id |
-| copy-to | timeout | remote-access-copy-to | **Argument have been removed** |
-| copy-to | system | remote-access-copy-to | **Argument have been removed** |
-| copy-to | fileID | remote-access-copy-to | **Argument have been removed** |
-| copy-to | system | remote-access-copy-to | **Argument have been removed** |
+| copy-to | timeout | remote-access-copy-to | **Argument was removed** |
+| copy-to | system | remote-access-copy-to | **Argument was removed** |
+| copy-to | fileID | remote-access-copy-to | **Argument was removed** |
+| copy-to | system | remote-access-copy-to | **Argument was removed** |
 | copy-from | file | remote-access-copy-from | file_path |
 | copy-from | **Argument did not exist** | remote-access-copy-from | file_name |
-| copy-from | timeout | remote-access-copy-from | **Argument have been removed** |
-| copy-from | system | remote-access-copy-from | **Argument have been removed** |
+| copy-from | timeout | remote-access-copy-from | **Argument was removed** |
+| copy-from | system | remote-access-copy-from | **Argument was removed** |
 
 ### Outputs
 #### The following outputs were removed in this version:
 | Remote Access Command Name | Old Command Outputs | Remote Access v2 Command Name | New Command Outputs |
 | --- | --- | --- | --- |
-| ssh | Command outputs outputted the command, stdout, stderr, the remote machine IP, and success status. | remote-access-ssh | Outputs the stdout and stderr only. |
+| ssh | Command outputs were: <br /> - command<br /> - stdout<br /> -  stderr<br /> - remote machine IP<br /> - success status | remote-access-ssh | Outputs: <br /> - stdout<br /> - stderr  |
 
