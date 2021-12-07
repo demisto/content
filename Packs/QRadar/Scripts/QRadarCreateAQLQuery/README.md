@@ -14,20 +14,20 @@ Build QRadar AQL Query. (Available from Cortex XSOAR 6.0.0).
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| base_values_to_search | The values of the first field to search. This can be a single value or a list of comma delimited values. For example admin1,admin2 |
-| base_fields_to_search | The field names of the first field to search. This can be a single value or a list of comma delimited values. For example admin1,admin2 |
-| base_field_state | The state of the second field to search, meaning are the values in the field should be included or excluded. Valid options are include or exclude. |
-| base_field_match | Are the values of the second field suppose to be exact match or partial match. Valid options are exact or partial. |
-| select_fields | The list of fields to select within the AQL query The default fields are DATEFORMAT\(devicetime,'dd-MM-yyyy hh:mm'\),LOGSOURCENAME\(logsourceid\),CATEGORYNAME\(category\),QIDNAME\(qid\),sourceip,destinationip,username |
-| time_frame | Time frame as used in AQL Examples can be LAST 7 DAYS START '2019-09-25 15:51' STOP '2019-09-25 17:51' For more examples review IBM's AQL documentation. |
-| first_additional_values | The values of the second field to search. This can be a single value or a list of comma delimited values. For example admin1,admin2 |
-| first_additional_fields | The field names of the second field to search. This can be a single value or a list of comma delimited values. For example admin1,admin2 |
-| first_additional_field_state | The state of the second field to search, meaning are the values in the field should be included or excluded. Valid options are include or exclude. |
-| first_additional_field_match | Are the values of the second field suppose to be exact match or partial match. Valid options are exact or partial. |
-| second_additional_values | The values of the third field to search. This can be a single value or a list of comma delimited values. For example admin1,admin2 |
-| second_additional_fields | The field names of the third field to search. This can be a single value or a list of comma delimited values. For example username,user |
-| second_additional_field_state | The state of the third field to search, meaning are the values in the field should be included or excluded. Valid options are include or exclude. |
-| second_additional_field_match | Are the values of the third field suppose to be exact match or partial match. Valid options are exact or partial. When choosing exact the AQL query will use the = operator. When choosing partial the AQL query will ILIKE and add '%%' to the values. |
+| base_values_to_search | The values of the first field to search. This can be a single value or a comma-separated list of values. For example admin1,admin2. |
+| base_fields_to_search | The field names of the first field to search. This can be a single value or a comma-separated list of values. For example admin1,admin2. |
+| base_field_state | The state of the second field to search, meaning whether the values in the field should be included or excluded. Valid options are include or exclude. |
+| base_field_match | Whether the values of the second field should be an exact match or a partial match. Valid options are exact or partial. |
+| select_fields | The list of fields to select within the AQL query. The default fields are DATEFORMAT\(devicetime,'dd-MM-yyyy hh:mm'\),LOGSOURCENAME\(logsourceid\),CATEGORYNAME\(category\),QIDNAME\(qid\),sourceip,destinationip,username |
+| time_frame | Time frame as used in AQL examples can be LAST 7 DAYS START '2019-09-25 15:51' STOP '2019-09-25 17:51'. For more examples, view IBM's AQL documentation. |
+| first_additional_values | The values of the second field to search. This can be a single value or a comma-separated list of values. For example admin1,admin2. |
+| first_additional_fields | The field names of the second field to search. This can be a single value or a comma-separated list of values. For example admin1,admin2. |
+| first_additional_field_state | The state of the second field to search, meaning whether the values in the field should be included or excluded. Valid options are include or exclude. |
+| first_additional_field_match | Whether the values of the second field should be an exact match or a partial match. Valid options are exact or partial. |
+| second_additional_values | The values of the third field to search. This can be a single value or a comma-separated list of values. For example admin1,admin2 |
+| second_additional_fields | The field names of the third field to search. This can be a single value or a comma-separated list of values. For example username,user |
+| second_additional_field_state | The state of the third field to search, meaning whether the values in the field should be included or excluded. Valid options are include or exclude. |
+| second_additional_field_match | Whether the values of the third field should be an exact match or a partial match. Valid options are exact or partial. When choosing exact, the AQL query will use the = operator. When choosing partial, the AQL query will use ILIKE and add '%%' to the values. |
 
 ## Outputs
 ---
