@@ -1,13 +1,7 @@
 id: CuckooTest
-version: 22
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    itemVersion: 1.0.3
-    fromServerVersion: 5.0.0
-    toServerVersion: ""
-    definitionid: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: CuckooTest
 description: '-'
 starttaskid: "0"
@@ -369,6 +363,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -439,3 +434,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0
