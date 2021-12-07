@@ -1,13 +1,11 @@
 comment: Entry widget that returns the number of port based rules found by PAN-OS
   policy optimizer.
 commonfields:
-  id: 69dd3f27-c074-4507-89d0-40ea26a8e8eb
+  id: EntryWidgetPortBasedRules
   version: -1
 dockerimage: demisto/python3:3.9.7.24076
 enabled: true
-engineinfo: {}
 name: EntryWidgetPortBasedRules
-pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: |2
@@ -49,3 +47,6 @@ subtype: python3
 tags:
 - dynamic-section
 type: python
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

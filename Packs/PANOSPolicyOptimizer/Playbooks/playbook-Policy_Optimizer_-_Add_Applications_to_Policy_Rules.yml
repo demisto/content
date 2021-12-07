@@ -1,6 +1,5 @@
-id: 94edd630-6eec-4775-8fd0-0f46b117fa37
-version: 11
-vcShouldKeepItemLegacyProdMachine: false
+id: Policy Optimizer - Add Applications to Policy Rules
+version: -1
 name: Policy Optimizer - Add Applications to Policy Rules
 description: |-
   This playbook is used in the PAN-OS - Policy Optimizer playbooks to edit rules with unused applications or rules that are port based, and add an application to the rule.
@@ -17,6 +16,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -100,14 +100,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
+      to:
+      subject:
       body:
         simple: Choose a policy rule and an application to add to the rule
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -257,6 +257,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -374,8 +375,11 @@ inputs:
   value: {}
   required: false
   description: PAN-OS rules to edit using the playbook.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: RulesToEdit
   description: Policy rules to edit using the playbook.
   type: string
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

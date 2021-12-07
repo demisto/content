@@ -1,6 +1,5 @@
-id: e4bb6818-5ef2-4c89-88c6-2e1be6b15ee6
-version: 18
-vcShouldKeepItemLegacyProdMachine: false
+id: Policy Optimizer - Generic
+version: -1
 name: Policy Optimizer - Generic
 description: |-
   This playbook is triggered by the PAN-OS Policy Optimizer incident type, and can go through any of the following sub-playbooks:
@@ -19,6 +18,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -49,6 +49,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -94,6 +95,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -182,6 +184,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -297,6 +300,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -384,16 +388,19 @@ inputs:
   value: {}
   required: false
   description: Slack user to notify about unused rules.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: email_address
   value: {}
   required: false
   description: Email address user to notify about unused rules.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: auto_commit
   value: {}
   required: false
   description: Specify whether you want to auto-commit the configuration for the PAN-OS
     policy changes automatically (Yes/No).
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

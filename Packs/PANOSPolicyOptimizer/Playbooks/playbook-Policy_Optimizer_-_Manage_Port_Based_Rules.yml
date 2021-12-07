@@ -1,6 +1,5 @@
-id: 9113197b-31ca-4b85-8c8d-e4ee123e1137
-version: 21
-vcShouldKeepItemLegacyProdMachine: false
+id: Policy Optimizer - Manage Port Based Rules
+version: -1
 name: Policy Optimizer - Manage Port Based Rules
 description: |
   Migrate port-based rules to application-based allow rules to reduce the attack surface and safely enable applications on your network.
@@ -16,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -84,6 +84,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -110,6 +111,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -224,6 +226,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -334,6 +337,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "13"
@@ -370,8 +374,8 @@ tasks:
       - "10"
     scriptarguments:
       subject:
-        simple: "PAN-OS Policy Optimizer has discovered port based rules in your environment.
-          \nView them here ->"
+        simple: "PAN-OS Policy Optimizer has discovered port based rules in your environment.\
+          \ \nView them here ->"
       to:
         complex:
           root: inputs.email_address
@@ -722,6 +726,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "19"
@@ -883,17 +888,19 @@ inputs:
   value: {}
   required: false
   description: Slack user to notify about port based rules.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: email_address
   value: {}
   required: false
   description: Email address user to notify about port based rules.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: auto_commit
   value: {}
   required: false
   description: Specify whether you want to auto-commit the configuration for the PAN-OS
     policy changes automatically (Yes/No).
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
-sourceplaybookid: c3a9fd8d-95e7-4e56-8a6d-4567533ba59d
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

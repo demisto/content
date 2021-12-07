@@ -73,7 +73,8 @@ script:
   - arguments:
     - default: false
       defaultValue: '30'
-      description: The time frame in days for which to show the unused rules. Default is 30.
+      description: The time frame in days for which to show the unused rules. Default
+        is 30.
       isArray: false
       name: timeframe
       required: false
@@ -92,12 +93,14 @@ script:
       secret: false
     - default: false
       defaultValue: 'false'
-      description: Whether to exclude rules reset during the last x days, where x is the value defined in the timeframe argument. It will not exclude rules by default.
+      description: Whether to exclude rules reset during the last x days, where x
+        is the value defined in the timeframe argument. It will not exclude rules
+        by default.
       isArray: false
       name: exclude
       predefined:
-        - 'false'
-        - 'true'
+      - 'false'
+      - 'true'
       required: false
       secret: false
     deprecated: false
