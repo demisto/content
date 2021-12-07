@@ -51,14 +51,14 @@ def logout(si):
     Disconnect(si)
 
 
-def get_vm(uuid):
+def get_vm(si, uuid):
     vm = si.content.searchIndex.FindByUuid(None, uuid, True, True)  # type: ignore
     if vm is None:
         raise SystemExit('Unable to locate Virtual Machine.')
     return vm
 
 
-def get_tag(args):
+def get_tag(vsphere_client, args):
     relevant_category = None
     relevant_tag = None
     categories = vsphere_client.tagging.Category.list()
@@ -154,7 +154,7 @@ def get_priority(priority):
         return vim.VirtualMachine.MovePriority().defaultPriority
 
 
-def get_vms(args):
+def get_vms(si, args):
     data = []
     content = si.RetrieveContent()  # type: ignore
     container = content.rootFolder
@@ -288,7 +288,7 @@ def suspend(uuid):
         raise SystemExit('Error occured while trying to power on Virtual Machine.')
 
 
-def hard_reboot(uuid):
+def hard_reboot(si, uuid):
     vm = get_vm(uuid)
     task = vm.ResetVM_Task()
     wait_for_tasks(si, [task])
@@ -404,7 +404,7 @@ def get_snapshots(snapshots, snapname):
     return snapObj
 
 
-def get_events(args):
+def get_events(si, args):
     vm = get_vm(args.get('uuid'))
     hr = []
     content = si.RetrieveServiceContent()  # type: ignore
@@ -436,7 +436,7 @@ def get_events(args):
     }
 
 
-def change_nic_state(args):
+def change_nic_state(si, args):
     uuid = args['vm-uuid']
     new_nic_state = args['nic-state']
     nic_number = args['nic-number']
@@ -498,11 +498,11 @@ def change_nic_state(args):
         raise SystemExit('Error occurred while trying to clone VM.')
 
 
-def list_vm_tags(uuid):
+def list_vm_tags(vsphere_client, uuid):
     dynamic_id = DynamicID(type='VirtualMachine', id=uuid)
     categories = vsphere_client.tagging.Category.list()
     x = vsphere_client.tagging.Category.get(categories[0])
-    # test = vsphere_client.tagging.TagAssociation.list_attached_tags(dynamic_id)
+    test = vsphere_client.tagging.TagAssociation.list_attached_tags(dynamic_id)
     tags = vsphere_client.tagging.Tag.list()
     tag = vsphere_client.tagging.Tag.get(tags[0])
     y = vsphere_client.tagging.TagAssociation.list_attached_objects(tag.id)
@@ -511,7 +511,7 @@ def list_vm_tags(uuid):
     x = 2
 
 
-def add_tag(args):
+def add_tag(vsphere_client, args):
     dynamic_id = DynamicID(type='VirtualMachine', id=args.get('uuid'))
     relevant_tag = get_tag(args)
     vsphere_client.tagging.TagAssociation.attach(relevant_tag, dynamic_id)
@@ -525,7 +525,7 @@ def add_tag(args):
     }
 
 
-def list_vms_by_tag(args):
+def list_vms_by_tag(vsphere_client, args):
     relevant_tag = get_tag(args)
     vms = vsphere_client.tagging.TagAssociation.list_attached_objects(relevant_tag)
     vms = filter(lambda vm: vm.type == 'VirtualMachine', vms)
@@ -550,7 +550,7 @@ def list_vms_by_tag(args):
     }
 
 
-def create_vm(args):
+def create_vm(si, args):
     content = si.RetrieveContent()
     folder = search_for_obj(content, [vim.Folder], args.get('folder'))
     host = search_for_obj(content, [vim.HostSystem], args.get('host'))
@@ -600,7 +600,7 @@ def create_vm(args):
         raise SystemExit('Error occurred while trying to create a VM.')
 
 
-def clone_vm(args):
+def clone_vm(si, args):
     vm = get_vm(args.get('uuid'))
     content = si.RetrieveContent()
     spec = vim.vm.CloneSpec()
@@ -656,7 +656,7 @@ def clone_vm(args):
         raise SystemExit('Error occurred while trying to clone VM.')
 
 
-def relocate_vm(args):
+def relocate_vm(si, args):
     content = si.RetrieveContent()
     vm = get_vm(args.get('uuid'))
 
@@ -687,7 +687,7 @@ def relocate_vm(args):
         raise SystemExit('Error occurred while trying to relocate VM.')
 
 
-def delete_vm(args):
+def delete_vm(si, args):
     vm = get_vm(args.get('uuid'))
     task = vm.Destroy_Task()
     wait_for_tasks(si, [task])
@@ -711,7 +711,7 @@ def delete_vm(args):
         raise SystemExit('Error occurred while trying to delete VM.')
 
 
-def register_vm(args):
+def register_vm(si, args):
     content = si.RetrieveContent()
     folder = search_for_obj(content, [vim.Folder], args.get('folder'))
     host = search_for_obj(content, [vim.HostSystem], args.get('host'))
@@ -746,65 +746,70 @@ def unregister_vm(args):
     }
 
 
-sout = sys.stdout
-sys.stdout = StringIO()
-res = []
-si = None
-vsphere_client = None
-try:
+def main():
+    sout = sys.stdout
+    sys.stdout = StringIO()
+    res = []
+    si = None
+    vsphere_client = None
+    try:
 
-    si, vsphere_client = login()
+        si, vsphere_client = login()
 
-    if demisto.command() == 'test-module':
-        result = 'ok'
-    if demisto.command() == 'vmware-get-vms':
-        result = get_vms(demisto.args())
-    if demisto.command() == 'vmware-poweron':
-        result = power_on(demisto.args()['vm-uuid'])
-    if demisto.command() == 'vmware-poweroff':
-        result = power_off(demisto.args()['vm-uuid'])
-    if demisto.command() == 'vmware-hard-reboot':
-        result = hard_reboot(demisto.args()['vm-uuid'])
-    if demisto.command() == 'vmware-suspend':
-        result = suspend(demisto.args()['vm-uuid'])
-    if demisto.command() == 'vmware-soft-reboot':
-        result = soft_reboot(demisto.args()['vm-uuid'])
-    if demisto.command() == 'vmware-create-snapshot':
-        result = create_snapshot(demisto.args())
-    if demisto.command() == 'vmware-revert-snapshot':
-        result = revert_snapshot(demisto.args()['snapshot-name'], demisto.args()['vm-uuid'])
-    if demisto.command() == 'vmware-get-events':
-        result = get_events(demisto.args())
-    if demisto.command() == 'vmware-change-nic-state':
-        result = change_nic_state(demisto.args())
-    if demisto.command() == 'vmware-list-vm-tags':
-        result = list_vm_tags(demisto.args()['uuid'])
-    if demisto.command() == 'vmware-add-tag':
-        result = add_tag(demisto.args())
-    if demisto.command() == 'vmware-list-vms-by-tag':
-        result = list_vms_by_tag(demisto.args())
-    if demisto.command() == 'vmware-create-vm':
-        result = create_vm(demisto.args())
-    if demisto.command() == 'vmware-clone-vm':
-        result = clone_vm(demisto.args())
-    if demisto.command() == 'vmware-relocate-vm':
-        result = relocate_vm(demisto.args())
-    if demisto.command() == 'vmware-delete-vm':
-        result = delete_vm(demisto.args())
-    if demisto.command() == 'vmware-register-vm':
-        result = register_vm(demisto.args())
-    if demisto.command() == 'vmware-unregister-vm':
-        result = unregister_vm(demisto.args())
-    res.append(result)
-except Exception as ex:
-    res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": str(ex)})  # type: ignore
+        if demisto.command() == 'test-module':
+            result = 'ok'
+        if demisto.command() == 'vmware-get-vms':
+            result = get_vms(si, demisto.args())
+        if demisto.command() == 'vmware-poweron':
+            result = power_on(demisto.args()['vm-uuid'])
+        if demisto.command() == 'vmware-poweroff':
+            result = power_off(demisto.args()['vm-uuid'])
+        if demisto.command() == 'vmware-hard-reboot':
+            result = hard_reboot(si, demisto.args()['vm-uuid'])
+        if demisto.command() == 'vmware-suspend':
+            result = suspend(demisto.args()['vm-uuid'])
+        if demisto.command() == 'vmware-soft-reboot':
+            result = soft_reboot(demisto.args()['vm-uuid'])
+        if demisto.command() == 'vmware-create-snapshot':
+            result = create_snapshot(demisto.args())
+        if demisto.command() == 'vmware-revert-snapshot':
+            result = revert_snapshot(demisto.args()['snapshot-name'], demisto.args()['vm-uuid'])
+        if demisto.command() == 'vmware-get-events':
+            result = get_events(si, demisto.args())
+        if demisto.command() == 'vmware-change-nic-state':
+            result = change_nic_state(si, demisto.args())
+        if demisto.command() == 'vmware-list-vm-tags':
+            result = list_vm_tags(vsphere_client, demisto.args()['uuid'])
+        if demisto.command() == 'vmware-add-tag':
+            result = add_tag(vsphere_client, demisto.args())
+        if demisto.command() == 'vmware-list-vms-by-tag':
+            result = list_vms_by_tag(vsphere_client, demisto.args())
+        if demisto.command() == 'vmware-create-vm':
+            result = create_vm(si, demisto.args())
+        if demisto.command() == 'vmware-clone-vm':
+            result = clone_vm(si, demisto.args())
+        if demisto.command() == 'vmware-relocate-vm':
+            result = relocate_vm(si, demisto.args())
+        if demisto.command() == 'vmware-delete-vm':
+            result = delete_vm(si, demisto.args())
+        if demisto.command() == 'vmware-register-vm':
+            result = register_vm(si, demisto.args())
+        if demisto.command() == 'vmware-unregister-vm':
+            result = unregister_vm(demisto.args())
+        res.append(result)
+    except Exception as ex:
+        res.append(
+            {"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": str(ex)})  # type: ignore
 
-try:
-    logout(si)
-except Exception as ex:
-    res.append({  # type: ignore
-        "Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": "Logout failed. " + str(ex)})
+    try:
+        logout(si)
+    except Exception as ex:
+        res.append({  # type: ignore
+            "Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": "Logout failed. " + str(ex)})
 
-sys.stdout = sout
-demisto.results(res)
-sys.exit(0)
+    sys.stdout = sout
+    demisto.results(res)
+
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()
