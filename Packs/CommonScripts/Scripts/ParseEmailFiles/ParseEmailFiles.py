@@ -1,3 +1,4 @@
+from typing import *  # noqa: F401
 #!/usr/bin/env python2
 # coding=utf-8
 # PEP0263  https://www.python.org/dev/peps/pep-0263/
@@ -3582,6 +3583,9 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
         html = ''
         text = ''
         attachment_names = []
+        attachment_content_ids = []
+        attachment_content_dispositions = []
+        attachment_internal_path = []
 
         attached_emails = []
         parts = [eml]
@@ -3595,6 +3599,8 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
             elif part.get_filename() or "attachment" in part.get("Content-Disposition", ""):
 
                 attachment_file_name = convert_to_unicode(part.get_filename())
+                attachment_content_id = part.get('Content-ID')
+                attachment_content_disposition = part.get('Content-Disposition')
                 if attachment_file_name is None and part.get('filename'):
                     attachment_file_name = os.path.normpath(part.get('filename'))
                     if os.path.isabs(attachment_file_name):
@@ -3631,7 +3637,10 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
 
                     if file_content:
                         # save the eml to war room as file entry
-                        demisto.results(fileResult(attachment_file_name, file_content))
+                        createdFile = fileResult(attachment_file_name, file_content)
+                        fileID = createdFile.get('FileID')
+                        attachment_internal_path.append(demisto.investigation().get('id') + '_' + fileID)
+                        demisto.results(createdFile)
 
                     if file_content and max_depth - 1 > 0:
                         f = tempfile.NamedTemporaryFile(delete=False)
@@ -3650,7 +3659,11 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                                                outputs=None)
                         finally:
                             os.remove(f.name)
+                    if not file_content:
+                        attachment_internal_path.append(None)
                     attachment_names.append(attachment_file_name)
+                    attachment_content_ids.append(attachment_content_id)
+                    attachment_content_dispositions.append(attachment_content_disposition)
                 else:
                     # .msg and other files (png, jpeg)
                     if part.is_multipart() and max_depth - 1 > 0:
@@ -3662,17 +3675,29 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                             attached_emails.append(msg_info)
 
                             attachment_file_name = individual_message.get_filename()
+                            attachment_content_id = individual_message.get('Content-ID')
+                            attachment_content_disposition = individual_message.get('Content-Disposition')
                             if attachment_file_name is None:
                                 attachment_file_name = "unknown_file_name{}".format(i)
 
-                            demisto.results(fileResult(attachment_file_name, msg_info))
+                            createdFile = fileResult(attachment_file_name, msg_info)
+                            fileID = createdFile.get('FileID')
+                            attachment_internal_path.append(demisto.investigation().get('id') + '_' + fileID)
+                            demisto.results(createdFile)
                             attachment_names.append(attachment_file_name)
+                            attachment_content_ids.append(attachment_content_id)
+                            attachment_content_dispositions.append(attachment_content_disposition)
 
                     else:
                         file_content = part.get_payload(decode=True)
+                        if attachment_file_name.endswith('.p7s') or not file_content:
+                            attachment_internal_path.append(None)
                         # fileResult will return an error if file_content is None.
                         if file_content and not attachment_file_name.endswith('.p7s'):
-                            demisto.results(fileResult(attachment_file_name, file_content))
+                            createdFile = fileResult(attachment_file_name, file_content)
+                            fileID = createdFile.get('FileID')
+                            attachment_internal_path.append(demisto.investigation().get('id') + '_' + fileID)
+                            demisto.results(createdFile)
 
                         if attachment_file_name.endswith(".msg") and max_depth - 1 > 0:
                             f = tempfile.NamedTemporaryFile(delete=False)
@@ -3692,6 +3717,9 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                                 os.remove(f.name)
 
                         attachment_names.append(attachment_file_name)
+                        attachment_content_ids.append(attachment_content_id)
+                        attachment_content_dispositions.append(attachment_content_disposition)
+
                 demisto.setContext('AttachmentName', attachment_file_name)
 
             elif part.get_content_type() == 'text/html':
@@ -3719,7 +3747,15 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                 'Text': convert_to_unicode(text, is_msg_header=False),
                 'Headers': header_list,
                 'HeadersMap': headers_map,
-                'Attachments': ','.join(attachment_names) if attachment_names else '',
+                'Attachments': [
+                    {
+                        "Name": attachment_names[i],
+                        "Content-ID": attachment_content_ids[i],
+                        "Content-Disposition": attachment_content_dispositions[i],
+                        "FilePath": attachment_internal_path[i]
+                    }
+                    for i in range(len(attachment_names))
+                ],                
                 'AttachmentNames': attachment_names if attachment_names else [],
                 'Format': eml.get_content_type(),
                 'Depth': MAX_DEPTH_CONST - max_depth
