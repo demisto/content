@@ -65,7 +65,7 @@ script:
   type: python
   commands:
   - name: prisma-cloud-compute-profile-host-list
-    description: Get information about the hosts and their profile events, this command supports asterisks which allows you to get host profiles that contain a specific substring
+    description: Get information about the hosts and their profile events, this command supports asterisks which allows you to get host profiles by filtering its fields according to a specific substring
     deprecated: false
     arguments:
     - name: cluster
@@ -121,7 +121,7 @@ script:
       description: geoip is the list of countries
       type: Unknown
   - name: prisma-cloud-compute-profile-container-list
-    description: Get information about the containers and their profile events, this command supports asterisks which allows you to get container profiles that contain a specific substring
+    description: Get information about the containers and their profile events, this command supports asterisks which allows you to get container profiles by filtering its fields according to a specific substring
     deprecated: false
     arguments:
     - name: cluster
