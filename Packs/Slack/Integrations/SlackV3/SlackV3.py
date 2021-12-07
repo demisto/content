@@ -176,9 +176,9 @@ def get_user_by_name(user_to_search: str, add_to_context: bool = True) -> dict:
             'name': user.get('name'),
             'id': user.get('id'),
             'profile': {
-                'email': user.get('profile', {}).get('email'),
-                'real_name': user.get('profile', {}).get('real_name'),
-                'display_name': user.get('profile', {}).get('display_name'),
+                'email': user.get('profile', {}).get('email', ''),
+                'real_name': user.get('profile', {}).get('real_name', ''),
+                'display_name': user.get('profile', {}).get('display_name', ''),
             }
         }
         if add_to_context:
@@ -619,6 +619,7 @@ async def long_running_loop():
         try:
             check_for_mirrors()
             check_for_unanswered_questions()
+            await asyncio.sleep(15)
         except requests.exceptions.ConnectionError as e:
             error = f'Could not connect to the Slack endpoint: {str(e)}'
         except Exception as e:
@@ -872,9 +873,8 @@ async def start_listening():
     """
     Starts a Slack SocketMode client and checks for mirrored incidents.
     """
-    await slack_loop()
-    long_loop_task = asyncio.create_task(long_running_loop(), name="Unanswered loop")
-    await asyncio.gather(long_loop_task)
+    tasks = [asyncio.ensure_future(slack_loop()), asyncio.ensure_future(long_running_loop())]
+    await asyncio.gather(*tasks)
 
 
 async def handle_dm(user: dict, text: str, client: AsyncWebClient):
@@ -1195,11 +1195,12 @@ async def get_user_by_id_async(client: AsyncWebClient, user_id: str) -> dict:
             await send_slack_request_async(client, 'users.info', http_verb='GET', body=body)).get(
             'user', {})
         user_to_context = {
-            'name': user.get('name'),
-            'id': user.get('id'),
-            'real_name': user.get('real_name', ''),
+            'name': user.get('name', ''),
+            'id': user.get('id', ''),
             'profile': {
-                'email': user.get('email', '')
+                'email': user.get('profile', {}).get('email', ''),
+                'real_name': user.get('profile', {}).get('real_name', ''),
+                'display_name': user.get('profile', {}).get('display_name', ''),
             }
         }
         users.append(user_to_context)
@@ -2172,7 +2173,7 @@ def loop_info(loop: asyncio.AbstractEventLoop):
 
 def slack_get_integration_context():
     integration_context = get_integration_context()
-    return_results(fileResult('slack_integration_context', json.dumps(integration_context), EntryType.ENTRY_INFO_FILE))
+    return_results(fileResult('slack_integration_context.json', json.dumps(integration_context), EntryType.ENTRY_INFO_FILE))
 
 
 def main() -> None:
