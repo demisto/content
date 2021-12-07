@@ -8329,7 +8329,16 @@ def indicators_value_to_clickable(indicators):
     return res
 
 
-def threads_dumper():
+def signal_handler_threads_dump(_sig, _frame):
+    """
+    Listener function to dump the threads to log info
+
+    :param _sig: The signal number
+    :param _frame: The current stack frame
+
+    :return: No data returned
+    :rtype: ``None``
+    """
     code = []
     for threadId, stack in sys._current_frames().items():
         code.append("\n# ThreadID: %s" % threadId)
@@ -8342,10 +8351,6 @@ def threads_dumper():
         + '\n'.join(code)\
         + '\n\n--- End Threads Dump ---\n'
     demisto.info(thread_dump_msg)
-
-
-def signal_handler_threads_dump(_sig, _frame):
-    threads_dumper()
 
 
 def register_signal_handler_threads_dump(signal_type=signal.SIGUSR1):
