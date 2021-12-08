@@ -3,6 +3,7 @@ from CommonServerPython import *
 
 ''' IMPORTS '''
 import requests
+import ipaddress
 import dateparser
 import tempfile
 from typing import Tuple
@@ -326,41 +327,12 @@ def parse_date_string_format(date_string: str, new_format: str = "%B %d, %Y %H:%
         return date_string
 
 
-def capitalize_api_response(api_response: Union[List[dict], dict]) -> Union[List[dict], dict]:
-    """
-    Capitalize an api response.
-
-    Args:
-        api_response (list/dict): The api response.
-
-    Returns:
-        list/dict: where its dict keys are capitalized.
-    """
-    if isinstance(api_response, dict):
-        return capitalize_dict_keys(dictionary=api_response)
-    return [capitalize_dict_keys(dictionary=response) for response in api_response]
-
-
-def capitalize_dict_keys(dictionary: dict) -> dict:
-    """
-    Capitalize dict keys.
-
-    Args:
-        dictionary (dict): any dictionary where its keys are strings.
-
-    Returns:
-        dict: capitalized dict keys.
-    """
-    return {key[0].upper() + key[1:] if "_" not in key else key.title(): val for key, val in dictionary.items()}
-
-
 def get_api_filtered_response(
     client: PrismaCloudComputeClient,
     url_suffix: str,
     offset: int,
     limit: int,
     args: Optional[dict] = None,
-    capitalize: bool = True
 ) -> list:
     """
     Filter the api response according to the offset/limit, used in case the api doesn't support limit/offset
@@ -371,7 +343,6 @@ def get_api_filtered_response(
         offset (int): the offset from which to begin listing the response.
         limit (int): the maximum limit of records in the response to fetch.
         args (dict): any command arguments if exist.
-        capitalize (bool): whether or not to capitalize the response keys.
 
     Returns:
         list: api filtered response, empty list in case there aren't any records in the api response.
@@ -382,13 +353,98 @@ def get_api_filtered_response(
     response = client.api_request(method='GET', url_suffix=url_suffix, params=assign_params(**args))
 
     if response:
-        if capitalize:
-            response = capitalize_api_response(api_response=response)
         start = min(offset, len(response))
         end = min(offset + limit, len(response))
         return response[start:end]
 
     return []
+
+
+def build_single_host_profile_table_response(host_info: dict) -> str:
+    """
+    Build a table for a single host.
+
+    Args:
+        host_info (dict): host information for the api.
+
+    Returns:
+        str: markdown table output for a single host.
+    """
+
+    host_description_table = build_hostnames_description_table(
+        host_description_info=get_hostname_description_info(host_info=host_info)
+    )
+
+    apps_info = [
+        {
+            'HostId': host_info.get('_id'),
+            'AppName': app.get('name'),
+            'StartupProcess': app.get('startupProcess').get('path'),
+            'User': app.get('startupProcess').get('user'),
+            'LaunchTime': parse_date_string_format(date_string=app.get('startupProcess').get('time'))
+        } for app in host_info.get('apps', [])
+    ]
+    ssh_events_info = [
+        {
+            'User': event.get('user'),
+            'Ip': str(ipaddress.IPv4Address(event.get('ip'))),
+            'ProcessPath': event.get('path'),
+            'Command': event.get('command'),
+            'Time': parse_date_string_format(date_string=event.get('time'))
+        } for event in host_info.get('sshEvents', [])
+    ]
+
+    apps_table = tableToMarkdown(
+        name='Apps',
+        t=apps_info,
+        headers=['AppName', 'StartupProcess', 'User', 'LaunchTime'],
+        removeNull=True
+    )
+    ssh_events_table = tableToMarkdown(
+        name='SSH Events',
+        t=ssh_events_info,
+        headers=['User', 'Ip', 'ProcessPath', 'Command', 'Time'],
+        removeNull=True
+    )
+
+    return host_description_table + apps_table + ssh_events_table
+
+
+def get_hostname_description_info(host_info: dict) -> dict:
+    """
+    Get the hostname description information.
+
+    Args:
+        host_info (dict): host's information from the api.
+
+    Returns:
+        dict: host description information
+    """
+    dist = host_info["labels"][0].replace("osDistro:", "") + " " + host_info["labels"][1].replace("osVersion:", "")
+
+    return {
+        "Hostname": host_info.get("_id"),
+        "Distribution": dist,
+        "Collections": host_info.get("collections")
+    }
+
+
+def build_hostnames_description_table(host_description_info: Union[List[dict], dict]) -> str:
+    """
+    Build the hostname description table.
+
+    Args:
+        host_description_info (dict/list): hosts description information.
+
+    Returns:
+        str: markdown table that describes the host/s.
+    """
+    return tableToMarkdown(
+        name="Host Description",
+        t=host_description_info,
+        headers=["Hostname", "Distribution", "Collections"],
+        removeNull=True
+    )
 
 
 def build_profile_host_table_response(hosts_info: List[dict]) -> str:
@@ -405,47 +461,12 @@ def build_profile_host_table_response(hosts_info: List[dict]) -> str:
     if not hosts_info:
         return "No results found"
 
-    apps_table = []
-    ssh_events_table = []
+    if len(hosts_info) == 1:  # then we have only one host
+        return build_single_host_profile_table_response(host_info=hosts_info[0])
 
-    for response in hosts_info:
-        for app in response.get('Apps', []):
-            apps_table.append(
-                {
-                    'HostId': response.get('_Id'),
-                    'AppName': app.get('name'),
-                    'StartupProcess': app.get('startupProcess').get('path'),
-                    'User': app.get('startupProcess').get('user'),
-                    'LaunchTime': parse_date_string_format(date_string=app.get('startupProcess').get('time'))
-
-                }
-            )
-        for event in response.get('SshEvents', []):
-            ssh_events_table.append(
-                {
-                    'HostId': response.get('_Id'),
-                    'User': event.get('user'),
-                    'Ip': event.get('ip'),
-                    'ProcessPath': event.get('path'),
-                    'Command': event.get('command'),
-                    'Time': parse_date_string_format(date_string=event.get('time'))
-                }
-            )
-
-    apps_markdown_table = tableToMarkdown(
-        name='Apps',
-        t=apps_table,
-        headers=['HostId', 'AppName', 'StartupProcess', 'User', 'LaunchTime'],
-        removeNull=True
+    return build_hostnames_description_table(
+        host_description_info=[get_hostname_description_info(host_info=host_info) for host_info in hosts_info]
     )
-    ssh_events_markdown_table = tableToMarkdown(
-        name='SSH Events',
-        t=ssh_events_table,
-        headers=['HostId', 'User', 'Ip', 'ProcessPath', 'Command', 'Time'],
-        removeNull=True
-    )
-
-    return apps_markdown_table + ssh_events_markdown_table
 
 
 def get_profile_host_list(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
@@ -463,20 +484,16 @@ def get_profile_host_list(client: PrismaCloudComputeClient, args: dict) -> Comma
     update_query_params_names(names=[("hostname", "hostName")], args=args)
     args.update(parse_limit_and_offset_values(limit=args.get("limit", "15"), offset=args.get("offset", "0")))
 
-    hosts_profile_info_raw_response = client.api_request(
+    hosts_profile_info = client.api_request(
         method='GET', url_suffix='/profiles/host', params=assign_params(**args)
     )
-    hosts_profile_info = None
-
-    if hosts_profile_info_raw_response:
-        hosts_profile_info = capitalize_api_response(api_response=hosts_profile_info_raw_response)
 
     return CommandResults(
         outputs_prefix='PrismaCloudCompute.ProfileHost',
         outputs_key_field='_Id',
         outputs=hosts_profile_info,
         readable_output=build_profile_host_table_response(hosts_info=hosts_profile_info),  # type:ignore
-        raw_response=hosts_profile_info_raw_response
+        raw_response=hosts_profile_info
     )
 
 
