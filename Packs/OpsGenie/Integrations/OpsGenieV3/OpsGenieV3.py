@@ -914,14 +914,16 @@ def _parse_fetch_time(fetch_time: str):
 
 
 def fetch_incidents_by_type(client: Client,
-                            params: Dict[str, Any],
+                            query: Optional[str],
+                            limit: Optional[int],
+                            fetch_time: str,
+                            status: Optional[str],
+                            priority: Optional[str],
+                            tags: Optional[str],
                             incident_fetching_func: Callable,
                             now: datetime,
                             last_run_dict: Optional[dict] = None):
-    query = params.get('query')
-    limit = int(params.get('max_fetch', 50))
-    fetch_time = params.get('first_fetch', '3 days').strip()
-
+    params: Dict[str, Any] = {}
     if not last_run_dict:
         new_last_run = _parse_fetch_time(fetch_time)
         last_run_dict = {'lastRun': new_last_run,
@@ -936,7 +938,10 @@ def fetch_incidents_by_type(client: Client,
         time_query = f'createdAt>{timestamp_last_run} AND createdAt<={timestamp_now}'
         params['query'] = f'{query} AND {time_query}' if query else f'{time_query}'
         params['limit'] = limit
-        params['is_fetch_query'] = True if params.get('query') else False
+        params['is_fetch_query'] = True if query else False
+        params['status'] = status
+        params["priority"] = priority
+        params["tags"] = tags
         raw_response = incident_fetching_func(params)
         last_run_dict['lastRun'] = now.strftime(DATE_FORMAT)
 
@@ -961,7 +966,7 @@ def _get_utc_now():
 
 def fetch_incidents_command(client: Client,
                             params: Dict[str, Any],
-                            last_run: Optional[dict] = None) -> Tuple[List[Dict[str, Any]], Dict]:
+                            last_run: Optional[Dict] = None) -> Tuple[List[Dict[str, Any]], Dict]:
     """Uses to fetch incidents into Demisto
     Documentation: https://github.com/demisto/content/tree/master/docs/fetching_incidents
 
@@ -983,15 +988,31 @@ def fetch_incidents_command(client: Client,
     next_page_alerts = demisto.get(last_run, f"{ALERT_TYPE}.next_page")
     last_run_incidents = demisto.get(last_run, f"{INCIDENT_TYPE}.lastRun")
     next_page_incidents = demisto.get(last_run, f"{INCIDENT_TYPE}.next_page")
+    query = params.get('query')
+    limit = int(params.get('max_fetch', 50))
+    fetch_time = params.get('first_fetch', '3 days').strip()
+    status = params.get('status')
+    priority = params.get('priority')
+    tags = params.get('tags')
     if ALERT_TYPE in event_type or ALL_TYPE in event_type:
         alerts, next_page_alerts, last_run_alerts = fetch_incidents_by_type(client,
-                                                                            params,
+                                                                            query,
+                                                                            limit,
+                                                                            fetch_time,
+                                                                            status,
+                                                                            priority,
+                                                                            tags,
                                                                             client.list_alerts,
                                                                             now,
                                                                             demisto.get(last_run, f"{ALERT_TYPE}"))
     if INCIDENT_TYPE in event_type or ALL_TYPE in event_type:
         incidents, next_page_incidents, last_run_incidents = fetch_incidents_by_type(client,
-                                                                                     params,
+                                                                                     query,
+                                                                                     limit,
+                                                                                     fetch_time,
+                                                                                     status,
+                                                                                     priority,
+                                                                                     tags,
                                                                                      client.list_incidents,
                                                                                      now,
                                                                                      demisto.get(last_run, f"{INCIDENT_TYPE}"))
