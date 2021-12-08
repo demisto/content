@@ -21,7 +21,7 @@ args:
   - "true"
   - "false"
   description: If false then the context key will be overwritten. If set to true then
-    the script will append to existing context key
+    the script will append to existing context key.
   defaultValue: "false"
 outputs: []
 scripttarget: 0
