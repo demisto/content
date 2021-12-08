@@ -403,7 +403,7 @@ def build_profile_host_table_response(hosts_info: List[dict]) -> str:
         str: markdown table output for the apps and ssh events of a host.
     """
     if not hosts_info:
-        return tableToMarkdown(name="No results found", t={})
+        return "No results found"
 
     apps_table = []
     ssh_events_table = []
@@ -492,7 +492,7 @@ def build_profile_container_table_response(containers_info: List[dict]) -> str:
         str: markdown table output.
     """
     if not containers_info:
-        return tableToMarkdown(name="No results found", t={})
+        return "No results found"
 
     container_details = []
     processes = []
@@ -601,7 +601,7 @@ def build_container_hosts_response(
         return context_output, tableToMarkdown(
             name="Containers hosts list", t=context_output, headers=["ContainerID", "HostsIDs"]
         )
-    return None, tableToMarkdown(name="No results found", t=[])
+    return None, "No results found"
 
 
 def get_container_hosts_list(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
@@ -667,7 +667,7 @@ def build_containers_forensic_response(
             headers=["ContainerID", "Type", "Path", "User", "Pid"],
             removeNull=True
         )
-    return None, tableToMarkdown(name="No results found", t=[])
+    return None, "No results found"
 
 
 def get_profile_container_forensic_list(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
@@ -732,7 +732,7 @@ def build_host_forensic_response(
         return context_output, tableToMarkdown(
             name="Host forensics report", t=host_forensics, headers=["Type", "App", "Path", "Command"], removeNull=True
         )
-    return None, tableToMarkdown(name="No results found", t=[])
+    return None, "No results found"
 
 
 def get_profile_host_forensic_list(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
@@ -747,6 +747,7 @@ def get_profile_host_forensic_list(client: PrismaCloudComputeClient, args: dict)
     Returns:
         CommandResults: command-results object.
     """
+
     host_id = args.pop("id")
     update_query_params_names(names=[("incident_id", "incidentID")], args=args)
     args.update(parse_limit_and_offset_values(limit=args.get("limit", "20"), offset=args.get("offset", "0")))
@@ -800,7 +801,7 @@ def get_custom_feeds_ip_list(client: PrismaCloudComputeClient) -> CommandResults
             feeds["Modified"] = parse_date_string_format(date_string=feeds.get("Modified", ""))
         table = tableToMarkdown(name="IP Feeds", t=feeds, headers=["Modified", "Feed"])
     else:
-        table = tableToMarkdown(name="No results found", t=[])
+        table = "No results found"
 
     return CommandResults(
         outputs_prefix="PrismaCloudCompute.CustomFeedIP",
