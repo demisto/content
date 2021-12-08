@@ -50,7 +50,7 @@ Using a national cloud endpoint is supported by setting the *Server URL* paramet
 * Microsoft 365 Germany Endpoint: `https://graph.microsoft.de`
 * Microsoft Operated by 21Vianet Endpoint: `https://microsoftgraph.chinacloudapi.cn`
 
-Please refer to [Microsoft Integrations - Using National Cloud](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud) for more information.
+Refer to [Microsoft Integrations - Using National Cloud](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud) for more information.
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
