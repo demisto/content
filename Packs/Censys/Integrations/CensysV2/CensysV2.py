@@ -100,7 +100,7 @@ def censys_search_command(client: Client, args: Dict[str, Any]) -> CommandResult
     """
     index = args.get('index')
     query = args.get('query', '')
-    page_size = arg_to_number(args.get('page_size', 50))
+    page_size = arg_to_number(args.get('page_size', 50))  # type: ignore[assignment]
     limit = args.get('limit')
     contents = []
 
@@ -203,7 +203,7 @@ def main() -> None:
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
 ''' ENTRY POINT '''

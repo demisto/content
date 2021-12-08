@@ -2,7 +2,9 @@
 import json
 import io
 import demistomock as demisto
-
+import CensysV2
+from CensysV2 import Client, censys_view_command, censys_search_command, main, test_module
+import pytest
 
 SEARCH_HOST_OUTPUTS = [{
     'ip': '1.0.0.0',
@@ -31,7 +33,13 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-def test_censys_host_search(mocker):
+@pytest.fixture()
+def client():
+    client = Client(base_url='https://search.censys.io/api/', auth=('test', '1234'), verify=True, proxy=False)
+    return client
+
+
+def test_censys_host_search(mocker, client):
     """
     Given:
         Command arguments: query and limit
@@ -40,10 +48,6 @@ def test_censys_host_search(mocker):
     Then:
         Validate the output compared to the mock output
     """
-    from CensysV2 import Client, censys_search_command
-
-    client = Client(base_url='https://search.censys.io/api/', auth=('test', '1234'), verify=True, proxy=False)
-
     args = {
         'index': 'ipv4',
         'query': 'services.service_name:HTTP',
@@ -57,7 +61,7 @@ def test_censys_host_search(mocker):
     assert response.outputs == SEARCH_HOST_OUTPUTS
 
 
-def test_censys_certs_search(mocker):
+def test_censys_certs_search(requests_mock, client):
     """
     Given:
         Command arguments: query and limit
@@ -66,10 +70,6 @@ def test_censys_certs_search(mocker):
     Then:
         Validate the output compared to the mock output
     """
-    from CensysV2 import Client, censys_search_command
-
-    client = Client(base_url='https://search.censys.io/api/', auth=('test', '1234'), verify=True, proxy=False)
-
     args = {
         'index': 'certificates',
         'query': "parsed.issuer.common_name: \"Let's Encrypt\"",
@@ -77,13 +77,13 @@ def test_censys_certs_search(mocker):
     }
 
     mock_response = util_load_json('test_data/search_certs_response.json')
-    mocker.patch.object(client, 'censys_search_certs_request', return_value=mock_response)
+    requests_mock.post('https://search.censys.io/api/v1/search/certificates', json=mock_response)
     response = censys_search_command(client, args)
     assert "### Search results for query \"parsed.issuer.common_name: \"Let's Encrypt\"" in response.readable_output
     assert response.outputs == SEARCH_CERTS_OUTPUTS
 
 
-def test_censys_view_host(mocker):
+def test_censys_view_host(requests_mock, client):
     """
     Given:
         Command arguments: query ip = 8.8.8.8
@@ -92,16 +92,12 @@ def test_censys_view_host(mocker):
     Then:
         Validate the output compared to the mock output
     """
-    from CensysV2 import Client, censys_view_command
-
-    client = Client(base_url='https://search.censys.io/api/', auth=('test', '1234'), verify=True, proxy=False)
-
     args = {
         'index': 'ipv4',
         'query': "8.8.8.8"
     }
     mock_response = util_load_json('test_data/view_host_response.json')
-    mocker.patch.object(client, 'censys_view_request', return_value=mock_response)
+    requests_mock.get('https://search.censys.io/api/v2/hosts/8.8.8.8', json=mock_response)
     response = censys_view_command(client, args)
     assert '### Information for IP 8.8.8.8' in response.readable_output
     assert response.outputs == mock_response.get('result')
@@ -116,8 +112,6 @@ def test_censys_view_host_invalid(requests_mock, mocker):
     Then:
         Validate error message returns.
     """
-    from CensysV2 import main
-    import CensysV2
     args = {
         'index': 'ipv4',
         'query': "test"
@@ -137,7 +131,7 @@ def test_censys_view_host_invalid(requests_mock, mocker):
     assert 'Error in API call [422]' in return_error_mock.call_args[0][0]
 
 
-def test_censys_view_cert(mocker):
+def test_censys_view_cert(requests_mock, client):
     """
     Given:
         Command arguments: sha-256
@@ -146,24 +140,19 @@ def test_censys_view_cert(mocker):
     Then:
         Validate the output compared to the mock output
     """
-    from CensysV2 import Client, censys_view_command
-
-    client = Client(base_url='https://search.censys.io/api/', auth=('test', '1234'), verify=True, proxy=False)
-
     args = {
         'index': 'certificates',
         'query': "9d3b51a6b80daf76e074730f19dc01e643ca0c3127d8f48be64cf3302f661234"
     }
     mock_response = util_load_json('test_data/view_cert_response.json')
-    mocker.patch.object(client, 'censys_view_request', return_value=mock_response)
+    requests_mock.get('https://search.censys.io/api/v1/view/certificates/9d3b51a6b80daf76e07473'
+                      '0f19dc01e643ca0c3127d8f48be64cf3302f661234', json=mock_response)
     response = censys_view_command(client, args)
     assert '### Information for certificate' in response.readable_output
     assert response.outputs == mock_response
 
 
-def test_test_module_valid(requests_mock):
-    from CensysV2 import Client, test_module
-    client = Client(base_url='https://search.censys.io/api/', auth=('test', '1234'), verify=True, proxy=False)
+def test_test_module_valid(requests_mock, client):
     requests_mock.get(url='https://search.censys.io/api/v2/hosts/8.8.8.8', status_code=200, json="{}")
 
     assert test_module(client) == 'ok'

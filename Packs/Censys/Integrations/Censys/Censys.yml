@@ -3,6 +3,11 @@ commonfields:
   id: Censys
   version: -1
 configuration:
+- defaultvalue: https://censys.io/api/v1/
+  display: Server URL
+  name: url
+  required: true
+  type: 0
 - display: Censys API ID
   name: apiid
   required: true

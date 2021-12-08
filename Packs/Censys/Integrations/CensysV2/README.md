@@ -13,7 +13,7 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
     | **Parameter** | **Required** |
     | --- | --- |
     | App ID | True |
-    | Password | True |
+    | Secret | True |
     | Trust any certificate (not secure) | False |
     | Use system proxy settings | False |
 
