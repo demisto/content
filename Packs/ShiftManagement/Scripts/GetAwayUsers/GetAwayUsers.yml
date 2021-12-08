@@ -6,22 +6,22 @@ commonfields:
 enabled: false
 name: GetAwayUsers
 outputs:
-- contextPath: CortexXSOAR.AwayUsers.id
+- contextPath: AwayUsers.id
   description: Away user ID.
   type: String
-- contextPath: CortexXSOAR.AwayUsers.username
+- contextPath: AwayUsers.username
   description: Away user username.
   type: String
-- contextPath: CortexXSOAR.AwayUsers.name
+- contextPath: AwayUsers.name
   description: Away user name.
   type: String
-- contextPath: CortexXSOAR.AwayUsers.phone
+- contextPath: AwayUsers.phone
   description: Away user phone.
   type: String
-- contextPath: CortexXSOAR.AwayUsers.roles
+- contextPath: AwayUsers.roles
   description: Away user roles.
   type: Unknown
-- contextPath: CortexXSOAR.AwayUsers.email
+- contextPath: AwayUsers.email
   description: Away user email.
   type: Unknown
 script: '-'
