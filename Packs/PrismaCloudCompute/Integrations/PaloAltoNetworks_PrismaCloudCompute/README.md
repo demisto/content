@@ -123,7 +123,7 @@ Get information about the hosts and their profile events, this command supports 
 | atd | /usr/sbin/atd | root | November 10, 2020 09:37:42 AM |
 | acpid | /usr/sbin/acpid | root | November 10, 2020 09:37:42 AM |
 | cron | /usr/sbin/cron | root | November 10, 2020 09:37:42 AM |
-| demisto | /usr/local/demisto/server | demisto | November 10, 2020 09:37:42 AM |
+|  | /usr/local//server |  | November 10, 2020 09:37:42 AM |
 | apt-daily | /bin/dash | root | November 10, 2020 11:41:34 AM |
 | snapd | /usr/lib/snapd/snapd | root | February 11, 2021 06:23:47 AM |
 | systemd | /lib/systemd/systemd | root | September 02, 2021 10:25:30 AM |
@@ -372,7 +372,7 @@ Get runtime forensics data for a specific container on a specific host
 #### Human Readable Output
 
 ### Containers forensic report
-|Type|Path|User|Pid|ContainerId|ListeningStartTime|Command|
+|Type|Path|User|Pid|ContainerId|Timestamp|Command|
 |---|---|---|---|---|---|---|
 | Process spawned | /usr/bin/mongodump | twistlock | 7990 | a6f769dd | January 01, 0001 00:00:00 AM | mongodump --out=/var/lib/twistlock-backup/dump |
 | Process spawned | /usr/bin/mongodump | twistlock | 27398 | a6f769dd | January 01, 0001 00:00:00 AM | mongodump --out=/var/lib/twistlock-backup/dump |
@@ -396,3 +396,74 @@ Get runtime forensics data for a specific container on a specific host
 | Process spawned | /usr/bin/mongodump | twistlock | 22080 | a6f769dd | January 01, 0001 00:00:00 AM | mongodump --out=/var/lib/twistlock-backup/dump |
 
 
+### prisma-cloud-compute-host-forensic-list
+***
+Get forensics on a specific host
+
+
+#### Base Command
+
+`prisma-cloud-compute-host-forensic-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | host ID, can be retrieved from 'prisma-cloud-compute-profile-host-list' command. | Required | 
+| collections | Collections are collections scoping the query. | Optional | 
+| incident_id | IncidentID is the incident ID in case the request kind is an incident. | Optional | 
+| limit | maximum of forensics data records to return, must be between 1-50. Default is 20. | Optional | 
+| offset | The offset number to begin listing host forensics from. Default is 0. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaCloudCompute.HostForensic.Forensics.app | String | App is the application associated with the event | 
+| PrismaCloudCompute.HostForensic.Forensics.attack | Unknown | Attack is the event attack type | 
+| PrismaCloudCompute.HostForensic.Forensics.category | Unknown | Category is the incident category. | 
+| PrismaCloudCompute.HostForensic.Forensics.command | String | Command is the event command | 
+| PrismaCloudCompute.HostForensic.Forensics.country | String | Country is the country associated with the event | 
+| PrismaCloudCompute.HostForensic.Forensics.effect | String | Effect is the runtime audit effect | 
+| PrismaCloudCompute.HostForensic.Forensics.interactive | Boolean | Interactive indicates if the event is interactive | 
+| PrismaCloudCompute.HostForensic.Forensics.ip | String | IP is the IP address associated with the event | 
+| PrismaCloudCompute.HostForensic.Forensics.listeningStartTime | Date | ListeningStartTime is the listening port start time | 
+| PrismaCloudCompute.HostForensic.Forensics.message | String | Message is the runtime audit message | 
+| PrismaCloudCompute.HostForensic.Forensics.path | String | Path is the event path | 
+| PrismaCloudCompute.HostForensic.Forensics.pid | Number | Pid is the event process id | 
+| PrismaCloudCompute.HostForensic.Forensics.port | Number | Port is the listening port | 
+| PrismaCloudCompute.HostForensic.Forensics.ppath | String | P-path is the event parent path | 
+| PrismaCloudCompute.HostForensic.Forensics.ppid | Number | PPid is the event parent process id | 
+| PrismaCloudCompute.HostForensic.Forensics.process | String | Process is the event process | 
+| PrismaCloudCompute.HostForensic.Forensics.timestamp | Date | Timestamp is the event timestamp | 
+| PrismaCloudCompute.HostForensic.Forensics.type | Unknown | Type is the event type. | 
+| PrismaCloudCompute.HostForensic.Forensics.user | Unknown | User is the event user | 
+| PrismaCloudCompute.HostForensic.hostID | String | The host ID that was analyzed | 
+
+
+#### Command Example
+```!prisma-cloud-compute-host-forensic-list id=hostname```
+
+#### Human Readable Output
+
+
+### Host forensics report
+|Type|Path|User|Pid|Timestamp|Command|App|
+|---|---|---|---|---|---|---|
+| Process spawned | /usr/bin/gawk | cakeagent | 29660 | December 08, 2021 18:16:04 PM | awk {gsub("%", "%%", $0);printf  $1 "\|" $2 "\|" $3 "\|" $4 "\|" $5 "\|" $6 "\|" $11 ":::"} | cron |
+| Process spawned | /bin/ps | cakeagent | 29659 | December 08, 2021 18:16:04 PM | ps aux | cron |
+| Process spawned | /usr/bin/gawk | cakeagent | 29657 | December 08, 2021 18:16:04 PM | awk { printf  $3 "\|" $2 "\|" $1 ":"} | cron |
+| Process spawned | /bin/grep | cakeagent | 29656 | December 08, 2021 18:16:04 PM | grep -vE ^Filesystem\|tmpfs\|cdrom | cron |
+| Process spawned | /bin/df | cakeagent | 29655 | December 08, 2021 18:16:04 PM | df -H -P -B G | cron |
+| Process spawned | /usr/bin/gawk | cakeagent | 29653 | December 08, 2021 18:16:04 PM | awk {print $2} | cron |
+| Process spawned | /bin/grep | cakeagent | 29652 | December 08, 2021 18:16:04 PM | grep total | cron |
+| Process spawned | /bin/df | cakeagent | 29651 | December 08, 2021 18:16:04 PM | df -x tmpfs -x cdrom --total | cron |
+| Process spawned | /usr/bin/gawk | cakeagent | 29649 | December 08, 2021 18:16:04 PM | awk {print $3} | cron |
+| Process spawned | /bin/grep | cakeagent | 29648 | December 08, 2021 18:16:04 PM | grep total | cron |
+| Process spawned | /bin/df | cakeagent | 29647 | December 08, 2021 18:16:04 PM | df -x tmpfs -x cdrom --total | cron |
+| Process spawned | /bin/sed | cakeagent | 29644 | December 08, 2021 18:16:03 PM | sed -re s/.*:[ ]+([0-9.]*)%us,.*/\1/ | cron |
+| Process spawned | /bin/grep | cakeagent | 29643 | December 08, 2021 18:16:03 PM | grep Cpu | cron |
+| Process spawned | /usr/bin/top | cakeagent | 29642 | December 08, 2021 18:16:03 PM | top -b -n1 | cron |
+| Process spawned | /bin/grep | cakeagent | 29639 | December 08, 2021 18:16:03 PM | grep MemTotal | cron |
+| Process spawned | /bin/sed | cakeagent | 29640 | December 08, 2021 18:16:03 PM | sed -r s/MemTotal:.* ([0-9]+) kB/\1/ | cron |
+| Process spawned | /bin/cat | cakeagent | 29638 | December 08, 2021 18:16:03 PM | cat /proc/meminfo | cron |

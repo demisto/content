@@ -700,6 +700,23 @@ def get_container_hosts_list(client: PrismaCloudComputeClient, args: dict) -> Co
     )
 
 
+def parse_forensics_timestamps(forensics: list[dict]) -> None:
+    """
+    Parses timestamps to a more human readable output for a forensic response.
+
+    Args:
+        forensics (list[dict]): host/container forensics response
+
+    """
+    for forensic in forensics:
+        if "timestamp" in forensic:
+            forensic["timestamp"] = parse_date_string_format(date_string=forensic.get("timestamp"))
+        if "listeningStartTime" in forensic:
+            forensic["listeningStartTime"] = parse_date_string_format(
+                date_string=forensic.get("listeningStartTime")
+            )
+
+
 def build_containers_forensic_response(
     client: PrismaCloudComputeClient, container_id: str, args: dict
 ) -> Tuple[Optional[dict], str]:
@@ -726,14 +743,7 @@ def build_containers_forensic_response(
     )
 
     if container_forensics:
-
-        for forensic in container_forensics:
-            if "timestamp" in forensic:
-                forensic["timestamp"] = parse_date_string_format(date_string=forensic.get("timestamp"))
-            if "listeningStartTime" in forensic:
-                forensic["listeningStartTime"] = parse_date_string_format(
-                    date_string=forensic.get("listeningStartTime")
-                )
+        parse_forensics_timestamps(forensics=container_forensics)
 
         context_output = {
             "containerID": container_id,
@@ -744,7 +754,7 @@ def build_containers_forensic_response(
         return context_output, tableToMarkdown(
             name="Containers forensic report",
             t=context_output["Forensics"],
-            headers=["type", "path", "user", "pid", "containerId", "listeningStartTime", "command"],
+            headers=["type", "path", "user", "pid", "containerId", "timestamp", "command"],
             removeNull=True,
             headerTransform=lambda word: word[0].upper() + word[1:]
         )
@@ -805,13 +815,19 @@ def build_host_forensic_response(
     )
 
     if host_forensics:
+        parse_forensics_timestamps(forensics=host_forensics)
+
         context_output = {
-            "HostID": host_id,
+            "hostID": host_id,
             "Forensics": host_forensics
         }
 
         return context_output, tableToMarkdown(
-            name="Host forensics report", t=host_forensics, headers=["Type", "App", "Path", "Command"], removeNull=True
+            name="Host forensics report",
+            t=host_forensics,
+            headers=["type", "path", "user", "pid", "timestamp", "command", "app"],
+            removeNull=True,
+            headerTransform=lambda word: word[0].upper() + word[1:]
         )
     return None, "No results found"
 
@@ -839,7 +855,7 @@ def get_profile_host_forensic_list(client: PrismaCloudComputeClient, args: dict)
         outputs_prefix='PrismaCloudCompute.HostForensic',
         outputs=context,
         readable_output=table,
-        outputs_key_field="HostID"
+        outputs_key_field="hostID"
     )
 
 
