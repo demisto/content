@@ -1993,61 +1993,6 @@ def test_cidr(requests_mock):
     assert result[0].indicator.dbot_score.indicator_type == DBotScoreType.CIDR
 
 
-def test_expanse_get_risky_flows(requests_mock):
-    """
-    Given:
-        - an Expanse client
-        - arguments (ip, limit)
-    When
-        - running !expanse-get-risky-flows
-    Then
-        - the Risky Flows for the IP from Behavior are retrieved and returned to the context
-    """
-    from ExpanseV2 import Client, get_risky_flows_command
-
-    MOCK_LIMIT = "2"
-    MOCK_IP = "203.0.113.102"
-    mock_risky_flows = util_load_json("test_data/expanse_get_risky_flows.json")
-    mock_risky_flows["data"] = [d for d in mock_risky_flows["data"] if d["internalAddress"] == MOCK_IP]
-
-    client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
-
-    requests_mock.get(
-        f"https://example.com/api/v1/behavior/risky-flows?page[limit]={MOCK_LIMIT}&filter[internal-ip-range]={MOCK_IP}",
-        json=mock_risky_flows
-    )
-    result = get_risky_flows_command(client, {"limit": MOCK_LIMIT, "internal_ip_range": MOCK_IP})
-
-    assert result.outputs_prefix == "Expanse.RiskyFlow"
-    assert result.outputs_key_field == "id"
-    assert result.outputs == mock_risky_flows["data"][:int(MOCK_LIMIT)]
-
-
-def test_expanse_list_risk_rules(requests_mock):
-    """
-    Given:
-        - an Expanse client
-        - arguments (limit)
-    When
-        - running !expanse-list-risk-rules
-    Then
-        - the risk rules are retrieved and returned to the context
-    """
-    from ExpanseV2 import Client, list_risk_rules_command
-
-    MOCK_LIMIT = "2"
-    mock_risk_rules = util_load_json("test_data/expanse_list_risk_rules.json")
-
-    client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
-
-    requests_mock.get(f"https://example.com/api/v1/behavior/risk-rules?page[limit]={MOCK_LIMIT}", json=mock_risk_rules)
-    result = list_risk_rules_command(client, {"limit": MOCK_LIMIT})
-
-    assert result.outputs_prefix == "Expanse.RiskRule"
-    assert result.outputs_key_field == "id"
-    assert result.outputs == mock_risk_rules["data"][:int(MOCK_LIMIT)]
-
-
 def test_domains_by_certificate(requests_mock):
     from ExpanseV2 import Client, domains_for_certificate_command
     domain_to_test = "base2.pets.com"

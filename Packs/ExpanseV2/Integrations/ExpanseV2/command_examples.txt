@@ -24,8 +24,6 @@
 !expanse-unassign-tags-from-domain asset_id="142194a1-f443-3878-8dcc-540f4061c5f5" tag_names="xsoar-test-pb-tag"
 !ip ip="1.1.1.1"
 !expanse-get-associated-domains ip="1.1.1.1"
-!expanse-list-risk-rules limit-3
-!expanse-get-risky-flows limit=1
 !expanse-get-services limit="1" provider="Amazon Web Services"
 !expanse-get-service service_id="99ea2dce-248a-3adb-937b-b46841825581"
 !expanse-list-pocs limit=1
