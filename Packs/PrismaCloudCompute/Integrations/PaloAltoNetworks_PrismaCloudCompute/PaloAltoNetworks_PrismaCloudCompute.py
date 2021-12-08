@@ -468,6 +468,22 @@ def build_profile_host_table_response(hosts_info: List[dict]) -> str:
     )
 
 
+def update_host_profile_context_fields(hosts_profile_info: List[dict]):
+    """
+    Update the fields for the context output of the 'prisma-cloud-compute-profile-host-list' command.
+
+    Args:
+        hosts_profile_info (list[dict]): hosts profile api response
+    """
+    for host_profile in hosts_profile_info:
+        if "created" in host_profile:
+            host_profile["created"] = parse_date_string_format(date_string=host_profile.get("created"))
+            host_profile["time"] = parse_date_string_format(date_string=host_profile.get("time"))
+        for event in host_profile.get("sshEvents", []):
+            if "ip" in event:
+                event["ip"] = str(ipaddress.IPv4Address(event.get("ip")))
+
+
 def get_profile_host_list(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
     """
     Get information about the hosts and their profile events.
@@ -486,6 +502,8 @@ def get_profile_host_list(client: PrismaCloudComputeClient, args: dict) -> Comma
     hosts_profile_info = client.api_request(
         method='GET', url_suffix='/profiles/host', params=assign_params(**args)
     )
+
+    update_host_profile_context_fields(hosts_profile_info=hosts_profile_info)   # type:ignore
 
     return CommandResults(
         outputs_prefix='PrismaCloudCompute.ProfileHost',
