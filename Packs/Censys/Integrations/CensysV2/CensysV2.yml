@@ -3,7 +3,7 @@ commonfields:
   id: CensysV2
   version: -1
 configuration:
-- display: API ID
+- display: App ID
   displaypassword: Secret
   name: credentials
   required: true
@@ -17,7 +17,7 @@ configuration:
   required: false
   type: 8
 description: Censys is a search engine that allows computer scientists to ask questions
-  about the devices and networks that compose the Internet. Driven by Internet-wide
+  about the devices and networks that compose the internet. Driven by internet-wide
   scanning, Censys lets researchers find specific hosts and create aggregate reports
   on how devices, and certificates are configured and deployed.
 display: Censys v2
@@ -26,7 +26,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: The IP Address of the requested host.
+      description: The IP address of the requested host.
       isArray: false
       name: query
       required: true
@@ -118,7 +118,7 @@ script:
       description: The UTC timestamp of when Censys scanned the service.
       type: Date
     - contextPath: Censys.View.services.perspective_id
-      description: The upstream Internet service provider Censys peered with to scan the service -
+      description: The upstream internet service provider Censys peered with to scan the service -
         NTT Communications, TATA, Telia Carrier, or Hurricane Electric.
       type: String
     - contextPath: Censys.View.services.port
@@ -143,7 +143,7 @@ script:
       type: String
     - contextPath: Censys.View.services.tls.certificates
       description: A subset of the parsed details of the certificate, including the issuer, subject, fingerprint,
-        names, public keys, and signature
+        names, public keys, and signature.
       type: Unknown
     - contextPath: Censys.View.services.tls.session_ticket
       description: Details about the session ticket provided by the server at the end of the TLS handshake.
@@ -156,10 +156,10 @@ script:
       type: String
     - contextPath: Censys.View.metadata
       description: Whether the certificate was (ever) seen during a Censys scan of
-        the Internet
+        the internet.
       type: Unknown
     - contextPath: Censys.View.parent_spki_subject_fingerprint
-      description: Parent spki subject fingerprint.
+      description: Parent simple public key infrastructure (SPKI) subject fingerprint.
       type: String
     - contextPath: Censys.View.parsed.extensions
       description: Additional fields that extend the X.509 spec.
@@ -189,7 +189,7 @@ script:
       description: Any names for which the certificate can be used for identity verification.
       type: String
     - contextPath: Censys.View.parsed.redacted
-      description: Was the certificate redacted.
+      description: Indicates whether the certificate redacted.
       type: Boolean
     - contextPath: Censys.View.parsed.serial_number
       description: The issuer-specific identifier of the certificate.
@@ -198,22 +198,22 @@ script:
       description: Indicates whether the subject key was also used to sign the certificate.
       type: Boolean
     - contextPath: Censys.View.parsed.signature.signature_algorithm.name
-      description: Name of signature algorithm, e.g., SHA1-RSA or ECDSA-SHA512. Unknown algorithms get an integer id.
+      description: Name of signature algorithm, e.g., SHA1-RSA or ECDSA-SHA512. Unknown algorithms get an integer ID.
       type: String
     - contextPath: Censys.View.parsed.signature.signature_algorithm.oid
-      description: The OBJECT IDENTIFIER of the signature algorithm, in dotted-decimal notation.
+      description: The object identifier of the signature algorithm, in dotted-decimal notation.
       type: String
     - contextPath: Censys.View.parsed.signature.valid
-      description: Is the signature valid.
+      description: Whether the signature is valid.
       type: Boolean
     - contextPath: Censys.View.parsed.signature.value
-      description: Contents of the signature BIT STRING.
+      description: Contents of the signature as a bit string.
       type: String
     - contextPath: Censys.View.parsed.signature_algorithm.name
-      description: Name of signature algorithm, e.g., SHA1-RSA or ECDSA-SHA512. Unknown algorithms get an integer id.
+      description: Name of the signature algorithm, e.g., SHA1-RSA or ECDSA-SHA512. Unknown algorithms get an integer ID.
       type: String
     - contextPath: Censys.View.parsed.signature_algorithm.oid
-      description: The OBJECT IDENTIFIER of the signature algorithm, in dotted-decimal notation.
+      description: The object identifier of the signature algorithm, in dotted-decimal notation.
       type: String
     - contextPath: Censys.View.parsed.spki_subject_fingerprint
       description: The SHA2-256 digest over the DER encoding of the certificate's SubjectPublicKeyInfo,
@@ -241,7 +241,7 @@ script:
       description: The public portion of an ECDSA asymmetric key.
       type: Unknown
     - contextPath: Censys.View.parsed.subject_key_info.fingerprint_sha256
-      description: The SHA2-256 digest calculated over the certificate's DER-encoded.
+      description: The SHA2-256 digest calculated over the certificate's DER encoding.
       type: String
     - contextPath: Censys.View.parsed.subject_key_info.key_algorithm.name
       description: Name of public key type, e.g., RSA or ECDSA.
@@ -255,11 +255,11 @@ script:
         TBSCertificate with any CT extensions omitted.
       type: String
     - contextPath: Censys.View.parsed.validation_level
-      description: How the certificate is validated -- Domain validated (DV), Organization
+      description: How the certificate is validated - Domain validated (DV), Organization
         Validated (OV), Extended Validation (EV), or unknown.
       type: String
     - contextPath: Censys.View.parsed.validity.end
-      description: Timestamp of when certificate expires. Timezone is UTC.
+      description: Timestamp of when the certificate expires. Timezone is UTC.
       type: Date
     - contextPath: Censys.View.parsed.validity.length
       description: The length of time, in seconds, that the certificate is valid.
@@ -271,10 +271,10 @@ script:
       description: The x.509 certificate version number.
       type: Number
     - contextPath: Censys.View.precert
-      description: Is the certificate is pre-cert or not.
+      description: Whether the certificate is pre-cert.
       type: Boolean
     - contextPath: Censys.View.raw
-      description: Certificate Raw.
+      description: The raw certificate.
       type: String
     - contextPath: Censys.View.tags
       description: Tags applied to the certificate.
@@ -296,14 +296,14 @@ script:
     - default: false
       defaultValue: '50'
       description: The maximum number of hits to return in each response (minimum
-        of 0, maximum of 100). This arguments is for host serach.
+        of 0, maximum of 100). (Applies for the host search.) 
       isArray: false
       name: page_size
       required: false
       secret: false
     - default: false
       defaultValue: '50'
-      description: The number of results to return.
+      description: The number of results to return. 
       isArray: false
       name: limit
       required: false
@@ -319,14 +319,14 @@ script:
       required: true
       secret: false
     - default: false
-      description: The fields to return. (Applies for certificates search)
+      description: The fields to return. (Applies for the certificates search.)
       isArray: false
       name: fields
       required: false
       secret: false
     - default: false
       defaultValue: '1'
-      description: The page to return (applies to certificates search).
+      description: The page to return. (Applies for the certificates search.)
       isArray: false
       name: page
       required: false
@@ -344,7 +344,7 @@ script:
       description: The autonomous system's CIDR.
       type: String
     - contextPath: Censys.Search.autonomous_system.country_code
-      description: he autonomous system's two-letter, ISO 3166-1 alpha-2 country code
+      description: The autonomous system's two-letter, ISO 3166-1 alpha-2 country code
         (e.g., US, CN, GB, RU).
       type: String
     - contextPath: Censys.Search.autonomous_system.description
@@ -358,7 +358,7 @@ script:
       type: String
     - contextPath: Censys.Search.location.continent
       description: The continent of the host's detected location (e.g., North America,
-        Europe, Asia, South America, Africa, Oceania)
+        Europe, Asia, South America, Africa, Oceania).
       type: String
     - contextPath: Censys.Search.location.coordinates
       description: The estimated coordinates of the host's detected location.
@@ -385,7 +385,7 @@ script:
       type: Number
     - contextPath: Censys.Search.services.service_name
       description: The name of the service on the port. This is typically the L7 protocol
-        (e.g., “HTTP”); however, in the case that a more specific HTTP-based protocol
+        (e.g., “HTTP”); however, in case a more specific HTTP-based protocol
         is found (e.g., Kubernetes or Prometheus), the field will show that. This
         field indicates where protocol-specific data will be located.
       type: String
@@ -406,10 +406,10 @@ script:
       description: Distinguished name of the entity that the certificate belongs to.
       type: String
     - contextPath: Censys.Search.parsed.validity.end
-      description: Timestamp of when certificate expires. Timezone is UTC.
+      description: Timestamp of when the certificate expires. Timezone is UTC.
       type: Date
     - contextPath: Censys.Search.parsed.validity.start
-      description: Timestamp of when certificate is first valid. Timezone is UTC.
+      description: Timestamp of when the certificate is first valid. Timezone is UTC.
       type: Date
     - contextPath: Censys.Search.parsed.issuer_dn
       description: Distinguished name of the entity that has signed and issued the
@@ -426,4 +426,4 @@ script:
   type: python
 tests:
 - CensysV2-Test
-fromversion: 6.1.0
+fromversion: 6.0.0
