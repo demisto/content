@@ -589,6 +589,7 @@ def fetch_credentials():
     engines_to_fetch_from = []
     ENGINES = argToList(demisto.params().get('engines', []))
     identifier = demisto.args().get('identifier')
+    concat_username_to_cred_name = argToBoolean(demisto.params().get('concat_username_to_cred_name') or 'false')
 
     if len(ENGINES) == 0:
         return_error('No secrets engines specified')
@@ -605,11 +606,11 @@ def fetch_credentials():
             if 'version' not in engine:
                 return_error('Version not configured for KV engine, re-configure the engine')
             if engine['version'] == '1':
-                credentials += get_kv1_secrets(engine['path'])
+                credentials += get_kv1_secrets(engine['path'], concat_username_to_cred_name)
             elif engine['version'] == '2':
-                credentials += get_kv2_secrets(engine['path'])
+                credentials += get_kv2_secrets(engine['path'], concat_username_to_cred_name)
         elif engine['type'] == 'Cubbyhole':
-            credentials += get_ch_secrets(engine['path'])
+            credentials += get_ch_secrets(engine['path'], concat_username_to_cred_name)
 
     if identifier:
         credentials = list(filter(lambda c: c.get('name', '') == identifier, credentials))
@@ -617,7 +618,7 @@ def fetch_credentials():
     demisto.credentials(credentials)
 
 
-def get_kv1_secrets(engine_path):
+def get_kv1_secrets(engine_path, concat_username_to_cred_name=False):
     path = engine_path
     params = {
         'list': 'true'
@@ -633,10 +634,14 @@ def get_kv1_secrets(engine_path):
     for secret in res['data'].get('keys', []):
         secret_data = get_kv1_secret(engine_path, secret)
         for k, v in secret_data.get('data', {}).iteritems():
+            if concat_username_to_cred_name:
+                name = '{0}_{1}'.format(secret, k)
+            else:
+                name = secret
             secrets.append({
                 'user': k,
                 'password': v,
-                'name': secret
+                'name': name
             })
 
     return secrets
@@ -648,7 +653,7 @@ def get_kv1_secret(engine_path, secret):
     return send_request(path, 'get')
 
 
-def get_kv2_secrets(engine_path):
+def get_kv2_secrets(engine_path, concat_username_to_cred_name=False):
     secrets = []
     res = list_secrets(engine_path, '2')
     if not res or 'data' not in res:
@@ -657,10 +662,14 @@ def get_kv2_secrets(engine_path):
     for secret in res['data'].get('keys', []):
         secret_data = get_kv2_secret(engine_path, secret)
         for k, v in secret_data.get('data', {}).get('data', {}).iteritems():
+            if concat_username_to_cred_name:
+                name = '{0}_{1}'.format(secret, k)
+            else:
+                name = secret
             secrets.append({
                 'user': k,
                 'password': v,
-                'name': secret
+                'name': name
             })
 
     return secrets
@@ -672,7 +681,7 @@ def get_kv2_secret(engine_path, secret):
     return send_request(path, 'get')
 
 
-def get_ch_secrets(engine_path):
+def get_ch_secrets(engine_path, concat_username_to_cred_name=False):
     path = engine_path
 
     params = {
@@ -689,10 +698,14 @@ def get_ch_secrets(engine_path):
     for secret in res['data'].get('keys', []):
         secret_data = get_ch_secret(engine_path, secret)
         for k, v in secret_data.get('data', {}).iteritems():
+            if concat_username_to_cred_name:
+                name = '{0}_{1}'.format(secret, k)
+            else:
+                name = secret
             secrets.append({
                 'user': k,
                 'password': v,
-                'name': secret
+                'name': name
             })
 
     return secrets

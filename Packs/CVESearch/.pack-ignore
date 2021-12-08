@@ -1,4 +1,4 @@
-[file:script-CveSearch.yml]
+[file:CveSearch.yml]
 ignore=BA101
 
 [file:playbook-CVE_Enrichment_-_Generic.yml]
