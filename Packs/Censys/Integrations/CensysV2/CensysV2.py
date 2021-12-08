@@ -76,7 +76,7 @@ def censys_view_command(client: Client, args: Dict[str, Any]) -> CommandResults:
             raw_response=res
         )
     else:
-        metadata = res.get('metadata')
+        metadata = res.get('metadata', {})
         content = {
             'SHA 256': res.get('fingerprint_sha256'),
             'Tags': res.get('tags'),
@@ -105,9 +105,9 @@ def censys_search_command(client: Client, args: Dict[str, Any]) -> CommandResult
     contents = []
 
     if index == 'ipv4':
-        if limit and int(limit) < page_size:
+        if limit and int(limit) < page_size:  # type: ignore
             page_size = limit
-        res = client.censys_search_ip_request(query, page_size)
+        res = client.censys_search_ip_request(query, page_size)  # type: ignore
         hits = res.get('result', {}).get('hits', [])
 
         for hit in hits:
@@ -149,7 +149,7 @@ def search_certs_command(client: Client, args: Dict[str, Any], query: str, limit
     }
 
     res = client.censys_search_certs_request(data)
-    results = res.get('results')[:limit]
+    results = res.get('results', {})[:limit]
     for result in results:
         contents.append({
             'SHA256': result.get('parsed').get('fingerprint_sha256'),
