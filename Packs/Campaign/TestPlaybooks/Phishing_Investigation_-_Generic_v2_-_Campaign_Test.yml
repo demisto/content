@@ -108,7 +108,7 @@ tasks:
       ignore-outputs:
         simple: "false"
       labels:
-        simple: '[{"Email/from":"ivandijk@paloaltonetworks.com.com"}]'
+        simple: '[{"Email/from":"testuser1@paloaltonetworks.com"}]'
       name:
         complex:
           root: incident
@@ -248,7 +248,7 @@ tasks:
       ignore-outputs:
         simple: "false"
       labels:
-        simple: '[{"Email/from":"ivandijk@paloaltonetworks.com.com"}]'
+        simple: '[{"Email/from":"testusercampaign@test.com"}]'
       name:
         complex:
           root: incident
@@ -312,7 +312,7 @@ tasks:
       emailto:
         simple: victim-test7@demistodev.onmicrosoft.com
       labels:
-        simple: '[{"Email/from":"ivandijk@paloaltonetworks.com.com"}]'
+        simple: '[{"Email/from":"testusercampaign@test.com"}]'
       name:
         complex:
           root: incident
@@ -375,7 +375,7 @@ tasks:
       emailto:
         simple: victim-test5@demistodev.onmicrosoft.com
       labels:
-        simple: '[{"Email/from":"ivandijk@paloaltonetworks.com.com"}]'
+        simple: '[{"Email/from":"testusercampaign@test.com"}]'
       name:
         complex:
           root: incident
@@ -438,7 +438,7 @@ tasks:
       emailto:
         simple: victim-test4@demistodev.onmicrosoft.com
       labels:
-        simple: '[{"Email/from":"ivandijk@paloaltonetworks.com.com"}]'
+        simple: '[{"Email/from":"testusercampaign@test.com"}]'
       name:
         complex:
           root: incident
@@ -501,7 +501,7 @@ tasks:
       emailto:
         simple: victim-test3@demistodev.onmicrosoft.com
       labels:
-        simple: '[{"Email/from":"ivandijk@paloaltonetworks.com.com"}]'
+        simple: '[{"Email/from":"testusercampaign@test.com"}]'
       name:
         complex:
           root: incident
@@ -564,7 +564,7 @@ tasks:
       emailto:
         simple: victim-test8@demistodev.onmicrosoft.com
       labels:
-        simple: '[{"Email/from":"ivandijk@paloaltonetworks.com.com"}]'
+        simple: '[{"Email/from":"testusercampaign@test.com"}]'
       name:
         complex:
           root: incident
@@ -627,7 +627,7 @@ tasks:
       emailto:
         simple: victim-test9@demistodev.onmicrosoft.com
       labels:
-        simple: '[{"Email/from":"ivandijk@paloaltonetworks.com.com"}]'
+        simple: '[{"Email/from":"testusercampaign@test.com"}]'
       name:
         complex:
           root: incident
@@ -799,7 +799,7 @@ tasks:
       emailto:
         simple: victim-test9@demistodev.onmicrosoft.com
       labels:
-        simple: '[{"Email/from":"ivandijk@paloaltonetworks.com.com"}]'
+        simple: '[{"Email/from":"testusercampaign@test.com"}]'
       name:
         complex:
           root: incident
@@ -861,7 +861,7 @@ tasks:
       emailto:
         simple: victim-test10@demistodev.onmicrosoft.com
       labels:
-        simple: '[{"Email/from":"ivandijk@paloaltonetworks.com.com"}]'
+        simple: '[{"Email/from":"testusercampaign@test.com"}]'
       name:
         complex:
           root: incident
