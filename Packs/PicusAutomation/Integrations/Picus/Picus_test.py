@@ -76,3 +76,72 @@ def test_getPicusVersion(mocker):
     mocker.patch("Picus.requests.post",return_value=mock_response)
     result = getPicusVersion().outputs
     assert result["version"] == 4074
+
+def test_getPeerList(mocker):
+    from Picus import getPeerList
+    mocker.patch("Picus.getAccessToken", return_value="test")
+    mocker.patch("Picus.generateEndpointURL", return_value=(1, 1))
+
+    mock_response = Response()
+    mock_response.status_code = "200"
+    mock_response._content = json.dumps(util_load_json("test_data/get_peerList.json")).encode("ascii")
+
+    mocker.patch("Picus.requests.post", return_value=mock_response)
+    result = getPeerList().outputs
+    assert result[2]["name"] == "Win10-Det2"
+
+def test_getVectorList(mocker):
+    from Picus import getVectorList
+    mocker.patch("Picus.getAccessToken", return_value="test")
+    mocker.patch("Picus.generateEndpointURL", return_value=(1, 1))
+
+    mock_response = Response()
+    mock_response.status_code = "200"
+    mock_response._content = json.dumps(util_load_json("test_data/get_vectorList.json")).encode("ascii")
+
+    mocker.patch("Picus.requests.post", return_value=mock_response)
+    result = getVectorList().outputs
+    assert result[0]["name"] == "Picus_Attacker_1 - Win10-Det1"
+
+def test_runAttacks(mocker):
+    from Picus import runAttacks
+    mocker.patch("Picus.getAccessToken", return_value="test")
+    mocker.patch("Picus.generateEndpointURL", return_value=(1, 1))
+    demisto_mock = mocker.patch("Picus.demisto")
+    demisto_mock.args.return_value.get.side_effect = ["561365", "PicusPeerEXT", "PicusPeerINT", "HTTP"]
+
+    mock_response = Response()
+    mock_response.status_code = "200"
+    mock_response._content = json.dumps(util_load_json("test_data/runAttacks.json")).encode("ascii")
+
+    mocker.patch("Picus.requests.post", return_value=mock_response)
+    result = runAttacks().outputs
+    assert result == "561365"
+
+def test_triggerUpdate(mocker):
+    from Picus import triggerUpdate
+    mocker.patch("Picus.getAccessToken", return_value="test")
+    mocker.patch("Picus.generateEndpointURL", return_value=(1, 1))
+
+    mock_response = Response()
+    mock_response.status_code = "200"
+    mock_response._content = json.dumps(util_load_json("test_data/triggerUpdate.json")).encode("ascii")
+
+    mocker.patch("Picus.requests.post", return_value=mock_response)
+    result = triggerUpdate().outputs
+    assert result["success"] == True
+
+def test_getVectorCompare(mocker):
+    from Picus import getVectorCompare
+    mocker.patch("Picus.getAccessToken", return_value="test")
+    mocker.patch("Picus.generateEndpointURL", return_value=(1, 1))
+    demisto_mock = mocker.patch("Picus.demisto")
+    demisto_mock.args.return_value.get.side_effect = ["PicusPeerEXT", "PicusPeerINT", 10]
+
+    mock_response = Response()
+    mock_response.status_code = "200"
+    mock_response._content = json.dumps(util_load_json("test_data/get_vectorCompare.json")).encode("ascii")
+
+    mocker.patch("Picus.requests.post", return_value=mock_response)
+    result = getVectorCompare().outputs
+    assert result[1]["name"] == "Jellyfin Server Side Request Forgery (SSRF) Vulnerability Variant-1"
