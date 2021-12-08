@@ -31,6 +31,12 @@ outputs:
 - contextPath: MicrosoftATP.IncorrectIDs
   description: Incorrect Device IDs entered
   type: unknown
+- contextPath: MicrosoftATP.IncorrectHostnames
+  description: Incorrect Device Hostnames entered
+  type: unknown
+- contextPath: MicrosoftATP.IncorrectIPs
+  description: Incorrect Device IPs entered
+  type: unknown
 starttaskid: '0'
 tasks:
   '0':
@@ -272,6 +278,8 @@ tasks:
     scriptarguments:
       Device_id:
         simple: ${inputs.Endpoint_ID}
+      Hostname:
+        simple: ${inputs.Hostname}
     separatecontext: true
     skipunavailable: false
     task:
