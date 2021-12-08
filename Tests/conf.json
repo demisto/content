@@ -4759,6 +4759,11 @@
             "fromversion": "6.0.0"
         },
         {
+            "integrations": "AzureDataExplorer",
+            "playbookID": "playbook-AzureDataExplorer-Test",
+            "fromversion": "6.0.0"
+        },
+        {
             "scripts": [
                 "SplunkShowAsset",
                 "SplunkShowDrilldown",
