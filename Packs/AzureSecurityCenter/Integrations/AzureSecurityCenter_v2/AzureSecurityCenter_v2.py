@@ -401,11 +401,11 @@ class MsClient:
             dict: response body
 
         """
-        """ subscriptions/{subscriptionId}/providers/Microsoft.Security/secureScores/{secureScoreName}?api-version=2020-01-0"""
-        
+
         cmd_url = f"/providers/Microsoft.Security/secureScores/{secure_score_name}"
-        params= {"api-version": SECURE_STORES_API_VERSION}
+        params = {"api-version": SECURE_STORES_API_VERSION}
         return self.ms_client.http_request(method="GET", url_suffix=cmd_url, params=params)
+
 
 """ FUNCTIONS """
 
@@ -1277,22 +1277,25 @@ def list_sc_subscriptions_command(client: MsClient):
 
 """ Secure Score Start"""
 
+
 def get_secure_scores_command(client: MsClient, args: dict):
-    
+
     secure_score_name = args.get("secure_score_name", "ascScore")
 
     securescore = client.get_secure_scores(secure_score_name)
-    
+
     md = tableToMarkdown(
         "Azure Security Center - Secure Score",
         securescore['properties']
     )
 
-    ec =  {"Azure.Securescore(val.ID && val.ID === obj.ID)": securescore['properties']}
+    ec = {"Azure.Securescore(val.ID && val.ID === obj.ID)": securescore['properties']}
 
     return md, ec, securescore
 
+
 """ Secure Scores End"""
+
 
 def test_module(client: MsClient):
     """
