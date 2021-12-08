@@ -43,7 +43,7 @@
         {
             "integrations": "CensysV2",
             "playbookID": "CensysV2-Test",
-            "fromversion": "6.0.0"
+            "fromversion": "6.1.0"
         },
         {
             "playbookID": "Generic Polling Test",

@@ -1,6 +1,7 @@
 
 import json
 import io
+import demistomock as demisto
 
 
 SEARCH_HOST_OUTPUTS = [{
@@ -104,6 +105,36 @@ def test_censys_view_host(mocker):
     response = censys_view_command(client, args)
     assert '### Information for IP 8.8.8.8' in response.readable_output
     assert response.outputs == mock_response.get('result')
+
+
+def test_censys_view_host_invalid(requests_mock, mocker):
+    """
+    Given:
+        Command arguments: query ip = test
+    When:
+        Running cen_view_command
+    Then:
+        Validate error message returns.
+    """
+    from CensysV2 import main
+    import CensysV2
+    args = {
+        'index': 'ipv4',
+        'query': "test"
+    }
+    mock_response = {
+        "code": 422,
+        "status": "Unprocessable Entity",
+        "error": "ip: value is not a valid IPv4 or IPv6 address"
+    }
+    requests_mock.get('https://search.censys.io/api/v2/hosts/test', json=mock_response, status_code=422)
+    return_error_mock = mocker.patch.object(CensysV2, 'return_error')
+    mocker.patch.object(demisto, 'error')
+    mocker.patch.object(demisto, 'args', return_value=args)
+    mocker.patch.object(demisto, 'command', return_value='cen-view')
+    main()
+    assert CensysV2.return_error.called
+    assert 'Error in API call [422]' in return_error_mock.call_args[0][0]
 
 
 def test_censys_view_cert(mocker):

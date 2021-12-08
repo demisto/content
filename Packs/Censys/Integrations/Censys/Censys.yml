@@ -3,6 +3,11 @@ commonfields:
   id: Censys
   version: -1
 configuration:
+- defaultvalue: https://censys.io/api/v1/
+  display: Server URL
+  name: url
+  required: true
+  type: 0
 - display: Censys API ID
   name: apiid
   required: true
@@ -19,7 +24,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Deprecated. Use CensysV2 instead. Censys is a search engine that allows
+description: Deprecated. Use Censys v2 instead. Censys is a search engine that allows
   computer scientists to ask questions about the devices and networks that compose
   the Internet. Driven by Internet-wide scanning, Censys lets researchers find specific
   hosts and create aggregate reports on how devices, websites, and certificates are

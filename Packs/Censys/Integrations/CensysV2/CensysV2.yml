@@ -3,7 +3,8 @@ commonfields:
   id: CensysV2
   version: -1
 configuration:
-- display: App ID
+- display: API ID
+  displaypassword: Secret
   name: credentials
   required: true
   type: 9
@@ -295,14 +296,14 @@ script:
     - default: false
       defaultValue: '50'
       description: The maximum number of hits to return in each response (minimum
-        of 0, maximum of 100). Default is 50. This arguments is for host serach.
+        of 0, maximum of 100). This arguments is for host serach.
       isArray: false
       name: page_size
       required: false
       secret: false
     - default: false
       defaultValue: '50'
-      description: The number of results to return. Default is 50.
+      description: The number of results to return.
       isArray: false
       name: limit
       required: false
@@ -325,7 +326,7 @@ script:
       secret: false
     - default: false
       defaultValue: '1'
-      description: The page to return, default is 1 (applies to certificates search).
+      description: The page to return (applies to certificates search).
       isArray: false
       name: page
       required: false
@@ -425,4 +426,4 @@ script:
   type: python
 tests:
 - CensysV2-Test
-fromversion: 6.0.0
+fromversion: 6.1.0

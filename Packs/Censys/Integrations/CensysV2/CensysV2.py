@@ -15,7 +15,7 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 class Client(BaseClient):
 
-    def censys_view_request(self, index: str, query: str):
+    def censys_view_request(self, index: str, query: str) -> Dict:
 
         if index == 'ipv4':
             url_suffix = f'v2/hosts/{query}'
@@ -24,7 +24,7 @@ class Client(BaseClient):
         res = self._http_request('GET', url_suffix)
         return res
 
-    def censys_search_ip_request(self, query: Dict, page_size: int):
+    def censys_search_ip_request(self, query: Dict, page_size: int) -> Dict:
         url_suffix = 'v2/hosts/search'
         params = {
             'q': query,
@@ -33,7 +33,7 @@ class Client(BaseClient):
         res = self._http_request('GET', url_suffix, params=params)
         return res
 
-    def censys_search_certs_request(self, data: Dict):
+    def censys_search_certs_request(self, data: Dict) -> Dict:
         url_suffix = 'v1/search/certificates'
         res = self._http_request('POST', url_suffix, json_data=data)
         return res
@@ -84,7 +84,7 @@ def censys_view_command(client: Client, args: Dict[str, Any]) -> CommandResults:
             'Added': metadata.get('added_at'),
             'Updated': metadata.get('updated_at')
         }
-        human_readable = tableToMarkdown('Information for certificate ', content)
+        human_readable = tableToMarkdown('Information for certificate', content)
         return CommandResults(
             readable_output=human_readable,
             outputs_prefix='Censys.View',
@@ -100,7 +100,7 @@ def censys_search_command(client: Client, args: Dict[str, Any]) -> CommandResult
     """
     index = args.get('index')
     query = args.get('query', '')
-    page_size = int(args.get('page_size', 50))
+    page_size = arg_to_number(args.get('page_size', 50))
     limit = args.get('limit')
     contents = []
 
@@ -135,8 +135,8 @@ def censys_search_command(client: Client, args: Dict[str, Any]) -> CommandResult
 
 
 def search_certs_command(client: Client, args: Dict[str, Any], query: str, limit: Optional[int]):
-    fields = ["parsed.fingerprint_sha256", "parsed.subject_dn", "parsed.issuer_dn", "parsed.issuer.organization",
-              "parsed.validity.start", "parsed.validity.end", "parsed.names"]
+    fields = ['parsed.fingerprint_sha256', 'parsed.subject_dn', 'parsed.issuer_dn', 'parsed.issuer.organization',
+              'parsed.validity.start', 'parsed.validity.end', 'parsed.names']
     search_fields = argToList(args.get('fields'))
     if search_fields:
         fields.append(search_fields)
@@ -177,30 +177,27 @@ def main() -> None:
     params = demisto.params()
     username = params.get('credentials', {}).get('identifier')
     password = params.get('credentials', {}).get('password')
-    verify_certificate = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy', False)
+    verify_certificate = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
 
     base_url = 'https://search.censys.io/api/'
-
-    demisto.debug(f'Command being called is {demisto.command()}')
+    command = demisto.command()
+    demisto.debug(f'Command being called is {command}')
     try:
-        headers: Dict = {'Content-Type': 'application/json'}
-
         client = Client(
             base_url=base_url,
             auth=(username, password),
             verify=verify_certificate,
-            headers=headers,
             proxy=proxy)
 
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
             return_results(result)
 
-        elif demisto.command() == 'cen-view':
+        elif command == 'cen-view':
             return_results(censys_view_command(client, demisto.args()))
-        elif demisto.command() == 'cen-search':
+        elif command == 'cen-search':
             return_results(censys_search_command(client, demisto.args()))
 
     # Log exceptions and return errors
