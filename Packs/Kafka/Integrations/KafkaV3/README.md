@@ -127,7 +127,7 @@ Consumes a single Kafka message.
 
 ### kafka-fetch-partitions
 ***
-Fetch partitions for a topic.
+Fetches partitions for a topic.
 
 
 #### Base Command
