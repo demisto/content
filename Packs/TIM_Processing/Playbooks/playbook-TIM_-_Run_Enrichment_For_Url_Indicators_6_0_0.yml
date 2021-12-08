@@ -1,7 +1,6 @@
 id: TIM - Run Enrichment For Url Indicators
 version: -1
-fromversion: 5.5.0
-toversion: 5.9.9
+fromversion: 6.0.0
 name: TIM - Run Enrichment For Url Indicators
 description: |-
     This playbook processes indicators by enriching indicators
@@ -97,7 +96,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 2
+    quietmode: 0
   "127":
     id: "127"
     taskid: 34af11b6-fc2e-486d-8dca-bada9338b213
@@ -172,24 +171,16 @@ tasks:
       id: e81120d8-dc36-484d-8841-27c13df99945
       version: -1
       name: Enrich bad indicators
-      description: Perform enrichment with enabled enrichment intergations
-      script: '|||url'
+      description: commands.local.cmd.enrich.indicators
+      script: Builtin|||enrichIndicators
       type: regular
       iscommand: true
-      brand: ""
+      brand: Builtin
     nexttasks:
       '#none#':
       - "127"
     scriptarguments:
-      limit: {}
-      long: {}
-      public: {}
-      retries: {}
-      sampleSize: {}
-      submitWait: {}
-      threshold: {}
-      timeout: {}
-      url:
+      indicatorsValues:
         complex:
           root: playbookQuery
           filters:
@@ -212,7 +203,6 @@ tasks:
           accessor: value
           transformers:
           - operator: uniq
-      wait: {}
     separatecontext: false
     view: |-
       {
@@ -323,7 +313,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 2
+    quietmode: 0
   "133":
     id: "133"
     taskid: 46cb4bec-b75d-41fa-8a35-045fc68d256e
@@ -332,24 +322,16 @@ tasks:
       id: 46cb4bec-b75d-41fa-8a35-045fc68d256e
       version: -1
       name: Enrich good indicators
-      description: Perform enrichment with enabled enrichment intergations
-      script: '|||url'
+      description: commands.local.cmd.enrich.indicators
+      script: Builtin|||enrichIndicators
       type: regular
       iscommand: true
-      brand: ""
+      brand: Builtin
     nexttasks:
       '#none#':
       - "127"
     scriptarguments:
-      limit: {}
-      long: {}
-      public: {}
-      retries: {}
-      sampleSize: {}
-      submitWait: {}
-      threshold: {}
-      timeout: {}
-      url:
+      indicatorsValues:
         complex:
           root: playbookQuery
           filters:
@@ -372,7 +354,6 @@ tasks:
           accessor: value
           transformers:
           - operator: uniq
-      wait: {}
     separatecontext: false
     view: |-
       {
@@ -442,7 +423,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 2
+    quietmode: 0
   "135":
     id: "135"
     taskid: 462b3eee-6f52-46a4-834d-2b8522b0c7b7
@@ -492,24 +473,16 @@ tasks:
       id: ca9ea73c-b29c-40b6-8a8a-2b932b57c7dc
       version: -1
       name: Enrich suspicious indicators
-      description: Perform enrichment with enabled enrichment intergations
-      script: '|||url'
+      description: commands.local.cmd.enrich.indicators
+      script: Builtin|||enrichIndicators
       type: regular
       iscommand: true
-      brand: ""
+      brand: Builtin
     nexttasks:
       '#none#':
       - "127"
     scriptarguments:
-      limit: {}
-      long: {}
-      public: {}
-      retries: {}
-      sampleSize: {}
-      submitWait: {}
-      threshold: {}
-      timeout: {}
-      url:
+      indicatorsValues:
         complex:
           root: playbookQuery
           filters:
@@ -532,7 +505,6 @@ tasks:
           accessor: value
           transformers:
           - operator: uniq
-      wait: {}
     separatecontext: false
     view: |-
       {
@@ -602,7 +574,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 2
+    quietmode: 0
   "138":
     id: "138"
     taskid: c484534c-f2ab-407b-881c-2a8b9aeb903f
@@ -652,24 +624,16 @@ tasks:
       id: 76db99f4-68ce-4128-803c-36e2ec6674f5
       version: -1
       name: Enrich unknown indicators
-      description: Perform enrichment with enabled enrichment intergations
-      script: '|||url'
+      description: commands.local.cmd.enrich.indicators
+      script: Builtin|||enrichIndicators
       type: regular
       iscommand: true
-      brand: ""
+      brand: Builtin
     nexttasks:
       '#none#':
       - "127"
     scriptarguments:
-      limit: {}
-      long: {}
-      public: {}
-      retries: {}
-      sampleSize: {}
-      submitWait: {}
-      threshold: {}
-      timeout: {}
-      url:
+      indicatorsValues:
         complex:
           root: playbookQuery
           filters:
@@ -692,7 +656,6 @@ tasks:
           accessor: value
           transformers:
           - operator: uniq
-      wait: {}
     separatecontext: false
     view: |-
       {
