@@ -188,7 +188,7 @@ RETURN_ERROR_TARGET = 'SlackV3.return_error'
 
 @pytest.fixture(autouse=True)
 def setup(mocker):
-    from SlackV3 import init_globals
+    import SlackV3
 
     mocker.patch.object(demisto, 'info')
     mocker.patch.object(demisto, 'debug')
@@ -200,7 +200,9 @@ def setup(mocker):
         'bot_id': 'W12345678'
     })
 
-    init_globals()
+    SlackV3.init_globals()
+    # We will manually change the safe mode to ensure it doesn't break previous user's envs.
+    SlackV3.SAFE_MODE = False
 
 
 class AsyncMock(MagicMock):
@@ -430,6 +432,7 @@ def test_get_user_by_name(mocker):
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
+
 
     # Assert
 
@@ -1157,7 +1160,7 @@ def test_check_for_mirrors(mocker):
     assert len(invite_call) == 2
     assert invited_users == ['U012A3CDE', 'U012B3CUI']
     assert channel == ['new_group', 'new_group']
-    assert demisto.setIntegrationContext.call_count == 1
+    assert demisto.setIntegrationContext.call_count == 2
     assert len(our_mirror_filter) == 1
     assert our_mirror == new_mirror
     assert len(our_user_filter) == 1
@@ -1238,7 +1241,7 @@ def test_check_for_mirrors_email_user_not_matching(mocker):
 
     invited_users = [c[1]['json']['users'] for c in invite_call]
     channel = [c[1]['json']['channel'] for c in invite_call]
-    assert demisto.setIntegrationContext.call_count == 1
+    assert demisto.setIntegrationContext.call_count == 2
 
     # Assert
     assert len(users_call) == 1
@@ -1306,7 +1309,7 @@ def test_check_for_mirrors_email_not_matching(mocker):
     assert len(invite_call) == 2
     assert invited_users == ['U012A3CDE', 'U012B3CUI']
     assert channel == ['new_group', 'new_group']
-    assert demisto.setIntegrationContext.call_count == 1
+    assert demisto.setIntegrationContext.call_count == 2
 
 
 def test_check_for_mirrors_user_email_not_matching(mocker):
@@ -1370,7 +1373,7 @@ def test_check_for_mirrors_user_email_not_matching(mocker):
 
     # Assert
     assert demisto.setIntegrationContext.call_count == 1
-    assert error_results[0]['Contents'] == 'User 123 not found in Slack'
+    assert error_results[0]['Contents'] == 'User bruce.wayne@pharmtech.zz not found in Slack'
     assert len(users_call) == 1
     assert len(invite_call) == 1
     assert invited_users == ['U012A3CDE']
@@ -2502,7 +2505,7 @@ def test_send_request_with_severity_user_doesnt_exist(mocker, capfd):
                                                          'permitted_notifications': ['incidentOpened']})
 
     SlackV3.init_globals()
-
+    SlackV3.SAFE_MODE = False
     # Set
 
     def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
@@ -2631,7 +2634,7 @@ def test_send_request_no_severity(mocker):
     # Assert
 
     assert return_error_mock.call_count == 1
-    assert err_msg == 'Either a user, group or channel must be provided.'
+    assert err_msg == 'Either a user, group, channel id, or channel must be provided.'
     assert len(users_call) == 0
     assert SlackV3.send_message.call_count == 0
 
@@ -2677,7 +2680,7 @@ def test_send_request_zero_severity(mocker):
     # Assert
 
     assert return_error_mock.call_count == 1
-    assert err_msg == 'Either a user, group or channel must be provided.'
+    assert err_msg == 'Either a user, group, channel id, or channel must be provided.'
     assert len(users_call) == 0
     assert SlackV3.send_message.call_count == 0
 
@@ -2971,7 +2974,7 @@ def test_send_file_no_args_no_investigation(mocker):
 
     # Assert
     assert SlackV3.slack_send_request.call_count == 0
-    assert err_msg == 'Either a user, group or channel must be provided.'
+    assert err_msg == 'Either a user, group, channel id or channel must be provided.'
 
 
 def test_set_topic(mocker):
@@ -3363,13 +3366,14 @@ def test_get_user(mocker):
 
 
 def test_get_user_by_name_paging_rate_limit(mocker):
-    from SlackV3 import get_user_by_name, init_globals
+    import SlackV3
     from slack_sdk.errors import SlackApiError
     from slack_sdk.web.slack_response import SlackResponse
     import time
 
     # Set
-    init_globals()
+    SlackV3.init_globals()
+    SlackV3.SAFE_MODE = False
     err_response: SlackResponse = SlackResponse(api_url='', client=None, http_verb='GET', req_args={},
                                                 data={'ok': False}, status_code=429, headers={'Retry-After': 30})
     first_call = {'members': js.loads(USERS), 'response_metadata': {'next_cursor': 'dGVhbTpDQ0M3UENUTks='}}
@@ -3382,7 +3386,7 @@ def test_get_user_by_name_paging_rate_limit(mocker):
     mocker.patch.object(time, 'sleep')
 
     # Arrange
-    user = get_user_by_name('alexios')
+    user = SlackV3.get_user_by_name('alexios')
     args = slack_sdk.WebClient.api_call.call_args_list
     first_args = args[0][1]
     second_args = args[2][1]
@@ -3397,13 +3401,14 @@ def test_get_user_by_name_paging_rate_limit(mocker):
 
 
 def test_get_user_by_name_paging_rate_limit_error(mocker):
-    from SlackV3 import get_user_by_name, init_globals
+    import SlackV3
     from slack_sdk.errors import SlackApiError
     from slack_sdk.web.slack_response import SlackResponse
     import time
 
     # Set
-    init_globals()
+    SlackV3.init_globals()
+    SlackV3.SAFE_MODE = False
     err_response: SlackResponse = SlackResponse(api_url='', client=None, http_verb='GET', req_args={},
                                                 data={'ok': False}, status_code=429, headers={'Retry-After': 40})
     first_call = {'members': js.loads(USERS), 'response_metadata': {'next_cursor': 'dGVhbTpDQ0M3UENUTks='}}
@@ -3417,7 +3422,7 @@ def test_get_user_by_name_paging_rate_limit_error(mocker):
 
     # Arrange
     with pytest.raises(SlackApiError):
-        get_user_by_name('alexios')
+        SlackV3.get_user_by_name('alexios')
     args = slack_sdk.WebClient.api_call.call_args_list
     first_args = args[0][1]
 
@@ -3428,12 +3433,13 @@ def test_get_user_by_name_paging_rate_limit_error(mocker):
 
 
 def test_get_user_by_name_paging_normal_error(mocker):
-    from SlackV3 import get_user_by_name, init_globals
+    import SlackV3
     from slack_sdk.errors import SlackApiError
     from slack_sdk.web.slack_response import SlackResponse
 
     # Set
-    init_globals()
+    SlackV3.init_globals()
+    SlackV3.SAFE_MODE = False
     err_response: SlackResponse = SlackResponse(api_url='', client=None, http_verb='GET', req_args={},
                                                 data={'ok': False}, status_code=500, headers={})
     first_call = {'members': js.loads(USERS), 'response_metadata': {'next_cursor': 'dGVhbTpDQ0M3UENUTks='}}
@@ -3446,7 +3452,7 @@ def test_get_user_by_name_paging_normal_error(mocker):
 
     # Arrange
     with pytest.raises(SlackApiError):
-        get_user_by_name('alexios')
+        SlackV3.get_user_by_name('alexios')
     args = slack_sdk.WebClient.api_call.call_args_list
     first_args = args[0][1]
 

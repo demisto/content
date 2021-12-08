@@ -101,6 +101,12 @@ configuration:
   name: enable_dm
   required: false
   type: 8
+- display: Enable Safe Mode
+  hidden: false
+  name: safe_mode
+  required: false
+  type: 8
+  defaultvalue: true
 - display: Common Channels
   name: common_channels
   type: 12
@@ -213,6 +219,12 @@ script:
       required: false
       secret: false
     - default: false
+      description: The id of the Slack channel to which to send the message.
+      isArray: false
+      name: channel_id
+      required: false
+      secret: false
+    - default: false
       description: An entry ID to send as a link.
       isArray: false
       name: entry
@@ -259,6 +271,13 @@ script:
       name: channel
       required: false
       secret: false
+    - default: false
+      description: The id of the channel to archive. If not provided, the mirrored
+        investigation channel is archived (if the channel exists).
+      isArray: false
+      name: channel_id
+      required: false
+      secret: false
     deprecated: false
     description: Archives a Slack channel.
     execution: false
@@ -291,6 +310,12 @@ script:
       required: false
       secret: false
     - default: false
+      description: The id of the Slack channel to which to send the file.
+      isArray: false
+      name: channel_id
+      required: false
+      secret: false
+    - default: false
       description: The ID of the thread to which to reply - can be retrieved from
         a previous send-notification command.
       isArray: false
@@ -314,6 +339,13 @@ script:
         channel is set (if the channel exists).
       isArray: false
       name: channel
+      required: false
+      secret: false
+    - default: false
+      description: The channel id. If not specified, the topic of the mirrored investigation
+        channel is set (if the channel exists).
+      isArray: false
+      name: channel_id
       required: false
       secret: false
     - default: true
@@ -371,6 +403,14 @@ script:
       name: channel
       required: false
       secret: false
+    - default: false
+      description: The id of the channel to which to invite the users. If the id
+        of the channel is not specified, the id of the mirrored investigation channel
+        is used (if the channel exists).
+      isArray: false
+      name: channel_id
+      required: false
+      secret: false
     deprecated: false
     description: Invites users to join a channel.
     execution: false
@@ -391,6 +431,14 @@ script:
       name: channel
       required: false
       secret: false
+    - default: false
+      description: The id of the channel from which to remove the users. If the
+        id of the channel is not specified, the mirrored investigation channel is
+        used (if the channel exists).
+      isArray: false
+      name: channel_id
+      required: false
+      secret: false
     deprecated: false
     description: Removes users from the specified channel.
     execution: false
@@ -408,6 +456,14 @@ script:
         exists).
       isArray: false
       name: channel
+      required: false
+      secret: false
+    - default: false
+      description: The current id of the channel. If the id of the channel is
+        not specified, the mirrored investigation channel is used (if the channel
+        exists).
+      isArray: false
+      name: channel_id
       required: false
       secret: false
     deprecated: false
@@ -455,6 +511,12 @@ script:
       required: true
       secret: false
     - default: false
+      description: The id for the channel containing the message.
+      isArray: false
+      name: channel_id
+      required: true
+      secret: false
+    - default: false
       description: The ID of the thread of which to pin - can be retrieved from
         a previous send-notification command.
       isArray: false
@@ -471,6 +533,12 @@ script:
       description: The channel the message is posted in.
       isArray: false
       name: channel
+      required: false
+      secret: false
+    - default: false
+      description: The id for the channel the message is posted in.
+      isArray: false
+      name: channel_id
       required: false
       secret: false
     - default: false
