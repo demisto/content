@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: b9afd8b5-96f7-49b4-81a9-409d7ce15406
+    taskid: d9279c28-038e-4ae3-870a-d05166cb927e
     type: start
     task:
-      id: b9afd8b5-96f7-49b4-81a9-409d7ce15406
+      id: d9279c28-038e-4ae3-870a-d05166cb927e
       version: -1
       name: ""
       iscommand: false
@@ -20,18 +20,23 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 602.5,
+          "x": 1360,
           "y": 50
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 77e962c5-7e72-4a3d-8419-edb07f578cbf
+    taskid: d4a9f780-9578-4402-80e0-aa9ae953981b
     type: regular
     task:
-      id: 77e962c5-7e72-4a3d-8419-edb07f578cbf
+      id: d4a9f780-9578-4402-80e0-aa9ae953981b
       version: -1
       name: Check 1991-05-20T20:37:43.000Z
       description: Sets a value into the context with the given context key
@@ -42,8 +47,8 @@ tasks:
     nexttasks:
       '#none#':
       - "3"
+      - "25"
     scriptarguments:
-      append: {}
       key:
         simple: TimeToCheck_1
       value:
@@ -52,20 +57,25 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 602.5,
+          "x": 1360,
           "y": 370
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 8189ee47-c322-4ab0-88ce-5307a0dcb360
+    taskid: 38b73bb0-a43f-414b-8ffa-3dd85dd0d001
     type: regular
     task:
-      id: 8189ee47-c322-4ab0-88ce-5307a0dcb360
+      id: 38b73bb0-a43f-414b-8ffa-3dd85dd0d001
       version: -1
-      name: Convert to Epoch 1
+      name: Convert to Epoch 6
       description: Sets a value into the context with the given context key
       scriptName: Set
       type: regular
@@ -75,34 +85,36 @@ tasks:
       '#none#':
       - "12"
     scriptarguments:
-      append: {}
       key:
-        simple: Epoch_1
+        simple: Epoch_6
       value:
         complex:
           root: TimeToCheck_1
           transformers:
           - operator: FormattedDateToEpoch
             args:
-              formatter:
-                value:
-                  simple: '%Y-%m-%dT%H:%M:%S.%fZ'
+              formatter: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 602.5,
+          "x": 1135,
           "y": 545
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 7de6bc45-3ffa-4dce-8055-1b6a638dbc1c
+    taskid: 3c4069ec-7f05-46ba-8120-8f36c7d0fe71
     type: regular
     task:
-      id: 7de6bc45-3ffa-4dce-8055-1b6a638dbc1c
+      id: 3c4069ec-7f05-46ba-8120-8f36c7d0fe71
       version: -1
       name: Check 20:51:20
       description: Sets a value into the context with the given context key
@@ -113,8 +125,8 @@ tasks:
     nexttasks:
       '#none#':
       - "7"
+      - "18"
     scriptarguments:
-      append: {}
       key:
         simple: TimeToCheck_3
       value:
@@ -123,18 +135,23 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1165,
+          "x": 2455,
           "y": 370
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 4de18348-8498-428e-8470-0e4c08d3cba7
+    taskid: 41d51fb7-9455-419a-8867-0cc89a938aa7
     type: regular
     task:
-      id: 4de18348-8498-428e-8470-0e4c08d3cba7
+      id: 41d51fb7-9455-419a-8867-0cc89a938aa7
       version: -1
       name: Check 20-05-1991
       description: Sets a value into the context with the given context key
@@ -145,28 +162,33 @@ tasks:
     nexttasks:
       '#none#':
       - "6"
+      - "22"
     scriptarguments:
-      append: {}
       key:
         simple: TimeToCheck_2
       value:
-        simple: "20-05-1991"
+        simple: 20-05-1991
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 275,
           "y": 370
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: ad9fe73f-5802-44fb-8dc4-a65d9f8e6331
+    taskid: 4a0fd399-94b4-4cc7-8cc0-45b636416b4f
     type: regular
     task:
-      id: ad9fe73f-5802-44fb-8dc4-a65d9f8e6331
+      id: 4a0fd399-94b4-4cc7-8cc0-45b636416b4f
       version: -1
       name: Convert to Epoch 2
       description: Sets a value into the context with the given context key
@@ -178,7 +200,6 @@ tasks:
       '#none#':
       - "11"
     scriptarguments:
-      append: {}
       key:
         simple: Epoch_2
       value:
@@ -200,12 +221,17 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 8a67f5a2-4997-4c64-84b2-affa3806da00
+    taskid: 02531047-4b80-4781-8003-1313d5aa52c4
     type: regular
     task:
-      id: 8a67f5a2-4997-4c64-84b2-affa3806da00
+      id: 02531047-4b80-4781-8003-1313d5aa52c4
       version: -1
       name: Convert to Epoch 3
       description: Sets a value into the context with the given context key
@@ -217,7 +243,6 @@ tasks:
       '#none#':
       - "8"
     scriptarguments:
-      append: {}
       key:
         simple: Epoch_3
       value:
@@ -233,18 +258,23 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1165,
+          "x": 2230,
           "y": 545
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 328738a9-c2dc-4fc2-8cd7-f4e49a5a399e
+    taskid: 481d4e39-2bc5-48c9-8a61-3228b993a25b
     type: condition
     task:
-      id: 328738a9-c2dc-4fc2-8cd7-f4e49a5a399e
+      id: 481d4e39-2bc5-48c9-8a61-3228b993a25b
       version: -1
       name: Validate result 3
       type: condition
@@ -270,18 +300,23 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1165,
+          "x": 2230,
           "y": 720
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: d141d4f3-2567-460c-85df-75a099f14e98
+    taskid: 410a88ed-c130-4c1c-8c0f-7b5fdd9881f8
     type: title
     task:
-      id: d141d4f3-2567-460c-85df-75a099f14e98
+      id: 410a88ed-c130-4c1c-8c0f-7b5fdd9881f8
       version: -1
       name: Done
       type: title
@@ -291,18 +326,23 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 602.5,
-          "y": 1225
+          "x": 1715,
+          "y": 1330
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: e60e6ea4-a14a-474b-8b3a-62d31b0d7b9d
+    taskid: 42d4898a-91c2-4969-851a-476682b742d6
     type: regular
     task:
-      id: e60e6ea4-a14a-474b-8b3a-62d31b0d7b9d
+      id: 42d4898a-91c2-4969-851a-476682b742d6
       version: -1
       name: Error
       description: Prints an error entry with a given message
@@ -317,18 +357,23 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -380,
-          "y": 1130
+          "x": 1020,
+          "y": 1300
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: cc7336f0-7aa0-407f-8418-ca6bc8f8f2e4
+    taskid: 14eb6030-b3cb-499c-87ab-8ff13a1dcf5e
     type: condition
     task:
-      id: cc7336f0-7aa0-407f-8418-ca6bc8f8f2e4
+      id: 14eb6030-b3cb-499c-87ab-8ff13a1dcf5e
       version: -1
       name: Validate result 2
       type: condition
@@ -360,14 +405,19 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: f249a134-6e1b-41cb-8030-2fe096bdcf56
+    taskid: 535ebb91-ee19-4ce6-8395-00c6dd4ac0bc
     type: condition
     task:
-      id: f249a134-6e1b-41cb-8030-2fe096bdcf56
+      id: 535ebb91-ee19-4ce6-8395-00c6dd4ac0bc
       version: -1
-      name: Validate result 1
+      name: Validate result 6
       type: condition
       iscommand: false
       brand: ""
@@ -383,7 +433,7 @@ tasks:
       - - operator: isEqualNumber
           left:
             value:
-              simple: ${Epoch_1}
+              simple: ${Epoch_6}
             iscontext: true
           right:
             value:
@@ -391,18 +441,23 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 602.5,
+          "x": 1135,
           "y": 720
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: be2ea045-f961-44c9-8196-e1a25bbe2b99
+    taskid: 92d494c0-0c5a-4c91-8e83-9d51f4174314
     type: regular
     task:
-      id: be2ea045-f961-44c9-8196-e1a25bbe2b99
+      id: 92d494c0-0c5a-4c91-8e83-9d51f4174314
       version: -1
       name: Start Clean
       description: Delete field from context
@@ -418,26 +473,27 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 602.5,
+          "x": 1360,
           "y": 195
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: bfccaae9-9902-4d80-8f70-83e62166ff05
+    taskid: 0ac6fa43-41f8-4bff-8059-3257ceef9fed
     type: condition
     task:
-      id: bfccaae9-9902-4d80-8f70-83e62166ff05
+      id: 0ac6fa43-41f8-4bff-8059-3257ceef9fed
       version: -1
       name: Convert back to ISO date 3
       type: condition
@@ -466,20 +522,25 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1165,
+          "x": 2445,
           "y": 895
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: d8580132-d0f3-4e50-88f6-0f6aa1141b45
+    taskid: 2354f1c9-09d7-49f5-800d-a29920a71205
     type: condition
     task:
-      id: d8580132-d0f3-4e50-88f6-0f6aa1141b45
+      id: 2354f1c9-09d7-49f5-800d-a29920a71205
       version: -1
-      name: Convert back to ISO date 1
+      name: Convert back to ISO date 6
       type: condition
       iscommand: false
       brand: ""
@@ -496,7 +557,7 @@ tasks:
           left:
             value:
               complex:
-                root: Epoch_1
+                root: Epoch_6
                 transformers:
                 - operator: TimeStampToDate
             iscontext: true
@@ -506,18 +567,23 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 602.5,
+          "x": 1360,
           "y": 895
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: c8b82ef9-06b1-4c95-8d30-e610bc6e1b63
+    taskid: 58a714df-24a4-4140-89dc-f03e67a9060f
     type: condition
     task:
-      id: c8b82ef9-06b1-4c95-8d30-e610bc6e1b63
+      id: 58a714df-24a4-4140-89dc-f03e67a9060f
       version: -1
       name: Convert back to ISO date 2
       type: condition
@@ -546,20 +612,411 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 275,
           "y": 895
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 799d4971-33a2-4f87-8309-3bac35139f5e
+    type: regular
+    task:
+      id: 799d4971-33a2-4f87-8309-3bac35139f5e
+      version: -1
+      name: Convert to Epoch 4
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      key:
+        simple: Epoch_4
+      value:
+        complex:
+          root: TimeToCheck_3
+          transformers:
+          - operator: FormattedDateToEpoch
+            args:
+              formatter: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2885,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 84464820-e25e-4663-81b2-7ed3d25cd2b8
+    type: condition
+    task:
+      id: 84464820-e25e-4663-81b2-7ed3d25cd2b8
+      version: -1
+      name: Validate result 4
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: ${Epoch_4}
+            iscontext: true
+          right:
+            value:
+              simple: "-2208913720"
+    view: |-
+      {
+        "position": {
+          "x": 2885,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 657dc360-5027-43c1-8420-a8cdc8a3ad0a
+    type: condition
+    task:
+      id: 657dc360-5027-43c1-8420-a8cdc8a3ad0a
+      version: -1
+      name: Convert back to ISO date 4
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Epoch_4
+                transformers:
+                - operator: TimeStampToDate
+            iscontext: true
+          right:
+            value:
+              simple: "1900-01-01T20:51:20.000Z"
+    view: |-
+      {
+        "position": {
+          "x": 2875,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: c9626706-c327-4f77-844d-0fcbda50ec83
+    type: regular
+    task:
+      id: c9626706-c327-4f77-844d-0fcbda50ec83
+      version: -1
+      name: Convert to Epoch 5
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      key:
+        simple: Epoch_5
+      value:
+        complex:
+          root: TimeToCheck_2
+          transformers:
+          - operator: FormattedDateToEpoch
+            args:
+              formatter: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 562e93e9-f022-4a5c-8a05-4b4f07538e17
+    type: condition
+    task:
+      id: 562e93e9-f022-4a5c-8a05-4b4f07538e17
+      version: -1
+      name: Validate result 5
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: ${Epoch_5}
+            iscontext: true
+          right:
+            value:
+              simple: "674697600"
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: e85b7745-0588-40cd-8513-e29fb4a8001f
+    type: condition
+    task:
+      id: e85b7745-0588-40cd-8513-e29fb4a8001f
+      version: -1
+      name: Convert back to ISO date 2
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Epoch_5
+                transformers:
+                - operator: TimeStampToDate
+            iscontext: true
+          right:
+            value:
+              simple: "1991-05-20T00:00:00.000Z"
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: c390f8b7-f5d5-41fd-8d11-8414d766a577
+    type: regular
+    task:
+      id: c390f8b7-f5d5-41fd-8d11-8414d766a577
+      version: -1
+      name: Convert to Epoch 1
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      key:
+        simple: Epoch_1
+      value:
+        complex:
+          root: TimeToCheck_1
+          transformers:
+          - operator: FormattedDateToEpoch
+            args:
+              formatter:
+                value:
+                  simple: '%Y-%m-%dT%H:%M:%S.%fZ'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1800,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 4fe2a642-c04b-4571-8daa-8ba629ac0580
+    type: condition
+    task:
+      id: 4fe2a642-c04b-4571-8daa-8ba629ac0580
+      version: -1
+      name: Validate result 1
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: ${Epoch_1}
+            iscontext: true
+          right:
+            value:
+              simple: "674771863"
+    view: |-
+      {
+        "position": {
+          "x": 1800,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 3a0767e6-0011-40fc-8c90-2dcc3c2cb8e0
+    type: condition
+    task:
+      id: 3a0767e6-0011-40fc-8c90-2dcc3c2cb8e0
+      version: -1
+      name: Convert back to ISO date 1
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Epoch_1
+                transformers:
+                - operator: TimeStampToDate
+            iscontext: true
+          right:
+            value:
+              simple: "1991-05-20T20:37:43.000Z"
+    view: |-
+      {
+        "position": {
+          "x": 1790,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1240,
-        "width": 1925,
-        "x": -380,
+        "height": 1345,
+        "width": 3215,
+        "x": 50,
         "y": 50
       }
     }
