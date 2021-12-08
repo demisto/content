@@ -1,8 +1,6 @@
 # coding=utf-8
 from __future__ import print_function
 
-import os
-
 import pytest
 
 import demistomock as demisto
@@ -404,27 +402,27 @@ def test_email_with_special_character(mocker):
 
 @pytest.mark.parametrize('encoded_subject, decoded_subject', [
     (
-            '[TESTING] =?utf-8?q?=F0=9F=94=92_=E2=9C=94_Votre_colis_est_disponible_chez_votre_co?= '
-            '=?utf-8?q?mmer=C3=A7ant_Pickup_!?=',
-            # noqa E501
-            '[TESTING]\xf0\x9f\x94\x92 \xe2\x9c\x94 Votre colis est disponible chez votre commer\xc3\xa7ant Pickup !'
+        '[TESTING] =?utf-8?q?=F0=9F=94=92_=E2=9C=94_Votre_colis_est_disponible_chez_votre_co?= '
+        '=?utf-8?q?mmer=C3=A7ant_Pickup_!?=',
+        # noqa E501
+        '[TESTING]\xf0\x9f\x94\x92 \xe2\x9c\x94 Votre colis est disponible chez votre commer\xc3\xa7ant Pickup !'
     ),
     (
-            'This =?UTF-8?B?VGVzdMKu?= passes',
-            'This Test® passes'
+        'This =?UTF-8?B?VGVzdMKu?= passes',
+        'This Test® passes'
     ),
     (
-            '=?utf-8?B?44CQ?= =?utf-8?B?4pGg?=',  # test case: double utf-8 byte encoded
-            '\xe3\x80\x90\xe2\x91\xa0'  # 【①
+        '=?utf-8?B?44CQ?= =?utf-8?B?4pGg?=',  # test case: double utf-8 byte encoded
+        '\xe3\x80\x90\xe2\x91\xa0'  # 【①
     ),
     (
-            '=?iso-2022-jp?B?GyRCJWEhPCVrLSEkSHxxGyhC?= '
-            '=?iso-2022-jp?B?GyRCRnxLXDhsSjg7eiQsST08KCQ1JGwkSiQkSjg7eiROJUYlOSVIGyhC?=',
-            'メール�と�日本語文字が表示されない文字のテスト'
+        '=?iso-2022-jp?B?GyRCJWEhPCVrLSEkSHxxGyhC?= '
+        '=?iso-2022-jp?B?GyRCRnxLXDhsSjg7eiQsST08KCQ1JGwkSiQkSjg7eiROJUYlOSVIGyhC?=',
+        'メール�と�日本語文字が表示されない文字のテスト'
     ),
     (
-            '=?UTF-8?Q?TEST_UNDERSCORE?=',
-            'TEST UNDERSCORE'
+        '=?UTF-8?Q?TEST_UNDERSCORE?=',
+        'TEST UNDERSCORE'
     ),
     # (
     #   'This is test =?iso-2022-jp?B?GyRCJWEhPCVrLSEkSHxxGyhC?= '
