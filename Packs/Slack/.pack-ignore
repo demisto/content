@@ -5,4 +5,4 @@ ignore=RM104,RM106
 ignore=BA108,BA109,IN145
 
 [file:Slack.yml]
-ignore=IN145,BC104
+ignore=IN145
