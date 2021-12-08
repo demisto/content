@@ -1,4 +1,4 @@
-!prisma-cloud-compute-profile-host-list hostName=*249* namespace=prod
+!prisma-cloud-compute-profile-host-list hostName=*249*
 !prisma-cloud-compute-profile-container-list id=123 hostName=host1, state=active
 !prisma-cloud-compute-profile-container-hosts-list id=123
 !prisma-cloud-compute-profile-container-forensic-list id=123,456 hostname=hostname1

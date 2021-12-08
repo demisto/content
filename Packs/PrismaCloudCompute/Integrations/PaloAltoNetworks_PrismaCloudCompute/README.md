@@ -74,7 +74,7 @@ If any alerts are missing in Cortex XSOAR, check the status of the integration.
 
 ### prisma-cloud-compute-profile-host-list
 ***
-Get information about the hosts and their profile events.
+Get information about the hosts and their profile events, this command supports asterisks which allows you to get host profiles by filtering its fields according to a specific substring
 
 
 #### Base Command
@@ -85,8 +85,8 @@ Get information about the hosts and their profile events.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | cluster | Clusters is the runtime profile k8s cluster filter. | Optional | 
-| hostname | Hosts is the runtime profile hostname filter. | Optional |  
-| limit | The maximum number of hosts and their profile events to return. Default is 15. . Default is 15. | Optional | 
+| hostname | Hosts is the runtime profile hostname filter, semi comma separated values, for example !prisma-cloud-compute-profile-host-list hostname="*149*,*257*". | Optional | 
+| limit | The maximum number of hosts and their profile events to return, must be between 1-50. Default is 15. | Optional | 
 | offset | The offset number to begin listing hosts and their profile events. Default is 0. Default is 0. | Optional | 
 
 
@@ -94,419 +94,80 @@ Get information about the hosts and their profile events.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaCloudCompute.ProfileHost._Id | String | ID is the profile ID \(hostname\) | 
-| PrismaCloudCompute.ProfileHost.AccountID | String | AccountID is the cloud account ID associated with the profile | 
-| PrismaCloudCompute.ProfileHost.Apps | Unknown | Apps are the host's apps metadata | 
-| PrismaCloudCompute.ProfileHost.Collections | String | Collections is a list of collections to which this profile applies | 
-| PrismaCloudCompute.ProfileHost.Created | Date | Created is the profile creation time | 
-| PrismaCloudCompute.ProfileHost.Hash | Unknown | Hash is an uint32 hash associated with the profile | 
-| PrismaCloudCompute.ProfileHost.Labels | String | Labels are the labels associated with the profile | 
-| PrismaCloudCompute.ProfileHost.SshEvents | Unknown | SSHEvents represents a list SSH events occurred on the host | 
-| PrismaCloudCompute.ProfileHost.Time | Date | Time is the last time when this profile was modified | 
-| PrismaCloudCompute.ProfileHost.Geoip | Unknown | geoip is the list of countries | 
+| PrismaCloudCompute.ProfileHost._id | Unknown | ID is the profile ID \(hostname\) | 
+| PrismaCloudCompute.ProfileHost.accountID | String | AccountID is the cloud account ID associated with the profile | 
+| PrismaCloudCompute.ProfileHost.apps | Unknown | Apps are the host's apps metadata | 
+| PrismaCloudCompute.ProfileHost.collections | String | Collections is a list of collections to which this profile applies | 
+| PrismaCloudCompute.ProfileHost.created | Date | Created is the profile creation time | 
+| PrismaCloudCompute.ProfileHost.hash | Unknown | Hash is an uint32 hash associated with the profile | 
+| PrismaCloudCompute.ProfileHost.labels | String | Labels are the labels associated with the profile | 
+| PrismaCloudCompute.ProfileHost.sshEvents | Unknown | SSHEvents represents a list SSH events occurred on the host | 
+| PrismaCloudCompute.ProfileHost.time | Date | Time is the last time when this profile was modified | 
+| PrismaCloudCompute.ProfileHost.geoip | Unknown | geoip is the list of countries | 
 
 
 #### Command Example
-```!prisma-cloud-compute-profile-host-list hostName=*249* namespace=prod```
+```!prisma-cloud-compute-profile-host-list hostName=*249*```
 
 #### Human Readable Output
 
-### Apps
-|HostId|AppName|StartupProcess|User|LaunchTime|
-|---|---|---|---|---|
-| host1 | ssh | /usr/sbin/sshd | root | November 10, 2020 09:37:42 AM |
-| host1 | docker | /usr/bin/dockerd | root | November 10, 2020 09:37:42 AM |
-| host1 | atd | /usr/sbin/atd | root | November 10, 2020 09:37:42 AM |
-| host1 | acpid | /usr/sbin/acpid | root | November 10, 2020 09:37:42 AM |
-| host1 | cron | /usr/sbin/cron | root | November 10, 2020 09:37:42 AM |
-| host1 | apt-daily | /bin/dash | root | November 10, 2020 11:41:34 AM |
-| host1 | snapd | /usr/lib/snapd/snapd | root | February 11, 2021 06:23:47 AM |
-| host1 | systemd | /lib/systemd/systemd | root | September 02, 2021 10:25:30 AM |
-### SSH Events
-|HostId|User|Ip|ProcessPath|Command|Time|
-|---|---|---|---|---|---|
-| host1 | ubuntu | 1.1.1.1 | /usr/bin/clear_console | /usr/bin/clear_console -q | September 02, 2021 11:49:33 AM |
-| host1 | ubuntu | 1.1.1.1 | /bin/ls | ls --color=auto -alF | September 02, 2021 11:04:01 AM |
-| host1 | ubuntu | 1.1.1.1 | /bin/ls | ls --color=auto -alF | September 02, 2021 11:03:57 AM |
-| host1 | ubuntu | 1.1.1.1 | /bin/ls | ls --color=auto -alF | September 02, 2021 11:03:53 AM |
-| host1 | ubuntu | 1.1.1.1 | /usr/bin/dircolors | /usr/bin/dircolors | September 02, 2021 11:03:52 AM |
-| host1 | ubuntu | 1.1.1.1 | /usr/bin/dirname | dirname /usr/bin/lesspipe | September 02, 2021 11:03:52 AM |
-| host1 | ubuntu | 1.1.1.1 | /usr/bin/basename | basename /usr/bin/lesspipe | September 02, 2021 11:03:52 AM |
-| host1 | ubuntu | 1.1.1.1 | /bin/dash | /bin/sh /usr/bin/lesspipe | September 02, 2021 11:03:52 AM |
-| host1 | ubuntu | 1.1.1.1 | /usr/bin/groups | /usr/bin/groups | September 02, 2021 11:03:52 AM |
-| host1 | ubuntu | 1.1.1.1 | /bin/bash | /bin/bash | September 02, 2021 11:03:52 AM |
-| host1 | ubuntu | 1.1.1.1 | /bin/su | /bin/su | September 02, 2021 11:03:52 AM |
-| host1 | ubuntu | 1.1.1.1 | /usr/bin/sudo | /usr/bin/sudo | September 02, 2021 11:03:52 AM |
-| host1 | ubuntu | 1.1.1.1 | /bin/ls | ls --color=auto -lt | September 02, 2021 11:03:45 AM |
-| host1 | ubuntu | 1.1.1.1 | /bin/ls | ls --color=auto -ltr | September 02, 2021 10:27:24 AM |
-| host1 | ubuntu | 1.1.1.1 | /bin/ls | ls --color=auto -alF | September 02, 2021 10:27:22 AM |
-| host1 | ubuntu | 1.1.1.1 | /bin/ls | ls --color=auto -alF | September 02, 2021 10:27:20 AM |
-| host1 | ubuntu | 1.1.1.1 | /bin/ls | ls /etc/bash_completion.d | September 02, 2021 10:27:18 AM |
-| host1 | ubuntu | 1.1.1.1 | /usr/bin/dircolors | /usr/bin/dircolors | September 02, 2021 10:27:18 AM |
-| host1 | ubuntu | 1.1.1.1 | /usr/bin/dirname | dirname /usr/bin/lesspipe | September 02, 2021 10:27:18 AM |
-| host1 | ubuntu | 1.1.1.1 | /usr/bin/basename | basename /usr/bin/lesspipe | September 02, 2021 10:27:18 AM |
-| host1 | ubuntu | 1.1.1.1 | /bin/dash | /bin/sh /usr/bin/lesspipe | September 02, 2021 10:27:18 AM |
-| host1 | ubuntu | 1.1.1.1 | /bin/ls | ls /etc/bash_completion.d | September 02, 2021 10:27:18 AM |
-| host1 | ubuntu | 1.1.1.1 | /bin/bash | /bin/bash | September 02, 2021 10:27:18 AM |
-| host1 | ubuntu | 2.2.2.2 | /usr/bin/scp | /usr/bin/scp | September 02, 2021 10:27:06 AM |
-| host1 | ubuntu | 2.2.2.2 | /bin/bash | bash -c scp -t . | September 02, 2021 10:27:06 AM |
-| host1 | root | 2.2.2.2 | /bin/sleep | /bin/sleep | September 02, 2021 10:26:52 AM |
-| host1 | root | 2.2.2.2 | /bin/bash | bash -c echo 'Please login as the user "ubuntu" rather than the user "root".';echo;sleep 10 | September 02, 2021 10:26:52 AM |
-| host1 | root | 1.1.1.1 | /bin/sleep | /bin/sleep | September 02, 2021 10:25:31 AM |
-| host1 | root | 1.1.1.1 | /bin/bash | bash -c echo 'Please login as the user "ubuntu" rather than the user "root".';echo;sleep 10 | September 02, 2021 10:25:31 AM |
-
-### prisma-cloud-compute-profile-container-list
-***
-Get information about the containers and their profile events.
-
-
-#### Base Command
-
-`prisma-cloud-compute-profile-container-list`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| cluster | Clusters is the runtime profile k8s cluster filter. | Optional | 
-| id | IDs is the runtime profile id filter. | Optional | 
-| image | Images is the runtime profile image filter. | Optional | 
-| image_id | ImageIDs is the runtime profile image id filter. | Optional | 
-| namespace | Namespaces is the runtime profile k8s namespace filter. | Optional | 
-| os | OS is the service runtime profile OS filter. | Optional | 
-| state | States is the runtime profile state filter. | Optional | 
-| limit | The maximum number of containers and their profile events. Default is 15. | Optional | 
-| offset | The offset number to begin listing containers and their profile events. Default is 0. | Optional | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| PrismaCloudCompute.ProfileContainer._Id | Unknown | Id is the profile ID | 
-| PrismaCloudCompute.ProfileContainer.AccountsIDs | String | AccountIDs are the cloud account IDs associated with the container runtime profile | 
-| PrismaCloudCompute.ProfileContainer.Archived | Boolean | Archive indicates whether this profile is archived | 
-| PrismaCloudCompute.ProfileContainer.Capabilities | Unknown | Capabilities are extended capabilities that are added to the profile based on static analysis | 
-| PrismaCloudCompute.ProfileContainer.Cluster | String | Cluster is the provided cluster name | 
-| PrismaCloudCompute.ProfileContainer.Collections | String | Collections are collections to which this profile applies | 
-| PrismaCloudCompute.ProfileContainer.Created | Date | Created is the profile creation time | 
-| PrismaCloudCompute.ProfileContainer.Entrypoint | String | Entrypoint is the image entrypoint | 
-| PrismaCloudCompute.ProfileContainer.Events | Unknown | Events are the last historical interactive process events for this profile, they are updated in a designated flow | 
-| PrismaCloudCompute.ProfileContainer.Filesystem | Unknown | Filesystem is the profile filesystem metadata | 
-| PrismaCloudCompute.ProfileContainer.Hash | Unknown | Hash is an uint32 hash associated with the profile | 
-| PrismaCloudCompute.ProfileContainer.HostNetwork | Boolean | HostNetwork whether the instance share the network namespace with the host | 
-| PrismaCloudCompute.ProfileContainer.HostPid | Boolean | HostPid indicates whether the instance share the pid namespace with the host | 
-| PrismaCloudCompute.ProfileContainer.Image | Boolean | description | 
-| PrismaCloudCompute.ProfileContainer.ImageID | String | ImageID is the profile's image ID | 
-| PrismaCloudCompute.ProfileContainer.Infra | Boolean | InfraContainer indicates this is an infrastructure container | 
-| PrismaCloudCompute.ProfileContainer.Istio | Boolean | Istio states whether it is an istio-monitored profile | 
-| PrismaCloudCompute.ProfileContainer.K8s | Unknown | K8s holds Kubernetes related data | 
-| PrismaCloudCompute.ProfileContainer.Label | String | Label is the profile's label | 
-| PrismaCloudCompute.ProfileContainer.LastUpdate | Date | Modified is the last time when this profile was modified | 
-| PrismaCloudCompute.ProfileContainer.LearnedStartup | Boolean | LearnedStartup indicates that startup events were learned | 
-| PrismaCloudCompute.ProfileContainer.Namespace | String | Namespace is the k8s deployment namespace | 
-| PrismaCloudCompute.ProfileContainer.Network | Unknown | Network is the profile networking metadata | 
-| PrismaCloudCompute.ProfileContainer.OS | Strubg | OS is the profile image OS | 
-| PrismaCloudCompute.ProfileContainer.Processes | Unknown | Processes is the profile processes metadata | 
-| PrismaCloudCompute.ProfileContainer.RelearningCause | String | RelearningCause is a string that describes the reasoning for a profile to enter the learning mode afterbeing activated | 
-| PrismaCloudCompute.ProfileContainer.RemainingLearningDurationSec | Number | RemainingLearningDurationSec represents the total time left that the system need to finish learning this image | 
-| PrismaCloudCompute.ProfileContainer.State | Unknown | State is the current state of the profile. | 
-
-
-#### Command Example
-```!prisma-cloud-compute-profile-container-list id=123 hostName=host1, state=active```
-
-#### Human Readable Output
-
-### Container information
-|ContainerID|Image|OS|State|Created|
-|---|---|---|---|---|
-| 1234 | twistlock/private:console_21_04_439 | Red Hat Enterprise Linux 8.4 (Ootpa) | active | September 02, 2021 11:05:08 AM |
-### Containers processes
-|ContainerID|Type|Path|DetectionTime|
-|---|---|---|---|
-| 1234 | static | /usr/bin/mongodump | January 01, 0001 00:00:00 AM |
-| 1234 | static | /usr/bin/mongorestore | January 01, 0001 00:00:00 AM |
-| 1234 | static | /usr/bin/rpm | January 01, 0001 00:00:00 AM |
-| 1234 | static | /usr/bin/gpgconf | January 01, 0001 00:00:00 AM |
-| 1234 | static | /usr/bin/gpg-connect-agent | January 01, 0001 00:00:00 AM |
-| 1234 | static | /usr/bin/apt-get | January 01, 0001 00:00:00 AM |
-| 1234 | static | /usr/bin/apt-config | January 01, 0001 00:00:00 AM |
-| 1234 | static | /usr/bin/touch | January 01, 0001 00:00:00 AM |
-| 1234 | static | /usr/bin/dpkg | January 01, 0001 00:00:00 AM |
-| 1234 | static | /usr/bin/cmp | January 01, 0001 00:00:00 AM |
-| 1234 | static | /bin/cat | January 01, 0001 00:00:00 AM |
-| 1234 | static | /bin/rm | January 01, 0001 00:00:00 AM |
-| 1234 | static | /bin/readlink | January 01, 0001 00:00:00 AM |
-| 1234 | static | /bin/sed | January 01, 0001 00:00:00 AM |
-| 1234 | static | /bin/cp | January 01, 0001 00:00:00 AM |
-| 1234 | static | /bin/mktemp | January 01, 0001 00:00:00 AM |
-| 1234 | static | /bin/chmod | January 01, 0001 00:00:00 AM |
-| 1234 | static | /usr/bin/sort | January 01, 0001 00:00:00 AM |
-| 1234 | static | /usr/bin/test | January 01, 0001 00:00:00 AM |
-| 1234 | static | /usr/bin/find | January 01, 0001 00:00:00 AM |
-| 1234 | static | /usr/bin/gpgv | January 01, 0001 00:00:00 AM |
-| 1234 | static | /usr/bin/dirname | January 01, 0001 00:00:00 AM |
-| 1234 | static | /bin/sh | January 01, 0001 00:00:00 AM |
-| 1234 | static | /bin/echo | January 01, 0001 00:00:00 AM |
-| 1234 | static | /usr/bin/tar | January 01, 0001 00:00:00 AM |
-| 1234 | static | /usr/bin/sed | January 01, 0001 00:00:00 AM |
-| 1234 | static | /app/server | January 01, 0001 00:00:00 AM |
-| 1234 | behavioral | /usr/bin/mongod | September 02, 2021 11:05:08 AM |
-### prisma-cloud-compute-profile-container-hosts-list
-***
-Get the hosts where a specific container is running.
-
-
-#### Base Command
-
-`prisma-cloud-compute-profile-container-hosts-list`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| id | Container profile ID. | Required |
-| limit | The maximum number of hosts to return. Default is 50. Default is 50. | Optional | 
-| offset | The offset number to begin listing hosts of the container. Default is 0. | Optional | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| PrismaCloudCompute.ProfileContainerHost.ContainerID | String | Container ID | 
-| PrismaCloudCompute.ProfileContainerHost.HostsIDs | Unknown | The container's host IDs. | 
-
-#### Command Example
-```!prisma-cloud-compute-profile-container-hosts-list id=123```
-
-#### Human Readable Output
-### Containers hosts list
-|ContainerID|HostsIDs|
-|---|---|
-| container_id_1 | host_id-1,<br>host_id-2 |
-
-
-### prisma-cloud-compute-profile-container-forensic-list
-***
-Get runtime forensics data for a specific container on a specific host
-
-
-#### Base Command
-
-`prisma-cloud-compute-profile-container-forensic-list`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| id | The container ID. | Required | 
-| collections | Collections are collections scoping the query. | Optional | 
-| hostname | Hostname is the hostname for which data should be fetched. | Required | 
-| incident_id | IncidentID is the incident ID in case the request kind is an incident. | Optional | 
-| limit | maximum of forensics data records to return. Default is 20. | Optional | 
-| offset | The offset number to begin listing records from . Default is 0. | Optional | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| PrismaCloudCompute.ContainerForensic.Forensics.AllPorts | Boolean | AllPorts indicates all listening ports are allowed | 
-| PrismaCloudCompute.ContainerForensic.Forensics.Attack | Unknown | Attack is the event attack type. | 
-| PrismaCloudCompute.ContainerForensic.Forensics.Category | Unknown | Category is the incident category. | 
-| PrismaCloudCompute.ContainerForensic.Forensics.Command | String | Command is the event command | 
-| PrismaCloudCompute.ContainerForensic.Forensics.ContainerId | Unknown | ContainerID is the event container id | 
-| PrismaCloudCompute.ContainerForensic.Forensics.DstIP | String | DstIP is the destination IP of the connection | 
-| PrismaCloudCompute.ContainerForensic.Forensics.DstPort | Unknown | DstPort is the destination port | 
-| PrismaCloudCompute.ContainerForensic.Forensics.DstProfileID | String | DstProfileID is the profile ID of the connection destination | 
-| PrismaCloudCompute.ContainerForensic.Forensics.Effect | String | Effect is the runtime audit effect | 
-| PrismaCloudCompute.ContainerForensic.Forensics.ListeningStartTime | Date | listeningStartTime is the port listening start time | 
-| PrismaCloudCompute.ContainerForensic.Forensics.Message | String | Message is the runtime audit message | 
-| PrismaCloudCompute.ContainerForensic.Forensics.NetworkCollectionType | Unknown | NetworkCollectionType is the type of the network collection method | 
-| PrismaCloudCompute.ContainerForensic.Forensics.Outbound | Boolean | Outbound indicates if the port is outbound | 
-| PrismaCloudCompute.ContainerForensic.Forensics.Path | String | Path is the event path | 
-| PrismaCloudCompute.ContainerForensic.Forensics.Pid | Number | Pid is the event process id | 
-| PrismaCloudCompute.ContainerForensic.Forensics.Port | Number | Port is the listening port | 
-| PrismaCloudCompute.ContainerForensic.Forensics.Ppid | Number | PPid is the event parent process id | 
-| PrismaCloudCompute.ContainerForensic.Forensics.Process | String | Process is the event processdescription | 
-| PrismaCloudCompute.ContainerForensic.Forensics.SrcIP | String | SrcIP is the source IP of the connection | 
-| PrismaCloudCompute.ContainerForensic.Forensics.SrcProfileID | String | SrcProfileID is the profile ID of the connection source | 
-| PrismaCloudCompute.ContainerForensic.Forensics.Static | Boolean | Static indicates the event was added to the profile without behavioral indication | 
-| PrismaCloudCompute.ContainerForensic.Forensics.Type | Unknown | Type is the event type. | 
-| PrismaCloudCompute.ContainerForensic.Forensics.Timestamp | Boolean | Timestamp is the event timestamp | 
-| PrismaCloudCompute.ContainerForensic.Forensics.User | String | User is the event user | 
-| PrismaCloudCompute.ContainerForensic.ContainerID | String | Container ID of the forensic | 
-| PrismaCloudCompute.ContainerForensic.Hostname | String | The Hostname | 
-
-
-#### Command Example
-```!prisma-cloud-compute-profile-container-forensic-list id=123 hostname=hostname1```
-
-#### Human Readable Output
-### Containers forensic report
-|ContainerID|Type|Path|User|Pid
+### Host Description
+|Hostname|Distribution|Collections|
 |---|---|---|
-| 123 | Process spawned | /usr/local/bin/defender | root | 5045
-| 123 | Process spawned | /usr/local/bin/defender | root | 5045
-| 123 | Process spawned | /bin/sed | root | 5045
-| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/solvers/dump | root | 4358
-| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/solvers/apt | root | 5045
-| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/methods/store | root | 5045
-| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/methods/rsh | root | 5045
-| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/methods/rred | root | 5045
-| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/methods/mirror | root | 4358
-| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/methods/https | root | 5045
-| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/methods/http | root | 15512
-| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/methods/gpgv | root | 4358
-| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/methods/ftp | root | 15512
-| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/methods/file | root | 5045
-| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/methods/copy | root | 5045
-| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/methods/cdrom | root | 15512
-| 123 | Binary created | /tmp/compute_security_updates275686626/usr/lib/apt/apt-helper | root | 5045
-| 123 | Process spawned | /usr/local/bin/defender | root | 5045
-| 123 | Process spawned | /usr/local/bin/defender | root | 5045
-| 123 | Process spawned | /usr/local/bin/defender | root | 5045
-### prisma-cloud-compute-host-forensic-list
-***
-Get forensics on a specific host
-
-
-#### Base Command
-
-`prisma-cloud-compute-host-forensic-list`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| id | host ID. | Required | 
-| collections | Collections are collections scoping the query. | Optional | 
-| incident_id | IncidentID is the incident ID in case the request kind is an incident. | Optional | 
-| limit | maximum of forensics data records to return. Default is 20. | Optional | 
-| offset | The offset number to begin listing host forensics from . Default is 0. | Optional | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| PrismaCloudCompute.HostForensic.Forensics.App | String | App is the application associated with the event | 
-| PrismaCloudCompute.HostForensic.Forensics.Attack | Unknown | Attack is the event attack type | 
-| PrismaCloudCompute.HostForensic.Forensics.Category | Unknown | Category is the incident category. | 
-| PrismaCloudCompute.HostForensic.Forensics.Command | String | Command is the event command | 
-| PrismaCloudCompute.HostForensic.Forensics.Country | String | Country is the country associated with the event | 
-| PrismaCloudCompute.HostForensic.Forensics.Effect | String | Effect is the runtime audit effect | 
-| PrismaCloudCompute.HostForensic.Forensics.Interactive | Boolean | Interactive indicates if the event is interactive | 
-| PrismaCloudCompute.HostForensic.Forensics.Ip | String | IP is the IP address associated with the event | 
-| PrismaCloudCompute.HostForensic.Forensics.ListeningStartTime | Date | ListeningStartTime is the listening port start time | 
-| PrismaCloudCompute.HostForensic.Forensics.Message | String | Message is the runtime audit message | 
-| PrismaCloudCompute.HostForensic.Forensics.Path | String | Path is the event path | 
-| PrismaCloudCompute.HostForensic.Forensics.Pid | Number | Pid is the event process id | 
-| PrismaCloudCompute.HostForensic.Forensics.Port | Number | Port is the listening port | 
-| PrismaCloudCompute.HostForensic.Forensics.Ppath | String | P-path is the event parent path | 
-| PrismaCloudCompute.HostForensic.Forensics.Ppid | Number | PPid is the event parent process id | 
-| PrismaCloudCompute.HostForensic.Forensics.Process | String | Process is the event process | 
-| PrismaCloudCompute.HostForensic.Forensics.Timestamp | Date | Timestamp is the event timestamp | 
-| PrismaCloudCompute.HostForensic.Forensics.Type | Unknown | Type is the event type. | 
-| PrismaCloudCompute.HostForensic.Forensics.User | String | User is the event user | 
-| PrismaCloudCompute.HostForensic.HostID | String | The host ID that was analyzed | 
-
-
-#### Command Example
-```!prisma-cloud-compute-host-forensic-list id=hostID limit=5```
-
-#### Human Readable Output
-### Host forensics report
-|Type|App|Path|Command|
+| ip-172-31-23-249.eu-west-1.compute.internal | Ubuntu 16.04 | All,<br>676921422616 |
+### Apps
+|AppName|StartupProcess|User|LaunchTime|
 |---|---|---|---|
-| Process spawned | demisto | /usr/bin/docker | docker ps -a |
-| Process spawned | demisto | /usr/bin/docker | docker ps -a |
-| Process spawned | cron | /usr/bin/wget | wget -q -o /dev/null -O /etc/cakeagent/cakelog.log -T 30 --post-data user=devopsdemistocom&secret=dT |
-| Process spawned | cron | /usr/bin/gawk | awk {gsub("%", "%%", $0);printf  $1 "\|" $2 "\|" $3 "\|" $4 "\|" $5 "\|" $6 "\|" $11 ":::"} |
-| Process spawned | cron | /bin/ps | ps aux |
-
-### prisma-cloud-compute-console-version-info
-***
-Get the console version. 
-
-
-#### Base Command
-
-`prisma-cloud-compute-console-version-info`
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| PrismaCloudCompute.Console.Version | String | The console version | 
-
-
-#### Command Example
-```!prisma-cloud-compute-console-version-info```
-
-#### Human Readable Output
-### Console version
-|version|
-|---|
-| 21.04.439 |
-
-### prisma-cloud-compute-custom-feeds-ip-list
-***
-Get all the BlackListed IP addresses in the system
-
-
-#### Base Command
-
-`prisma-cloud-compute-custom-feeds-ip-list`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| PrismaCloudCompute.CustomFeedIP._Id | String | ID is the custom feed id | 
-| PrismaCloudCompute.CustomFeedIP.Digest | String | Digest is an internal digest of the custom ip feed | 
-| PrismaCloudCompute.CustomFeedIP.Feed  | Unknown | Feed is the list of custom ips | 
-| PrismaCloudCompute.CustomFeedIP.Modified | Date | Modified is the last time the custom feed was modified | 
+| ssh | /usr/sbin/sshd | root | November 10, 2020 09:37:42 AM |
+| docker | /usr/bin/dockerd | root | November 10, 2020 09:37:42 AM |
+| atd | /usr/sbin/atd | root | November 10, 2020 09:37:42 AM |
+| acpid | /usr/sbin/acpid | root | November 10, 2020 09:37:42 AM |
+| cron | /usr/sbin/cron | root | November 10, 2020 09:37:42 AM |
+| demisto | /usr/local/demisto/server | demisto | November 10, 2020 09:37:42 AM |
+| apt-daily | /bin/dash | root | November 10, 2020 11:41:34 AM |
+| snapd | /usr/lib/snapd/snapd | root | February 11, 2021 06:23:47 AM |
+| systemd | /lib/systemd/systemd | root | September 02, 2021 10:25:30 AM |
+### SSH Events
+|User|Ip|ProcessPath|Command|Time|
+|---|---|---|---|---|
+| ubuntu | 1.1.1.1 | /usr/bin/clear_console | /usr/bin/clear_console -q | September 02, 2021 11:49:33 AM |
+| ubuntu | 1.1.1.1 | /bin/ls | ls --color=auto -alF | September 02, 2021 11:04:01 AM |
+| ubuntu | 1.1.1.1 | /bin/ls | ls --color=auto -alF | September 02, 2021 11:03:57 AM |
+| ubuntu | 1.1.1.1 | /bin/ls | ls --color=auto -alF | September 02, 2021 11:03:53 AM |
+| ubuntu | 1.1.1.1 | /usr/bin/dircolors | /usr/bin/dircolors | September 02, 2021 11:03:52 AM |
+| ubuntu | 1.1.1.1 | /usr/bin/dirname | dirname /usr/bin/lesspipe | September 02, 2021 11:03:52 AM |
+| ubuntu | 1.1.1.1 | /usr/bin/basename | basename /usr/bin/lesspipe | September 02, 2021 11:03:52 AM |
+| ubuntu | 1.1.1.1 | /bin/dash | /bin/sh /usr/bin/lesspipe | September 02, 2021 11:03:52 AM |
+| ubuntu | 1.1.1.1 | /usr/bin/groups | /usr/bin/groups | September 02, 2021 11:03:52 AM |
+| ubuntu | 3.3.3.3 | /bin/bash | /bin/bash | September 02, 2021 11:03:52 AM |
+| ubuntu | 1.1.1.1 | /bin/su | /bin/su | September 02, 2021 11:03:52 AM |
+| ubuntu | 1.1.1.1 | /usr/bin/sudo | /usr/bin/sudo | September 02, 2021 11:03:52 AM |
+| ubuntu | 1.1.1.1 | /bin/ls | ls --color=auto -lt | September 02, 2021 11:03:45 AM |
+| ubuntu | 4.4.4.4 | /bin/ls | ls --color=auto -ltr | September 02, 2021 10:27:24 AM |
+| ubuntu | 1.1.1.1 | /bin/ls | ls --color=auto -alF | September 02, 2021 10:27:22 AM |
+| ubuntu | 1.1.1.1 | /bin/ls | ls --color=auto -alF | September 02, 2021 10:27:20 AM |
+| ubuntu | 1.1.1.1 | /bin/ls | ls /etc/bash_completion.d | September 02, 2021 10:27:18 AM |
+| ubuntu | 1.1.1.1 | /usr/bin/dircolors | /usr/bin/dircolors | September 02, 2021 10:27:18 AM |
+| ubuntu | 5.5.5.5 | /usr/bin/dirname | dirname /usr/bin/lesspipe | September 02, 2021 10:27:18 AM |
+| ubuntu | 1.1.1.1 | /usr/bin/basename | basename /usr/bin/lesspipe | September 02, 2021 10:27:18 AM |
+| ubuntu | 1.1.1.1 | /bin/dash | /bin/sh /usr/bin/lesspipe | September 02, 2021 10:27:18 AM |
+| ubuntu | 1.1.1.1 | /bin/ls | ls /etc/bash_completion.d | September 02, 2021 10:27:18 AM |
+| ubuntu | 1.1.1.1 | /bin/bash | /bin/bash | September 02, 2021 10:27:18 AM |
+| ubuntu | 4.4.4.4 | /usr/bin/scp | /usr/bin/scp | September 02, 2021 10:27:06 AM |
+| ubuntu | 5.5.5.5 | /bin/bash | bash -c scp -t . | September 02, 2021 10:27:06 AM |
+| root | 2.2.2.2 | /bin/sleep | /bin/sleep | September 02, 2021 10:26:52 AM |
+| root | 2.2.2.2 | /bin/bash | bash -c echo 'Please login as the user "ubuntu" rather than the user "root".';echo;sleep 10 | September 02, 2021 10:26:52 AM |
+| root | 1.1.1.1 | /bin/sleep | /bin/sleep | September 02, 2021 10:25:31 AM |
+| root | 2.2.2.2 | /bin/bash | bash -c echo 'Please login as the user "ubuntu" rather than the user "root".';echo;sleep 10 | September 02, 2021 10:25:31 AM |
 
 
 #### Command Example
-```!prisma-cloud-compute-custom-feeds-ip-list```
+```!prisma-cloud-compute-profile-host-list hostName=*249*,*163```
 
 #### Human Readable Output
-### IP Feeds
-|modified|feed|
-|---|---|
-| November 30, 2021 20:47:06 PM | 4.4.4.4,<br>1.1.1.1,<br>2.2.2.2,<br>3.3.3.3 |
 
-
-### prisma-cloud-compute-custom-feeds-ip-add
-***
-Add a list of banned IPs to be blocked by the system
-
-
-#### Base Command
-
-`prisma-cloud-compute-custom-feeds-ip-add`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| ip | List of custom ips to add to the banned IPs list that will be blocked. | Required | 
-
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Command Example
-```!prisma-cloud-compute-custom-feeds-ip-add IP=1.1.1.1,2.2.2.2```
-
-#### Human Readable Output
-### IP Feeds
-|Feeds|
-|---|
-| 2.2.2.2,<br>1.1.1.1 |
-
+### Host Description
+|Hostname|Distribution|Collections|
+|---|---|---|
+| ip-172-31-23-249.eu-west-1.compute.internal | Ubuntu 16.04 | All,<br>676921422616 |
+| ip-172-31-5-163.eu-west-1.compute.internal | amzn 2 | All,<br>676921422616 |
