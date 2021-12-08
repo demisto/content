@@ -398,7 +398,7 @@ references:
         python3 -m pytest ./Tests/Marketplace/Tests/ -v
         python3 -m pytest ./Tests/scripts/utils/tests -v
         python3 -m pytest ./Tests/tests -v
-        python3 -m pytest ./Tests/private_build/ -v
+        python3 -m pytest ./Tests/private_build/tests -v
         python3 -m pytest Utils -v
 
         if [ -n "${DEMISTO_SDK_NIGHTLY}" ] ; then

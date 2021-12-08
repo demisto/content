@@ -4,7 +4,11 @@ Enriches RaDark incident with detailed items.
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-This playbook does not use any sub-playbooks.
+* Set RaDark Grid For Compromised Accounts
+* Set RaDark Grid For Hacking Discussions
+* Set RaDark Grid For Credit Cards
+* Set RaDark Grid For Leaked Credentials 
+* Set RaDark Grid For Network Vulnerabilities
 
 ### Integrations
 * RaDark
@@ -12,7 +16,6 @@ This playbook does not use any sub-playbooks.
 ### Scripts
 * IsIntegrationAvailable
 * MapRaDarkIncidentDetails
-* SetGridField
 
 ### Commands
 * radark-incident-get-items

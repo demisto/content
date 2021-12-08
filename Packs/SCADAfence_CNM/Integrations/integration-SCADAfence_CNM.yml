@@ -694,7 +694,7 @@ script:
     description: Fetches all connections from the CNM
   isfetch: true
   runonce: false
-  dockerimage: demisto/python:2.7.18.24066
+  dockerimage: demisto/python:2.7.18.24398
 tests:
 - SCADAfence_test
 fromversion: 5.0.0

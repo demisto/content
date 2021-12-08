@@ -30,6 +30,7 @@ For more details, see the <a href="https://www.vaultproject.io/docs/auth/approle
 <li>
 <strong>Fetches credentials</strong> - If set, the integration will fetch credentials from Vault to Cortex XSOAR.</li>
 <li><strong>CSV list of secrets engine types to fetch secrets from</strong></li>
+<li><strong>Concat username to credential object name</strong></li>
 </ul>
 </li>
 <li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>

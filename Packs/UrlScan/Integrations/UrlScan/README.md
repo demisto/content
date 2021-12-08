@@ -15,7 +15,7 @@
 <li><strong>Use system proxy settings</strong></li>
 <li>
 <strong>URL Threshold. </strong>Minimum number of positive results from urlscan.io to consider the URL malicious.</li>
-<li>
+<li><strong>User Agent</strong>: User Agent used during scans with this integration.</li>
 </ul>
 </li>
 <li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>
@@ -135,6 +135,11 @@
 <td style="width: 446px;">Will the submission be public or private</td>
 <td style="width: 97px;">Optional</td>
 </tr>
+<tr>
+<td style="width: 165px;">useragent</td>
+<td style="width: 446px;">User Agent used to perform scans</td>
+<td style="width: 97px;">Optional</td>
+</tr>
 </tbody>
 </table>
 <h5> </h5>
@@ -250,6 +255,11 @@
 <tr>
 <td style="width: 166px;">wait</td>
 <td style="width: 446px;">Time interval (in seconds) between retries, if the API rate limit is reached. This argument is optional, but if you specify the retries argument, you need to specify this argument.</td>
+<td style="width: 96px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 166px;">useragent</td>
+<td style="width: 446px;">User Agent used to perform scans</td>
 <td style="width: 96px;">Optional</td>
 </tr>
 </tbody>
