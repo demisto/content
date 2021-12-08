@@ -202,7 +202,8 @@ configuration:
   required: false
   additionalinfo: The fetch time range will be at least of the size specified here.
     This will support events that have a gap between their occurrence time and their
-    index time in Splunk. To decide the value, you need to analyze what is the average time between them both.
+    index time in Splunk. To decide how long the backwards window should be, you need to analyze what is the average
+    time between them both on your splunk envorinment.
 - display: 'Advanced: Unique ID fields'
   name: unique_id_fields
   type: 0
