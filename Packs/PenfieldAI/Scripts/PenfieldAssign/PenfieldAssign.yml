@@ -1,0 +1,30 @@
+comment: "PenfieldAssign will use the Penfield integration's penfield-get-assignee command to determine who an incident should be assigned to, then print the selected analyst to the War Room and overwrite the owner property."
+commonfields:
+  id: PenfieldAssign
+  version: -1
+enabled: true
+args:
+- name: assign
+  default: true
+  auto: PREDEFINED
+  predefined:
+  - "Yes"
+  - "No"
+  description: Whether this script should actually assign the incident by overwriting
+    owner. Defaults to yes.
+  defaultValue: "Yes"
+name: PenfieldAssign
+script: '-'
+system: false
+tags:
+- management
+- user
+- Utility
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.9.8.24399
+fromversion: 6.0.0
+dependson:
+  must:
+  - Penfield|||penfield-get-assignee

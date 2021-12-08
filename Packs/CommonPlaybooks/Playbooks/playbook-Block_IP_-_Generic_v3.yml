@@ -1281,7 +1281,7 @@ tasks:
         simple: |-
           <p>Dear XSOAR user,</p>
           <p>This notification informs you that the following list of IPs will be blocked on your XSOAR's integrated network devices.</p>
-          <p><br />(<strong>Note</strong>: the IPs will be added to your company BlockList or be blocked in individual rules based on the XSOAR integrated devices).</p>
+          <p><br />(<strong>Note</strong>: the IPs will be added to your company block list or be blocked in individual rules based on the XSOAR integrated devices).</p>
           <p>Also, <strong>please note</strong> that the following IPs are part of the <strong>internal range</strong> mentioned in the playbook:</p>
           <p>${BlockList.PIIP}</p>
           <p>&nbsp;</p>
@@ -1863,8 +1863,8 @@ tasks:
     task:
       id: f701bf9b-a74b-47c4-8256-d37ce5fc64fd
       version: -1
-      name: Cisco Secure Cloud Analytics - Add IP to BlockList
-      description: Add a domain or IP to the blacklist.
+      name: Cisco Secure Cloud Analytics - Add IP to Block List
+      description: Add a domain or IP to the block list.
       script: '|||sw-block-domain-or-ip'
       type: regular
       iscommand: true
@@ -2069,7 +2069,7 @@ tasks:
     task:
       id: a2efece2-222b-450f-816c-755b1f4f2c0f
       version: -1
-      name: Akamai WAF - Add IP to a blocklist
+      name: Akamai WAF - Add IP to a block list
       description: Adds elements to the specified network list.
       script: '|||akamai-add-elements-to-network-list'
       type: regular
@@ -2617,7 +2617,7 @@ tasks:
     task:
       id: ca66421d-fbc6-4e84-8ae5-c54d80321888
       version: -1
-      name: Re-set the blocklist [Inputs]
+      name: Re-set the block list [Inputs]
       description: Set a value in context under the key you entered. If no value is
         entered, the script does nothing.
       scriptName: SetAndHandleEmpty
@@ -2656,10 +2656,10 @@ tasks:
     task:
       id: 9c275081-8770-40c6-8c5d-9041e5da00bb
       version: -1
-      name: f110702f-70b8-4c74-8438-829d4ec553c1
+      name: Cisco FirePower- Append network group object
       description: This playbook will append a network group object with new elements
         (IPs or network objects).
-      playbookId: f110702f-70b8-4c74-8438-829d4ec553c1
+      playbookName: Cisco FirePower- Append network group object
       type: playbook
       iscommand: false
       brand: ""
@@ -2706,7 +2706,7 @@ tasks:
     task:
       id: a459d1a6-0fb3-423c-8c72-e2e65cb9f405
       version: -1
-      name: Re-set the blocklist [Inputs]
+      name: Re-set the block list [Inputs]
       description: Set a value in context under the key you entered. If no value is
         entered, the script does nothing.
       scriptName: SetAndHandleEmpty
@@ -2745,7 +2745,7 @@ tasks:
     task:
       id: 56cab1f8-95e3-41e5-873e-a6bd8f554e01
       version: -1
-      name: Re-set the blocklist [Malicious]
+      name: Re-set the block list [Malicious]
       description: Set a value in context under the key you entered. If no value is
         entered, the script does nothing.
       scriptName: SetAndHandleEmpty
@@ -2784,7 +2784,7 @@ tasks:
     task:
       id: dca0f1eb-2cce-461e-8f85-7da7174399f4
       version: -1
-      name: Re-set the blocklist [Suspicious]
+      name: Re-set the block list [Suspicious]
       description: Set a value in context under the key you entered. If no value is
         entered, the script does nothing.
       scriptName: SetAndHandleEmpty
@@ -2823,8 +2823,8 @@ tasks:
     task:
       id: 89c95e25-1341-459c-8cc7-d428e10b807d
       version: -1
-      name: ThreatX - add IP to a blocklist
-      description: Adds an IP address or CIDR to the blacklist.
+      name: ThreatX - add IP to a block list
+      description: Adds an IP address or CIDR to the block list.
       script: '|||threatx-blacklist-ip'
       type: regular
       iscommand: true
@@ -3015,7 +3015,7 @@ tasks:
         simple: |-
           <p>Dear XSOAR user,</p>
           <p>This notification informs you that the following list of IPs will be blocked on your XSOAR's integrated network devices.</p>
-          <p><br />(<strong>Note</strong>: the IPs will be added to your company BlockList or be blocked in individual rules based on the XSOAR integrated devices).</p>
+          <p><br />(<strong>Note</strong>: the IPs will be added to your company block list or be blocked in individual rules based on the XSOAR integrated devices).</p>
           <p>&nbsp;</p>
           <p>For more information, click the link below.</p>
       methods:
@@ -3159,7 +3159,7 @@ tasks:
     task:
       id: 00211c6d-40d4-4cb0-8a33-76ac25dd3b05
       version: -1
-      name: Append Internal IPs to a possible blocklist
+      name: Append Internal IPs to a possible block list
       description: Set a value in context under the key you entered. If no value is
         entered, the script does nothing.
       scriptName: SetAndHandleEmpty
@@ -3222,7 +3222,7 @@ tasks:
     task:
       id: 24aa26cf-65bc-4deb-8b15-8d2c3cc2dbea
       version: -1
-      name: Re-set the blocklist [Internal Address]
+      name: Re-set the block list [Internal Address]
       description: Set a value in context under the key you entered. If no value is
         entered, the script does nothing.
       scriptName: SetAndHandleEmpty
@@ -3345,6 +3345,8 @@ tasks:
       '#none#':
       - "99"
     scriptarguments:
+      type:
+        simple: IP
       value:
         complex:
           root: inputs.IP
@@ -3448,8 +3450,8 @@ inputs:
   value: {}
   required: false
   description: Insert a tag name with which indicators will get tagged. This tag can
-    be used later in the External Dynamic Lists integration by using the tag for
-    filtering IPs in the indicator query.
+    be used later in the External Dynamic Lists integration by using the tag for filtering
+    IPs in the indicator query.
   playbookInputQuery:
 - key: DAG
   value: {}

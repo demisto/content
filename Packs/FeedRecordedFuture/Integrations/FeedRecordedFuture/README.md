@@ -19,7 +19,7 @@ This integration was integrated and tested with Recorded Future Feed
     | Indicator Type | Type of the indicator in the feed. | True |
     | API token |  | True |
     | Services |  | True |
-    | Risk Rule | Limit the indicators list to a specific risk rule. To see available<br/>risk rules run the rf-feed-get-risk-rules command. This parameter will only be<br/>used for the 'connectApi' service. | False |
+    | Risk Rule | A comma-separated list of risk rules which limits the indicators list to a specific risk rule. For example: 'dhsAis,phishingUrl'. If more than one risk rule is set, the indicators fetching and the 'rf-feed-get-indicators' command will be executed for each risk rule. To see available risk rules run the rf-feed-get-risk-rules command. This parameter will only be used for the 'connectApi' service. Using the 'large' risk rule is not recommended. | False |
     | Fusion File Path | Load a custom risklist from a specified Recorded Future file path.<br/>If no file path is specified, the default risklist file is used. This parameter<br/>will only be used for the 'fusion' service. | False |
     | Tags | Supports CSV values. | False |
     | Request Timeout | Time in seconds before HTTP requests timeout. | True |
