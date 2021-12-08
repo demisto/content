@@ -369,7 +369,7 @@
                                 "index": 3,
                                 "listId": "pfjeh5flj3-b3a487f0-b7da-11eb-98eb-1965d2f9391a",
                                 "name": "Run Selected Action",
-                                "scriptId": "a48717d8-b34e-4852-82eb-52057f86eaae",
+                                "scriptId": "PerformActionOnCampaignIncidents",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             }
