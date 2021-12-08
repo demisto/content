@@ -1228,5 +1228,5 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- Phishing Investigation - Generic v2 - Campaign Test
+- no test
 fromversion: 6.0.0
