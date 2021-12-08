@@ -908,17 +908,16 @@ def threat_indicators_data_to_xsoar_format(ind_data):
         'Created': properties.get('created', ''),
         'CreatedByRef': properties.get('createdByRef', ''),
         'ExternalId': properties.get('externalId', ''),
-        'LastUpdatedTimeUtc': properties.get('lastUpdatedTimeUtc', ''),
+        'LastUpdatedTimeUtc': format_date(properties.get('lastUpdatedTimeUtc', '')),
         'Revoked': properties.get('revoked', ''),
         'Source': properties.get('source', ''),
-        'ThreatIntelligenceTags': properties.get('threatIntelligenceTags', ''),
         'Tags': properties.get('threatIntelligenceTags', 'No Tags'),
         'DisplayName': properties.get('displayName', ''),
         'Description': properties.get('description', ''),
         'Types': properties.get('threatTypes', ''),
         'KillChainPhases': [{
             'KillChainName': phase.get('killChainName'),
-            'PatternTypeValues': phase.get('phaseName')
+            'PhaseName': phase.get('phaseName')
         }
             for phase in properties.get('KillChainPhases', [])],
 
@@ -965,12 +964,8 @@ def build_query_filter(args):
             else:
                 filtering_args['patternTypes'].append(ind_type)
 
-    include_disabled = args.get('include_disabled', '')
-    if include_disabled:
-        if include_disabled == "true":
-            filtering_args['includeDisabled'] = True
-        else:
-            filtering_args['includeDisabled'] = False
+    include_disabled = args.get('include_disabled', 'false') == 'true'
+    filtering_args['includeDisabled'] = include_disabled
 
     remove_nulls_from_dictionary(filtering_args)
 
@@ -984,7 +979,7 @@ def build_threat_indicator_data(args):
         'patternType': value,
         'displayName': args.get('display_name'),
         'description': args.get('description'),
-        'revoked': args.get('revoked'),
+        'revoked': args.get('revoked',''),
         'confidence': arg_to_number(args.get('confidence')),
         'threatTypes': argToList(args.get('threat_types')),
         'includeDisabled': args.get('include_disabled', ''),
@@ -1037,7 +1032,6 @@ def build_updated_indicator_data(new_ind_data, original_ind_data):
 
 def extract_original_data_from_indicator(original_data):
     extracted_data = {
-
         'description': original_data.get('description', ''),
         'revoked': original_data.get('revoked', ''),
         'confidence': arg_to_number(original_data.get('confidence')),
@@ -1109,7 +1103,7 @@ def query_threat_indicators_command(client, args):
     else:
         data = build_query_filter(args)
 
-        result = client.http_request('POST', url_suffix, params={'$top': limit}, data=data)
+        result = client.http_request('GET', url_suffix, params={'$top': limit}, data=data)
 
     num_of_threat_indicators = 0
     threat_indicators = []

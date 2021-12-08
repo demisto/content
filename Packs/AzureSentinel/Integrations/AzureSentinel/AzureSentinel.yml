@@ -14,7 +14,6 @@ configuration:
   required: true
   type: 4
 - display: Client ID
-  displaypassword: Client Secret
   name: credentials
   required: true
   type: 9
@@ -1000,7 +999,7 @@ script:
       type: String
     - contextPath: AzureSentinel.ThreatIndicator.ETags
       description: The etags of the indicator.
-      type: Unknown
+      type: String
     - contextPath: AzureSentinel.ThreatIndicator.DisplayName
       description: The display name of the indicator.
       type: String
@@ -1030,12 +1029,21 @@ script:
       type: Date
     - contextPath: AzureSentinel.ThreatIndicator.KillChainPhases.PhaseName
       description: The phase name of the indicator.
-      type: Unknown
+      type: String
     - contextPath: AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeValues.Value
       description: The value of the inidcator.
-      type: Unknown
+      type: String
     - contextPath: AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeValues.ValueType
       description: The value type of the indicator.
+      type: String
+    - contextPath: AzureSentinel.ThreatIndicator.LastUpdatedTimeUtc
+      description: The last updated time of the indicator.
+      type: Date
+    - contextPath: AzureSentinel.ThreatIndicator.Tags
+      description: The tags of the indicator.
+      type: Unknown
+    - contextPath: AzureSentinel.ThreatIndicator.Types
+      description: The threat types of the inidcator.
       type: Unknown
   - arguments:
     - default: false
