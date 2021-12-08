@@ -605,7 +605,6 @@ HTTP_FILTERING_BODY_RESPONSE_PARAMS = [
         },
         "/profiles/container/123/hosts",
         ["host1", "host2", "host3", "host4", "host5"],
-        False
     ),
     (
         {
@@ -615,27 +614,26 @@ HTTP_FILTERING_BODY_RESPONSE_PARAMS = [
         "/profiles/container/123/forensic",
         [
             {
-                "Type": "Binary created",
-                "ContainerId": "123",
+                "type": "Binary created",
+                "containerId": "123",
             },
             {
-                "Type": "Binary created",
+                "type": "Binary created",
                 "ContainerId": "1234",
             },
             {
-                "Type": "Binary created",
-                "ContainerId": "12345",
+                "type": "Binary created",
+                "containerId": "12345",
             },
             {
-                "Type": "Binary created",
-                "ContainerId": "123456",
+                "type": "Binary created",
+                "containerId": "123456",
             },
             {
-                "Type": "Binary created",
-                "ContainerId": "1234567",
+                "type": "Binary created",
+                "containerId": "1234567",
             }
         ],
-        True
     ),
     (
         {
@@ -645,27 +643,26 @@ HTTP_FILTERING_BODY_RESPONSE_PARAMS = [
         "/profiles/host/123/forensic",
         [
             {
-                "Type": "Process spawned",
-                "App": "ffdd78ae",
+                "type": "Process spawned",
+                "app": "ffdd78ae",
             },
             {
-                "Type": "Listening port",
-                "App": "ffdd78ae",
+                "type": "Listening port",
+                "app": "ffdd78ae",
             },
             {
-                "Type": "Listening port",
-                "App": "ffdd78ae",
+                "type": "Listening port",
+                "app": "ffdd78ae",
             },
             {
-                "Type": "Listening port",
-                "App": "ffdd78ae",
+                "type": "Listening port",
+                "app": "ffdd78ae",
             },
             {
-                "Type": "Listening port",
-                "App": "ffdd78ae",
+                "type": "Listening port",
+                "app": "ffdd78ae",
             }
         ],
-        True
     ),
     (
         {
@@ -674,7 +671,6 @@ HTTP_FILTERING_BODY_RESPONSE_PARAMS = [
         },
         "/profiles/container/123/hosts",
         ["host1"],
-        False
     ),
     (
         {
@@ -683,7 +679,6 @@ HTTP_FILTERING_BODY_RESPONSE_PARAMS = [
         },
         "/profiles/container/123/hosts",
         ["host1, host2"],
-        False
     ),
     (
         {
@@ -692,7 +687,6 @@ HTTP_FILTERING_BODY_RESPONSE_PARAMS = [
         },
         "/profiles/container/123/hosts",
         ["host1, host2", "host3", "host4", "host5"],
-        False
     ),
     (
         {
@@ -701,7 +695,6 @@ HTTP_FILTERING_BODY_RESPONSE_PARAMS = [
         },
         "/profiles/container/123/hosts",
         ["host1, host2", "host3"],
-        False
     ),
     (
         {
@@ -710,13 +703,12 @@ HTTP_FILTERING_BODY_RESPONSE_PARAMS = [
         },
         "/profiles/container/123/hosts",
         ["host1, host2", "host3", "host4", "host5", "host6", "host7"],
-        False
     )
 ]
 
 
-@pytest.mark.parametrize("args, url_suffix, response, capitalize", HTTP_FILTERING_BODY_RESPONSE_PARAMS)
-def test_http_body_response_filtering_is_valid(requests_mock, args, url_suffix, response, capitalize, client):
+@pytest.mark.parametrize("args, url_suffix, response", HTTP_FILTERING_BODY_RESPONSE_PARAMS)
+def test_http_body_response_filtering_is_valid(requests_mock, args, url_suffix, response, client):
     """
     Given:
         - http body response.
@@ -733,7 +725,7 @@ def test_http_body_response_filtering_is_valid(requests_mock, args, url_suffix, 
 
     requests_mock.get(url=full_url, json=response)
     body_response = get_api_filtered_response(
-        client=client, url_suffix=url_suffix, offset=offset, limit=limit, args=args, capitalize=capitalize
+        client=client, url_suffix=url_suffix, offset=offset, limit=limit, args=args
     )
 
     assert len(body_response) == len(response[offset:limit + offset])
@@ -840,17 +832,13 @@ EXPECTED_CONTEXT_OUTPUT_DATA = [
         [
             {
                 "type": "Runtime profile networking",
-                "timestamp": "2021-09-02T11:05:17.697083555Z",
-                "containerId": "",
-                "listeningStartTime": "0001-01-01T00:00:00Z",
+                "containerId": "1234",
                 "port": 8000,
                 "outbound": True
             },
             {
                 "type": "Runtime profile networking",
-                "timestamp": "2021-09-02T11:05:11.188517918Z",
-                "containerId": "",
-                "listeningStartTime": "0001-01-01T00:00:00Z",
+                "containerId": "1234",
                 "port": 6789,
                 "process": "some_process"
             }
@@ -858,20 +846,16 @@ EXPECTED_CONTEXT_OUTPUT_DATA = [
         {
             "containerID": "123",
             "hostname": "hostname",
-            "forensics": [
+            "Forensics": [
                 {
                     "type": "Runtime profile networking",
-                    "timestamp": "2021-09-02T11:05:17.697083555Z",
-                    "containerId": "",
-                    "listeningStartTime": "0001-01-01T00:00:00Z",
+                    "containerId": "1234",
                     "port": 8000,
                     "outbound": True
                 },
                 {
                     "type": "Runtime profile networking",
-                    "timestamp": "2021-09-02T11:05:11.188517918Z",
-                    "containerId": "",
-                    "listeningStartTime": "0001-01-01T00:00:00Z",
+                    "containerId": "1234",
                     "port": 6789,
                     "process": "some_process"
                 }
@@ -890,26 +874,22 @@ EXPECTED_CONTEXT_OUTPUT_DATA = [
             {
                 "type": "Process spawned",
                 "command": "docker-runc --version",
-                "listeningStartTime": "0001-01-01T00:00:00Z"
             },
             {
                 "type": "Process spawned",
                 "command": "docker ps -a",
-                "listeningStartTime": "0001-01-01T00:00:00Z"
             }
         ],
         {
-            "HostID": "123",
+            "hostID": "123",
             "Forensics": [
                 {
                     "type": "Process spawned",
                     "command": "docker-runc --version",
-                    "listeningStartTime": "0001-01-01T00:00:00Z"
                 },
                 {
                     "type": "Process spawned",
                     "command": "docker ps -a",
-                    "listeningStartTime": "0001-01-01T00:00:00Z"
                 }
             ]
         }

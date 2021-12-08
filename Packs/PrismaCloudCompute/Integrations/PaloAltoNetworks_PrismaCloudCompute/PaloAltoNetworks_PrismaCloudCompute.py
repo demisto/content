@@ -419,7 +419,11 @@ def get_hostname_description_info(host_info: dict) -> dict:
     Returns:
         dict: host description information
     """
-    dist = host_info["labels"][0].replace("osDistro:", "") + " " + host_info["labels"][1].replace("osVersion:", "")
+    labels = host_info.get("labels", [])
+    if labels and len(labels) == 2:
+        dist = labels[0].replace("osDistro:", "") + " " + labels[1].replace("osVersion:", "")
+    else:
+        dist = ""
 
     return {
         "Hostname": host_info.get("_id"),
@@ -477,8 +481,9 @@ def update_host_profile_context_fields(hosts_profile_info: List[dict]):
     """
     for host_profile in hosts_profile_info:
         if "created" in host_profile:
-            host_profile["created"] = parse_date_string_format(date_string=host_profile.get("created"))
-            host_profile["time"] = parse_date_string_format(date_string=host_profile.get("time"))
+            host_profile["created"] = parse_date_string_format(date_string=host_profile.get("created", ""))
+        if "time" in host_profile:
+            host_profile["time"] = parse_date_string_format(date_string=host_profile.get("time", ""))
         for event in host_profile.get("sshEvents", []):
             if "ip" in event:
                 event["ip"] = str(ipaddress.IPv4Address(event.get("ip")))
@@ -503,13 +508,13 @@ def get_profile_host_list(client: PrismaCloudComputeClient, args: dict) -> Comma
         method='GET', url_suffix='/profiles/host', params=assign_params(**args)
     )
 
-    update_host_profile_context_fields(hosts_profile_info=hosts_profile_info)   # type:ignore
+    update_host_profile_context_fields(hosts_profile_info=hosts_profile_info)
 
     return CommandResults(
         outputs_prefix='PrismaCloudCompute.ProfileHost',
         outputs_key_field='_id',
         outputs=hosts_profile_info,
-        readable_output=build_profile_host_table_response(hosts_info=hosts_profile_info),  # type:ignore
+        readable_output=build_profile_host_table_response(hosts_info=hosts_profile_info),
         raw_response=hosts_profile_info
     )
 
@@ -631,7 +636,7 @@ def get_container_profile_list(client: PrismaCloudComputeClient, args: dict) -> 
         outputs_prefix='PrismaCloudCompute.ProfileContainer',
         outputs_key_field='_id',
         outputs=containers_info,
-        readable_output=build_profile_container_table_response(containers_info=containers_info),  # type:ignore
+        readable_output=build_profile_container_table_response(containers_info=containers_info),
         raw_response=containers_info
     )
 
@@ -700,7 +705,7 @@ def get_container_hosts_list(client: PrismaCloudComputeClient, args: dict) -> Co
     )
 
 
-def parse_forensics_timestamps(forensics: list[dict]) -> None:
+def parse_forensics_timestamps(forensics: List[dict]) -> None:
     """
     Parses timestamps to a more human readable output for a forensic response.
 
@@ -710,10 +715,10 @@ def parse_forensics_timestamps(forensics: list[dict]) -> None:
     """
     for forensic in forensics:
         if "timestamp" in forensic:
-            forensic["timestamp"] = parse_date_string_format(date_string=forensic.get("timestamp"))
+            forensic["timestamp"] = parse_date_string_format(date_string=forensic.get("timestamp", ""))
         if "listeningStartTime" in forensic:
             forensic["listeningStartTime"] = parse_date_string_format(
-                date_string=forensic.get("listeningStartTime")
+                date_string=forensic.get("listeningStartTime", "")
             )
 
 
@@ -893,10 +898,15 @@ def get_custom_feeds_ip_list(client: PrismaCloudComputeClient) -> CommandResults
     feeds = client.api_request(method='GET', url_suffix="/feeds/custom/ips")
 
     if feeds:
-        feeds = capitalize_api_response(api_response=feeds)
-        if "Modified" in feeds:
-            feeds["Modified"] = parse_date_string_format(date_string=feeds.get("Modified", ""))
-        table = tableToMarkdown(name="IP Feeds", t=feeds, headers=["Modified", "Feed"])
+        if "modified" in feeds:
+            feeds["modified"] = parse_date_string_format(date_string=feeds.get("modified", ""))
+        table = tableToMarkdown(
+            name="IP Feeds",
+            t=feeds,
+            headers=["modified", "feed"],
+            removeNull=True,
+            headerTransform=lambda word: word[0].upper() + word[1:]
+        )
     else:
         table = "No results found"
 
@@ -904,7 +914,7 @@ def get_custom_feeds_ip_list(client: PrismaCloudComputeClient) -> CommandResults
         outputs_prefix="PrismaCloudCompute.CustomFeedIP",
         outputs=feeds,
         readable_output=table,
-        outputs_key_field="Digest"
+        outputs_key_field="digest"
     )
 
 

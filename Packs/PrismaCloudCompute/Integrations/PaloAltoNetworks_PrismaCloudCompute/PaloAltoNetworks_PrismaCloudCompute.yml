@@ -294,7 +294,7 @@ script:
     deprecated: false
     arguments:
     - name: id
-      description: The container ID, can be retrieved from 'prisma-cloud-compute-profile-container-list' command.
+      description: The container ID, can be retrieved from prisma-cloud-compute-profile-container-list command.
       required: true
       isArray: false
       defaultValue: ""
@@ -408,7 +408,7 @@ script:
     deprecated: false
     arguments:
     - name: id
-      description: host ID, can be retrieved from 'prisma-cloud-compute-profile-host-list' command.
+      description: host ID, can be retrieved from prisma-cloud-compute-profile-host-list command.
       required: true
       isArray: false
       defaultValue: ""
