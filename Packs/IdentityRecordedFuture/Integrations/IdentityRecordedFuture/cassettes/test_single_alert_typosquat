@@ -1,0 +1,58 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.24.0
+      X-RF-User-Agent:
+      - Cortex_XSOAR/2.0 Cortex_XSOAR_unittest_0.1
+      X-RFToken:
+      - XXXXXX
+    method: GET
+    uri: https://api.recordedfuture.com/v2/alert/fp0_an
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAJVTXW/aMBT9K5Yl9lIIkFExRUIVBSbxwgNDfdg0RU58E7wGO/MHDCH+e6/jpaFT
+        +zApspx77jn30xfKmWU0uVANRwEnf2PGiFIC0ES6qupTqSzMnd0rfWtp78Yy6wxN0DhguRVK0uCw
+        ZK3TtU9BWmEFoN+PS/g5twJamGcMi05Wg+ThylXuDugXCBoKQCz/yy80Kz2IQeckB21FIXKMRgql
+        id0D4erAhCSn0ylSshISIsbzLMrVIYKS7JkhGYAkGkphLCpz+k+GAtPAQybvS/gK2QGrox/i9lx7
+        fC1RX4JdNhltPOn6s08rJkvHSu8BsmxMRjmdg+9/EzyDZToZdIE2cCKLm1K3Te6a+YabLt63oIId
+        dLpqO4yFVR78iI/xfQYNg+6trU0yHLK6jjTkSnPghbNOgy9uWIkjDE0+xAkHKeQPHwSfFfUoZX72
+        2lVNGf8l94S7t+bPKtMs9XuYaqiVtqmwcEhZhYmnwIVV+qFBVW3NrDd97MVxcFxzvPY+z/FkT39+
+        7Yz/jRd4ZjtffUCtdhCstjPiOV8uHu/CiO5251qZ347ZRmK6/OQXHKJsw44Z07OCVQa6sXgmCUzS
+        MRFvhhhSoc1qi7JsNi2h8SgeDcb4xbtxnEy+JPf30WQ0/d6yXjuZK9e8gLcPYHy7q6M3T2V87Yb9
+        fmZkQPwmveoRRMeklej2aLv6utquNosVvV5fABy8orAkBAAA
+    headers:
+      Cache-Control:
+      - no-cache, no-store, private, must-revalidate, max-age=0, no-transform
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json;charset=utf-8
+      Date:
+      - Thu, 29 Oct 2020 12:15:42 GMT
+      Expires:
+      - Thu, 01 Jan 1970 00:00:00 GMT
+      Pragma:
+      - no-cache
+      Set-Cookie:
+      - JSESSIONID=node01aplaz6btz9wsyz93w39dkoxp137448.node0;Path=/rfq
+      Strict-Transport-Security:
+      - max-age=86400; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+version: 1

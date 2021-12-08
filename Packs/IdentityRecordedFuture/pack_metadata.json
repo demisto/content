@@ -1,0 +1,33 @@
+{
+    "name": "Recorded Future Identity",
+    "description": "Recorded Future App for Identity",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Recorded Future",
+    "url": "https://www.recordedfuture.com/support/demisto-integration/",
+    "email": "support@recordedfuture.com",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "created": "2021-10-27T13:09:02Z",
+    "updated": "2021-10-27T13:09:02Z",
+    "certification": "certified",
+    "useCases": [],
+    "keywords": [
+        "recorded future",
+        "recordedfuture",
+        "rf",
+        "threat intelligence",
+        "ti",
+        "tip",
+        "enrichment",
+        "enrich",
+        "intelligence",
+        "data enrichment"
+    ],
+    "dependencies": {},
+    "githubUser": [
+        "rderkachrf"
+    ]
+}
