@@ -1,0 +1,17 @@
+{
+    "name": "HellowWorld-contrib-test",
+    "description": "contribution test",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "darkushin",
+    "url": "",
+    "email": "",
+    "created": "2021-12-08T08:48:31Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "darkushin"
+    ]
+}
