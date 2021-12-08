@@ -2,12 +2,9 @@ import copy
 import io
 import json
 import random
-import time
 
-from freezegun import freeze_time
 import dateparser
 from datetime import datetime, timedelta
-import demistomock as demisto
 
 import pytest
 from AzureADIdentityProtection import (AADClient, OUTPUTS_PREFIX,

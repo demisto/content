@@ -20,6 +20,7 @@ REQUIRED_PERMISSIONS = (
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
 
+
 def __reorder_first_headers(headers: List[str], first_headers: List[str]) -> None:
     """
     brings given headers to the head of the list, while preserving their order
@@ -286,7 +287,7 @@ def detections_to_incidents(detections: List[Dict[str, str]], last_fetch_datetim
 def get_last_fetch_time(last_run, params):
     last_fetch = last_run.get('latest_detection_found')
     if not last_fetch:
-        demisto.debug(f'[AzureADIdentityProtection] First run')
+        demisto.debug('[AzureADIdentityProtection] First run')
         # handle first time fetch
         first_fetch = f"{params.get('first_fetch') or '1 days'} ago"
         default_fetch_datetime = dateparser.parse(date_string=first_fetch, date_formats=[DATE_FORMAT])
@@ -301,7 +302,8 @@ def get_last_fetch_time(last_run, params):
 def build_filter(last_fetch, params):
     start_time_enforcing_filter = f"detectedDateTime gt {last_fetch}Z"
     user_supplied_filter = params.get('fetch_filter_expression', '')
-    query_filter = f'{user_supplied_filter} and {start_time_enforcing_filter}' if user_supplied_filter else start_time_enforcing_filter
+    query_filter = f'{user_supplied_filter} and {start_time_enforcing_filter}' if user_supplied_filter \
+        else start_time_enforcing_filter
     demisto.debug(f'[AzureADIdentityProtection] query_filter: {query_filter}Z')
     return query_filter
 
