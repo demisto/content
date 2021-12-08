@@ -12,3 +12,7 @@ on your AWS environment.
 - Configure the Necessary IAM Roles that the AWS Integration Can Assume.
 
 For detailed instructions, see the [AWS Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/aws-integrations---authentication).
+
+
+---
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/aws---ec2)
