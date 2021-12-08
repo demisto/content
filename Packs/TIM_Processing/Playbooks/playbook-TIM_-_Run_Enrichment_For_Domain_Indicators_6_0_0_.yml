@@ -1,14 +1,11 @@
-id: TIM - Run Enrichment For Url Indicators
+id: TIM - Run Enrichment For Domain Indicators
 version: -1
-fromversion: 5.5.0
-toversion: 5.9.9
-name: TIM - Run Enrichment For Url Indicators
-description: |-
-    This playbook processes indicators by enriching indicators
-    based on the indicator feed's reputation, as specified in the playbook
-    inputs. This playbook needs to be used with caution as it might use up the user
-    enrichment integration's API license when running enrichment for large amounts of
-    indicators.
+fromversion: 6.0.0
+name: TIM - Run Enrichment For Domain Indicators
+description: This playbook processes indicators by enriching indicators based on the
+  indicator feed's reputation, as specified in the playbook inputs. This playbook
+  needs to be used with caution as it might use up the user enrichment integration's
+  API license when running enrichment for large amounts of indicators.
 starttaskid: "0"
 tasks:
   "0":
@@ -41,18 +38,20 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 583e0fd9-25e4-4a0f-8141-88a29cb61d27
+    taskid: 63583391-162a-41bb-8bcb-ca636d550566
     type: condition
     task:
-      id: 583e0fd9-25e4-4a0f-8141-88a29cb61d27
+      id: 63583391-162a-41bb-8bcb-ca636d550566
       version: -1
       name: Are there bad results?
-      description: ''
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "127"
@@ -75,7 +74,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: URL
+                        simple: Domain
                 - - operator: isEqualString
                     left:
                       value:
@@ -97,7 +96,9 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 2
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "127":
     id: "127"
     taskid: 34af11b6-fc2e-486d-8dca-bada9338b213
@@ -123,6 +124,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "129":
     id: "129"
     taskid: bd335b7d-f6fb-4a0d-8a2f-03066ab8dc61
@@ -139,7 +142,7 @@ tasks:
       '#default#':
       - "127"
       "yes":
-      - "130"
+      - "140"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -164,68 +167,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "130":
-    id: "130"
-    taskid: e81120d8-dc36-484d-8841-27c13df99945
-    type: regular
-    task:
-      id: e81120d8-dc36-484d-8841-27c13df99945
-      version: -1
-      name: Enrich bad indicators
-      description: Perform enrichment with enabled enrichment intergations
-      script: '|||url'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "127"
-    scriptarguments:
-      limit: {}
-      long: {}
-      public: {}
-      retries: {}
-      sampleSize: {}
-      submitWait: {}
-      threshold: {}
-      timeout: {}
-      url:
-        complex:
-          root: playbookQuery
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: playbookQuery.indicator_type
-                iscontext: true
-              right:
-                value:
-                  simple: URL
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: playbookQuery.score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          accessor: value
-          transformers:
-          - operator: uniq
-      wait: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -260,
-          "y": 220
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "131":
     id: "131"
     taskid: 97e9ec4d-8286-4c4e-84b8-ab85f656a687
@@ -242,7 +185,7 @@ tasks:
       '#default#':
       - "127"
       "yes":
-      - "133"
+      - "141"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -267,18 +210,20 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "132":
     id: "132"
-    taskid: a6f61158-5b7f-4bb9-8f8f-2ba72dd1ab3b
+    taskid: 4d8290ee-5e34-448f-83b6-c262a644d127
     type: condition
     task:
-      id: a6f61158-5b7f-4bb9-8f8f-2ba72dd1ab3b
+      id: 4d8290ee-5e34-448f-83b6-c262a644d127
       version: -1
       name: Are there good results?
-      description: ''
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "127"
@@ -301,7 +246,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: URL
+                        simple: Domain
                 - - operator: isEqualString
                     left:
                       value:
@@ -323,81 +268,21 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 2
-  "133":
-    id: "133"
-    taskid: 46cb4bec-b75d-41fa-8a35-045fc68d256e
-    type: regular
-    task:
-      id: 46cb4bec-b75d-41fa-8a35-045fc68d256e
-      version: -1
-      name: Enrich good indicators
-      description: Perform enrichment with enabled enrichment intergations
-      script: '|||url'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "127"
-    scriptarguments:
-      limit: {}
-      long: {}
-      public: {}
-      retries: {}
-      sampleSize: {}
-      submitWait: {}
-      threshold: {}
-      timeout: {}
-      url:
-        complex:
-          root: playbookQuery
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: playbookQuery.indicator_type
-                iscontext: true
-              right:
-                value:
-                  simple: URL
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: playbookQuery.score
-                iscontext: true
-              right:
-                value:
-                  simple: "1"
-          accessor: value
-          transformers:
-          - operator: uniq
-      wait: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1280,
-          "y": 220
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "134":
     id: "134"
-    taskid: 06341244-463a-46e3-8ce2-04e02efb5b07
+    taskid: 97748f59-5bb0-4dd9-83f1-e318c992ca05
     type: condition
     task:
-      id: 06341244-463a-46e3-8ce2-04e02efb5b07
+      id: 97748f59-5bb0-4dd9-83f1-e318c992ca05
       version: -1
       name: Are there suspicious results?
-      description: ''
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "127"
@@ -420,7 +305,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: URL
+                        simple: Domain
                 - - operator: isEqualString
                     left:
                       value:
@@ -442,7 +327,9 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 2
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "135":
     id: "135"
     taskid: 462b3eee-6f52-46a4-834d-2b8522b0c7b7
@@ -459,7 +346,7 @@ tasks:
       '#default#':
       - "127"
       "yes":
-      - "136"
+      - "142"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -484,80 +371,20 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "136":
-    id: "136"
-    taskid: ca9ea73c-b29c-40b6-8a8a-2b932b57c7dc
-    type: regular
-    task:
-      id: ca9ea73c-b29c-40b6-8a8a-2b932b57c7dc
-      version: -1
-      name: Enrich suspicious indicators
-      description: Perform enrichment with enabled enrichment intergations
-      script: '|||url'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "127"
-    scriptarguments:
-      limit: {}
-      long: {}
-      public: {}
-      retries: {}
-      sampleSize: {}
-      submitWait: {}
-      threshold: {}
-      timeout: {}
-      url:
-        complex:
-          root: playbookQuery
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: playbookQuery.indicator_type
-                iscontext: true
-              right:
-                value:
-                  simple: URL
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: playbookQuery.score
-                iscontext: true
-              right:
-                value:
-                  simple: "2"
-          accessor: value
-          transformers:
-          - operator: uniq
-      wait: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 2340,
-          "y": 220
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "137":
     id: "137"
-    taskid: d2000281-57c8-4fe3-8261-f7d69320376f
+    taskid: 9c62e342-3f5c-4f98-8e3e-dfc47cfe37a6
     type: condition
     task:
-      id: d2000281-57c8-4fe3-8261-f7d69320376f
+      id: 9c62e342-3f5c-4f98-8e3e-dfc47cfe37a6
       version: -1
       name: Are there unknown results?
-      description: ''
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "127"
@@ -580,7 +407,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: URL
+                        simple: Domain
                 - - operator: isEqualString
                     left:
                       value:
@@ -602,7 +429,9 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 2
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "138":
     id: "138"
     taskid: c484534c-f2ab-407b-881c-2a8b9aeb903f
@@ -644,32 +473,26 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "139":
     id: "139"
-    taskid: 76db99f4-68ce-4128-803c-36e2ec6674f5
+    taskid: 166f04e1-3237-4c1a-87b8-03b26438bf28
     type: regular
     task:
-      id: 76db99f4-68ce-4128-803c-36e2ec6674f5
+      id: 166f04e1-3237-4c1a-87b8-03b26438bf28
       version: -1
       name: Enrich unknown indicators
-      description: Perform enrichment with enabled enrichment intergations
-      script: '|||url'
+      description: commands.local.cmd.enrich.indicators
+      script: Builtin|||enrichIndicators
       type: regular
       iscommand: true
-      brand: ""
+      brand: Builtin
     nexttasks:
       '#none#':
       - "127"
     scriptarguments:
-      limit: {}
-      long: {}
-      public: {}
-      retries: {}
-      sampleSize: {}
-      submitWait: {}
-      threshold: {}
-      timeout: {}
-      url:
+      indicatorsValues:
         complex:
           root: playbookQuery
           filters:
@@ -680,7 +503,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: URL
+                  simple: Domain
           - - operator: isEqualString
               left:
                 value:
@@ -692,7 +515,6 @@ tasks:
           accessor: value
           transformers:
           - operator: uniq
-      wait: {}
     separatecontext: false
     view: |-
       {
@@ -706,13 +528,181 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "140":
+    id: "140"
+    taskid: 09dd6cb3-d002-41b0-8393-1c404105551b
+    type: regular
+    task:
+      id: 09dd6cb3-d002-41b0-8393-1c404105551b
+      version: -1
+      name: Enrich bad indicators
+      description: commands.local.cmd.enrich.indicators
+      script: Builtin|||enrichIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "127"
+    scriptarguments:
+      indicatorsValues:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: Domain
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: value
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -210,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "141":
+    id: "141"
+    taskid: b6fe6d7e-50f4-406e-8f49-b962ab61f146
+    type: regular
+    task:
+      id: b6fe6d7e-50f4-406e-8f49-b962ab61f146
+      version: -1
+      name: Enrich good indicators
+      description: commands.local.cmd.enrich.indicators
+      script: Builtin|||enrichIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "127"
+    scriptarguments:
+      indicatorsValues:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: Domain
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.score
+                iscontext: true
+              right:
+                value:
+                  simple: "1"
+          accessor: value
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1250,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "142":
+    id: "142"
+    taskid: c0d836b5-755e-4949-89f7-4704aec03912
+    type: regular
+    task:
+      id: c0d836b5-755e-4949-89f7-4704aec03912
+      version: -1
+      name: Enrich suspicious indicators
+      description: commands.local.cmd.enrich.indicators
+      script: Builtin|||enrichIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "127"
+    scriptarguments:
+      indicatorsValues:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: Domain
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.score
+                iscontext: true
+              right:
+                value:
+                  simple: "2"
+          accessor: value
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2310,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 815,
-        "width": 3990,
+        "width": 3960,
         "x": -1270,
         "y": -330
       }
@@ -726,7 +716,7 @@ inputs:
   playbookInputQuery:
     query: ""
     queryEntity: indicators
-    results: null
+    results:
     daterange:
       fromdate: 0001-01-01T00:00:00Z
       todate: 0001-01-01T00:00:00Z
@@ -734,31 +724,35 @@ inputs:
         by: ""
         byto: ""
         byfrom: ""
-        tovalue: null
-        fromvalue: null
+        tovalue:
+        fromvalue:
         field: ""
       fromdatelicenseval: 0001-01-01T00:00:00Z
     runFromLastJobTime: false
 - key: EnrichBadIndicators
   value: {}
   required: false
-  description: Enter a value of true to enrich indicators whose reputation from the feed is bad.
-  playbookInputQuery: null
+  description: Enter a value of true to enrich indicators whose reputation from the
+    feed is bad.
+  playbookInputQuery:
 - key: EnrichGoodIndicators
   value: {}
   required: false
-  description: Enter a value of true to enrich indicators whose reputation from the feed is good.
-  playbookInputQuery: null
+  description: Enter a value of true to enrich indicators whose reputation from the
+    feed is good.
+  playbookInputQuery:
 - key: EnrichSuspiciousIndicators
   value: {}
   required: false
-  description: Enter a value of true to enrich indicators whose reputation from the feed is suspicious.
-  playbookInputQuery: null
+  description: Enter a value of true to enrich indicators whose reputation from the
+    feed is suspicious.
+  playbookInputQuery:
 - key: EnrichUnknownIndicators
   value: {}
   required: false
-  description: Enter a value of true to enrich indicators whose reputation from the feed is unknown.
-  playbookInputQuery: null
+  description: Enter a value of true to enrich indicators whose reputation from the
+    feed is unknown.
+  playbookInputQuery:
 outputs: []
 quiet: true
 tests:
