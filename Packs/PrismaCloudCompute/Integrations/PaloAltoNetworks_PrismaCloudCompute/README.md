@@ -467,3 +467,60 @@ Get forensics on a specific host
 | Process spawned | /bin/grep | cakeagent | 29639 | December 08, 2021 18:16:03 PM | grep MemTotal | cron |
 | Process spawned | /bin/sed | cakeagent | 29640 | December 08, 2021 18:16:03 PM | sed -r s/MemTotal:.* ([0-9]+) kB/\1/ | cron |
 | Process spawned | /bin/cat | cakeagent | 29638 | December 08, 2021 18:16:03 PM | cat /proc/meminfo | cron |
+### prisma-cloud-compute-custom-feeds-ip-list
+***
+Get all the BlackListed IP addresses in the system
+
+
+#### Base Command
+
+`prisma-cloud-compute-custom-feeds-ip-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaCloudCompute.CustomFeedIP._id | String | ID is the custom feed id | 
+| PrismaCloudCompute.CustomFeedIP.digest | String | Digest is an internal digest of the custom ip feed | 
+| PrismaCloudCompute.CustomFeedIP.feed | Unknown | Feed is the list of custom ips | 
+| PrismaCloudCompute.CustomFeedIP.modified | Date | Modified is the last time the custom feed was modified | 
+
+
+#### Command Example
+```!prisma-cloud-compute-custom-feeds-ip-list```
+
+#### Human Readable Output
+### IP Feeds
+|Modified|Feed|
+|---|---|
+| December 07, 2021 15:50:51 PM | 1.1.1.1,<br>2.2.2.2 |
+### prisma-cloud-compute-custom-feeds-ip-add
+***
+Add a list of banned IPs to be blocked by the system
+
+
+#### Base Command
+
+`prisma-cloud-compute-custom-feeds-ip-add`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ip | List of custom ips to add to the banned IPs list that will be blocked, for example ip=1.1.1.1,2.2.2.2. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!prisma-cloud-compute-custom-feeds-ip-add ip=1.1.1.1,2.2.2.2```
+
+#### Human Readable Output
+### Successfully updated the custom IP feeds
+**No entries.**
