@@ -168,6 +168,24 @@ script:
     - contextPath: Ticket.Status
       description: The status of the ticket.
       type: Unknown
+    - contextPath: Ticket.Priority
+      description: The priority of the ticket.
+      type: Unknown
+    - contextPath: Ticket.ProjectName
+      description: The ticket project name.
+      type: Unknown
+    - contextPath: Ticket.DueDate
+      description: The due date.
+      type: Unknown
+    - contextPath: Ticket.Created
+      description: The time the ticket was created.
+      type: Unknown
+    - contextPath: Ticket.LastSeen
+      description: The last time the ticket was viewed.
+      type: Unknown
+    - contextPath: Ticket.LastUpdate
+      description: The last time the ticket was updated.
+      type: Unknown
   - arguments:
     - default: false
       description: The user's attribute value. Can be Username or Email address. When
@@ -270,6 +288,24 @@ script:
     - contextPath: File.SHA1
       description: The SHA1 hash of the file (Jira attachments are saved as files
         in Cortex XSOAR).
+      type: Unknown
+    - contextPath: Ticket.Priority
+      description: The priority of the ticket.
+      type: Unknown
+    - contextPath: Ticket.ProjectName
+      description: The ticket project name.
+      type: Unknown
+    - contextPath: Ticket.DueDate
+      description: The due date.
+      type: Unknown
+    - contextPath: Ticket.Created
+      description: The time the ticket was created.
+      type: Unknown
+    - contextPath: Ticket.LastSeen
+      description: The last time the ticket was viewed.
+      type: Unknown
+    - contextPath: Ticket.LastUpdate
+      description: The last time the ticket was updated.
       type: Unknown
   - arguments:
     - default: false
