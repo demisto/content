@@ -41,14 +41,14 @@ configuration:
   required: false
   type: 0
 - additionalinfo: The initial offset to start fetching from, not including the value
-    set (e.g. if 3 is set, the first event that will be fetched will be from offset
+    set (e.g., if 3 is set, the first event that will be fetched will be from offset
     4). If you want to start from the earliest or latest, type in 'earliest' or 'latest'.
   display: Offset to fetch messages from (Exclusive)
   name: first_fetch
   required: false
   type: 0
 - defaultvalue: '50'
-  display: Max number of messages to fetch
+  display: Maximum number of messages to fetch
   name: max_fetch
   required: false
   type: 0
@@ -61,9 +61,9 @@ configuration:
   required: false
   type: 13
 - additionalinfo: |-
-    The max number of message bytes to retrieve in each attempted fetch request. Should be in multiples of 1024. If the fetching process takes a long time, consider increasing this value. Default is '1048576'.
+    The maximum number of message bytes to retrieve in each attempted fetch request. Should be in multiples of 1024. If the fetching process takes a long time, consider increasing this value. Default is '1048576'.
   defaultvalue: '1048576'
-  display: Max number of bytes per message
+  display: Maximum number of bytes per message
   hidden: false
   name: max_bytes_per_message
   required: false
@@ -91,32 +91,32 @@ script:
     name: kafka-print-topics
     outputs:
     - contextPath: Kafka.Topic.Name
-      description: Kafka topic name
+      description: Kafka topic name.
       type: String
     - contextPath: Kafka.Topic.Partitions.ID
-      description: Topic partition ID
+      description: Topic partition ID.
       type: Number
     - contextPath: Kafka.Topic.Partitions.EarliestOffset
-      description: Topic partition earliest offset
+      description: Topic partition earliest offset.
       type: Number
     - contextPath: Kafka.Topic.Partitions.LatestOffset
-      description: Topic partition latest offset
+      description: Topic partition latest offset.
       type: Number
   - arguments:
     - default: false
-      description: A topic to publish messages to
+      description: A topic to publish messages to.
       isArray: false
       name: topic
       required: true
       secret: false
     - default: false
-      description: Message value (string)
+      description: Message value (string).
       isArray: false
       name: value
       required: true
       secret: false
     - default: false
-      description: Message partition (number)
+      description: Message partition (number).
       isArray: false
       name: partitioning_key
       required: false
@@ -127,7 +127,7 @@ script:
     name: kafka-publish-msg
   - arguments:
     - default: false
-      description: A topic to get messages from
+      description: A topic to get messages from.
       isArray: false
       name: topic
       required: true
@@ -140,7 +140,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Partition (number)
+      description: Partition (number).
       isArray: false
       name: partition
       required: false
@@ -161,7 +161,7 @@ script:
       type: number
   - arguments:
     - default: false
-      description: A topic to fetch partitions for
+      description: A topic to fetch partitions for.
       isArray: false
       name: topic
       required: true
