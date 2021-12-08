@@ -208,7 +208,7 @@
                         "y": 4
                     },
                     {
-                        "description": "The information displayed in the different sections is updating dynamically, so changes are expected as incidents progress.",
+                        "description": "The information displayed in the different sections updates dynamically. Changes are expected as incidents progress.",
                         "h": 1,
                         "hideName": true,
                         "i": "qpnefeci5o-a34a1b00-56a8-11ec-a307-6b5fd18fa121",
