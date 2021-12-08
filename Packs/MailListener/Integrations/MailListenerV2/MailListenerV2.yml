@@ -37,6 +37,12 @@ configuration:
   name: permittedFromDomain
   required: false
   type: 0
+- defaultvalue: 'false'
+  additionalinfo: Whether to query search with headers when filtering by sender's email address.
+  display: Query search with headers
+  name: with_headers
+  required: false
+  type: 8
 - defaultvalue: 1 hour
   display: First fetch time
   name: first_fetch
