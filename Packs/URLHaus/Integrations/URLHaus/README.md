@@ -47,7 +47,7 @@ Retrieves URL information from URLhaus.
 | URLhaus.URL.Host | string | The extracted host of the malware URL \(IP address or domain name/FQDN\). | 
 | URLhaus.URL.DateAdded | date | Date the URL was added to URLhaus. | 
 | URLhaus.URL.Threat | string | The threat corresponding to this malware URL. | 
-| URLhaus.URL.Blacklist.Name | String | Name of the blacklist. | 
+| URLhaus.URL.Blacklist.Name | String | Name of the block list. | 
 | URLhaus.URL.Tags | string | A list of tags associated with the queried malware URL. | 
 | URLhaus.URL.Payload.Name | String | Payload file name. | 
 | URLhaus.URL.Payload.Type | String | Payload file type. | 
@@ -58,7 +58,7 @@ Retrieves URL information from URLhaus.
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | DBotScore.Score | Number | The actual score. | 
 | DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
-| URLhaus.URL.Blacklist.Status | String | Status of the URL in the blacklist. | 
+| URLhaus.URL.Blacklist.Status | String | Status of the URL in the block list. | 
 | URLhaus.URL.Payload.VT.Link | String | Link to the VirusTotal report. | 
 
 
@@ -136,7 +136,7 @@ Retrieves URL information from URLhaus.
 >### URLhaus reputation for http:<span>//</span>example.com/VMYB-ht_JAQo-gi/INV/99401FORPO/20673114777/US/Outstanding-Invoices/
 >|Date added|Description|Status|Threat|URLhaus ID|URLhaus link|
 >|---|---|---|---|---|---|
->| 2019-01-19T01:33:26 | Not listed in any blacklist | offline | malware_download | 105821 | https:<span>//</span>urlhaus.abuse.ch/url/105821/ |
+>| 2019-01-19T01:33:26 | Not listed in any block list | offline | malware_download | 105821 | https:<span>//</span>urlhaus.abuse.ch/url/105821/ |
 
 
 ### domain
@@ -165,11 +165,11 @@ Retrieves domain information from URLhaus.
 | DBotScore.Score | Number | The actual score. | 
 | DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
 | URLhaus.Domain.FirstSeen | Date | Date that the IP was seen for the first time \(UTC\). | 
-| URLhaus.Domain.Blacklist.Name | String | The status of the domain in different blacklists. | 
+| URLhaus.Domain.Blacklist.Name | String | The status of the domain in different block lists. | 
 | URLhaus.Domain.URL | String | URLs observed on this domain. | 
 | Domain.Malicious.Vendor | String | Vendor that reported the domain as malicious. | 
 | Domain.Malicious.Description | String | Description of the malicious domain. | 
-| URLhaus.Domain.Blacklist.Status | String | Status of the URL in the blacklist. | 
+| URLhaus.Domain.Blacklist.Status | String | Status of the URL in the block list. | 
 
 
 #### Command Example
@@ -236,7 +236,7 @@ Retrieves domain information from URLhaus.
 >### URLhaus reputation for example.com
 >|Description|First seen|URLhaus link|
 >|---|---|---|
->| Not listed in any blacklist | 2019-01-15T07:09:01 | https:<span>//</span>urlhaus.abuse.ch/host/example.com/ |
+>| Not listed in any block list | 2019-01-15T07:09:01 | https:<span>//</span>urlhaus.abuse.ch/host/example.com/ |
 
 
 ### file
