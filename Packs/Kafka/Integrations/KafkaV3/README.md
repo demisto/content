@@ -12,7 +12,7 @@ This integration is fully compatible with the Kafka v2 integration.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | CSV list of Kafka brokers to connect to, e.g. 172.16.20.207:9092,172.16.20.234:9093 |  | True |
+    | CSV list of Kafka brokers to connect to, e.g., 172.16.20.207:9092,172.16.20.234:9093 |  | True |
     | Use TLS for connection |  | False |
     | Trust any certificate (not secure) |  | False |
     | CA certificate of Kafka server (.cer) |  | False |
@@ -22,7 +22,7 @@ This integration is fully compatible with the Kafka v2 integration.
     | Password |  | False |
     | Topic to fetch incidents from (Required for fetch incidents) |  | False |
     | CSV list of partitions to fetch messages from |  | False |
-    | Offset to fetch messages from (exclusive) | The initial offset to start fetching from, not including the value set \(e.g. if 3 is set, the first event that will be fetched will be with offset 4\). If you want to start from the earliest or latest, type in 'earliest' or 'latest' accordingly. | False |
+    | Offset to fetch messages from (exclusive) | The initial offset to start fetching from, not including the value set \(e.g., if 3 is set, the first event that will be fetched will be with offset 4\). If you want to start from the earliest or latest, type in 'earliest' or 'latest' accordingly. | False |
     | Max number of messages to fetch |  | False |
     | Fetch incidents |  | False |
     | Incident type |  | False |
@@ -51,10 +51,10 @@ Prints all topics and their partitions.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Kafka.Topic.Name | String | Kafka topic name | 
-| Kafka.Topic.Partitions.ID | Number | Topic partition ID | 
-| Kafka.Topic.Partitions.EarliestOffset | Number | Topic partition earliest offset | 
-| Kafka.Topic.Partitions.LatestOffset | Number | Topic partition latest offset | 
+| Kafka.Topic.Name | String | Kafka topic name. | 
+| Kafka.Topic.Partitions.ID | Number | Topic partition ID. | 
+| Kafka.Topic.Partitions.EarliestOffset | Number | Topic partition earliest offset. | 
+| Kafka.Topic.Partitions.LatestOffset | Number | Topic partition latest offset. | 
 
 
 #### Command Example
