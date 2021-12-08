@@ -271,18 +271,15 @@ def fetch_incidents(client):
     return incidents
 
 
-def parse_limit_and_offset_values(limit: str, offset: str) -> dict:
+def parse_limit_and_offset_values(args: dict) -> None:
     """
-    Parse the offset and limit parameters.
+    Parse the offset and limit parameters to integers.
 
     Args:
-        limit (str): api request limit.
-        offset (str): api request offset.
+        args (dict): command arguments.
 
-    Returns:
-        dict: parsed offset and limit as integers.
     """
-
+    offset, limit = args.get("offset", "0"), args.get("limit", "20"),
     offset, limit = arg_to_number(arg=offset, arg_name="offset"), arg_to_number(arg=limit, arg_name="limit")
 
     if offset is not None and offset < 0:
@@ -291,10 +288,7 @@ def parse_limit_and_offset_values(limit: str, offset: str) -> dict:
     if limit is not None and (limit < 1 or limit > MAX_API_LIMIT):
         raise ValueError(f"limit parameter '{limit}' is invalid, must be between 1-50")
 
-    return {
-        "offset": offset,
-        "limit": limit
-    }
+    args["offset"], args["limit"] = offset, limit
 
 
 def update_query_params_names(names: List[Tuple[str, str]], args: dict) -> None:
@@ -502,7 +496,7 @@ def get_profile_host_list(client: PrismaCloudComputeClient, args: dict) -> Comma
         CommandResults: command-results object.
     """
     update_query_params_names(names=[("hostname", "hostName")], args=args)
-    args.update(parse_limit_and_offset_values(limit=args.get("limit", "15"), offset=args.get("offset", "0")))
+    parse_limit_and_offset_values(args=args)
 
     hosts_profile_info = client.api_request(
         method='GET', url_suffix='/profiles/host', params=assign_params(**args)
@@ -519,7 +513,7 @@ def get_profile_host_list(client: PrismaCloudComputeClient, args: dict) -> Comma
     )
 
 
-def build_single_container_profile_table(container_info: dict):
+def build_single_container_profile_table(container_info: dict) -> str:
     """
     Build a table for a single container.
 
@@ -570,7 +564,7 @@ def build_containers_description_table(container_description: Union[List[dict], 
     )
 
 
-def get_container_description_info(container_info):
+def get_container_description_info(container_info: dict) -> dict:
     """
     Build a table for a single host.
 
@@ -626,7 +620,7 @@ def get_container_profile_list(client: PrismaCloudComputeClient, args: dict) -> 
         CommandResults: command-results object.
     """
     update_query_params_names(names=[("image_id", "imageID")], args=args)
-    args.update(parse_limit_and_offset_values(limit=args.get("limit", "15"), offset=args.get("offset", "0")))
+    parse_limit_and_offset_values(args=args)
 
     containers_info = client.api_request(
         method='GET', params=assign_params(**args), url_suffix='/profiles/container'
@@ -693,7 +687,7 @@ def get_container_hosts_list(client: PrismaCloudComputeClient, args: dict) -> Co
         CommandResults: command-results object.
     """
     container_id = args.pop("id")
-    args.update(parse_limit_and_offset_values(limit=args.get("limit", "50"), offset=args.get("offset", "0")))
+    parse_limit_and_offset_values(args=args)
 
     context, table = build_container_hosts_response(client=client, container_id=container_id, args=args)
 
@@ -780,7 +774,7 @@ def get_profile_container_forensic_list(client: PrismaCloudComputeClient, args: 
     """
     container_id = args.pop("id")
     update_query_params_names(names=[("incident_id", "incidentID")], args=args)
-    args.update(parse_limit_and_offset_values(limit=args.get("limit", "20"), offset=args.get("offset", "0")))
+    parse_limit_and_offset_values(args=args)
 
     context, table = build_containers_forensic_response(
         client=client, container_id=container_id, args=args
@@ -852,7 +846,7 @@ def get_profile_host_forensic_list(client: PrismaCloudComputeClient, args: dict)
 
     host_id = args.pop("id")
     update_query_params_names(names=[("incident_id", "incidentID")], args=args)
-    args.update(parse_limit_and_offset_values(limit=args.get("limit", "20"), offset=args.get("offset", "0")))
+    parse_limit_and_offset_values(args=args)
 
     context, table = build_host_forensic_response(client=client, host_id=host_id, args=args)
 
