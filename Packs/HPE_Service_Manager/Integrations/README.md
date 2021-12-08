@@ -82,13 +82,6 @@ Updates existing incident (beta).
 | HPSM.Incidents.Urgency | unknown | Incident urgency. | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### hpsm-create-incident
 ***
 Creates a new incident.
@@ -152,13 +145,6 @@ Creates a new incident.
 | HPSM.Incidents.Urgency | unknown | Incident urgency. | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### hpsm-list-incidents
 ***
 Returns all incidents.
@@ -179,13 +165,6 @@ Returns all incidents.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | HPSM.IncidentIDs | unknown | An array of incident IDs. | 
-
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### hpsm-get-incident-by-id
@@ -235,13 +214,6 @@ Returns a single incident by ID. If no incident exists with the specified ID, an
 | HPSM.Incidents.UpdatedBy | unknown | The last user who updated the incident. | 
 | HPSM.Incidents.UpdatedTime | unknown | Incident update time. | 
 | HPSM.Incidents.Urgency | unknown | Incident urgency. | 
-
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### hpsm-create-resource
@@ -309,13 +281,6 @@ Updates the existing resource (beta).
 | HPSM.Resources.Urgency | unknown | Resource urgency. | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### hpsm-update-resource
 ***
 Creates a new resource.
@@ -381,13 +346,6 @@ Creates a new resource.
 | HPSM.Resources.Urgency | unknown | Resource urgency. | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### hpsm-list-resources
 ***
 Returns all resources (beta).
@@ -409,13 +367,6 @@ Returns all resources (beta).
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | HPSM.ResourceIDs | unknown | An array of resource IDs. | 
-
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### hpsm-get-resource-by-id
@@ -468,13 +419,6 @@ Returns a single resource by ID. If no resource exists with the specified ID, an
 | HPSM.Resources.Urgency | unknown | Resource urgency. | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### hpsm-list-devices
 ***
 Returns a list of devices, filtered according to query.
@@ -495,13 +439,6 @@ Returns a list of devices, filtered according to query.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | HPSM.DeviceIDs | unknown | The IDs \(configuration items\) of the devices. | 
-
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### hpsm-get-device
@@ -537,10 +474,5 @@ Find and return a device by ID.
 | HPSM.Devices.Status | unknown | Device status. | 
 | HPSM.Devices.UpdatedBy | unknown | The last user who updated the device. | 
 
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
 
 
