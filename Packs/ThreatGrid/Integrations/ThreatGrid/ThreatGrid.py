@@ -405,12 +405,15 @@ def get_threat_summary_by_id():
         'Score': demisto.get(r, 'data.score'),
         'Count': demisto.get(r, 'data.count'),
         'MaxConfidence': demisto.get(r, 'data.max-confidence'),
-        'ThreatFeeds': demisto.get(r, 'data.bis')
+        'ThreatFeeds': demisto.get(r, 'data.bis'),
+        'sha256': demisto.get(r, 'sha256'),
+        'sha1': demisto.get(r, 'sha1'),
+        'md5': demisto.get(r, 'md5')
     }
     dbot = {
         'Vendor': 'ThreatGrid',
         'Type': 'Sample ID',
-        'Indicator': sample['ID'],
+        'Indicator': sample['sha256'],
         'Score': calc_score(sample['Score'])
     }
     md = tableToMarkdown('ThreatGrid - Threat Summary', [sample],
