@@ -1,5 +1,5 @@
 args: []
-comment: Returns a list of all the users marked as away in Cortex XSOAR
+comment: Returns a list of all the users marked as away in Cortex XSOAR.
 commonfields:
   id: GetAwayUsers
   version: -1
@@ -23,7 +23,7 @@ outputs:
   type: Unknown
 - contextPath: AwayUsers.email
   description: Away user email.
-  type: Unknown
+  type: String
 script: '-'
 system: false
 tags: []
