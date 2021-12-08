@@ -24,7 +24,7 @@ args:
   - include
   - exclude
   defaultValue: include
-  description: The state of the second field to search, meaning whether the values in
+  description: The state of the first field to search, meaning whether the values in
     the field should be included or excluded. 
 - name: base_field_match
   required: true
