@@ -13,17 +13,13 @@ from AzureSentinel import AzureSentinelClient, list_incidents_command, list_inci
     delete_incident_command, XSOAR_USER_AGENT, incident_delete_comment_command, \
     query_threat_indicators_command, create_threat_indicator_command, delete_threat_indicator_command, \
     append_tags_threat_indicator_command, replace_tags_threat_indicator_command, update_threat_indicator_command, \
-    list_threat_indicator_command
+    list_threat_indicator_command, DEFAULT_LIMIT, NEXTLINK_DESCRIPTION
 
 TEST_ITEM_ID = 'test_watchlist_item_id_1'
 
 NEXT_LINK_CONTEXT_KEY = 'AzureSentinel.NextLink(val.Description == "NextLink for listing commands")'
 
 API_VERSION = '2021-04-01'
-
-DEFAULT_LIMIT = 50
-
-NEXTLINK_DESCRIPTION = 'NextLink for listing commands'
 
 
 def mock_client():

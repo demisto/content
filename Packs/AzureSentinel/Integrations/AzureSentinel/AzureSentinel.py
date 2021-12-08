@@ -18,6 +18,7 @@ APP_NAME = 'ms-azure-sentinel'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 API_VERSION = '2021-04-01'
+
 DEFAULT_AZURE_SERVER_URL = 'https://management.azure.com'
 
 NEXTLINK_DESCRIPTION = 'NextLink for listing commands'
