@@ -8333,7 +8333,10 @@ def signal_handler_threads_dump(_sig, _frame):
     """
     Listener function to dump the threads to log info
 
+    :type _sig: ``int``
     :param _sig: The signal number
+
+    :type _sig: ``Any``
     :param _frame: The current stack frame
 
     :return: No data returned
@@ -8357,6 +8360,7 @@ def register_signal_handler_threads_dump(signal_type=signal.SIGUSR1):
     """
     Function that registers the threads dump signal listener
 
+    :type signal_type: ``int``
     :param signal_type: The type of the signal to register
 
     :return: No data returned
