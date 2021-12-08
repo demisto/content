@@ -511,7 +511,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The id for the channel containing the message.
+      description: The ID for the channel containing the message.
       isArray: false
       name: channel_id
       required: true

@@ -171,7 +171,7 @@ def get_user_by_email(user_to_search: str) -> dict:
         return format_user_results(user)
 
 
-def add_user_to_context(user: dict, integration_context: dict = None):
+def add_user_to_context(user: dict, integration_context = None):
     """
     In some cases, we want to save user data to the integration context.
 
