@@ -1266,19 +1266,10 @@ async def get_user_by_id_async(client: AsyncWebClient, user_id: str) -> dict:
         body = {
             'user': user_id
         }
-        user = (
-            await send_slack_request_async(client, 'users.info', http_verb='GET', body=body)).get(
-            'user', {})
-        user_to_context = {
-            'name': user.get('name', ''),
-            'id': user.get('id', ''),
-            'profile': {
-                'email': user.get('profile', {}).get('email', ''),
-                'real_name': user.get('profile', {}).get('real_name', ''),
-                'display_name': user.get('profile', {}).get('display_name', ''),
-            }
-        }
-        users.append(user_to_context)
+        user = (await send_slack_request_async(client, 'users.info', http_verb='GET', body=body)).get('user', {})
+
+    if not SAFE_MODE:
+        users.append(format_user_results(user))
         set_to_integration_context_with_retries({'users': users}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
 
     return user
