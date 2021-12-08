@@ -1272,7 +1272,7 @@ def list_attachments_command(client: MsGraphClient, args):
     if attachments:
         attachment_list = [{
             'ID': attachment.get('id'),
-            'Name': attachment.get('name'),
+            'Name': attachment.get('name') or attachment.get('id'),
             'Type': attachment.get('contentType')
         } for attachment in attachments]
         attachment_entry = {'ID': message_id, 'Attachment': attachment_list, 'UserID': user_id}
