@@ -13,6 +13,15 @@ configuration:
   type: 9
   required: true
   hiddenusername: true
+- display: Timeout
+  name: timeout
+  defaultvalue: "60"
+  type: 0
+  required: true
+  additionalinfo: 'The time in seconds till a timeout exception is reached. You can
+    specify just the read timeout (for example 60) or also the connect timeout followed
+    after a comma (for example 60,10). If a connect timeout is not specified, a default
+    of 10 second will be used.'
 - display: Fetch indicators
   name: feed
   required: false
@@ -123,15 +132,6 @@ configuration:
   name: insecure
   required: false
   type: 8
-- display: Timeout
-  name: timeout
-  defaultvalue: "60"
-  type: 0
-  required: true
-  additionalinfo: 'The time in seconds till a timeout exception is reached. You can
-    specify just the read timeout (for example 60) or also the connect timeout followed
-    after a comma (for example 60,10). If a connect timeout is not specified, a default
-    of 10 second will be used.'
 description: 'Indicators feed from MISP'
 display: MISP Feed
 name: MISP Feed
