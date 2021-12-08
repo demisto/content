@@ -435,7 +435,7 @@ def test_list_attachments_with_name(mocker, client):
 
     """
     output_prefix = 'MSGraphMailAttachment(val.ID === obj.ID)'
-    with open('test_data/list_attachment_result') as attachment_result:
+    with open('test_data/list_attachment_result.json') as attachment_result:
         args = {"user_id": "example"}
         raw_response = json.load(attachment_result)
         mocker.patch.object(client, 'list_attachments', return_value=raw_response)
@@ -463,7 +463,7 @@ def test_list_attachments_without_name(mocker, client):
 
     """
     output_prefix = 'MSGraphMailAttachment(val.ID === obj.ID)'
-    with open('test_data/list_attachment_result_no_name') as attachment_result:
+    with open('test_data/list_attachment_result_no_name.json') as attachment_result:
         args = {"user_id": "example"}
         raw_response = json.load(attachment_result)
         mocker.patch.object(client, 'list_attachments', return_value=raw_response)
