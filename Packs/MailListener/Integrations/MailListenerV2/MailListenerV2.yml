@@ -38,9 +38,9 @@ configuration:
   required: false
   type: 0
 - defaultvalue: 'false'
-  additionalinfo: Whether to add the word HEADER to the query search when filtering by senders email address, In some of the mails services it's required.
-  display: Include HEADER in the query seracrh
-  name: with_header
+  additionalinfo: Whether to query search with headers when filtering by sender's email address.
+  display: Query search with headers
+  name: with_headers
   required: false
   type: 8
 - defaultvalue: 1 hour

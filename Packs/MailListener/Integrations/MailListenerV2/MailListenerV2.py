@@ -162,7 +162,7 @@ def fetch_incidents(client: IMAPClient,
                     last_run: dict,
                     first_fetch_time: str,
                     include_raw_body: bool,
-                    with_header: bool,
+                    with_headers: bool,
                     permitted_from_addresses: str,
                     permitted_from_domains: str,
                     delete_processed: bool,
@@ -188,7 +188,7 @@ def fetch_incidents(client: IMAPClient,
         last_run: The greatest incident created_time we fetched from last fetch
         first_fetch_time: If last_run is None then fetch all incidents since first_fetch_time
         include_raw_body: Whether to include the raw body of the mail in the incident's body
-        with_header: Whether to add the word HEADER to the query search
+        with_headers: Whether to add headers to the search query
         permitted_from_addresses: A string representation of list of mail addresses to fetch from
         permitted_from_domains: A string representation list of domains to fetch from
         delete_processed: Whether to delete processed mails
@@ -206,7 +206,7 @@ def fetch_incidents(client: IMAPClient,
         include_raw_body=include_raw_body,
         time_to_fetch_from=time_to_fetch_from,
         limit=limit,
-        with_header=with_header,
+        with_headers=with_headers,
         permitted_from_addresses=permitted_from_addresses,
         permitted_from_domains=permitted_from_domains,
         save_file=save_file,
@@ -224,7 +224,7 @@ def fetch_incidents(client: IMAPClient,
 
 def fetch_mails(client: IMAPClient,
                 time_to_fetch_from: datetime = None,
-                with_header: bool = False,
+                with_headers: bool = False,
                 permitted_from_addresses: str = '',
                 permitted_from_domains: str = '',
                 include_raw_body: bool = False,
@@ -239,7 +239,7 @@ def fetch_mails(client: IMAPClient,
         client: IMAP client
         time_to_fetch_from: Fetch all incidents since first_fetch_time
         include_raw_body: Whether to include the raw body of the mail in the incident's body
-        with_header: Whether to add the word HEADER to the query search
+        with_headers: Whether to add headers to the search query
         permitted_from_addresses: A string representation of list of mail addresses to fetch from
         permitted_from_domains: A string representation list of domains to fetch from
         limit: The maximum number of incidents to fetch each time, if the value is -1 all
@@ -257,7 +257,7 @@ def fetch_mails(client: IMAPClient,
         messages_uids = [message_id]
     else:
         messages_query = generate_search_query(time_to_fetch_from,
-                                               with_header,
+                                               with_headers,
                                                permitted_from_addresses,
                                                permitted_from_domains,
                                                uid_to_fetch_from)
@@ -292,7 +292,7 @@ def fetch_mails(client: IMAPClient,
 
 
 def generate_search_query(time_to_fetch_from: Optional[datetime],
-                          with_header: bool,
+                          with_headers: bool,
                           permitted_from_addresses: str,
                           permitted_from_domains: str,
                           uid_to_fetch_from: int) -> list:
@@ -301,7 +301,7 @@ def generate_search_query(time_to_fetch_from: Optional[datetime],
     starting date from which mail should be fetched.
     Input example #1:
         time_to_fetch_from: datetime.datetime(2020, 8, 7, 12, 14, 32, 918634, tzinfo=datetime.timezone.utc)
-        with_header: True
+        with_headers: True
         permitted_from_addresses: ['test1@mail.com']
         permitted_from_domains: ['test1.com']
     output example #1:
@@ -316,7 +316,7 @@ def generate_search_query(time_to_fetch_from: Optional[datetime],
          datetime.datetime(2020, 8, 7, 12, 14, 32, 918634, tzinfo=datetime.timezone.utc)]
     Input example #2:
         time_to_fetch_from: datetime.datetime(2020, 8, 7, 12, 14, 32, 918634, tzinfo=datetime.timezone.utc)
-        with_header: False
+        with_headers: False
         permitted_from_addresses: ['test1@mail.com']
         permitted_from_domains: ['test1.com']
     output example #2:
@@ -329,7 +329,7 @@ def generate_search_query(time_to_fetch_from: Optional[datetime],
          datetime.datetime(2020, 8, 7, 12, 14, 32, 918634, tzinfo=datetime.timezone.utc)]
     Args:
         time_to_fetch_from: The greatest incident created_time we fetched from last fetch
-        with_header: Whether to add the word HEADER to the query search
+        with_headers: Whether to add headers to the search query
         permitted_from_addresses: A string representation of list of mail addresses to fetch from
         permitted_from_domains: A string representation list of domains to fetch from
         uid_to_fetch_from: The email message UID to start the fetch from as offset
@@ -344,7 +344,7 @@ def generate_search_query(time_to_fetch_from: Optional[datetime],
         messages_query = OR(from_=permitted_from_addresses_list + permitted_from_domains_list).format()
         # Removing Parenthesis and quotes
         messages_query = messages_query.strip('()').replace('"', '')
-        if with_header:
+        if with_headers:
             messages_query = messages_query.replace('FROM', 'HEADER FROM')
     # Creating a list of the OR query words
     messages_query_list = messages_query.split()
@@ -363,7 +363,7 @@ def test_module(client: IMAPClient) -> str:
 
 def list_emails(client: IMAPClient,
                 first_fetch_time: str,
-                with_header: bool,
+                with_headers: bool,
                 permitted_from_addresses: str,
                 permitted_from_domains: str) -> CommandResults:
     """
@@ -371,7 +371,7 @@ def list_emails(client: IMAPClient,
     Args:
         client: IMAP client
         first_fetch_time: Fetch all incidents since first_fetch_time
-        with_header: Whether to add the word HEADER to the query search
+        with_headers: Whether to add headers to the search query
         permitted_from_addresses: A string representation of list of mail addresses to fetch from
         permitted_from_domains: A string representation list of domains to fetch from
 
@@ -382,7 +382,7 @@ def list_emails(client: IMAPClient,
 
     mails_fetched, _, _ = fetch_mails(client=client,
                                       time_to_fetch_from=fetch_time,
-                                      with_header=with_header,
+                                      with_headers=with_headers,
                                       permitted_from_addresses=permitted_from_addresses,
                                       permitted_from_domains=permitted_from_domains)
     results = [{'Subject': email.subject,
@@ -429,7 +429,7 @@ def main():
     include_raw_body = demisto.params().get('Include_raw_body', False)
     permitted_from_addresses = demisto.params().get('permittedFromAdd', '')
     permitted_from_domains = demisto.params().get('permittedFromDomain', '')
-    with_header = params.get('with_header')
+    with_headers = params.get('with_headers')
     delete_processed = demisto.params().get("delete_processed", False)
     limit = min(int(demisto.params().get('limit', '50')), 200)
     save_file = params.get('save_file', False)
@@ -451,7 +451,7 @@ def main():
             elif demisto.command() == 'mail-listener-list-emails':
                 return_results(list_emails(client=client,
                                            first_fetch_time=first_fetch_time,
-                                           with_header=with_header,
+                                           with_headers=with_headers,
                                            permitted_from_addresses=permitted_from_addresses,
                                            permitted_from_domains=permitted_from_domains))
             elif demisto.command() == 'mail-listener-get-email':
@@ -464,7 +464,7 @@ def main():
                 next_run, incidents = fetch_incidents(client=client, last_run=demisto.getLastRun(),
                                                       first_fetch_time=first_fetch_time,
                                                       include_raw_body=include_raw_body,
-                                                      with_header=with_header,
+                                                      with_headers=with_headers,
                                                       permitted_from_addresses=permitted_from_addresses,
                                                       permitted_from_domains=permitted_from_domains,
                                                       delete_processed=delete_processed, limit=limit,
