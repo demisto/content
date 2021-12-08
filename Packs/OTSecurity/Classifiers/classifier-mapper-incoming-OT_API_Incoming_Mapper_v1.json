@@ -1,14 +1,14 @@
 {
-	"description": "Sample mapper of OT incidents",
+	"name": "OTSecurity API Incoming Mapper v1",
+	"id": "OTSecurity_API_Incoming_Mapper_v1",
+	"description": "Sample mapper of OT Security incidents",
 	"feed": false,
-	"name": "OT API Incoming Mapper v1",
-	"id": "OT_API_Incoming_Mapper_v1",
 	"mapping": {
 		"Blank": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {}
 		},
-		"OT  Rogue Device Found": {
+		"OTSecurity Rogue Device Found": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
 				"MAC Address": {

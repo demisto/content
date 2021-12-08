@@ -1,12 +1,12 @@
 {
 	"defaultIncidentType": "",
-    "name": "OT API Classifier v1",
-	"id": "OT_API_Classifier_v1",
+    "name": "OTSecurity API Classifier v1",
+	"id": "OTSecurity_API_Classifier_v1",
 	"description": "Sample API classifier of OT incidents",
 	"feed": false,
     "fromVersion": "6.0.0",
 	"keyTypeMap": {
-		"Rogue Device Found Incident": "OT  Rogue Device Found"
+		"Rogue Device Found Incident": "OTSecurity Rogue Device Found"
 	},
 	"propagationLabels": [
 		"all"

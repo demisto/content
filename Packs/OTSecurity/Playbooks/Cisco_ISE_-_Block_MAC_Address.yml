@@ -1,0 +1,218 @@
+id: Cisco ISE - Block MAC Address
+version: -1
+name: Cisco ISE - Block MAC Address
+description: This Playbook Expects MAC Address and Policy Name
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7dcea484-4535-4a53-8cb0-afcf16bf36cb
+    type: start
+    task:
+      id: 7dcea484-4535-4a53-8cb0-afcf16bf36cb
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": -160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 5a11b2dd-25a4-42e9-8c13-0c3bc0c6670b
+    type: regular
+    task:
+      id: 5a11b2dd-25a4-42e9-8c13-0c3bc0c6670b
+      version: -1
+      name: Block Mac Address
+      description: Assigns an Adapative Network Control policy to an endpoint.
+      script: '|||cisco-ise-assign-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      mac_address:
+        simple: ${inputs.MACAddress}
+      policy_name:
+        simple: ${inputs.PolicyName}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 8b8e973d-90c5-4d51-8a7f-ff60980dcafa
+    type: condition
+    task:
+      id: 8b8e973d-90c5-4d51-8a7f-ff60980dcafa
+      version: -1
+      name: Check if Cisco ISE Integration Enabled
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Cisco ISE
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: d1ea642e-a699-4bc3-8a89-fc4c795413ab
+    type: title
+    task:
+      id: d1ea642e-a699-4bc3-8a89-fc4c795413ab
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 2abce675-c01c-4727-80fe-bb5e5d57808d
+    type: condition
+    task:
+      id: 2abce675-c01c-4727-80fe-bb5e5d57808d
+      version: -1
+      name: Any MAC Address to Block
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.MACAddress
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": -20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 770,
+        "width": 595,
+        "x": 50,
+        "y": -160
+      }
+    }
+  }
+inputs:
+- key: MACAddress
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: PolicyName
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery: null
+outputs: []
