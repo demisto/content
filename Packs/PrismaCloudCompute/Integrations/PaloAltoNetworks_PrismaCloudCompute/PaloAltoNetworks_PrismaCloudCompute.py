@@ -365,12 +365,11 @@ def build_single_host_profile_table_response(host_info: dict) -> str:
     Build a table for a single host.
 
     Args:
-        host_info (dict): host information for the api.
+        host_info (dict): host information from the api.
 
     Returns:
         str: markdown table output for a single host.
     """
-
     host_description_table = build_hostnames_description_table(
         host_description_info=get_hostname_description_info(host_info=host_info)
     )
@@ -490,11 +489,81 @@ def get_profile_host_list(client: PrismaCloudComputeClient, args: dict) -> Comma
 
     return CommandResults(
         outputs_prefix='PrismaCloudCompute.ProfileHost',
-        outputs_key_field='_Id',
+        outputs_key_field='_id',
         outputs=hosts_profile_info,
         readable_output=build_profile_host_table_response(hosts_info=hosts_profile_info),  # type:ignore
         raw_response=hosts_profile_info
     )
+
+
+def build_single_container_profile_table(container_info: dict):
+    """
+    Build a table for a single container.
+
+    Args:
+        container_info (dict): container information from the api.
+
+    Returns:
+        str: markdown table output for a single container.
+    """
+    container_description_table = build_containers_description_table(
+        container_description=get_container_description_info(container_info=container_info)
+    )
+
+    processes_info = [
+        {
+            "Type": process_type,
+            "Path": static_process.get("path"),
+            "DetectionTime": parse_date_string_format(date_string=static_process.get("time"))
+        } for process_type in ["static", "behavioral"]
+        for static_process in container_info.get("processes", {}).get(process_type, "")
+    ]
+
+    processes_table = tableToMarkdown(
+        name='Processes',
+        t=processes_info,
+        headers=['Type', 'Path', 'DetectionTime'],
+        removeNull=True
+    )
+
+    return container_description_table + processes_table
+
+
+def build_containers_description_table(container_description: Union[List[dict], dict]) -> str:
+    """
+    Build the container description table.
+
+    Args:
+        container_description (dict/list): containers description information.
+
+    Returns:
+        str: markdown table that describes the container/s.
+    """
+    return tableToMarkdown(
+        name="Container Description",
+        t=container_description,
+        headers=["ContainerID", "Image", "Os", "State", "Created"],
+        removeNull=True
+    )
+
+
+def get_container_description_info(container_info):
+    """
+    Build a table for a single host.
+
+    Args:
+        container_info (dict): container information from the api.
+
+    Returns:
+        dict: container description information.
+    """
+    return {
+        "ContainerID": container_info.get("_id"),
+        "Image": container_info.get("image"),
+        "Os": container_info.get("os"),
+        "State": container_info.get("state"),
+        "Created": parse_date_string_format(date_string=container_info.get("created", ""))
+    }
 
 
 def build_profile_container_table_response(containers_info: List[dict]) -> str:
@@ -511,45 +580,14 @@ def build_profile_container_table_response(containers_info: List[dict]) -> str:
     if not containers_info:
         return "No results found"
 
-    container_details = []
-    processes = []
+    if len(containers_info) == 1:  # means we have only one container
+        return build_single_container_profile_table(container_info=containers_info[0])
 
-    for container_info in containers_info:
-        container_details.append(
-            {
-                "ContainerID": container_info.get("_Id"),
-                "Image": container_info.get("Image"),
-                "OS": container_info.get("Os"),
-                "State": container_info.get("State"),
-                "Created": parse_date_string_format(date_string=container_info.get("Created", ""))
-            }
-        )
-
-        for process_type in ["static", "behavioral"]:
-            for static_process in container_info.get("Processes", {}).get(process_type, ""):
-                processes.append(
-                    {
-                        "ContainerID": container_info.get("_Id"),
-                        "Type": process_type,
-                        "Path": static_process.get("path"),
-                        "DetectionTime": parse_date_string_format(date_string=static_process.get("time"))
-                    }
-                )
-
-    container_details_table = tableToMarkdown(
-        name='Container information',
-        t=container_details,
-        headers=['ContainerID', 'Image', 'OS', 'State', 'Created'],
-        removeNull=True
+    return build_containers_description_table(
+        container_description=[
+            get_container_description_info(container_info=container_info) for container_info in containers_info
+        ]
     )
-    processes_table = tableToMarkdown(
-        name='Containers processes',
-        t=processes,
-        headers=['ContainerID', 'Type', 'Path', 'DetectionTime'],
-        removeNull=True
-    )
-
-    return container_details_table + processes_table
 
 
 def get_container_profile_list(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
@@ -567,20 +605,16 @@ def get_container_profile_list(client: PrismaCloudComputeClient, args: dict) -> 
     update_query_params_names(names=[("image_id", "imageID")], args=args)
     args.update(parse_limit_and_offset_values(limit=args.get("limit", "15"), offset=args.get("offset", "0")))
 
-    containers_info_raw_response = client.api_request(
+    containers_info = client.api_request(
         method='GET', params=assign_params(**args), url_suffix='/profiles/container'
     )
-    containers_info = None
-
-    if containers_info_raw_response:
-        containers_info = capitalize_api_response(api_response=containers_info_raw_response)
 
     return CommandResults(
         outputs_prefix='PrismaCloudCompute.ProfileContainer',
-        outputs_key_field='_Id',
+        outputs_key_field='_id',
         outputs=containers_info,
         readable_output=build_profile_container_table_response(containers_info=containers_info),  # type:ignore
-        raw_response=containers_info_raw_response
+        raw_response=containers_info
     )
 
 
