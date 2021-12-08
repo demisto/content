@@ -1,5 +1,6 @@
 from copy import deepcopy
 import pytest
+import io
 from splunklib.binding import AuthenticationError
 
 import SplunkPy as splunk
@@ -1347,103 +1348,9 @@ def test_labels_with_non_str_values(mocker):
     assert all(isinstance(label['value'], str) for label in labels)
 
 
-response_two_events = [{
-    "_bkt": "notable~668~66D21DF4-F4FD-4886-A986-82E72ADCBFE9",
-    "_cd": "668:17198",
-    "_indextime": "1596545116",
-    "_raw": "1596545116, search_name='Endpoint - Recurring Malware Infection - Rule', count='17', day_count='8', "
-            "dest='ACME-workstation-012', info_max_time='1596545100.000000000',info_min_time='1595939700.000000000', "
-            "info_search_time='1596545113.965466000', 'signature='Trojan.Gen.2'",
-    "_serial": "50",
-    "_si": ["ip-172-31-44-193", "notable"],
-    "_sourcetype": "stash",
-    "_time": "2020-08-24T12:10:17.000-07:00",
-    "dest": "ACME-workstation-012",
-    "dest_asset_id": "028877d3c80cb9d87900eb4f9c9601ea993d9b63",
-    "dest_asset_tag": ["cardholder", "pci", "americas"],
-    "dest_bunit": "americas",
-    "dest_category": ["cardholder", "pci"],
-    "dest_city": "Pleasanton",
-    "dest_country": "USA",
-    "dest_ip": "192.168.3.12",
-    "dest_is_expected": "TRUE",
-    "dest_lat": "37.694452",
-    "dest_long": "-121.894461",
-    "dest_nt_host": "ACME-workstation-012",
-    "dest_pci_domain": ["trust", "cardholder"],
-    "dest_priority": "medium",
-    "dest_requires_av": "TRUE",
-    "dest_risk_object_type": "system",
-    "dest_risk_score": "15680",
-    "dest_should_timesync": "TRUE",
-    "dest_should_update": "TRUE",
-    "host": "ip-172-31-44-193",
-    "host_risk_object_type": "system",
-    "host_risk_score": "0",
-    "index": "notable",
-    "linecount": "1",
-    "priorities": "medium",
-    "priority": "medium",
-    "risk_score": "15680",
-    "rule_description": "Endpoint - Recurring Malware Infection - Rule",
-    "rule_name": "Endpoint - Recurring Malware Infection - Rule",
-    "rule_title": "Endpoint - Recurring Malware Infection - Rule",
-    "security_domain": "Endpoint - Recurring Malware Infection - Rule",
-    "severity": "unknown",
-    "signature": "Trojan.Gen.2",
-    "source": "Endpoint - Recurring Malware Infection - Rule",
-    "sourcetype": "stash",
-    "splunk_server": "ip-172-31-44-193",
-    "urgency": "low"
-}, {
-    "_bkt": "notable~668~66D21DF4-F4FD-4886-A986-82E72ADCBFE9",
-    "_cd": "668:17198",
-    "_indextime": "1596545116",
-    "_raw": "1596545116, search_name='Endpoint - Recurring Malware Infection - Rule', count='17', day_count='8', "
-            "dest='ACME-workstation-012', info_max_time='1596545100.000000000', info_min_time='1595939700.000000000', "
-            "info_search_time='1596545113.965466000', signature='Trojan.Gen.2'",
-    "_serial": "50",
-    "_si": ["ip-172-31-44-193", "notable"],
-    "_sourcetype": "stash",
-    "_time": "2020-08-24T13:30:17.000-07:00",
-    "dest": "ACME-workstation-012",
-    "dest_asset_id": "028877d3c80cb9d87900eb4f9c9601ea993d9b63",
-    "dest_asset_tag": ["cardholder", "pci", "americas"],
-    "dest_bunit": "americas",
-    "dest_category": ["cardholder", "pci"],
-    "dest_city": "Pleasanton",
-    "dest_country": "USA",
-    "dest_ip": "192.168.3.12",
-    "dest_is_expected": "TRUE",
-    "dest_lat": "37.694452",
-    "dest_long": "-121.894461",
-    "dest_nt_host": "ACME-workstation-012",
-    "dest_pci_domain": ["trust", "cardholder"],
-    "dest_priority": "medium",
-    "dest_requires_av": "TRUE",
-    "dest_risk_object_type": "system",
-    "dest_risk_score": "15680",
-    "dest_should_timesync": "TRUE",
-    "dest_should_update": "TRUE",
-    "host": "ip-172-31-44-193",
-    "host_risk_object_type": "system",
-    "host_risk_score": "0",
-    "index": "notable",
-    "linecount": "1",
-    "priorities": "medium",
-    "priority": "medium",
-    "risk_score": "15680",
-    "rule_description": "Endpoint - Recurring Malware Infection - Rule",
-    "rule_name": "Endpoint - Recurring Malware Infection - Rule",
-    "rule_title": "Endpoint - Recurring Malware Infection - Rule",
-    "security_domain": "Endpoint - Recurring Malware Infection - Rule",
-    "severity": "unknown",
-    "signature": "Trojan.Gen.2",
-    "source": "Endpoint - Recurring Malware Infection - Rule",
-    "sourcetype": "stash",
-    "splunk_server": "ip-172-31-44-193",
-    "urgency": "low"
-}]
+def util_load_json(path):
+    with io.open(path) as f:
+        return json.loads(f.read())
 
 
 def mock_fetch_notables(mocker, demisto_params):
@@ -1468,6 +1375,8 @@ def test_incident_exceeded_limit(mocker):
     Then:
     - Number of incidents returned are as the FETCH_LIMIT and next run time will be the time of the last returned event
     """
+    response_two_events = util_load_json("test_data/response_two_events.json")
+
     splunk.FETCH_LIMIT = 2
     service, mock_dt = mock_fetch_notables(mocker, demisto_params={'fetchQuery': "something", 'enabled_enrichments': [],
                                                                    'occurrence_look_behind': 15})
