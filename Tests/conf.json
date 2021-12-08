@@ -4901,14 +4901,13 @@
         "cisco-ise-test-playbook": "Issue 44351",
         "GuardiCoreV2-Test": "Issue 43822",
         "LogRhythm REST test": "Issue 40654",
-        "Tanium Threat Response V2 Test": "Issue 44201",
         "ExtractAttackPattern-Test": "Issue 44095"
     },
     "skipped_integrations": {
         "AutoFocus V2": "Issue 26464",
         "AutoFocus Daily Feed": "Issue 26464",
         "AutoFocus Feed": "Issue 26464",
-        
+        "Palo Alto Networks Threat Vault": "Issue 26464",
         "_comment1": "~~~ NO INSTANCE ~~~",
         "Ipstack": "Usage limit reached (Issue 38063)",
         "AnsibleAlibabaCloud": "No instance - issue 40447",
