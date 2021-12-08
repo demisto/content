@@ -1,5 +1,3 @@
-Note: Support for this pack moved to the partner on October 1, 2021. Please contact them directly via the support link on the right. 
-
 Cofense Intelligence is reliable, human-verified phishing intelligence for actionable defense and strategic planning. Cofense researchers track emerging trends in phishing, research active threats, and supplement highest-priority investigations. Consumers of the intelligence are confident knowing indicators were validated by Cofense prior to platform ingestion. Cofense Intelligence machine-readable threat intelligence is ingested into platforms to support automation along with human-readable reports to make informed decisions against today’s phishing attacks.
 
 ##### What does this pack do?
@@ -11,7 +9,8 @@ Cofense Intelligence is reliable, human-verified phishing intelligence for actio
   - Domains
   - IP addresses
   - Email addresses
-Searches for strings associated with phishing attacks
-Links to human-readable reports for an explanation as to why indicators are a risk to business
+  - File hashes
+- Searches for strings associated with phishing attacks
+- Links to human-readable reports for an explanation as to why indicators are a risk to business
 
-https://cofense.com/product-services/phishing-intelligence/ 
+https://cofense.com/product-services/phishing-intelligence/
