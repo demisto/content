@@ -1109,7 +1109,7 @@ def test_eml_contains_attachment_with_unknown_encoded_file_name(mocker):
 
     assert len(results) == 1
     assert results[0]['Type'] == entryTypes['note']
-    assert results[0]['EntryContext']['Email']['AttachmentNames'] == [u'04. ���A������ИIƷ�|���υf��.pdf']
+    assert results[0]['EntryContext']['Email']['AttachmentNames'] == ['04. ���A������ИIƷ�|���υf��.pdf']
 
 
 def test_eml_contains_htm_attachment_empty_file_max_depth(mocker):
