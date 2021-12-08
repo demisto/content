@@ -1,0 +1,41 @@
+{
+  "value": [
+    {
+      "name": "refs/heads/main",
+      "objectId": "e776e6c047b57580e3d0c56b71395023e9b9c48c",
+      "creator": {
+        "displayName": "XSOAR Test",
+        "url": "https://vssps.visualstudio.com/XXXX/_apis/Identities/XXXX",
+        "_links": {
+          "avatar": {
+            "href": "https://dev.azure.com/xsoar-organization/_apis/GraphProfile/MemberAvatars/aad.ZWFlMjk2ZGYtMzYwOS03YWY3LWFkNzMtYzNlYmRhZDM3ZmQ5"
+          }
+        },
+        "id": "XXXX",
+        "uniqueName": "user2@xsoar.com",
+        "imageUrl": "https://dev.azure.com/xsoar-organization/_api/_common/identityImage?id=XXXX",
+        "descriptor": "aad.ZWFlMjk2ZGYtMzYwOS03YWY3LWFkNzMtYzNlYmRhZDM3ZmQ5"
+      },
+      "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/refs?filter=heads%2Fmain"
+    },
+    {
+      "name": "refs/heads/test2",
+      "objectId": "df0cc6ba5ce6984e4a379e8a5cea4d5db16aa67e",
+      "creator": {
+        "displayName": "XSOAR Test",
+        "url": "https://vssps.visualstudio.com/XXXX/_apis/Identities/XXXX",
+        "_links": {
+          "avatar": {
+            "href": "https://dev.azure.com/xsoar-organization/_apis/GraphProfile/MemberAvatars/aad.ZWFlMjk2ZGYtMzYwOS03YWY3LWFkNzMtYzNlYmRhZDM3ZmQ5"
+          }
+        },
+        "id": "XXXX",
+        "uniqueName": "user2@xsoar.com",
+        "imageUrl": "https://dev.azure.com/xsoar-organization/_api/_common/identityImage?id=XXXX",
+        "descriptor": "aad.ZWFlMjk2ZGYtMzYwOS03YWY3LWFkNzMtYzNlYmRhZDM3ZmQ5"
+      },
+      "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/refs?filter=heads%2Ftest2"
+    }
+  ],
+  "count": 2
+}

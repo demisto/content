@@ -1,0 +1,42 @@
+{
+  "_links": {
+    "self": {
+      "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/pipelines/1/runs/3"
+    },
+    "web": {
+      "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_build/results?buildId=3"
+    },
+    "pipeline.web": {
+      "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_build/definition?definitionId=1"
+    },
+    "pipeline": {
+      "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/pipelines/1?revision=1"
+    }
+  },
+  "pipeline": {
+    "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/pipelines/1?revision=1",
+    "id": "1",
+    "revision": 1,
+    "name": "xsoar",
+    "folder": "\\"
+  },
+  "state": "completed",
+  "result": "failed",
+  "createdDate": "2021-10-18T11:49:29.1321596Z",
+  "finishedDate": "2021-10-18T11: 49: 49.193014Z",
+  "url": "https: //dev.azure.com/yehudap/c137b60a-54a4-4a65-bb75-e1972c77da30/_apis/pipelines/1/runs/3",
+  "resources": {
+    "repositories": {
+      "self": {
+        "repository": {
+          "id": "bbd1bda1-b58e-41de-930a-59c92d852dcd",
+          "type": "azureReposGit"
+        },
+        "refName": "refs/heads/main",
+        "version": "72066c6968ce968deb23de4e41c8c7f091ced34e"
+      }
+    }
+  },
+  "id": "3",
+  "name": "20211018.3"
+}
