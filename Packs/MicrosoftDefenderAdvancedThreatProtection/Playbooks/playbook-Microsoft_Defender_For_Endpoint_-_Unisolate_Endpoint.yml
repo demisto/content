@@ -130,16 +130,6 @@ tasks:
             value:
               simple: inputs.Device_id
             iscontext: true
-        - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.Hostname
-            iscontext: true
-        - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.Device_IP
-            iscontext: true
     view: |-
       {
         "position": {
