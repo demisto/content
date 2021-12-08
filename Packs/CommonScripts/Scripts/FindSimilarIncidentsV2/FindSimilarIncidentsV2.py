@@ -108,20 +108,32 @@ def get_incident_labels_map(labels):
 
 
 def prepare_value_to_query_with(value):
-    str_value = str(value) if isinstance(value, int) else value
-    str_value = str_value.replace('"', r'\"').replace("\n", "\\n").replace("\r", "\\r")
-    str_value = str_value.encode('utf-8') if not isinstance(value, int) else str_value
-    return str_value
+    str_value_list = []
+    value_list = value
+    if isinstance(value, list) and not value:
+        value_list = [str(value)]
+    elif not isinstance(value, list):
+        value_list = [value]
+
+    for value in value_list:
+        demisto.log("value in list: %s" % value)
+        str_value = str(value) if isinstance(value, int) else value
+        str_value = str_value.replace('"', r'\"').replace("\n", "\\n").replace("\r", "\\r")
+        str_value = str_value.encode('utf-8') if not isinstance(value, int) else str_value
+        str_value_list.append(str_value)
+
+    return str_value_list
 
 
 def build_incident_fields_query(incident_data):
     similar_keys_list = []
     for key, value in incident_data.items():
-        str_value = prepare_value_to_query_with(value)
-        query_template = '{}:="{}"' if isinstance(value, int) else '{}="{}"'
-        similar_key = query_template.format(key, str_value)
-        similar_keys_list.append(similar_key) if isinstance(value, int) else \
-            similar_keys_list.append(str(similar_key).decode('utf-8'))  # type: ignore
+        str_value_list = prepare_value_to_query_with(value)
+        for str_value in str_value_list:
+            query_template = '{}="{}"' if isinstance(value, str) else '{}:="{}"'
+            similar_key = query_template.format(key, str_value)
+            similar_keys_list.append(str(similar_key).decode('utf-8')) if isinstance(value, str) else \
+                similar_keys_list.append(similar_key)
 
     return similar_keys_list
 
@@ -131,6 +143,7 @@ def get_incidents_by_keys(similar_incident_keys, time_field, incident_time, inci
     condition_string = ' %s ' % applied_condition.lower()
 
     incident_fields_query = build_incident_fields_query(similar_incident_keys)
+    # demisto.log("the  query is: %s" % incident_fields_query)
 
     similar_keys_query = condition_string.join(incident_fields_query)
     incident_time = parse_datetime(incident_time)
@@ -297,7 +310,9 @@ def main():
 
     # set the incident
     incident = merge_incident_fields(demisto.incidents()[0])  # type: ignore  # pylint: disable=no-value-for-parameter
-
+    # demisto.log(len(demisto.incidents()))
+    # for incident in demisto.incidents():
+    #     demisto.log("the incident: %s" % incident)
     # validate fields
     exact_match_incident_fields = get_map_from_nested_dict(incident,
                                                            {k: v for k, v in SIMILAR_INCIDENTS_FIELDS_MAP.items() if
@@ -317,6 +332,8 @@ def main():
             original_context_map[key] = response
             if not response and RAISE_ERROR_MISSING_VALUES:
                 raise ValueError("Error: Missing context key for incident: %s" % key)
+    # exact_match_incident_fields = {u'filemd5': [1234, 12345]}
+    # exact_match_incident_fields = {u'filemd5': []}
 
     log_message = 'Incident fields with exact match: %s' % exact_match_incident_fields
     if len(exact_match_incident_fields) > 1:
