@@ -778,12 +778,12 @@ EXPECTED_CONTEXT_OUTPUT_DATA = [
         "/profiles/host",
         [
             {
-                "_Id": "1",
-                "Hash": 1
+                "_id": "1",
+                "hash": 1
             },
             {
-                "_Id": "2",
-                "Hash": 2
+                "_id": "2",
+                "hash": 2
             }
         ],
         ""
@@ -797,19 +797,19 @@ EXPECTED_CONTEXT_OUTPUT_DATA = [
         "/profiles/container",
         [
             {
-                "State": "active",
-                "_Id": "1",
-                "Created": "2021-09-02T11:05:08.931Z"
+                "state": "active",
+                "_id": "1",
+                "created": "2021-09-02T11:05:08.931Z"
             },
             {
-                "State": "down",
-                "_Id": "2",
-                "Created": "2020-09-02T11:05:08.931Z"
+                "state": "down",
+                "_id": "2",
+                "created": "2020-09-02T11:05:08.931Z"
             },
             {
-                "State": "active",
-                "_Id": "3",
-                "Created": "2019-09-02T11:05:08.931Z"
+                "state": "active",
+                "_id": "3",
+                "created": "2019-09-02T11:05:08.931Z"
             }
         ],
         ""
@@ -824,8 +824,8 @@ EXPECTED_CONTEXT_OUTPUT_DATA = [
         "/profiles/container/123/hosts",
         ["host1", "host2"],
         {
-            "ContainerID": "123",
-            "HostsIDs": ["host1", "host2"]
+            "containerID": "123",
+            "hostsIDs": ["host1", "host2"]
         }
     ),
     (
@@ -839,41 +839,41 @@ EXPECTED_CONTEXT_OUTPUT_DATA = [
         "/profiles/container/123/forensic?hostname=hostname",
         [
             {
-                "Type": "Runtime profile networking",
-                "Timestamp": "2021-09-02T11:05:17.697083555Z",
-                "ContainerId": "",
-                "ListeningStartTime": "0001-01-01T00:00:00Z",
-                "Port": 8000,
-                "Outbound": True
+                "type": "Runtime profile networking",
+                "timestamp": "2021-09-02T11:05:17.697083555Z",
+                "containerId": "",
+                "listeningStartTime": "0001-01-01T00:00:00Z",
+                "port": 8000,
+                "outbound": True
             },
             {
-                "Type": "Runtime profile networking",
-                "Timestamp": "2021-09-02T11:05:11.188517918Z",
-                "ContainerId": "",
-                "ListeningStartTime": "0001-01-01T00:00:00Z",
-                "Port": 6789,
-                "Process": "some_process"
+                "type": "Runtime profile networking",
+                "timestamp": "2021-09-02T11:05:11.188517918Z",
+                "containerId": "",
+                "listeningStartTime": "0001-01-01T00:00:00Z",
+                "port": 6789,
+                "process": "some_process"
             }
         ],
         {
-            "ContainerID": "123",
-            "Hostname": "hostname",
-            "Forensics": [
+            "containerID": "123",
+            "hostname": "hostname",
+            "forensics": [
                 {
-                    "Type": "Runtime profile networking",
-                    "Timestamp": "2021-09-02T11:05:17.697083555Z",
-                    "ContainerId": "",
-                    "ListeningStartTime": "0001-01-01T00:00:00Z",
-                    "Port": 8000,
-                    "Outbound": True
+                    "type": "Runtime profile networking",
+                    "timestamp": "2021-09-02T11:05:17.697083555Z",
+                    "containerId": "",
+                    "listeningStartTime": "0001-01-01T00:00:00Z",
+                    "port": 8000,
+                    "outbound": True
                 },
                 {
-                    "Type": "Runtime profile networking",
-                    "Timestamp": "2021-09-02T11:05:11.188517918Z",
-                    "ContainerId": "",
-                    "ListeningStartTime": "0001-01-01T00:00:00Z",
-                    "Port": 6789,
-                    "Process": "some_process"
+                    "type": "Runtime profile networking",
+                    "timestamp": "2021-09-02T11:05:11.188517918Z",
+                    "containerId": "",
+                    "listeningStartTime": "0001-01-01T00:00:00Z",
+                    "port": 6789,
+                    "process": "some_process"
                 }
             ],
         }
@@ -888,28 +888,28 @@ EXPECTED_CONTEXT_OUTPUT_DATA = [
         "/profiles/host/123/forensic",
         [
             {
-                "Type": "Process spawned",
-                "Command": "docker-runc --version",
-                "ListeningStartTime": "0001-01-01T00:00:00Z"
+                "type": "Process spawned",
+                "command": "docker-runc --version",
+                "listeningStartTime": "0001-01-01T00:00:00Z"
             },
             {
-                "Type": "Process spawned",
-                "Command": "docker ps -a",
-                "ListeningStartTime": "0001-01-01T00:00:00Z"
+                "type": "Process spawned",
+                "command": "docker ps -a",
+                "listeningStartTime": "0001-01-01T00:00:00Z"
             }
         ],
         {
             "HostID": "123",
             "Forensics": [
                 {
-                    "Type": "Process spawned",
-                    "Command": "docker-runc --version",
-                    "ListeningStartTime": "0001-01-01T00:00:00Z"
+                    "type": "Process spawned",
+                    "command": "docker-runc --version",
+                    "listeningStartTime": "0001-01-01T00:00:00Z"
                 },
                 {
-                    "Type": "Process spawned",
-                    "Command": "docker ps -a",
-                    "ListeningStartTime": "0001-01-01T00:00:00Z"
+                    "type": "Process spawned",
+                    "command": "docker ps -a",
+                    "listeningStartTime": "0001-01-01T00:00:00Z"
                 }
             ]
         }
@@ -926,28 +926,28 @@ EXPECTED_CONTEXT_OUTPUT_DATA = [
         get_custom_feeds_ip_list,
         "/feeds/custom/ips",
         {
-            "_Id": "",
-            "Modified": "2021-12-01T11:50:50.882Z",
-            "Feed": [
+            "_id": "",
+            "modified": "2021-12-01T11:50:50.882Z",
+            "feed": [
                 "1.1.1.1",
                 "5.5.5.5",
                 "2.2.2.2",
                 "4.4.4.4",
                 "3.3.3.3"
             ],
-            "Digest": "1234"
+            "digest": "1234"
         },
         {
-            "_Id": "",
-            "Modified": "December 01, 2021 11:50:50 AM",
-            "Feed": [
+            "_id": "",
+            "modified": "December 01, 2021 11:50:50 AM",
+            "feed": [
                 "1.1.1.1",
                 "5.5.5.5",
                 "2.2.2.2",
                 "4.4.4.4",
                 "3.3.3.3"
             ],
-            "Digest": "1234"
+            "digest": "1234"
         }
     )
 ]
