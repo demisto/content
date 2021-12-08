@@ -1320,3 +1320,85 @@ There is no context output for this command.
 |---|
 | 2.2.2.2,<br>1.1.1.1 |
 
+### prisma-cloud-compute-profile-container-forensic-list
+***
+Get runtime forensics data for a specific container on a specific host
+
+
+#### Base Command
+
+`prisma-cloud-compute-profile-container-forensic-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The container ID, can be retrieved from 'prisma-cloud-compute-profile-container-list' command. | Required | 
+| collections | Collections are collections scoping the query. | Optional | 
+| hostname | Hostname is the hostname for which data should be fetched. | Required | 
+| incident_id | IncidentID is the incident ID in case the request kind is an incident. | Optional | 
+| limit | maximum of forensics data records to return, must be between 1-50. Default is 20. | Optional | 
+| offset | The offset number to begin listing records from. Default is 0. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaCloudCompute.ContainerForensic.containerID | String | The container ID. | 
+| PrismaCloudCompute.ContainerForensic.hostname | String | The Hostname. | 
+| PrismaCloudCompute.ContainerForensic.Forensics.allPorts | Boolean | AllPorts indicates all listening ports are allowed | 
+| PrismaCloudCompute.ContainerForensic.Forensics.attack | Unknown | Attack is the event attack type. | 
+| PrismaCloudCompute.ContainerForensic.Forensics.category | Unknown | Category is the incident category. | 
+| PrismaCloudCompute.ContainerForensic.Forensics.command | String | Command is the event command | 
+| PrismaCloudCompute.ContainerForensic.Forensics.containerId | Unknown | ContainerID is the event container id | 
+| PrismaCloudCompute.ContainerForensic.Forensics.dstIP | String | DstIP is the destination IP of the connection | 
+| PrismaCloudCompute.ContainerForensic.Forensics.dstPort | Unknown | DstPort is the destination port | 
+| PrismaCloudCompute.ContainerForensic.Forensics.dstProfileID | String | DstProfileID is the profile ID of the connection destination | 
+| PrismaCloudCompute.ContainerForensic.Forensics.effect | String | Effect is the runtime audit effect | 
+| PrismaCloudCompute.ContainerForensic.Forensics.listeningStartTime | Date | listeningStartTime is the port listening start time | 
+| PrismaCloudCompute.ContainerForensic.Forensics.message | String | Message is the runtime audit message | 
+| PrismaCloudCompute.ContainerForensic.Forensics.networkCollectionType | Unknown | NetworkCollectionType is the type of the network collection method | 
+| PrismaCloudCompute.ContainerForensic.Forensics.outbound | Boolean | Outbound indicates if the port is outbound | 
+| PrismaCloudCompute.ContainerForensic.Forensics.path | String | Path is the event path | 
+| PrismaCloudCompute.ContainerForensic.Forensics.pid | Number | Pid is the event process id | 
+| PrismaCloudCompute.ContainerForensic.Forensics.port | Number | Port is the listening port | 
+| PrismaCloudCompute.ContainerForensic.Forensics.ppid | Number | PPid is the event parent process id | 
+| PrismaCloudCompute.ContainerForensic.Forensics.process | String | Process is the event processdescription | 
+| PrismaCloudCompute.ContainerForensic.Forensics.srcIP | String | SrcIP is the source IP of the connection | 
+| PrismaCloudCompute.ContainerForensic.Forensics.srcProfileID | String | SrcProfileID is the profile ID of the connection source | 
+| PrismaCloudCompute.ContainerForensic.Forensics.static | Boolean | Static indicates the event was added to the profile without behavioral indication | 
+| PrismaCloudCompute.ContainerForensic.Forensics.type | Unknown | Type is the event type. | 
+| PrismaCloudCompute.ContainerForensic.Forensics.timestamp | Boolean | Timestamp is the event timestamp | 
+| PrismaCloudCompute.ContainerForensic.Forensics.user | Unknown | User is the event user | 
+
+
+#### Command Example
+```!prisma-cloud-compute-profile-container-forensic-list id=123 hostname=hostname1```
+
+#### Human Readable Output
+
+### Containers forensic report
+|Type|Path|User|Pid|ContainerId|ListeningStartTime|Command|
+|---|---|---|---|---|---|---|
+| Process spawned | /usr/bin/mongodump | twistlock | 7990 | a6f769dd | January 01, 0001 00:00:00 AM | mongodump --out=/var/lib/twistlock-backup/dump |
+| Process spawned | /usr/bin/mongodump | twistlock | 27398 | a6f769dd | January 01, 0001 00:00:00 AM | mongodump --out=/var/lib/twistlock-backup/dump |
+| Process spawned | /usr/bin/mongodump | twistlock | 14441 | a6f769dd | January 01, 0001 00:00:00 AM | mongodump --out=/var/lib/twistlock-backup/dump |
+| Process spawned | /usr/bin/mongodump | twistlock | 1421 | a6f769dd | January 01, 0001 00:00:00 AM | mongodump --out=/var/lib/twistlock-backup/dump |
+| Process spawned | /usr/bin/mongodump | twistlock | 20978 | a6f769dd | January 01, 0001 00:00:00 AM | mongodump --out=/var/lib/twistlock-backup/dump |
+| Process spawned | /usr/bin/mongodump | twistlock | 8044 | a6f769dd | January 01, 0001 00:00:00 AM | mongodump --out=/var/lib/twistlock-backup/dump |
+| Process spawned | /usr/bin/mongodump | twistlock | 27509 | a6f769dd | January 01, 0001 00:00:00 AM | mongodump --out=/var/lib/twistlock-backup/dump |
+| Process spawned | /usr/bin/mongodump | twistlock | 14633 | a6f769dd | January 01, 0001 00:00:00 AM | mongodump --out=/var/lib/twistlock-backup/dump |
+| Process spawned | /usr/bin/mongodump | twistlock | 1765 | a6f769dd | January 01, 0001 00:00:00 AM | mongodump --out=/var/lib/twistlock-backup/dump |
+| Process spawned | /usr/bin/mongodump | twistlock | 21338 | a6f769dd | January 01, 0001 00:00:00 AM | mongodump --out=/var/lib/twistlock-backup/dump |
+| Process spawned | /usr/bin/mongodump | twistlock | 8467 | a6f769dd | January 01, 0001 00:00:00 AM | mongodump --out=/var/lib/twistlock-backup/dump |
+| Process spawned | /usr/bin/mongodump | twistlock | 27998 | a6f769dd | January 01, 0001 00:00:00 AM | mongodump --out=/var/lib/twistlock-backup/dump |
+| Process spawned | /usr/bin/mongodump | twistlock | 15124 | a6f769dd | January 01, 0001 00:00:00 AM | mongodump --out=/var/lib/twistlock-backup/dump |
+| Process spawned | /usr/bin/mongodump | twistlock | 2230 | a6f769dd | January 01, 0001 00:00:00 AM | mongodump --out=/var/lib/twistlock-backup/dump |
+| Process spawned | /usr/bin/mongodump | twistlock | 21898 | a6f769dd | January 01, 0001 00:00:00 AM | mongodump --out=/var/lib/twistlock-backup/dump |
+| Process spawned | /usr/bin/mongodump | twistlock | 8668 | a6f769dd | January 01, 0001 00:00:00 AM | mongodump --out=/var/lib/twistlock-backup/dump |
+| Process spawned | /usr/bin/mongodump | twistlock | 28206 | a6f769dd | January 01, 0001 00:00:00 AM | mongodump --out=/var/lib/twistlock-backup/dump |
+| Process spawned | /usr/bin/mongodump | twistlock | 15330 | a6f769dd | January 01, 0001 00:00:00 AM | mongodump --out=/var/lib/twistlock-backup/dump |
+| Process spawned | /usr/bin/mongodump | twistlock | 2487 | a6f769dd | January 01, 0001 00:00:00 AM | mongodump --out=/var/lib/twistlock-backup/dump |
+| Process spawned | /usr/bin/mongodump | twistlock | 22080 | a6f769dd | January 01, 0001 00:00:00 AM | mongodump --out=/var/lib/twistlock-backup/dump |
+
+
