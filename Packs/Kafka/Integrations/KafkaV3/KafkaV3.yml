@@ -3,7 +3,7 @@ commonfields:
   id: KafkaV3
   version: -1
 configuration:
-- display: CSV list of Kafka brokers to connect to, e.g. 172.16.20.207:9092,172.16.20.234:9093
+- display: CSV list of Kafka brokers to connect to, e.g., 172.16.20.207:9092,172.16.20.234:9093
   name: brokers
   required: true
   type: 0
