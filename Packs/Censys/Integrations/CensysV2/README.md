@@ -2,7 +2,7 @@ Censys is a search engine that allows computer scientists to ask questions about
 This integration was integrated and tested with version 2.0 of Censys.
 
 Some changes have been made that might affect your existing content. 
-If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration---censys-v2).
+If you are upgrading from a previous of this integration, see [Breaking Changes](#additional-considerations-for-this-version).
 
 ## Configure Censys v2 on Cortex XSOAR
 
