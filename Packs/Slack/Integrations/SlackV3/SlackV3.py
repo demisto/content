@@ -171,7 +171,7 @@ def get_user_by_email(user_to_search: str) -> dict:
         return format_user_results(user)
 
 
-def add_user_to_context(user: dict, integration_context = None):
+def add_user_to_context(user: dict, integration_context=None):
     """
     In some cases, we want to save user data to the integration context.
 
@@ -254,7 +254,6 @@ def get_user_by_name(user_to_search: str, add_to_context: bool = True) -> dict:
         A slack user object
     """
     user: dict = {}
-    user_to_context: dict = {}
 
     integration_context = get_integration_context(SYNC_CONTEXT)
     user_to_search = user_to_search.lower()

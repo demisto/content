@@ -433,9 +433,7 @@ def test_get_user_by_name(mocker):
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
 
-
     # Assert
-
     # User name exists in integration context
     username = 'spengler'
     user = get_user_by_name(username)
