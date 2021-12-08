@@ -4308,7 +4308,8 @@
                 "Demisto REST API",
                 "Rasterize",
                 "Demisto Lock"
-            ]
+            ],
+            "instance_names": "sync"
         },
         {
             "playbookID": "PCAP Search test",
