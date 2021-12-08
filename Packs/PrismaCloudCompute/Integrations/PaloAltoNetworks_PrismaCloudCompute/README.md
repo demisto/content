@@ -279,3 +279,38 @@ Get information about the containers and their profile events, this command supp
 |---|---|---|---|---|
 | 123-container-id | twistlock/private:defender_21_04_439 | Red Hat Enterprise Linux 8.4 (Ootpa) | active | September 02, 2021 11:05:08 AM |
 | 456-container-id | twistlock/private:console_21_04_439 | Red Hat Enterprise Linux 8.4 (Ootpa) | active | September 02, 2021 11:05:08 AM |
+
+### prisma-cloud-compute-profile-container-hosts-list
+***
+Get the hosts where a specific container is running.
+
+
+#### Base Command
+
+`prisma-cloud-compute-profile-container-hosts-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Container profile ID, can be retrieved from 'prisma-cloud-compute-profile-container-list' command. | Required | 
+| limit | The maximum number of hosts to return, must be between 1-50. Default is 50. | Optional | 
+| offset | The offset number to begin listing hosts of the container. Default is 0. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaCloudCompute.ProfileContainerHost.containerID | String | Container ID | 
+| PrismaCloudCompute.ProfileContainerHost.hostsIDs | Unknown | The container's host IDs. | 
+
+
+#### Command Example
+```!prisma-cloud-compute-profile-container-hosts-list id=123```
+
+#### Human Readable Output
+### Containers hosts list
+|ContainerID|HostsIDs|
+|---|---|
+| 123-container-id | host1,<br>host2 |
+

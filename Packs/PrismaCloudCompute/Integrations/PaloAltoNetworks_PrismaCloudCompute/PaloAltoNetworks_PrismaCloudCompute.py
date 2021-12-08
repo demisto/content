@@ -641,16 +641,18 @@ def build_container_hosts_response(
         offset=offset,
         limit=limit,
         args=args,
-        capitalize=False
     )
 
     if hosts_ids:
         context_output = {
-            "ContainerID": container_id,
-            "HostsIDs": hosts_ids
+            "containerID": container_id,
+            "hostsIDs": hosts_ids
         }
         return context_output, tableToMarkdown(
-            name="Containers hosts list", t=context_output, headers=["ContainerID", "HostsIDs"]
+            name="Containers hosts list",
+            t=context_output,
+            headers=["containerID", "hostsIDs"],
+            headerTransform=lambda word: word[0].upper() + word[1:]
         )
     return None, "No results found"
 
