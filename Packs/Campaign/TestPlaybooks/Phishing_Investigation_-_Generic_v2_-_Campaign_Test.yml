@@ -1,6 +1,6 @@
-id: Phishing Investigation - Generic v2 - Campaign Test 3
+id: Phishing Investigation - Generic v2 - Campaign Test
 version: -1
-name: Phishing Investigation - Generic v2 - Campaign Test 3
+name: Phishing Investigation - Generic v2 - Campaign Test
 description: Tests that similar phishing incidents create a phishing campaign incident.
 starttaskid: "0"
 tasks:
