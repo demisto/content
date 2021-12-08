@@ -1,4 +1,5 @@
-from AzureSecurityCenter_v2 import MsClient, get_atp_command, get_aps_command, update_atp_command, get_secure_scores_command
+from AzureSecurityCenter_v2 import MsClient, get_atp_command, get_aps_command, update_atp_command, \
+    get_secure_scores_command
 
 # get atp command data
 GET_ATP_COMMAND_RAW_RESPONSE = {'properties': {'isEnabled': False},
@@ -39,7 +40,11 @@ GET_SECURE_SCORE_RAW_RESPONSE = {
     'properties': {'displayName': 'ASC score', 'score': {'max': 58, 'current': 14.51, 'percentage': 0.2502},
                    'weight': 199}}
 
-EXPECTED_GET_SECURE_SCORE_CONTEXT = {'Azure.Securescore(val.ID && val.ID === obj.ID)': {'displayName': 'ASC score', 'score': {'max': 58, 'current': 14.51, 'percentage': 0.2502}, 'weight': 199}}
+EXPECTED_GET_SECURE_SCORE_CONTEXT = {'Azure.Securescore(val.ID && val.ID === obj.ID)': {'displayName': 'ASC score',
+                                                                                        'score': {'max': 58,
+                                                                                                  'current': 14.51,
+                                                                                                  'percentage': 0.2502},
+                                                                                        'weight': 199}}
 
 client = MsClient(
     server="url", tenant_id="tenant", auth_id="auth_id", enc_key="enc_key", app_name="APP_NAME", verify="verify",
