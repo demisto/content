@@ -429,28 +429,28 @@ def test_get_headers():
 
 
 HTTP_REQUEST_URL_WITH_QUERY_PARAMS = [
-    # (
-    #     OrderedDict(cluster="cluster", hostname="hostname", limit="10", offset="0"),
-    #     get_profile_host_list,
-    #     "/profiles/host",
-    #     "https://test.com/profiles/host?cluster=cluster&limit=10&offset=0&hostname=hostname"
-    # ),
-    # (
-    #     OrderedDict(
-    #         cluster="cluster", id="1", image="image", image_id="1", namespace="namespace", os="os",
-    #         state="state", limit="10", offset="0"
-    #     ),
-    #     get_container_profile_list,
-    #     "/profiles/container",
-    #     "https://test.com/profiles/container?cluster=cluster&id=1&image=image"
-    #     "&namespace=namespace&os=os&state=state&limit=10&offset=0&imageid=1"
-    # ),
-    # (
-    #     OrderedDict(limit="10", offset="0", id="123"),
-    #     get_container_hosts_list,
-    #     "/profiles/container/123/hosts",
-    #     "https://test.com/profiles/container/123/hosts"
-    # ),
+    (
+        OrderedDict(cluster="cluster", hostname="hostname", limit="10", offset="0"),
+        get_profile_host_list,
+        "/profiles/host",
+        "https://test.com/profiles/host?cluster=cluster&limit=10&offset=0&hostname=hostname"
+    ),
+    (
+        OrderedDict(
+            cluster="cluster", id="1", image="image", image_id="1", namespace="namespace", os="os",
+            state="state", limit="10", offset="0"
+        ),
+        get_container_profile_list,
+        "/profiles/container",
+        "https://test.com/profiles/container?cluster=cluster&id=1&image=image"
+        "&namespace=namespace&os=os&state=state&limit=10&offset=0&imageid=1"
+    ),
+    (
+        OrderedDict(limit="10", offset="0", id="123"),
+        get_container_hosts_list,
+        "/profiles/container/123/hosts",
+        "https://test.com/profiles/container/123/hosts"
+    ),
     (
         OrderedDict(
             collections="collections", hostname="hostname", limit="15", offset="2", id="123"
