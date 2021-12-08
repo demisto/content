@@ -14,6 +14,7 @@ system: true
 args:
 - name: compareString
   required: true
+  isArray: true
   default: true
   description: The string(s) to compare with the input string. (could be multiple
     strings with a comma separator)
