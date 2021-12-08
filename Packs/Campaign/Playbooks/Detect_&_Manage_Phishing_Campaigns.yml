@@ -1230,5 +1230,3 @@ outputs: []
 tests:
 - Phishing Investigation - Generic v2 - Campaign Test
 fromversion: 6.0.0
-tests:
-- Phishing Investigation - Generic v2 - Campaign Test
