@@ -310,11 +310,33 @@ def test_date_str_to_azure_format_with_ms(date_to_test, expected):
     ('2021-07-28T00:10:00', '2021-07-28T00:10:00.000'),
 ])
 def test_date_str_to_azure_format_without_ms(date_to_test, expected):
+    """
+    Given:
+    - Two dates, without milliseconds, with and without a Z at the end.
+
+    When:
+    - Transforming the dates to Azure format
+
+    Then:
+    - Both dates have milliseconds and do not have a Z at the end.
+    """
     from AzureADIdentityProtection import date_str_to_azure_format
     assert date_str_to_azure_format(date_to_test) == expected
 
 
 def test_detections_to_incident():
+    """
+    Given:
+    - 10 detections, sorted by their detection time.
+    - 10 detections, shuffled.
+
+    When:
+    - Calling detections_to_incidents to parse the detections to incidents on the sorted detections.
+    - Calling detections_to_incidents to parse the detections to incidents on the shuffled detections.
+
+    Then:
+    - Both calls return 10 incidents, and the latest detection time among the detections.
+    """
     from AzureADIdentityProtection import detections_to_incidents, DATE_FORMAT
     detections_in_order = util_load_json('test_data/incidents.json')['value']
     detections_out_of_order = copy.deepcopy(detections_in_order)
@@ -334,6 +356,12 @@ def test_detections_to_incident():
 
 
 def mock_list_detections(limit, filter_expression, user_id, user_principal_name):
+    """
+    Mocks the request to list detections from the API.
+    The mock will manually take into consideration the filter and limit supplied as parameters.
+    It also accepts the user_id and user_principal_name, to allow full running of fetch (as the actual function
+    receives these parameters).
+    """
     from AzureADIdentityProtection import DATE_FORMAT, date_str_to_azure_format
     test_incidents = util_load_json('test_data/incidents.json')
     all_possible_results = test_incidents.get('value')
@@ -359,10 +387,21 @@ def mock_list_detections(limit, filter_expression, user_id, user_principal_name)
 
 
 def mock_get_last_fetch_time(last_run, params):
+    """
+    Mocks the function that retrieves the fetch time that should be used.
+
+    Args:
+        last_run: the last run's data.
+        params: the instance parameters (mocked).
+
+    Returns:
+        last_fetch (str): the date of the time to start the fetch from.
+        last_fetch_datetime (str): the datetime of the time to start the fetch from.
+    """
     from AzureADIdentityProtection import DATE_FORMAT, date_str_to_azure_format
     last_fetch = last_run.get('latest_detection_found')
     if not last_fetch:
-        # To handle the fact
+        # To handle the fact that we can't freeze the time and still parse relative time expressions such as 2 days
         last_fetch = "2021-07-16T11:08:55.000"
 
     last_fetch = date_str_to_azure_format(last_fetch)
@@ -371,6 +410,34 @@ def mock_get_last_fetch_time(last_run, params):
 
 
 def test_fetch_complete_flow(mocker, client):
+    """
+    Given:
+    - A start time of 2021-07-16T11:08:55.000.
+    - 10 Possible incidents to fetch, the first 2 with a detection date before the start time.
+
+    When:
+    - Running fetch for the first time
+
+    Then:
+    - The two incidents before the start time are not fetched.
+    - The 5 incidents after them are fetched.
+    - The last run is updated with the detection date of the latest incident.
+
+    When:
+    - Running fetch for the second time.
+
+    Then:
+    - Exactly 3 incidents (the last 3 incidents that can be fetched) are fetched.
+    - The first fetched incident is the earliest one not fetched in the previous run.
+    - The last run is updated with the detection date of the latest incident.
+
+    When:
+    - Running fetch for the third time.
+
+    Then:
+    - No incidents are fetched.
+    - The fetch end time remains unchanged.
+    """
     from AzureADIdentityProtection import fetch_incidents
 
     mocker.patch('AzureADIdentityProtection.get_last_fetch_time', side_effect=mock_get_last_fetch_time)
