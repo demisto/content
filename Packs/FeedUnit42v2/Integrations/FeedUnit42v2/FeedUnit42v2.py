@@ -91,6 +91,8 @@ class Client(BaseClient):
                     if test and limit < len(data):
                         return data
 
+        if test:
+            return data
         self.objects_data[kwargs.get('type')] = data
 
 
