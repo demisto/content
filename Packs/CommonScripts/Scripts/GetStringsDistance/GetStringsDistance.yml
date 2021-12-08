@@ -8,25 +8,24 @@ subtype: python2
 tags:
 - server
 - phishing
-comment: Get the string distance between inputString and compareString (could be a
-  comma separated list) based on Levenshtein Distance algorithm.
+comment: Get the string distance between inputString and compareString (compareString can be a
+  comma-separated list) based on Levenshtein Distance algorithm.
 system: true
 args:
 - name: compareString
   required: true
   isArray: true
   default: true
-  description: The string(s) to compare with the input string. (could be multiple
-    strings with a comma separator)
+  description: A comma-separated list of strings to compare with the input string.
 - name: inputString
   required: true
-  description: The input string to compare
+  description: The input string(s) to compare.
 - name: distance
-  description: Distance that is considered close
+  description: Distance that is considered close.
   defaultValue: "3"
 outputs:
 - contextPath: LevenshteinDistance
-  description: The closeness of the sender domain to our configured domains
+  description: The closeness of the sender domain to our configured domains.
 scripttarget: 0
 runonce: false
 fromversion: 5.0.0
