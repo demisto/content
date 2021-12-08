@@ -10,3 +10,6 @@ ignore=IF100
 
 [file:Detect_&_Manage_Phishing_Campaigns_README.md]
 ignore=RM106
+
+[file:SetPhishingCampaignDetails.yml]
+ignore=SC106
