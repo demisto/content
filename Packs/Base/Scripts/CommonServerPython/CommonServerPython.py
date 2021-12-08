@@ -8336,7 +8336,7 @@ def signal_handler_threads_dump(_sig, _frame):
     :type _sig: ``int``
     :param _sig: The signal number
 
-    :type _sig: ``Any``
+    :type _frame: ``Any``
     :param _frame: The current stack frame
 
     :return: No data returned
