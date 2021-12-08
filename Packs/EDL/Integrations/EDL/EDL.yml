@@ -36,7 +36,7 @@ configuration:
   required: false
   defaultvalue: true
   type: 8
-- additionalinfo: Only applies to IPs in text or csv formats.
+- additionalinfo: Only applies to IPs in text format.
   defaultvalue: Don't Collapse
   display: Should Collapse IPs
   hidden: false
@@ -47,6 +47,13 @@ configuration:
   - To Ranges
   required: false
   type: 15
+- additionalinfo: Maximum number of items in the EDL
+  defaultvalue: '2500'
+  display: EDL Size
+  hidden: false
+  name: edl_size
+  required: true
+  type: 0
 - additionalinfo: Internal page size used when querying Cortex XSOAR for the EDL. By default,
     this value shouldn't be changed.
   defaultvalue: '2000'
@@ -55,20 +62,13 @@ configuration:
   name: page_size
   required: false
   type: 0
-- additionalinfo: If selected, csv and XSOAR-csv formats will create a textual web
+- additionalinfo: If selected, csv format will create a textual web
     page instead of downloading a CSV file.
   display: Show CSV Formats as Text
   hidden: false
   name: csv_text
   required: false
   type: 8
-- additionalinfo: Maximum number of items in the EDL
-  defaultvalue: '2500'
-  display: EDL Size
-  hidden: false
-  name: edl_size
-  required: true
-  type: 0
 - additionalinfo: Enabling this will prevent automatic EDL refresh
   display: Update EDL On Demand Only
   name: on_demand
@@ -124,24 +124,25 @@ configuration:
   - regex
   required: false
   type: 15
-- additionalinfo: For use with TEXT format - if selected will strip the port
-    from URLs.
-  display: PAN-OS URL Format Port Strip
+- additionalinfo: For use with TEXT format - If selected, a URL that includes a port number will be reformatted
+    to remove the port. For example, 'www.example.com:9999/path' would become 'www.example.com/path'.
+  defaultvalue: 'true'
+  display: Strip Ports from URLs
   hidden: false
   name: url_port_stripping
   required: false
   type: 8
 - additionalinfo: For use with TEXT format - if selected will strip the protocol
     from URLs.
-  display: Protocol Strip
+  display: Strip Protocols from URLs
   hidden: false
   name: url_protocol_stripping
   required: false
   type: 8
   defaultvalue: true
-- additionalinfo: For use with PAN-OS URL format - if selected, any URL entry that
-    is not compliant with PAN-OS EDL URL format is dropped instead of being rewritten.
-  display: PAN-OS URL Format Drop Invalid Entries
+- additionalinfo: For use with TEXT format, If selected, any URL entry that is not compliant with PAN-OS EDL
+    URL format is dropped instead of being rewritten.
+  display: PAN-OS URL Drop Invalid Entries
   hidden: false
   name: drop_invalids
   required: false
@@ -176,6 +177,14 @@ configuration:
   name: nginx_server_conf
   required: false
   type: 12
+- additionalinfo: "Legacy Queries: When enabled, the integration will query the Server
+    using full queries. Enable this query mode, if you've been instructed by Support,
+    or you've encountered in the log errors of the form: msgpack: invalid code."
+  display: 'Advanced: Use Legacy Queries'
+  hidden: false
+  name: use_legacy_query
+  required: false
+  type: 8
 description: Use the Export Indicators Service integration to provide an endpoint
   with a list of indicators as a service for the system indicators.
 display: Export Indicators Service v2
@@ -194,8 +203,7 @@ script:
       default: false
       defaultValue: text
       description: The output format. Can be "text", "json", "json-seq", "csv", "XOSAR
-        json", "XSOAR json-seq", "XSOAR csv", "PAN-OS URL", "McAfee Web Gateway" and
-        "Symantec ProxySG".
+        json", "XSOAR json-seq", "McAfee Web Gateway" and "Symantec ProxySG".
       isArray: false
       name: format
       predefined:
@@ -205,10 +213,8 @@ script:
       - csv
       - XSOAR json
       - XSOAR json-seq
-      - XSOAR csv
       - McAfee Web Gateway
       - Symantec ProxySG
-      - PAN-OS URL
       required: false
       secret: false
     - default: false
@@ -218,18 +224,6 @@ script:
       isArray: false
       name: edl_size
       required: false
-      secret: false
-    - default: false
-      defaultValue: 'false'
-      description: Whether to print the indicators. If set to "true" will print the
-        indicators that were saved to the Export Indicators Service. The default value
-        is "false".
-      isArray: false
-      name: print_indicators
-      predefined:
-      - 'false'
-      - 'true'
-      required: true
       secret: false
     - default: false
       defaultValue: '0'
@@ -291,6 +285,18 @@ script:
       - 'True'
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Don't Collapse
+      description: Whether to collapse IPs to ranges or CIDRs.
+      isArray: false
+      name: collapse_ips
+      predefined:
+        - Don't Collapse
+        - To CIDRS
+        - To Ranges
+      required: false
+      secret: false
     - default: false
       defaultValue: bc_category
       description: For use with Symantec ProxySG format - set the default category
@@ -304,18 +310,6 @@ script:
         should be listed in the output. If not set, will list all existing categories.
       isArray: false
       name: category_attribute
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: Don't Collapse
-      description: Whether to collapse IPs to ranges or CIDRs.
-      isArray: false
-      name: collapse_ips
-      predefined:
-      - Don't Collapse
-      - To CIDRs
-      - To Ranges
       required: false
       secret: false
     - auto: PREDEFINED
@@ -344,6 +338,17 @@ script:
       predefined:
       - asc
       - desc
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: false
+      description: If selected, add to an empty EDL the comment "# Empty EDL".
+      isArray: false
+      name: add_comment_if_empty
+      predefined:
+        - 'False'
+        - 'True'
       required: false
       secret: false
     deprecated: false
