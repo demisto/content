@@ -611,6 +611,8 @@ def send_mail(args: dict, sg_from_email: str, sg_sender_name: str, sg):
     reply_to_email = args.get('ReplyTo')
     if reply_to_email:
         message.reply_to = ReplyTo(reply_to_email, None)  # type: ignore[name-defined]
+    elif reply_to_email == "":
+        return "Send-email failed: replyTo email is empty, please provide valid email"
 
     message.from_email = From(sg_from_email, sg_sender_name)  # type: ignore[name-defined]
 
@@ -624,12 +626,16 @@ def send_mail(args: dict, sg_from_email: str, sg_sender_name: str, sg):
         cc_emails = cc_emails if isinstance(cc_emails, list) else cc_emails.split(",")
         for email in cc_emails:
             message.cc = Cc(email, None, p=0)  # type: ignore[name-defined]
+    elif cc_emails == "":
+        return "Send-email failed: CC list is empty, please provide valid email"
 
     bcc_emails = args.get('Bcc')
     if bcc_emails:
         bcc_emails = bcc_emails if isinstance(bcc_emails, list) else bcc_emails.split(",")
         for email in bcc_emails:
             message.bcc = Bcc(email, None, p=0)  # type: ignore[name-defined]
+    elif bcc_emails == "":
+        return "Send-email failed: BCC list is empty, please provide valid email"
 
     response = sg.send(message)
     if response.status_code == 202:

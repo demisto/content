@@ -194,6 +194,8 @@ script:
     - description: The end date of the statistics to retrieve. Defaults to today.
         Must follow format YYYY-MM-DD.
       name: end_date
+    - description: The number of results to return.
+      name: limit
     - auto: PREDEFINED
       description: How to group the statistics. Must be either "day", "week", or "month".
       name: aggregated_by
@@ -229,15 +231,14 @@ script:
       predefined:
       - asc
       - desc
-    - description: The number of results to return.
-      name: limit
     - description: The point in the list to begin retrieving results.
       name: offset
     - description: 'Table headers to use the human readable output (if none provided,
         will show all table headers). Available headers: blocks,bounce_drops,bounces,clicks,date,deferred,delivered,invalid_emails,opens,processed,requests,spam_report_drops,spam_reports,unique_clicks,unique_opens,unsubscribe_drops,unsubscribes'
       name: headers
-    description: Retrieves the total sum of each email statistic for every category
-      over the given date range.
+    description: 'Retrieves the total sum of each email statistic for every category
+      over the given date range. By default it returns only 5 categories. Use limit=
+      argument to define the number of categories to return. '
     name: sg-get-all-categories-stats
     outputs:
     - contextPath: Sendgrid.AllCategoriesStats
