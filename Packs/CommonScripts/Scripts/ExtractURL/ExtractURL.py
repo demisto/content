@@ -1,6 +1,8 @@
 from html import unescape
 from typing import Tuple
+from urllib.error import HTTPError, URLError
 from urllib.parse import urlparse, parse_qs, ParseResult, unquote
+from urllib.request import urlopen
 
 from CommonServerPython import *
 
@@ -67,7 +69,6 @@ def get_redirect_url_from_query(non_formatted_url: str, parse_results: ParseResu
         (str): The URL the ATP Safe Link points to.
     """
     query_params_dict: Dict[str, List[str]] = parse_qs(parse_results.query)
-    #  TODO add test for error
     if not (query_urls := query_params_dict.get(redirect_param_name, [])):
         demisto.error(f'Could not find redirected URL. Returning the original URL: {non_formatted_url}')
         return non_formatted_url
@@ -105,7 +106,7 @@ def format_url(non_formatted_url: str) -> str:
         non_formatted_url (str): Non formatted URL.
 
     Returns:
-        (str): Formatted URL.
+        (Set[str]): Formatted URL, with its expanded URL if such exists.
     """
     parse_results: ParseResult = urlparse(non_formatted_url)
     if re.match(ATP_REGEX, non_formatted_url):
@@ -121,20 +122,31 @@ def format_url(non_formatted_url: str) -> str:
     # Common handling for unescape and normalizing
     non_formatted_url = unquote(unescape(non_formatted_url.replace('[.]', '.')))
     formatted_url = replace_protocol(non_formatted_url)
-
     return formatted_url
 
 
-# def unshorten_url(url):
-#     return requests.head(url, allow_redirects=True).url
+def expand_url(formatted_url: str) -> Set[str]:
+    """
+    Expands given URL. Returns a set of one URL if the URL is not a shorten URL, else returns shorten URL and
+    its expanded URL as a set.
+    Args:
+        formatted_url (set): URL.
+
+    Returns:
+        (Set[str]): Set of URL, and its expanded URL if such exists and is different than the given URL.
+    """
+    try:
+        expanded_url: str = urlopen(formatted_url, timeout=1).url
+        return {formatted_url, expanded_url}
+    # In case expanded URL is broken or does not exist anymore
+    except (HTTPError, ValueError, URLError):
+        pass
+    return {formatted_url}
+
+
 def main():
     try:
-        non_formatted_urls: List[Dict] = [{
-            "Type": entryTypes["note"],
-            "ContentsFormat": formats["json"],
-            "Contents": [format_url(url_.strip())]
-        } for url_ in argToList(demisto.args().get('input'))]
-        demisto.results(non_formatted_urls)
+        demisto.results(format_url(expand_url(demisto.args().get('input'))))
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute ExtractURL. Error: {str(e)}')
