@@ -14,3 +14,6 @@ on your AWS environment.
 For detailed instructions, [see the AWS Integrations Configuration Guide](https://xsoar.pan.dev/docs/reference/articles/aws-integrations---authentication).
 
 Command descriptions, input descriptions, and output descriptions are taken from the Amazon ACM documentation. For more information, see the [Amazon ACM documention](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/acm.html).
+
+---
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/aws---acm)

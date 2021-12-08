@@ -1,10 +1,7 @@
+category: IT Services
 commonfields:
   id: AWS - ACM
   version: -1
-name: AWS - ACM
-display: AWS - ACM
-category: IT Services
-description: Amazon Web Services Certificate Manager Service (ACM)
 configuration:
 - display: Role Arn
   name: roleArn
@@ -47,21 +44,22 @@ configuration:
   name: secret_key
   required: false
   type: 4
-- display: Timeout
-  name: timeout
-  additionalinfo: The time in seconds till a timeout exception is reached. You can
+- additionalinfo: The time in seconds till a timeout exception is reached. You can
     specify just the read timeout (for example 60) or also the connect timeout followed
     after a comma (for example 60,10). If a connect timeout is not specified, a default
     of 10 second will be used.
   defaultvalue: 60,10
+  display: Timeout
+  name: timeout
   required: false
   type: 0
-- display: Retries
+- additionalinfo: 'The maximum number of retry attempts when connection or throttling
+    errors are encountered. Set to 0 to disable retries. The default value is 5 and
+    the limit is 10. Note: Increasing the number of retries will increase the execution
+    time.'
+  defaultvalue: '5'
+  display: Retries
   name: retries
-  defaultvalue: 5
-  additionalinfo: "The maximum number of retry attempts when connection or throttling errors
-  are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10.
-  Note: Increasing the number of retries will increase the execution time."
   required: false
   type: 0
 - display: Trust any certificate (not secure)
@@ -72,25 +70,27 @@ configuration:
   name: proxy
   required: false
   type: 8
+description: Amazon Web Services Certificate Manager Service (ACM)
+display: AWS - ACM
+name: AWS - ACM
 script:
-  script: ''
-  type: python
   commands:
-  - name: aws-acm-describe-certificate
-    arguments:
-    - name: certificateArn
+  - arguments:
+    - description: The Amazon Resource Name (ARN) of the ACM certificate.
+      name: certificateArn
       required: true
-      description: The Amazon Resource Name (ARN) of the ACM certificate.
-    - name: region
-      description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
-      description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
-      description: An identifier for the assumed role session.
-    - name: roleSessionDuration
-      description: The duration, in seconds, of the role session. The value can range
+    - description: The AWS Region, if not specified the default region will be used.
+      name: region
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      name: roleSessionDuration
+    description: Returns detailed metadata about the specified ACM certificate.
+    name: aws-acm-describe-certificate
     outputs:
     - contextPath: AWS.ACM.Certificates.CertificateArn
       description: he Amazon Resource Name (ARN) of the certificate.
@@ -242,11 +242,10 @@ script:
       description: You can opt out of certificate transparency logging by specifying
         the DISABLED option. Opt in by specifying ENABLED.
       type: string
-    description: Returns detailed metadata about the specified ACM certificate.
-  - name: aws-acm-list-certificates
-    arguments:
-    - name: certificateStatuses
-      auto: PREDEFINED
+  - arguments:
+    - auto: PREDEFINED
+      description: Filter the certificate list by status value.
+      name: certificateStatuses
       predefined:
       - PENDING_VALIDATION
       - ISSUED
@@ -255,9 +254,9 @@ script:
       - VALIDATION_TIMED_OUT
       - REVOKED
       - FAILED
-      description: Filter the certificate list by status value.
-    - name: extendedKeyUsage
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: Specify one or more ExtendedKeyUsage extension values.
+      name: extendedKeyUsage
       predefined:
       - TLS_WEB_SERVER_AUTHENTICATION
       - TLS_WEB_CLIENT_AUTHENTICATION
@@ -271,9 +270,9 @@ script:
       - ANY
       - NONE
       - CUSTOM
-      description: Specify one or more ExtendedKeyUsage extension values.
-    - name: keyUsage
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: Specify one or more KeyUsage extension values.
+      name: keyUsage
       predefined:
       - DIGITAL_SIGNATURE
       - NON_REPUDIATION
@@ -286,9 +285,10 @@ script:
       - DECIPHER_ONLY
       - ANY
       - CUSTOM
-      description: Specify one or more KeyUsage extension values.
-    - name: keyTypes
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: Specify one or more algorithms that can be used to generate key
+        pairs.
+      name: keyTypes
       predefined:
       - RSA_2048
       - RSA_1024
@@ -296,12 +296,8 @@ script:
       - EC_prime256v1
       - EC_secp384r1
       - EC_secp521r1
-      description: Specify one or more algorithms that can be used to generate key
-        pairs.
     - auto: PREDEFINED
-      default: false
       description: The AWS Region, if not specified the default region will be used
-      isArray: false
       name: region
       predefined:
       - us-east-1
@@ -320,16 +316,18 @@ script:
       - sa-east-1
       - eu-north-1
       - eu-west-3
-      required: false
-      secret: false
-    - name: roleArn
-      description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
-      description: An identifier for the assumed role session.
-    - name: roleSessionDuration
-      description: The duration, in seconds, of the role session. The value can range
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      name: roleSessionDuration
+    description: Retrieves a list of certificate ARNs and domain names. You can request
+      that only certificates that match a specific status be listed. You can also
+      filter by specific attributes of the certificate.
+    name: aws-acm-list-certificates
     outputs:
     - contextPath: AWS.ACM.Certificates.CertificateArn
       description: Amazon Resource Name (ARN) of the certificate.
@@ -340,22 +338,16 @@ script:
       type: string
     - contextPath: AWS.ACM.Certificates.Region
       description: The AWS region were the certificate is located.
-    description: Retrieves a list of certificate ARNs and domain names. You can request
-      that only certificates that match a specific status be listed. You can also
-      filter by specific attributes of the certificate.
-  - name: aws-acm-add-tags-to-certificate
-    arguments:
-    - name: certificateArn
-      required: true
-      description: String that contains the ARN of the ACM certificate to which the
+  - arguments:
+    - description: String that contains the ARN of the ACM certificate to which the
         tag is to be applied.
-    - name: tags
+      name: certificateArn
       required: true
-      description: The key-value pair that defines the tag. The tag value is optional.
+    - description: The key-value pair that defines the tag. The tag value is optional.
+      name: tags
+      required: true
     - auto: PREDEFINED
-      default: false
       description: The AWS Region, if not specified the default region will be used
-      isArray: false
       name: region
       predefined:
       - us-east-1
@@ -374,31 +366,27 @@ script:
       - sa-east-1
       - eu-north-1
       - eu-west-3
-      required: false
-      secret: false
-    - name: roleArn
-      description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
-      description: An identifier for the assumed role session.
-    - name: roleSessionDuration
-      description: The duration, in seconds, of the role session. The value can range
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      name: roleSessionDuration
     description: Adds one or more tags to an ACM certificate.
     execution: true
-  - name: aws-acm-remove-tags-from-certificate
-    arguments:
-    - name: certificateArn
-      required: true
-      description: The ARN of the ACM Certificate with one or more tags that you want
+    name: aws-acm-add-tags-to-certificate
+  - arguments:
+    - description: The ARN of the ACM Certificate with one or more tags that you want
         to remove.
-    - name: tags
+      name: certificateArn
       required: true
-      description: The key-value pair that defines the tag to remove.
+    - description: The key-value pair that defines the tag to remove.
+      name: tags
+      required: true
     - auto: PREDEFINED
-      default: false
       description: The AWS Region, if not specified the default region will be used
-      isArray: false
       name: region
       predefined:
       - us-east-1
@@ -417,27 +405,23 @@ script:
       - sa-east-1
       - eu-north-1
       - eu-west-3
-      required: false
-      secret: false
-    - name: roleArn
-      description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
-      description: An identifier for the assumed role session.
-    - name: roleSessionDuration
-      description: The duration, in seconds, of the role session. The value can range
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      name: roleSessionDuration
     description: Remove one or more tags from an ACM certificate.
     execution: true
-  - name: aws-acm-list-tags-for-certificate
-    arguments:
-    - name: certificateArn
+    name: aws-acm-remove-tags-from-certificate
+  - arguments:
+    - description: The ARN of the ACM certificate for which you want to list the tags.
+      name: certificateArn
       required: true
-      description: The ARN of the ACM certificate for which you want to list the tags.
     - auto: PREDEFINED
-      default: false
       description: The AWS Region, if not specified the default region will be used
-      isArray: false
       name: region
       predefined:
       - us-east-1
@@ -456,16 +440,17 @@ script:
       - sa-east-1
       - eu-north-1
       - eu-west-3
-      required: false
-      secret: false
-    - name: roleArn
-      description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
-      description: An identifier for the assumed role session.
-    - name: roleSessionDuration
-      description: The duration, in seconds, of the role session. The value can range
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      name: roleSessionDuration
+    description: Lists the tags that have been applied to the ACM certificate. Use
+      the certificate's Amazon Resource Name (ARN) to specify the certificate.
+    name: aws-acm-list-tags-for-certificate
     outputs:
     - contextPath: AWS.ACM.Certificates.Tags.Key
       description: The key of the tag.
@@ -473,17 +458,12 @@ script:
     - contextPath: AWS.ACM.Certificates.Tags.Value
       description: The value of the tag.
       type: string
-    description: Lists the tags that have been applied to the ACM certificate. Use
-      the certificate's Amazon Resource Name (ARN) to specify the certificate.
-  - name: aws-acm-get-certificate
-    arguments:
-    - name: certificateArn
+  - arguments:
+    - description: The ARN of the certificate.
+      name: certificateArn
       required: true
-      description: The ARN of the certificate.
     - auto: PREDEFINED
-      default: false
       description: The AWS Region, if not specified the default region will be used
-      isArray: false
       name: region
       predefined:
       - us-east-1
@@ -504,16 +484,21 @@ script:
       - eu-west-3
       - us-gov-east-1
       - us-gov-west-1
-      required: false
-      secret: false
-    - name: roleArn
-      description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
-      description: An identifier for the assumed role session.
-    - name: roleSessionDuration
-      description: The duration, in seconds, of the role session. The value can range
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      name: roleSessionDuration
+    description: Retrieves a certificate specified by an ARN and its certificate chain
+      . The chain is an ordered list of certificates that contains the end entity
+      certificate, intermediate certificates of subordinate CAs, and the root certificate
+      in that order. The certificate and certificate chain are base64 encoded. If
+      you want to decode the certificate to see the individual fields, you can use
+      OpenSSL.
+    name: aws-acm-get-certificate
     outputs:
     - contextPath: AWS.ACM.Certificates.Certificate
       description: String that contains the ACM certificate represented by the ARN
@@ -523,15 +508,11 @@ script:
       description: The certificate chain that contains the root certificate issued
         by the certificate authority (CA).
       type: string
-    description: Retrieves a certificate specified by an ARN and its certificate chain
-      . The chain is an ordered list of certificates that contains the end entity
-      certificate, intermediate certificates of subordinate CAs, and the root certificate
-      in that order. The certificate and certificate chain are base64 encoded. If
-      you want to decode the certificate to see the individual fields, you can use
-      OpenSSL.
   dockerimage: demisto/boto3py3:1.0.0.24037
   runonce: false
+  script: ''
   subtype: python3
+  type: python
+fromversion: 5.0.0
 tests:
 - ACM-Test
-fromversion: 5.0.0
