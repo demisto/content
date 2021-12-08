@@ -8354,4 +8354,12 @@ def signal_handler_threads_dump(_sig, _frame):
 
 
 def register_signal_handler_threads_dump(signal_type=signal.SIGUSR1):
+    """
+    Function that registers the threads dump signal listener
+
+    :param signal_type: The type of the signal to register
+
+    :return: No data returned
+    :rtype: ``None``
+    """
     signal.signal(signal_type, signal_handler_threads_dump)
