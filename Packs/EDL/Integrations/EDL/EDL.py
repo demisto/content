@@ -49,14 +49,18 @@ DONT_COLLAPSE = "Don't Collapse"
 COLLAPSE_TO_CIDR = "To CIDRS"
 COLLAPSE_TO_RANGES = "To Ranges"
 
+MIMETYPE_JSON_SEQ: str = 'application/json-seq'
+MIMETYPE_JSON: str = 'application/json'
+MIMETYPE_CSV: str = 'text/csv'
+MIMETYPE_TEXT: str = 'text/plain'
+
 FORMAT_CSV: str = 'csv'
 FORMAT_TEXT: str = 'text'
 FORMAT_JSON_SEQ: str = 'json-seq'
 FORMAT_JSON: str = 'json'
-FORMAT_ARG_MWG: str = 'mwg'
-FORMAT_ARG_PANOSURL: str = 'panosurl'
-FORMAT_ARG_BLUECOAT: str = 'bluecoat'
-FORMAT_ARG_PROXYSG: str = 'proxysg'
+FORMAT_ARG_MWG = 'mwg'
+FORMAT_ARG_BLUECOAT = 'bluecoat'
+FORMAT_ARG_PROXYSG = 'proxysg'
 FORMAT_MWG: str = 'McAfee Web Gateway'
 FORMAT_PROXYSG: str = "Symantec ProxySG"
 FORMAT_XSOAR_JSON: str = 'XSOAR json'
@@ -82,6 +86,10 @@ class RequestArguments:
     CTX_CATEGORY_DEFAULT = 'bc_category'
     CTX_CATEGORY_ATTRIBUTE = 'category_attribute'
     CTX_FIELDS_TO_PRESENT = 'fields_to_present'
+    CTX_CSV_TEXT = 'csv_text'
+    CTX_SORT_FIELDS = 'sort_field'
+    CTX_SORT_ORDER = 'sort_order'
+    CTX_PROTOCOL_STRIP_KEY = 'url_protocol_stripping'
 
     FILTER_FIELDS_ON_FORMAT_TEXT = "name,type"
     FILTER_FIELDS_ON_FORMAT_MWG = "name,type,sourceBrands"
@@ -102,7 +110,11 @@ class RequestArguments:
                  mwg_type: str = 'string',
                  category_default: str = 'bc_category',
                  category_attribute: str = '',
-                 fields_to_present: str = None
+                 fields_to_present: str = None,
+                 csv_text: bool = False,
+                 sort_field: str = '',
+                 sort_order: str = '',
+                 url_protocol_stripping: bool = False,
                  ):
 
         self.query = query
@@ -110,6 +122,7 @@ class RequestArguments:
         self.limit = try_parse_integer(limit, EDL_LIMIT_ERR_MSG)
         self.offset = try_parse_integer(offset, EDL_OFFSET_ERR_MSG)
         self.url_port_stripping = url_port_stripping
+        self.url_protocol_stripping = url_protocol_stripping
         self.drop_invalids = drop_invalids
         self.collapse_ips = collapse_ips
         self.add_comment_if_empty = add_comment_if_empty
@@ -117,6 +130,9 @@ class RequestArguments:
         self.category_default = category_default
         self.category_attribute = []  # type:List
         self.fields_to_present = self.get_fields_to_present(fields_to_present)
+        self.csv_text = csv_text
+        self.sort_field = sort_field
+        self.sort_order = sort_order
 
         if category_attribute is not None:
             category_attribute_list = category_attribute.split(',')
@@ -138,6 +154,10 @@ class RequestArguments:
             self.CTX_CATEGORY_DEFAULT: self.category_default,
             self.CTX_CATEGORY_ATTRIBUTE: self.category_attribute,
             self.CTX_FIELDS_TO_PRESENT: self.fields_to_present,
+            self.CTX_CSV_TEXT: self.csv_text,
+            self.CTX_SORT_FIELDS: self.sort_field,
+            self.CTX_SORT_ORDER: self.sort_order,
+            self.CTX_PROTOCOL_STRIP_KEY: self.url_protocol_stripping
         }
 
     @classmethod
@@ -156,7 +176,11 @@ class RequestArguments:
                 mwg_type=ctx_dict.get(cls.CTX_MWG_TYPE),
                 category_default=ctx_dict.get(cls.CTX_CATEGORY_DEFAULT),
                 category_attributeself=ctx_dict.get(cls.CTX_CATEGORY_ATTRIBUTE),
-                fields_to_present=ctx_dict.get(cls.CTX_FIELDS_TO_PRESENT)
+                fields_to_present=ctx_dict.get(cls.CTX_FIELDS_TO_PRESENT),
+                csv_text=ctx_dict.get(cls.CTX_CSV_TEXT),
+                sort_field=ctx_dict.get(cls.CTX_SORT_FIELDS),
+                sort_order=ctx_dict.get(cls.CTX_SORT_ORDER),
+                url_protocol_stripping=ctx_dict.get(cls.CTX_PROTOCOL_STRIP_KEY),
             )
         )
 
@@ -171,18 +195,17 @@ class RequestArguments:
             FORMAT_CSV: self.FILTER_FIELDS_ON_FORMAT_CSV,
             FORMAT_JSON: self.FILTER_FIELDS_ON_FORMAT_JSON,
             FORMAT_XSOAR_JSON: self.FILTER_FIELDS_ON_FORMAT_XSOAR_JSON,
+            FORMAT_JSON_SEQ: self.FILTER_FIELDS_ON_FORMAT_JSON,
+            FORMAT_XSOAR_JSON_SEQ: self.FILTER_FIELDS_ON_FORMAT_XSOAR_JSON,
             FORMAT_MWG: self.FILTER_FIELDS_ON_FORMAT_MWG,
             FORMAT_PROXYSG: self.FILTER_FIELDS_ON_FORMAT_PROXYSG
         }
-        if self.out_format in [FORMAT_CSV, FORMAT_JSON, FORMAT_XSOAR_JSON] and fields_to_present:
+        if self.out_format in [FORMAT_CSV, FORMAT_JSON, FORMAT_XSOAR_JSON, FORMAT_JSON_SEQ, FORMAT_XSOAR_JSON_SEQ] and\
+                fields_to_present:
             if 'all' in argToList(fields_to_present):
-                fields_for_format[FORMAT_CSV] = None
-                fields_for_format[FORMAT_JSON] = None
-                fields_for_format[FORMAT_XSOAR_JSON] = None
+                return None
             else:
-                fields_for_format[FORMAT_CSV] = fields_to_present
-                fields_for_format[FORMAT_JSON] = fields_to_present
-                fields_for_format[FORMAT_XSOAR_JSON] = fields_to_present
+                return fields_to_present
 
         return fields_for_format.get(self.out_format, self.FILTER_FIELDS_ON_FORMAT_TEXT)
 
@@ -220,19 +243,27 @@ def create_new_edl(request_args: RequestArguments) -> str:
         size=PAGE_SIZE,
         limit=limit
     )
-    while True:
-        current_limit = limit
-        indicator_searcher.limit = current_limit
-        new_iocs = find_indicators_to_limit(indicator_searcher, request_args)
-        if request_args.out_format == 'text':
+    if request_args.out_format == 'text':
+        current_limit = int(limit*1)
+        while True:
+            indicator_searcher.limit = current_limit
+            new_iocs = find_indicators_to_limit(indicator_searcher, request_args)
             new_iocs = text_format(new_iocs, request_args)
+            edl_size = 0
+            new_iocs.seek(0)
+            for count, line in enumerate(new_iocs):
+                edl_size = count
             # continue searching iocs if 1) iocs was truncated or 2) got all available iocs
-            #     if len(num_formatted_iocs) >= len(iocs) or indicator_searcher.total <= current_limit:
-            #         break
-        else:
-            break
-    new_iocs.seek(0)
-    return new_iocs.read()
+            if edl_size + 1 >= current_limit or indicator_searcher.total <= current_limit:
+                break
+            else:
+                current_limit = int(current_limit*1.1)
+        new_iocs.seek(0)
+        return new_iocs.read() + '\n' + str(edl_size)
+    else:
+        new_iocs = find_indicators_to_limit(indicator_searcher, request_args)
+        new_iocs.seek(0)
+        return new_iocs.read()
 
 
 def replace_field_name_to_output_format(fields: str):
@@ -275,8 +306,8 @@ def find_indicators_to_limit(indicator_searcher: IndicatorsSearcher, request_arg
                     f.write(create_mwg_out_format(ioc, request_args.mwg_type, headers_was_writen))
                     headers_was_writen = True
 
-                if request_args.out_format in [FORMAT_JSON, FORMAT_XSOAR_JSON]:
-                    xsoar = True if request_args.out_format == FORMAT_XSOAR_JSON else False
+                if request_args.out_format in [FORMAT_JSON, FORMAT_XSOAR_JSON, FORMAT_JSON_SEQ, FORMAT_XSOAR_JSON_SEQ]:
+                    xsoar = True if request_args.out_format in [FORMAT_XSOAR_JSON, FORMAT_XSOAR_JSON_SEQ] else False
                     f.write(json_format(list_fields, ioc, xsoar))
 
                 if request_args.out_format == FORMAT_TEXT:
@@ -286,10 +317,11 @@ def find_indicators_to_limit(indicator_searcher: IndicatorsSearcher, request_arg
                 if request_args.out_format == FORMAT_CSV:
                     f.write(csv_format(headers_was_writen, list_fields, ioc, request_args.fields_to_present))
                     headers_was_writen = True
+
     except Exception as e:
         demisto.debug(e)
 
-    if request_args.out_format in [FORMAT_JSON, FORMAT_XSOAR_JSON]:
+    if request_args.out_format in [FORMAT_JSON, FORMAT_XSOAR_JSON, FORMAT_JSON_SEQ, FORMAT_XSOAR_JSON_SEQ]:
         ff = tempfile.TemporaryFile(mode='w+t')
         f.seek(2)
         ff.write('[' + f.read() + ']')
@@ -377,51 +409,6 @@ def add_indicator_to_category(indicator, category, files_by_category):
         files_by_category[category].write(indicator + '\n')
 
     return files_by_category
-
-
-def panos_url_formatting(indicator_data: dict, drop_invalids: bool, strip_port: bool):
-    # only format URLs and Domains
-    indicator = indicator_data.get('value')
-    if not indicator:
-        return ''
-    if indicator_data.get('indicator_type') in ['URL', 'Domain', 'DomainGlob']:
-        indicator = indicator.lower()
-
-        # remove initial protocol - http/https/ftp/ftps etc
-        indicator = _PROTOCOL_REMOVAL.sub('', indicator)
-
-        indicator_with_port = indicator
-        # remove port from indicator - from demisto.com:369/rest/of/path -> demisto.com/rest/of/path
-        indicator = _PORT_REMOVAL.sub(r'\g<1>', indicator)
-        # check if removing the port changed something about the indicator
-        if indicator != indicator_with_port and not strip_port:
-            # if port was in the indicator and strip_port param not set - ignore the indicator
-            return ''
-
-        with_invalid_tokens_indicator = indicator
-        # remove invalid tokens from indicator
-        indicator = _INVALID_TOKEN_REMOVAL.sub('*', indicator)
-
-        # check if the indicator held invalid tokens
-        if with_invalid_tokens_indicator != indicator:
-            # invalid tokens in indicator- if drop_invalids is set - ignore the indicator
-            if drop_invalids:
-                return ''
-
-            # check if after removing the tokens the indicator is too broad if so - ignore
-            # example of too broad terms: "*.paloalto", "*.*.paloalto", "*.paloalto:60"
-            hostname = indicator
-            if '/' in hostname:
-                hostname, _ = hostname.split('/', 1)
-
-            if _BROAD_PATTERN.match(hostname) is not None:
-                return ''
-
-        # for PAN-OS "*.domain.com" does not match "domain.com" - we should provide both
-        if indicator.startswith('*.'):
-            return (indicator[2:]) + '\n' + indicator + '\n'
-
-    return indicator + '\n'
 
 
 def csv_format(headers_was_writen, list_fields, ioc, headers):
@@ -550,16 +537,17 @@ def text_format(iocs, request_args: RequestArguments) -> Union[
             continue
         ioc_type = ioc.get('indicator_type')
         # protocol stripping
-        indicator = _PROTOCOL_REMOVAL.sub('', indicator)
+        if request_args.url_protocol_stripping:
+            indicator = _PROTOCOL_REMOVAL.sub('', indicator)
 
         if ioc_type not in [FeedIndicatorType.IP, FeedIndicatorType.IPv6,
                             FeedIndicatorType.CIDR, FeedIndicatorType.IPv6CIDR]:
-            # Port stripping
-            indicator_with_port = indicator
-            # remove port from indicator - from demisto.com:369/rest/of/path -> demisto.com/rest/of/path
-            indicator = _PORT_REMOVAL.sub(_URL_WITHOUT_PORT, indicator)
+            indicator_without_port = _PORT_REMOVAL.sub(_URL_WITHOUT_PORT, indicator)
+            if request_args.url_port_stripping:
+                # remove port from indicator - from demisto.com:369/rest/of/path -> demisto.com/rest/of/path
+                indicator = indicator_without_port
             # check if removing the port changed something about the indicator
-            if indicator != indicator_with_port and not request_args.url_port_stripping:
+            elif indicator != indicator_without_port and request_args.drop_invalids:
                 # if port was in the indicator and url_port_stripping param not set - ignore the indicator
                 continue
             # Reformatting to PAN-OS URL format
@@ -602,6 +590,21 @@ def text_format(iocs, request_args: RequestArguments) -> Union[
             formatted_indicators.write(str(ip)+'\n')
 
     return formatted_indicators
+
+
+def get_outbound_mimetype(request_args: RequestArguments) -> str:
+    """Returns the mimetype of the export_iocs"""
+    if request_args.out_format == [FORMAT_JSON, FORMAT_XSOAR_JSON]:
+        return MIMETYPE_JSON
+
+    elif request_args.out_format == FORMAT_CSV and not request_args.csv_text:
+        return MIMETYPE_CSV
+
+    elif request_args.out_format in [FORMAT_JSON_SEQ, FORMAT_XSOAR_JSON_SEQ]:
+        return MIMETYPE_JSON_SEQ
+
+    else:
+        return MIMETYPE_TEXT
 
 
 def get_edl_on_demand():
@@ -684,11 +687,11 @@ def route_edl() -> Response:
         edl_size = edl.count('\n') + 1  # add 1 as last line doesn't have a \n
     if len(edl) == 0 and request_args.add_comment_if_empty:
         edl = '# Empty EDL'
-    # mimetype = get_mimetype(request_args)
+    mimetype = get_outbound_mimetype(request_args)
     max_age = ceil((datetime.now() - dateparser.parse(cache_refresh_rate)).total_seconds())  # type: ignore[operator]
     demisto.debug(f'Returning edl of size: [{edl_size}], created: [{created}], query time seconds: [{query_time}],'
                   f' max age: [{max_age}], etag: [{etag}]')
-    resp = Response(edl, status=200, mimetype='text/plain', headers=[
+    resp = Response(edl, status=200, mimetype=mimetype, headers=[
         ('X-EDL-Created', created.isoformat()),
         ('X-EDL-Query-Time-Secs', "{:.3f}".format(query_time)),
         ('X-EDL-Size', str(edl_size)),
@@ -714,21 +717,28 @@ def get_request_args(request_args: dict, params: dict) -> RequestArguments:
     offset = try_parse_integer(request_args.get('s', 0), EDL_OFFSET_ERR_MSG)
     out_format = request.args.get('v', params.get('format', 'text'))
     query = request_args.get('q', params.get('indicators_query') or '')
-    strip_port = request_args.get('sp', params.get('url_port_stripping') or False)
-    drop_invalids = request_args.get('di', params.get('drop_invalids') or False)
-    collapse_ips = request_args.get('tr', params.get('collapse_ips', DONT_COLLAPSE))
-    add_comment_if_empty = request_args.get('ce', params.get('add_comment_if_empty', True))
     mwg_type = request.args.get('t', params.get('mwg_type', "string"))
+    strip_port = request_args.get('sp', params.get('url_port_stripping') or False)
+    strip_protocol = request_args.get('pr', params.get('url_protocol_stripping') or False)
+    drop_invalids = request_args.get('di', params.get('drop_invalids') or False)
     category_default = request.args.get('cd', params.get('category_default', 'bc_category'))
     category_attribute = request.args.get('ca', params.get('category_attribute', ''))
-    fields_to_present = request.args.get('f', params.get('fields_filter', ''))
+    collapse_ips = request_args.get('tr', params.get('collapse_ips', DONT_COLLAPSE))
+    csv_text = request.args.get('tx', params.get('csv_text', False))
+    sort_field = request.args.get('sf', params.get('sort_field'))
+    sort_order = request.args.get('so', params.get('sort_order'))
+    add_comment_if_empty = request_args.get('ce', params.get('add_comment_if_empty', True))
 
+    fields_to_present = request.args.get('f', params.get('fields_filter', ''))
 
     # handle flags
     if drop_invalids == '':
         drop_invalids = True
 
     if strip_port == '':
+        strip_port = True
+
+    if strip_protocol == '':
         strip_port = True
 
     if collapse_ips not in [DONT_COLLAPSE, COLLAPSE_TO_CIDR, COLLAPSE_TO_RANGES]:
@@ -780,7 +790,11 @@ def get_request_args(request_args: dict, params: dict) -> RequestArguments:
                             mwg_type,
                             category_default,
                             category_attribute,
-                            fields_to_present
+                            fields_to_present,
+                            csv_text,
+                            sort_field,
+                            sort_order,
+                            strip_protocol
                             )
 
 
@@ -826,6 +840,7 @@ def update_edl_command(args: Dict, params: Dict):
     query = args.get('query', '')
     collapse_ips = args.get('collapse_ips', DONT_COLLAPSE)
     url_port_stripping = get_bool_arg_or_param(args, params, 'url_port_stripping')
+    strip_protocol = get_bool_arg_or_param(args, params, 'url_protocol_stripping')
     drop_invalids = get_bool_arg_or_param(args, params, 'drop_invalids')
     add_comment_if_empty = get_bool_arg_or_param(args, params, 'add_comment_if_empty')
     offset = try_parse_integer(args.get('offset', 0), EDL_OFFSET_ERR_MSG)
@@ -834,6 +849,9 @@ def update_edl_command(args: Dict, params: Dict):
     category_attribute = params.get('category_attribute', '')
     fields_to_present = params.get('fields_filter', '')
     out_format = params.get('format', 'text')
+    csv_text = args.get('csv_text') == 'True'
+    sort_field = args.get('sort_field')
+    sort_order = args.get('sort_order')
 
     if params.get('use_legacy_query'):
         # workaround for "msgpack: invalid code" error
@@ -850,7 +868,12 @@ def update_edl_command(args: Dict, params: Dict):
                                     mwg_type,
                                     category_default,
                                     category_attribute,
-                                    fields_to_present)
+                                    fields_to_present,
+                                    csv_text,
+                                    sort_field,
+                                    sort_order,
+                                    strip_protocol)
+
     ctx = request_args.to_context_json()
     ctx[EDL_ON_DEMAND_KEY] = True
     set_integration_context(ctx)
@@ -864,6 +887,7 @@ def initialize_edl_context(params: dict):
     query = params.get('indicators_query', '')
     collapse_ips = params.get('collapse_ips', DONT_COLLAPSE)
     url_port_stripping = params.get('url_port_stripping', False)
+    url_protocol_stripping = params.get('url_port_stripping', False)
     drop_invalids = params.get('drop_invalids', False)
     add_comment_if_empty = params.get('add_comment_if_empty', True)
     mwg_type = params.get('mwg_type', "string")
@@ -871,6 +895,9 @@ def initialize_edl_context(params: dict):
     category_attribute = params.get('category_attribute', '')
     fields_to_present = params.get('fields_filter', '')
     out_format = params.get('format', 'text')
+    csv_text = params.get('csv_text') == 'True'
+    sort_field = params.get('sort_field')
+    sort_order = params.get('sort_order')
     if params.get('use_legacy_query'):
         # workaround for "msgpack: invalid code" error
         fields_to_present = 'use_legacy_query'
@@ -886,8 +913,12 @@ def initialize_edl_context(params: dict):
                                     mwg_type,
                                     category_default,
                                     category_attribute,
-                                    fields_to_present
-                                    )
+                                    fields_to_present,
+                                    csv_text,
+                                    sort_field,
+                                    sort_order,
+                                    url_protocol_stripping)
+
     EDL_ON_DEMAND_CACHE_PATH = demisto.uniqueFile()
     ctx = request_args.to_context_json()
     ctx[EDL_ON_DEMAND_KEY] = True
