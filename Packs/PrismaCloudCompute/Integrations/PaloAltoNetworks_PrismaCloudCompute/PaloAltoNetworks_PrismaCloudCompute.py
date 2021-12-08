@@ -852,7 +852,6 @@ def main():
     verify_certificate = not params.get('insecure', False)
     cert = params.get('certificate')
     proxy = params.get('proxy', False)
-    handle_proxy()
 
     # If checked to verify and given a certificate, save the certificate as a temp file
     # and set the path to the requests client
