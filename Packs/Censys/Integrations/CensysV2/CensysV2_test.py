@@ -3,7 +3,6 @@ import json
 import io
 from CensysV2 import Client, censys_view_command, censys_search_command
 import pytest
-import requests_mock
 
 from CommonServerPython import DemistoException
 
