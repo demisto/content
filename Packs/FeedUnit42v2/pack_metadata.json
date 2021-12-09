@@ -1,6 +1,6 @@
 {
     "name": "Unit42 v2 Feed",
-    "description": "Unit42 feed of published IOCs which contains malicious indicators.",
+    "description": "Unit 42 feed of published IOCs which contains malicious indicators.",
     "support": "xsoar",
     "currentVersion": "1.0.5",
     "author": "Cortex XSOAR",
