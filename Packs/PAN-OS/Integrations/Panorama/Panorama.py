@@ -632,6 +632,15 @@ def panorama_push_to_device_group(args: dict):
     command: str = ''
     command += f'<device-group><entry name="{DEVICE_GROUP}"/></device-group>'
 
+    vsys_name = args.get('vsys_name')
+    serial_number = args.get('serial_number')
+    # Check that either both are specified either both are empty.
+    if bool(vsys_name) != bool(serial_number):
+        raise Exception('Cannot preform virtual system commit without a serial_number and a vsys_name')
+
+    if vsys_name and serial_number:
+        command = f'<device-group><entry name="{DEVICE_GROUP}"/><devices><entry name="{serial_number}">' \
+                  f'<vsys><member>{vsys_name}</member></vsys></entry></devices></device-group>'
     if argToBoolean(args.get('validate-only', 'false')):
         command += '<validate-only>yes</validate-only>'
     if not argToBoolean(args.get('include-template', 'true')):
