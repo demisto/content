@@ -98,3 +98,50 @@ EXPECTED_CREATE_GROUP = {
         "Visibility": None
     }
 }
+EXPECTED_LIST_MEMBERS = [
+            {
+                "ID": "ID1",
+                "BusinessPhones": [
+
+                ],
+                "DisplayName": "mock1",
+                "GivenName": "mock1",
+                "JobTitle": "test",
+                "Mail": "mock1@demistodev.onmicrosoft.com",
+                "MobilePhone": "None",
+                "OfficeLocation": "None",
+                "PreferredLanguage": "en-US",
+                "Surname": "mock1",
+                "UserPrincipalName": "mock1@demistodev.onmicrosoft.com"
+            },
+            {
+                "ID": "ID2",
+                "BusinessPhones": [
+
+                ],
+                "DisplayName": "mock2",
+                "GivenName": "mock2",
+                "JobTitle": "None",
+                "Mail": "mock2@demistodev.onmicrosoft.com",
+                "MobilePhone": "050505050",
+                "OfficeLocation": "None",
+                "PreferredLanguage": "en-US",
+                "Surname": "mock2",
+                "UserPrincipalName": "mock2@demistodev.onmicrosoft.com"
+            },
+            {
+                "ID": "ID3",
+                "BusinessPhones": [
+
+                ],
+                "DisplayName": "mock3",
+                "GivenName": "mock3",
+                "JobTitle": "None",
+                "Mail": "None",
+                "MobilePhone": "None",
+                "OfficeLocation": "None",
+                "PreferredLanguage": "None",
+                "Surname": "mock3",
+                "UserPrincipalName": "mock3@demistodev.onmicrosoft.com"
+            }
+        ]
