@@ -27,8 +27,9 @@ class Email(object):
         except UnicodeDecodeError as e:
             demisto.info(f'Failed parsing mail from bytes: [{e}]\n{traceback.format_exc()}.'
                          '\nWill replace backslash and try to parse again')
-            message_bytes = message_bytes.replace(b'\\U', b'\\\\U').replace(b'\\u', b'\\\\u')
-            email_object = parse_from_bytes(message_bytes)
+
+            email_object = self.handle_message_slashes(message_bytes)
+
         self.id = id_
         self.to = [mail_addresses for _, mail_addresses in email_object.to]
         self.cc = [mail_addresses for _, mail_addresses in email_object.cc]
@@ -46,6 +47,36 @@ class Email(object):
         self.raw_json = self.generate_raw_json()
         self.save_eml_file = save_file
         self.labels = self._generate_labels()
+
+    @staticmethod
+    def handle_message_slashes(message_bytes: bytes):
+        """
+        Handles the case where message bytes containing "\U" or "\u" which needs escaping
+        Input example #1:
+            message_bytes = b'\\U'
+        Output example #1 (added escaping for the slash):
+            b'\\\\U'
+
+        Input example #2:
+            message_bytes = b'\\\\U'
+        Output example #2 (no need to add escaping since the number of slashes is even):
+            b'\\\\U'
+
+        Returns:
+            The message bytes after escaping
+        """
+
+        regex = re.compile(rb'\\+U', flags=re.IGNORECASE)
+
+        def escape_message_bytes(m):
+            s = m.group(0)
+            if len(s) % 2 == 0:
+                # The number of slashes prior to 'u' is odd - need to add one backslash
+                s = b'\\' + s
+            return s
+
+        message_bytes = regex.sub(escape_message_bytes, message_bytes)
+        return message_bytes
 
     def _generate_labels(self) -> List[Dict[str, str]]:
         """
