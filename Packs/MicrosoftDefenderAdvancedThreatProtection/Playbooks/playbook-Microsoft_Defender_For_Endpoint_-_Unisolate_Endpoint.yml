@@ -1,23 +1,22 @@
 id: Microsoft Defender For Endpoint - Unisolate Endpoint
-version: -1
+version: 14
+vcShouldKeepItemLegacyProdMachine: false
 name: Microsoft Defender For Endpoint - Unisolate Endpoint
-description: "This playbook will auto un-isolate endpoints by the *device ID that\
-  \ was provided in the playbook.\n\n*Hostname is not recognized as a device ID. \n\
-  For more information, you can use the following commands:\n!microsoft-atp-get-machine-details\n\
-  !microsoft-atp-get-machines"
+description: This playbook will auto unisolate endpoints through Microsoft Defender
+  For Endpoint by using Hostname, IP, or Device ID associated with the asset you wish
+  to block.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 1112fa0f-1c86-4685-8098-0d3ba8c57a33
+    taskid: f9d910fa-6833-4a21-85cb-06a5d1bfcfce
     type: start
     task:
-      id: 1112fa0f-1c86-4685-8098-0d3ba8c57a33
+      id: f9d910fa-6833-4a21-85cb-06a5d1bfcfce
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -26,7 +25,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": -310
+          "y": -430
         }
       }
     note: false
@@ -38,10 +37,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: c35d8f43-f558-4876-81c6-5b8f34707090
+    taskid: 5716f9b9-d904-4ffd-8d95-bfc68b484f07
     type: condition
     task:
-      id: c35d8f43-f558-4876-81c6-5b8f34707090
+      id: 5716f9b9-d904-4ffd-8d95-bfc68b484f07
       version: -1
       name: Is Microsoft Defender For Endpoint Integration Enabled?
       description: Returns 'yes' if the integration brand is available. Otherwise
@@ -67,7 +66,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": -165
+          "y": -285
         }
       }
     note: false
@@ -79,22 +78,21 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 897d4afb-051e-464c-85e1-407d56a9ecd7
+    taskid: e05ad26a-f769-482c-8525-43956fbe657e
     type: title
     task:
-      id: 897d4afb-051e-464c-85e1-407d56a9ecd7
+      id: e05ad26a-f769-482c-8525-43956fbe657e
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2090
+          "y": 1620
         }
       }
     note: false
@@ -106,10 +104,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: aa5fa5df-f8bf-4192-8e6c-13040806ecac
+    taskid: e09df2a6-5bc1-4e12-8170-2d7cab85a46c
     type: condition
     task:
-      id: aa5fa5df-f8bf-4192-8e6c-13040806ecac
+      id: e09df2a6-5bc1-4e12-8170-2d7cab85a46c
       version: -1
       name: Is there Device ID?
       description: Is there Device ID?
@@ -134,7 +132,7 @@ tasks:
       {
         "position": {
           "x": 330,
-          "y": 10
+          "y": -100
         }
       }
     note: false
@@ -146,10 +144,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 5e61aaa8-46ad-42d3-8a66-468d48adca90
+    taskid: 127367c3-f9a4-4184-8198-4d41183e990f
     type: regular
     task:
-      id: 5e61aaa8-46ad-42d3-8a66-468d48adca90
+      id: 127367c3-f9a4-4184-8198-4d41183e990f
       version: -1
       name: Get device info
       description: Get a machine's details by its identity.
@@ -159,8 +157,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
-      - "26"
+      - "31"
     scriptarguments:
       machine_id:
         complex:
@@ -177,7 +174,7 @@ tasks:
       {
         "position": {
           "x": 330,
-          "y": 200
+          "y": 100
         }
       }
     note: false
@@ -189,12 +186,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 1594d6d8-796a-4882-89e6-5a2ec66f5557
+    taskid: ed776d4f-060c-444f-846d-d07748b26de6
     type: condition
     task:
-      id: 1594d6d8-796a-4882-89e6-5a2ec66f5557
+      id: ed776d4f-060c-444f-846d-d07748b26de6
       version: -1
-      name: Is the Device Active?
+      name: Is The Device Active?
       description: Is the device ready for isolation?
       type: condition
       iscommand: false
@@ -203,7 +200,7 @@ tasks:
       '#default#':
       - "2"
       "yes":
-      - "7"
+      - "32"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -213,12 +210,14 @@ tasks:
             value:
               simple: MicrosoftATP.UnisolateList
             iscontext: true
+          right:
+            value: {}
           ignorecase: true
     view: |-
       {
         "position": {
-          "x": 750,
-          "y": 1260
+          "x": 1180,
+          "y": 695
         }
       }
     note: false
@@ -230,12 +229,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: e9346b59-32c2-4661-800a-2270d0dee5e6
+    taskid: d82be97d-6429-43d9-8acb-a054c091f3eb
     type: regular
     task:
-      id: e9346b59-32c2-4661-800a-2270d0dee5e6
+      id: d82be97d-6429-43d9-8acb-a054c091f3eb
       version: -1
-      name: Unisolate endpoint
+      name: Unisolate Endpoint
       description: Undo an isolation of a machine.
       script: '|||microsoft-atp-unisolate-machine'
       type: regular
@@ -254,8 +253,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 750,
-          "y": 1510
+          "x": 1180,
+          "y": 1045
         }
       }
     note: false
@@ -267,10 +266,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 217bb546-1fce-484c-8640-5e194e9aea9b
+    taskid: 97b52579-d382-4054-8efb-50c10002f9dd
     type: condition
     task:
-      id: 217bb546-1fce-484c-8640-5e194e9aea9b
+      id: 97b52579-d382-4054-8efb-50c10002f9dd
       version: -1
       name: Check if the Unisolate command succeeded
       description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
@@ -292,8 +291,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 750,
-          "y": 1680
+          "x": 1180,
+          "y": 1210
         }
       }
     note: false
@@ -305,12 +304,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 66575073-bc83-433b-88bc-e83170e8b117
+    taskid: e080dd2a-b70a-4fbc-8cb3-caa10bc4cdec
     type: regular
     task:
-      id: 66575073-bc83-433b-88bc-e83170e8b117
+      id: e080dd2a-b70a-4fbc-8cb3-caa10bc4cdec
       version: -1
-      name: Print a warning to the war room - Device/s already unisolated
+      name: Print a warning to the war room - Device already unisolated
       description: Prints text to war room (Markdown supported)
       scriptName: Print
       type: regular
@@ -339,14 +338,14 @@ tasks:
               prefix:
                 value:
                   simple: |
-                    The un-isolate action did not succeed. Please validate your input or check if the machine is already in a non-isolated state. The list of the devices.
+                    The un-isolate action did not succeed. Please validate your input or check if the machine is already in a non-isolated state. Device ID list:
               suffix: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 750,
-          "y": 1920
+          "x": 1180,
+          "y": 1450
         }
       }
     note: false
@@ -358,10 +357,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 172d1833-d5a5-44ca-8cf8-40b7bd2db400
+    taskid: fee89135-4019-46e2-8011-0d45ccb1ccb2
     type: regular
     task:
-      id: 172d1833-d5a5-44ca-8cf8-40b7bd2db400
+      id: fee89135-4019-46e2-8011-0d45ccb1ccb2
       version: -1
       name: Set Unisolate list
       description: |-
@@ -376,7 +375,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
+      - "5"
     scriptarguments:
       append:
         simple: "true"
@@ -400,8 +399,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 750,
-          "y": 890
+          "x": 1180,
+          "y": 530
         }
       }
     note: false
@@ -413,12 +412,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 1e5e27c8-c973-4a75-8a43-e6ebc88e49e4
+    taskid: 9d32cb38-f88a-473d-8e5d-02885e958128
     type: regular
     task:
-      id: 1e5e27c8-c973-4a75-8a43-e6ebc88e49e4
+      id: 9d32cb38-f88a-473d-8e5d-02885e958128
       version: -1
-      name: Set non-unisolate list
+      name: Set Inactive Device list
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
@@ -431,7 +430,6 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
       - "13"
     scriptarguments:
       append:
@@ -457,7 +455,7 @@ tasks:
       {
         "position": {
           "x": 750,
-          "y": 1060
+          "y": 530
         }
       }
     note: false
@@ -469,10 +467,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 78f40a23-1486-4f59-8b67-a075ee3e8912
+    taskid: 5d184293-53f5-4545-82b4-078e6e0bab66
     type: regular
     task:
-      id: 78f40a23-1486-4f59-8b67-a075ee3e8912
+      id: 5d184293-53f5-4545-82b4-078e6e0bab66
       version: -1
       name: Print those that can't be unisolated as  are not active
       description: Prints text to war room (Markdown supported)
@@ -492,8 +490,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 330,
-          "y": 1510
+          "x": 750,
+          "y": 1450
         }
       }
     note: false
@@ -505,12 +503,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 8f627507-152c-4291-82f3-d1eba4081600
+    taskid: 505f3eac-974c-4d87-86e8-3958eb0e30d4
     type: condition
     task:
-      id: 8f627507-152c-4291-82f3-d1eba4081600
+      id: 505f3eac-974c-4d87-86e8-3958eb0e30d4
       version: -1
-      name: Are there non-active devices?
+      name: Is There Inactive Device?
       description: Are there any unactive devices?
       type: condition
       iscommand: false
@@ -529,12 +527,14 @@ tasks:
             value:
               simple: MicrosoftATP.NonUnisolateList
             iscontext: true
+          right:
+            value: {}
           ignorecase: true
     view: |-
       {
         "position": {
-          "x": 330,
-          "y": 1260
+          "x": 750,
+          "y": 695
         }
       }
     note: false
@@ -546,12 +546,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 1cd8f18c-9034-4576-85ae-a4dbed8714c4
+    taskid: 08261d13-dd3f-4b84-8779-d3a7b2a22e59
     type: regular
     task:
-      id: 1cd8f18c-9034-4576-85ae-a4dbed8714c4
+      id: 08261d13-dd3f-4b84-8779-d3a7b2a22e59
       version: -1
-      name: Print incorrect Device IDs
+      name: Print incorrect Device ID
       description: Prints text to war room (Markdown supported)
       scriptName: Print
       type: regular
@@ -562,15 +562,14 @@ tasks:
       - "2"
     scriptarguments:
       value:
-        simple: "Please note that the following IDs are incorrect. No action was taken\
-          \ on the following Device IDs: \n${MicrosoftATP.IncorrectIDs}\n${MicrosoftATP.IncorrectIPs}\n\
-          ${MicrosoftATP.IncorrectHostnames}"
+        simple: "Please note that the following IDs are incorrect. No action was taken
+          on the following Device ID: \n${MicrosoftATP.IncorrectIDs}\n${MicrosoftATP.IncorrectIPs}\n${MicrosoftATP.IncorrectHostnames}"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 330,
-          "y": 1060
+          "y": 1450
         }
       }
     note: false
@@ -582,12 +581,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: ed45441e-bacb-4cde-8ef7-35ef88531b1a
+    taskid: 1757b5c4-0a1b-4fa9-8106-8369d732c17f
     type: regular
     task:
-      id: ed45441e-bacb-4cde-8ef7-35ef88531b1a
+      id: 1757b5c4-0a1b-4fa9-8106-8369d732c17f
       version: -1
-      name: Set Incorrect IPs
+      name: Set Incorrect IP
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
@@ -620,7 +619,7 @@ tasks:
       {
         "position": {
           "x": 330,
-          "y": 895
+          "y": 1220
         }
       }
     note: false
@@ -632,12 +631,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 43a3ec30-009a-4a8e-848b-a92b76c93594
+    taskid: e4946b41-ec64-4883-818c-fa254c69c36c
     type: regular
     task:
-      id: 43a3ec30-009a-4a8e-848b-a92b76c93594
+      id: e4946b41-ec64-4883-818c-fa254c69c36c
       version: -1
-      name: Set Incorrect Hostnames
+      name: Set Incorrect Hostname
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
@@ -674,7 +673,7 @@ tasks:
       {
         "position": {
           "x": 330,
-          "y": 750
+          "y": 1045
         }
       }
     note: false
@@ -686,12 +685,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: fe1f4fa7-16a9-4d4f-80ac-71247228b29e
+    taskid: ca909de6-b90a-4ded-81b1-2195f6504ce4
     type: regular
     task:
-      id: fe1f4fa7-16a9-4d4f-80ac-71247228b29e
+      id: ca909de6-b90a-4ded-81b1-2195f6504ce4
       version: -1
-      name: Set Incorrect IDs
+      name: Set Incorrect ID
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
@@ -728,7 +727,7 @@ tasks:
       {
         "position": {
           "x": 330,
-          "y": 585
+          "y": 695
         }
       }
     note: false
@@ -740,12 +739,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: dd6b9a82-8395-4b9d-8f40-b6d2d24321a8
+    taskid: 1a7c9aed-209c-46ca-82d3-0aaadf72d82d
     type: condition
     task:
-      id: dd6b9a82-8395-4b9d-8f40-b6d2d24321a8
+      id: 1a7c9aed-209c-46ca-82d3-0aaadf72d82d
       version: -1
-      name: Check if there are any incorrect device IDs
+      name: Check if there is any provided incorrect info
       description: Check if there are any incorrect device IDs
       type: condition
       iscommand: false
@@ -777,6 +776,8 @@ tasks:
                 transformers:
                 - operator: uniq
             iscontext: true
+          right:
+            value: {}
         - operator: isNotEmpty
           left:
             value:
@@ -817,7 +818,7 @@ tasks:
       {
         "position": {
           "x": 330,
-          "y": 410
+          "y": 530
         }
       }
     note: false
@@ -829,10 +830,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: f60f0398-3a28-4fd6-8db8-4d89bcc037c4
+    taskid: ba113517-e5f4-4cb7-841e-c607faf23db1
     type: regular
     task:
-      id: f60f0398-3a28-4fd6-8db8-4d89bcc037c4
+      id: ba113517-e5f4-4cb7-841e-c607faf23db1
       version: -1
       name: Get Device Info
       description: Retrieves a collection of machines that have communicated with
@@ -843,8 +844,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "26"
-      - "10"
+      - "31"
     scriptarguments:
       ip:
         complex:
@@ -860,7 +860,7 @@ tasks:
       {
         "position": {
           "x": 750,
-          "y": 200
+          "y": 100
         }
       }
     note: false
@@ -872,10 +872,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: dc75c489-59ba-4e26-85be-ff748104cffa
+    taskid: 7f4502a3-728e-40e4-8463-0ec54a757d46
     type: condition
     task:
-      id: dc75c489-59ba-4e26-85be-ff748104cffa
+      id: 7f4502a3-728e-40e4-8463-0ec54a757d46
       version: -1
       name: Is there a Device IP?
       description: Is there a Device IP?
@@ -902,7 +902,7 @@ tasks:
       {
         "position": {
           "x": 750,
-          "y": 10
+          "y": -100
         }
       }
     note: false
@@ -914,10 +914,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 8d442860-2c81-49eb-8813-9f485be83f6d
+    taskid: 29362ee0-744d-4e35-8e87-84eb92f5d804
     type: condition
     task:
-      id: 8d442860-2c81-49eb-8813-9f485be83f6d
+      id: 29362ee0-744d-4e35-8e87-84eb92f5d804
       version: -1
       name: Is there a  Hostname?
       description: Is there a Device Hostname?
@@ -944,7 +944,7 @@ tasks:
       {
         "position": {
           "x": 1170,
-          "y": 10
+          "y": -100
         }
       }
     note: false
@@ -956,10 +956,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 0b2983dc-39c6-46dc-83ee-353765e50b07
+    taskid: 773f97b0-f899-4286-8941-7da337086c7f
     type: regular
     task:
-      id: 0b2983dc-39c6-46dc-83ee-353765e50b07
+      id: 773f97b0-f899-4286-8941-7da337086c7f
       version: -1
       name: Get Device Info
       description: Retrieves a collection of machines that have communicated with
@@ -970,8 +970,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
-      - "26"
+      - "31"
     scriptarguments:
       hostname:
         complex:
@@ -987,7 +986,154 @@ tasks:
       {
         "position": {
           "x": 1170,
-          "y": 200
+          "y": 100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 7c1ec123-fa09-4829-8ef5-81fc689e2fbb
+    type: title
+    task:
+      id: 7c1ec123-fa09-4829-8ef5-81fc689e2fbb
+      version: -1
+      name: Normalizing Device info
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+      - "35"
+      - "34"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 7a15344c-2373-4a41-8219-0b62f42504e2
+    type: title
+    task:
+      id: 7a15344c-2373-4a41-8219-0b62f42504e2
+      version: -1
+      name: Unisolate Device
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 55071917-0ecf-4fc4-8e90-8c76aa7a3bc1
+    type: title
+    task:
+      id: 55071917-0ecf-4fc4-8e90-8c76aa7a3bc1
+      version: -1
+      name: Active Devices
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 575f8c79-4956-4262-8f02-8f68eafcf0f5
+    type: title
+    task:
+      id: 575f8c79-4956-4262-8f02-8f68eafcf0f5
+      version: -1
+      name: Inactive Device
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 6972b54a-0602-402c-83c1-a15efbd654d1
+    type: title
+    task:
+      id: 6972b54a-0602-402c-83c1-a15efbd654d1
+      version: -1
+      name: Incorrect Input
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 330,
+          "y": 410
         }
       }
     note: false
@@ -1001,20 +1147,19 @@ view: |-
   {
     "linkLabelsPosition": {
       "13_12_yes": 0.52,
-      "13_2_#default#": 0.1,
+      "13_2_#default#": 0.18,
       "1_2_#default#": 0.1,
+      "28_2_#default#": 0.13,
       "3_2_#default#": 0.23,
-      "3_4_yes": 0.51,
       "5_2_#default#": 0.1,
-      "5_7_yes": 0.66,
       "8_2_#default#": 0.1
     },
     "paper": {
       "dimensions": {
-        "height": 2465,
-        "width": 1500,
+        "height": 2115,
+        "width": 1510,
         "x": 50,
-        "y": -310
+        "y": -430
       }
     }
   }
@@ -1027,40 +1172,33 @@ inputs:
     For more information, you can use the following commands:
     !microsoft-atp-get-machine-details
     !microsoft-atp-get-machines
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Hostname
   value: {}
   required: false
   description: The Device Hostname that you would like to Isolate
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Device_IP
   value: {}
   required: false
   description: The Device IP that you would like to Isolate
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs:
 - contextPath: MicrosoftATP.MachineAction.ID
   description: The machine action ID.
+  type: string
 - contextPath: MicrosoftATP.NonUnisolateList
   description: Those machine IDs that won't be released from isolation
-  type: unknown
+  type: string
 - contextPath: MicrosoftATP.UnisolateList
   description: Machine IDs that were released from isolation.
-  type: unknown
+  type: string
 - contextPath: MicrosoftATP.IncorrectIDs
   description: Incorrect Device IDs entered
-  type: unknown
+  type: string
 - contextPath: MicrosoftATP.IncorrectHostnames
   description: IncorrectHostnames entered
-  type: unknown
+  type: string
 - contextPath: MicrosoftATP.IncorrectIPs
   description: Incorrect Device IPs entered
-  type: unknown
-tests:
-- Microsoft Defender Advanced Threat Protection - Test prod
-- Microsoft Defender Advanced Threat Protection - Test dev
-- Microsoft Defender Advanced Threat Protection - Test
-- Microsoft Defender Advanced Threat Protection - Test self deployed
-- Microsoft Defender - ATP - Indicators SC Test
-- Microsoft Defender - ATP - Indicators Test
-fromversion: 6.0.0
+  type: string
