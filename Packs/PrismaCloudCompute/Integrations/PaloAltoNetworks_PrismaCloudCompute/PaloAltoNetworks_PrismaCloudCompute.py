@@ -172,9 +172,21 @@ class PrismaCloudComputeClient(BaseClient):
 
     def get_console_version(self):
         """
-        Sends a request to get the prisma cloud compute console version
+        Sends a request to get the prisma cloud compute console version.
+
+        Returns:
+            str: console version.
         """
-        return self._http_request(method="GET", url_suffix=f"/version")
+        return self._http_request(method="GET", url_suffix="/version")
+
+    def get_custom_ip_feeds(self):
+        """
+        Sends a request to get the custom IP feeds.
+
+        Returns:
+            dict: existing IP feeds.
+        """
+        return self._http_request(method="GET", url_suffix="/feeds/custom/ips")
 
 
 def str_to_bool(s):
@@ -816,7 +828,7 @@ def get_custom_feeds_ip_list(client: PrismaCloudComputeClient) -> CommandResults
     Returns:
         CommandResults: command-results object.
     """
-    feeds = client.api_request(method='GET', url_suffix="/feeds/custom/ips")
+    feeds = client.get_custom_ip_feeds()
 
     if feeds:
         if "modified" in feeds:
@@ -835,7 +847,8 @@ def get_custom_feeds_ip_list(client: PrismaCloudComputeClient) -> CommandResults
         outputs_prefix="PrismaCloudCompute.CustomFeedIP",
         outputs=feeds,
         readable_output=table,
-        outputs_key_field="digest"
+        outputs_key_field="digest",
+        raw_response=feeds
     )
 
 
