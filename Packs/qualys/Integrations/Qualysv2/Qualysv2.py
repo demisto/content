@@ -7,16 +7,6 @@ import traceback
 from typing import Dict, Any, Tuple, Callable
 
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
-# Login:
-# demst2nr
-# Password:
-# 7nZ7s!i9BAHbW9!
-# Website Address:
-# https://qualysguard.qg2.apps.qualys.com/qglogin/index.html
-#
-# Other Secrets:
-# Qualys API server URL
-# https://qualysguard.qg2.apps.qualys.com
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
@@ -226,8 +216,11 @@ COMMANDS_PARSE_AND_OUTPUT_DATA: Dict[str, Dict[Any, Any]] = {
         'table_name': 'Host List Detection',
         'json_path': ['HOST_LIST_VM_DETECTION_OUTPUT', 'RESPONSE'],
         'collection_name': 'HOST_LIST'
-    #     HOST_LIST_VM_DETECTION_OUTPUT/RESPONSE/HOST_LIST/HOST
-    }
+    },
+    'qualys-host-update': {
+        'table_name': 'Host updated',
+        'json_path': ['HOST_UPDATE_OUTPUT', 'RESPONSE'],
+    },
 }
 
 # Context prefix and key for each command
@@ -379,7 +372,11 @@ COMMANDS_CONTEXT_DATA = {
     'qualys-host-list-detection': {
         'context_prefix': 'Qualys.HostDetections',
         'context_key': 'ID'
-    }
+    },
+    'qualys-host-update': {
+        'context_prefix': 'Qualys.Endpoint.Update',
+        'context_key': 'ID',
+    },
 }
 
 # Information about the API request of the commands
@@ -575,10 +572,15 @@ COMMANDS_API_DATA: Dict[str, Dict[str, str]] = {
         'resp_type': 'text',
     },
     'qualys-host-list-detection': {
-        'api_route': f'{API_SUFFIX}asset/host/vm/detection/?action=list',
+        'api_route': API_SUFFIX + 'asset/host/vm/detection/?action=list',
         'call_method': 'GET',
         'resp_type': 'text'
-    }
+    },
+    'qualys-host-update': {
+        'api_route': API_SUFFIX + 'asset/host/?action=update',
+        'call_method': 'POST',
+        'resp_type': 'text',
+    },
 }
 
 # Arguments' names of each command
@@ -823,7 +825,13 @@ COMMANDS_ARGS_DATA: Dict[str, Any] = {
         'args': ['ids', 'ips', 'qids', 'severities', 'use_tags', 'tag_set_by', 'tag_include_selector',
                  'tag_exclude_selector', 'tag_set_include', 'tag_set_exclude', 'detection_processed_before',
                  'detection_processed_after', 'vm_scan_since', 'no_vm_scan_since', 'truncation_limit']
-    }
+    },
+    'qualys-host-update': {
+        'args': [
+            'ids', 'ips', 'network_id', 'host_dns', 'host_netbios', 'tracking_method', 'new_tracking_method',
+            'new_owner', 'new_comment', 'new_ud1', 'new_ud2', 'new_ud3'
+        ],
+    },
 }
 
 # Dictionary for arguments used by Qualys API
@@ -1725,6 +1733,10 @@ def main():
             'result_handler': handle_general_result,
             'output_builder': build_multiple_values_parsed_output,
         },
+        'qualys-host-list-detection': {
+            'result_handler': handle_general_result,
+            'output_builder': build_multiple_values_parsed_output
+        },
         # *** Commands with no output ***
         'qualys-report-fetch': {
             'result_handler': handle_fetch_result,
@@ -1739,6 +1751,10 @@ def main():
             'output_builder': build_single_text_output,
         },
         'qualys-ip-update': {
+            'result_handler': handle_general_result,
+            'output_builder': build_single_text_output,
+        },
+        'qualys-host-update': {
             'result_handler': handle_general_result,
             'output_builder': build_single_text_output,
         },
@@ -1766,11 +1782,6 @@ def main():
             'result_handler': handle_general_result,
             'output_builder': build_changed_names_output,
         },
-
-        'qualys-host-list-detection': {
-            'result_handler': handle_general_result,
-            'output_builder': build_multiple_values_parsed_output
-        }
     }
 
     requested_command = demisto.command()

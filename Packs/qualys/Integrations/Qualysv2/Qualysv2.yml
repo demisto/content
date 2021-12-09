@@ -2354,7 +2354,6 @@ script:
       description: Status of the restricted ips feature.
     description: Get the list of restricted IPs within the user's subscription.
     execution: true
-
   - name: qualys-host-list-detection
     arguments:
     - default: false
@@ -2454,7 +2453,111 @@ script:
       description: Date & time of the action.
     - contextPath: Qualys.Restricted.Manage.ITEM_LIST.ITEM.VALUE
       description: Status of the restricted ips feature.
-    description: Get the list of restricted IPs within the user's subscription.
+    description: Get a list of hosts with the hosts latest vulnerability data, based on the host based
+      scan data available in the user’s account.
+    execution: true
+  - name: qualys-host-update
+    arguments:
+    - default: false
+      description: Show only certain host IDs/ranges. One or more host IDs/ranges
+        may be specified. Multiple entries are comma separated. A host ID range is
+        specified with a hyphen (for example, 190-400).Valid host IDs are required.
+      isArray: true
+      name: ids
+      required: false
+      secret: false
+    - default: false
+      description: The hosts you want to add to, remove from or replace in the restricted
+        IPs list. How to specify IP addresses. One or more IPs/ranges may be specified.
+        Multiple IPs/ranges are comma separated. An IP range is specified with a hyphen
+        (for example, 10.10.30.1-10.10.30.50).
+      isArray: true
+      name: ips
+      required: false
+      secret: false
+    - default: false
+      description: (Valid only when the Network Support feature is enabled
+        for the user’s account) Restrict the request to a certain
+        custom network by specifying the network ID. When
+        unspecified, we default to Global Default Network.
+      name: network_id
+      required: false
+      secret: false
+    - default: false
+      description: The DNS hostname for the IP you want to update. A single
+        IP must be specified in the same request and the IP will
+        only be updated if it matches the hostname specified.
+      name: host_dns
+      required: false
+      secret: false
+    - default: false
+      description: The NetBIOS hostname for the IP you want to update. A
+        single IP must be specified in the same request and the IP
+        will only be updated if it matches the hostname specified.
+      name: host_netbios
+      required: false
+      secret: false
+    - name: tracking_method
+      auto: PREDEFINED
+      predefined:
+      - "IP"
+      - "DNS"
+      - "NETBIOS"
+      description: Show only IP addresses/ranges which have a certain
+        tracking method.
+    - name: new_tracking_method
+      auto: PREDEFINED
+      predefined:
+      - "IP"
+      - "DNS"
+      - "NETBIOS"
+      description: Change the tracking method. Specify IP for IP
+        address, DNS or NETBIOS. Note - You cannot change the
+        tracking method to EC2 or AGENT. If an IP is already
+        tracked by EC2 or AGENT, you cannot change the tracking
+        method to something else.
+    - default: false
+      description: Change the owner of the host asset(s). The
+        owner must be a Manager. Another user (Unit Manager,
+        Scanner, Reader) can be the owner if the IP address is in the
+        user’s account.
+      isArray: true
+      name: new_owner
+      required: false
+      secret: false
+    - default: false
+      description: Change the user-defined comments. Specify new
+        comments for the host asset(s).
+      name: new_comment
+      required: false
+      secret: false
+    - default: false
+      description: Change value for user-defined field 1.
+        You can specify a maximum of 128 characters (ascii) for
+        each field value.
+      name: new_ud1
+      required: false
+      secret: false
+    - default: false
+      description: Change value for user-defined field 2.
+        You can specify a maximum of 128 characters (ascii) for
+        each field value.
+      name: new_ud2
+      required: false
+      secret: false
+    - default: false
+      description: Change value for user-defined field 3.
+        You can specify a maximum of 128 characters (ascii) for
+        each field value.
+      name: new_ud3
+      required: false
+      secret: false
+    outputs:
+    - contextPath: Qualys.Endpoint.Update.Status
+      description: Action result message.
+    - contextPath: Qualys.Endpoint.Update.Timestamp
+      description: Date & time of the action.
+    description: Update host attributes using new update parameters (new_tracking_method, new_owner, new_ud1, new_ud2, new_ud3, and new_comment).
     execution: true
 
   dockerimage: demisto/python3:3.9.7.24076
