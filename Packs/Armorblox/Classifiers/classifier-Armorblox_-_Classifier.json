@@ -1,0 +1,62 @@
+{
+    "defaultIncidentType": "Armorblox",
+    "description": "Classifies Armorblox Incidents.",
+    "feed": false,
+    "id": "e8ded555-9409-4d33-842c-45d29b6ab31c",
+    "keyTypeMap": {
+        "Abuse Report": "Armorblox Abuse Mailbox Report",
+        "Extortion": "Armorblox Inbound Threat",
+        "Graymail": "Armorblox Inbound Threat",
+        "Impersonation: Employee": "Armorblox Inbound Threat",
+        "Impersonation: VIP": "Armorblox Inbound Threat",
+        "Impersonation: VIP (Requesting Gift Card)": "Armorblox Inbound Threat",
+        "Impersonation:Employee": "Armorblox Inbound Threat",
+        "Impersonation:VIP": "Armorblox Inbound Threat",
+        "PCI Bank Account Number": "Armorblox Outbound Threat",
+        "PCI Credit Card Number": "Armorblox Outbound Threat",
+        "PCI IBAN": "Armorblox Outbound Threat",
+        "PCI Routing Number": "Armorblox Outbound Threat",
+        "PII Passport": "Armorblox Outbound Threat",
+        "PII Social Security Number": "Armorblox Outbound Threat",
+        "PII Tax Number": "Armorblox Outbound Threat",
+        "Passwords": "Armorblox Outbound Threat",
+        "Payment Fraud (External)": "Armorblox Inbound Threat",
+        "Payment Fraud (Internal)": "Armorblox Inbound Threat",
+        "Payroll Fraud": "Armorblox Inbound Threat",
+        "Phish URL (Attachment)": "Armorblox Inbound Threat",
+        "Phish URL (Mail Body)": "Armorblox Inbound Threat",
+        "Potential Account Compromise": "Armorblox Inbound Threat",
+        "Ransomware": "Armorblox Inbound Threat",
+        "Social Engineering": "Armorblox Inbound Threat"
+    },
+    "name": "Armorblox - Classifier",
+    "transformer": {
+        "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "policy_names",
+            "transformers": [
+                {
+                    "args": {
+                        "descending": {
+                            "isContext": false,
+                            "value": {
+                                "complex": null,
+                                "simple": "false"
+                            }
+                        }
+                    },
+                    "operator": "sort"
+                },
+                {
+                    "args": {},
+                    "operator": "FirstArrayElement"
+                }
+            ]
+        },
+        "simple": ""
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

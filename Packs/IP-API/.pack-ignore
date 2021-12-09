@@ -1,2 +1,4 @@
 [file:IPAPI.yml]
 ignore=IN145
+[file:pack_metadata.json]
+ignore=PA129

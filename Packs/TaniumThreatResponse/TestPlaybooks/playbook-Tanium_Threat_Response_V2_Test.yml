@@ -2499,6 +2499,8 @@ tasks:
         simple: "150"
       offset:
         simple: "30"
+      type:
+        simple: "event"
     separatecontext: false
     view: |-
       {
@@ -3021,7 +3023,17 @@ tasks:
               right:
                 value:
                   simple: connected
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Tanium.Connection.platform
+                iscontext: true
+              right:
+                value:
+                  simple: Windows
           accessor: id
+          transformers:
+          - operator: FirstArrayElement
       path:
         simple: C:\Users\Administrator\Desktop\
     separatecontext: false

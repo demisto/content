@@ -7,3 +7,6 @@ ignore=IF100
 
 [file:incidentfield-Select_Campaign_Incidents.json]
 ignore=IF100
+
+[file:SetPhishingCampaignDetails.yml]
+ignore=SC106

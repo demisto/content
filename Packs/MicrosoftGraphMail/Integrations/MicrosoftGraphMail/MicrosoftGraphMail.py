@@ -807,8 +807,12 @@ class MsGraphClient:
         """
         parsed_email = MsGraphClient._parse_item_as_dict(email)
 
-        if email.get('hasAttachments', False):  # handling attachments of fetched email
-            parsed_email['Attachments'] = self._get_email_attachments(message_id=email.get('id', ''))
+        # handling attachments of fetched email
+        attachments = self._get_email_attachments(message_id=email.get('id', ''))
+        if attachments:
+            parsed_email['Attachments'] = attachments
+
+        parsed_email['Mailbox'] = self._mailbox_to_fetch
 
         incident = {
             'name': parsed_email['Subject'],
@@ -1268,7 +1272,7 @@ def list_attachments_command(client: MsGraphClient, args):
     if attachments:
         attachment_list = [{
             'ID': attachment.get('id'),
-            'Name': attachment.get('name'),
+            'Name': attachment.get('name') or attachment.get('id'),
             'Type': attachment.get('contentType')
         } for attachment in attachments]
         attachment_entry = {'ID': message_id, 'Attachment': attachment_list, 'UserID': user_id}
