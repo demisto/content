@@ -959,7 +959,7 @@ def add_custom_ip_feeds(client: PrismaCloudComputeClient, args: dict) -> Command
     )
 
     return CommandResults(
-        readable_output=tableToMarkdown(name="Successfully updated the custom IP feeds", t=[])
+        readable_output="Successfully updated the custom IP feeds"
     )
 
 

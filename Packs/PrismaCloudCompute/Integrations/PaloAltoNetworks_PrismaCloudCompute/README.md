@@ -522,5 +522,4 @@ There is no context output for this command.
 ```!prisma-cloud-compute-custom-feeds-ip-add ip=1.1.1.1,2.2.2.2```
 
 #### Human Readable Output
-### Successfully updated the custom IP feeds
-**No entries.**
+Successfully updated the custom IP feeds
