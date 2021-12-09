@@ -8388,7 +8388,7 @@ def signal_handler_memory_dump(_sig, _frame):
         i = id(obj)
         size = sys.getsizeof(obj, 0)
         if hasattr(obj, '__class__'):
-            cls = str(obj.__class__)
+            cls = str(obj.__class__)[8:-2]
             if cls in classes_dict:
                 current_class = classes_dict.get(cls)
                 current_class['count'] += 1
@@ -8418,23 +8418,25 @@ def print_memory_dump(classes_as_list: list):
     """
     show_x_classes = 20
 
-    print('\n\n--- Start Memory Dump ---')
+    message = '\n\n--- Start Memory Dump ---\n'
 
-    print(f'\n--- Start Top {show_x_classes} Classes by Count ---\n')
+    message += f'\n--- Start Top {show_x_classes} Classes by Count ---\n\n'
     classes_sorted_by_count = sorted(classes_as_list, key=lambda d: d['count'], reverse=True)
-    print('count\tsize\tname')
+    message += 'count\t\tsize\t\tname\n'
     for current_class in classes_sorted_by_count[:show_x_classes]:
-        print(f'{current_class["count"]}\t{current_class["size"]}\t{current_class["name"][8:-2]}')
-    print(f'\n--- End Top {show_x_classes} Classes by Count ---')
+        message += f'{current_class["count"]}\t\t{current_class["size"]}\t\t{current_class["name"]}\n'
+    message += f'\n--- End Top {show_x_classes} Classes by Count ---\n'
 
-    print(f'\n--- Start Top {show_x_classes} Classes by Size ---\n')
+    message += f'\n--- Start Top {show_x_classes} Classes by Size ---\n'
     classes_sorted_by_size = sorted(classes_as_list, key=lambda d: d['size'], reverse=True)
-    print('size\tcount\tname')
+    message += 'size\t\tcount\t\tname\n'
     for current_class in classes_sorted_by_size[:show_x_classes]:
-        print(f'{current_class["size"]}\t{current_class["count"]}\t{current_class["name"][8:-2]}')
-    print(f'\n--- End Top {show_x_classes} Classes by Size ---')
+        message += f'{current_class["size"]}\t\t{current_class["count"]}\t\t{current_class["name"]}\n'
+    message += f'\n--- End Top {show_x_classes} Classes by Size ---\n'
 
-    print('\n--- End Memory Dump ---\n\n')
+    message += '\n--- End Memory Dump ---\n\n'
+
+    demisto.info(message)
 
 
 
@@ -8468,7 +8470,7 @@ def signal_handler_threads_and_memory_dump(_sig, _frame):
     signal_handler_memory_dump(_sig, _frame)
 
 
-def register_signal_handler_threads_and_memory_dump(signal_type=signal.SIGUSR2):
+def register_signal_handler_threads_and_memory_dump(signal_type=signal.SIGUSR1):
     """
     Function that registers the threads and memory dump signal listener
 
