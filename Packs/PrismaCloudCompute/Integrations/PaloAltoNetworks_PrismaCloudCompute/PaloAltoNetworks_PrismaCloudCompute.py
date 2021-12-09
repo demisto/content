@@ -115,7 +115,7 @@ class PrismaCloudComputeClient(BaseClient):
                 )
             raise e
 
-    def get_host_profiles(self, params):
+    def get_host_profiles(self, params=None):
         """
         Sends a request to get all the host profiles.
 
@@ -125,9 +125,11 @@ class PrismaCloudComputeClient(BaseClient):
         Returns:
             list[dict]: host profiles api response.
         """
+        if not params:
+            params = {}
         return self._http_request(method="GET", url_suffix="/profiles/host", params=params)
 
-    def get_container_profiles(self, params):
+    def get_container_profiles(self, params=None):
         """
         Sends a request to get all the container profiles.
 
@@ -137,6 +139,8 @@ class PrismaCloudComputeClient(BaseClient):
         Returns:
             list[dict]: host profiles api response.
         """
+        if not params:
+            params = {}
         return self._http_request(method="GET", url_suffix="/profiles/container", params=params)
 
     def get_containers_hosts(self, container_id):
@@ -151,7 +155,20 @@ class PrismaCloudComputeClient(BaseClient):
         """
         return self._http_request(method="GET", url_suffix=f"profiles/container/{container_id}/hosts")
 
+    def get_container_forensic(self, container_id, params=None):
+        """
+        Sends a request to get a specific container forensics.
 
+        Args:
+            container_id (str): the container ID.
+            params (dict): query parameters.
+
+        Returns:
+            list[dict]: container forensics.
+        """
+        if not params:
+            params = {}
+        return self._http_request(method="GET", url_suffix=f"profiles/container/{container_id}/forensic", params=params)
 
 
 def str_to_bool(s):
@@ -381,7 +398,7 @@ def epochs_to_timestamp(epochs: int, date_format: str = "%B %d, %Y %H:%M:%S %p")
         return ""
 
 
-def filter_api_response(api_response: list, offset: int, limit: int) -> list:
+def filter_api_response(api_response: list, offset: int, limit: int) -> Optional[list]:
     """
     Filter the api response according to the offset/limit, used in case the api doesn't support limit/offset
 
@@ -391,8 +408,11 @@ def filter_api_response(api_response: list, offset: int, limit: int) -> list:
         limit (int): the maximum limit of records in the response to fetch.
 
     Returns:
-        list: api filtered response.
+        list: api filtered response, None in case the api response is empty
     """
+    if api_response is None:
+        return api_response
+
     start = min(offset, len(api_response))
     end = min(offset + limit, len(api_response))
     return api_response[start:end]
@@ -611,10 +631,12 @@ def get_container_hosts_list(client: PrismaCloudComputeClient, args: dict) -> Co
     """
     container_id = args.pop("id")
     limit, offset = parse_limit_and_offset_values(limit=args.get("limit"), offset=args.get("offset"))
-    hosts = client.get_containers_hosts(container_id=container_id)
 
-    if hosts:
-        hosts = filter_api_response(api_response=hosts, limit=limit, offset=offset)
+    if hosts := filter_api_response(
+        api_response=client.get_containers_hosts(container_id=container_id),
+        limit=limit,
+        offset=offset
+    ):
         context_output = {
             "containerID": container_id,
             "hostsIDs": hosts
@@ -637,67 +659,6 @@ def get_container_hosts_list(client: PrismaCloudComputeClient, args: dict) -> Co
     )
 
 
-def parse_forensics_timestamps(forensics: List[dict]) -> None:
-    """
-    Parses timestamps to a more human readable output for a forensic response.
-
-    Args:
-        forensics (list[dict]): host/container forensics response
-
-    """
-    for forensic in forensics:
-        if "timestamp" in forensic:
-            forensic["timestamp"] = parse_date_string_format(date_string=forensic.get("timestamp", ""))
-        if "listeningStartTime" in forensic:
-            forensic["listeningStartTime"] = parse_date_string_format(
-                date_string=forensic.get("listeningStartTime", "")
-            )
-
-
-def build_containers_forensic_response(
-    client: PrismaCloudComputeClient, container_id: str, args: dict
-) -> Tuple[Optional[dict], str]:
-    """
-    Build a table and a context response for the 'prisma-cloud-compute-profile-container-forensic-list' command.
-
-    Args:
-        client (PrismaCloudComputeClient): prisma-cloud-compute client.
-        container_id (str): container ID.
-        args (dict): prisma-cloud-compute-profile-container-forensic-list command arguments.
-
-    Returns:
-        Tuple[dict, str]: Context and table response.
-    """
-    # api request does not support offset only, but does support limit.
-    offset = args.pop("offset", 0)
-    # because the api supports only limit, it is necessary to add the requested offset to the limit be able to take the
-    # correct offset:limit after the api call.
-    limit = args.get("limit", 20)
-    args["limit"] = offset + args["limit"]
-
-    container_forensics = filter_api_response(
-        client=client, url_suffix=f"profiles/container/{container_id}/forensic", offset=offset, limit=limit, args=args
-    )
-
-    if container_forensics:
-        parse_forensics_timestamps(forensics=container_forensics)
-
-        context_output = {
-            "containerID": container_id,
-            "hostname": args.get("hostname"),
-            "Forensics": container_forensics
-        }
-
-        return context_output, tableToMarkdown(
-            name="Containers forensic report",
-            t=context_output["Forensics"],
-            headers=["type", "path", "user", "pid", "containerId", "timestamp", "command"],
-            removeNull=True,
-            headerTransform=lambda word: word[0].upper() + word[1:]
-        )
-    return None, "No results found"
-
-
 def get_profile_container_forensic_list(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
     """
     Returns runtime forensics data for a specific container on a specific host.
@@ -710,19 +671,51 @@ def get_profile_container_forensic_list(client: PrismaCloudComputeClient, args: 
     Returns:
         CommandResults: command-results object.
     """
-    container_id = args.pop("id")
-    update_query_params_names(names=[("incident_id", "incidentID")], args=args)
-    parse_limit_and_offset_values(args=args)
+    if "incident_id" in args:
+        args["incidentID"] = args.pop("incident_id")
 
-    context, table = build_containers_forensic_response(
-        client=client, container_id=container_id, args=args
-    )
+    container_id = args.pop("id")
+    # api request does not support offset only, but does support limit.
+    limit, offset = parse_limit_and_offset_values(limit=args.get("limit"), offset=args.pop("offset"))
+    # because the api supports only limit, it is necessary to add the requested offset to the limit be able to take the
+    # correct offset:limit after the api call.
+    args["limit"] = limit + offset
+
+    if container_forensics := filter_api_response(
+        api_response=client.get_container_forensic(container_id=container_id, params=assign_params(**args)),
+        limit=limit,
+        offset=offset
+    ):
+        for forensic in container_forensics:
+            if "timestamp" in forensic:
+                forensic["timestamp"] = parse_date_string_format(date_string=forensic.get("timestamp", ""))
+            if "listeningStartTime" in forensic:
+                forensic["listeningStartTime"] = parse_date_string_format(
+                    date_string=forensic.get("listeningStartTime", "")
+                )
+
+        context_output = {
+            "containerID": container_id,
+            "hostname": args.get("hostname"),
+            "Forensics": container_forensics
+        }
+
+        table = tableToMarkdown(
+            name="Containers forensic report",
+            t=context_output["Forensics"],
+            headers=["type", "path", "user", "pid", "containerId", "timestamp", "command"],
+            removeNull=True,
+            headerTransform=lambda word: word[0].upper() + word[1:]
+        )
+    else:
+        context_output, table = None, "No results found"
 
     return CommandResults(
         outputs_prefix='PrismaCloudCompute.ContainerForensic',
-        outputs=context,
+        outputs=context_output,
         readable_output=table,
-        outputs_key_field=["containerID", "hostname"]
+        outputs_key_field=["containerID", "hostname"],
+        raw_response=container_forensics
     )
 
 
