@@ -3,7 +3,7 @@ import json
 import io
 import demistomock as demisto
 import CensysV2
-from CensysV2 import Client, censys_view_command, censys_search_command, main, test_module
+from CensysV2 import Client, censys_view_command, censys_search_command, main
 import pytest
 
 SEARCH_HOST_OUTPUTS = [{
@@ -161,6 +161,7 @@ def test_censys_view_cert(requests_mock, client):
 
 
 def test_test_module_valid(requests_mock, client):
+    from CensysV2 import test_module
     requests_mock.get(url='https://search.censys.io/api/v2/hosts/8.8.8.8', status_code=200, json="{}")
 
     assert test_module(client) == 'ok'
