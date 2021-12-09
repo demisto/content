@@ -1,8 +1,6 @@
 # Simple script to create a sha256 hash from agiven input
 import hashlib
-
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
+from hashlib import blake2b
 
 text = demisto.args()['text']
 hashtype = demisto.args()['type']
@@ -17,8 +15,12 @@ elif hashtype == 'md5':
     h = hashlib.md5()
     h.update(text.encode('utf-8'))
 else:
-    h = hashlib.blake2b()
+    h = blake2b()
     h.update(text.encode('utf-8'))
 
-demisto.setContext("CreateHash", h.hexdigest())
-return_results(h.hexdigest())
+context = {
+        "CreateHash": str(h.hexdigest())
+    }
+command_results = CommandResults(outputs=context)
+
+return_results(command_results)
