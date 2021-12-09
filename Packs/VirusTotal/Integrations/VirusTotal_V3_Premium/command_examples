@@ -1,0 +1,20 @@
+!vt-private-download-file hash=0f555ed56bb78c5511f4e488cd37f24d1425fcfa
+!vt-private-file-sandbox-pcap report_id="699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3_VirusTotal Jujubox"
+!vt-private-intelligence-search query=699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3
+!vt-private-livehunt-notifications-files-list limit=1
+!vt-private-livehunt-notifications-list filter=malicious_executables limit=1
+!vt-private-livehunt-rule-list-files id=5988042761601024 limit=1
+!vt-private-livehunt-rules-create limit=100 name="a new rule" yara_rule=`rule foobar { strings: $ = "foobar" condition: all of them }`
+!vt-private-livehunt-rules-delete id=5551558908215296
+!vt-private-livehunt-rules-get-by-id id=6360290934161408
+!vt-private-livehunt-rules-list limit=1 enabled=false order="modification_date-"
+!vt-private-livehunt-rules-update id=6360290934161408 enabled=false
+!vt-private-quota-limits-list
+!vt-private-retrohunt-jobs-get-by-id id=akrupnik_panw-1617056777
+!vt-private-retrohunt-jobs-get-matching-files id=akrupnik_panw-1610969096
+!vt-private-retrohunt-jobs-create rules=`rule foobar { strings: $ = "foobar" condition: all of them }` corpus=goodware start_time="3 days"
+!vt-private-retrohunt-jobs-list limit=1
+!vt-private-zip-create file=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855,275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f password=apassword
+!vt-private-zip-get zip_id=5548746369433600
+!vt-private-zip-download zip_id=5548746369433600
+!vt-private-search-file query="type:peexe size:90kb+ positives:5+ behaviour:'taskkill'"
