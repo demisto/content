@@ -13,7 +13,7 @@ To create an authentication token, go to [Splunk create authentication tokens](h
 ## Fetching notable events.
 The integration allows for fetching Splunk notable events using a default query. The query can be changed and modified to support different Splunk use cases. (See [Existing users](#existing-users)).
 
-We are highly recommend you to read [Ingest Incidents from a SIEM Using Splunk article](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-tutorials/tutorials/splunk-use-case.html) before starting using this integration.
+We highly recommend reading the [Ingest Incidents from a SIEM Using Splunk article](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-tutorials/tutorials/splunk-use-case.html) before starting using this integration.
 This article will help you configure your Splunk integration, set up a basic flow and start ingesting incidents from the Splunk to Cortex XSOAR.
 
 ### How to configure
