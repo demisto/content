@@ -3,23 +3,19 @@ args:
   name: excludedMACAddress
 comment: Gets all MAC addresses in context, excluding ones given.
 commonfields:
-  id: 18a6fc9b-7e80-46a3-8c86-13a3131ca04c
+  id: ContextGetMACAddresses
   version: -1
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-    itemVersion: ""
-    packID: 5182f4c2-46ce-4d28-8e07-ea94c016efec
-    propagationLabels:
-    - all
-    toServerVersion: ""
 enabled: true
-engineinfo: {}
 name: ContextGetMACAddresses
-pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''
 scripttarget: 0
 tags: []
 type: javascript
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
