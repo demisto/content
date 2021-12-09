@@ -68,11 +68,6 @@ script:
     description: Get information about the hosts and their profile events, this command supports asterisks which allows you to get host profiles by filtering its fields according to a specific substring
     deprecated: false
     arguments:
-    - name: cluster
-      description: Clusters is the runtime profile k8s cluster filter
-      required: false
-      isArray: false
-      defaultValue: ""
     - name: hostname
       description: Hosts is the runtime profile hostname filter, semi comma separated values, for example !prisma-cloud-compute-profile-host-list hostname="*149*,*257*"
       required: false
