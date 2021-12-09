@@ -1,5 +1,5 @@
 import requests_mock
-from iDefense_v2 import IDEFENSE_URL_TEMPLATE, Client, _get_ia_for_indicator, domain_command, url_command, ip_command, uuid_command, hash_command, _calculate_dbot_score
+from iDefense_v2 import IDEFENSE_URL_TEMPLATE, Client, domain_command, url_command, ip_command, uuid_command, hash_command, _calculate_dbot_score
 from CommonServerPython import DemistoException, DBotScoreReliability
 from test_data.response_constants import *
 import demistomock as demisto
@@ -220,11 +220,11 @@ def _is_intelligence_data_present_in_command_result(context_result, test_intel_j
     content = context_result['HumanReadable']
 
     for title, url in alerts.items():
-        if not url in content[content.find(title):content.find('|', content.find(title))]:
+        if url not in content[content.find(title):content.find('|', content.find(title))]:
             return False
 
     for title, url in reports.items():
-        if not url in content[content.find(title):content.find('|', content.find(title))]:
+        if url not in content[content.find(title):content.find('|', content.find(title))]:
             return False
     return True
 
