@@ -339,7 +339,7 @@ def hash_command(client: Client, args: dict, reliability: DBotScoreReliability, 
     """
     try:
         hash: str = str(args.get('hash'))
-        key_type: str = ""
+        key_type:str = None
 
         # For MD5   --->
         if len(hash) == 32:
