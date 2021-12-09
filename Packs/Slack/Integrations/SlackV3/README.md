@@ -4,6 +4,7 @@ This integration was integrated and tested with Slack.
 
 Slack V3 utilizes ["Socket Mode"](https://api.slack.com/apis/connections/socket) to enable the integration to communicate directly with Slack for mirroring. This requires a dedicated Slack app to be created for the XSOAR integration. See [Creating a Custom App](#creating-a-custom-app) on how to create your App in Slack.
 
+Please refer to the video tutorial [found here](https://live.paloaltonetworks.com/t5/cortex-xsoar-how-to-videos/cortex-xsoar-how-to-video-slack-v3-configuration/ta-p/445226) to learn about configuring SlackV3 using the app manifest.
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for SlackV3.
@@ -300,7 +301,22 @@ Creates a channel in Slack.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Slack.Channel.ID | String | The ID of the channel. | 
+| Slack.Channel.Name | String | The name of the channel. | 
+
+#### Context Example
+```json
+{
+    "Slack": {
+        "Channel": {
+            "ID": "C0R2D2C3PO",
+            "Name": "random"
+        }
+    }
+}
+```
 
 #### Command Example
 ```
@@ -532,8 +548,10 @@ There is no context output for this command.
 >The message was successfully pinned.
 
 ### Known Limitations
-SlackV3 mirrors incidents by listening to messages being sent in channels the bot has been added to.
+- When Safe Mode is enabled, there are no pagination calls made to Slack. This is to avoid rate limiting which can occur in workspaces where there are excessive amounts of channels or users. If a command worked for you prior to version 2.3.0, please try disabling the Safe Mode parameter.
+- All commands which use `channel` as a parameter, it is now advised to use `channel-id` using the channel ID found in the incident's context under the `Slack.Channels.ID` value. Using `channel-id` as opposed to `channel` will improve the performance of the integration.
+- SlackV3 mirrors incidents by listening to messages being sent in channels the bot has been added to.
 Because of this, you may have some users in Slack who are not users in XSOAR. This will occasionally cause the module 
 health to indicate that an error has occurred because a user was unable to be found. In this circumstance, the error is expected and is purely cosmetic in nature.
-
-Please note: If a dedicated channel is configured, however there are no notifications being sent, please verify that the **Types of Notifications** to send parameter is populated.
+- In some cases when mirroring an investigation, kicking the admin will cause no further actions to be able to be performed by the bot. Any subsequent actions taken on the channel (such as mirror out) will result in a "not in channel" error.
+- Please note: If a dedicated channel is configured, however there are no notifications being sent, please verify that the **Types of Notifications** to send parameter is populated.

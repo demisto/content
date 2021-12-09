@@ -385,6 +385,13 @@ script:
       secret: false
     deprecated: false
     description: Creates a channel in Slack.
+    outputs:
+    - contextPath: Slack.Channel.ID
+      description: The ID of the channel.
+      type: String
+    - contextPath: Slack.Channel.Name
+      description: The name of the channel.
+      type: String
     execution: false
     name: slack-create-channel
   - arguments:
