@@ -13,14 +13,16 @@ class WhereFieldEquals(unittest.TestCase):
         """
         args = {
             "value":
-            '[{ "name": "מה זה", "type": "IP" }, {  "name": "myFile.txt", "type": '
-            '"File"  }, { "name": "172.0.0.2", "type": "IP" }, "somestring"]',
+                [{"name": "מה זה", "type": "IP"},
+                 {"name": "myFile.txt", "type": "File"},
+                 {"name": "172.0.0.2", "type": "IP"},
+                 "somestring"],
             "field":
-            "type",
+                "type",
             "equalTo":
-            "IP",
+                "IP",
             "getField":
-            "name"
+                "name"
         }
         expected_result = '["מה זה","172.0.0.2"]'
         received_result = where_field_equals(args)
@@ -37,14 +39,15 @@ class WhereFieldEquals(unittest.TestCase):
         """
         args = {
             "value":
-            '[{ "name": "łłłłł", "type": "IP" }, {  "name": "myFile.txt", "type": '
-            '"File"  }, { "name": "172.0.0.2", "type": "IP" }]',
+                [{"name": "łłłłł", "type": "IP"},
+                 {"name": "myFile.txt", "type": "File"},
+                 {"name": "172.0.0.2", "type": "IP"}],
             "field":
-            "type",
+                "type",
             "equalTo":
-            "IP",
+                "IP",
             "getField":
-            "name"
+                "name"
         }
         expected_result = '["łłłłł","172.0.0.2"]'
         received_result = where_field_equals(args)
@@ -59,9 +62,9 @@ class WhereFieldEquals(unittest.TestCase):
         and a dictionary containing the correct context.
         """
         args = {
-            "value": '[{ "name": "Testing", "text": "Hello", "type": "IP" }, '
-                     '{ "name": "myFile.txt", "type": "IP" }, '
-                     '{ "name": "172.0.0.2", "text": "World", "type": "IP" }]',
+            "value": [{"name": "Testing", "text": "Hello", "type": "IP"},
+                      {"name": "myFile.txt", "type": "IP"},
+                      {"name": "172.0.0.2", "text": "World", "type": "IP"}],
             "field": "type",
             "equalTo": "IP",
             "getField": "text",
@@ -118,10 +121,6 @@ class WhereFieldEquals(unittest.TestCase):
                 {
                     "NetworkType": "Internal",
                     "Address": "test4@demisto.com",
-                },
-                {
-                    "NetworkType": "Internal",
-                    "Address": "{}",
                 }
             ],
             "field": "NetworkType",
@@ -144,14 +143,15 @@ class WhereFieldEquals(unittest.TestCase):
         """
         args = {
             "value":
-            '[{ "name": "מה זה", "type": "IP" }, {  "name": "myFile.txt", "type": '
-            '"File"  }, { "name": "172.0.0.2", "type_1": "IP" }]',
+                [{"name": "מה זה", "type": "IP"},
+                 {"name": "myFile.txt", "type": "File"},
+                 {"name": "172.0.0.2", "type_1": "IP"}],
             "field":
-            "type",
+                "type",
             "equalTo":
-            "IP",
+                "IP",
             "getField":
-            "name"
+                "name"
         }
         expected_result = "מה זה"
         received_result = where_field_equals(args)
@@ -167,16 +167,16 @@ class WhereFieldEquals(unittest.TestCase):
         """
         args = {
             "value":
-            '[{ "name": "", "type": "IP" }, '
-            '{ "name": {}, "type": "IP" }, '
-            '{ "name": [], "type": "IP" }, '
-            '{ "name": 0, "type": "IP" }]',
+                [{"name": "", "type": "IP"},
+                 {"name": {}, "type": "IP"},
+                 {"name": [], "type": "IP"},
+                 {"name": 0, "type": "IP"}],
             "field":
-            "type",
+                "type",
             "equalTo":
-            "IP",
+                "IP",
             "getField":
-            "name"
+                "name"
         }
         expected_result = '["",{},[],0]'
         received_result = where_field_equals(args)
