@@ -309,9 +309,9 @@ Get the hosts where a specific container is running.
 
 #### Human Readable Output
 ### Containers hosts list
-|ContainerID|HostsIDs|
-|---|---|
-| 123-container-id | host1,<br>host2 |
+|HostsIDs|
+|---|
+| host1,<br>host2 |
 
 ### prisma-cloud-compute-profile-container-forensic-list
 ***
