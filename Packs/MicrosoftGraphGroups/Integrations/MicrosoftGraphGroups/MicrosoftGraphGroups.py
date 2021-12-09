@@ -224,9 +224,10 @@ def list_groups_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, D
         next_link_response = groups['@odata.nextLink']
 
     if next_link_response:
-        entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID === obj.ID).NextLink': next_link_response,
+        entry_context = {f'{INTEGRATION_CONTEXT_NAME}NextLink': {'GroupsNextLink': next_link_response},
                          f'{INTEGRATION_CONTEXT_NAME}(val.ID === obj.ID)': groups_outputs}
-        title = 'Groups (Note that there are more results. Please use the next_link argument to see them.):'
+        title = 'Groups (Note that there are more results. Please use the next_link argument to see them. The value ' \
+                'can be found in the context under MSGraphGroupsNextLink.GroupsNextLink): '
     else:
         entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID === obj.ID)': groups_outputs}
         title = 'Groups:'
@@ -341,16 +342,19 @@ def list_members_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, 
 
     # get the group data from the context
     group_data = demisto.dt(demisto.context(), f'{INTEGRATION_CONTEXT_NAME}(val.ID === "{group_id}")')
+    if not group_data:
+        return_error('Could not find group data in the context, please run "!msgraph-groups-get-group" to retrieve group data.')
     if isinstance(group_data, list):
         group_data = group_data[0]
 
     if '@odata.nextLink' in members:
         next_link_response = members['@odata.nextLink']
         group_data['Members'] = members_outputs  # add a field with the members to the group
-        group_data['Members']['NextLink'] = next_link_response
+        group_data['MembersNextLink'] = next_link_response
         entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID === obj.ID)': group_data}
         title = f'Group {group_id} members ' \
-                f'(Note that there are more results. Please use the next_link argument to see them.):'
+                f'(Note that there are more results. Please use the next_link argument to see them. The value can be ' \
+                f'found in the context under {INTEGRATION_CONTEXT_NAME}.MembersNextLink): '
     else:
         group_data['Members'] = members_outputs  # add a field with the members to the group
         entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID === obj.ID)': group_data}
