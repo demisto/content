@@ -107,3 +107,6 @@ Gets indicators from the feed.
 #### Human Readable Output
 Retrieved 7 indicators.
 
+
+#### No Attribute for a given Attribute Tag
+If no Attribute exist with the Attribute Tag used to filter, MISP will return existing events that have the tag instead.  
