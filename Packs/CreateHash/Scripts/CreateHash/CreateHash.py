@@ -22,8 +22,8 @@ else:
     h.update(text.encode('utf-8'))
 
 context = {
-        "CreateHash": str(h.hexdigest())
-    }
+    "CreateHash": str(h.hexdigest())
+}
 command_results = CommandResults(outputs=context)
 
 return_results(command_results)
