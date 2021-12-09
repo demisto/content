@@ -1,0 +1,143 @@
+id: AWS - Route53 - Test
+version: -1
+name: AWS - Route53 - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fb42f4d7-d77e-4cc2-8a11-7a49de8ca726
+    type: start
+    task:
+      id: fb42f4d7-d77e-4cc2-8a11-7a49de8ca726
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 90cf3060-f2e6-4474-84b3-079e781c578a
+    type: regular
+    task:
+      id: 90cf3060-f2e6-4474-84b3-079e781c578a
+      version: -1
+      name: List Hosted Zones
+      description: 'Retrieves a list of the public and private hosted zones that are
+        associated with the current AWS account. '
+      script: '|||aws-route53-list-hosted-zones'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 5fb48c9f-3947-489b-8828-a77d279c61a6
+    type: regular
+    task:
+      id: 5fb48c9f-3947-489b-8828-a77d279c61a6
+      version: -1
+      name: List Resource Record Sets
+      description: Lists the resource record sets in a specified hosted zone.
+      script: '|||aws-route53-list-resource-record-sets'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      hostedZoneId:
+        simple: ${AWS.Route53.HostedZones.Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 6161e271-13ae-4b64-88da-6e30a17e2344
+    type: title
+    task:
+      id: 6161e271-13ae-4b64-88da-6e30a17e2344
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 905,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.0.0
+description: ''

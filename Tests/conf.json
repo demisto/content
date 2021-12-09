@@ -1596,6 +1596,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "AWS - Route53",
+            "playbookID": "AWS - Route53 - Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "SplunkPy",
             "playbookID": "SplunkPySearch_Test_default_handler",
             "memory_threshold": 200,
