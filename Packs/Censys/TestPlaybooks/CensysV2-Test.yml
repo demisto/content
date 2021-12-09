@@ -229,10 +229,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: c471549e-2109-449f-82ac-5f448c509b84
+    taskid: 4b941d4f-a3a0-47ff-8eb7-2cdf1d04e7b3
     type: regular
     task:
-      id: c471549e-2109-449f-82ac-5f448c509b84
+      id: 4b941d4f-a3a0-47ff-8eb7-2cdf1d04e7b3
       version: -1
       name: Censys search host
       description: Returns previews of hosts matching a specified search query or
@@ -247,7 +247,7 @@ tasks:
     scriptarguments:
       index:
         simple: ipv4
-      limit:
+      page_size:
         simple: "1"
       query:
         simple: services.service_name:HTTP
@@ -310,10 +310,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: a8c5e304-34e8-466d-8c60-88ba16cdf9bc
+    taskid: 5c97bd74-b11c-4e87-8ecc-46372801c63b
     type: regular
     task:
-      id: a8c5e304-34e8-466d-8c60-88ba16cdf9bc
+      id: 5c97bd74-b11c-4e87-8ecc-46372801c63b
       version: -1
       name: Censys Certs Search
       description: Returns previews of hosts matching a specified search query or
