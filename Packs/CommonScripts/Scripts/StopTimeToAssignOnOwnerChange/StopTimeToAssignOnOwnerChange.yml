@@ -21,4 +21,4 @@ runonce: false
 runas: DBotWeakRole
 tests:
 - SLA Scripts - Test
-dockerimage: demisto/python:2.7.18.24066
+dockerimage: demisto/python:2.7.18.24398
