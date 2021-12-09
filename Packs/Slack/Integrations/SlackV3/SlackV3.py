@@ -162,12 +162,15 @@ def get_user_by_email(user_to_search: str) -> dict:
     user = response.get('user', {})
 
     if not user:
+        err_str = f'User {user_to_search} not found in Slack'
+        if SAFE_MODE:
+            err_str += ' and Safe Mode is enabled. If this command worked previously for you, please try disabling' \
+                       ' Safe Mode from the instance configuration or use the users email instead.'
         demisto.results({
             'Type': WARNING_ENTRY_TYPE,
-            'Contents': f'User {user_to_search} not found in Slack',
+            'Contents': err_str,
             'ContentsFormat': formats['text']
         })
-        return {}
     else:
         return format_user_results(user)
 
@@ -258,24 +261,27 @@ def get_user_by_name(user_to_search: str, add_to_context: bool = True) -> dict:
     """
     user: dict = {}
 
-    integration_context = get_integration_context(SYNC_CONTEXT)
     user_to_search = user_to_search.lower()
-    if integration_context.get('users'):
-        demisto.debug(f"Checking in context for {user_to_search}")
-        # Check if we already have the user to prevent call to users.lookupByEmail
-        users = json.loads(integration_context['users'])
-        user = return_user_filter(user_to_search, users)
+    if not SAFE_MODE:
+        integration_context = get_integration_context(SYNC_CONTEXT)
+        if integration_context.get('users'):
+            demisto.debug(f"Checking in context for {user_to_search}")
+            # Check if we already have the user to prevent call to users.lookupByEmail
+            users = json.loads(integration_context['users'])
+            user = return_user_filter(user_to_search, users)
 
     if not user and re.match(emailRegex, user_to_search):
         demisto.debug(f"Checking via API for email of {user_to_search}")
         user = get_user_by_email(user_to_search)
         if user and (add_to_context or not SAFE_MODE):
+            integration_context = get_integration_context(SYNC_CONTEXT)
             add_user_to_context(user=user, integration_context=integration_context)
     if not user and not SAFE_MODE:
         demisto.debug(f"Couldn't find {user_to_search} and safe mode is disabled. Checking API")
         user = paginated_search_for_user(user_to_search)
         demisto.debug(f"Found {user_to_search} - {user}")
         if user and (add_to_context or not SAFE_MODE):
+            integration_context = get_integration_context(SYNC_CONTEXT)
             add_user_to_context(user=user, integration_context=integration_context)
 
     return user
@@ -299,9 +305,13 @@ def search_slack_users(users: Union[list, str]) -> list:
     for user in users:
         slack_user = get_user_by_name(user)
         if not slack_user:
+            err_str = f'User {user} not found in Slack'
+            if SAFE_MODE:
+                err_str += ' and Safe Mode is enabled. If this command worked previously for you, please try disabling' \
+                           ' Safe Mode from the instance configuration or use the users email instead.'
             demisto.results({
                 'Type': WARNING_ENTRY_TYPE,
-                'Contents': f'User {user} not found in Slack',
+                'Contents': err_str,
                 'ContentsFormat': formats['text']
             })
         else:
@@ -574,10 +584,6 @@ def mirror_investigation():
         mirrors: list = []
     else:
         mirrors = json.loads(integration_context['mirrors'])
-    if not integration_context or not integration_context.get('conversations', []):
-        conversations: list = []
-    else:
-        conversations = json.loads(integration_context['conversations'])
 
     investigation_id = investigation.get('id')
     send_first_message = False
@@ -600,7 +606,6 @@ def mirror_investigation():
                                                    body=body).get('channel', {})
             conversation_name = conversation.get('name')
             conversation_id = conversation.get('id')
-            conversations.append({'name': conversation_name, 'id': conversation_id})
 
             # Get the bot ID so we can invite him
             if integration_context.get('bot_id'):
@@ -676,8 +681,16 @@ def mirror_investigation():
 
     mirrors.append(mirror)
 
-    set_to_integration_context_with_retries({'mirrors': mirrors, 'conversations': conversations}, OBJECTS_TO_KEYS,
-                                            SYNC_CONTEXT)
+    if SAFE_MODE:
+        set_to_integration_context_with_retries({'mirrors': mirrors}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+    else:
+        if not integration_context or not integration_context.get('conversations', []):
+            conversations: list = []
+        else:
+            conversations = json.loads(integration_context['conversations'])
+        conversations.append({'name': conversation_name, 'id': conversation_id})
+        set_to_integration_context_with_retries({'mirrors': mirrors, 'conversations': conversations}, OBJECTS_TO_KEYS,
+                                                SYNC_CONTEXT)
 
     if send_first_message:
         server_links = demisto.demistoUrls()
@@ -854,9 +867,13 @@ def invite_to_mirrored_channel(channel_id: str, users: List[Dict]) -> list:
         if slack_user:
             slack_users.append(slack_user)
         else:
+            err_str = f'User {user} not found in Slack'
+            if SAFE_MODE:
+                err_str += ' and Safe Mode is enabled. If this command worked previously for you, please try disabling' \
+                           ' Safe Mode from the instance configuration or use the users email instead.'
             demisto.results({
                 'Type': WARNING_ENTRY_TYPE,
-                'Contents': f'User {user_name} not found in Slack',
+                'Contents': err_str,
                 'ContentsFormat': formats['text']
             })
 
@@ -2111,7 +2128,15 @@ def get_user():
 
     slack_user = get_user_by_name(user)
     if not slack_user:
-        return_error('User not found')
+        err_str = f'User {user} not found in Slack'
+        if SAFE_MODE:
+            err_str += ' and Safe Mode is enabled. If this command worked previously for you, please try disabling' \
+                       ' Safe Mode from the instance configuration or use the users email instead.'
+        demisto.results({
+            'Type': WARNING_ENTRY_TYPE,
+            'Contents': err_str,
+            'ContentsFormat': formats['text']
+        })
 
     profile = slack_user.get('profile', {})
     result_user = {
