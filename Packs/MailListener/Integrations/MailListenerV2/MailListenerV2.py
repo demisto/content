@@ -28,7 +28,8 @@ class Email(object):
             demisto.info(f'Failed parsing mail from bytes: [{e}]\n{traceback.format_exc()}.'
                          '\nWill replace backslash and try to parse again')
 
-            email_object = self.handle_message_slashes(message_bytes)
+            message_bytes = self.handle_message_slashes(message_bytes)
+            email_object = parse_from_bytes(message_bytes)
 
         self.id = id_
         self.to = [mail_addresses for _, mail_addresses in email_object.to]
