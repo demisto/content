@@ -139,7 +139,7 @@ def search_certs_command(client: Client, args: Dict[str, Any], query: str, limit
               'parsed.validity.start', 'parsed.validity.end', 'parsed.names']
     search_fields = argToList(args.get('fields'))
     if search_fields:
-        fields.append(search_fields)
+        fields.extend(search_fields)
     contents = []
     data = {
         'query': query,
