@@ -9,12 +9,12 @@ configuration:
   type: 0
 - display: Tenant ID
   name: tenant_id
-  type: 0
   required: true
+  type: 0
 - display: Authentication Token
   name: authentication_token
-  type: 4
   required: true
+  type: 4
 - defaultvalue: 'true'
   display: Allow creating users
   name: create_user_enabled
@@ -58,31 +58,25 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Integrate with AWS's services to execute CRUD and Group operations for employee lifecycle processes.
+description: Integrate with AWS's services to execute CRUD and Group operations for
+  employee lifecycle processes.
 display: AWS - IAM (user lifecycle management)
 name: AWS-ILM
 script:
   commands:
   - arguments:
-    - default: false
-      description: User Profile indicator details.
-      isArray: false
+    - description: User Profile indicator details.
       name: user-profile
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'true'
       description: 'When set to true, after the command execution the status of the
-        user in the 3rd-party integration will be active. Possible values: "true" and "false".'
-      isArray: false
+        user in the 3rd-party integration will be active. Possible values: "true"
+        and "false".'
       name: allow-enable
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Creates a user.
     execution: true
     name: iam-create-user
@@ -119,25 +113,18 @@ script:
       description: The employee's username in the app.
       type: String
   - arguments:
-    - default: false
-      description: A User Profile indicator.
-      isArray: false
+    - description: A User Profile indicator.
       name: user-profile
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'true'
       description: 'When set to true, after the command execution the status of the
-        user in the 3rd-party integration will be active. Possible values: "true" and "false".'
-      isArray: false
+        user in the 3rd-party integration will be active. Possible values: "true"
+        and "false".'
       name: allow-enable
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Updates an existing user with the data passed in the user-profile
       argument.
     execution: true
@@ -175,15 +162,10 @@ script:
       description: The employee's username in the app.
       type: String
   - arguments:
-    - default: false
-      description: A User Profile indicator.
-      isArray: false
+    - description: A User Profile indicator.
       name: user-profile
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves a single user resource.
-    execution: false
     name: iam-get-user
     outputs:
     - contextPath: IAM.Vendor.active
@@ -218,13 +200,9 @@ script:
       description: The employee's username in the app.
       type: String
   - arguments:
-    - default: false
-      description: A User Profile indicator.
-      isArray: false
+    - description: A User Profile indicator.
       name: user-profile
       required: true
-      secret: false
-    deprecated: false
     description: Disable an active user.
     execution: true
     name: iam-disable-user
@@ -260,20 +238,19 @@ script:
     - contextPath: IAM.Vendor.username
       description: The employee's username in the app.
       type: String
-  - deprecated: false
+  - arguments: []
     description: Retrieves a User Profile schema, which holds all of the user fields
       within the application. Used for outgoing-mapping through the Get Schema option.
-    execution: false
     name: get-mapping-fields
-  - name: iam-get-group
+  - arguments:
+    - description: SCIM content in JSON format.
+      name: scim
+      required: true
     description: Retrieves a group
     execution: true
-    arguments:
-    - name: scim
-      required: true
-      description: SCIM content in JSON format.
+    name: iam-get-group
     outputs:
-    - contextPath: "GetGroup.id"
+    - contextPath: GetGroup.id
       description: Group Id.
       type: String
     - contextPath: GetGroup.displayName
@@ -294,11 +271,13 @@ script:
     - contextPath: GetGroup.errorMessage
       description: Error details if there is a failure.
       type: Unknown
-  - name: iam-create-group
-    arguments:
-    - name: scim
+  - arguments:
+    - description: Group SCIM data with the display name.
+      name: scim
       required: true
-      description: Group SCIM data with the display name.
+    description: Creates an empty group
+    execution: true
+    name: iam-create-group
     outputs:
     - contextPath: CreateGroup.id
       description: Group ID.
@@ -315,27 +294,29 @@ script:
     - contextPath: CreateGroup.errorMessage
       description: Error details if there is a failure
       type: Unknown
-    description: Creates an empty group
-    execution: true
-  - name: iam-update-group
-    arguments:
-    - name: scim
+  - arguments:
+    - description: Group SCIM data.
+      name: scim
       required: true
-      description: Group SCIM data.
-    - name: memberIdsToAdd
-      auto: PREDEFINED
-      predefined:
-      - Comma-separated optional values.
-      description: List of members IDs. A maximum of 100 users per call can
-        be modified using this command
+    - auto: PREDEFINED
+      description: List of members IDs. A maximum of 100 users per call can be modified
+        using this command
       isArray: true
-    - name: memberIdsToDelete
-      auto: PREDEFINED
+      name: memberIdsToAdd
       predefined:
       - Comma-separated optional values.
+    - auto: PREDEFINED
       description: List of members ids to be deleted from the group. A maximum of
         100 users per call can be modified using this command
       isArray: true
+      name: memberIdsToDelete
+      predefined:
+      - Comma-separated optional values.
+    description: Updates an existing group resource. This command allows individual
+      (or groups of) users to be added or removed from the group with a single operation.
+      A maximum of 100 users can be modified in a single call.
+    execution: true
+    name: iam-update-group
     outputs:
     - contextPath: UpdateGroup.id
       description: Group ID.
@@ -352,15 +333,13 @@ script:
     - contextPath: UpdateGroup.errorMessage
       description: Error details if there is a failure.
       type: Unknown
-    description: Updates an existing group resource. This command allows individual
-      (or groups of) users to be added or removed from the group with a single operation.
-      A maximum of 100 users can be modified in a single call.
-    execution: true
-  - name: iam-delete-group
-    arguments:
-    - name: scim
+  - arguments:
+    - description: Group SCIM with ID.
+      name: scim
       required: true
-      description: Group SCIM with ID.
+    description: Permanently removes a group.
+    execution: true
+    name: iam-delete-group
     outputs:
     - contextPath: DeleteGroup.id
       description: Group ID.
@@ -377,18 +356,13 @@ script:
     - contextPath: DeleteGroup.errorMessage
       description: Error details if there is a failure.
       type: Unknown
-    description: Permanently removes a group.
-    execution: true
   dockerimage: demisto/python3:3.9.8.24399
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
-  runonce: false
-  script: '-'
-  subtype: python3
-  type: python
   ismappable: true
   isremotesyncout: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
 tests:
 - No tests
-fromversion: 6.0.0
