@@ -340,7 +340,7 @@ def main():
         demisto.results(result)
         sys.exit(0)
     except Exception as e:
-        return_error('Error has occurred in the AWS GuardDuty Integration: {error}\n {message}'.format(
+        return_error('Error has occurred in the AWS Route53 Integration: {error}\n {message}'.format(
             error=type(e), message=e.message))
 
 
