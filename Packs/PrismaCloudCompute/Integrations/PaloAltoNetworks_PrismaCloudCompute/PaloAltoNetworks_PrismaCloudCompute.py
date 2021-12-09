@@ -49,21 +49,6 @@ class PrismaCloudComputeClient(BaseClient):
             super().__init__(base_url, True, proxy, ok_codes, headers, auth)
             self._verify = verify
 
-    def api_request(
-        self, method, url_suffix, full_url=None, headers=None, auth=None, json_data=None, params=None, data=None,
-        files=None, timeout=10, resp_type='json', ok_codes=None, **kwargs
-    ):
-        """
-        A wrapper method for the http request.
-        """
-        if method == 'PUT':
-            resp_type = 'text'
-
-        return self._http_request(
-            method=method, url_suffix=url_suffix, full_url=full_url, headers=headers, auth=auth, json_data=json_data,
-            params=params, data=data, files=files, timeout=timeout, resp_type=resp_type, ok_codes=ok_codes, **kwargs
-        )
-
     def _http_request(self, method, url_suffix, full_url=None, headers=None,
                       auth=None, json_data=None, params=None, data=None, files=None,
                       timeout=10, resp_type='json', ok_codes=None, **kwargs):
@@ -184,6 +169,12 @@ class PrismaCloudComputeClient(BaseClient):
         if not params:
             params = {}
         return self._http_request(method="GET", url_suffix=f"/profiles/host/{host_id}/forensic", params=params)
+
+    def get_console_version(self):
+        """
+        Sends a request to get the prisma cloud compute console version
+        """
+        return self._http_request(method="GET", url_suffix=f"/version")
 
 
 def str_to_bool(s):
@@ -804,12 +795,13 @@ def get_console_version(client: PrismaCloudComputeClient) -> CommandResults:
     Returns:
         CommandResults: command-results object.
     """
-    version = client.api_request(method="GET", url_suffix="/version")
+    version = client.get_console_version()
 
     return CommandResults(
         outputs_prefix="PrismaCloudCompute.Console.Version",
         outputs=version,
-        readable_output=tableToMarkdown(name="Console version", t={"Version": version}, headers=["Version"])
+        readable_output=tableToMarkdown(name="Console version", t={"Version": version}, headers=["Version"]),
+        raw_response=version
     )
 
 
