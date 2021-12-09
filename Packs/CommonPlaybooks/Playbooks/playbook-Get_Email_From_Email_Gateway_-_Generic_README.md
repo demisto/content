@@ -1,4 +1,4 @@
-Retrieve a specified eml/msg file directly from the email security gateway product.
+This playbook retrieves a specified eml/msg file directly from the email security gateway product.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -22,15 +22,15 @@ This playbook does not use any commands.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| MessageID | The message ID received by the Email Security product. |  | Optional |
-| UserID | The Id of user. |  | Optional |
+| MessageID | The message ID received by the email security gateway product. |  | Optional |
+| UserID | The user ID. |  | Optional |
 
 ## Playbook Outputs
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| File | The MSG/EML File Entry ID | string |
+| File | The MSG/EML file entry ID | String |
 
 ## Playbook Image
 ---
