@@ -178,7 +178,7 @@ def list_secrets(engine_path, version, folder=None):
     if version == '2':
         path += '/metadata'
         if folder:
-            path += '/' + folder
+            path += os.path.join('/', folder, '/')
 
     params = {
         'list': 'true'
@@ -683,7 +683,7 @@ def get_kv2_secrets(engine_path, concat_username_to_cred_name=False, folder=None
 def get_kv2_secret(engine_path, secret, folder=None):
     path = engine_path + 'data/'
     if folder:
-        path += '{}/'.format(folder)
+        path += os.path.join(folder, '/')
     path += secret
 
     return send_request(path, 'get')
