@@ -13,7 +13,7 @@ This integration is fully compatible with the Kafka v2 integration.
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | CSV list of Kafka brokers to connect to, e.g., 172.16.20.207:9092,172.16.20.234:9093 |  | True |
-    | Consumer group id (Default is 'xsoar_group') | This group id will be used when fetching incidents and preforming consumer commands. | False |
+    | Consumer group id | This group id will be used when fetching incidents and preforming consumer commands. If not set the group id 'xsoar_group' will be used. | False |
     | Use TLS for connection |  | False |
     | Trust any certificate (not secure) |  | False |
     | CA certificate of Kafka server (.cer) |  | False |
