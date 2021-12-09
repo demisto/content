@@ -58,6 +58,7 @@ class Pack(object):
     def __init__(self, pack_name, pack_path):
         self._pack_name = pack_name
         self._pack_path = pack_path
+        self._zip_path = None  # zip_path will be updated as part of zip_pack
         self._status = None
         self._public_storage_path = ""
         self._remove_files_list = []  # tracking temporary files, in order to delete in later step
@@ -321,6 +322,10 @@ class Pack(object):
     @property
     def is_missing_dependencies(self):
         return self._is_missing_dependencies
+
+    @property
+    def zip_path(self):
+        return self._zip_path
 
     def _get_latest_version(self):
         """ Return latest semantic version of the pack.
@@ -779,6 +784,31 @@ class Pack(object):
             return task_status
 
     @staticmethod
+    def zip_folder_items(source_path, source_name, zip_pack_path):
+        """
+        Zips the source_path
+        Args:
+            source_path (str): The source path of the folder the items are in.
+            zip_pack_path (str): The path to the zip folder.
+            source_name (str): The name of the source that should be zipped.
+        """
+        task_status = False
+        try:
+            with ZipFile(zip_pack_path, 'w', ZIP_DEFLATED) as pack_zip:
+                for root, dirs, files in os.walk(source_path, topdown=True):
+                    for f in files:
+                        full_file_path = os.path.join(root, f)
+                        relative_file_path = os.path.relpath(full_file_path, source_path)
+                        pack_zip.write(filename=full_file_path, arcname=relative_file_path)
+
+            task_status = True
+            logging.success(f"Finished zipping {source_name} folder.")
+        except Exception:
+            logging.exception(f"Failed in zipping {source_name} folder")
+        finally:
+            return task_status
+
+    @staticmethod
     def encrypt_pack(zip_pack_path, pack_name, encryption_key, extract_destination_path,
                      private_artifacts_dir, secondary_encryption_key):
         """ decrypt the pack in order to see that the pack was encrypted in the first place.
@@ -871,7 +901,7 @@ class Pack(object):
         """
         return self.decrypt_pack(encrypted_zip_pack_path, decryption_key)
 
-    def zip_pack(self, extract_destination_path="", pack_name="", encryption_key="",
+    def zip_pack(self, extract_destination_path="", encryption_key="",
                  private_artifacts_dir='private_artifacts', secondary_encryption_key=""):
         """ Zips pack folder.
 
@@ -879,28 +909,20 @@ class Pack(object):
             bool: whether the operation succeeded.
             str: full path to created pack zip.
         """
-        zip_pack_path = f"{self._pack_path}.zip" if not encryption_key else f"{self._pack_path}_not_encrypted.zip"
-        task_status = False
-
-        try:
-            with ZipFile(zip_pack_path, 'w', ZIP_DEFLATED) as pack_zip:
-                for root, dirs, files in os.walk(self._pack_path, topdown=True):
-                    for f in files:
-                        full_file_path = os.path.join(root, f)
-                        relative_file_path = os.path.relpath(full_file_path, self._pack_path)
-                        pack_zip.write(filename=full_file_path, arcname=relative_file_path)
-
-            if encryption_key:
-                self.encrypt_pack(zip_pack_path, pack_name, encryption_key, extract_destination_path,
+        self._zip_path = f"{self._pack_path}.zip" if not encryption_key else f"{self._pack_path}_not_encrypted.zip"
+        source_path = self._pack_path
+        source_name = self._pack_name
+        task_status = self.zip_folder_items(source_path, source_name, self._zip_path)
+        if encryption_key:
+            try:
+                Pack.encrypt_pack(self._zip_path, source_name, encryption_key, extract_destination_path,
                                   private_artifacts_dir, secondary_encryption_key)
-            task_status = True
-            logging.success(f"Finished zipping {self._pack_name} pack.")
-        except Exception:
-            logging.exception(f"Failed in zipping {self._pack_name} folder")
-        finally:
-            # If the pack needs to be encrypted, it is initially at a different location than this final path
-            final_path_to_zipped_pack = f"{self._pack_path}.zip"
-            return task_status, final_path_to_zipped_pack
+                # If the pack needs to be encrypted, it is initially at a different location than this final path
+                zip_pack_path = f"{source_path}.zip"
+            except Exception:
+                task_status = False
+                logging.exception(f"Failed in encrypting {source_name} folder")
+        return task_status, zip_pack_path
 
     def detect_modified(self, content_repo, index_folder_path, current_commit_hash, previous_commit_hash):
         """ Detects pack modified files.

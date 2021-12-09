@@ -910,6 +910,65 @@ def get_images_data(packs_list: list):
     return images_data
 
 
+def map_pack_dependencies_graph(pack_name, first_level_graph, full_dep_graph):
+    """ Travel the mandatory dependencies to collect all dependencies under each pack name """
+    if pack_name not in full_dep_graph:
+        pack_deps = set()
+        if pack_name != "Base":
+            # Base is always missing from the dependencies graph, but all are dependent on it
+            pack_deps.add("Base")
+        full_dep_graph[pack_name] = pack_deps
+        deps = first_level_graph.get(pack_name, {}).get('dependencies')
+        if not deps:
+            return
+        for dep_name, dep_val in deps.items():
+            if dep_val.get('mandatory'):
+                pack_deps.add(dep_name)
+                map_pack_dependencies_graph(dep_name, first_level_graph, full_dep_graph)
+                # add 2nd+ level mandatory dependencies
+                for inner_dep_name in full_dep_graph[dep_name]:
+                    pack_deps.add(inner_dep_name)
+    # returning value for readability
+    return full_dep_graph
+
+
+def upload_packs_with_dependencies_zip(extract_destination_path, packs_dependencies_mapping, packs_list, packs_dict):
+    logging.info("Starting to collect pack with dependencies zips")
+    full_deps_graph = {}
+    for pack in packs_list:
+        pack_with_dep_path = os.path.join(pack.path, "with_dependencies")
+        zip_with_deps_path = pack.path + "with_dependencies.zip"
+        full_deps_graph = map_pack_dependencies_graph(pack.name, packs_dependencies_mapping, full_deps_graph)
+        pack_deps = full_deps_graph[pack.name]
+        if not os.path.isfile(pack.zip_path):
+            task_status, _ = pack.zip_pack()
+            if not task_status:
+                pack.status = PackStatus.FAILED_ZIPPING_PACK_ARTIFACTS.name
+                pack.cleanup()
+                continue
+        shutil.move(pack.zip_path, os.path.join(pack_with_dep_path, pack.name + '.zip'))
+        for dep_name in pack_deps:
+            if dep_name not in packs_dict:
+                dep_pack = Pack(dep_name, os.path.join(extract_destination_path, dep_name))
+                packs_dict[dep_name] = dep_pack
+            else:
+                dep_pack = packs_dict[dep_name]
+            if not os.path.isfile(dep_pack.zip_path):
+                task_status, _ = dep_pack.zip_pack()
+                if not task_status:
+                    dep_pack.status = PackStatus.FAILED_ZIPPING_PACK_ARTIFACTS.name
+                    dep_pack.cleanup()
+                    continue
+            shutil.move(dep_pack.zip_path, os.path.join(pack_with_dep_path, dep_name + '.zip'))
+        Pack.zip_folder_items(
+            pack_with_dep_path,
+            pack_with_dep_path,
+            zip_with_deps_path
+        )
+        os.remove(pack_with_dep_path)
+        # TODO: upload zip_with_deps_path
+
+
 def main():
     install_logging('Prepare_Content_Packs_For_Testing.log', logger=logging)
     option = option_handler()
@@ -952,6 +1011,7 @@ def main():
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
     packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in pack_names
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
+    packs_dict = {pack.name: pack for pack in packs_list}
     diff_files_list = content_repo.commit(current_commit_hash).diff(content_repo.commit(previous_commit_hash))
 
     # taking care of private packs
@@ -1142,6 +1202,14 @@ def main():
     # summary of packs status
     print_packs_summary(successful_packs, skipped_packs, failed_packs, not is_bucket_upload_flow)
 
+    # handle packs with dependencies zip
+    upload_packs_with_dependencies_zip(extract_destination_path, packs_dependencies_mapping, packs_list, packs_dict)
+
 
 if __name__ == '__main__':
-    main()
+    # main()
+    full_graph = {}
+    with open("/Users/darbel/Downloads/packs_dependencies_outputs_example.json") as f:
+        a = json.load(f)
+    map_pack_dependencies_graph("Malware", a, full_graph)
+    print('ok')
