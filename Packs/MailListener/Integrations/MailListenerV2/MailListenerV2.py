@@ -49,7 +49,7 @@ class Email(object):
         self.labels = self._generate_labels()
 
     @staticmethod
-    def handle_message_slashes(message_bytes: bytes):
+    def handle_message_slashes(message_bytes: bytes) -> bytes:
         """
         Handles the case where message bytes containing "\U" or "\u" which needs escaping
         Input example #1:
