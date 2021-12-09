@@ -8405,6 +8405,8 @@ def signal_handler_memory_dump(_sig, _frame):
     classes_as_list = list(classes_dict.values())
     print_memory_dump(classes_as_list)
 
+    print_local_vars()
+
 
 def print_memory_dump(classes_as_list: list):
     """
@@ -8438,6 +8440,22 @@ def print_memory_dump(classes_as_list: list):
 
     demisto.info(message)
 
+
+def print_local_vars():
+    """
+    A function that prints the local variables to log info
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    local_vars = list(locals().items())
+    message = '\n\n--- Start Local Vars ---\n\n'
+    for current_local_var in local_vars:
+        message += str(current_local_var) + '\n'
+
+    message += '\n--- End Local Vars ---\n\n'
+
+    demisto.info(message)
 
 
 def register_signal_handler_memory_dump(signal_type=signal.SIGUSR2):
