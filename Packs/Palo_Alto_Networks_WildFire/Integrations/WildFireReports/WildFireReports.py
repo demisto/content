@@ -16,7 +16,12 @@ class Client(BaseClient):
         return self._http_request(
             'POST',
             url_suffix='/get/report',
-            params={'apikey': self.token, 'format': 'pdf', 'hash': file_hash},
+            params={
+                'apikey': self.token,
+                'agent': 'xsoartim',
+                'format': 'pdf',
+                'hash': file_hash,
+            },
             resp_type='response',
             ok_codes=(200, 401, 404),
         )
