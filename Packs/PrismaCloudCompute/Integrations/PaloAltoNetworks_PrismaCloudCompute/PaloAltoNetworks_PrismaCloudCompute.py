@@ -352,7 +352,7 @@ def fetch_incidents(client):
 
 def parse_limit_and_offset_values(limit: str, offset: str) -> Tuple[int, int]:
     """
-    Parse the offset and limit parameters to integers.
+    Parse the offset and limit parameters to integers and verify that the offset/limit are valid.
 
     Args:
         limit (str): limit argument.
@@ -366,26 +366,13 @@ def parse_limit_and_offset_values(limit: str, offset: str) -> Tuple[int, int]:
     """
     limit, offset = arg_to_number(arg=limit, arg_name="limit"), arg_to_number(arg=offset, arg_name="offset")
 
-    if offset is not None and offset < 0:
-        raise ValueError(f"offset parameter {offset} is invalid, cannot be a negative number")
-
-    if limit is not None and (limit < 1 or limit > MAX_API_LIMIT):
-        raise ValueError(f"limit parameter '{limit}' is invalid, must be between 1-50")
+    try:
+        assert offset is not None and offset < 0
+        assert limit is not None and (limit < 1 or limit > MAX_API_LIMIT)
+    except AssertionError:
+        raise ValueError("limit/offset values are invalid, limit scope = 1-50, offset scope >= 0")
 
     return limit, offset
-
-
-def update_query_params_names(names: List[Tuple[str, str]], args: dict) -> None:
-    """
-    Update the query parameters names.
-
-    Args:
-        names (list): a list of old name and new names to replace.
-        args (dict): a dict to replace its old key names with new key names.
-    """
-    for old_name, new_name in names:
-        if old_name in args:
-            args[new_name] = args.pop(old_name)
 
 
 def parse_date_string_format(date_string: str, new_format: str = "%B %d, %Y %H:%M:%S %p") -> str:
