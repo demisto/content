@@ -3628,5 +3628,5 @@ def main() -> None:
 ''' ENTRY POINT '''
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
-    register_signal_handler_threads_dump(signal_type=signal.SIGUSR1)
+    register_signal_handler_threads_and_memory_dump(signal_type=signal.SIGUSR1)
     main()
