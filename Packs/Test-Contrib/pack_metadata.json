@@ -1,0 +1,17 @@
+{
+    "name": "Test-Contrib",
+    "description": "Testing contribution of new pack",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "daniel",
+    "url": "",
+    "email": "",
+    "created": "2021-12-09T09:27:22Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "darkushin"
+    ]
+}
