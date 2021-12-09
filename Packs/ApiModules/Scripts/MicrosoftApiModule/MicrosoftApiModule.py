@@ -14,6 +14,7 @@ class Scopes:
     graph = 'https://graph.microsoft.com/.default'
     security_center = 'https://api.securitycenter.windows.com/.default'
     security_center_apt_service = 'https://securitycenter.onmicrosoft.com/windowsatpservice/.default'
+    management_azure = 'https://management.azure.com/.default'
 
 
 # authorization types
@@ -105,6 +106,7 @@ class MicrosoftClient(BaseClient):
             resource: str = '', **kwargs):
         """
         Overrides Base client request function, retrieves and adds to headers access token before sending the request.
+
         Args:
             resp_type: Type of response to return. will be ignored if `return_empty_response` is True.
             headers: Headers to add to the request.
@@ -114,7 +116,7 @@ class MicrosoftClient(BaseClient):
         Returns:
             Response from api according to resp_type. The default is `json` (dict or list).
         """
-        if 'ok_codes' not in kwargs:
+        if 'ok_codes' not in kwargs and not self._ok_codes:
             kwargs['ok_codes'] = (200, 201, 202, 204, 206, 404)
         token = self.get_access_token(resource=resource, scope=scope)
         default_headers = {
@@ -167,9 +169,11 @@ class MicrosoftClient(BaseClient):
         Access token is used and stored in the integration context
         until expiration time. After expiration, new refresh token and access token are obtained and stored in the
         integration context.
+
         Args:
             resource (str): The resource identifier for which the generated token will have access to.
             scope (str): A scope to get instead of the default on the API.
+
         Returns:
             str: Access token that will be added to authorization header.
         """
@@ -190,8 +194,7 @@ class MicrosoftClient(BaseClient):
             if self.epoch_seconds() < valid_until:
                 return access_token
 
-        auth_type = self.auth_type
-        if auth_type == OPROXY_AUTH_TYPE:
+        if self.auth_type == OPROXY_AUTH_TYPE:
             if self.multi_resource:
                 for resource_str in self.resources:
                     access_token, expires_in, refresh_token = self._oproxy_authorize(resource_str)
@@ -302,21 +305,15 @@ class MicrosoftClient(BaseClient):
             return self._get_token_device_code(refresh_token, scope, integration_context)
         else:
             # by default, grant_type is CLIENT_CREDENTIALS
-            if self.multi_resource:
-                expires_in = -1  # init variable as an int
-                for resource in self.resources:
-                    self.resource = resource
-                    access_token, expires_in, refresh_token = self._get_self_deployed_token_client_credentials()
-                    self.resource_to_access_token[resource] = access_token
-                self.resource = ''
-                return '', expires_in, refresh_token
             return self._get_self_deployed_token_client_credentials(scope=scope)
 
     def _get_self_deployed_token_client_credentials(self, scope: Optional[str] = None) -> Tuple[str, int, str]:
         """
         Gets a token by authorizing a self deployed Azure application in client credentials grant type.
+
         Args:
             scope; A scope to add to the headers. Else will get self.scope.
+
         Returns:
             tuple: An access token and its expiry.
         """
@@ -397,6 +394,7 @@ class MicrosoftClient(BaseClient):
     ) -> Tuple[str, int, str]:
         """
         Gets a token by authorizing a self deployed Azure application.
+
         Returns:
             tuple: An access token, its expiry and refresh token.
         """
@@ -439,10 +437,13 @@ class MicrosoftClient(BaseClient):
     @staticmethod
     def error_parser(error: requests.Response) -> str:
         """
+
         Args:
             error (requests.Response): response with error
+
         Returns:
             str: string of error
+
         """
         try:
             response = error.json()
@@ -463,6 +464,7 @@ class MicrosoftClient(BaseClient):
     def epoch_seconds(d: datetime = None) -> int:
         """
         Return the number of seconds for given date. If no date, return current.
+
         Args:
             d (datetime): timestamp
         Returns:
@@ -487,6 +489,7 @@ class MicrosoftClient(BaseClient):
         Args:
             content: Content to encrypt
             key: encryption key from oproxy
+
         Returns:
             timestamp: Encrypted content
         """
@@ -500,6 +503,7 @@ class MicrosoftClient(BaseClient):
             Args:
                 string: String to encrypt
                 enc_key: Encryption key
+
             Returns:
                 bytes: Encrypted value
             """
@@ -569,6 +573,7 @@ and enter the code **{user_code}** to authenticate.
 
 class NotFoundError(Exception):
     """Exception raised for 404 - Not Found errors.
+
     Attributes:
         message -- explanation of the error
     """
