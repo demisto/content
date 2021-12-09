@@ -1140,45 +1140,6 @@ def convert_url_to_ascii_character(url_name):
     return re.sub('([^a-zA-Z\W]+)', convert_non_ascii_chars, url_name)
 
 
-# def find_hash_type(file_hash: str = ""):
-#     """Find the type of a file hash by its length.
-#
-#     Args:
-#         file_hash: The hash that represents the file.
-#
-#     Returns:
-#         4 variables that represent the sha of the file respectively [md5, sha1, sha256, sha512],
-#         only one is with the hash value the others are None.
-#
-#     """
-#     if len(file_hash) == 32:  # md5
-#         return file_hash, None, None, None
-#     if len(file_hash) == 40:  # sha1
-#         return None, file_hash, None, None
-#     if len(file_hash) == 64:  # sha256
-#         return None, None, file_hash, None
-#     if len(file_hash) == 128:  # sha512
-#         return None, None, None, file_hash
-def raise_if_hash_not_valid(file_hash: str):
-    """Raises an error if file_hash is not valid
-
-    Args:
-        file_hash: file hash
-
-    Raises:
-        ValueError: if hash is not of type SHA-256, SHA-1 or MD5
-
-    Examples:
-        >>> raise_if_hash_not_valid('not a hash')
-        Traceback (most recent call last):
-         ...
-        ValueError: Hash "not a hash" is not of type SHA-256, SHA-1 or MD5
-        >>> raise_if_hash_not_valid('7e641f6b9706d860baf09fe418b6cc87')
-    """
-    if get_hash_type(file_hash) not in ('sha256', 'sha1', 'md5'):
-        raise ValueError(f'Hash "{file_hash}" is not of type SHA-256, SHA-1 or MD5')
-
-
 ''' COMMANDS'''
 
 
@@ -1659,13 +1620,12 @@ def search_file_command(file, reliability, create_relationships):
         else:
             md = tableToMarkdown(table_name, autofocus_file_output)
 
-        # md5, sha1, sha256, sha512 = find_hash_type(file_hash)
+        hash_type = get_hash_type(file_hash)
 
         file = Common.File(
-            md5=md5,
-            sha1=sha1,
-            sha256=sha256,
-            sha512=sha512,
+            md5=file_hash if hash_type == 'md5' else None,
+            sha1=file_hash if hash_type == 'sha1' else None,
+            sha256=file_hash if hash_type == 'sha256' else None,
             dbot_score=dbot_score,
             malware_family=get_tags_for_tags_and_malware_family_fields(raw_tags, True),
             tags=get_tags_for_tags_and_malware_family_fields(raw_tags),
