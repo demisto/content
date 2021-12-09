@@ -1,6 +1,5 @@
 id: Microsoft Defender For Endpoint - Unisolate Endpoint
-version: 14
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Microsoft Defender For Endpoint - Unisolate Endpoint
 description: This playbook will auto unisolate endpoints through Microsoft Defender
   For Endpoint by using Hostname, IP, or Device ID associated with the asset you wish
@@ -17,6 +16,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -87,6 +87,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -562,8 +563,9 @@ tasks:
       - "2"
     scriptarguments:
       value:
-        simple: "Please note that the following IDs are incorrect. No action was taken
-          on the following Device ID: \n${MicrosoftATP.IncorrectIDs}\n${MicrosoftATP.IncorrectIPs}\n${MicrosoftATP.IncorrectHostnames}"
+        simple: "Please note that the following IDs are incorrect. No action was taken\
+          \ on the following Device ID: \n${MicrosoftATP.IncorrectIDs}\n${MicrosoftATP.IncorrectIPs}\n\
+          ${MicrosoftATP.IncorrectHostnames}"
     separatecontext: false
     view: |-
       {
@@ -1007,6 +1009,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "33"
@@ -1038,6 +1041,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "7"
@@ -1067,6 +1071,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -1096,6 +1101,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "11"
@@ -1125,6 +1131,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "26"
@@ -1172,17 +1179,17 @@ inputs:
     For more information, you can use the following commands:
     !microsoft-atp-get-machine-details
     !microsoft-atp-get-machines
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Hostname
   value: {}
   required: false
   description: The Device Hostname that you would like to Isolate
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Device_IP
   value: {}
   required: false
   description: The Device IP that you would like to Isolate
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: MicrosoftATP.MachineAction.ID
   description: The machine action ID.
@@ -1202,3 +1209,11 @@ outputs:
 - contextPath: MicrosoftATP.IncorrectIPs
   description: Incorrect Device IPs entered
   type: string
+tests:
+- Microsoft Defender Advanced Threat Protection - Test prod
+- Microsoft Defender Advanced Threat Protection - Test dev
+- Microsoft Defender Advanced Threat Protection - Test
+- Microsoft Defender Advanced Threat Protection - Test self deployed
+- Microsoft Defender - ATP - Indicators SC Test
+- Microsoft Defender - ATP - Indicators Test
+fromversion: 6.0.0
