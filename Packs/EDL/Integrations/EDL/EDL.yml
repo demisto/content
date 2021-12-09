@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: ExportIndicators v2
+  id: EDL
   version: -1
 configuration:
 - additionalinfo: The query to run to update the EDL. To view expected results, you
@@ -188,7 +188,7 @@ configuration:
 description: Use the Export Indicators Service integration to provide an endpoint
   with a list of indicators as a service for the system indicators.
 display: Export Indicators Service v2
-name: ExportIndicators v2
+name: EDL
 script:
   commands:
   - arguments:
