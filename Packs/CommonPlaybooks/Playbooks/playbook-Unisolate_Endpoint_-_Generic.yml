@@ -22,21 +22,22 @@ name: Unisolate Endpoint - Generic
 outputs:
 - contextPath: MicrosoftATP.MachineAction.ID
   description: The machine action ID.
+  type: string
 - contextPath: MicrosoftATP.NonUnisolateList
   description: Those machine IDs that won't be released from isolation
-  type: unknown
+  type: string
 - contextPath: MicrosoftATP.UnisolateList
   description: Machine IDs that were released from isolation.
-  type: unknown
+  type: string
 - contextPath: MicrosoftATP.IncorrectIDs
   description: Incorrect Device IDs entered
-  type: unknown
+  type: string
 - contextPath: MicrosoftATP.IncorrectHostnames
   description: Incorrect Device Hostnames entered
-  type: unknown
+  type: string
 - contextPath: MicrosoftATP.IncorrectIPs
   description: Incorrect Device IPs entered
-  type: unknown
+  type: string
 starttaskid: '0'
 tasks:
   '0':

@@ -65,21 +65,22 @@ outputs:
   type: unknown
 - contextPath: MicrosoftATP.MachineAction.ID
   description: The machine action ID.
+  type: string
 - contextPath: MicrosoftATP.IsolateList
   description: The Machine IDs which were Isolated
-  type: unknown
+  type: string
 - contextPath: MicrosoftATP.NonIsolateList
   description: Machine ID's which will not be isolated
-  type: unknown
+  type: string
 - contextPath: MicrosoftATP.IncorrectIDs
   description: Incorrect Device IDs entered
-  type: unknown
+  type: string
 - contextPath: MicrosoftATP.IncorrectHostnames
   description: Incorrect Device Hostnames entered
-  type: unknown
+  type: string
 - contextPath: MicrosoftATP.IncorrectIPs
   description: Incorrect Device IPs entered
-  type: unknown
+  type: string
 starttaskid: '0'
 tasks:
   '0':

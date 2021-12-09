@@ -5,12 +5,12 @@ Make sure to provide the valid playbook input for the integration you are using.
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+* Microsoft Defender For Endpoint - Isolate Endpoint
+* Isolate Endpoint - Cybereason
+* Crowdstrike Falcon - Isolate Endpoint
+* Cortex XDR - Isolate Endpoint
 * Block Endpoint - Carbon Black Response V2
 * FireEye HX - Isolate Endpoint
-* Crowdstrike Falcon - Isolate Endpoint
-* Isolate Endpoint - Cybereason
-* Microsoft Defender For Endpoint - Isolate Endpoint
-* Cortex XDR - Isolate Endpoint
 
 ### Integrations
 This playbook does not use any integrations.
@@ -50,9 +50,12 @@ This playbook does not use any commands.
 | PaloAltoNetworksXDR.Endpoint.is_isolated | Whether the endpoint is isolated. | unknown |
 | CbResponse.Sensors.Status | Sensor status. | unknown |
 | CbResponse.Sensors.Isolated | Whether the sensor is isolated. | unknown |
-| MicrosoftATP.MachineAction.ID | The machine action ID. | unknown |
-| MicrosoftATP.IsolateList | The Machine IDs which were Isolated | unknown |
-| MicrosoftATP.NonIsolateList | Machine ID's which will not be isolated | unknown |
+| MicrosoftATP.MachineAction.ID | The machine action ID. | string |
+| MicrosoftATP.IsolateList | The Machine IDs which were Isolated | string |
+| MicrosoftATP.NonIsolateList | Machine ID's which will not be isolated | string |
+| MicrosoftATP.IncorrectIDs | Incorrect Device IDs entered | string |
+| MicrosoftATP.IncorrectHostnames | Incorrect Device Hostnames entered | string |
+| MicrosoftATP.IncorrectIPs | Incorrect Device IPs entered | string |
 
 ## Playbook Image
 ---

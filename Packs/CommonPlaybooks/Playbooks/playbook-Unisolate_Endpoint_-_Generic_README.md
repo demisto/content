@@ -11,12 +11,12 @@ Currently supports the following integrations:
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Unisolate Endpoint - Cybereason
-* FireEye HX - Unisolate Endpoint
-* Carbon Black Response - Unisolate Endpoint
 * Cortex XDR - Unisolate Endpoint
+* Carbon Black Response - Unisolate Endpoint
+* FireEye HX - Unisolate Endpoint
 * Microsoft Defender For Endpoint - Unisolate Endpoint
 * Crowdstrike Falcon - Unisolate Endpoint
+* Unisolate Endpoint - Cybereason
 
 ### Integrations
 This playbook does not use any integrations.
@@ -40,9 +40,12 @@ This playbook does not use any commands.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| MicrosoftATP.MachineAction.ID | The machine action ID. | unknown |
-| MicrosoftATP.NonUnisolateList | Those machine IDs that won't be released from isolation | unknown |
-| MicrosoftATP.UnisolateList | Machine IDs that were released from isolation. | unknown |
+| MicrosoftATP.MachineAction.ID | The machine action ID. | string |
+| MicrosoftATP.NonUnisolateList | Those machine IDs that won't be released from isolation | string |
+| MicrosoftATP.UnisolateList | Machine IDs that were released from isolation. | string |
+| MicrosoftATP.IncorrectIDs | Incorrect Device IDs entered | string |
+| MicrosoftATP.IncorrectHostnames | Incorrect Device Hostnames entered | string |
+| MicrosoftATP.IncorrectIPs | Incorrect Device IPs entered | string |
 
 ## Playbook Image
 ---
