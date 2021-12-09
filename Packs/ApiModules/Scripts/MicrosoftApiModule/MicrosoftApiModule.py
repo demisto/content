@@ -305,9 +305,17 @@ class MicrosoftClient(BaseClient):
             return self._get_token_device_code(refresh_token, scope, integration_context)
         else:
             # by default, grant_type is CLIENT_CREDENTIALS
+            if self.multi_resource:
+                expires_in = -1  # init variable as an int
+                for resource in self.resources:
+                    access_token, expires_in, refresh_token = self._get_self_deployed_token_client_credentials(
+                        resource=resource)
+                    self.resource_to_access_token[resource] = access_token
+                return '', expires_in, refresh_token
             return self._get_self_deployed_token_client_credentials(scope=scope)
 
-    def _get_self_deployed_token_client_credentials(self, scope: Optional[str] = None) -> Tuple[str, int, str]:
+    def _get_self_deployed_token_client_credentials(self, scope: Optional[str] = None,
+                                                    resource: Optional[str] = None) -> Tuple[str, int, str]:
         """
         Gets a token by authorizing a self deployed Azure application in client credentials grant type.
 
@@ -327,8 +335,8 @@ class MicrosoftClient(BaseClient):
         if self.scope or scope:
             data['scope'] = scope if scope else self.scope
 
-        if self.resource:
-            data['resource'] = self.resource
+        if self.resource or resource:
+            data['resource'] = resource if resource else self.resource
 
         response_json: dict = {}
         try:
