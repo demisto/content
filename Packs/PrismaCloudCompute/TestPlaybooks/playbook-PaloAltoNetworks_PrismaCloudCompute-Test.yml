@@ -298,6 +298,9 @@ tasks:
       - "10"
     note: false
     quietmode: 0
+    scriptarguments:
+      hostname:
+        simple: '*163*'
     separatecontext: false
     skipunavailable: false
     task:
@@ -305,13 +308,13 @@ tasks:
       description: Get information about the hosts and their profile events, this
         command supports asterisks which allows you to get host profiles that contain
         a specific substring
-      id: 7ebb265a-468b-403e-8ac9-cf2a97d7974a
+      id: a8aeef4b-69e8-42e2-8f16-e59dc56c1c0f
       iscommand: true
       name: prisma-cloud-compute-profile-host-list
       script: PaloAltoNetworks_PrismaCloudCompute|||prisma-cloud-compute-profile-host-list
       type: regular
       version: -1
-    taskid: 7ebb265a-468b-403e-8ac9-cf2a97d7974a
+    taskid: a8aeef4b-69e8-42e2-8f16-e59dc56c1c0f
     timertriggers: []
     type: regular
     view: |-
@@ -331,6 +334,9 @@ tasks:
       - "23"
     note: false
     quietmode: 0
+    scriptarguments:
+      id:
+        simple: '*5f2561fab84*'
     separatecontext: false
     skipunavailable: false
     task:
@@ -338,13 +344,13 @@ tasks:
       description: Get information about the containers and their profile events,
         this command supports asterisks which allows you to get container profiles
         that contain a specific substring
-      id: 84b08227-5fb5-462d-840d-0f749a98cb25
+      id: fe116c0b-d994-4c3f-885d-89a5d988f04c
       iscommand: true
       name: prisma-cloud-compute-profile-container-list
       script: PaloAltoNetworks_PrismaCloudCompute|||prisma-cloud-compute-profile-container-list
       type: regular
       version: -1
-    taskid: 84b08227-5fb5-462d-840d-0f749a98cb25
+    taskid: fe116c0b-d994-4c3f-885d-89a5d988f04c
     timertriggers: []
     type: regular
     view: |-
@@ -360,52 +366,61 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: PrismaCloudCompute.ProfileHost._Id
+              simple: PrismaCloudCompute.ProfileHost._id
+          operator: containsGeneral
+          right:
+            value:
+              simple: 5-163
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.ProfileHost.accountID
+          operator: isEqualString
+          right:
+            value:
+              simple: "676921422616"
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.ProfileHost.apps
           operator: isNotEmpty
       - - left:
             iscontext: true
             value:
-              simple: PrismaCloudCompute.ProfileHost.AccountID
+              simple: PrismaCloudCompute.ProfileHost.collections
           operator: isNotEmpty
       - - left:
             iscontext: true
             value:
-              simple: PrismaCloudCompute.ProfileHost.Apps
+              simple: PrismaCloudCompute.ProfileHost.created
           operator: isNotEmpty
       - - left:
             iscontext: true
             value:
-              simple: PrismaCloudCompute.ProfileHost.Collections
+              simple: PrismaCloudCompute.ProfileHost.hash
+          operator: isEqualString
+          right:
+            value:
+              simple: "1"
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.ProfileHost.labels
           operator: isNotEmpty
       - - left:
             iscontext: true
             value:
-              simple: PrismaCloudCompute.ProfileHost.Created
+              simple: PrismaCloudCompute.ProfileHost.sshEvents
           operator: isNotEmpty
       - - left:
             iscontext: true
             value:
-              simple: PrismaCloudCompute.ProfileHost.Hash
+              simple: PrismaCloudCompute.ProfileHost.time
           operator: isNotEmpty
       - - left:
             iscontext: true
             value:
-              simple: PrismaCloudCompute.ProfileHost.Labels
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: PrismaCloudCompute.ProfileHost.SshEvents
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: PrismaCloudCompute.ProfileHost.Time
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: PrismaCloudCompute.ProfileHost.Geoip
+              simple: PrismaCloudCompute.ProfileHost.geoip
           operator: isNotEmpty
       label: "yes"
     id: "10"
@@ -421,12 +436,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 8079de70-8fb7-498f-8c50-020bbce9a2d5
+      id: f38706fe-c9ca-41ac-832b-eff25aa90024
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: 8079de70-8fb7-498f-8c50-020bbce9a2d5
+    taskid: f38706fe-c9ca-41ac-832b-eff25aa90024
     timertriggers: []
     type: condition
     view: |-
@@ -448,29 +463,19 @@ tasks:
     quietmode: 0
     scriptarguments:
       id:
-        complex:
-          filters:
-          - - left:
-                iscontext: true
-                value:
-                  simple: PrismaCloudCompute.ProfileContainer._Id
-              operator: containsGeneral
-              right:
-                value:
-                  simple: 5f2561fab84792d2aff3e355ed241afe820026f9345de760450dcaf65331a77f
-          root: PrismaCloudCompute.ProfileContainer._Id
+        simple: ${PrismaCloudCompute.ProfileContainer._id}
     separatecontext: false
     skipunavailable: false
     task:
       brand: PaloAltoNetworks_PrismaCloudCompute
       description: Get the hosts where a specific container is running.
-      id: d58e3aee-3784-4d60-861d-559810545666
+      id: bdb3c458-922f-4115-8bdd-313efbda26a4
       iscommand: true
       name: prisma-cloud-compute-profile-container-hosts-list
       script: PaloAltoNetworks_PrismaCloudCompute|||prisma-cloud-compute-profile-container-hosts-list
       type: regular
       version: -1
-    taskid: d58e3aee-3784-4d60-861d-559810545666
+    taskid: bdb3c458-922f-4115-8bdd-313efbda26a4
     timertriggers: []
     type: regular
     view: |-
@@ -487,7 +492,7 @@ tasks:
             iscontext: true
             value:
               complex:
-                accessor: HostsIDs
+                accessor: hostsIDs
                 root: PrismaCloudCompute.ProfileContainerHost
                 transformers:
                 - operator: FirstArrayElement
@@ -509,12 +514,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: ec085e78-3525-4710-8457-17c6a76ac31d
+      id: 5af0980b-8c67-403f-8a25-e0249a531257
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: ec085e78-3525-4710-8457-17c6a76ac31d
+    taskid: 5af0980b-8c67-403f-8a25-e0249a531257
     timertriggers: []
     type: condition
     view: |-
@@ -531,7 +536,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - "15"
+      - "25"
     note: false
     quietmode: 0
     scriptarguments:
@@ -541,37 +546,27 @@ tasks:
           - - left:
                 iscontext: true
                 value:
-                  simple: PrismaCloudCompute.ProfileContainerHost.HostsIDs
+                  simple: PrismaCloudCompute.ProfileContainerHost.hostsIDs
               operator: containsGeneral
               right:
                 value:
                   simple: 5-163
-          root: PrismaCloudCompute.ProfileContainerHost.HostsIDs
+          root: PrismaCloudCompute.ProfileContainerHost.hostsIDs
       id:
-        complex:
-          filters:
-          - - left:
-                iscontext: true
-                value:
-                  simple: PrismaCloudCompute.ProfileContainer._Id
-              operator: containsGeneral
-              right:
-                value:
-                  simple: 5f2561fab84792d2aff3e355ed241afe820026f9345de760450dcaf65331a77f
-          root: PrismaCloudCompute.ProfileContainer._Id
+        simple: ${PrismaCloudCompute.ProfileContainer._id}
     separatecontext: false
     skipunavailable: false
     task:
       brand: PaloAltoNetworks_PrismaCloudCompute
       description: Get runtime forensics data for a specific container on a specific
         host
-      id: 64d2533c-dc12-4ab8-8639-411b93da8e85
+      id: c9df96e7-84cf-4f5a-8cc7-bb90f152788e
       iscommand: true
       name: prisma-cloud-compute-profile-container-forensic-list
       script: PaloAltoNetworks_PrismaCloudCompute|||prisma-cloud-compute-profile-container-forensic-list
       type: regular
       version: -1
-    taskid: 64d2533c-dc12-4ab8-8639-411b93da8e85
+    taskid: c9df96e7-84cf-4f5a-8cc7-bb90f152788e
     timertriggers: []
     type: regular
     view: |-
@@ -581,48 +576,6 @@ tasks:
           "y": 1400
         }
       }
-  "15":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: PrismaCloudCompute.ContainerForensic.Forensics.Path
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: PrismaCloudCompute.ContainerForensic.Forensics.Type
-          operator: isNotEmpty
-      label: "yes"
-    id: "15"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      "yes":
-      - "5"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: e46b88b3-5604-48c6-8bb2-58dcba44b9fb
-      iscommand: false
-      name: Verify Outputs
-      type: condition
-      version: -1
-    taskid: e46b88b3-5604-48c6-8bb2-58dcba44b9fb
-    timertriggers: []
-    type: condition
-    view: |-
-      {
-        "position": {
-          "x": -840,
-          "y": 1620
-        }
-      }
   "16":
     id: "16"
     ignoreworker: false
@@ -630,34 +583,24 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - "17"
+      - "24"
     note: false
     quietmode: 0
     scriptarguments:
       id:
-        complex:
-          filters:
-          - - left:
-                iscontext: true
-                value:
-                  simple: PrismaCloudCompute.ProfileHost._Id
-              operator: containsGeneral
-              right:
-                value:
-                  simple: 23-249
-          root: PrismaCloudCompute.ProfileHost._Id
+        simple: ${PrismaCloudCompute.ProfileHost._id}
     separatecontext: false
     skipunavailable: false
     task:
       brand: PaloAltoNetworks_PrismaCloudCompute
       description: Get forensics on a specific host
-      id: 43f5965d-aaba-4702-881e-ce760659444c
+      id: e5d8fba4-f90e-4edc-8e6d-e4f694f06f23
       iscommand: true
       name: prisma-cloud-compute-host-forensic-list
       script: PaloAltoNetworks_PrismaCloudCompute|||prisma-cloud-compute-host-forensic-list
       type: regular
       version: -1
-    taskid: 43f5965d-aaba-4702-881e-ce760659444c
+    taskid: e5d8fba4-f90e-4edc-8e6d-e4f694f06f23
     timertriggers: []
     type: regular
     view: |-
@@ -665,48 +608,6 @@ tasks:
         "position": {
           "x": -185,
           "y": 890
-        }
-      }
-  "17":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: PrismaCloudCompute.HostForensic.Forensics.Type
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: PrismaCloudCompute.HostForensic.Forensics.Path
-          operator: isNotEmpty
-      label: "yes"
-    id: "17"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      "yes":
-      - "5"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 83e48be8-3378-4f8d-8df2-8267dfddb824
-      iscommand: false
-      name: Verify Outputs
-      type: condition
-      version: -1
-    taskid: 83e48be8-3378-4f8d-8df2-8267dfddb824
-    timertriggers: []
-    type: condition
-    view: |-
-      {
-        "position": {
-          "x": -185,
-          "y": 1125
         }
       }
   "18":
@@ -817,7 +718,7 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: PrismaCloudCompute.CustomFeedIP.Feed
+              simple: PrismaCloudCompute.CustomFeedIP.feed
           operator: hasLength
           right:
             value:
@@ -825,7 +726,7 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: PrismaCloudCompute.CustomFeedIP.Feed
+              simple: PrismaCloudCompute.CustomFeedIP.feed
           operator: containsGeneral
           right:
             value:
@@ -833,7 +734,7 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: PrismaCloudCompute.CustomFeedIP.Feed
+              simple: PrismaCloudCompute.CustomFeedIP.feed
           operator: containsGeneral
           right:
             value:
@@ -852,12 +753,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: db8fa25c-4918-4bc1-8cf0-c345cfbbe0b4
+      id: aa46361d-44d6-4205-86d0-2f7b8844a400
       iscommand: false
       name: Verify outputs
       type: condition
       version: -1
-    taskid: db8fa25c-4918-4bc1-8cf0-c345cfbbe0b4
+    taskid: aa46361d-44d6-4205-86d0-2f7b8844a400
     timertriggers: []
     type: condition
     view: |-
@@ -907,28 +808,40 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: PrismaCloudCompute.ProfileContainer._Id
+              simple: PrismaCloudCompute.ProfileContainer._id
+          operator: containsGeneral
+          right:
+            value:
+              simple: 5f2561fab84
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.ProfileContainer.image
+          operator: containsGeneral
+          right:
+            value:
+              simple: private:console
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.ProfileContainer.imageID
+          operator: containsGeneral
+          right:
+            value:
+              simple: 5f2561fab84
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.ProfileContainer.processes
           operator: isNotEmpty
       - - left:
             iscontext: true
             value:
-              simple: PrismaCloudCompute.ProfileContainer.Image
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
+              simple: PrismaCloudCompute.ProfileContainer.state
+          operator: isEqualString
+          right:
             value:
-              simple: PrismaCloudCompute.ProfileContainer.ImageID
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: PrismaCloudCompute.ProfileContainer.Processes
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: PrismaCloudCompute.ProfileContainer.State
-          operator: isNotEmpty
+              simple: active
       label: "yes"
     id: "23"
     ignoreworker: false
@@ -943,12 +856,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: cf9435a9-ad14-4dc5-825d-917823d36468
+      id: e751a736-5ea8-428d-8fb0-1230f971f27c
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: cf9435a9-ad14-4dc5-825d-917823d36468
+    taskid: e751a736-5ea8-428d-8fb0-1230f971f27c
     timertriggers: []
     type: condition
     view: |-
@@ -956,6 +869,90 @@ tasks:
         "position": {
           "x": -840,
           "y": 590
+        }
+      }
+  "24":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.HostForensic.Forensics.path
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.HostForensic.Forensics.type
+          operator: isNotEmpty
+      label: "yes"
+    id: "24"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "yes":
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7a396810-41e3-4d00-8bed-3ed046b2b72a
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 7a396810-41e3-4d00-8bed-3ed046b2b72a
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -185,
+          "y": 1165
+        }
+      }
+  "25":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.ContainerForensic.Forensics.path
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.ContainerForensic.Forensics.type
+          operator: isNotEmpty
+      label: "yes"
+    id: "25"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "yes":
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: eadcfd46-fbff-46df-8409-cc27a8b7e048
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: eadcfd46-fbff-46df-8409-cc27a8b7e048
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -840,
+          "y": 1680
         }
       }
 version: -1
