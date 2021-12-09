@@ -35,7 +35,15 @@ Outgoing miroriring is recommended for Cortex XSOAR version 6.2 and above. If yo
 14. In the Enrichment Types field, select Asset, Drilldown and Identity.
 This enrichment provides additional information about Assets, drilldown, and identities that are related to the notable events you ingest.
 15. Fetch backwards window - this backward window is for cases there is a gap between the event occurrence time and the event index time on the server.
-The backward window should be the average time in minutes between events occurence time and index time. This value will be included on the search query time range in order to not miss events that was index on delay.  
+In Splunk, there is often a delay between the time an incident is created (the event's "occurrence time") and the time it is actually searchable in Splunk and visible in the index (the event's "index time").
+This delay can be caused by an inefficient Splunk architecture, causing higher event indexing latency. However, it can also be "by design", e.g. if some endpoints / machines that generate Splunk events are usually offline.
+Another point to note is that Splunk's searches are based on the occurrence time behind the scenes. Meaning, Splunk itself uses occurrence time as its determining factor for bucket division and search.
+Therefore - we can't use index time as our primary search key without making the searches inefficient.
+The backwards window is a way for you to configure the longest delay you would like to support.
+This parameter determines the size of the occurrence time "sliding window" we will support in our queries. For example, if set for 2 hours, we will always search for events that occurred up to 2 hours ago (and will of course ignore duplicates).
+However, there is obviously a price - the larger the window, the longer it will take for fetch queries to complete.
+The best value to set depends on the delays that you see in your system (consult with your Splunk expert / master), the number of events in your system and other network properties.
+Please use this parameter with careful consideration.
 16. Click Test and then Save & exit.
 
 **Note: If you are using custom incident type, you also need to create custom corresponding incoming and outgoing mappers. Pay attention, if you want to use mirror mechanism, incoming mapper must contain the following fields: dbotMirrorDirection, dbotMirrorId, dbotMirrorInstance**
