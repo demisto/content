@@ -62,7 +62,7 @@ def test_censys_host_search(requests_mock, client):
     assert response.outputs == SEARCH_HOST_OUTPUTS
 
 
-def test_censys_certs_search(client):
+def test_censys_certs_search(requests_mock, client):
     """
     Given:
         Command arguments: query and limit
@@ -78,15 +78,13 @@ def test_censys_certs_search(client):
     }
 
     mock_response = util_load_json('test_data/search_certs_response.json')
-    with requests_mock.Mocker() as mock:
-        mock.post('https://search.censys.io/api/v1/search/certificates', json=mock_response)
-
-        response = censys_search_command(client, args)
-        history = mock.request_history[0]
-        assert json.loads(history.text)['fields'] == ['parsed.fingerprint_sha256', 'parsed.subject_dn',
-                                                      'parsed.issuer_dn', 'parsed.issuer.organization',
-                                                      'parsed.validity.start', 'parsed.validity.end', 'parsed.names',
-                                                      'parsed.fingerprint_sha1', 'validation.apple.valid']
+    requests_mock.post('https://search.censys.io/api/v1/search/certificates', json=mock_response)
+    response = censys_search_command(client, args)
+    history = requests_mock.request_history[0]
+    assert json.loads(history.text)['fields'] == ['parsed.fingerprint_sha256', 'parsed.subject_dn',
+                                                  'parsed.issuer_dn', 'parsed.issuer.organization',
+                                                  'parsed.validity.start', 'parsed.validity.end', 'parsed.names',
+                                                  'parsed.fingerprint_sha1', 'validation.apple.valid']
     assert response.outputs == SEARCH_CERTS_OUTPUTS
     assert "### Search results for query \"parsed.issuer.common_name: \"Let's Encrypt\"" in response.readable_output
 
