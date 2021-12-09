@@ -109,6 +109,8 @@ def http_request(uri: str, method: str, headers: dict = {},
     if is_pcap:
         return result
 
+    demisto.debug(f'THIS IS THE RESULT TEXT {result.text} STATUS CODE {result.status_code}')
+
     json_result = json.loads(xml2json(result.text))
 
     # handle raw response that does not contain the response key, e.g configuration export
@@ -506,16 +508,18 @@ def panorama_commit(args):
         is_partial = True
         command += f'<partial><admin><member>{admin_name}</member></admin></partial>'
 
-    force_commit = argToBoolean(args.get('force_commit'))
+    force_commit = argToBoolean(args.get('force_commit')) if args.get('force_commit') else None
     if force_commit:
         command += '<force></force>'
 
-    exclude_device_network_configuration = args.get('exclude_device_network_configuration')
+    exclude_device_network = args.get('exclude_device_network_configuration')
+    exclude_device_network_configuration = argToBoolean(exclude_device_network) if exclude_device_network else None
     if exclude_device_network_configuration:
         is_partial = True
         command += '<partial><device-and-network>excluded</device-and-network></partial>'
 
-    exclude_shared_objects = args.get('exclude_shared_objects')
+    exclude_shared_objects_str = args.get('exclude_shared_objects')
+    exclude_shared_objects = argToBoolean(exclude_shared_objects_str) if exclude_shared_objects_str else None
     if exclude_shared_objects:
         is_partial = True
         command += '<partial><shared-object>excluded</shared-object></partial>'

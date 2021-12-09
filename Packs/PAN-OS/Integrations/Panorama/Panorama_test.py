@@ -763,3 +763,10 @@ class TestPanoramaEditRuleCommand:
         with pytest.raises(DemistoException):
             Panorama.panorama_edit_rule_command(args)
 
+
+# @pytest.mark.parametrize('args, expected_url',
+#                          [])
+# def test_panorama_commit_command(mocker, args, expected_url):
+#     """
+#     """
+#     return get_offense_enrichment(enrichment) == expected
