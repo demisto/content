@@ -266,7 +266,8 @@ def convert_incident_to_readable(raw_incident: Dict) -> Dict:
         raw_incident = {}
 
     incident_meta_data = _get_meta_data_for_incident(raw_incident)
-    device_groups = {device.get('device name') for device in incident_meta_data.get('Devices', [])}
+    device_groups = {device.get('device name') for device in incident_meta_data.get('Devices', [])
+                     if device.get('device name')}
     return {
         'Incident name': raw_incident.get('incidentName'),
         'Tags': ', '.join(raw_incident.get('tags', [])),
