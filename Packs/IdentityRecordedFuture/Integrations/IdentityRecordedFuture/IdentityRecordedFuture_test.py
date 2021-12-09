@@ -2,18 +2,19 @@ import io
 import os
 import unittest
 import json
-from datetime import datetime
 from pathlib import Path
-from unittest.mock import call
+from unittest.mock import call, patch, Mock
 from IdentityRecordedFuture import (
     Actions,
     Client,
+    period_to_date,
 )
 
 from CommonServerPython import CommandResults
 import vcr as vcrpy
 
 CASSETTES = Path(__file__).parent / 'cassettes'
+DATETIME_STR_VALUE = "2021-12-08T12:10:21.837Z"
 
 
 def filter_out_whoami(response):
@@ -37,29 +38,11 @@ vcr = vcrpy.VCR(
 )
 
 
-class RFTest(unittest.TestCase):
-    def setUp(self) -> None:
-        base_url = "https://api.recordedfuture.com/v2/"
-        verify_ssl = True
-        self.token = os.environ.get("RF_TOKEN")
-        headers = {
-            "X-RFToken": self.token,
-            "X-RF-User-Agent": "Cortex_XSOAR/2.0 Cortex_XSOAR_unittest_0.1",
-        }
+def util_load_json(path):
+    with io.open(path, mode='r', encoding='utf-8') as f:
+        return json.loads(f.read())
 
-        self.client = Client(
-            base_url=base_url, verify=verify_ssl, headers=headers, proxy=None
-        )
-        self.actions = Actions(self.client)
-
-    @vcr.use_cassette()
-    def test_whoami(self) -> None:
-        resp = self.client.whoami()
-        self.assertEqual(isinstance(resp, dict), True)
-
-
-
-def create_client():
+def create_client() -> Client:
     base_url = "https://api.recordedfuture.com/gw/xsoar/"
     verify_ssl = True
     token = os.environ.get("RF_TOKEN")
@@ -71,3 +54,59 @@ def create_client():
     return Client(
         base_url=base_url, verify=verify_ssl, headers=headers, proxy=None
     )
+
+
+@vcr.use_cassette()
+def test_client_whoami() -> None:
+    client = create_client()
+    resp = client.whoami()
+    assert isinstance(resp, dict)==True
+
+
+class RFTestIdentity(unittest.TestCase):
+    def setUp(self) -> None:
+        self.domains = ['fake1.com']
+        self.password_properties = ['Letter', 'Number']
+        self.period = 'Last 3 Months'
+
+    @patch('IdentityRecordedFuture.period_to_date', return_value=DATETIME_STR_VALUE)
+    def test_identity_search(self, period_to_date_mock) -> None:
+        """Test search identities code"""
+        domain_type = 'All'
+        all_domain_types = ['Email', 'Authorization']
+        limit_identities = 33
+        action_prefix = 'RecordedFuture.Credentials.SearchIdentities'
+        search_response = util_load_json('./cassettes/identity_search_response.json')
+        client = create_client()
+        client.identity_search = Mock(return_value=search_response)
+        actions = Actions(client)
+        action_return = actions.identity_search_command(
+            self.domains, self.period, domain_type, self.password_properties, limit_identities
+        )
+        period_to_date_mock.assert_called_once_with(self.period)
+        client.identity_search.assert_called_once_with(
+            self.domains, DATETIME_STR_VALUE, all_domain_types, self.password_properties, limit_identities,
+        )
+        self.assertEqual(action_return.outputs_prefix, action_prefix)
+        self.assertEqual(action_return.outputs, search_response)
+
+    @patch('IdentityRecordedFuture.period_to_date', return_value=DATETIME_STR_VALUE)
+    def test_identity_lookup(self, period_to_date_mock):
+        email_identities = ['realname@fake.com']
+        username_identities = [{'login': 'notreal', 'domain':'fake1.com'}]
+        identities = 'realname@fake.com; notreal'
+
+        lookup_response = util_load_json('./cassettes/identity_lookup_response.json')
+        action_prefix = 'RecordedFuture.Credentials.Identities'
+        client = create_client()
+        client.identity_lookup = Mock(return_value=lookup_response)
+        actions = Actions(client)
+        action_return = actions.identity_lookup_command(
+            identities, self.period, self.password_properties, self.domains,
+        )
+        period_to_date_mock.assert_called_once_with(self.period)
+        client.identity_lookup.assert_called_once_with(
+            email_identities, username_identities, DATETIME_STR_VALUE, self.password_properties,
+        )
+        self.assertEqual(action_return.outputs_prefix, action_prefix)
+        self.assertEqual(action_return.outputs, lookup_response)

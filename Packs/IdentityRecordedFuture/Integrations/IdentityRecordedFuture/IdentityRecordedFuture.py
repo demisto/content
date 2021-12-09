@@ -4,7 +4,7 @@ from urllib import parse
 import requests
 import json
 import re
-import datetime
+from datetime import datetime, timedelta
 
 # flake8: noqa: F402,F405 lgtm
 import demistomock as demisto
@@ -22,6 +22,19 @@ requests.packages.urllib3.disable_warnings()  # pylint:disable=no-member
 
 __version__ = '1.0'
 
+
+def period_to_date(period):
+    current_time = datetime.now()
+    periods_to_date = {
+        'Last 24 Hours': (current_time - timedelta(days=1)).strftime(ISO_DATE_FORMAT),
+        'Last 7 Days': (current_time - timedelta(weeks=1)).strftime(ISO_DATE_FORMAT),
+        'Last Month': (current_time - timedelta(days=31)).strftime(ISO_DATE_FORMAT),
+        'Last 3 Months': (current_time - timedelta(3*30)).strftime(ISO_DATE_FORMAT),
+        'Last 6 Months': (current_time - timedelta(6*30)).strftime(ISO_DATE_FORMAT),
+        'Last Year': (current_time - timedelta(365)).strftime(ISO_DATE_FORMAT),
+        'All time': None,
+    }
+    return periods_to_date[period]
 
 
 class Client(BaseClient):
@@ -94,20 +107,6 @@ class Actions():
     def __init__(self, rf_client: Client):
         self.client = rf_client
 
-    @staticmethod
-    def __period_to_date(period):
-        current_time = datetime.datetime.now()
-        periods_to_date = {
-            'Last 24 Hours': (current_time - datetime.timedelta(days=1)).strftime(ISO_DATE_FORMAT),
-            'Last 7 Days': (current_time - datetime.timedelta(weeks=1)).strftime(ISO_DATE_FORMAT),
-            'Last Month': (current_time - datetime.timedelta(days=31)).strftime(ISO_DATE_FORMAT),
-            'Last 3 Months': (current_time - datetime.timedelta(3*30)).strftime(ISO_DATE_FORMAT),
-            'Last 6 Months': (current_time - datetime.timedelta(6*30)).strftime(ISO_DATE_FORMAT),
-            'Last Year': (current_time - datetime.timedelta(365)).strftime(ISO_DATE_FORMAT),
-            'All time': None,
-        }
-        return periods_to_date[period]
-
     def identity_search_command(
         self,
         domains: List[str],
@@ -122,7 +121,7 @@ class Actions():
             domain_type = ["Email", "Authorization"]
         else:
             domain_type = [domain_type]
-        date_period = self.__period_to_date(latest_downloaded)
+        date_period = period_to_date(latest_downloaded)
         response = self.client.identity_search(domains, date_period, domain_type, password_properties, limit_identities)
         command_results = self.__build_search_context(response, domains)
         return command_results
@@ -141,9 +140,9 @@ class Actions():
 
     def __build_search_context(self, search_data, domains):
         result = CommandResults(
-                readable_output=self.__build_search_markdown(search_data['identities'], domains),
+                readable_output=self.__build_search_markdown(search_data, domains),
                 outputs_prefix='RecordedFuture.Credentials.SearchIdentities',
-                outputs=search_data['identities'],
+                outputs=search_data,
             )
         return result
 
@@ -178,13 +177,13 @@ class Actions():
         else:
             raise DemistoException(f"Failed due to - Received unexpected data in Lookup command: {identities}")
 
-        date_period = self.__period_to_date(first_downloaded)
+        date_period = period_to_date(first_downloaded)
         response = self.client.identity_lookup(email_identities, authorization_identities, date_period, password_properties)
         command_results = self.__build_lookup_context(response, identities)
         return command_results
 
     def __build_lookup_markdown(self, lookup_data, identities):
-        if lookup_data:
+        if lookup_data.get('identities'):
             markdown=['## Credentials Lookup']
             markdown.append("*****")
             for identity in lookup_data['identities']:
@@ -194,6 +193,8 @@ class Actions():
                 passwords = []
                 dumps = []
                 breaches = []
+                authorization_service_text = ''
+                exfiltration_date_text = ''
                 for idx, credential in  enumerate(credentials):
                     exposed_secret = credential["exposed_secret"]
                     password_number_text = f"Password {idx + 1}"
@@ -207,10 +208,15 @@ class Actions():
                         passwords.append(
                             f"{password_number_text}: {hash_value} ({hash_algorithm})"
                         )
+                    if credential.get('authorization_service'):
+                        authorization_service_text = f"Authorization service url: {credential['authorization_service']['url']}\n"
+                    if credential.get('exfiltration_date'):
+                        exfiltration_date = datetime.strptime(credential['exfiltration_date'], ISO_DATE_FORMAT).strftime("%b %Y")
+                        exfiltration_date_text = f"Exfiltration date: {exfiltration_date}"
                     for dump in credential['dumps']:
                         dump_downloaded = dump.get('downloaded', '')
                         if dump_downloaded:
-                            dump_downloaded = datetime.datetime.strptime(dump_downloaded, ISO_DATE_FORMAT).strftime("%b %Y")
+                            dump_downloaded = datetime.strptime(dump_downloaded, ISO_DATE_FORMAT).strftime("%b %Y")
                             dump_text = f"__{dump['name']}__, {dump_downloaded},  {password_number_text}"
                         else:
                             dump_text = f"__{dump['name']}__, {password_number_text}"
@@ -221,7 +227,7 @@ class Actions():
                         for breach in dump.get('breaches', []):
                             breach_date = breach.get('breached')
                             if breach_date:
-                                breach_date = datetime.datetime.strptime(breach_date, ISO_DATE_FORMAT).strftime("%b %Y")
+                                breach_date = datetime.strptime(breach_date, ISO_DATE_FORMAT).strftime("%b %Y")
                                 breaches.append(f"__{breach['name']}__, {breach_date}, {password_number_text}")
                             else:
                                 breach_date = breaches.append(f"__{breach['name']}__, {password_number_text}")
@@ -230,9 +236,13 @@ class Actions():
 
                 markdown.append("### Exposed Password Data")
                 markdown.extend(passwords)
+                markdown.append(authorization_service_text)
+                markdown.append(exfiltration_date_text)
                 markdown.append("*****")
-                markdown.append("### Breaches")
-                markdown.extend(breaches)
+                if breaches:
+                    # Authentication data do not have breaches
+                    markdown.append("### Breaches")
+                    markdown.extend(breaches)
                 markdown.append("*****")
                 markdown.append("### Dumps")
                 markdown.extend(dumps)
@@ -274,7 +284,7 @@ def main() -> None:
 
         headers = {
             "X-RFToken": demisto_params["token"],
-            "X-RF-User-Agent": f"Cortex_XSOAR/{__version__} Cortex_XSOAR_"
+            "X-RF-User-Agent": f"Cortex_XSOAR_Identity/{__version__} Cortex_XSOAR_"
             f'{demisto.demistoVersion()["version"]}',
         }
         client = Client(
