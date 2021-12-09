@@ -7,6 +7,11 @@ configuration:
   name: brokers
   required: true
   type: 0
+- display: Consumer group id (Default is 'xsoar_group')
+  additionalinfo: This group id will be used when fetching incidents and preforming consumer commands.
+  name: group_id
+  required: false
+  type: 0
 - display: Use TLS for connection
   name: use_ssl
   required: false
@@ -186,6 +191,6 @@ script:
   type: python
   subtype: python3
   dockerimage: demisto/confluent-kafka:1.0.0.24422
-fromversion: 6.0.0
+fromversion: 6.1.0
 tests:
 - KafkaV3 Test

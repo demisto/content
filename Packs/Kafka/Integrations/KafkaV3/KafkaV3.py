@@ -790,6 +790,7 @@ def main():  # pragma: no cover
     demisto_args = demisto.args()
     demisto.debug(f'Command being called is {demisto_command}')
     brokers = demisto_params.get('brokers')
+    group_id = demisto_params.get('group_id', 'xsoar_group')
     offset = handle_empty(demisto_params.get('offset', 'earliest'), 'earliest')
     trust_any_cert = demisto_params.get('insecure', False)
 
@@ -804,9 +805,9 @@ def main():  # pragma: no cover
         ssl_password = demisto_params.get('additional_password', None)
         kafka_kwargs = {'brokers': brokers, 'ca_cert': ca_cert, 'client_cert': client_cert,
                         'client_cert_key': client_cert_key, 'ssl_password': ssl_password, 'offset': offset,
-                        'trust_any_cert': trust_any_cert}
+                        'trust_any_cert': trust_any_cert, 'group_id': group_id}
     else:
-        kafka_kwargs = {'brokers': brokers, 'offset': offset, 'trust_any_cert': trust_any_cert}
+        kafka_kwargs = {'brokers': brokers, 'offset': offset, 'trust_any_cert': trust_any_cert, 'group_id': group_id}
 
     try:
         commands_manager(kafka_kwargs, demisto_params, demisto_args, demisto_command)

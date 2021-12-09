@@ -13,6 +13,7 @@ This integration is fully compatible with the Kafka v2 integration.
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | CSV list of Kafka brokers to connect to, e.g., 172.16.20.207:9092,172.16.20.234:9093 |  | True |
+    | Consumer group id (Default is 'xsoar_group') | This group id will be used when fetching incidents and preforming consumer commands. | False |
     | Use TLS for connection |  | False |
     | Trust any certificate (not secure) |  | False |
     | CA certificate of Kafka server (.cer) |  | False |
@@ -60,9 +61,41 @@ Prints all topics and their partitions.
 #### Command Example
 ```!kafka-print-topics```
 
-#### Human Readable Output
+#### Context Example
+```
+{
+    "Kafka": {
+        "Topic": [
+            {
+                "Name": "test-topic1", 
+                "Partitions": [
+                    {
+                        "ID": 0
+                    }
+                ]
+            }, 
+            {
+                "Name": "test-topic2", 
+                "Partitions": [
+                    {
+                        "ID": 0
+                    },
+                    {
+                        "ID": 1
+                    }
+                ]
+            } 
+        ]
+    }
+}
+```
 
-![](https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/Kafka_V2_mceclip3.png)
+#### Human Readable Output
+##### Kafka Topics
+| **Name** | **Partitions** |
+| --- | --- |
+| test-topic1 | {'ID': 0} |
+| test-topic2 | {'ID': 0, 'EarliestOffset': 0, 'OldestOffset': 3}, {'ID': 1, 'EarliestOffset': 0, 'OldestOffset': 4} | 
 
 ### kafka-publish-msg
 ***
@@ -86,11 +119,11 @@ Publishes a message to Kafka.
 There is no context output for this command.
 
 #### Command Example
-```!kafka-publish-msg topic=test value="test message"```
+```!kafka-publish-msg topic=test-topic value="test message"```
 
 #### Human Readable Output
+Message was successfully produced to topic 'test-topic', partition 0
 
-![](https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/Kafka_V2_mceclip4.png)
 
 ### kafka-consume-msg
 ***
@@ -119,11 +152,29 @@ Consumes a single Kafka message.
 
 
 #### Command Example
-```!kafka-consume-msg topic=test offset=latest```
+```!kafka-consume-msg topic=test-topic offset=latest```
+
+#### Context Example
+```
+{
+    "Kafka": {
+        "Topic": {
+            "Message": {
+                "Value": "test message", 
+                "Offset": 11
+            }, 
+            "Name": "test-topic"
+        }
+    }
+}
+```
 
 #### Human Readable Output
+##### Message consumed from topic 'test'
+| **Offset** | **Message** |
+| --- | --- |
+| 11 | test message |
 
-![](https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/Kafka_V2_mceclip6.png)
 
 ### kafka-fetch-partitions
 ***
@@ -151,6 +202,27 @@ Fetches partitions for a topic.
 #### Command Example
 ```!kafka-fetch-partitions topic=test```
 
-#### Human Readable Output
+### Context Example
+```
+{
+    "Kafka": {
+        "Topic": {
+            "Partition": [
+                0,
+                1,
+                2
+            ], 
+            "Name": "test"
+        }
+    }
+}
+```
 
-![](https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/Kafka_V2_mceclip8.png)
+#### Human Readable Output
+##### Available partitions for topic 'test'
+| **Partitions** |
+| --- |
+| 0 |
+| 1 |
+| 2 |
+
