@@ -1107,7 +1107,7 @@ def test_eml_contains_attachment_with_unknown_encoded_file_name(mocker):
 
     assert len(results) == 1
     assert results[0]['Type'] == entryTypes['note']
-    assert results[0]['EntryContext']['Email']['AttachmentNames'] == ['04AIf|ƷυИ���������������.pdf']
+    assert results[0]['EntryContext']['Email']['AttachmentNames'] == ['04AIf|???���������������.pdf']
     assert debug[0] == 'Could not find the encoding type of the string, decoding by default with utf-8'
 
 
