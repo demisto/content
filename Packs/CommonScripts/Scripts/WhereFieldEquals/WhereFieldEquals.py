@@ -18,10 +18,8 @@ def where_field_equals(args):
     found_matches = []
     for dict_item in values_to_search:
         if isinstance(dict_item, dict) and dict_item.get(field) == equal_to:
-            if get_field:
-                value = dict_item.get(get_field)
-                if value:
-                    found_matches.append(value)
+            if get_field and get_field in dict_item and dict_item[get_field] is not None:
+                found_matches.append(dict_item[get_field])
             else:
                 found_matches.append(dict_item)
 

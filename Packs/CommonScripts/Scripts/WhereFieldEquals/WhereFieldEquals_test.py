@@ -118,6 +118,10 @@ class WhereFieldEquals(unittest.TestCase):
                 {
                     "NetworkType": "Internal",
                     "Address": "test4@demisto.com",
+                },
+                {
+                    "NetworkType": "Internal",
+                    "Address": "{}",
                 }
             ],
             "field": "NetworkType",
@@ -150,5 +154,30 @@ class WhereFieldEquals(unittest.TestCase):
             "name"
         }
         expected_result = "מה זה"
+        received_result = where_field_equals(args)
+        assert expected_result == received_result
+
+    @staticmethod
+    def test_where_returned_field_is_None():
+        """
+        Given: list of dictionaries where some keys have a None boolean value.
+        When: Finding fields that contain the given value under the given key.
+        Then: Return properly formatted tuple containing a human readable representation
+        and a dictionary containing the correct context.
+        """
+        args = {
+            "value":
+            '[{ "name": "", "type": "IP" }, '
+            '{ "name": {}, "type": "IP" }, '
+            '{ "name": [], "type": "IP" }, '
+            '{ "name": 0, "type": "IP" }]',
+            "field":
+            "type",
+            "equalTo":
+            "IP",
+            "getField":
+            "name"
+        }
+        expected_result = '["",{},[],0]'
         received_result = where_field_equals(args)
         assert expected_result == received_result
