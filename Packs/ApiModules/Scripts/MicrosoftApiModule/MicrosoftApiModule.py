@@ -320,8 +320,8 @@ class MicrosoftClient(BaseClient):
         Gets a token by authorizing a self deployed Azure application in client credentials grant type.
 
         Args:
-            scope; A scope to add to the headers. Else will get self.scope.
-
+            scope: A scope to add to the headers. Else will get self.scope.
+            resource: A resource to add to the headers. Else will get self.resource.
         Returns:
             tuple: An access token and its expiry.
         """
@@ -336,7 +336,7 @@ class MicrosoftClient(BaseClient):
             data['scope'] = scope if scope else self.scope
 
         if self.resource or resource:
-            data['resource'] = resource if resource else self.resource
+            data['resource'] = resource if resource else self.resource  # type: ignore
 
         response_json: dict = {}
         try:
