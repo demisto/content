@@ -155,7 +155,7 @@ class PrismaCloudComputeClient(BaseClient):
         """
         return self._http_request(method="GET", url_suffix=f"profiles/container/{container_id}/hosts")
 
-    def get_container_forensic(self, container_id, params=None):
+    def get_container_forensics(self, container_id, params=None):
         """
         Sends a request to get a specific container forensics.
 
@@ -169,6 +169,21 @@ class PrismaCloudComputeClient(BaseClient):
         if not params:
             params = {}
         return self._http_request(method="GET", url_suffix=f"profiles/container/{container_id}/forensic", params=params)
+
+    def get_host_forensics(self, host_id, params=None):
+        """
+        Sends a request to get a specific host forensics.
+
+        Args:
+            host_id (str): the host ID.
+            params (dict): query parameters.
+
+        Returns:
+            list[dict]: host forensics.
+        """
+        if not params:
+            params = {}
+        return self._http_request(method="GET", url_suffix=f"/profiles/host/{host_id}/forensic", params=params)
 
 
 def str_to_bool(s):
@@ -682,7 +697,7 @@ def get_profile_container_forensic_list(client: PrismaCloudComputeClient, args: 
     args["limit"] = limit + offset
 
     if container_forensics := filter_api_response(
-        api_response=client.get_container_forensic(container_id=container_id, params=assign_params(**args)),
+        api_response=client.get_container_forensics(container_id=container_id, params=assign_params(**args)),
         limit=limit,
         offset=offset
     ):
@@ -719,49 +734,6 @@ def get_profile_container_forensic_list(client: PrismaCloudComputeClient, args: 
     )
 
 
-def build_host_forensic_response(
-    client: PrismaCloudComputeClient, host_id: str, args: dict
-) -> Tuple[Optional[dict], str]:
-    """
-    Build a table and a context response for the 'prisma-cloud-compute-host-forensic-list' command.
-
-    Args:
-        client (PrismaCloudComputeClient): prisma-cloud-compute client.
-        host_id (str): host ID.
-        args (dict): prisma-cloud-compute-profile-container-forensic-list command arguments.
-
-    Returns:
-        Tuple[dict, str]: Context and table response.
-    """
-    # api request does not support offset only, but does support limit.
-    offset = args.pop("offset", 0)
-    limit = args.get("limit", 20)
-    # because the api supports only limit, it is necessary to add the requested offset to the limit be able to take the
-    # correct offset:limit after the api call.
-    args["limit"] = offset + args["limit"]
-
-    host_forensics = filter_api_response(
-        client=client, url_suffix=f"/profiles/host/{host_id}/forensic", offset=offset, limit=limit, args=args
-    )
-
-    if host_forensics:
-        parse_forensics_timestamps(forensics=host_forensics)
-
-        context_output = {
-            "hostID": host_id,
-            "Forensics": host_forensics
-        }
-
-        return context_output, tableToMarkdown(
-            name="Host forensics report",
-            t=host_forensics,
-            headers=["type", "path", "user", "pid", "timestamp", "command", "app"],
-            removeNull=True,
-            headerTransform=lambda word: word[0].upper() + word[1:]
-        )
-    return None, "No results found"
-
-
 def get_profile_host_forensic_list(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
     """
     Returns runtime forensics data for a specific host.
@@ -774,18 +746,50 @@ def get_profile_host_forensic_list(client: PrismaCloudComputeClient, args: dict)
     Returns:
         CommandResults: command-results object.
     """
+    if "incident_id" in args:
+        args["incidentID"] = args.pop("incident_id")
 
     host_id = args.pop("id")
-    update_query_params_names(names=[("incident_id", "incidentID")], args=args)
-    parse_limit_and_offset_values(args=args)
+    # api request does not support offset only, but does support limit.
+    limit, offset = parse_limit_and_offset_values(limit=args.get("limit"), offset=args.pop("offset"))
+    # because the api supports only limit, it is necessary to add the requested offset to the limit be able to take the
+    # correct offset:limit after the api call.
+    args["limit"] = limit + offset
 
-    context, table = build_host_forensic_response(client=client, host_id=host_id, args=args)
+    if host_forensics := filter_api_response(
+        api_response=client.get_host_forensics(host_id=host_id, params=assign_params(**args)),
+        limit=limit,
+        offset=offset
+    ):
+        for forensic in host_forensics:
+            if "timestamp" in forensic:
+                forensic["timestamp"] = parse_date_string_format(date_string=forensic.get("timestamp", ""))
+            if "listeningStartTime" in forensic:
+                forensic["listeningStartTime"] = parse_date_string_format(
+                    date_string=forensic.get("listeningStartTime", "")
+                )
+
+        context_output = {
+            "hostID": host_id,
+            "Forensics": host_forensics
+        }
+
+        table = tableToMarkdown(
+            name="Host forensics report",
+            t=host_forensics,
+            headers=["type", "path", "user", "pid", "timestamp", "command", "app"],
+            removeNull=True,
+            headerTransform=lambda word: word[0].upper() + word[1:]
+        )
+    else:
+        context_output, table = None, "No results found"
 
     return CommandResults(
         outputs_prefix='PrismaCloudCompute.HostForensic',
-        outputs=context,
+        outputs=context_output,
         readable_output=table,
-        outputs_key_field="hostID"
+        outputs_key_field="hostID",
+        raw_response=host_forensics
     )
 
 
