@@ -1386,7 +1386,9 @@ def search_ip_command(ip, reliability, create_relationships):
     relationships = []
 
     for ip_address in ip_list:
-        raw_res = search_indicator('ipv4_address', ip_address)
+        ip_type = 'ipv6_address' if is_ipv6_valid(ip_address) else 'ipv4_address'
+        raw_res = search_indicator(ip_type, ip_address)
+
         if not raw_res.get('indicator'):
             raise ValueError('Invalid response for indicator')
 

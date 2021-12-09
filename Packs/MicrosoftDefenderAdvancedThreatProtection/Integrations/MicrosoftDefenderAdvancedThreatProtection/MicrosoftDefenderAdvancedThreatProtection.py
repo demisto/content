@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, List, Dict
 from CommonServerPython import *
 import urllib3
 from dateutil.parser import parse
@@ -1084,6 +1084,51 @@ def get_file_related_machines_command(client: MsClient, args: dict):
     return human_readable, entry_context, machines_response
 
 
+def parse_ip_addresses(ip_addresses: List[Dict]) -> List[Dict]:
+    """
+    Creates new dict with readable keys and concat all the ip addresses with the same MAC address.
+    Args:
+        ip_addresses (List[Dict]): List of ip addresses dictionaries as recieved from the api.
+
+    Returns:
+        List of dicts
+    """
+    mac_addresses = dict.fromkeys([item.get('macAddress') for item in ip_addresses])
+    for item in ip_addresses:
+        current_mac = item.get('macAddress')
+        if not mac_addresses[current_mac]:
+            mac_addresses[current_mac] = {
+                'MACAddress': item['macAddress'],
+                'IPAddresses': [item['ipAddress']],
+                'Type': item['type'],
+                'Status': item['operationalStatus']
+            }
+        else:
+            mac_addresses[current_mac]['IPAddresses'].append(item['ipAddress'])
+
+    return list(mac_addresses.values())
+
+
+def print_ip_addresses(parsed_ip_addresses: List[Dict]) -> str:
+    """
+    Converts the given list of ip addresses to ascii table.
+    Args:
+        parsed_ip_addresses (List[Dict]):
+
+    Returns:
+        ascii table without headers
+    """
+
+    rows = list()
+    for i, entry in enumerate(parsed_ip_addresses, start=1):
+        rows.append([f"{i}.", f"MAC : {entry['MACAddress']}", f"IP Addresses : {','.join(entry['IPAddresses'])}",
+                     f"Type : {entry['Type']}", f"Status : {entry['Status']}"])
+    max_lengths = [len(max(col, key=lambda x: len(x))) for col in zip(*rows)]  # to make sure the table is pretty
+    string_rows = [' | '.join([cell.ljust(max_len_col) for cell, max_len_col in zip(row, max_lengths)]) for row in rows]
+
+    return '\n'.join(string_rows)
+
+
 def get_machine_details_command(client: MsClient, args: dict):
     """Retrieves specific Machine by its machine ID or computer name.
 
@@ -1091,17 +1136,32 @@ def get_machine_details_command(client: MsClient, args: dict):
         (str, dict, dict). Human readable, context, raw response
     """
     headers = ['ID', 'ComputerDNSName', 'OSPlatform', 'LastIPAddress', 'LastExternalIPAddress', 'HealthStatus',
-               'RiskScore', 'ExposureLevel']
+               'RiskScore', 'ExposureLevel', 'IPAddresses']
     machine_id = args.get('machine_id')
     machine_response = client.get_machine_details(machine_id)
     machine_data = get_machine_data(machine_response)
+    raw_ip_addresses = machine_data.get('IPAddresses', [])
 
-    entry_context = {
-        'MicrosoftATP.Machine(val.ID === obj.ID)': machine_data
-    }
-    human_readable = tableToMarkdown(f'Microsoft Defender ATP machine {machine_id} details:', machine_data,
-                                     headers=headers, removeNull=True)
-    return human_readable, entry_context, machine_response
+    parsed_ip_address = parse_ip_addresses(raw_ip_addresses)
+    human_readable_ip_addresses = print_ip_addresses(parsed_ip_address)
+
+    machine_data['IPAddresses'] = human_readable_ip_addresses
+    human_readable = tableToMarkdown(
+        f'Microsoft Defender ATP machine {machine_id} details:',
+        machine_data,
+        headers=headers,
+        removeNull=True)
+
+    machine_data['IPAddresses'] = raw_ip_addresses
+    results = CommandResults(
+        outputs_prefix='MicrosoftATP.Machine',
+        outputs_key_field='ID',
+        outputs=machine_data,
+        readable_output=human_readable,
+        raw_response=machine_response
+    )
+
+    return results
 
 
 def run_antivirus_scan_command(client: MsClient, args: dict):
@@ -1817,6 +1877,7 @@ def get_machine_data(machine):
         'AADDeviceID': machine.get('aadDeviceId'),
         'IsAADJoined': machine.get('isAadJoined'),
         'MachineTags': machine.get('machineTags'),
+        'IPAddresses': machine.get('ipAddresses'),
     })
     return machine_data
 
@@ -2542,7 +2603,7 @@ def main():
             return_outputs(*get_file_related_machines_command(client, args))
 
         elif command == 'microsoft-atp-get-machine-details':
-            return_outputs(*get_machine_details_command(client, args))
+            return_results(get_machine_details_command(client, args))
 
         elif command == 'microsoft-atp-run-antivirus-scan':
             return_outputs(*run_antivirus_scan_command(client, args))

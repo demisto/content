@@ -1,0 +1,65 @@
+{
+  "objects": [
+    {
+      "source_created": null,
+      "status": "inactive",
+      "itype": "c2_url",
+      "expiration_ts": "2021-08-18T15:32:24.053Z",
+      "ip": null,
+      "is_editable": false,
+      "feed_id": 0,
+      "update_id": 545714552,
+      "value": "http://www.ujhy1.com/",
+      "is_public": true,
+      "threat_type": "c2",
+      "workgroups": [],
+      "rdns": null,
+      "confidence": 100,
+      "uuid": "ee031c96-6a83-49be-91a1-ddf32a12c09c",
+      "retina_confidence": -1,
+      "trusted_circle_ids": null,
+      "id": 238885612,
+      "source": "Analyst",
+      "owner_organization_id": 67,
+      "import_session_id": null,
+      "source_modified": null,
+      "type": "url",
+      "sort": [
+        1629301201467,
+        "238885612"
+      ],
+      "description": null,
+      "tags": [
+        {
+          "id": "r94",
+          "name": "all_public"
+        }
+      ],
+      "threatscore": 70,
+      "latitude": null,
+      "modified_ts": "2021-08-18T15:40:01.467Z",
+      "org": "",
+      "asn": "",
+      "created_ts": "2021-05-20T15:32:24.126Z",
+      "tlp": null,
+      "is_anonymous": false,
+      "country": null,
+      "source_reported_confidence": 100,
+      "can_add_public_tags": true,
+      "longitude": null,
+      "subtype": null,
+      "meta": {
+        "detail2": "bifocals_deactivated_on_2021-08-18_15:40:00.105823",
+        "severity": "low"
+      },
+      "resource_uri": "/api/v2/intelligence/238885612/"
+    }
+  ],
+  "meta": {
+    "total_count": 1,
+    "offset": 0,
+    "limit": 1000,
+    "took": 5,
+    "next": null
+  }
+}

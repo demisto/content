@@ -1,3 +1,4 @@
+import gzip
 import json
 import io
 from freezegun import freeze_time
@@ -824,6 +825,56 @@ def test_get_xql_query_results_polling_command_success_more_than_1000(mocker):
     assert command_result.outputs == {'status': 'SUCCESS', 'number_of_results': 1500, 'query_name': '',
                                       'query_cost': {'376699223': 0.0031591666666666665}, 'remaining_quota': 1000.0,
                                       'results': {'stream_id': 'test_stream_id'}, 'execution_id': 'query_id_mock'}
+
+
+def test_get_xql_query_results_polling_command_success_more_than_1000_results_parse_to_context(mocker):
+    """
+    Given:
+    - A query that has a successful status and the number of results is more than 1000.
+
+    When:
+    - Calling get_xql_query_results_polling_command function with 'parse_result_file_to_context' argument set to True.
+
+    Then:
+    - Ensure returned command results are correct.
+    - Ensure the results were parsed to context instead of being extracted to a file.
+
+    """
+    query = 'MOCK_QUERY'
+    mock_response = {'status': 'SUCCESS',
+                     'number_of_results': 1500,
+                     'query_cost': {'376699223': 0.0031591666666666665},
+                     'remaining_quota': 1000.0,
+                     'results': {'stream_id': 'test_stream_id'},
+                     'execution_id': 'query_id_mock'}
+    # The results that should be parsed to context instead of being extracted to a file:
+    expected_results_in_context = [
+        {"_time": "2021-10-14 03:59:09.793 UTC", "event_id": "123", "_vendor": "PANW", "_product": "XDR agent",
+         "insert_timestamp": "2021-10-14 04:02:12.883114 UTC"},
+        {"_time": "2021-10-14 03:59:09.809 UTC", "event_id": "234", "_vendor": "PANW", "_product": "XDR agent",
+         "insert_timestamp": "2021-10-14 04:02:12.883114 UTC"},
+        {"_time": "2021-10-14 04:00:27.78 UTC", "event_id": "456", "_vendor": "PANW", "_product": "XDR agent",
+         "insert_timestamp": "2021-10-14 04:04:34.332563 UTC"},
+        {"_time": "2021-10-14 04:00:27.797 UTC", "event_id": "567", "_vendor": "PANW", "_product": "XDR agent",
+         "insert_timestamp": "2021-10-14 04:04:34.332563 UTC"}
+    ]
+    # Creates the mocked data which returns from 'XQLQueryingEngine.get_xql_query_results' command:
+    mock_file_data = b''
+    for item in expected_results_in_context:
+        mock_file_data += json.dumps(item).encode('utf-8')
+        mock_file_data += b'\n'
+    compressed_mock_file_data = gzip.compress(mock_file_data)
+
+    mocker.patch('XQLQueryingEngine.get_xql_query_results', return_value=(mock_response, compressed_mock_file_data))
+    mocker.patch.object(demisto, 'command', return_value='xdr-xql-generic-query')
+    results = XQLQueryingEngine.get_xql_query_results_polling_command(CLIENT, {'query': query,
+                                                                               'parse_result_file_to_context': True})
+
+    assert results.outputs.get('results', []) == expected_results_in_context, \
+        'There might be a problem in parsing the results into the context'
+    assert results.outputs == {'status': 'SUCCESS', 'number_of_results': 1500, 'query_name': '',
+                               'query_cost': {'376699223': 0.0031591666666666665}, 'remaining_quota': 1000.0,
+                               'results': expected_results_in_context, 'execution_id': 'query_id_mock'}
 
 
 def test_get_xql_query_results_polling_command_pending(mocker):

@@ -29,6 +29,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "2":
     id: "2"
     taskid: 54859700-b0a7-41c7-8313-e437692e2d40
@@ -45,18 +46,16 @@ tasks:
       '#none#':
       - "25"
     scriptarguments:
-      category: {}
       retry-count:
         simple: "3"
       severity:
         simple: Informational
-      status: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 720
         }
       }
     note: false
@@ -64,6 +63,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "3":
     id: "3"
     taskid: 3d416bd3-ef4a-4541-81d1-745a046bca96
@@ -99,7 +99,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1070
         }
       }
     note: false
@@ -107,46 +107,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "5":
-    id: "5"
-    taskid: 0f0b087c-3564-4ee9-87b4-1d7cf1022660
-    type: condition
-    task:
-      id: 0f0b087c-3564-4ee9-87b4-1d7cf1022660
-      version: -1
-      name: Assert right machine was fetched
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "15"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: MicrosoftATP
-                accessor: FileMachine.Machines.ID
-            iscontext: true
-          right:
-            value:
-              simple: f70f9fe6b29cd9511652434919c6530618f06606
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    isoversize: false
   "8":
     id: "8"
     taskid: bd79a552-7906-46c4-8733-067f295ef900
@@ -158,12 +119,13 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 2295
+          "y": 2120
         }
       }
     note: false
@@ -171,6 +133,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "15":
     id: "15"
     taskid: bc4642a7-41f1-4584-8698-c693f1e033f5
@@ -191,18 +154,14 @@ tasks:
     scriptarguments:
       health_status:
         simple: Active
-      hostname: {}
-      ip: {}
-      os_platform: {}
       retry-count:
         simple: "3"
-      risk_score: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 545
         }
       }
     note: false
@@ -210,12 +169,13 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "18":
     id: "18"
-    taskid: 90e21740-c9d5-47a1-80d7-74613086516d
+    taskid: 9d539b24-9439-433b-8a3a-5575f71cc5f2
     type: regular
     task:
-      id: 90e21740-c9d5-47a1-80d7-74613086516d
+      id: 9d539b24-9439-433b-8a3a-5575f71cc5f2
       version: -1
       name: Create alert with time as name
       script: '|||microsoft-atp-create-alert'
@@ -240,6 +200,8 @@ tasks:
               field:
                 value:
                   simple: Timestamp
+      execution-timeout:
+        simple: "10"
       machine_id:
         complex:
           root: MicrosoftATP
@@ -273,7 +235,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 1595
         }
       }
     note: false
@@ -281,6 +243,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "19":
     id: "19"
     taskid: da624c6b-3908-48a0-8851-956884f734ce
@@ -310,7 +273,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 1945
         }
       }
     note: false
@@ -318,6 +281,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "20":
     id: "20"
     taskid: db613c28-8355-4a20-8e40-f59f804392f1
@@ -343,7 +307,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1245
         }
       }
     note: false
@@ -351,6 +315,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "21":
     id: "21"
     taskid: 8fbe20d9-2881-4de1-85f4-6818c45c2902
@@ -380,7 +345,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1420
         }
       }
     note: false
@@ -388,31 +353,31 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "24":
     id: "24"
-    taskid: 61b3ef41-78ee-4895-8a9c-674cad6260d0
+    taskid: af45926d-3e39-4141-8bff-dccd85b7eb8a
     type: regular
     task:
-      id: 61b3ef41-78ee-4895-8a9c-674cad6260d0
+      id: af45926d-3e39-4141-8bff-dccd85b7eb8a
       version: -1
-      name: Get machine related to file
-      description: Get a collection of machines related to a given file hash.
-      script: '|||microsoft-atp-get-file-related-machines'
+      name: Get machine related to domain
+      description: Retrieves a collection of machines that have communicated to or
+        from a given domain address.
+      script: '|||microsoft-atp-get-domain-machines'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
       - "29"
       - "26"
       - "28"
       - "44"
+      - "15"
     scriptarguments:
-      file:
-        simple: 36c5d12033b2eaf251bae61c00690ffb17fddc87
-      file_hash:
-        simple: 36c5d12033b2eaf251bae61c00690ffb17fddc87
+      domain:
+        simple: google.com
       retry-count:
         simple: "3"
     separatecontext: false
@@ -428,12 +393,13 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "25":
     id: "25"
-    taskid: 5d446010-f828-477a-8437-bc2af05ed254
+    taskid: b1461367-1ca0-47db-86f7-a240b2812f52
     type: regular
     task:
-      id: 5d446010-f828-477a-8437-bc2af05ed254
+      id: b1461367-1ca0-47db-86f7-a240b2812f52
       version: -1
       name: Get alert related files
       description: Retrieves the files associated to a specific alert.
@@ -457,7 +423,6 @@ tasks:
                   simple: "0"
       limit:
         simple: "10"
-      offset: {}
       retry-count:
         simple: "3"
     separatecontext: false
@@ -465,7 +430,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 895
         }
       }
     note: false
@@ -473,16 +438,17 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "26":
     id: "26"
-    taskid: 10a20d4f-f24d-4697-8808-144c6ee8e9d8
+    taskid: a409caea-62e7-471b-8f57-a339bc8810ce
     type: regular
     task:
-      id: 10a20d4f-f24d-4697-8808-144c6ee8e9d8
+      id: a409caea-62e7-471b-8f57-a339bc8810ce
       version: -1
-      name: Get file related alerts
-      description: Retrieves a collection of alerts related to a given file hash.
-      script: '|||microsoft-atp-get-file-alerts'
+      name: Get domain related alerts
+      description: Retrieves a collection of alerts related to a given domain address.
+      script: '|||microsoft-atp-get-domain-alerts'
       type: regular
       iscommand: true
       brand: ""
@@ -490,28 +456,16 @@ tasks:
       '#none#':
       - "36"
     scriptarguments:
-      file_hash:
-        complex:
-          root: MicrosoftATP.FileMachine
-          accessor: File
+      domain:
+        simple: ${MicrosoftATP.DomainMachine.Domain}
       retry-count:
         simple: "3"
-      sha1:
-        complex:
-          root: MicrosoftATP
-          accessor: AlertFile.Files.Sha1
-          transformers:
-          - operator: atIndex
-            args:
-              index:
-                value:
-                  simple: "0"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 1770
+          "y": 1595
         }
       }
     note: false
@@ -519,6 +473,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "27":
     id: "27"
     taskid: b8f9b54a-0175-4f0e-8e9e-206ad5eb9aec
@@ -538,10 +493,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -555,39 +506,28 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "28":
     id: "28"
-    taskid: 74d89565-d486-4a32-8eb5-180023810143
+    taskid: b1556496-3a66-4609-8399-ca0e365ec8d6
     type: regular
     task:
-      id: 74d89565-d486-4a32-8eb5-180023810143
+      id: b1556496-3a66-4609-8399-ca0e365ec8d6
       version: -1
-      name: Get file statistics
-      description: Retrieves the statistics for the given file.
-      script: '|||microsoft-atp-get-file-statistics'
+      name: Get domain statistics
+      description: Retrieves the statistics on the given domain.
+      script: '|||microsoft-atp-get-domain-statistics'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "42"
+      - "34"
     scriptarguments:
-      file_hash:
-        complex:
-          root: MicrosoftATP.FileMachine
-          accessor: File
+      domain:
+        simple: ${MicrosoftATP.DomainMachine.Domain}
       retry-count:
         simple: "3"
-      sha1:
-        complex:
-          root: MicrosoftATP
-          accessor: AlertFile.Files.Sha1
-          transformers:
-          - operator: atIndex
-            args:
-              index:
-                value:
-                  simple: "0"
     separatecontext: false
     view: |-
       {
@@ -601,12 +541,13 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "29":
     id: "29"
-    taskid: c8da42e8-2c73-4b36-8bf2-672af859e936
+    taskid: 44a1b987-e055-46ab-8754-3b4172b4b299
     type: regular
     task:
-      id: c8da42e8-2c73-4b36-8bf2-672af859e936
+      id: 44a1b987-e055-46ab-8754-3b4172b4b299
       version: -1
       name: Get machine action data
       description: Return the machine's actions. If you set an action id it will return
@@ -619,10 +560,9 @@ tasks:
       '#none#':
       - "38"
     scriptarguments:
-      id: {}
       machine_id:
         complex:
-          root: MicrosoftATP.FileMachine.Machines
+          root: MicrosoftATP.DomainMachine.Machines
           accessor: ID
           transformers:
           - operator: atIndex
@@ -630,16 +570,48 @@ tasks:
               index:
                 value:
                   simple: "0"
-      requestor: {}
       retry-count:
         simple: "3"
-      status: {}
-      type: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 1340,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "34":
+    id: "34"
+    taskid: 7eab39fa-dfed-4eed-87b8-95f40e5f7275
+    type: regular
+    task:
+      id: 7eab39fa-dfed-4eed-87b8-95f40e5f7275
+      version: -1
+      name: Get file statistics
+      description: Retrieves the statistics for the given file.
+      script: '|||microsoft-atp-get-file-statistics'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      file_hash:
+        simple: E2101519714F8A4056A9DE18443BC6E8A1F1B977
+      retry-count:
+        simple: "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
           "y": 1770
         }
       }
@@ -648,40 +620,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "34":
-    id: "34"
-    taskid: 9843dbcb-3102-4c9d-80f4-829506e737ce
-    type: regular
-    task:
-      id: 9843dbcb-3102-4c9d-80f4-829506e737ce
-      version: -1
-      name: Get domain statistics
-      description: Retrieves the statistics on the given domain.
-      script: '|||microsoft-atp-get-domain-statistics'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "35"
-    scriptarguments:
-      domain:
-        simple: google.com
-      retry-count:
-        simple: "3"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1945
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    isoversize: false
   "35":
     id: "35"
     taskid: 3b2db1d2-9679-45bd-8fd0-cab5e8a4737a
@@ -708,7 +647,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 2120
+          "y": 1945
         }
       }
     note: false
@@ -716,12 +655,13 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "36":
     id: "36"
-    taskid: f53e7396-a7d3-449f-89d2-be9ddbbd25f1
+    taskid: b7feda8f-daf9-4fe4-87eb-520ce4a05f87
     type: regular
     task:
-      id: f53e7396-a7d3-449f-89d2-be9ddbbd25f1
+      id: b7feda8f-daf9-4fe4-87eb-520ce4a05f87
       version: -1
       name: Get user alerts
       description: Retrieves a collection of alerts related to a given user ID.
@@ -742,7 +682,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 1945
+          "y": 1770
         }
       }
     note: false
@@ -750,12 +690,13 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "37":
     id: "37"
-    taskid: de8ae37d-8f06-4031-879e-7a186915cb6c
+    taskid: 845eb136-ce7a-4702-8d20-d3e9641b26a1
     type: regular
     task:
-      id: de8ae37d-8f06-4031-879e-7a186915cb6c
+      id: 845eb136-ce7a-4702-8d20-d3e9641b26a1
       version: -1
       name: Get user machines
       description: Retrieves a collection of machines related to a given user ID.
@@ -776,7 +717,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 2120
+          "y": 1945
         }
       }
     note: false
@@ -784,12 +725,13 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "38":
     id: "38"
-    taskid: c758267a-61c0-4354-8b56-db6a7f70f54b
+    taskid: 1cf630a0-c8b2-4eab-851b-644fe76177ec
     type: regular
     task:
-      id: c758267a-61c0-4354-8b56-db6a7f70f54b
+      id: 1cf630a0-c8b2-4eab-851b-644fe76177ec
       version: -1
       name: Add machine tag
       description: Adds or remove tag to a specific Machine.
@@ -805,7 +747,7 @@ tasks:
         simple: Add
       machine_id:
         complex:
-          root: MicrosoftATP.FileMachine.Machines
+          root: MicrosoftATP.DomainMachine.Machines
           accessor: ID
           transformers:
           - operator: atIndex
@@ -813,6 +755,45 @@ tasks:
               index:
                 value:
                   simple: "0"
+      retry-count:
+        simple: "3"
+      tag:
+        simple: testing
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "39":
+    id: "39"
+    taskid: ff67b92c-717d-4120-821c-e1da4ddf27d6
+    type: regular
+    task:
+      id: ff67b92c-717d-4120-821c-e1da4ddf27d6
+      version: -1
+      name: Remove machine tag
+      description: Adds or remove tag to a specific Machine.
+      script: '|||microsoft-atp-add-remove-machine-tag'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      action:
+        simple: Remove
+      machine_id:
+        simple: ${MicrosoftATP.Machine.ID}
       retry-count:
         simple: "3"
       tag:
@@ -830,80 +811,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "39":
-    id: "39"
-    taskid: 5b449ae2-3091-4d43-8ab8-2503e8419e1c
-    type: regular
-    task:
-      id: 5b449ae2-3091-4d43-8ab8-2503e8419e1c
-      version: -1
-      name: Remove machine tag
-      description: Adds or remove tag to a specific Machine.
-      script: '|||microsoft-atp-add-remove-machine-tag'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      action:
-        simple: Remove
-      machine_id:
-        simple: f70f9fe6b29cd9511652434919c6530618f06606
-      retry-count:
-        simple: "3"
-      tag:
-        simple: testing
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 2120
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "42":
-    id: "42"
-    taskid: d2dce830-ee1d-4465-807f-d8057c2d68c5
-    type: regular
-    task:
-      id: d2dce830-ee1d-4465-807f-d8057c2d68c5
-      version: -1
-      name: Get file related machines
-      description: Get a collection of machines related to a given file hash.
-      script: '|||microsoft-atp-get-file-related-machines'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "34"
-    scriptarguments:
-      file:
-        simple: ${MicrosoftATP.FileStatistics.Sha1}
-      file_hash:
-        simple: ${MicrosoftATP.FileStatistics.Sha1}
-      retry-count:
-        simple: "3"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1770
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    isoversize: false
   "43":
     id: "43"
     taskid: 21d1ff73-e7da-4b55-8bef-9640ff1389e9
@@ -931,21 +839,18 @@ tasks:
               index:
                 value:
                   simple: "0"
-      assigned_to: {}
       classification:
         simple: Unknown
       comment:
         simple: testing
-      determination: {}
       retry-count:
         simple: "3"
-      status: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 1770
         }
       }
     note: false
@@ -953,12 +858,13 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "44":
     id: "44"
-    taskid: 1b966347-fc62-4c17-8e71-fdf6d2f4a3c4
+    taskid: c6136754-cdf8-4aaa-855f-e804e019cd2f
     type: regular
     task:
-      id: 1b966347-fc62-4c17-8e71-fdf6d2f4a3c4
+      id: c6136754-cdf8-4aaa-855f-e804e019cd2f
       version: -1
       name: Start Investigation
       description: Start an automated investigation on a machine.
@@ -973,14 +879,13 @@ tasks:
       comment:
         simple: testing
       machine_id:
-        simple: ${MicrosoftATP.FileMachine.Machines.ID}
-      timeout: {}
+        simple: ${MicrosoftATP.DomainMachine.Machines.ID}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 1770,
-          "y": 1945
+          "y": 1770
         }
       }
     note: false
@@ -988,6 +893,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "45":
     id: "45"
     taskid: 240b6d06-4b68-4ed3-85c2-87970c011250
@@ -1006,16 +912,14 @@ tasks:
       '#none#':
       - "8"
     scriptarguments:
-      id: {}
       limit:
         simple: "5"
-      offset: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 1770,
-          "y": 2120
+          "y": 1945
         }
       }
     note: false
@@ -1023,12 +927,13 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2310,
+        "height": 2135,
         "width": 2100,
         "x": 50,
         "y": 50

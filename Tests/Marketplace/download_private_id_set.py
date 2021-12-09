@@ -5,7 +5,7 @@ from Tests.Marketplace.marketplace_services import init_storage_client
 
 
 def create_empty_id_set_in_artifacts(private_id_set_path):
-    empty_id_set = {
+    empty_id_set: dict = {
         "scripts": [],
         "playbooks": [],
         "integrations": [],

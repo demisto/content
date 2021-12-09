@@ -1,14 +1,15 @@
-import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
-
 import copy
+import gzip
 import hashlib
-import requests
-import traceback
 import secrets
 import string
-from typing import Dict, Any, Tuple
+import traceback
+from typing import Any, Dict, Tuple
+
+import requests
+
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
@@ -621,6 +622,7 @@ def get_xql_query_results_polling_command(client: Client, args: dict) -> Union[C
     """
     # get the query data either from the integration context (if its not the first run) or from the given args.
     query_id = args.get('query_id', '')
+    parse_result_file_to_context = argToBoolean(args.get('parse_result_file_to_context', 'false'))
     integration_context = get_integration_context()
     command_data = integration_context.get(query_id, args)
     command_name = command_data.get('command_name', demisto.command())
@@ -633,11 +635,17 @@ def get_xql_query_results_polling_command(client: Client, args: dict) -> Union[C
     outputs_prefix = get_outputs_prefix(command_name)
     command_results = CommandResults(outputs_prefix=outputs_prefix, outputs_key_field='execution_id', outputs=outputs,
                                      raw_response=copy.deepcopy(outputs))
-    # if there are more then 1000 results - a file is returned
+    # if there are more then 1000 results
     if file_data:
-        file = fileResult(filename="results.gz", data=file_data)
-        remove_query_id_from_integration_context(query_id)
-        return [file, command_results]
+        if not parse_result_file_to_context:
+            #  Extracts the results into a file only
+            file = fileResult(filename="results.gz", data=file_data)
+            remove_query_id_from_integration_context(query_id)
+            return [file, command_results]
+        else:
+            # Parse the results to context:
+            data = gzip.decompress(file_data).decode()
+            outputs['results'] = [json.loads(line) for line in data.split("\n") if len(line) > 0]
 
     # if status is pending, in versions above 6.2.0, the command will be called again in the next run until success.
     if outputs.get('status') == 'PENDING':

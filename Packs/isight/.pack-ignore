@@ -1,2 +1,2 @@
-[file:integration-isight.yml]
-ignore=IN144
+[file:FireEyeISIGHT.yml]
+ignore=IN144,IN145

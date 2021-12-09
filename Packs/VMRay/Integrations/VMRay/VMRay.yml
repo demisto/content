@@ -22,10 +22,11 @@ configuration:
   name: server
   required: true
   type: 0
-- display: API Key
-  name: api_key
-  required: true
-  type: 4
+- displaypassword: API Key (Recommended)
+  name: credentials
+  required: false
+  hiddenusername: true
+  type: 9
 - display: Use system proxy settings
   name: proxy
   required: false
@@ -34,6 +35,11 @@ configuration:
   name: insecure
   required: false
   type: 8
+- display: API Key (Deprecated)
+  additionalinfo: Use the "API Key (Recommended)" parameter instead.
+  name: api_key
+  required: false
+  type: 4
 description: Malware analysis sandboxing.
 display: VMRay
 name: vmray
@@ -1209,7 +1215,7 @@ script:
     description: Retrieves a sample using the sample ID. (Deprecated)
     execution: false
     name: upload_sample
-  dockerimage: demisto/python:2.7.18.24066
+  dockerimage: demisto/python:2.7.18.24398
   feed: false
   isfetch: false
   longRunning: false

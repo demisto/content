@@ -1,10 +1,10 @@
-KnowBe4 PhishER integration allows to pull events from PhishER system and do mutations
+**KnowBe4 PhishER** integration allows to pull events from PhishER system and do mutations.
 This integration was integrated and tested with version 6.0.0 of XSOAR
 
 ## Configure Phisher on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Phisher.
+2. Search for PhishER.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |

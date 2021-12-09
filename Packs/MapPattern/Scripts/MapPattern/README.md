@@ -38,6 +38,8 @@ When unmatched or the input value is structured (dict or list), it will simply r
 | caseless | Set to true for caseless comparison, false otherwise. |
 | priority | The option to choose which value matched to return. Available options: `first_match` (default) and `last_match`. |
 | context | \`demisto\` context: Input . \(single dot\) on \`From previous tasks\` to enable to extract the context data. |
+| flags | The comma separated flags for pattern matching in regex. `dotall` (s), `multiline` (m), `ignorecase` (i) and `unicode` (u) are supported. This will apply to all the algorithms. |
+| compare_fields | Set to true if you want pattern matching for each field, otherwise false. |
 
 ## Outputs
 ---
@@ -47,10 +49,19 @@ There are no outputs for this script.
 ---
 ## Syntax for `mappings`
     
-    mappings ::= mapping | List[mapping]
+    mappings ::= pattern-mapping | field-mapping
+                 # `field-mapping` must be used when you set `compare_fields` to true. `pattern-mapping` is used if it is not set.
+
+    pattern-mapping ::= list-pattern-mapping | base-pattern-mapping
+
+    list-pattern-mapping ::= List[base-pattern-mapping]
+
+    base-pattern-mapping ::= Dict[pattern, repl]
     
-    mapping ::= Dict[pattern, repl]
-    
+    field-mapping ::= Dict[field-name, pattern-mapping]
+ 
+    field-name ::= str
+
     pattern ::= str   # The pattern string which depends on the algorithm given to match with the value.
     
     repl ::= output-str | config
@@ -58,11 +69,16 @@ There are no outputs for this script.
     output-str ::= str  # The data to replace to the value.
                         # - Backslash substitution on the template string is available in `regex`
                         # - DT syntax (${}) is available when `context` is enabled.
-    
+                        # - As DT syntax, `${..}` refers the value given in the inputs, and `${.<name>}` also refers the value property located at the relateve path to it.
+
     output-any ::= output-str | Any  # The data to replace to the value.
                                      # `null` is the special value to identify the input value given in this transformer.
     
     algorithm ::= "literal" | "wildcard" | "regex" | "regmatch"
+    
+    comp-fields ::= List[field] | comma-separated-fields
+    
+    comma-separated-fields ::= str # Comma separated field
     
     config ::= Dict[str, Any]
               
@@ -70,10 +86,9 @@ There are no outputs for this script.
               {
                   "algorithm": algorithm,               # (Optional) The algorithm to pattern matching.
                   "output": output-any,                 # (Optional) The data to replace to the value by the pattern.
-                  "exclude": pattern | List[pattern],   # (Optional) The patterns to exclude in the pattern matching.
-                  "next": mappings                      # (Optional) The subsequent condition to do the pattern matching with the value taken from the output.
+                  "exclude": pattern | List[pattern],   # (Optional) Patterns to exclude in the pattern matching.
+                  "next": mappings                      # (Optional) Subsequent conditions to do the pattern matching with the value taken from the output.
               }
-
 
 
 ---
@@ -89,6 +104,10 @@ Transform a severity name to the corresponding number.
 > priority: first_match
 
 > context:
+
+> flags:
+
+> compare_fields:
 
 #### mappings:
 
@@ -121,6 +140,10 @@ Normalize a human readable phrase to a cannonical name.
 
 > context:
 
+> flags:
+
+> compare_fields:
+
 #### mappings:
 
     {
@@ -150,6 +173,10 @@ Remove all the heading "Re:" or "Fw:" from an email subject.
 
 > context:
 
+> flags:
+
+> compare_fields:
+
 #### mappings:
 
     {
@@ -173,6 +200,10 @@ Extract the user name field from an text in an Active Directory user account for
 > priority: first_match
 
 > context:
+
+> flags:
+
+> compare_fields:
 
 #### mappings:
 
@@ -202,6 +233,10 @@ Extract the user name field from an quoted text in an Active Directory user acco
 > priority: first_match
 
 > context:
+
+> flags:
+
+> compare_fields:
 
 #### mappings:
 
@@ -245,6 +280,10 @@ Extract first name and last name from an email address in `firstname.lastname@do
 
 > context:
 
+> flags:
+
+> compare_fields:
+
 #### mappings:
 
     [
@@ -280,6 +319,10 @@ Normalize a date/time text to `YYYY-MM-DD HH:mm:ss TZ`.
 > priority: first_match
 
 > context:
+
+> flags:
+
+> compare_fields:
 
 #### mappings:
 
@@ -382,4 +425,76 @@ Normalize a date/time text to `YYYY-MM-DD HH:mm:ss TZ`.
 | 2021-01-02T01:23:45.010Z | 2021-01-02 01:23:45 GMT |
 | 2021-01-02T01:23:45Z | 2021-01-02 01:23:45 GMT |
 | Tue, 3 Jun 2008 11:05:30 GMT | 2008-06-03 11:05:30 GMT |
+
+
+
+---
+
+Pattern matching for different nodes
+
+> algorithm: wildcard
+
+> caseless: true
+
+> priority: first_match
+
+> context:
+
+> flags:
+
+> compare_fields: true
+
+#### mappings:
+
+    {
+        "IP": {
+            "127.*": "localhost"
+        },
+        "Host": {
+            "*.local": "localhost",
+            "*": "other"
+        }
+    }
+
+
+| **Input** | **Output** |
+| --- | --- |
+| {"IP": "127.0.0.1"} | "localhost" |
+| {"Host": "localhost"} | "localhost" |
+| {"IP": "192.168.1.1"} | "other" |
+
+
+
+---
+
+Make a text with the `value` field corresponding to the `score` field.
+
+> algorithm: regex
+
+> caseless: true
+
+> priority: first_match
+
+> context: .
+
+> flags:
+
+> compare_fields: true
+
+#### mappings:
+
+    {
+        "score": {
+            "1": "low - ${.value}",
+            "2": "medium - ${.value}",
+            "3": "hight - ${.value}",
+            ".*": "unknown - ${.value}"
+        }
+    }
+
+
+| **Input** | **Output** |
+| --- | --- |
+| {"score": 1, "value": "192.168.1.1"} | "low - 192.168.1.1" |
+| {"score": 4, "value": "192.168.1.1"} | "unknown - 192.168.1.1" |
 

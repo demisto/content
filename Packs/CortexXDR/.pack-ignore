@@ -2,10 +2,10 @@
 ignore=PA116
 
 [file:CortexXDRIR.yml]
-ignore=IN126,IN136
+ignore=IN126,IN136,IN145
 
 [file:XDR_iocs.yml]
-ignore=BA108,BA109
+ignore=BA108,BA109,IN145
 
 [file:XDRSyncScript_5_9_9.yml]
 ignore=BA108,BA109,BA110

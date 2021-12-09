@@ -1,2 +1,5 @@
 [file:README.md]
 ignore=RM102
+
+[file:Cymptom.yml]
+ignore=IN145

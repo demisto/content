@@ -37,6 +37,7 @@ EDL_NO_URLS_IN_PROXYSG_FORMAT = 'ProxySG format only outputs URLs - no URLs foun
 
 EDL_ON_DEMAND_KEY: str = 'UpdateEDL'
 EDL_ON_DEMAND_CACHE_PATH: str = ''
+EDL_SEARCH_LOOP_LIMIT: int = 10
 
 ''' REFORMATTING REGEXES '''
 _PROTOCOL_REMOVAL = re.compile('^(?:[a-z]+:)*//')
@@ -964,7 +965,6 @@ def main():
 
 
 from NGINXApiModule import *  # noqa: E402
-
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()

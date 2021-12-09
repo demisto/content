@@ -1,5 +1,5 @@
 [file:MicrosoftGraphSecurity.yml]
-ignore=IN126,IN135,DS107
+ignore=IN126,IN135,DS107,IN145
 
 [file:playbook-Microsoft_Graph_Test.yml]
 ignore=auto-test
