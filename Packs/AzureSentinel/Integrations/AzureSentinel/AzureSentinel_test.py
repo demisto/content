@@ -969,12 +969,12 @@ class TestHappyPath:
         mocked_indicators = MOCKED_THREAT_INDICATOR_OUTPUT.copy()
         if expected_next_link:
             mocked_indicators['nextLink'] = expected_next_link
-
-        requests_mock.get(
-            'http://server_url/subscriptions/subscriptionID/resourceGroups/resourceGroupName/providers/Microsoft'
-            '.OperationalInsights/workspaces/workspaceName/providers/Microsoft.SecurityInsights/threatIntelligence'
-            '/main/indicators', json=mocked_indicators)
-        requests_mock.get('https://test.com', json=mocked_indicators)
+            requests_mock.get(
+                'http://server_url/subscriptions/subscriptionID/resourceGroups/resourceGroupName/providers/Microsoft'
+                '.OperationalInsights/workspaces/workspaceName/providers/Microsoft.SecurityInsights/threatIntelligence'
+                '/main/indicators', json=mocked_indicators)
+        else:
+            requests_mock.get('https://test.com', json=mocked_indicators)
 
         requests_mock.post('https://login.microsoftonline.com/tenant_id/oauth2/v2.0/token', json={})
 
@@ -1012,12 +1012,12 @@ class TestHappyPath:
         mocked_indicators = MOCKED_THREAT_INDICATOR_OUTPUT.copy()
         if expected_next_link:
             mocked_indicators['nextLink'] = expected_next_link
-
-        requests_mock.post(
-            'http://server_url/subscriptions/subscriptionID/resourceGroups/resourceGroupName/providers/Microsoft'
-            '.OperationalInsights/workspaces/workspaceName/providers/Microsoft.SecurityInsights/threatIntelligence'
-            '/main/queryIndicators', json=mocked_indicators)
-        requests_mock.get('https://test.com', json=mocked_indicators)
+            requests_mock.post(
+                'http://server_url/subscriptions/subscriptionID/resourceGroups/resourceGroupName/providers/Microsoft'
+                '.OperationalInsights/workspaces/workspaceName/providers/Microsoft.SecurityInsights/threatIntelligence'
+                '/main/queryIndicators', json=mocked_indicators)
+        else:
+            requests_mock.post('https://test.com', json=mocked_indicators)
 
         requests_mock.post('https://login.microsoftonline.com/tenant_id/oauth2/v2.0/token', json={})
 

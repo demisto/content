@@ -897,6 +897,7 @@ def threat_indicators_data_to_xsoar_format(ind_data):
     """
 
     properties = ind_data.get('properties', {})
+    pattern = properties.get('parsedPattern', [])[0]
 
     formatted_data = {
         'ID': ind_data.get('id'),
@@ -906,7 +907,7 @@ def threat_indicators_data_to_xsoar_format(ind_data):
         'Kind': ind_data.get('kind'),
 
         'Confidence': properties.get('confidence', ''),
-        'Created': properties.get('created', ''),
+        'Created': format_date(properties.get('created', '')),
         'CreatedByRef': properties.get('createdByRef', ''),
         'ExternalId': properties.get('externalId', ''),
         'LastUpdatedTimeUtc': format_date(properties.get('lastUpdatedTimeUtc', '')),
@@ -919,25 +920,24 @@ def threat_indicators_data_to_xsoar_format(ind_data):
         'KillChainPhases': [{
             'KillChainName': phase.get('killChainName'),
             'PhaseName': phase.get('phaseName')
-        }
-            for phase in properties.get('KillChainPhases', [])],
+        } for phase in properties.get('KillChainPhases', [])],
 
-        'ParsedPattern': [{
+        'ParsedPattern': {
             'PatternTypeKey': pattern.get('patternTypeKey'),
             'PatternTypeValues': {
                 'Value': pattern.get('patternTypeValues')[0].get('value'),
                 'ValueType': pattern.get('patternTypeValues')[0].get('valueType')
             }
-        }
-            for pattern in properties.get('parsedPattern', [])],
+        },
 
         'Pattern': properties.get('pattern', ''),
         'PatternType': properties.get('patternType', ''),
         'ValidFrom': format_date(properties.get('validFrom', '')),
         'ValidUntil': format_date(properties.get('validUntil', '')),
-        'Values': properties.get('parsedPattern')[0].get('patternTypeValues')[0].get('value')
+        'Values': pattern.get('patternTypeValues')[0].get('value')
     }
     remove_nulls_from_dictionary(formatted_data)
+
     return formatted_data
 
 
@@ -984,7 +984,7 @@ def build_threat_indicator_data(args):
         'confidence': arg_to_number(args.get('confidence')),
         'threatTypes': argToList(args.get('threat_types')),
         'includeDisabled': args.get('include_disabled', ''),
-        'source': args.get('source', DEFAULT_SOURCE),
+        'source': DEFAULT_SOURCE,
         'threatIntelligenceTags': argToList(args.get('tags')),
         'validFrom': format_date(args.get('valid_from', '')),
         'validUntil': format_date(args.get('valid_until', '')),
@@ -1096,15 +1096,14 @@ def list_threat_indicator_command(client, args):
 def query_threat_indicators_command(client, args):
     url_suffix = 'threatIntelligence/main/queryIndicators'
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))  # the default limit is 50
-
+    data = build_query_filter(args)
     next_link = args.get('next_link', '')
     if next_link:
         next_link = next_link.replace('%20', ' ')  # OData syntax can't handle '%' character
-        result = client.http_request('GET', full_url=next_link)
+        result = client.http_request('POST', full_url=next_link, data=data)
     else:
-        data = build_query_filter(args)
 
-        result = client.http_request('GET', url_suffix, params={'$top': limit}, data=data)
+        result = client.http_request('POST', url_suffix, params={'$top': limit}, data=data)
 
     num_of_threat_indicators = 0
     threat_indicators = []
@@ -1189,7 +1188,7 @@ def update_threat_indicator_command(client, args):
 
 
 def delete_threat_indicator_command(client, args):
-    indicator_names = argToList(args.get('indicator_name'))
+    indicator_names = argToList(args.get('indicator_names'))
 
     for indicator_name in indicator_names:
         url_suffix = f'threatIntelligence/main/indicators/{indicator_name}'
