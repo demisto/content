@@ -321,6 +321,23 @@ def parse_date_string_format(date_string: str, new_format: str = "%B %d, %Y %H:%
         return date_string
 
 
+def epochs_to_timestamp(epochs: int, date_format: str = "%B %d, %Y %H:%M:%S %p") -> str:
+    """
+    Converts epochs time representation to a new string date format.
+
+    Args:
+        epochs (int): time in epochs (seconds)
+        date_format (str): the desired format that the timestamp will be.
+
+    Returns:
+        str: timestamp in the new format, empty string in case of a failure
+    """
+    try:
+        return datetime.utcfromtimestamp(epochs).strftime(date_format)
+    except TypeError:
+        return ""
+
+
 def get_api_filtered_response(
     client: PrismaCloudComputeClient,
     url_suffix: str,
@@ -481,6 +498,10 @@ def update_host_profile_context_fields(hosts_profile_info: List[dict]):
         for event in host_profile.get("sshEvents", []):
             if "ip" in event:
                 event["ip"] = str(ipaddress.IPv4Address(event.get("ip")))
+            if "time" in event:
+                event["time"] = parse_date_string_format(date_string=host_profile.get("time", ""))
+            if "loginTime" in event:
+                event["loginTime"] = epochs_to_timestamp(epochs=event.get("loginTime"))
 
 
 def get_profile_host_list(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
