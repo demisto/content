@@ -8406,32 +8406,35 @@ def signal_handler_memory_dump(_sig, _frame):
     print_memory_dump(classes_as_list)
 
     print_local_vars()
+    print_global_vars()
 
 
-def print_memory_dump(classes_as_list: list):
+def print_memory_dump(classes_as_list: list, show_x_classes: int = 20):
     """
     A function that prints the memory dump to log info
 
     :type classes_as_list: ``list``
     :param classes_as_list: The classes to print to the log
 
+    :type show_x_classes: ``int``
+    :param show_x_classes: The maximum number of classes to print to the log
+
     :return: No data returned
     :rtype: ``None``
     """
-    show_x_classes = 20
 
     message = '\n\n--- Start Memory Dump ---\n'
 
     message += f'\n--- Start Top {show_x_classes} Classes by Count ---\n\n'
     classes_sorted_by_count = sorted(classes_as_list, key=lambda d: d['count'], reverse=True)
-    message += 'count\t\tsize\t\tname\n'
+    message += 'Count\t\tSize\t\tName\n'
     for current_class in classes_sorted_by_count[:show_x_classes]:
         message += f'{current_class["count"]}\t\t{current_class["size"]}\t\t{current_class["name"]}\n'
     message += f'\n--- End Top {show_x_classes} Classes by Count ---\n'
 
     message += f'\n--- Start Top {show_x_classes} Classes by Size ---\n'
     classes_sorted_by_size = sorted(classes_as_list, key=lambda d: d['size'], reverse=True)
-    message += 'size\t\tcount\t\tname\n'
+    message += 'Size\t\tCount\t\tName\n'
     for current_class in classes_sorted_by_size[:show_x_classes]:
         message += f'{current_class["size"]}\t\t{current_class["count"]}\t\t{current_class["name"]}\n'
     message += f'\n--- End Top {show_x_classes} Classes by Size ---\n'
@@ -8454,6 +8457,36 @@ def print_local_vars():
         message += str(current_local_var) + '\n'
 
     message += '\n--- End Local Vars ---\n\n'
+
+    demisto.info(message)
+
+
+def print_global_vars(show_x_globals: int = 20):
+    """
+    A function that prints the global variables to log info
+
+    :type show_x_globals: ``int``
+    :param show_x_globals: The max number of globals to print to the log
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    globals_dict = dict(globals())
+    globals_dict_full = {}
+    for current_key in globals_dict.keys():
+        current_value = globals_dict[current_key]
+        globals_dict_full[current_key] = {
+            'name': current_key,
+            'value': current_value,
+            'size': sys.getsizeof(current_value)
+        }
+
+    message = f'\n\n--- Start Top {show_x_globals} Globals by Size ---\n'
+    globals_sorted_by_size = sorted(globals_dict_full.values(), key=lambda d: d['size'], reverse=True)
+    message += 'Size\t\tName\t\tValue\n'
+    for current_global in globals_sorted_by_size[:show_x_globals]:
+        message += f'{current_global["size"]}\t\t{current_global["name"]}\t\t{current_global["value"]}\n'
+    message += f'\n--- End Top {show_x_globals} Globals by Size ---\n'
 
     demisto.info(message)
 
