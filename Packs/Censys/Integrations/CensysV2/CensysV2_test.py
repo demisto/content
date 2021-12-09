@@ -1,10 +1,11 @@
 
 import json
 import io
-import demistomock as demisto
-import CensysV2
-from CensysV2 import Client, censys_view_command, censys_search_command, main
+from CensysV2 import Client, censys_view_command, censys_search_command
 import pytest
+import requests_mock
+
+from CommonServerPython import DemistoException
 
 SEARCH_HOST_OUTPUTS = [{
     'ip': '1.0.0.0',
@@ -39,7 +40,7 @@ def client():
     return client
 
 
-def test_censys_host_search(mocker, client):
+def test_censys_host_search(requests_mock, client):
     """
     Given:
         Command arguments: query and limit
@@ -55,13 +56,13 @@ def test_censys_host_search(mocker, client):
     }
 
     mock_response = util_load_json('test_data/search_host_response.json')
-    mocker.patch.object(client, 'censys_search_ip_request', return_value=mock_response)
+    requests_mock.get('https://search.censys.io/api/v2/hosts/search', json=mock_response)
     response = censys_search_command(client, args)
     assert "### Search results for query \"services.service_name:HTTP\"" in response.readable_output
     assert response.outputs == SEARCH_HOST_OUTPUTS
 
 
-def test_censys_certs_search(mocker, client):
+def test_censys_certs_search(client):
     """
     Given:
         Command arguments: query and limit
@@ -77,18 +78,17 @@ def test_censys_certs_search(mocker, client):
     }
 
     mock_response = util_load_json('test_data/search_certs_response.json')
-    mocker.patch.object(client, '_http_request', return_value=mock_response)
-    mocker.patch.object(demisto, 'args', return_value={'fields': 'parsed.fingerprint_sha1'})
-    response = censys_search_command(client, args)
-    assert client._http_request.call_args.kwargs['json_data']['fields'] == ['parsed.fingerprint_sha256',
-                                                                            'parsed.subject_dn', 'parsed.issuer_dn',
-                                                                            'parsed.issuer.organization',
-                                                                            'parsed.validity.start',
-                                                                            'parsed.validity.end', 'parsed.names',
-                                                                            'parsed.fingerprint_sha1',
-                                                                            'validation.apple.valid']
-    assert "### Search results for query \"parsed.issuer.common_name: \"Let's Encrypt\"" in response.readable_output
+    with requests_mock.Mocker() as mock:
+        mock.post('https://search.censys.io/api/v1/search/certificates', json=mock_response)
+
+        response = censys_search_command(client, args)
+        history = mock.request_history[0]
+        assert json.loads(history.text)['fields'] == ['parsed.fingerprint_sha256', 'parsed.subject_dn',
+                                                      'parsed.issuer_dn', 'parsed.issuer.organization',
+                                                      'parsed.validity.start', 'parsed.validity.end', 'parsed.names',
+                                                      'parsed.fingerprint_sha1', 'validation.apple.valid']
     assert response.outputs == SEARCH_CERTS_OUTPUTS
+    assert "### Search results for query \"parsed.issuer.common_name: \"Let's Encrypt\"" in response.readable_output
 
 
 def test_censys_view_host(requests_mock, client):
@@ -111,7 +111,7 @@ def test_censys_view_host(requests_mock, client):
     assert response.outputs == mock_response.get('result')
 
 
-def test_censys_view_host_invalid(requests_mock, mocker):
+def test_censys_view_host_invalid(requests_mock, client):
     """
     Given:
         Command arguments: query ip = test
@@ -130,13 +130,8 @@ def test_censys_view_host_invalid(requests_mock, mocker):
         "error": "ip: value is not a valid IPv4 or IPv6 address"
     }
     requests_mock.get('https://search.censys.io/api/v2/hosts/test', json=mock_response, status_code=422)
-    return_error_mock = mocker.patch.object(CensysV2, 'return_error')
-    mocker.patch.object(demisto, 'error')
-    mocker.patch.object(demisto, 'args', return_value=args)
-    mocker.patch.object(demisto, 'command', return_value='cen-view')
-    main()
-    assert CensysV2.return_error.called
-    assert 'Error in API call [422]' in return_error_mock.call_args[0][0]
+    with pytest.raises(DemistoException):
+        censys_view_command(client, args)
 
 
 def test_censys_view_cert(requests_mock, client):

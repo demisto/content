@@ -100,14 +100,14 @@ def censys_search_command(client: Client, args: Dict[str, Any]) -> CommandResult
     """
     index = args.get('index')
     query = args.get('query', '')
-    page_size = arg_to_number(args.get('page_size', 50))  # type: ignore[assignment]
+    page_size: int = arg_to_number(args.get('page_size', 50))  # type: ignore[assignment]
     limit = arg_to_number(args.get('limit'))
     contents = []
 
     if index == 'ipv4':
-        if limit and limit < page_size:  # type: ignore
+        if limit and limit < page_size:
             page_size = limit
-        res = client.censys_search_ip_request(query, page_size)  # type: ignore
+        res = client.censys_search_ip_request(query, page_size)
         hits = res.get('result', {}).get('hits', [])
 
         for hit in hits:
