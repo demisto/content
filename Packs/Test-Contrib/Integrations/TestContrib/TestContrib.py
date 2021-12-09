@@ -259,6 +259,7 @@ urllib3.disable_warnings()
 ''' CONSTANTS '''
 
 # contrib test
+# second comment
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 MAX_INCIDENTS_TO_FETCH = 50
 HELLOWORLD_SEVERITIES = ['Low', 'Medium', 'High', 'Critical']
