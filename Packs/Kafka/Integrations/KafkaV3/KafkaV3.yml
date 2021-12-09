@@ -7,8 +7,8 @@ configuration:
   name: brokers
   required: true
   type: 0
-- display: Consumer group id
-  additionalinfo: This group id will be used when fetching incidents and preforming consumer commands. If not set the group id 'xsoar_group' will be used.
+- display: Consumer group ID
+  additionalinfo: This group ID will be used when fetching incidents and preforming consumer commands. If not set the group id 'xsoar_group' will be used.
   name: group_id
   required: false
   type: 0
