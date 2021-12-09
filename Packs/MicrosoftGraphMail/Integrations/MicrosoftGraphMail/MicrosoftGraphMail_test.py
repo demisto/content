@@ -571,3 +571,21 @@ def test_send_mail_command(mocker, client, args):
         assert message.get('toRecipients')[0].get('emailAddress').get("address") == args.get('to')[0]
         assert message.get('body').get('content') == args.get('htmlBody') or args.get('body')
         assert message.get('subject') == args.get('subject')
+
+
+@pytest.mark.parametrize('server_url, expected_endpoint', [('https://graph.microsoft.us', 'gcc-high'),
+                                                           ('https://dod-graph.microsoft.us', 'dod'),
+                                                           ('https://graph.microsoft.de', 'de'),
+                                                           ('https://microsoftgraph.chinacloudapi.cn', 'cn')])
+def test_server_to_endpoint(server_url, expected_endpoint):
+    """
+    Given:
+        - Host address for national endpoints
+    When:
+        - Creating a new MsGraphClient
+    Then:
+        - Verify that the host address is translated to the correct endpoint code, i.e. com/gcc-high/dod/de/cn
+    """
+    from MicrosoftApiModule import GRAPH_BASE_ENDPOINTS
+
+    assert GRAPH_BASE_ENDPOINTS[server_url] == expected_endpoint
