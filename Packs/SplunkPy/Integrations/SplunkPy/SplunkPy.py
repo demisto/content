@@ -1,22 +1,27 @@
-from splunklib.binding import HTTPError, namespace, AuthenticationError
-
-import demistomock as demisto
-from CommonServerPython import *
-import splunklib.client as client
-
-import splunklib.results as results
-import json
-from datetime import timedelta, datetime
-import pytz
-import dateparser
-import urllib2
 import hashlib
-import ssl
-from StringIO import StringIO
-import requests
-import urllib3
 import io
+import json
 import re
+import ssl
+from datetime import datetime, timedelta
+
+import dateparser
+import demistomock as demisto  # noqa: F401
+import pytz
+import requests
+import splunklib.client as client
+import splunklib.results as results
+import urllib2
+import urllib3
+from CommonServerPython import *  # noqa: F401
+from splunklib.binding import AuthenticationError, HTTPError, namespace
+from StringIO import StringIO
+
+# contrib first comment
+# second comment
+# third comment
+# fourth comment
+
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 

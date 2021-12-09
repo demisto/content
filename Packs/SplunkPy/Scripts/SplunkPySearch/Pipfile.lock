@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "c96affb1f06fd680e7e37b90f5593c6509bce73fbe508c6a9e2e364ac22db961"
+            "sha256": "9f29003b48c59d98b8e6b80f2fd7ccee8315471cc1602f1baa5850490256a426"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -217,13 +217,6 @@
             ],
             "index": "pypi",
             "version": "==1.16.0"
-        },
-        "splunk-sdk": {
-            "hashes": [
-                "sha256:b4963a983f1538686cf3f83f9e5ee5e48419cc71744fc8bc0f60f8b8576efb98"
-            ],
-            "index": "pypi",
-            "version": "==1.6.16"
         },
         "tldextract": {
             "hashes": [
