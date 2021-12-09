@@ -9,6 +9,7 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 # contrib test
+# second comment
 userUri = '/scim/v2/Users/'
 groupUri = '/scim/v2/Groups/'
 patchSchema = 'urn:ietf:params:scim:api:messages:2.0:PatchOp'
