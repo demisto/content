@@ -6,6 +6,7 @@ Note that adding code to CommonServerUserPython can override functions in Common
 from __future__ import print_function
 
 import base64
+import gc
 import json
 import logging
 import os
@@ -8367,3 +8368,114 @@ def register_signal_handler_threads_dump(signal_type=signal.SIGUSR1):
     :rtype: ``None``
     """
     signal.signal(signal_type, signal_handler_threads_dump)
+
+
+def signal_handler_memory_dump(_sig, _frame):
+    """
+    Listener function to dump the memory to log info
+
+    :type _sig: ``int``
+    :param _sig: The signal number
+
+    :type _frame: ``Any``
+    :param _frame: The current stack frame
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    classes_dict = {}
+    for obj in gc.get_objects():
+        i = id(obj)
+        size = sys.getsizeof(obj, 0)
+        if hasattr(obj, '__class__'):
+            cls = str(obj.__class__)
+            if cls in classes_dict:
+                current_class = classes_dict.get(cls)
+                current_class['count'] += 1
+                current_class['size'] += size
+                classes_dict[cls] = current_class
+            else:
+                current_class = {
+                    'name': cls,
+                    'count': 1,
+                    'size': size,
+                }
+                classes_dict[cls] = current_class
+
+    classes_as_list = list(classes_dict.values())
+    print_memory_dump(classes_as_list)
+
+
+def print_memory_dump(classes_as_list: list):
+    """
+    A function that prints the memory dump to log info
+
+    :type classes_as_list: ``list``
+    :param classes_as_list: The classes to print to the log
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    show_x_classes = 20
+
+    print('\n\n--- Start Memory Dump ---')
+
+    print(f'\n--- Start Top {show_x_classes} Classes by Count ---\n')
+    classes_sorted_by_count = sorted(classes_as_list, key=lambda d: d['count'], reverse=True)
+    print('count\tsize\tname')
+    for current_class in classes_sorted_by_count[:show_x_classes]:
+        print(f'{current_class["count"]}\t{current_class["size"]}\t{current_class["name"][8:-2]}')
+    print(f'\n--- End Top {show_x_classes} Classes by Count ---')
+
+    print(f'\n--- Start Top {show_x_classes} Classes by Size ---\n')
+    classes_sorted_by_size = sorted(classes_as_list, key=lambda d: d['size'], reverse=True)
+    print('size\tcount\tname')
+    for current_class in classes_sorted_by_size[:show_x_classes]:
+        print(f'{current_class["size"]}\t{current_class["count"]}\t{current_class["name"][8:-2]}')
+    print(f'\n--- End Top {show_x_classes} Classes by Size ---')
+
+    print('\n--- End Memory Dump ---\n\n')
+
+
+
+def register_signal_handler_memory_dump(signal_type=signal.SIGUSR2):
+    """
+    Function that registers the memory dump signal listener
+
+    :type signal_type: ``int``
+    :param signal_type: The type of the signal to register
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    signal.signal(signal_type, signal_handler_memory_dump)
+
+
+def signal_handler_threads_and_memory_dump(_sig, _frame):
+    """
+    Listener function to dump the threads and memory to log info
+
+    :type _sig: ``int``
+    :param _sig: The signal number
+
+    :type _frame: ``Any``
+    :param _frame: The current stack frame
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    signal_handler_threads_dump(_sig, _frame)
+    signal_handler_memory_dump(_sig, _frame)
+
+
+def register_signal_handler_threads_and_memory_dump(signal_type=signal.SIGUSR2):
+    """
+    Function that registers the threads and memory dump signal listener
+
+    :type signal_type: ``int``
+    :param signal_type: The type of the signal to register
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    signal.signal(signal_type, signal_handler_threads_and_memory_dump)
