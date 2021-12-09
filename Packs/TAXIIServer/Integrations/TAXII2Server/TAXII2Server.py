@@ -3,9 +3,10 @@ import uuid
 from ssl import SSLContext, PROTOCOL_TLSv1_2
 from tempfile import NamedTemporaryFile
 from flask import Flask, request, make_response, jsonify
-from gevent.pywsgi import WSGIServer
 from urllib.parse import ParseResult, urlparse
 from secrets import compare_digest
+from dateutil.parser import parse
+from gevent.pywsgi import WSGIServer
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -14,6 +15,8 @@ from CommonServerPython import *
 HTTP_200_OK = 200
 HTTP_400_BAD_REQUEST = 400
 HTTP_401_UNAUTHORIZED = 401
+HTTP_404_NOT_FOUND = 404
+HTTP_406_NOT_ACCEPABLE = 406
 INTEGRATION_NAME: str = 'TAXII Server'
 API_ROOT = 'threatintel'
 APP: Flask = Flask('demisto-taxii2Z')
@@ -29,6 +32,7 @@ TAXII_VER_2_0 = '2.0'
 TAXII_VER_2_1 = '2.1'
 PAWN_UUID = uuid.uuid5(uuid.NAMESPACE_URL, 'https://www.paloaltonetworks.com')
 SCO_DET_ID_NAMESPACE = uuid.UUID('00abedb4-aa42-466c-9c01-fed23315a9b7')
+STIX_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 
 XSOAR_TYPES_TO_STIX_SCO = {
     FeedIndicatorType.CIDR: 'ipv4-addr',
@@ -38,7 +42,6 @@ XSOAR_TYPES_TO_STIX_SCO = {
     FeedIndicatorType.Account: 'user-account',
     FeedIndicatorType.Domain: 'domain-name',
     FeedIndicatorType.Email: 'email-addr',
-    FeedIndicatorType.Host: '?????',  # TODO: Check what to do.
     FeedIndicatorType.IP: 'ipv4-addr',
     FeedIndicatorType.Registry: 'windows-registry-key',
     FeedIndicatorType.File: 'file',
@@ -108,13 +111,12 @@ class TAXII2Server:
         self._auth = None
         if credentials:
             self._auth = (credentials.get('identifier', ''), credentials.get('password', ''))
-        self._api_root = API_ROOT
         self.version = version
         if not (version == TAXII_VER_2_0 or version == TAXII_VER_2_1):
             raise Exception(f'Wrong TAXII 2 Server version: {version}. '
                             f'Possible values: {TAXII_VER_2_0}, {TAXII_VER_2_1}.')
         self._collections_resource = []
-        self._collections_by_id = dict()
+        self.collections_by_id = dict()
         self.namespace_uuid = uuid.uuid5(PAWN_UUID, demisto.getLicenseID())
         self.create_collections(collections)
 
@@ -155,6 +157,9 @@ class TAXII2Server:
         return self._auth
 
     def create_collections(self, collections):
+        """
+        Creates collection resources from collection params.
+        """
         collections_resource = []
         collections_by_id = dict()
         for name, query in collections.items():
@@ -171,7 +176,7 @@ class TAXII2Server:
             collections_by_id[collection_uuid] = collection
 
         self._collections_resource = collections_resource
-        self._collections_by_id = collections_by_id
+        self.collections_by_id = collections_by_id
 
     def get_discovery_service(self):
         """
@@ -180,7 +185,7 @@ class TAXII2Server:
         Returns:
             The discovery response.
         """
-        default = urljoin(self._service_address, self._api_root)
+        default = urljoin(self._service_address, API_ROOT)
         default = urljoin(default, '/')
 
         return {
@@ -190,84 +195,112 @@ class TAXII2Server:
             'api_roots': [default]
         }
 
-    def get_api_root(self, api_root):
+    def get_api_root(self):
         """
         Handle API Root request.
 
         Returns:
             The API ROOT response.
         """
-        if not api_root == self._api_root:
-            raise Exception(f"Unknown API Root {api_root}. Check possible API Roots using '{self.discovery_route}'")
-
         return {
             'title': 'XSOAR TAXII2 Server ThreatIntel',
             'description': 'This API Root provides TAXII Services for system indicators.',
-            'versions': [SERVER.api_version],
-            'max_content_length': 9765625  # TODO: Ask what is this
+            'versions': [self.api_version],
+            'max_content_length': 9765625 if self.version == TAXII_VER_2_0 else 104857600
         }
 
-    def get_collections(self, api_root):
+    def get_collections(self):
         """
         Handle Collections request.
 
         Returns:
             The Collections response.
         """
-        if not api_root == self._api_root:
-            raise Exception(f"Unknown API Root {api_root}. Check possible API Roots using '{self.discovery_route}'")
-
         return self._collections_resource
 
-    def get_collection_by_id(self, api_root, collection_id):
+    def get_collection_by_id(self, collection_id):
         """
         Handle Collection ID request.
 
         Returns:
             The Collection with given ID response.
         """
-        if not api_root == self._api_root:
-            raise Exception(f"Unknown API Root {api_root}. Check possible API Roots using '{self.discovery_route}'")
-        found_collection = self._collections_by_id.get(collection_id)
-
-        if not found_collection:
-            raise Exception(f'No collection with id "{collection_id}". '
-                            f'Use "/{api_root}/collections/" to get all existing collections.')
+        found_collection = self.collections_by_id.get(collection_id)
         return found_collection
 
-    def get_objects(self, api_root: str, collection_id: str, added_after, limit: int, offset: int, ids: list,
-                    types: list, versions: list):
-        if not api_root == self._api_root:
-            raise Exception(f"Unknown API Root {api_root}. Check possible API Roots using '{self.discovery_route}'")
-        found_collection = self._collections_by_id.get(collection_id)
+    def get_manifest(self, collection_id: str, added_after, limit: int, offset: int,
+                     types: list):
+        """
+        Handle Manifest request.
 
-        if not found_collection:
-            raise Exception(f'No collection with id "{collection_id}". '
-                            f'Use "/{api_root}/collections/" to get all existing collections.')
-
+        Returns:
+            The objects from given collection ID.
+        """
+        found_collection = self.collections_by_id.get(collection_id)
         query = found_collection.get('description')
         new_limit = offset + limit
-        new_query = create_query(query, ids, types, versions)
-        ios = find_indicators(query=new_query, added_after=added_after, limit=new_limit)
+        new_query = create_query(query, types)
+        iocs, _ = find_indicators(query=new_query, added_after=added_after, limit=new_limit, is_manifest=True)
 
         first_added = None
         last_added = None
-        objects = ios[offset:offset + limit]
+        objects = iocs[offset:offset + limit]
 
         if objects:
-            first_added = objects[0].get('created')
-            last_added = objects[-1].get('created')
+            first_added = parse(objects[0].get('date_added')).strftime(STIX_DATE_FORMAT)
+            last_added = parse(objects[-1].get('date_added')).strftime(STIX_DATE_FORMAT)
 
-        bundle = {
-            'type': 'bundle',
+        response = {
             'objects': objects,
-            'id': '123'  # TODO: what is a bundle id?
         }
-        response = bundle
+
         if self.version == TAXII_VER_2_1:
+            if len(iocs) > offset + limit:
+                response['more'] = True
+                response['next'] = str(limit + offset)
+
+        return response, first_added, last_added
+
+    def get_objects(self, collection_id: str, added_after, limit: int, offset: int, types: list):
+        """
+        Handle Objects request.
+
+        Returns:
+            The objects from given collection ID.
+        """
+
+        found_collection = self.collections_by_id.get(collection_id)
+        query = found_collection.get('description')
+        new_limit = offset + limit
+        new_query = create_query(query, types)
+        iocs, extensions = find_indicators(query=new_query, added_after=added_after, limit=new_limit)
+
+        first_added = None
+        last_added = None
+
+        limited_iocs = iocs[offset:offset + limit]
+        limited_extensions = extensions[offset:offset + limit]
+
+        objects = [val for pair in zip(limited_iocs, limited_extensions) for val in pair]
+
+        if limited_iocs:
+            first_added = parse(limited_extensions[0].get('created')).strftime(STIX_DATE_FORMAT)
+            last_added = parse(limited_extensions[-1].get('created')).strftime(STIX_DATE_FORMAT)
+
+        response = {}
+        if self.version == TAXII_VER_2_0:
             response = {
-                'data': bundle
+                'type': 'bundle',
+                'objects': objects,
+                'id': uuid.uuid4()
             }
+        elif self.version == TAXII_VER_2_1:
+            response = {
+                'objects': objects,
+            }
+            if len(limited_iocs) > offset + limit:
+                response['more'] = True
+                response['next'] = str(limit + offset)
 
         return response, first_added, last_added
 
@@ -277,32 +310,63 @@ SERVER: TAXII2Server
 ''' HELPER FUNCTIONS '''
 
 
-def taxii_validate_request(f):
+def taxii_validate_request_headers(f):
     @functools.wraps(f)
-    def validate_request(*args, **kwargs):
+    def validate_request_headers(*args, **kwargs):
         """
         function of HTTP requests to validate authentication and Accept headers.
         """
         accept_headers = [MEDIA_TYPE_TAXII_ANY, MEDIA_TYPE_TAXII_V20, MEDIA_TYPE_TAXII_V21,
                           MEDIA_TYPE_STIX_V20, ACCEPT_TYPE_ALL]
         credentials = request.authorization
+
         if SERVER.auth:
             auth_success = (compare_digest(credentials.username, SERVER.auth[0])
                             and compare_digest(credentials.password, SERVER.auth[1]))
             if not auth_success:
                 handle_long_running_error('Authorization failed')
                 return handle_response(HTTP_401_UNAUTHORIZED, {'title': 'Authorization failed'})
+
         request_headers = request.headers
         if (accept_header := request_headers.get('Accept')) not in accept_headers:
             handle_long_running_error('Invalid TAXII Headers')
-            return handle_response(HTTP_400_BAD_REQUEST,
+            return handle_response(HTTP_406_NOT_ACCEPABLE,
                                    {'title': 'Invalid TAXII Headers',
                                     'description': f'Invalid Accept header: {accept_header}, '
                                                    f'please use one ot the following Accept headers: '
                                                    f'{accept_headers}'})
         return f(*args, **kwargs)
 
-    return validate_request
+    return validate_request_headers
+
+
+def taxii_validate_url_param(f):
+    @functools.wraps(f)
+    def validate_url_param(*args, **kwargs):
+        """
+        function of HTTP requests to validate api_root and collection_id.
+        """
+        api_root = kwargs.get('api_root')
+        collection_id = kwargs.get('collection_id')
+        if api_root and not api_root == API_ROOT:
+            handle_long_running_error('Unknown API Root')
+            return handle_response(HTTP_404_NOT_FOUND,
+                                   {'title': 'Unknown API Root',
+                                    'description': f"Unknown API Root {api_root}. Check possible API Roots using "
+                                                   f"'{SERVER.discovery_route}'"})
+
+        if collection_id:
+            if not SERVER.collections_by_id.get(collection_id):
+                handle_long_running_error('Unknown Collection')
+                return handle_response(HTTP_404_NOT_FOUND,
+                                       {'title': 'Unknown Collection',
+                                        'description': f'No collection with id "{collection_id}". '
+                                                       f'Use "/{api_root}/collections/" to get '
+                                                       f'all existing collections.'})
+
+        return f(*args, **kwargs)
+
+    return validate_url_param
 
 
 def handle_long_running_error(error: str):
@@ -344,25 +408,24 @@ def handle_response(status_code, content, date_added_first=None, date_added_last
     return make_response(jsonify(content), status_code, headers)
 
 
-def create_query(query, ids, types, versions):
-    new_query = query + ' '
-    if ids:
-        # TODO: add filtering by id.
-        pass
+def create_query(query, types):
     if types:
         try:
-            xsoar_types = [STIX2_TYPES_TO_XSOAR[t] for t in types]
+            xsoar_types = [STIX2_TYPES_TO_XSOAR[t] for t in types if t != 'domain-name']
+            if 'domain-name' in types:
+                xsoar_types.append(STIX2_TYPES_TO_XSOAR['domain-name'])
         except KeyError as e:
             raise Exception(f'Unsupported object type: {e}.')
+        new_query = query + ' '
         new_query += ' or '.join(['type:' + x for x in xsoar_types])
-    if versions:
-        # TODO: check if we have versions. options: [last, first, all, <value>]
-        pass
-    return new_query
+        return new_query
+    else:
+        return query
 
 
-def find_indicators(query: str, added_after, limit: int) -> list:
-    iocs: List[dict] = []
+def find_indicators(query: str, added_after, limit: int, is_manifest: bool = False):
+    iocs = []
+    extensions = []
     indicator_searcher = IndicatorsSearcher(
         query=query,
         limit=limit,
@@ -372,40 +435,104 @@ def find_indicators(query: str, added_after, limit: int) -> list:
         found_indicators = ioc.get('iocs') or []
         for xsoar_indicator in found_indicators:
             xsoar_type = xsoar_indicator.get('indicator_type')
-            stix_ioc = FUNCTIONS_FOR_XSOAR_TYPES[xsoar_type](xsoar_indicator, xsoar_type)
-            iocs.append(stix_ioc)
+            if is_manifest:
+                manifest_entry = create_manifest_entry(xsoar_indicator, xsoar_type)
+                if manifest_entry:
+                    iocs.append(manifest_entry)
+            else:
+                stix_ioc, extension_definition = create_stix_object(xsoar_indicator, xsoar_type)
+                if stix_ioc and extension_definition:
+                    iocs.append(stix_ioc)
+                    extensions.append(extension_definition)
 
-    return iocs
+    return iocs, extensions
 
 
-def create_sco_stix_uuid(value, stix_type):
-    unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, value)
+def create_sco_stix_uuid(xsoar_indicator, stix_type):
+    # TODO: debug to get stix id
+    if stix_type == 'user-account':
+        unique_id = None
+        pass
+    elif stix_type == 'windows-registry-key':
+        unique_id = None
+        pass
+    elif stix_type == 'file':
+        unique_id = None
+        pass
+    else:
+        value = xsoar_indicator.get('value')
+        unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, '{"value":"' + value + '"}')
+
     stix_id = f'{stix_type}--{unique_id}'
     return stix_id
 
 
-def create_sdo_stix_uuid(value, stix_type):
-    unique_id = uuid.uuid5(SERVER.namespace_uuid, value)
+def create_sdo_stix_uuid(xsoar_indicator, stix_type):
+    if stix_type == 'attack-pattern':
+        # todo
+        unique_id = None
+        pass
+    else:
+        value = xsoar_indicator.get('value')
+        unique_id = uuid.uuid5(SERVER.namespace_uuid, f'{stix_type}:{value}')
+
     stix_id = f'{stix_type}--{unique_id}'
     return stix_id
 
 
-def create_stix_ip(xsoar_indicator, xsoar_type):
-    stix_type = XSOAR_TYPES_TO_STIX_SCO.get(xsoar_type)
-    value = xsoar_indicator.get('value')
-    stix_id = create_sco_stix_uuid('{"value":"' + value + '"}', stix_type)
-    # TODO: create mapping
-    ipv4 = {
+def create_manifest_entry(xsoar_indicator, xsoar_type):
+    if stix_type := XSOAR_TYPES_TO_STIX_SCO.get(xsoar_type):
+        stix_id = create_sco_stix_uuid(xsoar_indicator, stix_type)
+    elif stix_type := XSOAR_TYPES_TO_STIX_SDO.get(xsoar_type):
+        stix_id = create_sdo_stix_uuid(xsoar_indicator, stix_type)
+    else:
+        demisto.debug(f'No such indicator type: {xsoar_type} in stix format.')
+        return {}
+    entry = {
         'id': stix_id,
-        'value': value,
-        'type': stix_type,
-        'created': xsoar_indicator.get('firstSeen'),
-        'modified': xsoar_indicator.get('modified'),
+        'date_added': parse(xsoar_indicator.get('timestamp')).strftime(STIX_DATE_FORMAT),
     }
-    return ipv4
+    if SERVER.version == TAXII_VER_2_1:
+        entry['version'] = xsoar_indicator.get('version')
+    return entry
 
 
-# TODO: build functions for each indicator type
+def create_stix_object(xsoar_indicator, xsoar_type):
+    if stix_type := XSOAR_TYPES_TO_STIX_SCO.get(xsoar_type):
+        stix_id = create_sco_stix_uuid(xsoar_indicator, stix_type)
+        object_type = stix_type
+    elif stix_type := XSOAR_TYPES_TO_STIX_SDO.get(xsoar_type):
+        stix_id = create_sdo_stix_uuid(xsoar_indicator, stix_type)
+        object_type = stix_type
+    else:
+        demisto.debug(f'No such indicator type: {xsoar_type} in stix format.')
+        return {}
+
+    xsoar_indicator['extension_type'] = 'property_extension'
+    extention_id = f'extension-definition--{uuid.uuid4()}'
+    extension_definition = {
+        'id': extention_id,
+        'type': 'extension-definition',
+        'spec_version': SERVER.version,
+        'name': f'XSOAR TIM {xsoar_type}',
+        'description': 'This schema adds TIM data to the object',
+        'created': xsoar_indicator.get('timestamp'),
+        'modified': xsoar_indicator.get('modified'),
+        'created_by_ref': 'identity--<UUID of creator>',  # todo: change it
+        'schema': '<Link to JSON schema or a description>',  # todo: change it
+        'version': '1.0',
+        'extension_types': ['property-extension']
+    }
+    sco_object = {
+        'id': stix_id,
+        'value': xsoar_indicator.get('value'),
+        'type': object_type,
+        'spec_version': SERVER.version,
+        'extensions': {
+            extention_id: xsoar_indicator,
+        },
+    }
+    return sco_object, extension_definition
 
 
 def parse_content_range(content_range):
@@ -414,8 +541,8 @@ def parse_content_range(content_range):
     if range_type != 'items':
         raise Exception(f'Bad Content-Range header: {content_range}.')
 
-    range_count, _ = range_count.split('/', 1)
-    range_begin, range_end = range_count.split('-', 1)
+    range_count = range_count.split('/')
+    range_begin, range_end = range_count[0].split('-', 1)
 
     offset = int(range_begin)
     limit = int(range_end)
@@ -437,44 +564,19 @@ def get_collections(params: dict = demisto.params()) -> dict:
     return collections
 
 
-FUNCTIONS_FOR_XSOAR_TYPES = {
-    FeedIndicatorType.CIDR: create_stix_ip,
-    FeedIndicatorType.DomainGlob: 'domain-name',
-    FeedIndicatorType.IPv6: create_stix_ip,
-    FeedIndicatorType.IPv6CIDR: create_stix_ip,
-    FeedIndicatorType.Account: 'user-account',
-    FeedIndicatorType.Domain: 'domain-name',  # TODO: Maybe domain?
-    FeedIndicatorType.Email: 'email-addr',
-    FeedIndicatorType.Host: '?????',  # TODO: Check what to do.
-    FeedIndicatorType.IP: create_stix_ip,
-    FeedIndicatorType.Registry: 'windows-registry-key',
-    FeedIndicatorType.File: 'file',
-    FeedIndicatorType.URL: 'url',
-    ThreatIntel.ObjectsNames.ATTACK_PATTERN: 'attack-pattern',
-    ThreatIntel.ObjectsNames.CAMPAIGN: 'campaign',
-    ThreatIntel.ObjectsNames.COURSE_OF_ACTION: 'course-of-action',
-    ThreatIntel.ObjectsNames.INFRASTRUCTURE: 'infrastructure',
-    ThreatIntel.ObjectsNames.INTRUSION_SET: 'instruction-set',
-    ThreatIntel.ObjectsNames.REPORT: 'report',
-    ThreatIntel.ObjectsNames.THREAT_ACTOR: 'threat-actor',
-    ThreatIntel.ObjectsNames.TOOL: 'tool',
-    ThreatIntel.ObjectsNames.MALWARE: 'malware',
-    FeedIndicatorType.CVE: 'vulnerability',
-}
-
 ''' ROUTE FUNCTIONS '''
 
 
 @APP.route('/taxii/', methods=['GET'])  # TAXII v2.0
 @APP.route('/taxii2/', methods=['GET'])  # TAXII v2.1
-@taxii_validate_request
+@taxii_validate_request_headers
 def taxii2_server_discovery():
     """
     Defines TAXII API - Server Information:
     Server Discovery section (4.1) `here  for v2.1 <https://docs.oasis-open.org/cti/taxii/v2.1/cs01/taxii-v2.1-cs01.html#_Toc31107526>`__
     and `here for v2.0 <http://docs.oasis-open.org/cti/taxii/v2.0/cs01/taxii-v2.0-cs01.html#_Toc496542727>`__
     Returns:
-        discovery: A Discovery Resource upon successful requests. Additional information..
+        discovery: A Discovery Resource upon successful requests.
     """
     try:
         discovery_response = SERVER.get_discovery_service()
@@ -488,8 +590,9 @@ def taxii2_server_discovery():
 
 
 @APP.route('/<api_root>/', methods=['GET'])
-@taxii_validate_request
-def taxii2_api_root(api_root):
+@taxii_validate_request_headers
+@taxii_validate_url_param
+def taxii2_api_root(api_root: str):
     """
      Defines TAXII API - Server Information:
      Get API Root Information section (4.2) `here <https://docs.oasis-open.org/cti/taxii/v2.1/cs01/taxii-v2.1-cs01.html#_Toc31107528>`__
@@ -499,7 +602,7 @@ def taxii2_api_root(api_root):
          api-root: An API Root Resource upon successful requests.
      """
     try:
-        api_root_response = SERVER.get_api_root(api_root)
+        api_root_response = SERVER.get_api_root()
     except Exception as e:
         error = f'Could not perform the API Root request: {str(e)}'
         handle_long_running_error(error)
@@ -510,14 +613,23 @@ def taxii2_api_root(api_root):
 
 
 @APP.route('/<api_root>/status/<status_id>/', methods=['GET'])
-@taxii_validate_request
+@taxii_validate_request_headers
+@taxii_validate_url_param
 def taxii2_status(api_root, status_id):
-    # TODO: Not allowed
-    pass
+    """Status API call used to check status for adding object to the system.
+    Our collections are read only. No option to add objects.
+    Then All status requests ending with error.
+
+    Returns: Error response.
+    """
+    return handle_response(HTTP_400_BAD_REQUEST, {'title': 'Get Status not allowed.',
+                                                  'description': 'All collections are read-only. '
+                                                                 'Adding objects is not allowed.'})
 
 
 @APP.route('/<api_root>/collections/', methods=['GET'])
-@taxii_validate_request
+@taxii_validate_request_headers
+@taxii_validate_url_param
 def taxii2_collections(api_root: str):
     """
     Defines TAXII API - Collections:
@@ -529,7 +641,7 @@ def taxii2_collections(api_root: str):
         `here <https://docs.oasis-open.org/cti/taxii/v2.1/csprd01/taxii-v2.1-csprd01.html#_Toc532988050>`__.
     """
     try:
-        collections_response = SERVER.get_collections(api_root)
+        collections_response = SERVER.get_collections()
     except Exception as e:
         error = f'Could not perform the collections request: {str(e)}'
         handle_long_running_error(error)
@@ -539,20 +651,21 @@ def taxii2_collections(api_root: str):
 
 
 @APP.route('/<api_root>/collections/<collection_id>/', methods=['GET'])
-@taxii_validate_request
+@taxii_validate_request_headers
+@taxii_validate_url_param
 def taxii2_collection_by_id(api_root: str, collection_id: str):
     """
     Defines TAXII API - Collections:
     Get Collection section (5.2) `here for v.2.0 <http://docs.oasis-open.org/cti/taxii/v2.0/cs01/taxii-v2.0-cs01.html#_Toc496542736>`__
     and `here for v.2.1 <https://docs.oasis-open.org/cti/taxii/v2.1/csprd01/taxii-v2.1-csprd01.html#_Toc532988051>`__
     Args:
-        collection_id:
+        collection_id: the is of the collection, can be obtained using `collection` request.
         api_root (str): the base URL of the API Root
     Returns:
         collections: A Collection Resource with given id upon successful requests.
     """
     try:
-        collection_response = SERVER.get_collection_by_id(api_root, collection_id)
+        collection_response = SERVER.get_collection_by_id(collection_id)
     except Exception as e:
         error = f'Could not perform the collection request: {str(e)}'
         handle_long_running_error(error)
@@ -562,14 +675,59 @@ def taxii2_collection_by_id(api_root: str, collection_id: str):
 
 
 @APP.route('/<api_root>/collections/<collection_id>/manifest/', methods=['GET'])
-@taxii_validate_request
+@taxii_validate_request_headers
+@taxii_validate_url_param
 def taxii2_manifest(api_root: str, collection_id: str):
-    # TODO: implement
-    pass
+    """
+    """
+    try:
+        added_after = request.args.get('added_after')
+        types = argToList(request.args.get('match[type]'))
+        limit = 100
+        offset = 0
+
+        try:
+            if added_after:
+                datetime.strptime(added_after, STIX_DATE_FORMAT)
+        except ValueError as e:
+            raise Exception(f'Added after time format should be YYYY-MM-DDTHH:mm:ss.[s+]Z. {e}')
+
+        if SERVER.version == TAXII_VER_2_0:
+            if content_range := request.headers.get('Content-Range'):
+                offset, limit = parse_content_range(content_range)
+            elif range := request.headers.get('Range'):
+                offset, limit = parse_content_range(range)
+
+        elif SERVER.version == TAXII_VER_2_1:
+            next = request.args.get('next')
+            limit = request.args.get('limit')
+            offset = int(next) if next else 0
+            limit = int(limit) if limit else 100
+
+        manifest_response, date_added_first, date_added_last = SERVER.get_manifest(
+            collection_id=collection_id,
+            added_after=added_after,
+            offset=offset,
+            limit=limit,
+            types=types,
+        )
+    except Exception as e:
+        error = f'Could not perform the manifest request: {str(e)}'
+        handle_long_running_error(error)
+        return handle_response(HTTP_400_BAD_REQUEST, {'title': 'Manifest Request Error',
+                                                      'description': error})
+
+    return handle_response(
+        status_code=HTTP_200_OK,
+        content=manifest_response,
+        date_added_first=date_added_first,
+        date_added_last=date_added_last,
+    )
 
 
 @APP.route('/<api_root>/collections/<collection_id>/objects/', methods=['GET'])
-@taxii_validate_request
+@taxii_validate_request_headers
+@taxii_validate_url_param
 def taxii2_objects(api_root: str, collection_id: str):
     """
     Defines TAXII API - Collections Objects:
@@ -582,17 +740,14 @@ def taxii2_objects(api_root: str, collection_id: str):
         `here <https://docs.oasis-open.org/cti/taxii/v2.1/csprd01/taxii-v2.1-csprd01.html#_Toc532988038>`__.
     """
     try:
-        # TODO: Parse match arguments
         added_after = request.args.get('added_after')
-        ids = argToList(request.args.get('match[id]'))  # TODO: Maybe not supported
         types = argToList(request.args.get('match[type]'))
-        versions = argToList(request.args.get('match[version]'))
-        limit = 500  # TODO: should limit have default param?
+        limit = 100
         offset = 0
 
         try:
             if added_after:
-                datetime.strptime(added_after, '%Y-%m-%dT%H:%M:%S.%fZ')
+                datetime.strptime(added_after, STIX_DATE_FORMAT)
         except ValueError as e:
             raise Exception(f'Added after time format should be YYYY-MM-DDTHH:mm:ss.[s+]Z. {e}')
 
@@ -603,18 +758,18 @@ def taxii2_objects(api_root: str, collection_id: str):
                 offset, limit = parse_content_range(range)
 
         elif SERVER.version == TAXII_VER_2_1:
+            next = request.args.get('next')
             limit = request.args.get('limit')
-            limit = int(limit) if limit else None
+
+            offset = int(next) if next else 0
+            limit = int(limit) if limit else 100
 
         objects_response, date_added_first, date_added_last = SERVER.get_objects(
-            api_root=api_root,
             collection_id=collection_id,
             added_after=added_after,
             offset=offset,
             limit=limit,
-            ids=ids,
             types=types,
-            versions=versions,
         )
     except Exception as e:
         error = f'Could not perform the objects request: {str(e)}'
@@ -716,7 +871,7 @@ def main():
         return_error(err_msg)
 
 
-from NGINXApiModule import *  # noqa: E402
+# from NGINXApiModule import *  # noqa: E402
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()
