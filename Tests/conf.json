@@ -4778,6 +4778,14 @@
         {
             "playbookID": "JsonToTable - Test Playbook",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "ACTI",
+            "playbookID": "Feed iDefense Test"
+        },
+        {
+            "integrations": "ACTI",
+            "playbookID": "iDefense_v2_Test"
         }
     ],
     "skipped_tests": {
@@ -4852,10 +4860,8 @@
         "EWS Extension: Powershell Online V2 Test": "Issue 39008",
         "O365 - EWS - Extension - Test": "Issue 39008",
         "Majestic Million Test Playbook": "Issue 30931",
-        "iDefense_v2_Test": "Issue 40126",
         "EWS Mail Sender Test": "Issue 27944",
         "McAfee ESM v2 - Test v10.3.0": "Issue 35616",
-        "Feed iDefense Test": "Issue 34035",
         "McAfee ESM v2 - Test v10.2.0": "Issue 35670",
         "McAfee ESM Watchlists - Test v10.3.0": "Issue 37130",
         "McAfee ESM Watchlists - Test v10.2.0": "Issue 39389",
@@ -4986,16 +4992,13 @@
         "FraudWatch": "Issue 34299",
         "Cisco Stealthwatch": "No instance - developed by Qmasters",
         "Armis": "No instance - developed by SOAR Experts",
-        
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
-        
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
-        
         "_comment4": "~~~ OTHER ~~~",
         "Anomali ThreatStream v2": "Will be deprecated soon.",
         "Anomali ThreatStream": "Will be deprecated soon.",
@@ -5177,7 +5180,6 @@
         "HelloWorldPremium-Test"
     ],
     "docker_thresholds": {
-        
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {

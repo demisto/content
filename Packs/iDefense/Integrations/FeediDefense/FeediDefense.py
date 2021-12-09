@@ -38,7 +38,7 @@ def custom_build_iterator(client: Client, feed: Dict, limit, **kwargs) -> List:
 
     while more_indicators:
         params['page'] = page_number
-        demisto.debug(f"Initiating API call to iDefense with url: {feed.get('url', client.url)} ,with parameters: "
+        demisto.debug(f"Initiating API call to ACTI with url: {feed.get('url', client.url)} ,with parameters: "
                       f"{params} and page number: {page_number} ")
         try:
 
@@ -75,7 +75,7 @@ def custom_build_iterator(client: Client, feed: Dict, limit, **kwargs) -> List:
                 .format(err_type, exception.errno, exception.strerror)
             raise DemistoException(err_msg, exception)
 
-    demisto.debug(f"Received in total {len(result)} indicators from iDefense Feed")
+    demisto.debug(f"Received in total {len(result)} indicators from ACTI Feed")
     return result
 
 

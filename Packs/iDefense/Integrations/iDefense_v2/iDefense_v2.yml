@@ -37,8 +37,8 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-description: iDefense provides intelligence regarding security threats and vulnerabilities.
-display: iDefense v2
+description: ACTI provides intelligence regarding security threats and vulnerabilities.
+display: Accenture CTI
 name: iDefense_v2
 script:
   commands:
@@ -52,14 +52,11 @@ script:
     - contextPath: IP.Address
       description: The IP address that was checked.
       type: String
-    - contextPath: IP.Malicious.Vendor
-      description: For malicious IP addresses, the vendor that made the decision.
-      type: String
-    - contextPath: IP.Malicious.Description
-      description: For malicious IP addresses, the reason the vendor made that decision.
-      type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
       type: String
     - contextPath: DBotScore.Type
       description: The indicator type.
@@ -81,14 +78,11 @@ script:
     - contextPath: Domain.Name
       description: The name of the domain that was checked.
       type: String
-    - contextPath: Domain.Malicious.Vendor
-      description: For malicious domains, the vendor that made the decision.
-      type: String
-    - contextPath: Domain.Malicious.Description
-      description: For malicious domains, the reason the vendor made that decision.
-      type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
       type: String
     - contextPath: DBotScore.Type
       description: The indicator type.
@@ -110,15 +104,12 @@ script:
     - contextPath: URL.Data
       description: The URL that was checked.
       type: String
-    - contextPath: URL.Malicious.Vendor
-      description: For malicious URLs, the vendor that made the decision.
-      type: String
-    - contextPath: URL.Malicious.Description
-      description: For malicious URLs, the reason the vendor made that decision.
-      type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: String
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String      
     - contextPath: DBotScore.Type
       description: The indicator type.
       type: String
@@ -139,33 +130,18 @@ script:
     - contextPath: IP.Address
       description: The IP address.
       type: String
-    - contextPath: IP.Malicious.Vendor
-      description: For malicious IPs, the vendor that made the decision.
-      type: String
-    - contextPath: IP.Malicious.Description
-      description: For malicious IPs, the reason the vendor made that decision.
-      type: String
     - contextPath: Domain.Name
       description: The domain name.
-      type: String
-    - contextPath: Domain.Malicious.Vendor
-      description: For malicious domains, the vendor that made the decision.
-      type: String
-    - contextPath: Domain.Malicious.Description
-      description: For malicious domains, the reason the vendor made that decision.
       type: String
     - contextPath: URL.Data
       description: The URL.
       type: String
-    - contextPath: URL.Malicious.Vendor
-      description: For malicious URLs, the vendor that made the decision.
-      type: String
-    - contextPath: URL.Malicious.Description
-      description: For malicious URLs, the reason the vendor made that decision.
-      type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: String
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String      
     - contextPath: DBotScore.Type
       description: The indicator type.
       type: String
@@ -176,6 +152,51 @@ script:
       description: The actual score.
       type: Number
     description: Get specific indicator reputation
+  - name: file
+    arguments:
+    - name: hash
+      default: false
+      description: To check contextual properties by hash(MD5/SHA1/SHA256).
+      #isArray: true
+    outputs:
+    - contextPath: File.ThreatTypes
+      description: Threat Type associated with the hash.
+      type: String
+    - contextPath: File.Confidence
+      description: Confidence of the file associated with the hash.
+      type: String
+    - contextPath: File.MalwareFamily
+      description: Malware family of the file associated with the hash belongs to. 
+      type: String
+    - contextPath: File.SHA1
+      description: SHA1 hash.
+      type: String
+    - contextPath: File.SHA256
+      description: SHA256 hash.
+      type: String
+    - contextPath: File.MD5
+      description: MD5 hash.
+      type: String
+    - contextPath: File.Type
+      description: Type of hash.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor that was used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    description: Retrieves contextual data related to file hashes. Enter either sha1 or sha256 or a MD5 hash.
+  
   dockerimage: demisto/python3:3.9.8.24399
   feed: false
   isfetch: false
