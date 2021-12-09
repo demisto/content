@@ -24,9 +24,7 @@ class KeyVaultClient:
     def __init__(self, tenant_id: str, client_id: str, client_secret: str,
                  subscription_id: str, resource_group_name: str,
                  verify: bool, proxy: bool):
-        # self._headers = {
-        #     'Content-Type': 'application/json'
-        # }
+
         self.ms_client = MicrosoftClient(
             self_deployed=True,
             auth_id=client_id,
