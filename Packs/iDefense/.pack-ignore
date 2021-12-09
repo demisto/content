@@ -3,6 +3,3 @@ ignore=PA125
 
 [file:iDefense_v2.yml]
 ignore=BA108,BA109
-
-[file:iDefense_v2.py]
-ignore=E501

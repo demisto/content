@@ -1,5 +1,5 @@
 import requests_mock
-from iDefense_v2 import IDEFENSE_URL_TEMPLATE, Client, domain_command, url_command, ip_command, uuid_command, hash_command, _calculate_dbot_score
+from iDefense_v2 import IDEFENSE_URL_TEMPLATE, Client, domain_command, url_command, ip_command, uuid_command, hash_command, _calculate_dbot_score                             # noqa: E501
 from CommonServerPython import DemistoException, DBotScoreReliability
 from test_data.response_constants import *
 import demistomock as demisto
@@ -38,7 +38,7 @@ def test_ip_command():
     """
 
     url = 'https://test.com/rest/threatindicator/v0/ip?key.values=0.0.0.0'
-    doc_url = 'https://test.com/rest/document/v0?links.display_text.query=0.0.0.0&type.values=intelligence_alert&type.values=intelligence_report'
+    doc_url = 'https://test.com/rest/document/v0?links.display_text.query=0.0.0.0&type.values=intelligence_alert&type.values=intelligence_report'                                 # noqa: E501
     status_code = 200
     json_data = IP_RES_JSON
     intel_json_data = IP_INTEL_JSON
@@ -79,7 +79,7 @@ def test_ip_command_when_api_key_not_authorised_for_document_search():
     """
 
     url = 'https://test.com/rest/threatindicator/v0/ip?key.values=0.0.0.0'
-    doc_url = 'https://test.com/rest/document/v0?links.display_text.query=0.0.0.0&type.values=intelligence_alert&type.values=intelligence_report'
+    doc_url = 'https://test.com/rest/document/v0?links.display_text.query=0.0.0.0&type.values=intelligence_alert&type.values=intelligence_report'                                                        # noqa: E501
 
     status_code = 200
     error_status_code = 403
@@ -124,14 +124,14 @@ def test_domain_command():
     """
 
     url = 'https://test.com/rest/threatindicator/v0/domain?key.values=mydomain.com'
-    doc_url = 'https://test.com/rest/document/v0?links.display_text.query=mydomain.com&type.values=intelligence_alert&type.values=intelligence_report'
+    doc_url = 'https://test.com/rest/document/v0?links.display_text.query=mydomain.com&type.values=intelligence_alert&type.values=intelligence_report'                                            # noqa: E501
 
     status_code = 200
     json_data = DOMAIN_RES_JSON
     intel_json_data = DOMAIN_INTEL_JSON
     expected_output = {
         'domain': [{'Name': 'mydomain.com'}],
-        'DBOTSCORE': [{'Indicator': 'mydomain.com', 'Type': 'domain', 'Vendor': 'iDefense', 'Score': 2, 'Reliability': 'B - Usually reliable'}]
+        'DBOTSCORE': [{'Indicator': 'mydomain.com', 'Type': 'domain', 'Vendor': 'iDefense', 'Score': 2, 'Reliability': 'B - Usually reliable'}]                                                      # noqa: E501
     }
 
     domain_to_check = {'domain': 'mydomain.com'}
@@ -165,7 +165,7 @@ def test_domain_command_when_api_key_not_authorized_for_document_search():
     """
 
     url = 'https://test.com/rest/threatindicator/v0/domain?key.values=mydomain.com'
-    doc_url = 'https://test.com/rest/document/v0?links.display_text.query=mydomain.com&type.values=intelligence_alert&type.values=intelligence_report'
+    doc_url = 'https://test.com/rest/document/v0?links.display_text.query=mydomain.com&type.values=intelligence_alert&type.values=intelligence_report'                                                                                # noqa: E501
 
     status_code = 200
     error_status_code = 403
@@ -175,7 +175,7 @@ def test_domain_command_when_api_key_not_authorized_for_document_search():
 
     expected_output = {
         'domain': [{'Name': 'mydomain.com'}],
-        'DBOTSCORE': [{'Indicator': 'mydomain.com', 'Type': 'domain', 'Vendor': 'iDefense', 'Score': 2, 'Reliability': 'B - Usually reliable'}]
+        'DBOTSCORE': [{'Indicator': 'mydomain.com', 'Type': 'domain', 'Vendor': 'iDefense', 'Score': 2, 'Reliability': 'B - Usually reliable'}]                                                                                         # noqa: E501
     }
 
     domain_to_check = {'domain': 'mydomain.com'}
@@ -243,7 +243,7 @@ def test_hash_command():
     """
 
     url = 'https://test.com/rest/threatindicator/v0?files.sha1.query=0a30b5b24196e503c4a21dcfd1447b28a39af314'
-    doc_url = 'https://test.com/rest/document/v0?links.display_text.query=bf0fea133818387cca7eaef5a52c0aed&type.values=intelligence_alert&type.values=intelligence_report'
+    doc_url = 'https://test.com/rest/document/v0?links.display_text.query=bf0fea133818387cca7eaef5a52c0aed&type.values=intelligence_alert&type.values=intelligence_report'                                                                                # noqa: E501
 
     status_code = 200
     json_data = HASH_RES_JSON
@@ -280,7 +280,7 @@ def test_hash_command_when_api_key_not_authorized_for_document_search():
     """
 
     url = 'https://test.com/rest/threatindicator/v0?files.sha1.query=0a30b5b24196e503c4a21dcfd1447b28a39af314'
-    doc_url = 'https://test.com/rest/document/v0?links.display_text.query=bf0fea133818387cca7eaef5a52c0aed&type.values=intelligence_alert&type.values=intelligence_report'
+    doc_url = 'https://test.com/rest/document/v0?links.display_text.query=bf0fea133818387cca7eaef5a52c0aed&type.values=intelligence_alert&type.values=intelligence_report'                                                           # noqa: E501
 
     status_code = 200
     error_status_code = 403
@@ -352,14 +352,14 @@ def test_uuid_command():
     """
 
     url = 'https://test.com/rest/threatindicator/v0/461b5ba2-d4fe-4b5c-ac68-35b6636c6edf'
-    doc_url = 'https://test.com/rest/document/v0?links.display_text.query=mydomain.com&type.values=intelligence_alert&type.values=intelligence_report'
+    doc_url = 'https://test.com/rest/document/v0?links.display_text.query=mydomain.com&type.values=intelligence_alert&type.values=intelligence_report'                                                           # noqa: E501
 
     status_code = 200
     json_data = UUID_RES_JSON
     intel_json_data = DOMAIN_INTEL_JSON
     expected_output = {
         'domain': [{'Name': 'mydomain.com'}],
-        'DBOTSCORE': [{'Indicator': 'mydomain.com', 'Type': 'domain', 'Vendor': 'iDefense', 'Score': 2, 'Reliability': 'B - Usually reliable'}]
+        'DBOTSCORE': [{'Indicator': 'mydomain.com', 'Type': 'domain', 'Vendor': 'iDefense', 'Score': 2, 'Reliability': 'B - Usually reliable'}]                                                                  # noqa: E501
     }
 
     uuid_to_check = {'uuid': '461b5ba2-d4fe-4b5c-ac68-35b6636c6edf'}
@@ -393,7 +393,7 @@ def test_uuid_command_when_api_key_not_authorized_for_document_search():
     """
 
     url = 'https://test.com/rest/threatindicator/v0/461b5ba2-d4fe-4b5c-ac68-35b6636c6edf'
-    doc_url = 'https://test.com/rest/document/v0?links.display_text.query=mydomain.com&type.values=intelligence_alert&type.values=intelligence_report'
+    doc_url = 'https://test.com/rest/document/v0?links.display_text.query=mydomain.com&type.values=intelligence_alert&type.values=intelligence_report'                                                                                                  # noqa: E501
 
     status_code = 200
     error_status_code = 403
@@ -403,7 +403,7 @@ def test_uuid_command_when_api_key_not_authorized_for_document_search():
 
     expected_output = {
         'domain': [{'Name': 'mydomain.com'}],
-        'DBOTSCORE': [{'Indicator': 'mydomain.com', 'Type': 'domain', 'Vendor': 'iDefense', 'Score': 2, 'Reliability': 'B - Usually reliable'}]
+        'DBOTSCORE': [{'Indicator': 'mydomain.com', 'Type': 'domain', 'Vendor': 'iDefense', 'Score': 2, 'Reliability': 'B - Usually reliable'}]                                                                                   # noqa: E501
     }
 
     uuid_to_check = {'uuid': '461b5ba2-d4fe-4b5c-ac68-35b6636c6edf'}
@@ -533,7 +533,7 @@ def test_url_command():
     """
 
     url = 'https://test.com/rest/threatindicator/v0/url?key.values=http://www.malware.com'
-    doc_url = 'https://test.com/rest/document/v0?links.display_text.query=http://www.malware.com&type.values=intelligence_alert&type.values=intelligence_report'
+    doc_url = 'https://test.com/rest/document/v0?links.display_text.query=http://www.malware.com&type.values=intelligence_alert&type.values=intelligence_report'                                                             # noqa: E501
     status_code = 200
     json_data = URL_RES_JSON
     intel_json_data = URL_INTEL_JSON
@@ -573,7 +573,7 @@ def test_url_command_when_api_key_not_authorized_for_document_search():
     """
 
     url = 'https://test.com/rest/threatindicator/v0/url?key.values=http://www.malware.com'
-    doc_url = 'https://test.com/rest/document/v0?links.display_text.query=http://www.malware.com&type.values=intelligence_alert&type.values=intelligence_report'
+    doc_url = 'https://test.com/rest/document/v0?links.display_text.query=http://www.malware.com&type.values=intelligence_alert&type.values=intelligence_report'                                                                                             # noqa: E501
 
     status_code = 200
     error_status_code = 403

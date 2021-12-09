@@ -374,7 +374,7 @@ def hash_command(client: Client, args: dict, reliability: DBotScoreReliability, 
 
 def _hash_extract(Res: dict, reliability: DBotScoreReliability, key_type: str, hash: str, doc_search_client: Client):
     """
-    Helps to fetch contextual properties related to hash and create context fields thereby enabling to store data in context data-store.
+    Helps to fetch contextual properties related to hash and create context fields thereby enabling to store data in context data-store.                       # noqa: E501
 
     Args:
         Res: Raw response received after API call.
@@ -437,7 +437,7 @@ def _hash_extract(Res: dict, reliability: DBotScoreReliability, key_type: str, h
 def _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client, indicatorTypeHash: bool = False):
     """
 
-    Adds Intelligence reports and Intelligence alerts information to analysis result for the indicator using given doc search client
+    Adds Intelligence reports and Intelligence alerts information to analysis result for the indicator using given doc search client                                        # noqa: E501
 
     Args:
         analysis_result obtained from _extract_analysis_info function call
@@ -481,7 +481,7 @@ def _get_ia_for_indicator(indicator: str, doc_search_client: Client):
 
     try:
         res = doc_search_client.threat_indicator_search(
-            url_suffix='/v0', data={'type.values': ['intelligence_alert', 'intelligence_report'], 'links.display_text.query': indicator})
+            url_suffix='/v0', data={'type.values': ['intelligence_alert', 'intelligence_report'], 'links.display_text.query': indicator})                                                                       # noqa: E501
 
         alerts = {item['title']: item['uuid'] for item in res.get('results', []) if item['type'] == 'intelligence_alert'}
         reports = {item['title']: item['uuid'] for item in res.get('results', []) if item['type'] == 'intelligence_report'}
