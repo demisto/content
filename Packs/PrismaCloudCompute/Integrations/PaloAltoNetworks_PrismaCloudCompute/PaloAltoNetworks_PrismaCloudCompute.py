@@ -188,6 +188,12 @@ class PrismaCloudComputeClient(BaseClient):
         """
         return self._http_request(method="GET", url_suffix="/feeds/custom/ips")
 
+    def add_custom_ip_feeds(self, feeds):
+        """
+        Sends a request to add custom IP feeds.
+        """
+        self._http_request(method="PUT", url_suffix="/feeds/custom/ips", resp_type="text", json_data={"feed": feeds})
+
 
 def str_to_bool(s):
     """
@@ -865,17 +871,13 @@ def add_custom_ip_feeds(client: PrismaCloudComputeClient, args: dict) -> Command
         CommandResults: command-results object.
     """
     # the api overrides the blacklisted IPs, therefore it is necessary to add those who exist to the 'PUT' request.
-    current_ip_feeds = client.api_request(method="GET", url_suffix="/feeds/custom/ips").get("feed", [])
+    current_ip_feeds = client.get_custom_ip_feeds().get("feed", [])
     new_ip_feeds = argToList(arg=args.pop("ip"))
 
     # remove duplicates, the api doesn't give error on duplicate IPs
     combined_feeds = list(set(current_ip_feeds + new_ip_feeds))
 
-    client.api_request(
-        url_suffix="/feeds/custom/ips",
-        method='PUT',
-        json_data={"feed": combined_feeds}
-    )
+    client.add_custom_ip_feeds(feeds=combined_feeds)
 
     return CommandResults(
         readable_output="Successfully updated the custom IP feeds"
