@@ -1324,7 +1324,7 @@ def parse_attachment_as_dict(item_id, attachment):
                 ATTACHMENT_ID: attachment.attachment_id.id,
                 'attachmentName': get_attachment_name(attachment.name),
                 'attachmentSHA256': hashlib.sha256(attachment_content).hexdigest() if attachment_content else None,
-                'attachmentContentType': attachment.taxii_content_type,
+                'attachmentContentType': attachment.content_type,
                 'attachmentContentId': attachment.content_id,
                 'attachmentContentLocation': attachment.content_location,
                 'attachmentSize': attachment.size,

@@ -225,7 +225,7 @@ def blob2dict(blob):
     return {
         'Name': blob.name,
         'Bucket': blob.bucket.name,
-        'ContentType': blob.taxii_content_type,
+        'ContentType': blob.content_type,
         'TimeCreated': datetime2str(blob.time_created),
         'TimeUpdated': datetime2str(blob.updated),
         'TimeDeleted': datetime2str(blob.time_deleted),
