@@ -139,6 +139,20 @@ class PrismaCloudComputeClient(BaseClient):
         """
         return self._http_request(method="GET", url_suffix="/profiles/container", params=params)
 
+    def get_containers_hosts(self, container_id):
+        """
+        Sends a request to get the hosts that host a specific container.
+
+        Args:
+            container_id (str): the container ID.
+
+        Returns:
+            list[str]: hosts IDs that host the container.
+        """
+        return self._http_request(method="GET", url_suffix=f"profiles/container/{container_id}/hosts")
+
+
+
 
 def str_to_bool(s):
     """
@@ -303,6 +317,9 @@ def parse_limit_and_offset_values(limit: str, offset: str) -> Tuple[int, int]:
         limit (str): limit argument.
         offset (str): offset argument.
 
+    Raises:
+        ValueError: in case the offset/limit values are invalid
+
     Returns:
         Tuple[int, int]: parsed offset and parsed limit
     """
@@ -364,37 +381,21 @@ def epochs_to_timestamp(epochs: int, date_format: str = "%B %d, %Y %H:%M:%S %p")
         return ""
 
 
-def get_api_filtered_response(
-    client: PrismaCloudComputeClient,
-    url_suffix: str,
-    offset: int,
-    limit: int,
-    args: Optional[dict] = None,
-) -> list:
+def filter_api_response(api_response: list, offset: int, limit: int) -> list:
     """
     Filter the api response according to the offset/limit, used in case the api doesn't support limit/offset
 
     Args:
-        client (PrismaCloudComputeClient): prisma-cloud-compute client.
-        url_suffix (str): url suffix of the base api url.
+        api_response (list): api response from an endpoint.
         offset (int): the offset from which to begin listing the response.
         limit (int): the maximum limit of records in the response to fetch.
-        args (dict): any command arguments if exist.
 
     Returns:
-        list: api filtered response, empty list in case there aren't any records in the api response.
+        list: api filtered response.
     """
-    if not args:
-        args = {}
-
-    response = client.api_request(method='GET', url_suffix=url_suffix, params=assign_params(**args))
-
-    if response:
-        start = min(offset, len(response))
-        end = min(offset + limit, len(response))
-        return response[start:end]
-
-    return []
+    start = min(offset, len(api_response))
+    end = min(offset + limit, len(api_response))
+    return api_response[start:end]
 
 
 def get_hostname_description_info(host_info: dict) -> dict:
@@ -596,45 +597,6 @@ def get_container_profile_list(client: PrismaCloudComputeClient, args: dict) -> 
     )
 
 
-def build_container_hosts_response(
-    client: PrismaCloudComputeClient, container_id: str, args: dict
-) -> Tuple[Optional[dict], str]:
-    """
-    Build a table and a context response for the 'prisma-cloud-compute-profile-container-hosts-list' command.
-
-    Args:
-        client (PrismaCloudComputeClient): prisma-cloud-compute client.
-        container_id (str): container ID.
-        args (dict): prisma-cloud-compute-profile-container-list command arguments.
-
-    Returns:
-        Tuple[dict, str]: Context and table response.
-    """
-    # this api endpoint does not support either limit/offset.
-    limit, offset = args.pop("limit"), args.pop("offset")
-
-    hosts_ids = get_api_filtered_response(
-        client=client,
-        url_suffix=f"profiles/container/{container_id}/hosts",
-        offset=offset,
-        limit=limit,
-        args=args,
-    )
-
-    if hosts_ids:
-        context_output = {
-            "containerID": container_id,
-            "hostsIDs": hosts_ids
-        }
-        return context_output, tableToMarkdown(
-            name="Containers hosts list",
-            t=context_output,
-            headers=["containerID", "hostsIDs"],
-            headerTransform=lambda word: word[0].upper() + word[1:]
-        )
-    return None, "No results found"
-
-
 def get_container_hosts_list(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
     """
     Returns the hosts where the containers are running.
@@ -648,15 +610,30 @@ def get_container_hosts_list(client: PrismaCloudComputeClient, args: dict) -> Co
         CommandResults: command-results object.
     """
     container_id = args.pop("id")
-    parse_limit_and_offset_values(args=args)
+    limit, offset = parse_limit_and_offset_values(limit=args.get("limit"), offset=args.get("offset"))
+    hosts = client.get_containers_hosts(container_id=container_id)
 
-    context, table = build_container_hosts_response(client=client, container_id=container_id, args=args)
+    if hosts:
+        hosts = filter_api_response(api_response=hosts, limit=limit, offset=offset)
+        context_output = {
+            "containerID": container_id,
+            "hostsIDs": hosts
+        }
+        table = tableToMarkdown(
+            name="Hosts",
+            t=context_output,
+            headers=["hostsIDs"],
+            headerTransform=lambda word: word[0].upper() + word[1:]
+        )
+    else:
+        context_output, table = None, "No results found"
 
     return CommandResults(
         outputs_prefix="PrismaCloudCompute.ProfileContainerHost",
-        outputs=context,
+        outputs=context_output,
         readable_output=table,
-        outputs_key_field="containerID"
+        outputs_key_field="containerID",
+        raw_response=hosts
     )
 
 
@@ -698,7 +675,7 @@ def build_containers_forensic_response(
     limit = args.get("limit", 20)
     args["limit"] = offset + args["limit"]
 
-    container_forensics = get_api_filtered_response(
+    container_forensics = filter_api_response(
         client=client, url_suffix=f"profiles/container/{container_id}/forensic", offset=offset, limit=limit, args=args
     )
 
@@ -770,7 +747,7 @@ def build_host_forensic_response(
     # correct offset:limit after the api call.
     args["limit"] = offset + args["limit"]
 
-    host_forensics = get_api_filtered_response(
+    host_forensics = filter_api_response(
         client=client, url_suffix=f"/profiles/host/{host_id}/forensic", offset=offset, limit=limit, args=args
     )
 
