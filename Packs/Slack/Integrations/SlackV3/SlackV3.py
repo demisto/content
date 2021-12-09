@@ -2297,7 +2297,7 @@ def init_globals(command_name: str = ''):
         COMMON_CHANNELS = dict(item.split(':') for item in common_channels.split(','))
     else:
         COMMON_CHANNELS = {}
-    SAFE_MODE = demisto.params().get('safe_mode', True)
+    SAFE_MODE = demisto.params().get('safe_mode', False)
 
     # Formats the error message for the 'Channel Not Found' errors
     error_str = 'The channel was not found'

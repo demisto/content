@@ -3071,8 +3071,8 @@ def test_set_topic_no_args_no_investigation(mocker):
 
     # Assert
     assert SlackV3.get_conversation_by_name.call_count == 0
-    assert err_msg == 'The channel was not found and Safe Mode is enabled. If this command worked previously for you, ' \
-                      'please try disabling Safe Mode from the instance configuration.'
+    assert err_msg == 'The channel was not found Either the Slack app is not a member of the channel, ' \
+                      'or the slack app does not have permission to find the channel.'
 
 
 def test_invite_users(mocker):
@@ -3153,8 +3153,8 @@ def test_invite_users_no_channel_doesnt_exist(mocker):
     # Assert
     assert SlackV3.get_conversation_by_name.call_count == 0
     assert SlackV3.invite_users_to_conversation.call_count == 0
-    assert err_msg == 'The channel was not found and Safe Mode is enabled. If this command worked previously for you, ' \
-                      'please try disabling Safe Mode from the instance configuration.'
+    assert err_msg == 'The channel was not found Either the Slack app is not a member of the channel, ' \
+                      'or the slack app does not have permission to find the channel.'
 
 
 def test_kick_users(mocker):
@@ -3235,8 +3235,8 @@ def test_kick_users_no_channel_doesnt_exist(mocker):
     # Assert
     assert SlackV3.get_conversation_by_name.call_count == 0
     assert SlackV3.invite_users_to_conversation.call_count == 0
-    assert err_msg == 'The channel was not found and Safe Mode is enabled. If this command worked previously for you, ' \
-                      'please try disabling Safe Mode from the instance configuration.'
+    assert err_msg == 'The channel was not found Either the Slack app is not a member of the channel, ' \
+                      'or the slack app does not have permission to find the channel.'
 
 
 def test_rename_channel(mocker):
@@ -3335,8 +3335,8 @@ def test_rename_no_args_no_investigation(mocker):
 
     # Assert
     assert SlackV3.get_conversation_by_name.call_count == 0
-    assert err_msg == 'The channel was not found and Safe Mode is enabled. If this command worked previously for you, ' \
-                      'please try disabling Safe Mode from the instance configuration.'
+    assert err_msg == 'The channel was not found Either the Slack app is not a member of the channel, ' \
+                      'or the slack app does not have permission to find the channel.'
 
 
 def test_get_user(mocker):
