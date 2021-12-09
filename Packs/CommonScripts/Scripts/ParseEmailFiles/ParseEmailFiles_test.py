@@ -1093,19 +1093,22 @@ def test_eml_contains_attachment_with_unknown_encoded_file_name(mocker):
     """
     Given: An email containing an attachment with unknown encoded name.
     When: Parsing a valid email file with default parameters.
-    Then: The file name is parsed as expected.
+    Then: The file name is parsed as expected and the debug alert exist.
     """
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
     mocker.patch.object(demisto, 'executeCommand',
                         side_effect=exec_command_for_file('Unknown_encode_attachment_name.eml'))
     mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, 'debug')
 
     main()
     results = demisto.results.call_args[0]
+    debug = demisto.debug.call_args[0]
 
     assert len(results) == 1
     assert results[0]['Type'] == entryTypes['note']
-    assert results[0]['EntryContext']['Email']['AttachmentNames'] == ['04. ���A������ИIƷ�|���υf��.pdf']
+    assert results[0]['EntryContext']['Email']['AttachmentNames'] == ['04AIf|ƷυИ���������������.pdf']
+    assert debug[0] == 'Could not find the encoding type of the string, decoding by default with utf-8'
 
 
 def test_eml_contains_htm_attachment_empty_file_max_depth(mocker):
