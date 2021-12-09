@@ -2354,6 +2354,109 @@ script:
       description: Status of the restricted ips feature.
     description: Get the list of restricted IPs within the user's subscription.
     execution: true
+
+  - name: qualys-host-list-detection
+    arguments:
+    - default: false
+      description: Show only certain host IDs/ranges. One or more host IDs/ranges
+        may be specified. Multiple entries are comma separated. A host ID range is
+        specified with a hyphen (for example, 190-400).Valid host IDs are required.
+      isArray: true
+      name: ids
+      required: false
+      secret: false
+    - default: false
+      description: The hosts you want to add to, remove from or replace in the restricted
+        IPs list. How to specify IP addresses. One or more IPs/ranges may be specified.
+        Multiple IPs/ranges are comma separated. An IP range is specified with a hyphen
+        (for example, 10.10.30.1-10.10.30.50).
+      isArray: true
+      name: ips
+      required: false
+      secret: false
+    - default: false
+      description: "Show only detection records with certain QIDs. One or more QIDs may be specified. A range is specified with a dash (for example: 68518-68522). Multiple entries are comma separated. Valid QIDs are required."
+      isArray: true
+      name: qids
+      required: false
+      secret: false
+    - default: false
+      description: "Show only detection records which have certain severities. One or more levels may be specified. A range is specified with a dash (for example: 1-3). Multiple entries are comma separated."
+      isArray: true
+      name: severities
+      required: false
+      secret: false
+    - name: use_tags
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: Specify 0 (the default) if you want to select hosts based on IP
+        addresses/ranges and/or asset groups. Specify 1 if you want to select hosts
+        based on asset tags.
+    - name: tag_set_by
+      auto: PREDEFINED
+      predefined:
+      - id
+      - name
+      description: (Optional when use_tags=1) Specify “id” (the default) to select
+        a tag set by providing tag IDs. Specify “name” to select a tag set by providing
+        tag names.
+    - name: tag_include_selector
+      auto: PREDEFINED
+      predefined:
+      - any
+      - all
+      description: (Optional when use_tags=1) Select “any” (the default) to include
+        hosts that match at least one of the selected tags. Select “all” to include
+        hosts that match all of the selected tags.
+    - name: tag_exclude_selector
+      auto: PREDEFINED
+      predefined:
+      - any
+      - all
+      description: (Optional when use_tags=1) Select “any” (the default) to exclude
+        hosts that match at least one of the selected tags. Select “all” to exclude
+        hosts that match all of the selected tags.
+    - name: tag_set_include
+      description: (Optional when use_tags=1) Specify a tag set to include. Hosts
+        that match these tags will be included. You identify the tag set by providing
+        tag name or IDs. Multiple entries are comma separated.
+      isArray: true
+    - name: tag_set_exclude
+      description: (Optional when use_tags=1) Specify a tag set to exclude. Hosts
+        that match these tags will be excluded. You identify the tag set by providing
+        tag name or IDs. Multiple entries are comma separated.
+      isArray: true
+    - name: detection_processed_before
+      description: Show detections with vulnerability scan results
+        processed before a certain date and time. Specify the date
+        in YYYY-MMDD[THH:MM:SSZ] format (UTC/GMT), like
+        “2016-09-12” or “2016-09-12T23:15:00Z”.
+    - name: detection_processed_after
+      description: Show detections with vulnerability scan results
+        processed after a certain date and time. Specify the date in
+        YYYY-MMDD[ THH:MM:SSZ] format (UTC/GMT), like
+        “2016-09-12” or “2016-09-12T23:15:00Z”.
+    - name: vm_scan_since
+      description: "Show hosts that were last scanned for vulnerabilities since a certain date and time (optional). Hosts that were the target of a vulnerability scan since the date/time will be shown. Date/time is specified in this format: YYYY-MM-DD[THH:MM:SSZ] (UTC/GMT). Permissions: An Auditor cannot specify this parameter."
+    - name: no_vm_scan_since
+      description: Show hosts not scanned since a certain date and time (optional). The date/time is specified in YYYY-MMDD[THH:MM:SSZ] format (UTC/GMT), like “2007-07-01” or “2007-01-25T23:12:00Z”. Permissions - An Auditor cannot specify this parameter.
+    - name: truncation_limit
+      description: Specify the maximum number of host records processed per request.
+        When not specified, the truncation limit is set to 1000 host records. You
+        may specify a value less than the default (1-999) or greater than the default
+        (1001-1000000).
+    outputs:
+    - contextPath: Qualys.HostDetections.Manage.TEXT
+      description: Action result message.
+    - contextPath: Qualys.Restricted.Manage.DATETIME
+      description: Date & time of the action.
+    - contextPath: Qualys.Restricted.Manage.ITEM_LIST.ITEM.VALUE
+      description: Status of the restricted ips feature.
+    description: Get the list of restricted IPs within the user's subscription.
+    execution: true
+
   dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: false

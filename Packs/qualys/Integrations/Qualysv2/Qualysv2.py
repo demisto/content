@@ -7,7 +7,16 @@ import traceback
 from typing import Dict, Any, Tuple, Callable
 
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
-
+# Login:
+# demst2nr
+# Password:
+# 7nZ7s!i9BAHbW9!
+# Website Address:
+# https://qualysguard.qg2.apps.qualys.com/qglogin/index.html
+#
+# Other Secrets:
+# Qualys API server URL
+# https://qualysguard.qg2.apps.qualys.com
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
@@ -213,6 +222,12 @@ COMMANDS_PARSE_AND_OUTPUT_DATA: Dict[str, Dict[Any, Any]] = {
         'table_name': '',
         'json_path': ["SIMPLE_RETURN", "RESPONSE"],
     },
+    'qualys-host-list-detection': {
+        'table_name': 'Host List Detection',
+        'json_path': ['HOST_LIST_VM_DETECTION_OUTPUT', 'RESPONSE'],
+        'collection_name': 'HOST_LIST'
+    #     HOST_LIST_VM_DETECTION_OUTPUT/RESPONSE/HOST_LIST/HOST
+    }
 }
 
 # Context prefix and key for each command
@@ -361,6 +376,10 @@ COMMANDS_CONTEXT_DATA = {
         'context_prefix': 'Qualys.VirtualEndpoint',
         'context_key': 'DATETIME',
     },
+    'qualys-host-list-detection': {
+        'context_prefix': 'Qualys.HostDetections',
+        'context_key': 'ID'
+    }
 }
 
 # Information about the API request of the commands
@@ -555,6 +574,11 @@ COMMANDS_API_DATA: Dict[str, Dict[str, str]] = {
         'call_method': 'POST',
         'resp_type': 'text',
     },
+    'qualys-host-list-detection': {
+        'api_route': f'{API_SUFFIX}asset/host/vm/detection/?action=list',
+        'call_method': 'GET',
+        'resp_type': 'text'
+    }
 }
 
 # Arguments' names of each command
@@ -795,6 +819,11 @@ COMMANDS_ARGS_DATA: Dict[str, Any] = {
     'test-module': {
         'args': []
     },
+    'qualys-host-list-detection': {
+        'args': ['ids', 'ips', 'qids', 'severities', 'use_tags', 'tag_set_by', 'tag_include_selector',
+                 'tag_exclude_selector', 'tag_set_include', 'tag_set_exclude', 'detection_processed_before',
+                 'detection_processed_after', 'vm_scan_since', 'no_vm_scan_since', 'truncation_limit']
+    }
 }
 
 # Dictionary for arguments used by Qualys API
@@ -1394,7 +1423,7 @@ def build_multiple_values_parsed_output(**kwargs) -> Tuple[List[Any], str]:
     asset_collection = handled_result[command_parse_and_output_data['collection_name']]
     original_amount = None
     limit_msg = ''
-    headers = command_parse_and_output_data.get('table_headers') if\
+    headers = command_parse_and_output_data.get('table_headers') if \
         command_parse_and_output_data.get('table_headers') else None
     parsed_output = generate_list_dicts(asset_collection)
 
@@ -1737,6 +1766,11 @@ def main():
             'result_handler': handle_general_result,
             'output_builder': build_changed_names_output,
         },
+
+        'qualys-host-list-detection': {
+            'result_handler': handle_general_result,
+            'output_builder': build_multiple_values_parsed_output
+        }
     }
 
     requested_command = demisto.command()
