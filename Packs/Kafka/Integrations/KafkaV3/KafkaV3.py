@@ -734,7 +734,7 @@ def fetch_incidents(kafka: KafkaCommunicator, demisto_params: dict) -> None:
         if topic_partitions:
             kafka_consumer.assign(topic_partitions)
 
-            demisto.debug(f"Beginning to poll messages from kafka")
+            demisto.debug("Beginning to poll messages from kafka")
 
             for _ in range(max_messages):
                 polled_msg = kafka_consumer.poll(kafka.POLL_TIMEOUT)

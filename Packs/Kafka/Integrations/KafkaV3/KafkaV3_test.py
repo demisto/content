@@ -798,7 +798,7 @@ def test_fetch_incidents_no_messages(mocker, demisto_params, last_run, cluster_t
     fetch_incidents(KAFKA, demisto_params)
 
     assign_mock.assert_not_called()
-    poll_mock.assert_called_once()
+    poll_mock.assert_not_called()
     close_mock.assert_called_once()
     incidents_mock.assert_called_once_with([])
     set_last_run_mock.assert_called_once_with(last_run)
