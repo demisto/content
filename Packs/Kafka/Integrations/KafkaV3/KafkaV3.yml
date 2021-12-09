@@ -7,7 +7,7 @@ configuration:
   name: brokers
   required: true
   type: 0
-- display: Consumer group id (Default is 'xsoar_group')
+- display: Consumer group id (default is 'xsoar_group')
   additionalinfo: This group id will be used when fetching incidents and preforming consumer commands.
   name: group_id
   required: false

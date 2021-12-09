@@ -83,6 +83,9 @@ class KafkaCommunicator:
         if message_max_bytes:
             self.conf_consumer.update({'message.max.bytes': int(message_max_bytes)})
 
+        demisto.debug(f"The consumer configuration is \n{self.conf_consumer}\n")
+        demisto.debug(f"The producer configuration is \n{self.conf_producer}\n")
+
         if ca_cert:
             with tempfile.NamedTemporaryFile(mode="w", delete=False) as ca_descriptor:
                 self.ca_path = ca_descriptor.name
@@ -726,17 +729,19 @@ def fetch_incidents(kafka: KafkaCommunicator, demisto_params: dict) -> None:
         topic_partitions = get_fetch_topic_partitions(kafka, topic, offset, last_fetched_offsets)
 
     try:
+        demisto.debug(f"The topic partitions assigned to the consumer are: {topic_partitions}")
+
         if topic_partitions:
             kafka_consumer.assign(topic_partitions)
 
-        demisto.debug(f"The topic partitions assigned to the consumer are: {topic_partitions}")
+            demisto.debug(f"Beginning to poll messages from kafka")
 
-        for _ in range(max_messages):
-            polled_msg = kafka_consumer.poll(kafka.POLL_TIMEOUT)
-            if polled_msg:
-                demisto.debug("Received a message from Kafka.")
-                incidents.append(create_incident(message=polled_msg, topic=topic))
-                last_fetched_offsets[f'{polled_msg.partition()}'] = polled_msg.offset()
+            for _ in range(max_messages):
+                polled_msg = kafka_consumer.poll(kafka.POLL_TIMEOUT)
+                if polled_msg:
+                    demisto.debug("Received a message from Kafka.")
+                    incidents.append(create_incident(message=polled_msg, topic=topic))
+                    last_fetched_offsets[f'{polled_msg.partition()}'] = polled_msg.offset()
 
     finally:
         if kafka_consumer:
