@@ -119,11 +119,25 @@ class PrismaCloudComputeClient(BaseClient):
         """
         Sends a request to get all the host profiles.
 
+        Args:
+            params (dict): query parameters.
+
         Returns:
             list[dict]: host profiles api response.
         """
-        host_profiles = self._http_request(method="GET", url_suffix="/profiles/host", params=params)
-        return host_profiles if host_profiles else None
+        return self._http_request(method="GET", url_suffix="/profiles/host", params=params)
+
+    def get_container_profiles(self, params):
+        """
+        Sends a request to get all the container profiles.
+
+        Args:
+            params (dict): query parameters.
+
+        Returns:
+            list[dict]: host profiles api response.
+        """
+        return self._http_request(method="GET", url_suffix="/profiles/container", params=params)
 
 
 def str_to_bool(s):
@@ -497,57 +511,6 @@ def get_profile_host_list(client: PrismaCloudComputeClient, args: dict) -> Comma
     )
 
 
-def build_single_container_profile_table(container_info: dict) -> str:
-    """
-    Build a table for a single container.
-
-    Args:
-        container_info (dict): container information from the api.
-
-    Returns:
-        str: markdown table output for a single container.
-    """
-    container_description_table = build_containers_description_table(
-        container_description=get_container_description_info(container_info=container_info)
-    )
-
-    processes_info = [
-        {
-            "Type": process_type,
-            "Path": static_process.get("path"),
-            "DetectionTime": parse_date_string_format(date_string=static_process.get("time"))
-        } for process_type in ["static", "behavioral"]
-        for static_process in container_info.get("processes", {}).get(process_type, "")
-    ]
-
-    processes_table = tableToMarkdown(
-        name='Processes',
-        t=processes_info,
-        headers=['Type', 'Path', 'DetectionTime'],
-        removeNull=True
-    )
-
-    return container_description_table + processes_table
-
-
-def build_containers_description_table(container_description: Union[List[dict], dict]) -> str:
-    """
-    Build the container description table.
-
-    Args:
-        container_description (dict/list): containers description information.
-
-    Returns:
-        str: markdown table that describes the container/s.
-    """
-    return tableToMarkdown(
-        name="Container Description",
-        t=container_description,
-        headers=["ContainerID", "Image", "Os", "State", "Created"],
-        removeNull=True
-    )
-
-
 def get_container_description_info(container_info: dict) -> dict:
     """
     Build a table for a single host.
@@ -563,32 +526,9 @@ def get_container_description_info(container_info: dict) -> dict:
         "Image": container_info.get("image"),
         "Os": container_info.get("os"),
         "State": container_info.get("state"),
-        "Created": parse_date_string_format(date_string=container_info.get("created", ""))
+        "Created": parse_date_string_format(date_string=container_info.get("created", "")),
+        "EntryPoint": container_info.get("entrypoint")
     }
-
-
-def build_profile_container_table_response(containers_info: List[dict]) -> str:
-    """
-    Build a table from the api response of the profile container
-    list for the command 'prisma-cloud-compute-profile-container-list'
-
-    Args:
-        containers_info (list[dict]): the api raw response.
-
-    Returns:
-        str: markdown table output.
-    """
-    if not containers_info:
-        return "No results found"
-
-    if len(containers_info) == 1:  # means we have only one container
-        return build_single_container_profile_table(container_info=containers_info[0])
-
-    return build_containers_description_table(
-        container_description=[
-            get_container_description_info(container_info=container_info) for container_info in containers_info
-        ]
-    )
 
 
 def get_container_profile_list(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
@@ -603,18 +543,55 @@ def get_container_profile_list(client: PrismaCloudComputeClient, args: dict) -> 
     Returns:
         CommandResults: command-results object.
     """
-    update_query_params_names(names=[("image_id", "imageID")], args=args)
-    parse_limit_and_offset_values(args=args)
+    if "image_id" in args:
+        args["imageID"] = args.pop("image_id")
+    args["limit"], args["offset"] = parse_limit_and_offset_values(limit=args.get("limit"), offset=args.get("offset"))
 
-    containers_info = client.api_request(
-        method='GET', params=assign_params(**args), url_suffix='/profiles/container'
-    )
+    containers_info = client.get_container_profiles(params=assign_params(**args))
+    if containers_info:
+        container_description_headers = ["ContainerID", "Image", "Os", "State", "Created", "EntryPoint"]
+
+        if len(containers_info) == 1:  # means we have only one container
+            container_info = containers_info[0]
+
+            container_description_table = tableToMarkdown(
+                name="Container Description",
+                t=get_container_description_info(container_info=container_info),
+                headers=container_description_headers,
+                removeNull=True
+            )
+
+            processes_table = tableToMarkdown(
+                name="Processes",
+                t=[
+                    {
+                        "Type": process_type,
+                        "Md5": process.get("md5"),
+                        "Path": process.get("path"),
+                        "DetectionTime": parse_date_string_format(date_string=process.get("time"))
+                    } for process_type in ["static", "behavioral"]
+                    for process in container_info.get("processes", {}).get(process_type, "")
+                ],
+                headers=["Type", "Path", "DetectionTime", "Md5"],
+                removeNull=True
+            )
+
+            table = container_description_table + processes_table
+        else:
+            table = tableToMarkdown(
+                name="Container Description",
+                t=[get_container_description_info(container_info=container_info) for container_info in containers_info],
+                headers=container_description_headers,
+                removeNull=True
+            )
+    else:
+        table = "No results found"
 
     return CommandResults(
         outputs_prefix='PrismaCloudCompute.ProfileContainer',
         outputs_key_field='_id',
         outputs=containers_info,
-        readable_output=build_profile_container_table_response(containers_info=containers_info),
+        readable_output=table,
         raw_response=containers_info
     )
 
