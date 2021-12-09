@@ -2,7 +2,11 @@
     "name": "IBM QRadar",
     "description": "Fetch offenses as incidents and search QRadar",
     "support": "xsoar",
+<<<<<<< HEAD
     "currentVersion": "2.1.20",
+=======
+    "currentVersion": "2.2.0",
+>>>>>>> ef27b0457b113cdc07a3c29dd0506b3a2ea54842
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
