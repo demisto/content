@@ -115,6 +115,16 @@ class PrismaCloudComputeClient(BaseClient):
                 )
             raise e
 
+    def get_host_profiles(self, params):
+        """
+        Sends a request to get all the host profiles.
+
+        Returns:
+            list[dict]: host profiles api response.
+        """
+        host_profiles = self._http_request(method="GET", url_suffix="/profiles/host", params=params)
+        return host_profiles if host_profiles else None
+
 
 def str_to_bool(s):
     """
@@ -271,16 +281,18 @@ def fetch_incidents(client):
     return incidents
 
 
-def parse_limit_and_offset_values(args: dict) -> None:
+def parse_limit_and_offset_values(limit: str, offset: str) -> Tuple[int, int]:
     """
     Parse the offset and limit parameters to integers.
 
     Args:
-        args (dict): command arguments.
+        limit (str): limit argument.
+        offset (str): offset argument.
 
+    Returns:
+        Tuple[int, int]: parsed offset and parsed limit
     """
-    offset, limit = args.get("offset", "0"), args.get("limit", "20"),
-    offset, limit = arg_to_number(arg=offset, arg_name="offset"), arg_to_number(arg=limit, arg_name="limit")
+    limit, offset = arg_to_number(arg=limit, arg_name="limit"), arg_to_number(arg=offset, arg_name="offset")
 
     if offset is not None and offset < 0:
         raise ValueError(f"offset parameter {offset} is invalid, cannot be a negative number")
@@ -288,7 +300,7 @@ def parse_limit_and_offset_values(args: dict) -> None:
     if limit is not None and (limit < 1 or limit > MAX_API_LIMIT):
         raise ValueError(f"limit parameter '{limit}' is invalid, must be between 1-50")
 
-    args["offset"], args["limit"] = offset, limit
+    return limit, offset
 
 
 def update_query_params_names(names: List[Tuple[str, str]], args: dict) -> None:
@@ -371,55 +383,6 @@ def get_api_filtered_response(
     return []
 
 
-def build_single_host_profile_table_response(host_info: dict) -> str:
-    """
-    Build a table for a single host.
-
-    Args:
-        host_info (dict): host information from the api.
-
-    Returns:
-        str: markdown table output for a single host.
-    """
-    host_description_table = build_hostnames_description_table(
-        host_description_info=get_hostname_description_info(host_info=host_info)
-    )
-
-    apps_info = [
-        {
-            'HostId': host_info.get('_id'),
-            'AppName': app.get('name'),
-            'StartupProcess': app.get('startupProcess').get('path'),
-            'User': app.get('startupProcess').get('user'),
-            'LaunchTime': parse_date_string_format(date_string=app.get('startupProcess').get('time'))
-        } for app in host_info.get('apps', [])
-    ]
-    ssh_events_info = [
-        {
-            'User': event.get('user'),
-            'Ip': str(ipaddress.IPv4Address(event.get('ip'))),
-            'ProcessPath': event.get('path'),
-            'Command': event.get('command'),
-            'Time': parse_date_string_format(date_string=event.get('time'))
-        } for event in host_info.get('sshEvents', [])
-    ]
-
-    apps_table = tableToMarkdown(
-        name='Apps',
-        t=apps_info,
-        headers=['AppName', 'StartupProcess', 'User', 'LaunchTime'],
-        removeNull=True
-    )
-    ssh_events_table = tableToMarkdown(
-        name='SSH Events',
-        t=ssh_events_info,
-        headers=['User', 'Ip', 'ProcessPath', 'Command', 'Time'],
-        removeNull=True
-    )
-
-    return host_description_table + apps_table + ssh_events_table
-
-
 def get_hostname_description_info(host_info: dict) -> dict:
     """
     Get the hostname description information.
@@ -428,10 +391,9 @@ def get_hostname_description_info(host_info: dict) -> dict:
         host_info (dict): host's information from the api.
 
     Returns:
-        dict: host description information
+        dict: host description information.
     """
-    labels = host_info.get("labels", [])
-    if labels and len(labels) == 2:
+    if (labels := host_info.get("labels")) and len(labels) == 2:
         dist = labels[0].replace("osDistro:", "") + " " + labels[1].replace("osVersion:", "")
     else:
         dist = ""
@@ -441,67 +403,6 @@ def get_hostname_description_info(host_info: dict) -> dict:
         "Distribution": dist,
         "Collections": host_info.get("collections")
     }
-
-
-def build_hostnames_description_table(host_description_info: Union[List[dict], dict]) -> str:
-    """
-    Build the hostname description table.
-
-    Args:
-        host_description_info (dict/list): hosts description information.
-
-    Returns:
-        str: markdown table that describes the host/s.
-    """
-    return tableToMarkdown(
-        name="Host Description",
-        t=host_description_info,
-        headers=["Hostname", "Distribution", "Collections"],
-        removeNull=True
-    )
-
-
-def build_profile_host_table_response(hosts_info: List[dict]) -> str:
-    """
-    Build a table from the api response of the profile host
-    list for the command 'prisma-cloud-compute-profile-host-list'
-
-    Args:
-        hosts_info (list[dict]): the api raw response.
-
-    Returns:
-        str: markdown table output for the apps and ssh events of a host.
-    """
-    if not hosts_info:
-        return "No results found"
-
-    if len(hosts_info) == 1:  # then we have only one host
-        return build_single_host_profile_table_response(host_info=hosts_info[0])
-
-    return build_hostnames_description_table(
-        host_description_info=[get_hostname_description_info(host_info=host_info) for host_info in hosts_info]
-    )
-
-
-def update_host_profile_context_fields(hosts_profile_info: List[dict]):
-    """
-    Update the fields for the context output of the 'prisma-cloud-compute-profile-host-list' command.
-
-    Args:
-        hosts_profile_info (list[dict]): hosts profile api response
-    """
-    for host_profile in hosts_profile_info:
-        if "created" in host_profile:
-            host_profile["created"] = parse_date_string_format(date_string=host_profile.get("created", ""))
-        if "time" in host_profile:
-            host_profile["time"] = parse_date_string_format(date_string=host_profile.get("time", ""))
-        for event in host_profile.get("sshEvents", []):
-            if "ip" in event:
-                event["ip"] = str(ipaddress.IPv4Address(event.get("ip")))
-            if "time" in event:
-                event["time"] = parse_date_string_format(date_string=host_profile.get("time", ""))
-            if "loginTime" in event:
-                event["loginTime"] = epochs_to_timestamp(epochs=event.get("loginTime"))
 
 
 def get_profile_host_list(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
@@ -516,20 +417,82 @@ def get_profile_host_list(client: PrismaCloudComputeClient, args: dict) -> Comma
     Returns:
         CommandResults: command-results object.
     """
-    update_query_params_names(names=[("hostname", "hostName")], args=args)
-    parse_limit_and_offset_values(args=args)
+    if "hostname" in args:
+        args["hostName"] = args.pop("hostname")
 
-    hosts_profile_info = client.api_request(
-        method='GET', url_suffix='/profiles/host', params=assign_params(**args)
-    )
+    args["limit"], args["offset"] = parse_limit_and_offset_values(limit=args.get("limit"), offset=args.get("offset"))
 
-    update_host_profile_context_fields(hosts_profile_info=hosts_profile_info)
+    hosts_profile_info = client.get_host_profiles(params=assign_params(**args))
+
+    if hosts_profile_info:
+        for host_profile in hosts_profile_info:
+            if "created" in host_profile:
+                host_profile["created"] = parse_date_string_format(date_string=host_profile.get("created", ""))
+            if "time" in host_profile:
+                host_profile["time"] = parse_date_string_format(date_string=host_profile.get("time", ""))
+            for event in host_profile.get("sshEvents", []):
+                if "ip" in event:
+                    # transforms ip as integer representation to ip as string representation
+                    event["ip"] = str(ipaddress.IPv4Address(event.get("ip")))
+                if "time" in event:
+                    event["time"] = parse_date_string_format(date_string=host_profile.get("time", ""))
+                if "loginTime" in event:
+                    event["loginTime"] = epochs_to_timestamp(epochs=event.get("loginTime"))
+
+        if len(hosts_profile_info) == 1:  # means we have only one host
+            host_info = hosts_profile_info[0]
+
+            host_description_table = tableToMarkdown(
+                name="Host Description",
+                t=get_hostname_description_info(host_info=host_info),
+                headers=["Hostname", "Distribution", "Collections"],
+                removeNull=True
+            )
+
+            apps_table = tableToMarkdown(
+                name="Apps",
+                t=[
+                    {
+                        "AppName": app.get("name"),
+                        "StartupProcess": app.get("startupProcess").get("path"),
+                        "User": app.get("startupProcess").get("user"),
+                        "LaunchTime": parse_date_string_format(date_string=app.get("startupProcess").get("time"))
+                    } for app in host_info.get("apps", [])
+                ],
+                headers=["AppName", "StartupProcess", "User", "LaunchTime"],
+                removeNull=True
+            )
+            ssh_events_table = tableToMarkdown(
+                name="SSH Events",
+                t=[
+                    {
+                        "User": event.get("user"),
+                        "Ip": event.get("ip"),
+                        "ProcessPath": event.get("path"),
+                        "Command": event.get("command"),
+                        "Time": event.get("time")
+                    } for event in host_info.get("sshEvents", [])
+                ],
+                headers=["User", "Ip", "ProcessPath", "Command", "Time"],
+                removeNull=True
+            )
+
+            table = host_description_table + apps_table + ssh_events_table
+        else:
+            table = tableToMarkdown(
+                name="Host Description",
+                t=[get_hostname_description_info(host_info=host_info) for host_info in hosts_profile_info],
+                headers=["Hostname", "Distribution", "Collections"],
+                removeNull=True
+            )
+    else:
+        table = "No results found"
 
     return CommandResults(
-        outputs_prefix='PrismaCloudCompute.ProfileHost',
-        outputs_key_field='_id',
+        outputs_prefix="PrismaCloudCompute.ProfileHost",
+        outputs_key_field="_id",
         outputs=hosts_profile_info,
-        readable_output=build_profile_host_table_response(hosts_info=hosts_profile_info),
+        readable_output=table,
         raw_response=hosts_profile_info
     )
 

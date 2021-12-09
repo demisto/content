@@ -84,7 +84,6 @@ Get information about the hosts and their profile events, this command supports 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cluster | Clusters is the runtime profile k8s cluster filter. | Optional | 
 | hostname | Hosts is the runtime profile hostname filter, semi comma separated values, for example !prisma-cloud-compute-profile-host-list hostname="*149*,*257*". | Optional | 
 | limit | The maximum number of hosts and their profile events to return, must be between 1-50. Default is 15. | Optional | 
 | offset | The offset number to begin listing hosts and their profile events. Default is 0. Default is 0. | Optional | 
