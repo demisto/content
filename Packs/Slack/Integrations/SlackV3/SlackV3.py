@@ -77,6 +77,7 @@ ENABLE_DM: bool
 PERMITTED_NOTIFICATION_TYPES: List[str]
 COMMON_CHANNELS: dict
 SAFE_MODE: bool
+CHANNEL_NOT_FOUND_ERROR_MSG: str
 
 ''' HELPER FUNCTIONS '''
 
@@ -198,6 +199,7 @@ def paginated_search_for_user(user_to_search: str):
     Returns:
         If a user is found, will return a context safe version of the user found. Else, will return an empty dict.
     """
+    demisto.debug(f"Attempting to fetch data for {user_to_search} from Slack API.")
     body = {
         'limit': PAGINATED_COUNT
     }
@@ -217,6 +219,7 @@ def paginated_search_for_user(user_to_search: str):
         response = send_slack_request_sync(CLIENT, 'users.list', http_verb='GET', body=body)
 
     if user:
+        demisto.debug(f"User {user_to_search} was found.")
         return format_user_results(user)
     else:
         return {}
@@ -258,16 +261,20 @@ def get_user_by_name(user_to_search: str, add_to_context: bool = True) -> dict:
     integration_context = get_integration_context(SYNC_CONTEXT)
     user_to_search = user_to_search.lower()
     if integration_context.get('users'):
+        demisto.debug(f"Checking in context for {user_to_search}")
         # Check if we already have the user to prevent call to users.lookupByEmail
         users = json.loads(integration_context['users'])
         user = return_user_filter(user_to_search, users)
 
     if not user and re.match(emailRegex, user_to_search):
+        demisto.debug(f"Checking via API for email of {user_to_search}")
         user = get_user_by_email(user_to_search)
         if user and (add_to_context or not SAFE_MODE):
             add_user_to_context(user=user, integration_context=integration_context)
     if not user and not SAFE_MODE:
+        demisto.debug(f"Couldn't find {user_to_search} and safe mode is disabled. Checking API")
         user = paginated_search_for_user(user_to_search)
+        demisto.debug(f"Found {user_to_search} - {user}")
         if user and (add_to_context or not SAFE_MODE):
             add_user_to_context(user=user, integration_context=integration_context)
 
@@ -1261,7 +1268,7 @@ async def get_user_by_id_async(client: AsyncWebClient, user_id: str) -> dict:
         users = json.loads(integration_context['users'])
         user_filter = list(filter(lambda u: u['id'] == user_id, users))
         if user_filter:
-            user = user_filter[0]
+            return user_filter[0]
     if not user:
         body = {
             'user': user_id
@@ -1916,8 +1923,7 @@ def set_channel_topic():
         channel_id = channel.get('id') if not channel_id else channel_id
 
     if not channel_id:
-        return_error('Channel was not found - Either the Slack app is not a member of the channel, '
-                     'or the slack app does not have permission to find the channel.')
+        return_error(CHANNEL_NOT_FOUND_ERROR_MSG)
 
     body = {
         'channel': channel_id,
@@ -1953,8 +1959,7 @@ def rename_channel():
         channel_id = channel.get('id') if not channel_id else channel_id
 
     if not channel_id:
-        return_error('Channel was not found - Either the Slack app is not a member of the channel, '
-                     'or the slack app does not have permission to find the channel.')
+        return_error(CHANNEL_NOT_FOUND_ERROR_MSG)
     body = {
         'channel': channel_id,
         'name': new_name
@@ -1992,8 +1997,7 @@ def close_channel():
         channel_id = channel.get('id') if not channel_id else channel_id
 
     if not channel_id:
-        return_error('Channel was not found - Either the Slack app is not a member of the channel, '
-                     'or the slack app does not have permission to find the channel.')
+        return_error(CHANNEL_NOT_FOUND_ERROR_MSG)
     body = {
         'channel': channel_id
     }
@@ -2068,8 +2072,7 @@ def invite_to_channel():
         channel_id = channel.get('id')
 
     if not channel_id:
-        return_error('Channel was not found - Either the Slack app is not a member of the channel, '
-                     'or the slack app does not have permission to find the channel.')
+        return_error(CHANNEL_NOT_FOUND_ERROR_MSG)
     slack_users = search_slack_users(users)
     if slack_users:
         invite_users_to_conversation(channel_id, list(map(lambda u: u.get('id'), slack_users)))
@@ -2093,8 +2096,7 @@ def kick_from_channel():
         channel_id = channel.get('id')
 
     if not channel_id:
-        return_error('Channel was not found - Either the Slack app is not a member of the channel, '
-                     'or the slack app does not have permission to find the channel.')
+        return_error(CHANNEL_NOT_FOUND_ERROR_MSG)
     slack_users = search_slack_users(users)
     if slack_users:
         kick_users_from_conversation(channel_id, list(map(lambda u: u.get('id'), slack_users)))
@@ -2151,8 +2153,7 @@ def slack_edit_message():
         channel_id = channel.get('id')
 
     if not channel_id:
-        return_error('Channel was not found - Either the Slack app is not a member of the channel, '
-                     'or the slack app does not have permission to find the channel.')
+        return_error(CHANNEL_NOT_FOUND_ERROR_MSG)
     if not thread_id:
         return_error('The timestamp of the message to edit is required.')
 
@@ -2221,8 +2222,7 @@ def pin_message():
         channel_id = channel.get('id')
 
     if not channel_id:
-        return_error('Channel was not found - Either the Slack app is not a member of the channel, '
-                     'or the slack app does not have permission to find the channel.')
+        return_error(CHANNEL_NOT_FOUND_ERROR_MSG)
     body = {
         'channel': channel_id,
         'timestamp': thread_id
@@ -2259,7 +2259,7 @@ def init_globals(command_name: str = ''):
     global BOT_TOKEN, PROXY_URL, PROXIES, DEDICATED_CHANNEL, CLIENT
     global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, INCIDENT_TYPE, VERIFY_CERT, ENABLE_DM
     global BOT_NAME, BOT_ICON_URL, MAX_LIMIT_TIME, PAGINATED_COUNT, SSL_CONTEXT, APP_TOKEN, ASYNC_CLIENT
-    global PERMITTED_NOTIFICATION_TYPES, COMMON_CHANNELS, SAFE_MODE
+    global PERMITTED_NOTIFICATION_TYPES, COMMON_CHANNELS, SAFE_MODE, CHANNEL_NOT_FOUND_ERROR_MSG
 
     VERIFY_CERT = not demisto.params().get('unsecure', False)
     if not VERIFY_CERT:
@@ -2297,7 +2297,17 @@ def init_globals(command_name: str = ''):
         COMMON_CHANNELS = dict(item.split(':') for item in common_channels.split(','))
     else:
         COMMON_CHANNELS = {}
-    SAFE_MODE = demisto.params().get('same_mode', True)
+    SAFE_MODE = demisto.params().get('safe_mode', True)
+
+    # Formats the error message for the 'Channel Not Found' errors
+    error_str = 'The channel was not found'
+    if SAFE_MODE:
+        error_str += ' and Safe Mode is enabled. If this command worked previously for you, please try disabling Safe ' \
+                     'Mode from the instance configuration.'
+    else:
+        error_str += ' Either the Slack app is not a member of the channel, or the slack app does not have permission' \
+                     ' to find the channel.'
+    CHANNEL_NOT_FOUND_ERROR_MSG = error_str
 
 
 def print_thread_dump():

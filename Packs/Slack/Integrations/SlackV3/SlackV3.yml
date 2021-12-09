@@ -508,7 +508,7 @@ script:
       description: The channel containing the message.
       isArray: false
       name: channel
-      required: true
+      required: false
       secret: false
     - default: false
       description: The ID of the thread of which to pin - can be retrieved from
@@ -521,7 +521,7 @@ script:
       description: The ID for the channel containing the message.
       isArray: false
       name: channel_id
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Pins a selected message to the given channel.
