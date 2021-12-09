@@ -1,16 +1,25 @@
 category: Messaging
 commonfields:
-  id: Kafka V2
+  id: KafkaV3
   version: -1
 configuration:
-- display: CSV list of Kafka brokers to connect to, e.g. 172.16.20.207:9092,172.16.20.234:9093
+- display: CSV list of Kafka brokers to connect to, e.g., 172.16.20.207:9092,172.16.20.234:9093
   name: brokers
   required: true
+  type: 0
+- display: Consumer group ID
+  additionalinfo: This group ID will be used when fetching incidents and preforming consumer commands. If not set the group id 'xsoar_group' will be used.
+  name: group_id
+  required: false
   type: 0
 - display: Use TLS for connection
   name: use_ssl
   required: false
   type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
 - display: CA certificate of Kafka server (.cer)
   name: ca_cert
   required: false
@@ -23,10 +32,11 @@ configuration:
   name: client_cert_key
   required: false
   type: 12
-- display: Client certificate key password (if required)
+- displaypassword: Client certificate key password (if required)
+  hiddenusername: true
   name: additional_password
   required: false
-  type: 4
+  type: 9
 - display: Topic to fetch incidents from (Required for fetch incidents)
   name: topic
   required: false
@@ -36,15 +46,15 @@ configuration:
   required: false
   type: 0
 - additionalinfo: The initial offset to start fetching from, not including the value
-    set (e.g. if 3 is set, the first event that will be fetched will be with offset
-    4).
+    set (e.g., if 3 is set, the first event that will be fetched will be from offset
+    4). If you want to start from the earliest or latest, type in 'earliest' or 'latest'.
   display: Offset to fetch messages from (Exclusive)
-  name: offset
+  name: first_fetch
   required: false
   type: 0
 - defaultvalue: '50'
-  display: Max number of messages to fetch
-  name: max_messages
+  display: Maximum number of messages to fetch
+  name: max_fetch
   required: false
   type: 0
 - display: Fetch incidents
@@ -56,25 +66,23 @@ configuration:
   required: false
   type: 13
 - additionalinfo: |-
-    The max number of message bytes to retrieve in each attempted fetch request. Should be in multiples of 1024. If the fetching process is taking a long time, you should consider increasing this value. Default is '1048576'.
+    The maximum number of message bytes to retrieve in each attempted fetch request. Should be in multiples of 1024. If the fetching process takes a long time, consider increasing this value. Default is '1048576'.
   defaultvalue: '1048576'
-  display: Max number of bytes per message
+  display: Maximum number of bytes per message
   hidden: false
   name: max_bytes_per_message
   required: false
   type: 0
-description: 'Deprecated. Use the Kafka v3 integration instead.
-The Open source distributed streaming platform.'
-display: Kafka v2 (Deprecated)
-deprecated: true
-name: Kafka V2
+description: Kafka is an open source distributed streaming platform.
+display: Kafka v3
+name: KafkaV3
 script:
   commands:
   - arguments:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Whether to fetch topics available offsets or not.
+      description: Whether to include the first and last offset for a topic, when printing a list of topics and partitions.
       isArray: false
       name: include_offsets
       predefined:
@@ -83,37 +91,37 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Prints all partitions of a topic.
+    description: Prints all topics and their partitions.
     execution: false
     name: kafka-print-topics
     outputs:
     - contextPath: Kafka.Topic.Name
-      description: Kafka topic name
+      description: Kafka topic name.
       type: String
     - contextPath: Kafka.Topic.Partitions.ID
-      description: Topic partition ID
+      description: Topic partition ID.
       type: Number
     - contextPath: Kafka.Topic.Partitions.EarliestOffset
-      description: Topic partition earliest offset
+      description: Topic partition earliest offset.
       type: Number
     - contextPath: Kafka.Topic.Partitions.LatestOffset
-      description: Topic partition latest offset
+      description: Topic partition latest offset.
       type: Number
   - arguments:
     - default: false
-      description: A topic to filter messages by
+      description: A topic to publish messages to.
       isArray: false
       name: topic
       required: true
       secret: false
     - default: false
-      description: Message value (string)
+      description: Message value (string).
       isArray: false
       name: value
       required: true
       secret: false
     - default: false
-      description: Message partition key (number)
+      description: Message partition (number).
       isArray: false
       name: partitioning_key
       required: false
@@ -124,20 +132,20 @@ script:
     name: kafka-publish-msg
   - arguments:
     - default: false
-      description: A topic to filter by
+      description: A topic to get messages from.
       isArray: false
       name: topic
       required: true
       secret: false
     - default: false
       defaultValue: Earliest
-      description: Message offset to filter by. Acceptable values are 'Earliest', 'Latest', or any other offest number.
+      description: Message offset to filter by. Acceptable values are 'Earliest', 'Latest', or an offest number. 
       isArray: false
       name: offset
       required: false
       secret: false
     - default: false
-      description: Partition (number)
+      description: Partition (number).
       isArray: false
       name: partition
       required: false
@@ -158,10 +166,10 @@ script:
       type: number
   - arguments:
     - default: false
-      description: A topic to filter by
+      description: A topic to fetch partitions for.
       isArray: false
       name: topic
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Fetch partitions for a topic.
@@ -174,15 +182,15 @@ script:
     - contextPath: Kafka.Topic.Partition
       description: Prints all partitions for a topic.
       type: number
-  dockerimage: demisto/pykafka:1.0.0.19034
   feed: false
   isfetch: true
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
-  subtype: python2
   type: python
+  subtype: python3
+  dockerimage: demisto/confluent-kafka:1.0.0.24422
+fromversion: 6.1.0
 tests:
-- No Test - Can not connect to instance from remote
-fromversion: 5.0.0
+- KafkaV3 Test
