@@ -29,9 +29,15 @@ Please refer to the video tutorial [found here](https://live.paloaltonetworks.co
     | `filtered_tags` | Comma-separated list of tags by which to filter the messages sent from XSOAR. Only supported in Cortex XSOAR V6.1 and above. | False |
     | `permitted_notifications` | Types of Notifications to send in the dedicated channel. | False |
     | `common_channels` | For workspaces where a handful of channels are consistently being used, you may add them as a CSV in the format ChannelName:ChannelID. | False |
-    | `safe_mode` | When enabled, Safe Mode will prevent the integration from paginating to search for Users or Conversations. Additionally, it will prevent excess data from being stored to the integration context. | False |
+    | `safe_mode` | When enabled, Safe Mode will prevent the integration from paginating to search for Users or Conversations. Additionally, it will prevent excess data from being stored to the integration context. If this parameter is disabled, the instance may create high memory usage. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+### Safe Mode
+
+When Safe Mode is enabled, there are no pagination calls made to Slack. This is to avoid rate limiting which can occur in workspaces where there are excessive amounts of channels or users. If a command worked for you prior to version 2.3.0, please try disabling the Safe Mode parameter.
+
+**Warning** - Disabling `Safe Mode` can lead to the integration context becoming too large. This can adversely effect performance.
 
 ### Creating a Custom App
 1. Navigate to: https://api.slack.com/apps/ .
@@ -548,7 +554,6 @@ There is no context output for this command.
 >The message was successfully pinned.
 
 ### Known Limitations
-- When Safe Mode is enabled, there are no pagination calls made to Slack. This is to avoid rate limiting which can occur in workspaces where there are excessive amounts of channels or users. If a command worked for you prior to version 2.3.0, please try disabling the Safe Mode parameter.
 - All commands which use `channel` as a parameter, it is now advised to use `channel-id` using the channel ID found in the incident's context under the `Slack.Channels.ID` value. Using `channel-id` as opposed to `channel` will improve the performance of the integration.
 - SlackV3 mirrors incidents by listening to messages being sent in channels the bot has been added to.
 Because of this, you may have some users in Slack who are not users in XSOAR. This will occasionally cause the module 

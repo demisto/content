@@ -472,6 +472,50 @@ def test_get_user_by_name(mocker):
     assert slack_sdk.WebClient.api_call.call_count == 3
 
 
+def test_get_user_by_name_safe_mode(mocker):
+    """
+    Given:
+        Test Case 1 - User's name only
+        Test Case 2 - A user's valid email
+        Test Case 3 - A user's valid email which is not in Slack.
+    When:
+        Searching for a user's ID
+    Then:
+        Test Case 1 - Assert that only an empty dict was returned and the API was not called.
+        Test Case 2 - Assert That the user's ID was found in the returned dict.
+        Test Case 3 - Assert that only an empty dict was returned
+    """
+    import SlackV3
+    # Set
+
+    user_1 = {'user': js.loads(USERS)[0]}
+    user_2 = {'user': {}}
+
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=[user_1, user_2])
+
+    SlackV3.SAFE_MODE = True
+    # Assert
+    # User name exists in integration context
+    username = 'spengler'
+    user = SlackV3.get_user_by_name(username)
+    assert user == {}
+    assert slack_sdk.WebClient.api_call.call_count == 0
+
+    # User email exists in Slack API
+    email = 'spengler@ghostbusters.example.com'
+    user = SlackV3.get_user_by_name(email)
+    assert user['id'] == 'U012A3CDE'
+    assert slack_sdk.WebClient.api_call.call_count == 1
+
+    # User email doesn't exist in Slack API
+    email = 'perikles@acropoli.com'
+    user = SlackV3.get_user_by_name(email)
+    assert user == {}
+    assert slack_sdk.WebClient.api_call.call_count == 2
+
+
 def test_get_user_by_name_paging(mocker):
     from SlackV3 import get_user_by_name
     # Set
@@ -2037,6 +2081,136 @@ def test_send_request(mocker):
     assert channel_res == 'neat'
 
 
+def test_send_request_channel_id(mocker):
+    import SlackV3
+
+    # Set
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
+        if method == 'users.list':
+            return {'members': js.loads(USERS)}
+        elif method == 'conversations.list':
+            return {'channels': js.loads(CONVERSATIONS)}
+        elif method == 'conversations.open':
+            return {'channel': {'id': 'im_channel'}}
+        return {}
+
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
+    mocker.patch.object(SlackV3, 'send_file', return_value='neat')
+    mocker.patch.object(SlackV3, 'send_message', return_value='cool')
+
+    # Arrange
+
+    channel_id_text_res = SlackV3.slack_send_request(to=None, channel=None, group=None, message='Hi', channel_id='C12345')
+    channel_id_file_res = SlackV3.slack_send_request(to=None, channel=None, group=None, channel_id='C12345',
+                                                     file_dict={'foo': 'file'})
+
+    channel_id_text_args = SlackV3.send_message.call_args[0]
+    channel_id_file_args = SlackV3.send_file.call_args[0]
+
+    calls = slack_sdk.WebClient.api_call.call_args_list
+
+    users_call = [c for c in calls if c[0][0] == 'users.list']
+    conversations_call = [c for c in calls if c[0][0] == 'conversations.list']
+
+    # Assert
+    # Assert that NO user or channel APIs were called.
+    assert len(users_call) == 0
+    assert len(conversations_call) == 0
+
+    assert SlackV3.send_message.call_count == 1
+    assert SlackV3.send_file.call_count == 1
+
+    assert channel_id_text_args[0] == ['C12345']
+    assert channel_id_text_args[1] == ''
+    assert channel_id_text_args[2] is False
+    assert channel_id_text_args[4] == 'Hi'
+    assert channel_id_text_args[5] == ''
+
+    assert channel_id_file_args[0] == ['C12345']
+    assert channel_id_file_args[1] == {'foo': 'file'}
+    assert channel_id_file_args[3] == ''
+
+    assert channel_id_text_res == 'cool'
+    assert channel_id_file_res == 'neat'
+
+
+def test_send_request_safe_mode(mocker, capfd):
+    import SlackV3
+
+    # Set
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
+        if method == 'users.list':
+            return {'members': js.loads(USERS)}
+        elif method == 'conversations.list':
+            return {'channels': js.loads(CONVERSATIONS)}
+        elif method == 'conversations.open':
+            return {'channel': {'id': 'im_channel'}}
+        return {}
+
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
+    mocker.patch.object(SlackV3, 'send_file', return_value='neat')
+    mocker.patch.object(SlackV3, 'send_message', return_value='cool')
+    return_error_mock = mocker.patch(RETURN_ERROR_TARGET, side_effect=InterruptedError())
+
+    SlackV3.SAFE_MODE = True
+    # Arrange
+
+    channel_id_text_res = SlackV3.slack_send_request(to=None, channel=None, group=None, message='Hi',
+                                                     channel_id='C12345')
+    channel_id_file_res = SlackV3.slack_send_request(to=None, channel=None, group=None, channel_id='C12345',
+                                                     file_dict={'foo': 'file'})
+    with capfd.disabled():
+        with pytest.raises(InterruptedError):
+            SlackV3.slack_send_request(to=None, channel='should-fail', group=None, message='Hi',
+                                       channel_id=None)
+    err_msg_1 = return_error_mock.call_args[0][0]
+
+    assert err_msg_1 == "Could not find the Slack conversation should-fail. If you're using Safe Mode, try searching by" \
+                        " channel_id"
+
+    with capfd.disabled():
+        with pytest.raises(InterruptedError):
+            SlackV3.slack_send_request(to=None, channel='should-fail', group=None, channel_id=None,
+                                       file_dict={'foo': 'file'})
+    err_msg_2 = return_error_mock.call_args[0][0]
+
+    assert err_msg_2 == "Could not find the Slack conversation should-fail. If you're using Safe Mode, try searching by" \
+                        " channel_id"
+
+    channel_id_text_args = SlackV3.send_message.call_args[0]
+    channel_id_file_args = SlackV3.send_file.call_args[0]
+
+    calls = slack_sdk.WebClient.api_call.call_args_list
+
+    users_call = [c for c in calls if c[0][0] == 'users.list']
+    conversations_call = [c for c in calls if c[0][0] == 'conversations.list']
+
+    # Assert
+    # Assert that NO user or channel APIs were called.
+    assert len(users_call) == 0
+    assert len(conversations_call) == 0
+
+    assert SlackV3.send_message.call_count == 1
+    assert SlackV3.send_file.call_count == 1
+
+    assert channel_id_text_args[0] == ['C12345']
+    assert channel_id_text_args[1] == ''
+    assert channel_id_text_args[2] is False
+    assert channel_id_text_args[4] == 'Hi'
+    assert channel_id_text_args[5] == ''
+
+    assert channel_id_file_args[0] == ['C12345']
+    assert channel_id_file_args[1] == {'foo': 'file'}
+    assert channel_id_file_args[3] == ''
+
+    assert channel_id_text_res == 'cool'
+    assert channel_id_file_res == 'neat'
+
+
 def test_send_request_different_name(mocker):
     import SlackV3
 
@@ -2111,6 +2285,7 @@ def test_send_request_with_severity(mocker):
     mocker.patch.object(SlackV3, 'send_message', return_value=SLACK_RESPONSE)
 
     # Arrange
+    SlackV3.SAFE_MODE = False
     SlackV3.slack_send()
 
     send_args = SlackV3.send_message.call_args[0]
@@ -2166,6 +2341,7 @@ def test_send_request_with_notification_channel(mocker):
     mocker.patch.object(SlackV3, 'send_message', return_value=SLACK_RESPONSE)
 
     # Arrange
+    SlackV3.SAFE_MODE = False
     SlackV3.slack_send()
 
     send_args = SlackV3.send_message.call_args[0]
@@ -2219,6 +2395,7 @@ def test_send_request_with_notification_channel_as_dest(mocker, notify):
     mocker.patch.object(SlackV3, 'send_message', return_value=SLACK_RESPONSE)
 
     # Arrange
+    SlackV3.SAFE_MODE = False
     SlackV3.slack_send()
 
     send_args = SlackV3.send_message.call_args[0]
@@ -3071,8 +3248,9 @@ def test_set_topic_no_args_no_investigation(mocker):
 
     # Assert
     assert SlackV3.get_conversation_by_name.call_count == 0
-    assert err_msg == 'The channel was not found Either the Slack app is not a member of the channel, ' \
-                      'or the slack app does not have permission to find the channel.'
+    assert err_msg == 'The channel was not found and Safe Mode is enabled. If this command worked previously for you, ' \
+                      'please try disabling Safe Mode from the instance configuration. Please refer to ' \
+                      'https://xsoar.pan.dev/docs/reference/integrations/slack-v3#safe-mode for more details.'
 
 
 def test_invite_users(mocker):
@@ -3153,8 +3331,9 @@ def test_invite_users_no_channel_doesnt_exist(mocker):
     # Assert
     assert SlackV3.get_conversation_by_name.call_count == 0
     assert SlackV3.invite_users_to_conversation.call_count == 0
-    assert err_msg == 'The channel was not found Either the Slack app is not a member of the channel, ' \
-                      'or the slack app does not have permission to find the channel.'
+    assert err_msg == 'The channel was not found and Safe Mode is enabled. If this command worked previously for you, ' \
+                      'please try disabling Safe Mode from the instance configuration. Please refer to ' \
+                      'https://xsoar.pan.dev/docs/reference/integrations/slack-v3#safe-mode for more details.'
 
 
 def test_kick_users(mocker):
@@ -3198,6 +3377,7 @@ def test_kick_users_no_channel(mocker):
     mocker.patch.object(demisto, 'results')
 
     # Arrange
+    SlackV3.SAFE_MODE = False
     SlackV3.kick_from_channel()
 
     send_args = SlackV3.kick_users_from_conversation.call_args[0]
@@ -3235,8 +3415,9 @@ def test_kick_users_no_channel_doesnt_exist(mocker):
     # Assert
     assert SlackV3.get_conversation_by_name.call_count == 0
     assert SlackV3.invite_users_to_conversation.call_count == 0
-    assert err_msg == 'The channel was not found Either the Slack app is not a member of the channel, ' \
-                      'or the slack app does not have permission to find the channel.'
+    assert err_msg == 'The channel was not found and Safe Mode is enabled. If this command worked previously for you, ' \
+                      'please try disabling Safe Mode from the instance configuration. Please refer to ' \
+                      'https://xsoar.pan.dev/docs/reference/integrations/slack-v3#safe-mode for more details.'
 
 
 def test_rename_channel(mocker):
@@ -3335,8 +3516,9 @@ def test_rename_no_args_no_investigation(mocker):
 
     # Assert
     assert SlackV3.get_conversation_by_name.call_count == 0
-    assert err_msg == 'The channel was not found Either the Slack app is not a member of the channel, ' \
-                      'or the slack app does not have permission to find the channel.'
+    assert err_msg == 'The channel was not found and Safe Mode is enabled. If this command worked previously for you, ' \
+                      'please try disabling Safe Mode from the instance configuration. Please refer to ' \
+                      'https://xsoar.pan.dev/docs/reference/integrations/slack-v3#safe-mode for more details.'
 
 
 def test_get_user(mocker):

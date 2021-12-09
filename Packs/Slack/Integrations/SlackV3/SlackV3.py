@@ -121,6 +121,15 @@ def get_current_utc_time() -> datetime:
     return datetime.utcnow()
 
 
+def format_user_not_found_error(user: str) -> str:
+    err_str = f'User {user} not found in Slack'
+    if SAFE_MODE:
+        err_str += ' and Safe Mode is enabled. If this command worked previously for you, please try disabling' \
+                   ' Safe Mode from the instance configuration or use the users email instead. Please refer to ' \
+                   'https://xsoar.pan.dev/docs/reference/integrations/slack-v3#safe-mode for more details.'
+    return err_str
+
+
 def return_user_filter(user_to_search: str, users_list):
     """
     Looks through the inputted list and if the user to search for exists, will return the user. Otherwise, it will
@@ -162,15 +171,13 @@ def get_user_by_email(user_to_search: str) -> dict:
     user = response.get('user', {})
 
     if not user:
-        err_str = f'User {user_to_search} not found in Slack'
-        if SAFE_MODE:
-            err_str += ' and Safe Mode is enabled. If this command worked previously for you, please try disabling' \
-                       ' Safe Mode from the instance configuration or use the users email instead.'
+        err_str = format_user_not_found_error(user_to_search)
         demisto.results({
             'Type': WARNING_ENTRY_TYPE,
             'Contents': err_str,
             'ContentsFormat': formats['text']
         })
+        return {}
     else:
         return format_user_results(user)
 
@@ -225,6 +232,7 @@ def paginated_search_for_user(user_to_search: str):
         demisto.debug(f"User {user_to_search} was found.")
         return format_user_results(user)
     else:
+        demisto.debug(format_user_not_found_error(user=user_to_search))
         return {}
 
 
@@ -248,6 +256,56 @@ def format_user_results(user: dict):
     }
 
 
+def get_user_by_name_safe_mode(user_to_search: str) -> dict:
+    """
+    When the default Safe Mode is enabled, we look for the user by email only.
+
+    Args:
+        user_to_search: The user's email
+    Returns:
+        A slack user object
+    """
+    user = {}
+    if re.match(emailRegex, user_to_search):
+        demisto.debug(f"Checking via API for email of {user_to_search}")
+        user = get_user_by_email(user_to_search)
+    return user
+
+
+def get_user_by_name_safe_mode_disabled(user_to_search, add_to_context):
+    """
+    When Safe Mode is disabled, we look for the user first in the context. If the user is not found, then we proceed to
+    search for the user by email, if that fails, then we will search for the user using a paginated call.
+
+    Args:
+        user_to_search: The user's email
+    Returns:
+        A slack user object
+    """
+    user = {}
+    integration_context = get_integration_context(SYNC_CONTEXT)
+    if integration_context.get('users'):
+        demisto.debug(f"Checking in context for {user_to_search}")
+        # Check if we already have the user to prevent call to users.lookupByEmail
+        users = json.loads(integration_context['users'])
+        user = return_user_filter(user_to_search, users)
+
+    if not user and re.match(emailRegex, user_to_search):
+        demisto.debug(f"Checking via API for email of {user_to_search}")
+        user = get_user_by_email(user_to_search)
+        if user and (add_to_context or not SAFE_MODE):
+            integration_context = get_integration_context(SYNC_CONTEXT)
+            add_user_to_context(user=user, integration_context=integration_context)
+    if not user:
+        demisto.debug(f"Couldn't find {user_to_search} and safe mode is disabled. Checking API")
+        user = paginated_search_for_user(user_to_search)
+        demisto.debug(f"Found {user_to_search} - {user}")
+        if user and (add_to_context or not SAFE_MODE):
+            integration_context = get_integration_context(SYNC_CONTEXT)
+            add_user_to_context(user=user, integration_context=integration_context)
+    return user
+
+
 def get_user_by_name(user_to_search: str, add_to_context: bool = True) -> dict:
     """
     Gets a slack user by a user name
@@ -259,32 +317,10 @@ def get_user_by_name(user_to_search: str, add_to_context: bool = True) -> dict:
     Returns:
         A slack user object
     """
-    user: dict = {}
-
-    user_to_search = user_to_search.lower()
-    if not SAFE_MODE:
-        integration_context = get_integration_context(SYNC_CONTEXT)
-        if integration_context.get('users'):
-            demisto.debug(f"Checking in context for {user_to_search}")
-            # Check if we already have the user to prevent call to users.lookupByEmail
-            users = json.loads(integration_context['users'])
-            user = return_user_filter(user_to_search, users)
-
-    if not user and re.match(emailRegex, user_to_search):
-        demisto.debug(f"Checking via API for email of {user_to_search}")
-        user = get_user_by_email(user_to_search)
-        if user and (add_to_context or not SAFE_MODE):
-            integration_context = get_integration_context(SYNC_CONTEXT)
-            add_user_to_context(user=user, integration_context=integration_context)
-    if not user and not SAFE_MODE:
-        demisto.debug(f"Couldn't find {user_to_search} and safe mode is disabled. Checking API")
-        user = paginated_search_for_user(user_to_search)
-        demisto.debug(f"Found {user_to_search} - {user}")
-        if user and (add_to_context or not SAFE_MODE):
-            integration_context = get_integration_context(SYNC_CONTEXT)
-            add_user_to_context(user=user, integration_context=integration_context)
-
-    return user
+    if SAFE_MODE:
+        return get_user_by_name_safe_mode(user_to_search=user_to_search)
+    else:
+        return get_user_by_name_safe_mode_disabled(user_to_search=user_to_search, add_to_context=add_to_context)
 
 
 def search_slack_users(users: Union[list, str]) -> list:
@@ -305,10 +341,7 @@ def search_slack_users(users: Union[list, str]) -> list:
     for user in users:
         slack_user = get_user_by_name(user)
         if not slack_user:
-            err_str = f'User {user} not found in Slack'
-            if SAFE_MODE:
-                err_str += ' and Safe Mode is enabled. If this command worked previously for you, please try disabling' \
-                           ' Safe Mode from the instance configuration or use the users email instead.'
+            err_str = format_user_not_found_error(user=user)
             demisto.results({
                 'Type': WARNING_ENTRY_TYPE,
                 'Contents': err_str,
@@ -867,10 +900,7 @@ def invite_to_mirrored_channel(channel_id: str, users: List[Dict]) -> list:
         if slack_user:
             slack_users.append(slack_user)
         else:
-            err_str = f'User {user} not found in Slack'
-            if SAFE_MODE:
-                err_str += ' and Safe Mode is enabled. If this command worked previously for you, please try disabling' \
-                           ' Safe Mode from the instance configuration or use the users email instead.'
+            err_str = format_user_not_found_error(user=user_name)
             demisto.results({
                 'Type': WARNING_ENTRY_TYPE,
                 'Contents': err_str,
@@ -1481,15 +1511,16 @@ def get_conversation_by_name(conversation_name: str) -> dict:
     if len(COMMON_CHANNELS) > 0:
         conversation = search_conversation_in_params(conversation_to_search)
 
-    # Find conversation in the cache
-    if not conversation:
-        conversation = search_conversation_in_context(conversation_to_search)
+    if not SAFE_MODE:
+        # Find conversation in the cache if SAFE_MODE is disabled.
+        if not conversation:
+            conversation = search_conversation_in_context(conversation_to_search)
 
-    # Find conversation in the api if SAFE_MODE is disabled.
-    if not conversation and not SAFE_MODE:
-        conversation = get_conversation_from_api_paginated(conversation_to_search)
-        # Save conversation to cache
-        save_conversation_to_context(conversation)
+        # Find conversation in the api if SAFE_MODE is disabled.
+        if not conversation:
+            conversation = get_conversation_from_api_paginated(conversation_to_search)
+            # Save conversation to cache
+            save_conversation_to_context(conversation)
 
     return conversation
 
@@ -1840,9 +1871,9 @@ def send_file_to_destinations(destinations: list, file_dict: dict, thread_id: st
     return response
 
 
-def slack_send_request(to: str, channel: str, group: str, entry: str = '', ignore_add_url: bool = False,
-                       thread_id: str = '', message: str = '', blocks: str = '', file_dict: dict = None,
-                       channel_id: str = None) \
+def slack_send_request(to: str = None, channel: str = None, group: str = None, entry: str = '',
+                       ignore_add_url: bool = False, thread_id: str = '', message: str = '',
+                       blocks: str = '', file_dict: dict = None, channel_id: str = None) \
         -> Optional[SlackResponse]:
     """
     Requests to send a message or a file to Slack.
@@ -1894,9 +1925,10 @@ def slack_send_request(to: str, channel: str, group: str, entry: str = '', ignor
                 channel_mirror = mirrored_channel_filter[0]
                 conversation_id = channel_mirror['channel_id']
             else:
-                conversation = get_conversation_by_name(destination_name)
+                conversation = get_conversation_by_name(destination_name)  # type: ignore
                 if not conversation:
-                    return_error(f'Could not find the Slack conversation {destination_name}')
+                    return_error(f'Could not find the Slack conversation {destination_name}. If you\'re using'
+                                 ' Safe Mode, try searching by channel_id')
                 conversation_id = conversation.get('id')
 
             if conversation_id:
@@ -2128,10 +2160,7 @@ def get_user():
 
     slack_user = get_user_by_name(user)
     if not slack_user:
-        err_str = f'User {user} not found in Slack'
-        if SAFE_MODE:
-            err_str += ' and Safe Mode is enabled. If this command worked previously for you, please try disabling' \
-                       ' Safe Mode from the instance configuration or use the users email instead.'
+        err_str = format_user_not_found_error(user=user)
         demisto.results({
             'Type': WARNING_ENTRY_TYPE,
             'Contents': err_str,
@@ -2322,13 +2351,14 @@ def init_globals(command_name: str = ''):
         COMMON_CHANNELS = dict(item.split(':') for item in common_channels.split(','))
     else:
         COMMON_CHANNELS = {}
-    SAFE_MODE = demisto.params().get('safe_mode', False)
+    SAFE_MODE = demisto.params().get('safe_mode', True)
 
     # Formats the error message for the 'Channel Not Found' errors
     error_str = 'The channel was not found'
     if SAFE_MODE:
         error_str += ' and Safe Mode is enabled. If this command worked previously for you, please try disabling Safe ' \
-                     'Mode from the instance configuration.'
+                     'Mode from the instance configuration. Please refer to ' \
+                     'https://xsoar.pan.dev/docs/reference/integrations/slack-v3#safe-mode for more details.'
     else:
         error_str += ' Either the Slack app is not a member of the channel, or the slack app does not have permission' \
                      ' to find the channel.'
