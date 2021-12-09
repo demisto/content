@@ -57,7 +57,7 @@ class Client(BaseClient):
         """Identity search."""
         return self._http_request(
             method="post",
-            url_suffix="search",
+            url_suffix="identity/credentials/search",
             json_data={
                 "domains": domains,
                 "domain_types": domain_type,
@@ -82,7 +82,7 @@ class Client(BaseClient):
         """Identity Lookup."""
         return self._http_request(
             method="post",
-            url_suffix="lookup",
+            url_suffix="identity/credentials/lookup",
             json_data={
                 "subjects": email_identities,
                 "subjects_login": authorization_identities,
@@ -131,9 +131,9 @@ class Actions():
             markdown=[f'## This is search results for {", ".join(domains)} :']
             for identity in search_data:
                 if isinstance(identity, dict):
-                    markdown.append(f"- __{identity['login']}__  in domain  {identity['domain']}")
+                    markdown.append(f"- **{identity['login']}**  in domain  {identity['domain']}")
                 else:
-                    markdown.append(f'- __{identity}__')
+                    markdown.append(f'- **{identity}**')
         else:
             markdown=[f'## There is no data for {", ".join(domains)} in selected period']
         return "\n".join(markdown)
@@ -179,14 +179,15 @@ class Actions():
 
         date_period = period_to_date(first_downloaded)
         response = self.client.identity_lookup(email_identities, authorization_identities, date_period, password_properties)
-        command_results = self.__build_lookup_context(response, identities)
+        identities_data = response.get('identities', [])
+        command_results = self.__build_lookup_context(identities_data, identities)
         return command_results
 
     def __build_lookup_markdown(self, lookup_data, identities):
-        if lookup_data.get('identities'):
+        if lookup_data:
             markdown=['## Credentials Lookup']
             markdown.append("*****")
-            for identity in lookup_data['identities']:
+            for identity in lookup_data:
                 markdown.append(f'### Identity __{identity["identity"]["subjects"][0]}__:')
                 markdown.append("*****")
                 credentials = identity['credentials']
@@ -243,7 +244,7 @@ class Actions():
                     # Authentication data do not have breaches
                     markdown.append("### Breaches")
                     markdown.extend(breaches)
-                markdown.append("*****")
+                    markdown.append("*****")
                 markdown.append("### Dumps")
                 markdown.extend(dumps)
         else:
