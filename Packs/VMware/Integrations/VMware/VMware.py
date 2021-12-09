@@ -24,7 +24,15 @@ PASSWORD = demisto.params()['credentials']['password']
 PORT = str(FULL_URL_ARR[1])
 
 
-def login():
+def login(params):
+    full_url = params['url']
+    url_arr = full_url.split(':')
+    url = url_arr[0]
+    port = str(url_arr[1])
+    user_name = params['credentials']['identifier']
+    passsword = params['credentials']['password']
+    client = Client(full_url, params.get('insecure'), params.get('proxy'), {}, user_name, passsword)
+
     s = ssl.SSLContext(ssl.PROTOCOL_TLS)
     s.verify_mode = ssl.CERT_NONE
     session = requests.session()
@@ -107,8 +115,9 @@ def create_vm_config_creator(host, args):
     spec.cpuAllocation = resource_allocation_spec
     spec.memoryAllocation = resource_allocation_info
     spec.memoryMB = arg_to_number(args.get('virtual-memory'))
-    # spec.guestId = args.get('guestId')
     spec.files = files
+    if args.get('guestId'):
+        spec.guestId = args.get('guestId')
     return spec
 
 
@@ -137,8 +146,8 @@ def apply_get_vms_filters(args, vm_summery):
     uuids = argToList(args.get('uuid'))
 
     ip = not vm_summery.guest.ipAddress or not args.get('ip') or vm_summery.guest.ipAddress in ips
-    hostname = not vm_summery.guest.hostName or not args.get('hostname') or vm_summery.guest.ipAddress == args.get(
-        'hostName')
+    hostname = not vm_summery.guest.hostName or not args.get('hostname') or vm_summery.guest.hostName == args.get(
+        'hostname')
     name = not args.get('name') or vm_summery.config.name in names
     uuid = not args.get('uuid') or vm_summery.config.instanceUuid in uuids
 
@@ -529,13 +538,14 @@ def list_vms_by_tag(vsphere_client, args):
     relevant_tag = get_tag(args)
     vms = vsphere_client.tagging.TagAssociation.list_attached_objects(relevant_tag)
     vms = filter(lambda vm: vm.type == 'VirtualMachine', vms)
-    vms_details = vsphere_client.vcenter.VM.list(VM.FilterSpec(vms=set([str(vm.id) for vm in vms])))
+    vms_details = vsphere_client.vcenter.VM.list(
+        vsphere_client.vcenter.VM.FilterSpec(vms=set([str(vm.id) for vm in vms])))
     data = []
     for vm in vms_details:
         data.append({
             'TagName': args.get('tag'),
             'Category': args.get('category'),
-            'VM': vms_details.name
+            'VM': vm.name
         })
     ec = {
         'VMWare.Tag(val.Tag && val.Category && val.TagName === obj.TagName && va.Category == obj.Category)': data
@@ -670,7 +680,6 @@ def relocate_vm(si, args):
     if datastore:
         spec.datastore = datastore
         spec.disks = create_rellocation_locator_spec(vm, datastore)
-    # check_task = vim.vm.check.ProvisioningChecker.CheckRelocate_Task(vm=vm, spec=spec, testType=[])
     task = vm.RelocateVM_Task(spec, priority)
     wait_for_tasks(si, [task])
 
@@ -718,7 +727,7 @@ def register_vm(si, args):
     pool = search_for_obj(content, [vim.ResourcePool], args.get('pool'))
 
     task = folder.RegisterVM_Task(path=args.get('path'), name=args.get('name'),
-                                  asTemplate=args.get('asTemplaet', False), pool=pool, host=host)
+                                  asTemplate=args.get('asTemplate', False), pool=pool, host=host)
     wait_for_tasks(si, [task])
     if task.info.state == 'success':
         return {
@@ -746,15 +755,14 @@ def unregister_vm(args):
     }
 
 
-def main():
+def main():  # pragma: no cover
     sout = sys.stdout
     sys.stdout = StringIO()
     res = []
     si = None
     vsphere_client = None
     try:
-
-        si, vsphere_client = login()
+        si, vsphere_client = login(demisto.params())
 
         if demisto.command() == 'test-module':
             result = 'ok'
