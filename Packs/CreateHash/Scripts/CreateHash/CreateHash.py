@@ -2,6 +2,9 @@
 import hashlib
 from hashlib import blake2b
 
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 text = demisto.args()['text']
 hashtype = demisto.args()['type']
 

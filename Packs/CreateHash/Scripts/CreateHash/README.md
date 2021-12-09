@@ -14,8 +14,8 @@ Creating a hash of a given input, support sha1, sha256, md5 and blake. Wrapper f
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| text |  |
-| type |  |
+| text | Text or string for which a hash should be created. |
+| type | Hash method to be used. |
 
 ## Outputs
 ---
