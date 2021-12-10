@@ -4,7 +4,7 @@ from PaloAltoNetworks_PrismaCloudCompute import (
     PrismaCloudComputeClient, camel_case_transformer, fetch_incidents, get_headers,
     HEADERS_BY_NAME, get_profile_host_list, get_container_profile_list, get_container_hosts_list,
     get_profile_container_forensic_list, get_profile_host_forensic_list, get_console_version, get_custom_feeds_ip_list,
-    add_custom_ip_feeds, get_api_filtered_response, parse_date_string_format
+    add_custom_ip_feeds, filter_api_response, parse_date_string_format
 )
 
 from CommonServerPython import DemistoException
@@ -494,7 +494,7 @@ def test_http_request_url_is_valid(requests_mock, args, func, url_suffix, expect
     Then:
         - Verify that the full URL of the http request is sent with the correct query/uri params.
     """
-    mocker = requests_mock.get(url=BASE_URL + url_suffix, json={})
+    mocker = requests_mock.get(url=BASE_URL + url_suffix, json=[])
     func(client=client, args=args) if args else func(client=client)
 
     assert expected_url == mocker.last_request._url_parts.geturl()
@@ -599,137 +599,58 @@ def test_http_body_request_is_valid(requests_mock, func, url_suffix, args, clien
 
 HTTP_FILTERING_BODY_RESPONSE_PARAMS = [
     (
-        {
-            "limit": "4",
-            "offset": "2"
-        },
-        "/profiles/container/123/hosts",
-        ["host1", "host2", "host3", "host4", "host5"],
+        4, 2, ["host1", "host2", "host3", "host4", "host5"], ["host3", "host4", "host5"]
     ),
     (
-        {
-            "offset": "1",
-            "limit": "3"
-        },
-        "/profiles/container/123/forensic",
-        [
-            {
-                "type": "Binary created",
-                "containerId": "123",
-            },
-            {
-                "type": "Binary created",
-                "ContainerId": "1234",
-            },
-            {
-                "type": "Binary created",
-                "containerId": "12345",
-            },
-            {
-                "type": "Binary created",
-                "containerId": "123456",
-            },
-            {
-                "type": "Binary created",
-                "containerId": "1234567",
-            }
-        ],
+        4, 2, ["host1"], []
     ),
     (
-        {
-            "offset": "1",
-            "limit": "2"
-        },
-        "/profiles/host/123/forensic",
-        [
-            {
-                "type": "Process spawned",
-                "app": "ffdd78ae",
-            },
-            {
-                "type": "Listening port",
-                "app": "ffdd78ae",
-            },
-            {
-                "type": "Listening port",
-                "app": "ffdd78ae",
-            },
-            {
-                "type": "Listening port",
-                "app": "ffdd78ae",
-            },
-            {
-                "type": "Listening port",
-                "app": "ffdd78ae",
-            }
-        ],
+        5, 1, ["host1", "host2"], ["host2"]
     ),
     (
-        {
-            "limit": "4",
-            "offset": "2"
-        },
-        "/profiles/container/123/hosts",
-        ["host1"],
+        3, 1, ["host1", "host2", "host3", "host4", "host5"], ["host2", "host3", "host4"]
     ),
     (
-        {
-            "limit": "5",
-            "offset": "1"
-        },
-        "/profiles/container/123/hosts",
-        ["host1, host2"],
+        1, 4, ["host1", "host2", "host3"], []
     ),
     (
-        {
-            "limit": "3",
-            "offset": "1"
-        },
-        "/profiles/container/123/hosts",
-        ["host1, host2", "host3", "host4", "host5"],
+        1, 4, ["host1", "host2", "host3", "host4", "host5", "host6", "host7"], ["host5"]
     ),
     (
-        {
-            "limit": "1",
-            "offset": "4"
-        },
-        "/profiles/container/123/hosts",
-        ["host1, host2", "host3"],
+        5, 3, ["host1", "host2", "host3", "host4", "host5", "host6", "host7"], ["host4", "host5", "host6", "host7"]
     ),
     (
-        {
-            "limit": "1",
-            "offset": "4"
-        },
-        "/profiles/container/123/hosts",
-        ["host1, host2", "host3", "host4", "host5", "host6", "host7"],
-    )
+        2, 8, ["host1", "host2", "host3", "host4", "host5", "host6", "host7"], []
+    ),
+    (
+        7, 4, ["host1", "host2", "host3", "host4", "host5", "host6", "host7"], ["host5", "host6", "host7"]
+    ),
+    (
+        4, 0, ["host1", "host2", "host3"], ["host1", "host2", "host3"]
+    ),
+    (
+        1, 1, ["host1", "host2", "host3"], ["host2"]
+    ),
 ]
 
 
-@pytest.mark.parametrize("args, url_suffix, response", HTTP_FILTERING_BODY_RESPONSE_PARAMS)
-def test_http_body_response_filtering_is_valid(requests_mock, args, url_suffix, response, client):
+@pytest.mark.parametrize("limit, offset, full_response, expected_response", HTTP_FILTERING_BODY_RESPONSE_PARAMS)
+def test_http_body_response_filtering_is_valid(limit, offset, full_response, expected_response, client):
     """
     Given:
-        - http body response.
+        - api response.
 
     When:
-        - Calling a function that is responsible for a single command.
+        - calling the function to filter the response
 
     Then:
         - Verify that the http body response is filtered correctly.
     """
-    full_url = BASE_URL + url_suffix
 
-    offset, limit = int(args.pop("offset")), int(args.pop("limit"))
+    body_response = filter_api_response(api_response=full_response, limit=limit, offset=offset)
 
-    requests_mock.get(url=full_url, json=response)
-    body_response = get_api_filtered_response(
-        client=client, url_suffix=url_suffix, offset=offset, limit=limit, args=args
-    )
-
-    assert len(body_response) == len(response[offset:limit + offset])
-    assert body_response == response[offset:limit + offset]
+    assert len(body_response) == len(expected_response)
+    assert body_response == expected_response
 
 
 def test_date_string_format_conversion_is_successful():
@@ -918,7 +839,6 @@ EXPECTED_CONTEXT_OUTPUT_DATA = [
             "digest": "1234"
         },
         {
-            "_id": "",
             "modified": "December 01, 2021 11:50:50 AM",
             "feed": [
                 "1.1.1.1",

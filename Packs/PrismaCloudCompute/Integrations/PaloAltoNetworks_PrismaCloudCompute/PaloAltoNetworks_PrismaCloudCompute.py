@@ -110,8 +110,6 @@ class PrismaCloudComputeClient(BaseClient):
         Returns:
             list[dict]: host profiles api response.
         """
-        if not params:
-            params = {}
         return self._http_request(method="GET", url_suffix="/profiles/host", params=params)
 
     def get_container_profiles(self, params=None):
@@ -124,8 +122,6 @@ class PrismaCloudComputeClient(BaseClient):
         Returns:
             list[dict]: host profiles api response.
         """
-        if not params:
-            params = {}
         return self._http_request(method="GET", url_suffix="/profiles/container", params=params)
 
     def get_containers_hosts(self, container_id):
@@ -151,8 +147,6 @@ class PrismaCloudComputeClient(BaseClient):
         Returns:
             list[dict]: container forensics.
         """
-        if not params:
-            params = {}
         return self._http_request(method="GET", url_suffix=f"profiles/container/{container_id}/forensic", params=params)
 
     def get_host_forensics(self, host_id, params=None):
@@ -166,8 +160,6 @@ class PrismaCloudComputeClient(BaseClient):
         Returns:
             list[dict]: host forensics.
         """
-        if not params:
-            params = {}
         return self._http_request(method="GET", url_suffix=f"/profiles/host/{host_id}/forensic", params=params)
 
     def get_console_version(self):
@@ -191,6 +183,9 @@ class PrismaCloudComputeClient(BaseClient):
     def add_custom_ip_feeds(self, feeds):
         """
         Sends a request to add custom IP feeds.
+
+        Args:
+            feeds (list[str]): IP feeds to add.
         """
         self._http_request(method="PUT", url_suffix="/feeds/custom/ips", resp_type="text", json_data={"feed": feeds})
 
@@ -367,8 +362,8 @@ def parse_limit_and_offset_values(limit: str, offset: str) -> Tuple[int, int]:
     limit, offset = arg_to_number(arg=limit, arg_name="limit"), arg_to_number(arg=offset, arg_name="offset")
 
     try:
-        assert offset is not None and offset < 0
-        assert limit is not None and (limit < 1 or limit > MAX_API_LIMIT)
+        assert offset is not None and offset >= 0
+        assert limit is not None and 0 < limit < MAX_API_LIMIT
     except AssertionError:
         raise ValueError("limit/offset values are invalid, limit scope = 1-50, offset scope >= 0")
 
@@ -466,16 +461,12 @@ def get_profile_host_list(client: PrismaCloudComputeClient, args: dict) -> Comma
     if "hostname" in args:
         args["hostName"] = args.pop("hostname")
 
-    args["limit"], args["offset"] = parse_limit_and_offset_values(limit=args.get("limit"), offset=args.get("offset"))
+    args["limit"], args["offset"] = parse_limit_and_offset_values(
+        limit=args.get("limit", "15"), offset=args.get("offset", "0")
+    )
 
-    hosts_profile_info = client.get_host_profiles(params=assign_params(**args))
-
-    if hosts_profile_info:
+    if hosts_profile_info := client.get_host_profiles(params=assign_params(**args)):
         for host_profile in hosts_profile_info:
-            if "created" in host_profile:
-                host_profile["created"] = parse_date_string_format(date_string=host_profile.get("created", ""))
-            if "time" in host_profile:
-                host_profile["time"] = parse_date_string_format(date_string=host_profile.get("time", ""))
             for event in host_profile.get("sshEvents", []):
                 if "ip" in event:
                     # transforms ip as integer representation to ip as string representation
@@ -577,10 +568,11 @@ def get_container_profile_list(client: PrismaCloudComputeClient, args: dict) -> 
     """
     if "image_id" in args:
         args["imageID"] = args.pop("image_id")
-    args["limit"], args["offset"] = parse_limit_and_offset_values(limit=args.get("limit"), offset=args.get("offset"))
+    args["limit"], args["offset"] = parse_limit_and_offset_values(
+        limit=args.get("limit", "15"), offset=args.get("offset", "0")
+    )
 
-    containers_info = client.get_container_profiles(params=assign_params(**args))
-    if containers_info:
+    if containers_info := client.get_container_profiles(params=assign_params(**args)):
         container_description_headers = ["ContainerID", "Image", "Os", "State", "Created", "EntryPoint"]
 
         if len(containers_info) == 1:  # means we have only one container
@@ -641,7 +633,7 @@ def get_container_hosts_list(client: PrismaCloudComputeClient, args: dict) -> Co
         CommandResults: command-results object.
     """
     container_id = args.pop("id")
-    limit, offset = parse_limit_and_offset_values(limit=args.get("limit"), offset=args.get("offset"))
+    limit, offset = parse_limit_and_offset_values(limit=args.get("limit", "50"), offset=args.get("offset", "0"))
 
     if hosts := filter_api_response(
         api_response=client.get_containers_hosts(container_id=container_id),
@@ -659,11 +651,11 @@ def get_container_hosts_list(client: PrismaCloudComputeClient, args: dict) -> Co
             headerTransform=lambda word: word[0].upper() + word[1:]
         )
     else:
-        context_output, table = None, "No results found"
+        context_output, table = {}, "No results found"
 
     return CommandResults(
         outputs_prefix="PrismaCloudCompute.ProfileContainerHost",
-        outputs=context_output,
+        outputs=context_output if context_output else None,
         readable_output=table,
         outputs_key_field="containerID",
         raw_response=hosts
@@ -687,7 +679,7 @@ def get_profile_container_forensic_list(client: PrismaCloudComputeClient, args: 
 
     container_id = args.pop("id")
     # api request does not support offset only, but does support limit.
-    limit, offset = parse_limit_and_offset_values(limit=args.get("limit"), offset=args.pop("offset"))
+    limit, offset = parse_limit_and_offset_values(limit=args.get("limit", "20"), offset=args.pop("offset", "0"))
     # because the api supports only limit, it is necessary to add the requested offset to the limit be able to take the
     # correct offset:limit after the api call.
     args["limit"] = limit + offset
@@ -719,11 +711,11 @@ def get_profile_container_forensic_list(client: PrismaCloudComputeClient, args: 
             headerTransform=lambda word: word[0].upper() + word[1:]
         )
     else:
-        context_output, table = None, "No results found"
+        context_output, table = {}, "No results found"
 
     return CommandResults(
         outputs_prefix='PrismaCloudCompute.ContainerForensic',
-        outputs=context_output,
+        outputs=context_output if context_output else None,
         readable_output=table,
         outputs_key_field=["containerID", "hostname"],
         raw_response=container_forensics
@@ -747,7 +739,7 @@ def get_profile_host_forensic_list(client: PrismaCloudComputeClient, args: dict)
 
     host_id = args.pop("id")
     # api request does not support offset only, but does support limit.
-    limit, offset = parse_limit_and_offset_values(limit=args.get("limit"), offset=args.pop("offset"))
+    limit, offset = parse_limit_and_offset_values(limit=args.get("limit", "15"), offset=args.pop("offset", "0"))
     # because the api supports only limit, it is necessary to add the requested offset to the limit be able to take the
     # correct offset:limit after the api call.
     args["limit"] = limit + offset
@@ -778,11 +770,11 @@ def get_profile_host_forensic_list(client: PrismaCloudComputeClient, args: dict)
             headerTransform=lambda word: word[0].upper() + word[1:]
         )
     else:
-        context_output, table = None, "No results found"
+        context_output, table = {}, "No results found"
 
     return CommandResults(
         outputs_prefix='PrismaCloudCompute.HostForensic',
-        outputs=context_output,
+        outputs=context_output if context_output else None,
         readable_output=table,
         outputs_key_field="hostID",
         raw_response=host_forensics
@@ -826,6 +818,8 @@ def get_custom_feeds_ip_list(client: PrismaCloudComputeClient) -> CommandResults
     if feeds:
         if "modified" in feeds:
             feeds["modified"] = parse_date_string_format(date_string=feeds.get("modified", ""))
+        if "_id" in feeds:
+            feeds.pop("_id")
         table = tableToMarkdown(
             name="IP Feeds",
             t=feeds,
@@ -833,6 +827,7 @@ def get_custom_feeds_ip_list(client: PrismaCloudComputeClient) -> CommandResults
             removeNull=True,
             headerTransform=lambda word: word[0].upper() + word[1:]
         )
+
     else:
         table = "No results found"
 
@@ -866,9 +861,7 @@ def add_custom_ip_feeds(client: PrismaCloudComputeClient, args: dict) -> Command
 
     client.add_custom_ip_feeds(feeds=combined_feeds)
 
-    return CommandResults(
-        readable_output="Successfully updated the custom IP feeds"
-    )
+    return CommandResults(readable_output="Successfully updated the custom IP feeds")
 
 
 def main():
