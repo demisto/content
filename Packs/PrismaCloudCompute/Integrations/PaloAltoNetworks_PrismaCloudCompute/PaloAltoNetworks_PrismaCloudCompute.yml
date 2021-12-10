@@ -87,7 +87,7 @@ script:
     outputs:
     - contextPath: PrismaCloudCompute.ProfileHost._id
       description: ID is the profile ID (hostname)
-      type: Unknown
+      type: String
     - contextPath: PrismaCloudCompute.ProfileHost.accountID
       description: AccountID is the cloud account ID associated with the profile
       type: String
@@ -96,13 +96,13 @@ script:
       type: Unknown
     - contextPath: PrismaCloudCompute.ProfileHost.collections
       description: Collections is a list of collections to which this profile applies
-      type: String
+      type: Unknown
     - contextPath: PrismaCloudCompute.ProfileHost.created
       description: Created is the profile creation time
       type: Date
     - contextPath: PrismaCloudCompute.ProfileHost.hash
       description: Hash is an uint32 hash associated with the profile
-      type: Unknown
+      type: Number
     - contextPath: PrismaCloudCompute.ProfileHost.labels
       description: Labels are the labels associated with the profile
       type: String
@@ -113,7 +113,7 @@ script:
       description: Time is the last time when this profile was modified
       type: Date
     - contextPath: PrismaCloudCompute.ProfileHost.geoip
-      description: geoip is the list of countries
+      description: geoip is the list of countries from which the host was accessed
       type: Unknown
   - name: prisma-cloud-compute-profile-container-list
     description: Get information about the containers and their profile events, this command supports asterisks which allows you to get container profiles by filtering its fields according to a specific substring
@@ -168,11 +168,11 @@ script:
     outputs:
     - contextPath: PrismaCloudCompute.ProfileContainer._id
       description: Id is the profile ID
-      type: Unknown
+      type: String
     - contextPath: PrismaCloudCompute.ProfileContainer.accountsIDs
       description: AccountIDs are the cloud account IDs associated with the container
         runtime profile
-      type: String
+      type: Unknown
     - contextPath: PrismaCloudCompute.ProfileContainer.archived
       description: Archive indicates whether this profile is archived
       type: Boolean
@@ -185,7 +185,7 @@ script:
       type: String
     - contextPath: PrismaCloudCompute.ProfileContainer.collections
       description: Collections are collections to which this profile applies
-      type: String
+      type: Unknown
     - contextPath: PrismaCloudCompute.ProfileContainer.created
       description: Created is the profile creation time
       type: Date
@@ -201,7 +201,7 @@ script:
       type: Unknown
     - contextPath: PrismaCloudCompute.ProfileContainer.hash
       description: Hash is an uint32 hash associated with the profile
-      type: Unknown
+      type: String
     - contextPath: PrismaCloudCompute.ProfileContainer.hostNetwork
       description: HostNetwork whether the instance share the network namespace with
         the host
@@ -211,8 +211,8 @@ script:
         with the host
       type: Boolean
     - contextPath: PrismaCloudCompute.ProfileContainer.image
-      description: description
-      type: Boolean
+      description: Image is the image that the container runs with
+      type: String
     - contextPath: PrismaCloudCompute.ProfileContainer.imageID
       description: ImageID is the profile's image ID
       type: String
@@ -242,7 +242,7 @@ script:
       type: Unknown
     - contextPath: PrismaCloudCompute.ProfileContainer.os
       description: OS is the profile image OS
-      type: Strubg
+      type: String
     - contextPath: PrismaCloudCompute.ProfileContainer.processes
       description: Processes is the profile processes metadata
       type: Unknown
@@ -262,7 +262,7 @@ script:
     deprecated: false
     arguments:
     - name: id
-      description: Container profile ID, can be retrieved from 'prisma-cloud-compute-profile-container-list' command.
+      description: Container profile ID, can be retrieved from prisma-cloud-compute-profile-container-list command.
       required: true
       isArray: false
       defaultValue: ""
@@ -278,10 +278,10 @@ script:
       defaultValue: "0"
     outputs:
     - contextPath: PrismaCloudCompute.ProfileContainerHost.containerID
-      description: Container ID
+      description: The container ID
       type: String
     - contextPath: PrismaCloudCompute.ProfileContainerHost.hostsIDs
-      description: The container's host IDs.
+      description: The list of hosts where this container is running.
       type: Unknown
   - name: prisma-cloud-compute-profile-container-forensic-list
     description: Get runtime forensics data for a specific container on a specific
@@ -323,7 +323,7 @@ script:
       description: The container ID.
       type: String
     - contextPath: PrismaCloudCompute.ContainerForensic.hostname
-      description: The Hostname.
+      description: The hostname.
       type: String
     - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.allPorts
       description: AllPorts indicates all listening ports are allowed
@@ -339,7 +339,7 @@ script:
       type: String
     - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.containerId
       description: ContainerID is the event container id
-      type: Unknown
+      type: String
     - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.dstIP
       description: DstIP is the destination IP of the connection
       type: String
@@ -360,7 +360,7 @@ script:
       type: String
     - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.networkCollectionType
       description: NetworkCollectionType is the type of the network collection method
-      type: Unknown
+      type: String
     - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.outbound
       description: Outbound indicates if the port is outbound
       type: Boolean
@@ -397,7 +397,7 @@ script:
       type: Boolean
     - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.user
       description: User is the event user
-      type: Unknown
+      type: String
   - name: prisma-cloud-compute-host-forensic-list
     description: Get forensics on a specific host
     deprecated: false
@@ -501,9 +501,6 @@ script:
     deprecated: false
     arguments: []
     outputs:
-    - contextPath: PrismaCloudCompute.CustomFeedIP._id
-      description: ID is the custom feed id
-      type: String
     - contextPath: PrismaCloudCompute.CustomFeedIP.digest
       description: Digest is an internal digest of the custom ip feed
       type: String
