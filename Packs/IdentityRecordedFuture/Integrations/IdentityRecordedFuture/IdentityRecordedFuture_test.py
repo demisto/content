@@ -109,4 +109,4 @@ class RFTestIdentity(unittest.TestCase):
             email_identities, username_identities, DATETIME_STR_VALUE, self.password_properties,
         )
         self.assertEqual(action_return.outputs_prefix, action_prefix)
-        self.assertEqual(action_return.outputs, lookup_response)
+        self.assertEqual(action_return.outputs, lookup_response['identities'])
