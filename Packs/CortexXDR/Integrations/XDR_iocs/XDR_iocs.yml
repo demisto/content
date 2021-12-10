@@ -168,6 +168,23 @@ script:
     name: xdr-iocs-push
   - arguments:
     - default: false
+      description: The time of the file creation (use UTC time zone).
+      isArray: false
+      name: time
+      required: true
+      secret: false
+    deprecated: false
+    description: Set sync time manually (Do not use this command unless you unredstandard
+      the consequences).
+    execution: false
+    name: xdr-iocs-set-sync-time
+  - deprecated: false
+    description: Creates the sync file for the manual process. Run this command when
+      instructed by the XDR support team.
+    execution: false
+    name: xdr-iocs-create-sync-file
+  - arguments:
+    - default: false
       description: The indicator to enable.
       isArray: true
       name: indicator
@@ -188,7 +205,7 @@ script:
     description: Disables IOCs in the XDR server.
     execution: false
     name: xdr-iocs-disable
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   feed: true
   isfetch: false
   longRunning: false
