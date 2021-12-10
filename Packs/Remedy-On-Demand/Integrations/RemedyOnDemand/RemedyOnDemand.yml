@@ -1,61 +1,57 @@
+category: Case Management
 commonfields:
   id: Remedy On-Demand
   version: -1
-name: Remedy On-Demand
-display: Remedy On-Demand
-category: Case Management
-description: Use Remedy On-Demand to manage tickets
 configuration:
 - display: Server URL (e.g. 'https://myurl.com', 'http://41.79.151.82')
   name: url
-  defaultvalue: ""
-  type: 0
   required: true
-- display: Port
-  name: port
-  defaultvalue: "8008"
   type: 0
+- defaultvalue: '8008'
+  display: Port
+  name: port
   required: false
+  type: 0
 - display: Username
   name: credentials
-  defaultvalue: ""
-  type: 9
   required: true
+  type: 9
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
-  type: 8
   required: false
+  type: 8
 - display: Trust any certificate (not secure)
   name: insecure
-  type: 8
   required: false
+  type: 8
 - display: Fetch incidents
   name: isFetch
-  type: 8
   required: false
+  type: 8
 - display: Incident type
   name: incidentType
-  type: 13
   required: false
+  type: 13
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+description: Use Remedy On-Demand to manage tickets
+display: Remedy On-Demand
+name: Remedy On-Demand
 script:
-  script: ''
-  type: javascript
   commands:
-  - name: remedy-incident-create
-    arguments:
-    - name: first-name
-      required: true
-      description: costumer's first name (make sure costumer already exists)
-    - name: last-name
-      required: true
-      description: costumer's first name (make sure costumer already exists)
-    - name: description
-      required: true
-      description: Incident description
-    - name: status
-      required: true
-      auto: PREDEFINED
+  - arguments:
+    - description: costumer's first name (make sure costumer already exists)
+      name: first_name
+    - description: costumer's first name (make sure costumer already exists)
+      name: last_name
+    - description: Incident description
+      name: description
+    - auto: PREDEFINED
+      description: Incident status
+      name: status
       predefined:
       - New
       - Assigned
@@ -64,10 +60,9 @@ script:
       - Resolved
       - Closed
       - Cancelled
-      description: Incident status
-    - name: source
-      required: true
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: Incident source
+      name: source
       predefined:
       - Direct Input
       - Email
@@ -80,63 +75,35 @@ script:
       - Walk
       - Web
       - Other
-      description: Incident source
-    - name: service-type
-      required: true
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: Incident service-type
+      name: service_type
       predefined:
       - User Service Restoration
       - User Service Request
       - Infrastructure Event
       - Infrastructure Restoration
-      description: Incident service-type
-    - name: impact
-      required: true
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: Incident impact
+      name: impact
       predefined:
       - 1-Extensive/Widespread
       - 2-Significant/Large
       - 3-Moderate/Limited
       - 4-Minor/Localized
-      description: Incident impact
-    - name: urgency
-      required: true
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: Incident urgency
+      name: urgency
       predefined:
       - 1-Critical
       - 2-High
       - 3-Medium
       - 4-Low
-      description: Incident urgency
-    - name: custom-fields
-      description: Custom fields for incident creation. Should be comma separated
+    - description: Custom fields for incident creation. Should be comma separated
         query (i.e. field1=value1,field2=value2).
-    outputs:
-    - contextPath: Ticket.ID
-      description: Ticket ID
-    - contextPath: Ticket.Submitter
-      description: Ticket submitter
-    - contextPath: Ticket.Status
-      description: Ticket status
-    - contextPath: Ticket.Description
-      description: Ticket description
-    - contextPath: Ticket.Source
-      description: Ticket reported source
-    - contextPath: Ticket.Impact
-      description: TicketiImpact
-    - contextPath: Ticket.Urgency
-      description: Ticket urgency
-    - contextPath: Ticket.Type
-      description: Ticket service type
+      name: custom_fields
     description: Create new ticket incident
-  - name: remedy-get-incident
-    arguments:
-    - name: ID
-      required: true
-      default: true
-      description: Incident Entry ID. If EntryID is not available to you, incident
-        details can be found using `remedy-fetch-incidents query="'Incident Number'
-        = \"<incident number>\"".
+    name: remedy-incident-create
     outputs:
     - contextPath: Ticket.ID
       description: Ticket ID
@@ -154,12 +121,15 @@ script:
       description: Ticket urgency
     - contextPath: Ticket.Type
       description: Ticket service type
+  - arguments:
+    - default: true
+      description: Incident Entry ID. If EntryID is not available to you, incident
+        details can be found using `remedy-fetch-incidents query="'Incident Number'
+        = \"<incident number>\"".
+      name: ID
+      required: true
     description: Get one incident by ID
-  - name: remedy-fetch-incidents
-    arguments:
-    - name: query
-      description: Search query/qualification format of '<field> LIKE "<values>"'
-        (e.g. 'Company LIKE "My company"', 'Submitter LIKE "%john%"')
+    name: remedy-get-incident
     outputs:
     - contextPath: Ticket.ID
       description: Ticket ID
@@ -177,19 +147,41 @@ script:
       description: Ticket urgency
     - contextPath: Ticket.Type
       description: Ticket service type
+  - arguments:
+    - description: Search query/qualification format of '<field> LIKE "<values>"'
+        (e.g. 'Company LIKE "My company"', 'Submitter LIKE "%john%"')
+      name: query
     description: Fetch all incidents
-  - name: remedy-incident-update
-    arguments:
-    - name: ID
-      required: true
-      default: true
+    name: remedy-fetch-incidents
+    outputs:
+    - contextPath: Ticket.ID
+      description: Ticket ID
+    - contextPath: Ticket.Submitter
+      description: Ticket submitter
+    - contextPath: Ticket.Status
+      description: Ticket status
+    - contextPath: Ticket.Description
+      description: Ticket description
+    - contextPath: Ticket.Source
+      description: Ticket reported source
+    - contextPath: Ticket.Impact
+      description: TicketiImpact
+    - contextPath: Ticket.Urgency
+      description: Ticket urgency
+    - contextPath: Ticket.Type
+      description: Ticket service type
+  - arguments:
+    - default: true
       description: Incident Entry ID. If EntryID is not available to you, incident
         details can be found using `remedy-fetch-incidents query="'Incident Number'
         = \"<incident number>\"".
-    - name: description
-      description: Updated description
-    - name: status
-      auto: PREDEFINED
+      name: ID
+      required: true
+    - description: Updated description
+      name: description
+    - auto: PREDEFINED
+      description: Updated status (unchanged if not specified)
+      name: status
       predefined:
       - New
       - Assigned
@@ -198,25 +190,25 @@ script:
       - Resolved
       - Closed
       - Cancelled
-      description: Updated status (unchanged if not specified)
-    - name: urgency
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: Updated urgency (unchanged if not specified)
+      name: urgency
       predefined:
       - 1-Critical
       - 2-High
       - 3-Medium
       - 4-Low
-      description: Updated urgency (unchanged if not specified)
-    - name: impact
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: Updated impact (unchanged if not specified)
+      name: impact
       predefined:
       - 1-Extensive/Widespread
       - 2-Signinficant/Large
       - 3-Moderate/Limited
       - 4-Minor/Localized
-      description: Updated impact (unchanged if not specified)
-    - name: source
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: Updated reported source (unchanged if not specified)
+      name: source
       predefined:
       - Direct Input
       - Email
@@ -229,15 +221,16 @@ script:
       - Walk
       - Web
       - Other
-      description: Updated reported source (unchanged if not specified)
-    - name: service-type
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: Updated service-type (unchanged if not specified)
+      name: service-type
       predefined:
       - User Service Restoration
       - User Service Request
       - Infrastructure Event
       - Infrastructure Restoration
-      description: Updated service-type (unchanged if not specified)
+    description: Update exiting incident
+    name: remedy-incident-update
     outputs:
     - contextPath: Ticket.ID
       description: Ticket ID
@@ -255,7 +248,10 @@ script:
       description: Ticket urgency
     - contextPath: Ticket.Type
       description: Ticket service type
-    description: Update exiting incident
   isfetch: true
-hidden: false
+  runonce: false
+  script: ''
+  type: javascript
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
