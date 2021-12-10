@@ -191,29 +191,27 @@ class Actions():
                 markdown.append(f'### Identity __{identity["identity"]["subjects"][0]}__:')
                 markdown.append("*****")
                 credentials = identity['credentials']
-                passwords = []
+                passwords_section = []
                 dumps = []
                 breaches = []
-                authorization_service_text = ''
-                exfiltration_date_text = ''
                 for idx, credential in  enumerate(credentials):
                     exposed_secret = credential["exposed_secret"]
                     password_number_text = f"Password {idx + 1}"
                     if exposed_secret["effectively_clear"] and exposed_secret['details'].get('clear_text_hint'):
-                        passwords.append(
+                        passwords_section.append(
                             f"{password_number_text}: {exposed_secret['details']['clear_text_hint']} ({exposed_secret['type']})"
                         )
                     elif exposed_secret['hashes']:
                         hash_value = exposed_secret['hashes'][0]['hash']
                         hash_algorithm = exposed_secret['hashes'][0]['algorithm']
-                        passwords.append(
+                        passwords_section.append(
                             f"{password_number_text}: {hash_value} ({hash_algorithm})"
                         )
                     if credential.get('authorization_service'):
-                        authorization_service_text = f"Authorization service url: {credential['authorization_service']['url']}\n"
+                        passwords_section.append(f"Authorization service url: {credential['authorization_service']['url']}\n")
                     if credential.get('exfiltration_date'):
                         exfiltration_date = datetime.strptime(credential['exfiltration_date'], ISO_DATE_FORMAT).strftime("%b %Y")
-                        exfiltration_date_text = f"Exfiltration date: {exfiltration_date}"
+                        passwords_section.append(f"Exfiltration date: {exfiltration_date}")
                     for dump in credential['dumps']:
                         dump_downloaded = dump.get('downloaded', '')
                         if dump_downloaded:
@@ -236,9 +234,7 @@ class Actions():
 
 
                 markdown.append("### Exposed Password Data")
-                markdown.extend(passwords)
-                markdown.append(authorization_service_text)
-                markdown.append(exfiltration_date_text)
+                markdown.extend(passwords_section)
                 markdown.append("*****")
                 if breaches:
                     # Authentication data do not have breaches

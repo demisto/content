@@ -5,11 +5,11 @@ name: Recorded Future Identity
 display: Recorded Future Identity
 category: Data Enrichment & Threat Intelligence
 image:
-description: +++++++++++++++++++
+description: Recorded Future Identity Integration that provides access to Recorded Future Identity module data.
 configuration:
-- display: Server URL (e.g., +++++++++++++++)
+- display: Server URL (e.g., https://api.recordedfuture.com/gw/xsoar-identity)
   name: server_url
-  defaultvalue: https://api.recordedfuture.com/identity/credentials/
+  defaultvalue: https://api.recordedfuture.com/gw/xsoar-identity
   type: 0
   required: true
 - display: API Token
@@ -93,7 +93,7 @@ script:
     arguments:
       - name: identities
         required: true
-        description: Identities for the lookup
+        description: Identities for the lookup separated by semicolon.(e.g. "test@test.com; test1@google.com")
       - name: first-downloaded
         required: true
         auto: PREDEFINED

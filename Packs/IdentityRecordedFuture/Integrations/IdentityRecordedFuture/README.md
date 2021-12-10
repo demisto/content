@@ -45,7 +45,7 @@ Get a list of identities for the specified period of time.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | latest-downloaded | Time frame for the leaked identities          | Required |
-| domain_type       | Type of the domain(Email, Authorization, All) | Required |
+| domain_type       | Type of the domain(Email, Authorization, All) | Optional |
 
 
 
@@ -53,7 +53,7 @@ Get a list of identities for the specified period of time.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| RecordedFuture.Credentials.SearchIdentities | List | List of Identities that were found in search command  |
+| RecordedFuture.Credentials.SearchIdentities | List | List of Identities that were found in search command |
 
 
 

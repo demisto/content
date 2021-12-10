@@ -1,0 +1,215 @@
+id: ce98bf76-2b6a-4e82-81a0-b09e2e615d9c
+version: 13
+vcShouldKeepItemLegacyProdMachine: false
+name: Recorded Future External Usecase Playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 40099a99-0040-4d3e-81b7-e534517d4678
+    type: start
+    task:
+      id: 40099a99-0040-4d3e-81b7-e534517d4678
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 6f548c85-8cfa-4656-8646-3dca83205ef9
+    type: regular
+    task:
+      id: 6f548c85-8cfa-4656-8646-3dca83205ef9
+      version: -1
+      name: recordedfuture-identity-search
+      description: Get email values that were leaked.
+      script: Recorded Future Identity|||recordedfuture-identity-search
+      type: regular
+      iscommand: true
+      brand: Recorded Future Identity
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      domain_type:
+        simple: Authorization
+      latest-downloaded:
+        simple: Last Year
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 7b888f0e-5215-4527-835c-b5b8d98e88bc
+    type: title
+    task:
+      id: 7b888f0e-5215-4527-835c-b5b8d98e88bc
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: bb1c7d0c-7341-412c-81f5-319ace5f0dcf
+    type: condition
+    task:
+      id: bb1c7d0c-7341-412c-81f5-319ace5f0dcf
+      version: -1
+      name: Check If any creds were found
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: RecordedFuture.Credentials
+                accessor: SearchIdentities
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: e4885b7d-7d4e-4789-8a41-a69ecff86e77
+    type: regular
+    task:
+      id: e4885b7d-7d4e-4789-8a41-a69ecff86e77
+      version: -1
+      name: recordedfuture-identity-lookup
+      script: Recorded Future Identity|||recordedfuture-identity-lookup
+      type: regular
+      iscommand: true
+      brand: Recorded Future Identity
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      first-downloaded:
+        simple: Last Year
+      identities:
+        simple: ${RecordedFuture.Credentials.SearchIdentities}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 16877dca-6d27-4232-89e7-03afaabafb3f
+    type: regular
+    task:
+      id: 16877dca-6d27-4232-89e7-03afaabafb3f
+      version: -1
+      name: Please check the credentials in WarRoom and make action.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1165,
+        "width": 970,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
