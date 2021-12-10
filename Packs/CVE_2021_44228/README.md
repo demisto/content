@@ -1,23 +1,13 @@
-This pack is part of the Rapid Breach Response pack.
+This pack is part of the [Rapid Breach Response](https://xsoar.pan.dev/marketplace/details/MajorBreachesInvestigationandResponse) pack.
 
 **Critical RCE Vulnerability: log4j - CVE-2021-44228** refers to a 0-day exploit in the popular Java logging library log4j2.
 
 On Dec. 9, 2021, a remote code execution (RCE) vulnerability in Apache log4j 2 was identified being exploited in the wild. Public proof of concept (PoC) code was released and subsequent investigation revealed that exploitation was incredibly easy to perform.
 
-**Affected Version**
-
-Apache Log4j 2.x <= 2.15.0-rc1
-
-**This playbook should be trigger manually and includes the following tasks:**
-
-* Collect related known indicators from several sources.
-* Indicators and exploitation patterns hunting using PAN-OS, Cortex XDR and SIEM products.
-* Block indicators automatically or manually.
-
-**Mitigations:**
-
-* Apache official CVE-2021-44228 patch.
-* Unit42 recommended mitigations.
+This pack will provide you with a first response kit which includes:
+* Hunting
+* Remediation
+* Mitigations
 
 More information:
 
