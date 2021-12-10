@@ -19,5 +19,59 @@
         "0-day",
         "zero day",
         "Apache"
+    ],
+    "dependencies": {
+        "QRadar": {
+            "mandatory": false,
+            "display_name": "IBM QRadar"
+        },
+        "PAN-OS": {
+            "mandatory": false,
+            "display_name": "PAN-OS"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "MajorBreachesInvestigationandResponse": {
+            "mandatory": true,
+            "display_name": "Rapid Breach Response"
+        },
+        "SplunkPyPreRelease": {
+            "mandatory": false,
+            "display_name": "Splunk Prerelease"
+        },
+        "CortexXDR": {
+            "mandatory": false,
+            "display_name": "Palo Alto Networks Cortex XDR - Investigation and Response"
+        },
+        "SplunkPy": {
+            "mandatory": false,
+            "display_name": "Splunk"
+        },
+        "PaloAltoNetworks_PAN_OS_EDL_Management": {
+            "mandatory": false,
+            "display_name": "Palo Alto Networks PAN-OS EDL Management"
+        },
+        "PANWComprehensiveInvestigation": {
+            "mandatory": false,
+            "display_name": "PANW Comprehensive Investigation"
+        },
+        "CommonPlaybooks": {
+            "mandatory": false,
+            "display_name": "Common Playbooks"
+        }
+    },
+    "displayedImages": [
+        "QRadar",
+        "PAN-OS",
+        "CommonScripts",
+        "MajorBreachesInvestigationandResponse",
+        "SplunkPyPreRelease",
+        "CortexXDR",
+        "SplunkPy",
+        "PaloAltoNetworks_PAN_OS_EDL_Management",
+        "PANWComprehensiveInvestigation",
+        "CommonPlaybooks"
     ]
 }
