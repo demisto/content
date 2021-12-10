@@ -177,11 +177,14 @@ def test_eml_contains_eml(mocker):
     assert len(results) == 1
     assert results[0]['Type'] == entryTypes['note']
     assert results[0]['EntryContext']['Email'][0]['Subject'] == 'Fwd: test - inner attachment eml'
-    assert 'ArcSight_ESM_fixes.yml' in results[0]['EntryContext']['Email'][0]['Attachments'][0]['Name']
-    assert 'test - inner attachment eml.eml' in results[0]['EntryContext']['Email'][0]['Attachments'][1]['Name']
+    assert 'ArcSight_ESM_fixes.yml' in results[0]['EntryContext']['Email'][0]['Attachments']
+    assert 'ArcSight_ESM_fixes.yml' in results[0]['EntryContext']['Email'][0]['AttachmentsData'][0]['Name']
+    assert 'test - inner attachment eml.eml' in results[0]['EntryContext']['Email'][0]['Attachments']
+    assert 'test - inner attachment eml.eml' in results[0]['EntryContext']['Email'][0]['AttachmentsData'][1]['Name']
     assert results[0]['EntryContext']['Email'][0]['Depth'] == 0
     assert results[0]['EntryContext']['Email'][1]["Subject"] == 'test - inner attachment eml'
-    assert 'CS Training 2019 - EWS.pptx' in results[0]['EntryContext']['Email'][1]["Attachments"][0]['Name']
+    assert 'CS Training 2019 - EWS.pptx' in results[0]['EntryContext']['Email'][1]["Attachments"]
+    assert 'CS Training 2019 - EWS.pptx' in results[0]['EntryContext']['Email'][1]["AttachmentsData"][0]['Name']
     assert results[0]['EntryContext']['Email'][1]['Depth'] == 1
 
 
@@ -224,7 +227,8 @@ def test_eml_contains_msg(mocker):
     assert results[0]['EntryContext']['Email'][0]['Subject'] == 'DONT OPEN - MALICIOS'
     assert results[0]['EntryContext']['Email'][0]['Depth'] == 0
 
-    assert 'Attacker+email+.msg' in results[0]['EntryContext']['Email'][0]['Attachments'][0]['Name']
+    assert 'Attacker+email+.msg' in results[0]['EntryContext']['Email'][0]['Attachments']
+    assert 'Attacker+email+.msg' in results[0]['EntryContext']['Email'][0]['AttachmentsData'][0]['Name']
     assert results[0]['EntryContext']['Email'][1]["Subject"] == 'Attacker email'
     assert results[0]['EntryContext']['Email'][1]['Depth'] == 1
 
@@ -266,8 +270,10 @@ def test_eml_contains_eml_depth(mocker):
     assert len(results) == 1
     assert results[0]['Type'] == entryTypes['note']
     assert results[0]['EntryContext']['Email']['Subject'] == 'Fwd: test - inner attachment eml'
-    assert 'ArcSight_ESM_fixes.yml' in results[0]['EntryContext']['Email']['Attachments'][0]['Name']
-    assert 'test - inner attachment eml.eml' in results[0]['EntryContext']['Email']['Attachments'][1]['Name']
+    assert 'ArcSight_ESM_fixes.yml' in results[0]['EntryContext']['Email']['Attachments']
+    assert 'ArcSight_ESM_fixes.yml' in results[0]['EntryContext']['Email']['AttachmentsData'][0]['Name']
+    assert 'test - inner attachment eml.eml' in results[0]['EntryContext']['Email']['Attachments']
+    assert 'test - inner attachment eml.eml' in results[0]['EntryContext']['Email']['AttachmentsData'][1]['Name']
     assert isinstance(results[0]['EntryContext']['Email'], dict)
     assert results[0]['EntryContext']['Email']['Depth'] == 0
 
@@ -683,7 +689,8 @@ def test_eml_contains_base64_encoded_eml(mocker, email_file):
     assert len(results) == 1
     assert results[0]['Type'] == entryTypes['note']
     assert results[0]['EntryContext']['Email'][0]['Subject'] == 'Fwd: test - inner attachment eml (base64)'
-    assert 'message.eml' in results[0]['EntryContext']['Email'][0]['Attachments'][0]['Name']
+    assert 'message.eml' in results[0]['EntryContext']['Email'][0]['Attachments']
+    assert 'message.eml' in results[0]['EntryContext']['Email'][0]['AttachmentsData'][0]['Name']
     assert results[0]['EntryContext']['Email'][0]['Depth'] == 0
 
     assert results[0]['EntryContext']['Email'][1]["Subject"] == 'test - inner attachment eml'
@@ -833,7 +840,8 @@ def test_eml_contains_htm_attachment(mocker):
     results = demisto.results.call_args[0]
     assert len(results) == 1
     assert results[0]['Type'] == entryTypes['note']
-    assert results[0]['EntryContext']['Email'][u'Attachments'][0]['Name'] == '1.htm'
+    assert results[0]['EntryContext']['Email'][u'Attachments'] == '1.htm'
+    assert results[0]['EntryContext']['Email'][u'AttachmentsData'][0]['Name'] == '1.htm'
 
 
 def test_signed_attachment(mocker):
@@ -938,7 +946,8 @@ def test_eml_base64_header_comment_although_string(mocker):
     assert results[0]['EntryContext']['Email'][0]['Subject'] == 'DONT OPEN - MALICIOS'
     assert results[0]['EntryContext']['Email'][0]['Depth'] == 0
 
-    assert 'Attacker+email+.msg' in results[0]['EntryContext']['Email'][0]['Attachments'][0]['Name']
+    assert 'Attacker+email+.msg' in results[0]['EntryContext']['Email'][0]['Attachments']
+    assert 'Attacker+email+.msg' in results[0]['EntryContext']['Email'][0]['AttachmentsData'][0]['Name']
     assert results[0]['EntryContext']['Email'][1]["Subject"] == 'Attacker email'
     assert results[0]['EntryContext']['Email'][1]['Depth'] == 1
 

@@ -3746,7 +3746,8 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                 'Text': convert_to_unicode(text, is_msg_header=False),
                 'Headers': header_list,
                 'HeadersMap': headers_map,
-                'Attachments': [
+                'Attachments': ','.join(attachment_names) if attachment_names else '',
+                'AttachmentsData': [
                     {
                         "Name": attachment_names[i],
                         "Content-ID": attachment_content_ids[i],
