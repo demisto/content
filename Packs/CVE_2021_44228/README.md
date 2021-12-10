@@ -1,4 +1,4 @@
-This pack is part of the Rapid Breach Response pack which should be installed as well.
+This pack is part of the Rapid Breach Response pack.
 
 **Critical RCE Vulnerability: log4j - CVE-2021-44228** refers to a 0-day exploit in the popular Java logging library log4j2.
 
