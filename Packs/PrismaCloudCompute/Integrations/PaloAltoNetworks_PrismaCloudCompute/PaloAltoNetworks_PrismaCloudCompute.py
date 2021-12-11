@@ -363,7 +363,7 @@ def parse_limit_and_offset_values(limit: str, offset: str) -> Tuple[int, int]:
 
     try:
         assert offset is not None and offset >= 0
-        assert limit is not None and 0 < limit < MAX_API_LIMIT
+        assert limit is not None and 0 < limit <= MAX_API_LIMIT
     except AssertionError:
         raise ValueError("limit/offset values are invalid, limit scope = 1-50, offset scope >= 0")
 
@@ -473,6 +473,8 @@ def get_profile_host_list(client: PrismaCloudComputeClient, args: dict) -> Comma
                     event["ip"] = str(ipaddress.IPv4Address(event.get("ip")))
                 if "time" in event:
                     event["time"] = parse_date_string_format(date_string=host_profile.get("time", ""))
+
+                # loginTime is in unix format
                 if "loginTime" in event:
                     event["loginTime"] = epochs_to_timestamp(epochs=event.get("loginTime"))
 
@@ -690,6 +692,7 @@ def get_profile_container_forensic_list(client: PrismaCloudComputeClient, args: 
         offset=offset
     ):
         for forensic in container_forensics:
+            remove_nulls_from_dictionary(data=forensic)
             if "timestamp" in forensic:
                 forensic["timestamp"] = parse_date_string_format(date_string=forensic.get("timestamp", ""))
             if "listeningStartTime" in forensic:
@@ -750,6 +753,7 @@ def get_profile_host_forensic_list(client: PrismaCloudComputeClient, args: dict)
         offset=offset
     ):
         for forensic in host_forensics:
+            remove_nulls_from_dictionary(data=forensic)
             if "timestamp" in forensic:
                 forensic["timestamp"] = parse_date_string_format(date_string=forensic.get("timestamp", ""))
             if "listeningStartTime" in forensic:
@@ -813,9 +817,7 @@ def get_custom_feeds_ip_list(client: PrismaCloudComputeClient) -> CommandResults
     Returns:
         CommandResults: command-results object.
     """
-    feeds = client.get_custom_ip_feeds()
-
-    if feeds:
+    if feeds := client.get_custom_ip_feeds():
         if "modified" in feeds:
             feeds["modified"] = parse_date_string_format(date_string=feeds.get("modified", ""))
         if "_id" in feeds:
