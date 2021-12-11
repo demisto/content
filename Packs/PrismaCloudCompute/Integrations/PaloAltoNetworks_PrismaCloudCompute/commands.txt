@@ -1,8 +1,8 @@
-!prisma-cloud-compute-profile-host-list hostName=*249*
-!prisma-cloud-compute-profile-container-list id=*123*
-!prisma-cloud-compute-profile-container-hosts-list id=123
-!prisma-cloud-compute-profile-container-forensic-list id=123 hostname=hostname1
-!prisma-cloud-compute-host-forensic-list id=hostID limit=5
+!prisma-cloud-compute-profile-host-list hostname=*249*
+!prisma-cloud-compute-profile-container-list id=*5f2561fab84*
+!prisma-cloud-compute-profile-container-hosts-list id=ip-172-31-5-163.eu-west-1.compute.internal
+!prisma-cloud-compute-profile-container-forensic-list id=sha256:5f2561fab84792d2aff3e355ed241afe820026f9345de760450dcaf65331a77f_twistlock_ hostname=ip-172-31-23-249.eu-west-1.compute.internal
+!prisma-cloud-compute-host-forensic-list id=ip-172-31-23-249.eu-west-1.compute.internal limit=5
 !prisma-cloud-compute-console-version-info
 !prisma-cloud-compute-custom-feeds-ip-list
 !prisma-cloud-compute-custom-feeds-ip-add IP=1.1.1.1,2.2.2.2
