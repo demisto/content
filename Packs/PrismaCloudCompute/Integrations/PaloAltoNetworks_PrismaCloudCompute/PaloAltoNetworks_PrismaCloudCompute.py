@@ -189,6 +189,15 @@ class PrismaCloudComputeClient(BaseClient):
         """
         self._http_request(method="PUT", url_suffix="/feeds/custom/ips", resp_type="text", json_data={"feed": feeds})
 
+    def get_custom_md5_malware(self):
+        """
+        Sends a request to get the list of all custom uploaded md5 malware records
+
+        Returns:
+            dict: custom md5 malware records
+        """
+        return self._http_request(method="GET", url_suffix="/feeds/custom/malware")
+
 
 def str_to_bool(s):
     """
@@ -345,7 +354,7 @@ def fetch_incidents(client):
     return incidents
 
 
-def parse_limit_and_offset_values(limit: str, offset: str) -> Tuple[int, int]:
+def parse_limit_and_offset_values(limit: str, offset: Optional[str] = "0") -> Tuple[int, int]:
     """
     Parse the offset and limit parameters to integers and verify that the offset/limit are valid.
 
@@ -404,14 +413,14 @@ def epochs_to_timestamp(epochs: int, date_format: str = "%B %d, %Y %H:%M:%S %p")
         return ""
 
 
-def filter_api_response(api_response: list, offset: int, limit: int) -> Optional[list]:
+def filter_api_response(api_response: list, limit: int, offset: int = 0) -> Optional[list]:
     """
     Filter the api response according to the offset/limit, used in case the api doesn't support limit/offset
 
     Args:
         api_response (list): api response from an endpoint.
-        offset (int): the offset from which to begin listing the response.
         limit (int): the maximum limit of records in the response to fetch.
+        offset (int): the offset from which to begin listing the response.
 
     Returns:
         list: api filtered response, None in case the api response is empty
@@ -866,6 +875,50 @@ def add_custom_ip_feeds(client: PrismaCloudComputeClient, args: dict) -> Command
     return CommandResults(readable_output="Successfully updated the custom IP feeds")
 
 
+def get_custom_malware_feeds(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
+    """
+    List all custom uploaded md5 malware records.
+    Implement the command 'prisma-cloud-compute-custom-feeds-malware-list'
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-custom-feeds-malware-list command arguments.
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    limit, _ = parse_limit_and_offset_values(limit=args.get("limit", "50"))
+    feeds_info = client.get_custom_md5_malware()
+    if "_id" in feeds_info:
+        feeds_info.pop("_id")  # not needed, it will be removed from the api in the future.
+    if "modified" in feeds_info:
+        feeds_info["modified"] = parse_date_string_format(date_string=feeds_info.get("modified", ""))
+
+    if malware_feeds := filter_api_response(api_response=feeds_info.get("feed", []), limit=limit):
+        for feed in malware_feeds:
+            if "modified" in feed:
+                # there is no option to modify a specific malware feed, hence its redundant (and always returns 0)
+                feed.pop("modified")
+
+        table = tableToMarkdown(
+            name="Malware Md5 Feeds",
+            t=malware_feeds,
+            headers=["name", "md5", "allowed"],
+            headerTransform=lambda word: word[0].upper() + word[1:]
+        )
+        feeds_info["feed"] = malware_feeds
+    else:
+        table = "No results found"
+
+    return CommandResults(
+        outputs_prefix="PrismaCloudCompute.CustomFeedMalware",
+        outputs=feeds_info if table != "No results found" else None,
+        readable_output=table,
+        outputs_key_field="digest",
+        raw_response=feeds_info
+    )
+
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -929,6 +982,8 @@ def main():
             return_results(results=get_console_version(client=client))
         elif requested_command == 'prisma-cloud-compute-custom-feeds-ip-list':
             return_results(results=get_custom_feeds_ip_list(client=client))
+        elif requested_command == 'prisma-cloud-compute-custom-feeds-malware-list':
+            return_results(results=get_custom_malware_feeds(client=client, args=demisto.args()))
     # Log exceptions
     except Exception as e:
         return_error(f'Failed to execute {requested_command} command. Error: {str(e)}')

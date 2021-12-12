@@ -6,3 +6,4 @@
 !prisma-cloud-compute-console-version-info
 !prisma-cloud-compute-custom-feeds-ip-list
 !prisma-cloud-compute-custom-feeds-ip-add IP=1.1.1.1,2.2.2.2
+!prisma-cloud-compute-custom-feeds-malware-list limit=2

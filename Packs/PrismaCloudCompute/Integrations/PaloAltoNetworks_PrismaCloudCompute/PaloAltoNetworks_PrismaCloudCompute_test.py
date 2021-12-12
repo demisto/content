@@ -4,7 +4,7 @@ from PaloAltoNetworks_PrismaCloudCompute import (
     PrismaCloudComputeClient, camel_case_transformer, fetch_incidents, get_headers,
     HEADERS_BY_NAME, get_profile_host_list, get_container_profile_list, get_container_hosts_list,
     get_profile_container_forensic_list, get_profile_host_forensic_list, get_console_version, get_custom_feeds_ip_list,
-    add_custom_ip_feeds, filter_api_response, parse_date_string_format
+    add_custom_ip_feeds, filter_api_response, parse_date_string_format, get_custom_malware_feeds
 )
 
 from CommonServerPython import DemistoException
@@ -540,6 +540,10 @@ INVALID_LIMIT_OFFSET_ARGS = [
     (
         {"limit": "0", "offset": "0", "id": "123"},
         get_container_hosts_list,
+    ),
+    (
+        {"limit": "-1"},
+        get_custom_malware_feeds
     )
 ]
 
@@ -846,6 +850,41 @@ EXPECTED_CONTEXT_OUTPUT_DATA = [
                 "2.2.2.2",
                 "4.4.4.4",
                 "3.3.3.3"
+            ],
+            "digest": "1234"
+        }
+    ),
+    (
+        {"limit": "1"},
+        get_custom_malware_feeds,
+        "/feeds/custom/malware",
+        {
+            "_id": "",
+            "modified": "2021-12-09T13:31:38.851Z",
+            "feed": [
+                {
+                    "md5": "1234",
+                    "name": "test",
+                    "modified": 0,
+                    "allowed": False
+                },
+                {
+                    "md5": "12345",
+                    "name": "test1",
+                    "modified": 0,
+                    "allowed": False
+                },
+            ],
+            "digest": "1234"
+        },
+        {
+            "modified": "December 09, 2021 13:31:38 PM",
+            "feed": [
+                {
+                    "md5": "1234",
+                    "name": "test",
+                    "allowed": False
+                }
             ],
             "digest": "1234"
         }
