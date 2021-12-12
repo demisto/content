@@ -4,7 +4,8 @@ from PaloAltoNetworks_PrismaCloudCompute import (
     PrismaCloudComputeClient, camel_case_transformer, fetch_incidents, get_headers,
     HEADERS_BY_NAME, get_profile_host_list, get_container_profile_list, get_container_hosts_list,
     get_profile_container_forensic_list, get_profile_host_forensic_list, get_console_version, get_custom_feeds_ip_list,
-    add_custom_ip_feeds, filter_api_response, parse_date_string_format, get_custom_malware_feeds
+    add_custom_ip_feeds, filter_api_response, parse_date_string_format, get_custom_malware_feeds,
+    add_custom_malware_feeds
 )
 
 from CommonServerPython import DemistoException
@@ -569,16 +570,41 @@ HTTP_BODY_REQUEST_PARAMS = [
         add_custom_ip_feeds,
         "/feeds/custom/ips",
         {
-            "ip": [
-                "1.1.1.1",
+            "ip": "1.1.1.1"
+        },
+        {
+            "feed":  ["1.1.1.1"]
+        }
+    ),
+    (
+        add_custom_malware_feeds,
+        "/feeds/custom/malware",
+        {
+            "name": "test",
+            "md5": "1,2,3"
+        },
+        {
+            "feed": [
+                {
+                    "name": "test",
+                    "md5": "1"
+                },
+                {
+                    "name": "test",
+                    "md5": "2"
+                },
+                {
+                    "name": "test",
+                    "md5": "3"
+                }
             ]
         }
     )
 ]
 
 
-@pytest.mark.parametrize("func, url_suffix, args", HTTP_BODY_REQUEST_PARAMS)
-def test_http_body_request_is_valid(requests_mock, func, url_suffix, args, client):
+@pytest.mark.parametrize("func, url_suffix, args, expected_response", HTTP_BODY_REQUEST_PARAMS)
+def test_http_body_request_is_valid(requests_mock, func, url_suffix, args, expected_response, client):
     """
     Given:
         - http body request to an api endpoint.
@@ -594,11 +620,9 @@ def test_http_body_request_is_valid(requests_mock, func, url_suffix, args, clien
     requests_mock.get(url=full_url, json={})
     mocker = requests_mock.put(url=full_url, json={})
 
-    expected_body_request = {"feed": args.get("ip")}
-
     func(client=client, args=args)
 
-    assert expected_body_request == mocker.last_request.json()
+    assert expected_response == mocker.last_request.json()
 
 
 HTTP_FILTERING_BODY_RESPONSE_PARAMS = [

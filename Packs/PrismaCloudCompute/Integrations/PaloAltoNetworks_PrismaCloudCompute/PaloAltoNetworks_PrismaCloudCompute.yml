@@ -865,6 +865,21 @@ script:
         - contextPath: PrismaCloudCompute.CustomFeedMalware.modified
           description: Modified is the last time the custom feed was modified
           type: Date
+    - name: prisma-cloud-compute-custom-feeds-malware-add
+      description: Add custom md5 malware hashes
+      deprecated: false
+      arguments:
+        - name: name
+          description: The name that will be attached to the md5 records
+          required: true
+          isArray: false
+          defaultValue: ""
+        - name: md5
+          description: Comma-seperated list of md5 hashes to be added
+          required: true
+          isArray: true
+          defaultValue: ""
+      outputs: []
 tests:
   - No test
 fromversion: 5.0.0

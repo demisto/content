@@ -975,3 +975,29 @@ List all custom uploaded md5 malwares.
 | first_md5_hash | md5_hash1 | false |
 | second_md5_hash | md5_hash2 | false |
 
+### prisma-cloud-compute-custom-feeds-malware-add
+***
+Add custom md5 malware hashes
+
+
+#### Base Command
+
+`prisma-cloud-compute-custom-feeds-malware-add`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name that will be attached to the md5 records. | Required | 
+| md5 | Comma-seperated list of md5 hashes to be added. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!prisma-cloud-compute-custom-feeds-malware-add name=test md5=md5_hash1,md5_hash2,md5_hash3```
+
+#### Human Readable Output
+Successfully updated the custom md5 malware feeds
+

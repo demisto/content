@@ -198,6 +198,17 @@ class PrismaCloudComputeClient(BaseClient):
         """
         return self._http_request(method="GET", url_suffix="/feeds/custom/malware")
 
+    def add_custom_md5_malware(self, feeds):
+        """
+        Sends a request to add md5 malware hashes.
+
+        Args:
+            feeds: (list[dict]): md5 malware feeds to add.
+        """
+        self._http_request(
+            method="PUT", url_suffix="/feeds/custom/malware", json_data={"feed": feeds}, resp_type="text"
+        )
+
 
 def str_to_bool(s):
     """
@@ -919,6 +930,32 @@ def get_custom_malware_feeds(client: PrismaCloudComputeClient, args: dict) -> Co
     )
 
 
+def add_custom_malware_feeds(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
+    """
+    Add custom md5 hashes of malware to the prisma cloud compute.
+    Implement the command 'prisma-cloud-compute-custom-feeds-malware-add'
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-custom-feeds-malware-add command arguments.
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    # the api overrides the md5 malware hashes, therefore it is necessary to add those who exist to the 'PUT' request.
+    feeds = client.get_custom_md5_malware().get("feed", [])
+    name, md5s = args.get("name"), argToList(arg=args.get("md5", []))
+
+    existing_md5s = set([feed.get("md5") for feed in feeds])
+    for md5 in md5s:
+        if md5 not in existing_md5s:  # verify that there are no duplicates because the api doesn't handle it
+            feeds.append({"name": name, "md5": md5})
+
+    client.add_custom_md5_malware(feeds=feeds)
+
+    return CommandResults(readable_output="Successfully updated the custom md5 malware feeds")
+
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -984,6 +1021,8 @@ def main():
             return_results(results=get_custom_feeds_ip_list(client=client))
         elif requested_command == 'prisma-cloud-compute-custom-feeds-malware-list':
             return_results(results=get_custom_malware_feeds(client=client, args=demisto.args()))
+        elif requested_command == 'prisma-cloud-compute-custom-feeds-malware-add':
+            return_results(results=add_custom_malware_feeds(client=client, args=demisto.args()))
     # Log exceptions
     except Exception as e:
         return_error(f'Failed to execute {requested_command} command. Error: {str(e)}')
