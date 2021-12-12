@@ -874,12 +874,39 @@ script:
           required: true
           isArray: false
           defaultValue: ""
+          predefined:
+            - ""
         - name: md5
           description: Comma-seperated list of md5 hashes to be added
           required: true
           isArray: true
           defaultValue: ""
+          predefined:
+            - ""
       outputs: []
+    - name: cve
+      description: Get infomration about the cves in the system, will return maximum of 50 records, it is possible to query for partial cve description such as cve-2020 or cve-2014 or by severity/distro/package
+      deprecated: false
+      arguments:
+        - name: cve
+          description: Comma-seperated list of cves, for example, !cve
+            cve=cve-2016-223,cve-2020-3546
+          required: false
+          isArray: true
+          defaultValue: ""
+      outputs:
+        - contextPath: CVE.ID
+          description: 'The ID of the CVE, for example: CVE-2015-1653'
+          type: String
+        - contextPath: CVE.CVSS
+          description: 'The CVSS of the CVE, for example: 10.0'
+          type: String
+        - contextPath: CVE.Modified
+          description: The timestamp of when the CVE was last modified.
+          type: Date
+        - contextPath: CVE.Description
+          description: A description of the CVE.
+          type: String
 tests:
   - No test
 fromversion: 5.0.0

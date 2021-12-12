@@ -1001,3 +1001,59 @@ There is no context output for this command.
 #### Human Readable Output
 Successfully updated the custom md5 malware feeds
 
+### cve
+***
+Get infomration about the cves in the system, will return maximum of 50 records, it is possible to query for partial cve description such as cve-2020 or cve-2014 or by severity/distro/package
+
+
+#### Base Command
+
+`cve`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| cve | Comma-seperated list of cves, for example, !cve cve=cve-2016-223,cve-2020-3546. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CVE.ID | String | The ID of the CVE, for example: CVE-2015-1653 | 
+| CVE.CVSS | String | The CVSS of the CVE, for example: 10.0 | 
+| CVE.Modified | Date | The timestamp of when the CVE was last modified. | 
+| CVE.Description | String | A description of the CVE. | 
+
+
+#### Command Example
+```!cve cve=CVE-2021-444```
+
+#### Context Example
+```json
+{
+    "CVE": [
+        {
+            "ID": "CVE-2021-4048", 
+            "CVSS": 0, 
+            "Modified": "December 11, 2021 20:03:11 PM", 
+            "Description": "An out-of-bounds read flaw was found in the CLARRV, DLARRV, SLARRV, and ZLARRV functions in lapack through version 3.10.0, as also used in OpenBLAS before version 0.3.18. Specially crafted inputs passed to these functions could cause an application using lapack to crash or possibly disclose portions of its memory."
+        }, 
+        {
+            "ID": "CVE-2021-44420", 
+            "CVSS": 0, 
+            "Modified": "December 08, 2021 04:42:07 AM", 
+            "Description": "In Django 2.2 before 2.2.25, 3.1 before 3.1.14, and 3.2 before 3.2.10, HTTP requests for URLs with trailing newlines could bypass upstream access control based on URL paths."
+        }
+    ]
+}
+```
+
+#### Human Readable Output
+### Cves Information
+|Cve|Package|Distro|Cvss|Severity|
+|---|---|---|---|---|
+| CVE-2021-44420 | python-django | debian | 0 | unimportant |
+| CVE-2021-44420 | python-django | ubuntu | 0 | low |
+
+

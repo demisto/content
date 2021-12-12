@@ -5,7 +5,7 @@ from PaloAltoNetworks_PrismaCloudCompute import (
     HEADERS_BY_NAME, get_profile_host_list, get_container_profile_list, get_container_hosts_list,
     get_profile_container_forensic_list, get_profile_host_forensic_list, get_console_version, get_custom_feeds_ip_list,
     add_custom_ip_feeds, filter_api_response, parse_date_string_format, get_custom_malware_feeds,
-    add_custom_malware_feeds
+    add_custom_malware_feeds, get_cves
 )
 
 from CommonServerPython import DemistoException
@@ -479,6 +479,12 @@ HTTP_REQUEST_URL_WITH_QUERY_PARAMS = [
         get_custom_feeds_ip_list,
         "/feeds/custom/ips",
         "https://test.com/feeds/custom/ips"
+    ),
+    (
+        OrderedDict(cve="cve-2104"),
+        get_cves,
+        "/cves",
+        "https://test.com/cves?id=cve-2104"
     )
 ]
 
@@ -573,7 +579,7 @@ HTTP_BODY_REQUEST_PARAMS = [
             "ip": "1.1.1.1"
         },
         {
-            "feed":  ["1.1.1.1"]
+            "feed": ["1.1.1.1"]
         }
     ),
     (
@@ -912,6 +918,63 @@ EXPECTED_CONTEXT_OUTPUT_DATA = [
             ],
             "digest": "1234"
         }
+    ),
+    (
+        {"cve": "cve"},
+        get_cves,
+        "/cves",
+        [
+            {
+                "cve": "cve1",
+                "distro": "distro",
+                "distro_release": "distro_release",
+                "type": "type",
+                "package": "package",
+                "severity": "unimportant",
+                "status": "fixed in 2.22-15",
+                "cvss": 5,
+                "rules": [
+                    "<2.22-15"
+                ],
+                "conditions": None,
+                "modified": 1606135803,
+                "fixDate": 0,
+                "link_id": "",
+                "description": "description1"
+            },
+            {
+                "cve": "cve2",
+                "distro": "distro",
+                "distro_release": "distro_release",
+                "type": "type",
+                "package": "package",
+                "severity": "severity",
+                "status": "fixed in 2.22-100.15",
+                "cvss": 7,
+                "rules": [
+                    "<2.22-100.15"
+                ],
+                "conditions": None,
+                "modified": 1606135803,
+                "fixDate": 0,
+                "link_id": "",
+                "description": "description2"
+            },
+        ],
+        [
+            {
+                "ID": "cve1",
+                "Description": "description1",
+                "CVSS": 5,
+                "Modified": "November 23, 2020 12:50:03 PM"
+            },
+            {
+                "ID": "cve2",
+                "Description": "description2",
+                "CVSS": 7,
+                "Modified": "November 23, 2020 12:50:03 PM"
+            }
+        ]
     )
 ]
 

@@ -209,6 +209,18 @@ class PrismaCloudComputeClient(BaseClient):
             method="PUT", url_suffix="/feeds/custom/malware", json_data={"feed": feeds}, resp_type="text"
         )
 
+    def get_cve_info(self, cve):
+        """
+        Sends a request to get information about a cve.
+
+        Args:
+            cve (str): the cve to get information about.
+
+        Returns:
+            list[dict]: cves information.
+        """
+        return self._http_request(method="GET", url_suffix="/cves", params={"id": cve})
+
 
 def str_to_bool(s):
     """
@@ -956,6 +968,53 @@ def add_custom_malware_feeds(client: PrismaCloudComputeClient, args: dict) -> Co
     return CommandResults(readable_output="Successfully updated the custom md5 malware feeds")
 
 
+def get_cves(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
+    """
+    Get cves information, implement the command 'cve'.
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): cve command arguments.
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    requested_cves = argToList(arg=args.get("cve", []))
+    all_cves_information = []
+
+    for cve in requested_cves:
+        if cves_info := client.get_cve_info(cve=cve):
+            all_cves_information.extend(cves_info)
+
+    if filtered_cves_information := filter_api_response(api_response=all_cves_information, limit=MAX_API_LIMIT):
+        context_output = [
+            {
+                "ID": cve_info.get("cve"),
+                "CVSS": cve_info.get("cvss"),
+                "Modified": epochs_to_timestamp(epochs=cve_info.get("modified")),
+                "Description": cve_info.get("description")
+            } for cve_info in filtered_cves_information
+        ]
+
+        table = tableToMarkdown(
+            name="Cves Information",
+            t=filtered_cves_information,
+            headers=["cve", "package", "distro", "release", "cvss", "severity"],
+            headerTransform=lambda word: word[0].upper() + word[1:],
+            removeNull=True
+        )
+    else:
+        context_output, table = [], "No results found"
+
+    return CommandResults(
+        outputs_prefix="CVE",
+        outputs=context_output if context_output else None,
+        readable_output=table,
+        outputs_key_field=["ID", "Description"],
+        raw_response=all_cves_information
+    )
+
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -1023,6 +1082,8 @@ def main():
             return_results(results=get_custom_malware_feeds(client=client, args=demisto.args()))
         elif requested_command == 'prisma-cloud-compute-custom-feeds-malware-add':
             return_results(results=add_custom_malware_feeds(client=client, args=demisto.args()))
+        elif requested_command == 'cve':
+            return_results(results=get_cves(client=client, args=demisto.args()))
     # Log exceptions
     except Exception as e:
         return_error(f'Failed to execute {requested_command} command. Error: {str(e)}')
