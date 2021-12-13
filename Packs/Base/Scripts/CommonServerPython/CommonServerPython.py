@@ -8389,7 +8389,6 @@ def signal_handler_memory_dump(_sig, _frame):
     """
     classes_dict = {}
     for obj in gc.get_objects():
-        i = id(obj)
         size = sys.getsizeof(obj, 0)
         if hasattr(obj, '__class__'):
             cls = str(obj.__class__)[8:-2]
