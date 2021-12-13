@@ -2,7 +2,7 @@ commonfields:
   id: Welcome
   version: -1
 comment: ''
-dockerimage: demisto/python3:3.9.4.18682
+dockerimage: demisto/python3:3.9.8.24399
 enabled: true
 name: Welcome
 runas: DBotWeakRole
