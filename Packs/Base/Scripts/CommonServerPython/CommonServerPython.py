@@ -8537,5 +8537,7 @@ def register_signal_handler_threads_and_memory_dump(signal_type=signal.SIGUSR1, 
     :return: No data returned
     :rtype: ``None``
     """
-    PROFILING_DUMP_ROWS_LIMIT=profiling_dump_rows_limit
+    globals_ = globals()
+    globals_[PROFILING_DUMP_ROWS_LIMIT] = profiling_dump_rows_limit
+
     signal.signal(signal_type, signal_handler_threads_and_memory_dump)
