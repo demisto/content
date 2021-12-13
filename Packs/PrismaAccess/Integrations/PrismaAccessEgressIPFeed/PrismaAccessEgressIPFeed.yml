@@ -4,7 +4,7 @@ commonfields:
 name: Prisma Access Egress IP feed
 display: Prisma Access Egress IP feed
 category: Data Enrichment & Threat Intelligence
-description: Dynamically retrieve and whitelist IPs Prisma Access uses to egress traffic
+description: Dynamically retrieve and add to allow list IPs Prisma Access uses to egress traffic
   to the internet and SaaS apps.
 configuration:
 - display: Fetch indicators

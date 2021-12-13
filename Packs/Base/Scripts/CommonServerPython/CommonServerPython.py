@@ -26,6 +26,8 @@ from threading import Lock
 import demistomock as demisto
 import warnings
 
+import signal
+
 
 class WarningsHandler(object):
     #    Wrapper to handle warnings. We use a class to cleanup after execution
@@ -8325,3 +8327,43 @@ def indicators_value_to_clickable(indicators):
             indicator_url = os.path.join('#', 'indicator', indicator_id)
             res[indicator] = '[{indicator}]({indicator_url})'.format(indicator=indicator, indicator_url=indicator_url)
     return res
+
+
+def signal_handler_threads_dump(_sig, _frame):
+    """
+    Listener function to dump the threads to log info
+
+    :type _sig: ``int``
+    :param _sig: The signal number
+
+    :type _frame: ``Any``
+    :param _frame: The current stack frame
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    code = []
+    for threadId, stack in sys._current_frames().items():
+        code.append("\n# ThreadID: %s" % threadId)
+        for filename, lineno, name, line in traceback.extract_stack(stack):
+            code.append('File: "%s", line %d, in %s' % (filename, lineno, name))
+            if line:
+                code.append("  %s" % (line.strip()))
+
+    thread_dump_msg = '\n\n--- Start Threads Dump ---\n'\
+        + '\n'.join(code)\
+        + '\n\n--- End Threads Dump ---\n'
+    demisto.info(thread_dump_msg)
+
+
+def register_signal_handler_threads_dump(signal_type=signal.SIGUSR1):
+    """
+    Function that registers the threads dump signal listener
+
+    :type signal_type: ``int``
+    :param signal_type: The type of the signal to register
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    signal.signal(signal_type, signal_handler_threads_dump)

@@ -1,0 +1,115 @@
+id: ContentPackInstaller_Test
+version: -1
+name: ContentPackInstaller_Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 80e5a37f-6918-470c-8628-8d3c7c1a2a44
+    type: start
+    task:
+      id: 80e5a37f-6918-470c-8628-8d3c7c1a2a44
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: bad2b6c0-4b4f-4c52-8ceb-51fddd7e0317
+    type: regular
+    task:
+      id: bad2b6c0-4b4f-4c52-8ceb-51fddd7e0317
+      version: -1
+      name: ContentPackInstaller
+      description: Marketplace packs installer for the content management pack.
+      scriptName: ContentPackInstaller
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      pack_id_key:
+        simple: packid
+      pack_version_key:
+        simple: packversion
+      packs_data:
+        simple: '[{"packid":"Base","packversion":"latest"}]'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 9cd8d149-a1ad-4bff-8adb-ef1f853a3ed5
+    type: title
+    task:
+      id: 9cd8d149-a1ad-4bff-8adb-ef1f853a3ed5
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 425,
+        "width": 380,
+        "x": 710,
+        "y": 80
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.0.0
+description: Test for MarketPlaceInstaller automation
