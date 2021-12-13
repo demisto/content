@@ -32,4 +32,4 @@ data = {
     }
 }
 
-demisto.results(data)
+return_results(data)
