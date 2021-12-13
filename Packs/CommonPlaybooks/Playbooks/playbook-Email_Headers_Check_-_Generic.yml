@@ -2,9 +2,9 @@ id: Email Headers Check - Generic
 version: -1
 name: Email Headers Check - Generic
 description: |-
-  This playbook execute one automation and one playbook in order to check the email headers:
-  * CheckEmailAuthenticity -Checks the authenticity of an email based on the email's SPF, DMARC, and DKIM.
-  * Process Microsoft's Anti-Spam Headers - This playbook stores the SCL, BCL and PCL scores (if exists) to the associated incident fields (Phishing SCL Score, Phishing PCL Score, Phishing BCL Score).
+  This playbook executes one sub-playbook and one automation to check the email headers:
+  - **Process Microsoft's Anti-Spam Headers** - This playbook stores the SCL, BCL and PCL scores if they exist to the relevant incident fields (Phishing SCL Score, Phishing PCL Score, Phishing BCL Score).
+  - **CheckEmailAuthenticity** - This automation checks email authenticity based on its SPF, DMARC, and DKIM.
 starttaskid: "0"
 tasks:
   "0":
@@ -168,7 +168,7 @@ tasks:
       id: f79d35d3-f80d-4fe2-86d6-dc0c8fa63815
       version: -1
       name: Save authenticity check result to incident field
-      description: Save the verdict, regarding the authenticity of the email, in an
+      description: Save the verdict regarding the authenticity of the email in an
         incident field.
       script: Builtin|||setIncident
       type: regular
@@ -273,7 +273,7 @@ tasks:
       id: 9a63beaa-ee45-413f-8709-b6ea855a0a1a
       version: -1
       name: Check Microsoft's Headers?
-      description: 'Whether to check for Microsoft headers or not'
+      description: 'Whether to check for Microsoft headers'
       type: condition
       iscommand: false
       brand: ""
@@ -317,7 +317,7 @@ tasks:
       version: -1
       name: Process Microsoft's Anti-Spam Headers
       description: |-
-        This playbook stores the SCL, BCL and PCL scores (if exists) to the associated incident fields (Phishing SCL Score, Phishing PCL Score, Phishing BCL Score).
+        This playbook stores the SCL, BCL and PCL scores (if they exist) to the associated incident fields (Phishing SCL Score, Phishing PCL Score, Phishing BCL Score).
         It also does the following:
         1) Sets the email classification to "spam" if the "SCL" score is equal or higher than 5.
         2) Sets the incident severity according to the playbook inputs (default is: PCL/BCL - Medium, SCL - Low). The severity of the incident is set only when one (or more) of the following occurs:
@@ -325,7 +325,7 @@ tasks:
         - BCL (Bulk complaint level) score is between and including 4-7: The message is from a bulk sender that generates a mixed number of complaints. Between and including 8-9: The message is from a bulk sender that generates a high number of complaints.
         - SCL (Spam confidence level) score is between and including 5-6: Spam filtering marked the message as Spam. 9: Spam filtering marked the message as High confidence spam)
 
-        For further information on SCL/BCL/PCL, see the following Microsoft documentation:
+        For more information on SCL/BCL/PCL, see the following Microsoft documentation:
 
         https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/spam-confidence-levels?view=o365-worldwide
 
@@ -410,27 +410,27 @@ inputs:
   value:
     simple: "False"
   required: false
-  description: Whether the authenticity of the email should be verified, using SPF,
+  description: Whether the authenticity of the email should be verified using SPF,
     DKIM and DMARC.
   playbookInputQuery:
 - key: CheckMicrosoftHeaders
   value:
     simple: "False"
   required: false
-  description: Whether to Check Microsoft's headers for BCL/PCL/SCL scores and set
+  description: Whether to Check Microsoft headers for BCL/PCL/SCL scores and set
     the "Severity" and "Email Classification" accordingly.
   playbookInputQuery:
 outputs:
 - contextPath: Email.AuthenticityCheck
-  description: 'Possible values are be: Fail / Suspicious / Undetermined / Pass'
+  description: 'Possible values are: Fail / Suspicious / Undetermined / Pass'
   type: Unknown
 - contextPath: Email.MicrosoftHeadersSeverityCheck
   description: |
     Possible Values:
 
-    Medium: PCL or BCL scores are equal to or higher than 4.
+    Medium: PCL or BCL scores are equal to or greater than 4.
 
-    High: BCL score is equal to or higher than 8.
+    High: BCL score is equal to or greater than 8.
   type: unknown
 tests:
 - No tests (auto formatted)
