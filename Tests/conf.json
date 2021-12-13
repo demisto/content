@@ -1181,7 +1181,7 @@
             "playbookID": "TestEditServerConfig"
         },
         {
-            "playbookID": "MarketplacePackInstaller_Test",
+            "playbookID": "ContentPackInstaller_Test",
             "integrations": "Demisto REST API",
             "fromversion": "6.0.0"
         },

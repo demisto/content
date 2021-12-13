@@ -24,52 +24,78 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Censys is a search engine that allows computer scientists to ask questions
-  about the devices and networks that compose the Internet. Driven by Internet-wide
-  scanning, Censys lets researchers find specific hosts and create aggregate reports
-  on how devices, websites, and certificates are configured and deployed.
-display: Censys
+description: Deprecated. Use Censys v2 instead. Censys is a search engine that allows
+  computer scientists to ask questions about the devices and networks that compose
+  the internet. Driven by internet-wide scanning, Censys lets researchers find specific
+  hosts and create aggregate reports on how devices, websites, and certificates are
+  configured and deployed.
+display: Censys (Deprecated)
 name: Censys
 script:
   commands:
   - arguments:
-    - description: IP address for which to perform a query.
+    - default: false
+      description: IP address for which to perform a query.
+      isArray: false
       name: query
       required: true
+      secret: false
     - auto: PREDEFINED
+      default: false
       description: The index from which to retrieve data. Can be "ipv4", "websites",
         or "certificates".
+      isArray: false
       name: index
       predefined:
       - ipv4
       - websites
       - certificates
       required: true
+      secret: false
+    deprecated: false
     description: Returns detailed information for an IP address within the specified
       index.
+    execution: false
     name: cen-view
   - arguments:
-    - description: The attribute for which you are searching (JSON format).
+    - default: false
+      description: The attribute for which you are searching (JSON format).
+      isArray: false
       name: query
       required: true
+      secret: false
     - auto: PREDEFINED
+      default: false
       description: The index on which to perform a query.
+      isArray: false
       name: index
       predefined:
       - ipv4
       - websites
       - certificates
       required: true
-    - defaultValue: '1'
-      description: Page to return (default 1)
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: Page to return.
+      isArray: false
       name: page
+      required: false
+      secret: false
+    deprecated: false
     description: Searches for an attribute within the specified index.
+    execution: false
     name: cen-search
   dockerimage: demisto/python:2.7.18.24398
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
-  script: ''
+  script: '-'
   subtype: python2
   type: python
-fromversion: 5.0.0
 tests:
 - No test
+deprecated: true
+fromversion: 5.0.0

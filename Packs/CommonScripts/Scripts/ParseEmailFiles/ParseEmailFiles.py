@@ -3434,8 +3434,7 @@ def convert_to_unicode(s, is_msg_header=True):
                 ENCODINGS_TYPES.add(encoding)
             else:
                 demisto.debug('Could not find the encoding type of the string, decoding by default with utf-8')
-
-
+                res += decoded_s.decode('utf-8', errors='replace').encode('utf-8')
         return res.strip()
     except Exception:
         for file_data in ENCODINGS_TYPES:
