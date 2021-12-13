@@ -949,7 +949,9 @@ def upload_packs_with_dependencies_zip(extract_destination_path, packs_dependenc
                     continue
             shutil.move(pack.zip_path, os.path.join(pack_with_dep_path, zip_with_deps_path))
             for dep_name in pack_deps:
+                logging.info(f"Starting going over {dep_name} dependency")
                 if dep_name not in packs_dict:
+                    logging.info(f"Couldn't find {dep_name} in packs - creating it")
                     dep_pack = Pack(dep_name, os.path.join(extract_destination_path, dep_name))
                     packs_dict[dep_name] = dep_pack
                 else:
@@ -957,6 +959,7 @@ def upload_packs_with_dependencies_zip(extract_destination_path, packs_dependenc
                 if not (dep_pack.zip_path and os.path.isfile(dep_pack.zip_path)):
                     if not zip_pack(dep_pack, signature_key):
                         continue
+                logging.info(f"Gonna move {dep_pack.zip_path} to {os.path.join(pack_with_dep_path, dep_name + '.zip')}")
                 shutil.move(dep_pack.zip_path, os.path.join(pack_with_dep_path, dep_name + '.zip'))
             Pack.zip_folder_items(
                 pack_with_dep_path,
