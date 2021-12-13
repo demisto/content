@@ -1,5 +1,6 @@
-Email security gateways produce a high volume of phishing alerts. Analysts investigating these alerts need to adjust their response procedures by type, severity, or content to identify campaigns, analyze their IoCs, and protect an organization from malicious emails.
-This content pack enables you to retrieve, process and analyze email files and manage phishing alert incidents. The out-of-the-box items are robust enough to get you started, but are easily customizable to fit your specific requirements.
+Email security gateways produce a high volume of phishing alerts. To protect an organization from malicious emails, analysts investigating phishing alerts need to adjust their response procedures by email type, severity, or content to identify campaigns and inspect IoCs.
+This content pack enables analysts to retrieve, process, and analyze email files to manage phishing alert incidents. 
+The out-of-the-box items are robust enough to get you started, but are easily customizable to fit your specific requirements.
 
 
 ##### What Does This Pack Do?
