@@ -26,7 +26,7 @@ def main():
         set_indicator_hint(indicator_id)
         return_results(
             CommandResults(readable_output='![](https://raw.githubusercontent.com/demisto/content/'
-                                           'EscapeRoomMaterials/Packs/EscapeRoomTier1/images/incident_Jafar.gif)')
+                                           'EscapeRoomMaterials/Packs/EscapeRoomTier1/images/indicator_Jafar.gif)')
         )
     except Exception as exc:  # pylint: disable=W0703
         demisto.error(traceback.format_exc())  # print the traceback
