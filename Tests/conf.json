@@ -41,6 +41,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "CensysV2",
+            "playbookID": "CensysV2-Test",
+            "fromversion": "6.1.0"
+        },
+        {
             "playbookID": "Generic Polling Test",
             "timeout": 250
         },
@@ -1176,7 +1181,7 @@
             "playbookID": "TestEditServerConfig"
         },
         {
-            "playbookID": "MarketplacePackInstaller_Test",
+            "playbookID": "ContentPackInstaller_Test",
             "integrations": "Demisto REST API",
             "fromversion": "6.0.0"
         },
@@ -4389,6 +4394,13 @@
             ]
         },
         {
+            "playbookID": "GetStringsDistance - Test",
+            "fromversion": "5.0.0",
+            "scripts": [
+                "GetStringsDistance"
+            ]
+        },
+        {
             "playbookID": "GCS Bucket Management - Test",
             "fromversion": "5.0.0",
             "integrations": [
@@ -4784,12 +4796,21 @@
             "fromversion": "6.0.0"
         },
         {
+            "integrations": "OpsGenieV3",
+            "playbookID": "OpsGenieV3TestPlaybook",
+            "fromversion": "6.2.0"
+        },
+        {
             "playbookID": "test_AssignToNextShiftOOO",
             "fromversion": "5.5.0"
         },
         {
             "playbookID": "JsonToTable - Test Playbook",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "KafkaV3",
+            "playbookID": "KafkaV3 Test"
         }
     ],
     "skipped_tests": {
@@ -4978,6 +4999,7 @@
         "Freshdesk": "Trial account expired",
         "Threat Grid": "Issue 16197",
         "Kafka V2": "Can not connect to instance from remote",
+        "KafkaV3": "Can not connect to instance from remote",
         "Check Point Sandblast": "Issue 15948",
         "Remedy AR": "getting 'Not Found' in test button",
         "Salesforce": "Issue 15901",
@@ -4997,16 +5019,13 @@
         "FraudWatch": "Issue 34299",
         "Cisco Stealthwatch": "No instance - developed by Qmasters",
         "Armis": "No instance - developed by SOAR Experts",
-        
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
-        
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
-        
         "_comment4": "~~~ OTHER ~~~",
         "Anomali ThreatStream v2": "Will be deprecated soon.",
         "Anomali ThreatStream": "Will be deprecated soon.",
@@ -5188,7 +5207,6 @@
         "HelloWorldPremium-Test"
     ],
     "docker_thresholds": {
-        
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {
