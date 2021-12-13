@@ -321,7 +321,8 @@ Returns a verdict for a hash.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hash | Hash to get the verdict for. | Required | 
+| hash | Hash to get the verdict for. | Optional | 
+| url | The URL to get the verdict for. | Optional | 
 
 
 #### Context Output
@@ -336,6 +337,9 @@ Returns a verdict for a hash.
 | DBotScore.Type | string | The indicator type. | 
 | DBotScore.Vendor | string | Vendor used to calculate the score. | 
 | DBotScore.Score | number | The actual score. | 
+| WildFire.Verdicts.AnalysisTime | date | Verdict Analysis time. | 
+| WildFire.Verdicts.URL | string | The URL of the web page. | 
+| WildFire.Verdicts.Valid | string | Is the URL valid. | 
 
 
 #### Command Example

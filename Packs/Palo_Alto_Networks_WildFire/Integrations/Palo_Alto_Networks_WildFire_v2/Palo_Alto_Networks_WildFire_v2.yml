@@ -681,6 +681,9 @@ script:
     - contextPath: WildFire.Verdicts.Valid
       description: Is the URL valid.
       type: String
+    - contextPath: WildFire.Verdicts.Verdict
+      description: Verdict of the file.
+      type: Number
   - arguments:
     - default: false
       description: EntryID of the text file that contains multiple hashes. Limit is

@@ -570,6 +570,8 @@ def wildfire_get_verdict(file_hash: Optional[str] = None, url: Optional[str] = N
 def wildfire_get_verdict_command():
     file_hashes = hash_args_handler(demisto.args().get('hash', ''))
     urls = argToList(demisto.args().get('url', ''))
+    if not urls and not file_hashes:
+        raise Exception('Specify exactly 1 of the following arguments: url, hash.')
     if file_hashes:
         for file_hash in file_hashes:
             result, verdict_data = wildfire_get_verdict(file_hash=file_hash)
