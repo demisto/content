@@ -52,20 +52,20 @@ class Email(object):
     @staticmethod
     def handle_message_slashes(message_bytes: bytes) -> bytes:
         """
-        Handles the case where message bytes containing "\U" or "\u" which needs escaping
-        Input example #1:
-            message_bytes = b'\\U'
-        Output example #1 (added escaping for the slash):
-            b'\\\\U'
-
-        Input example #2:
-            message_bytes = b'\\\\U'
-        Output example #2 (no need to add escaping since the number of slashes is even):
-            b'\\\\U'
-
+        Handles the case where message bytes containing backslashes  which needs escaping
         Returns:
             The message bytes after escaping
         """
+
+#   Input example # 1:
+#       message_bytes = b'\\U'
+#   Output example # 1 (added escaping for the slash):
+#       b'\\\\U'
+#
+#   Input example # 2:
+#       message_bytes = b'\\\\U'
+#   Output example # 2 (no need to add escaping since the number of slashes is even):
+#       b'\\\\U'
 
         regex = re.compile(rb'\\+U', flags=re.IGNORECASE)
 
