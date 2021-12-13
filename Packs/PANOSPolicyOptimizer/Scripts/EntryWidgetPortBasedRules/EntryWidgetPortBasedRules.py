@@ -2,7 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-incident = demisto.incidents()
 no_apps = demisto.get(demisto.context(), 'PanOS.PolicyOptimizer.NoApps', [])
 
 data = {
