@@ -42,7 +42,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Sets the Risk State to retrieve. Possible values are: "atRisk", "confirmedCompromised", "remediated", or "dismissed"
+      description: 'Sets the Risk State to retrieve. Possible values are: "atRisk", "confirmedCompromised", "remediated", or "dismissed"'
       isArray: false
       name: risk_state
       predefined:
