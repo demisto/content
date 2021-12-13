@@ -14,13 +14,27 @@
     "useCases": [],
     "keywords": [],
     "dependencies": {
-        "Panorama": {
+        "PAN-OS": {
             "mandatory": true,
             "display_name": "PAN-OS"
+        },
+        "Phishing": {
+            "mandatory": true,
+            "display_name": "Phishing"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
         },
         "CommonScripts": {
             "mandatory": true,
             "display_name": "Common Scripts"
         }
-    }
+    },
+    "displayedImages": [
+        "PAN-OS",
+        "Phishing",
+        "CommonTypes",
+        "CommonScripts"
+    ]
 }
