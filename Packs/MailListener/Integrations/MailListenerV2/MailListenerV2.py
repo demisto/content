@@ -57,15 +57,15 @@ class Email(object):
             The message bytes after escaping
         """
 
-#   Input example # 1:
-#       message_bytes = b'\\U'
-#   Output example # 1 (added escaping for the slash):
-#       b'\\\\U'
-#
-#   Input example # 2:
-#       message_bytes = b'\\\\U'
-#   Output example # 2 (no need to add escaping since the number of slashes is even):
-#       b'\\\\U'
+        #   Input example # 1:
+        #       message_bytes = b'\\U'
+        #   Output example # 1 (added escaping for the slash):
+        #       b'\\\\U'
+        #
+        #   Input example # 2:
+        #       message_bytes = b'\\\\U'
+        #   Output example # 2 (no need to add escaping since the number of slashes is even):
+        #       b'\\\\U'
 
         regex = re.compile(rb'\\+U', flags=re.IGNORECASE)
 
