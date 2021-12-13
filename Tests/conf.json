@@ -1181,7 +1181,7 @@
             "playbookID": "TestEditServerConfig"
         },
         {
-            "playbookID": "MarketplacePackInstaller_Test",
+            "playbookID": "ContentPackInstaller_Test",
             "integrations": "Demisto REST API",
             "fromversion": "6.0.0"
         },
@@ -4379,6 +4379,13 @@
             "fromversion": "5.0.0",
             "integrations": [
                 "Google Cloud Storage"
+            ]
+        },
+        {
+            "playbookID": "GetStringsDistance - Test",
+            "fromversion": "5.0.0",
+            "scripts": [
+                "GetStringsDistance"
             ]
         },
         {
