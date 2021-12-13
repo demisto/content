@@ -76,10 +76,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 96436397-332f-4979-8dea-9ca9b53f5b84
+    taskid: bdf48002-95ff-49f1-8ad3-f525b6366c5b
     type: collection
     task:
-      id: 96436397-332f-4979-8dea-9ca9b53f5b84
+      id: bdf48002-95ff-49f1-8ad3-f525b6366c5b
       version: -1
       name: Choose app to add to the rule
       description: "Choose application to add to the policy rule."
@@ -128,6 +128,16 @@ tasks:
         optionsarg:
         - complex:
             root: inputs.rules_list
+            filters:
+            - - operator: notIn
+                left:
+                  value:
+                    simple: inputs.rules_list
+                  iscontext: true
+                right:
+                  value:
+                    simple: Updated.Rules
+                  iscontext: true
         - simple: "No"
         fieldassociated: ""
         placeholder: ""
@@ -221,7 +231,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "8"
     scriptarguments:
       element_to_change:
         simple: application
@@ -265,7 +275,7 @@ tasks:
       {
         "position": {
           "x": 380,
-          "y": 1030
+          "y": 1210
         }
       }
     note: false
@@ -307,7 +317,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 860
+          "y": 1035
         }
       }
     note: false
@@ -360,12 +370,57 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: dbf138df-2cb5-49c1-8e19-8b751831bedc
+    type: regular
+    task:
+      id: dbf138df-2cb5-49c1-8e19-8b751831bedc
+      version: -1
+      name: Save handled rule
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Updated.Rules
+      value:
+        complex:
+          root: Add applications to policy rules.Answers
+          accessor: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1055,
+        "height": 1235,
         "width": 910,
         "x": 380,
         "y": 40
