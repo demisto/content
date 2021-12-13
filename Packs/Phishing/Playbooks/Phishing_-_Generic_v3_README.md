@@ -8,14 +8,15 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Sub-playbooks
 * Block Indicators - Generic v2
 * Detonate File - Generic
-* Process Microsoft's Anti-Spam Headers
-* Extract Indicators From File - Generic v2
-* Process Email - Generic v2
+* Detonate URL - Generic
+* Search And Delete Emails - Generic v2
 * Calculate Severity - Generic v2
 * Email Address Enrichment - Generic v2.1
-* Entity Enrichment - Phishing v2
 * Detect & Manage Phishing Campaigns
-* Search And Delete Emails - Generic v2
+* Process Email - Generic v2
+* Process Microsoft's Anti-Spam Headers
+* Extract Indicators From File - Generic v2
+* Entity Enrichment - Phishing v2
 
 ### Integrations
 This playbook does not use any integrations.
@@ -23,13 +24,13 @@ This playbook does not use any integrations.
 ### Scripts
 * AssignAnalystToIncident
 * Set
-* DBotPredictPhishingWords
 * CheckEmailAuthenticity
+* DBotPredictPhishingWords
 
 ### Commands
-* closeInvestigation
-* send-mail
 * setIncident
+* send-mail
+* closeInvestigation
 * extractIndicators
 
 ## Playbook Inputs
@@ -49,6 +50,7 @@ This playbook does not use any integrations.
 | O365ExchangeLocationExclusion | Used only when searching and deleting emails in O365. Comma-separated list of mailboxes/distribution groups to exclude when you use the value "All" for the O365ExchangeLocation input. |  | Optional |
 | CheckMicrosoftHeaders | Check Microsoft's headers for BCL/PCL/SCL scores and set the "Severity" and "Email Classification" accordingly. | True | Optional |
 | InternalDomains | A CSV list of internal domains. The list will be used to determine whether an email address is internal or external. |  | Optional |
+| DetonateURL | Whether to use URL Detonation playbook or not. When detonating a URL it's possible that it will take a few minutes. False is default. | True | Optional |
 
 ## Playbook Outputs
 ---

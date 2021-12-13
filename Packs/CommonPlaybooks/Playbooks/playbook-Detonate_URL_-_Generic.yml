@@ -82,6 +82,11 @@ tasks:
     nexttasks:
       '#none#':
       - "3"
+    scriptarguments:
+      URL:
+        complex:
+          root: inputs.URL
+          accessor: Data
     separatecontext: true
     loop:
       iscommand: false
@@ -117,6 +122,11 @@ tasks:
     nexttasks:
       '#none#':
       - "3"
+    scriptarguments:
+      URL:
+        complex:
+          root: inputs.URL
+          accessor: Data
     separatecontext: true
     loop:
       iscommand: false
@@ -153,6 +163,11 @@ tasks:
     nexttasks:
       '#none#':
       - "3"
+    scriptarguments:
+      URL:
+        complex:
+          root: inputs.URL
+          accessor: Data
     separatecontext: true
     loop:
       iscommand: false
@@ -189,6 +204,11 @@ tasks:
     nexttasks:
       '#none#':
       - "3"
+    scriptarguments:
+      URL:
+        complex:
+          root: inputs.URL
+          accessor: Data
     separatecontext: true
     loop:
       iscommand: false
@@ -223,6 +243,11 @@ tasks:
     nexttasks:
       '#none#':
       - "3"
+    scriptarguments:
+      URL:
+        complex:
+          root: inputs.URL
+          accessor: Data
     separatecontext: true
     loop:
       iscommand: false
@@ -257,6 +282,11 @@ tasks:
     nexttasks:
       '#none#':
       - "3"
+    scriptarguments:
+      URL:
+        complex:
+          root: inputs.URL
+          accessor: Data
     separatecontext: true
     loop:
       iscommand: false
@@ -291,6 +321,11 @@ tasks:
     nexttasks:
       '#none#':
       - "3"
+    scriptarguments:
+      URL:
+        complex:
+          root: inputs.URL
+          accessor: Data
     separatecontext: true
     loop:
       iscommand: false
@@ -331,7 +366,9 @@ tasks:
       Timeout:
         simple: "60"
       url:
-        simple: ${URL.Data}
+        complex:
+          root: inputs.URL
+          accessor: Data
     separatecontext: true
     loop:
       iscommand: false
@@ -367,6 +404,17 @@ tasks:
     nexttasks:
       '#none#':
       - "3"
+    scriptarguments:
+      EnvironmentID:
+        simple: "100"
+      Interval:
+        simple: "5"
+      Timeout:
+        simple: "30"
+      URL:
+        complex:
+          root: inputs.URL
+          accessor: Data
     separatecontext: true
     loop:
       iscommand: false
@@ -711,18 +759,6 @@ outputs:
   type: String
 - contextPath: ANYRUN.Task.Process.Version.Version
   description: Version of the program executed.
-  type: String
-- contextPath: DBotScore.Indicator
-  description: The indicator that was tested.
-  type: String
-- contextPath: DBotScore.Score
-  description: The actual score.
-  type: Number
-- contextPath: DBotScore.Type
-  description: Type of indicator.
-  type: String
-- contextPath: DBotScore.Vendor
-  description: Vendor used to calculate the score.
   type: String
 - contextPath: URL.Data
   description: URL data.

@@ -27,8 +27,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": -90
+          "x": 67.5,
+          "y": -510
         }
       }
     note: false
@@ -160,8 +160,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 7.5,
-          "y": 195
+          "x": -497.5,
+          "y": 190
         }
       }
     note: false
@@ -186,8 +186,8 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "53"
-      - "85"
+      - "11"
+      - "18"
     scriptarguments:
       key:
         simple: ReporterAddress
@@ -200,8 +200,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1182.5,
-          "y": 520
+          "x": 67.5,
+          "y": -35
         }
       }
     note: false
@@ -248,8 +248,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1182.5,
-          "y": 880
+          "x": 682.5,
+          "y": 570
         }
       }
     note: false
@@ -410,13 +410,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "134"
+      - "53"
+      - "85"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1182.5,
-          "y": 195
+          "x": 920,
+          "y": 190
         }
       }
     note: false
@@ -446,8 +447,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 240,
-          "y": 530
+          "x": 197.5,
+          "y": 515
         }
       }
     note: false
@@ -459,41 +460,104 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 428797e8-b94b-4b0b-81b5-52659562e72e
+    taskid: 798fc67b-dc69-4f59-8d20-4604ea09f0a3
     type: playbook
     task:
-      id: 428797e8-b94b-4b0b-81b5-52659562e72e
+      id: 798fc67b-dc69-4f59-8d20-4604ea09f0a3
       version: -1
       name: Process Email - Generic v2
+      description: |
+        Add email details to the relevant context entities and handle the case where original emails are attached.
+
+        Added on this v2 playbook:
+        - Uses incident fields and not incident labels.
+        - Provides separate paths to "Phishing Alerts".
+        - Uses the new "Get Original Email - Generic v2" playbook to retrieve original emails as eml files from the following integrations:
+            * EWS v2
+            * Microsoft Graph Mail integration
+            * Gmail
+            * FireEye EX and FireEye CM
+            * Proofpoint Protection Server
+            * Agari Phishing Defense
+            * Mimecast
+        This will assist with parsing the email artifacts in a more efficient way.
       playbookName: Process Email - Generic v2
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "55"
       - "22"
       - "88"
+      - "137"
     scriptarguments:
-      UserID:
+      Email:
         complex:
           root: incident
-          accessor: emaifrom
-          transformers:
-          - operator: replaceMatch
-            args:
-              regex:
-                value:
-                  simple: (?i).*<([A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,})>
-              replaceWith:
-                value:
-                  simple: $1
+          accessor: emailto
+      EmailBrand:
+        simple: Gmail
+      EmailCC:
+        complex:
+          root: incident
+          accessor: emailcc
+      EmailFormat:
+        complex:
+          root: incident
+          accessor: emailformat
+      EmailFrom:
+        complex:
+          root: incident
+          accessor: emailfrom
+      EmailHeaders:
+        complex:
+          root: incident
+          accessor: phishingreporteremailheaders
+      EmailHtml:
+        complex:
+          root: incident
+          accessor: emailhtml
+      EmailSubject:
+        complex:
+          root: incident
+          accessor: emailsubject
+      EmailText:
+        complex:
+          root: incident
+          accessor: emailbody
+      File:
+        complex:
+          root: File
+      GetOriginalEmail:
+        simple: "True"
+      UserID:
+        complex:
+          root: ReporterAddress
     separatecontext: true
+    loop:
+      iscommand: false
+      scriptArguments:
+        UserID:
+          complex:
+            root: incident
+            accessor: emaifrom
+            transformers:
+            - operator: replaceMatch
+              args:
+                regex:
+                  value:
+                    simple: (?i).*<([A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,})>
+                replaceWith:
+                  value:
+                    simple: $1
+      exitCondition: ""
+      wait: 1
+      max: 100
     view: |-
       {
         "position": {
-          "x": 7.5,
+          "x": -497.5,
           "y": 340
         }
       }
@@ -872,14 +936,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "18"
-      - "11"
+      - "134"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 40
+          "x": 67.5,
+          "y": -360
         }
       }
     note: false
@@ -943,7 +1006,7 @@ tasks:
       {
         "position": {
           "x": -260,
-          "y": 725
+          "y": 920
         }
       }
     note: false
@@ -994,8 +1057,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1182.5,
-          "y": 700
+          "x": 682.5,
+          "y": 390
         }
       }
     note: false
@@ -1025,8 +1088,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -260,
-          "y": 530
+          "x": -727.5,
+          "y": 515
         }
       }
     note: false
@@ -1323,8 +1386,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1650,
-          "y": 700
+          "x": 1150,
+          "y": 390
         }
       }
     note: false
@@ -1381,7 +1444,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1142.5,
+          "x": -1222.5,
           "y": 680
         }
       }
@@ -1411,8 +1474,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1142.5,
-          "y": 530
+          "x": -1222.5,
+          "y": 515
         }
       }
     note: false
@@ -1463,7 +1526,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1142.5,
+          "x": -1222.5,
           "y": 1060
         }
       }
@@ -1519,7 +1582,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1142.5,
+          "x": -1222.5,
           "y": 860
         }
       }
@@ -1793,7 +1856,7 @@ tasks:
       {
         "position": {
           "x": -260,
-          "y": 860
+          "y": 1060
         }
       }
     note: false
@@ -2199,8 +2262,94 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1182.5,
-          "y": 340
+          "x": 67.5,
+          "y": -205
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "135":
+    id: "135"
+    taskid: 413fb861-e84a-4921-8f6e-76a9286241a6
+    type: playbook
+    task:
+      id: 413fb861-e84a-4921-8f6e-76a9286241a6
+      version: -1
+      name: Detonate URL - Generic
+      playbookName: Detonate URL - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      URL:
+        complex:
+          root: URL
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": -260,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "137":
+    id: "137"
+    taskid: 6179edea-1b2e-457f-8000-26605a704e14
+    type: condition
+    task:
+      id: 6179edea-1b2e-457f-8000-26605a704e14
+      version: -1
+      name: Detonate URL?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "52"
+      "yes":
+      - "135"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.DetonateURL
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": -260,
+          "y": 515
         }
       }
     note: false
@@ -2214,6 +2363,7 @@ system: true
 view: |-
   {
     "linkLabelsPosition": {
+      "137_135_yes": 0.54,
       "15_31_#default#": 0.6,
       "33_16_No": 0.64,
       "36_28_Yes": 0.5,
@@ -2226,10 +2376,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 4930,
-        "width": 3172.5,
-        "x": -1142.5,
-        "y": -90
+        "height": 5350,
+        "width": 2752.5,
+        "x": -1222.5,
+        "y": -510
       }
     }
   }
@@ -2327,6 +2477,13 @@ inputs:
   required: false
   description: A CSV list of internal domains. The list will be used to determine
     whether an email address is internal or external.
+  playbookInputQuery:
+- key: DetonateURL
+  value:
+    simple: "True"
+  required: false
+  description: Whether to use URL Detonation playbook or not. When detonating a URL
+    it's possible that it will take a few minutes. False is default.
   playbookInputQuery:
 outputs: []
 tests:
