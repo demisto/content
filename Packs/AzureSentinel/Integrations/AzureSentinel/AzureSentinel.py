@@ -980,7 +980,7 @@ def build_threat_indicator_data(args):
         'patternType': value,
         'displayName': args.get('display_name'),
         'description': args.get('description'),
-        'revoked': args.get('revoked',''),
+        'revoked': args.get('revoked', ''),
         'confidence': arg_to_number(args.get('confidence')),
         'threatTypes': argToList(args.get('threat_types')),
         'includeDisabled': args.get('include_disabled', ''),
