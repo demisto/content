@@ -8429,19 +8429,19 @@ def print_memory_dump(classes_as_list):
 
     message = '\n\n--- Start Memory Dump ---\n'
 
-    message += f'\n--- Start Top {PROFILING_DUMP_ROWS_LIMIT} Classes by Count ---\n\n'
+    message += '\n--- Start Top {} Classes by Count ---\n\n'.format(PROFILING_DUMP_ROWS_LIMIT)
     classes_sorted_by_count = sorted(classes_as_list, key=lambda d: d['count'], reverse=True)
     message += 'Count\t\tSize\t\tName\n'
     for current_class in classes_sorted_by_count[:PROFILING_DUMP_ROWS_LIMIT]:
-        message += f'{current_class["count"]}\t\t{current_class["size"]}\t\t{current_class["name"]}\n'
-    message += f'\n--- End Top {PROFILING_DUMP_ROWS_LIMIT} Classes by Count ---\n'
+        message += '{}\t\t{}\t\t{}\n'.format(current_class["count"], current_class["size"], current_class["name"])
+    message += '\n--- End Top {} Classes by Count ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
 
-    message += f'\n--- Start Top {PROFILING_DUMP_ROWS_LIMIT} Classes by Size ---\n'
+    message += '\n--- Start Top {} Classes by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
     classes_sorted_by_size = sorted(classes_as_list, key=lambda d: d['size'], reverse=True)
     message += 'Size\t\tCount\t\tName\n'
     for current_class in classes_sorted_by_size[:PROFILING_DUMP_ROWS_LIMIT]:
-        message += f'{current_class["size"]}\t\t{current_class["count"]}\t\t{current_class["name"]}\n'
-    message += f'\n--- End Top {PROFILING_DUMP_ROWS_LIMIT} Classes by Size ---\n'
+        message += '{}\t\t{}\t\t{}\n'.format(current_class["size"], current_class["count"], current_class["name"])
+    message += '\n--- End Top {} Classes by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
 
     message += '\n--- End Memory Dump ---\n\n'
 
@@ -8482,12 +8482,12 @@ def print_global_vars():
             'size': sys.getsizeof(current_value)
         }
 
-    message = f'\n\n--- Start Top {PROFILING_DUMP_ROWS_LIMIT} Globals by Size ---\n'
+    message = '\n\n--- Start Top {} Globals by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
     globals_sorted_by_size = sorted(globals_dict_full.values(), key=lambda d: d['size'], reverse=True)
     message += 'Size\t\tName\t\tValue\n'
     for current_global in globals_sorted_by_size[:PROFILING_DUMP_ROWS_LIMIT]:
-        message += f'{current_global["size"]}\t\t{current_global["name"]}\t\t{current_global["value"]}\n'
-    message += f'\n--- End Top {PROFILING_DUMP_ROWS_LIMIT} Globals by Size ---\n'
+        message += f'{current_global["size"]}\t\t{current_global["name"]}\t\t{current_global["value"]}\n'.format(current_global["size"], current_global["name"], current_global["value"])
+    message += '\n--- End Top {} Globals by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
 
     demisto.info(message)
 
