@@ -4786,6 +4786,10 @@
         {
             "integrations": "ACTI",
             "playbookID": "iDefense_v2_Test"
+        },
+        {
+            "integrations": "KafkaV3",
+            "playbookID": "KafkaV3 Test"
         }
     ],
     "skipped_tests": {
