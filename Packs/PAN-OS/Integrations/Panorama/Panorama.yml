@@ -179,14 +179,12 @@ script:
     - auto: PREDEFINED
       description: (True/False) Force Commit
       name: force_commit
-      defaultValue: 'false'
       predefined:
         - 'true'
         - 'false'
     - auto: PREDEFINED
       description: (True/False) Partial commit while excluding shared objects and device and network configuration.
       name: exclude_device_network_configuration
-      defaultValue: 'false'
       predefined:
         - 'true'
         - 'false'
@@ -194,7 +192,6 @@ script:
       description: (True/False) Partial commit while excluding shared objects and
         device and network configuration.
       name: exclude_shared_objects
-      defaultValue: 'false'
       predefined:
         - 'true'
         - 'false'
