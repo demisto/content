@@ -1,5 +1,13 @@
 Build QRadar AQL Query. (Available from Cortex XSOAR 6.0.0).
 
+This automation creates AQL queriesfor the QRadar SIEM using complex queries in case the provided search values require several conditions. Complex queries take into consideration several inputs and allow to include or exclude each of the values as well as perform a full or partial search. Each of the values can be searched across several fields. All the 
+
+For example in the base_values_to_search argument will evaluate several user names that may or may not exist in several fields. The first_additional_values input can for example evaluate for IP addresses in several fields that may or may not exist in several fields and second_additional_values can search for an event id that may or may not exist in several fields. The results of all of the inputs will create an AQL query that covers all of the inputs combining all of the different conditions.
+
+Notice that all the values and field within these three argumets use an OR operator and between the 3 arguments with an AND operator.
+
+Also notice that arguments will be combined, meaning by populating the first and second values the resulting AQL query will be a combination of all of them and not 3 separate searches. In addition try to use the indexed fields in QRadar (indexed fields should be provided before non indexed ones)
+
 ## Script Data
 ---
 
