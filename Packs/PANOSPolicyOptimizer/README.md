@@ -5,3 +5,9 @@ The Policy Optimizer integration in this content pack provides you with a simple
 - Identifies port-based rules so you can convert them to application-based rules that allow traffic or adds applications to existing rules without compromising application availability. 
 - Identifies rules configured with unused applications. 
 - Helps you to analyze rule characteristics and prioritize which rules to migrate or clean up first.
+
+As part of this pack, you will also get out-of-the-box Policy Optimizer incident views, a full layout and automation scripts. All of these are easily customizable to suit the needs of your organization.
+
+_For more information, visit our [PAN-OS Policy Optimizer docs page](https://xsoar.pan.dev/docs/reference/packs/policy-optimizer)._
+
+![Policy_Optimizer_-_Manage_Unused_Rules](https://raw.githubusercontent.com/demisto/content//Packs/PolicyOptimizer/doc_files/Policy_Optimizer_-_Manage_Unused_Rules.png)
