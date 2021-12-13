@@ -36,4 +36,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Policy Optimizer - Manage Port Based Rules](Insert the link to your image here)
+![Policy Optimizer - Manage Port Based Rules](https://github.com/demisto/content/blob/82df056cff9dc4ce8b0753b341a4434593fa4608/Packs/PANOSPolicyOptimizer/doc_files/Policy_Optimizer_-_Manage_Port_Based_Rules.png?raw=true)
