@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Azure-DevOps-Pipeline-Run
-description: This playbook runs a pipeline on Azure DevOps Environment
+description: This playbook runs a pipeline on the Azure DevOps Environment.
 starttaskid: "0"
 tasks:
   "0":
