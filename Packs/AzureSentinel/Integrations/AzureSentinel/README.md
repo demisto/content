@@ -36,7 +36,6 @@ To get the *Subscription ID*, *Workspace Name* and *Resource Group* parameters, 
     | Server URL | False |
     | Tenant ID | True |
     | Client ID | True |
-    | Password | True |
     | Subscription ID | True |
     | Resource Group Name | True |
     | Workspace Name | True |
@@ -500,7 +499,7 @@ Gets a list of watchlists from Azure Sentinel.
 
 ### azure-sentinel-delete-watchlist
 ***
-Delete a watchlist from Azure Sentinel.
+Delete a watchlists from Azure Sentinel.
 
 
 #### Base Command
