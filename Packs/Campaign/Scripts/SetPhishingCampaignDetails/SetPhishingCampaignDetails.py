@@ -87,10 +87,11 @@ class SetPhishingCampaignDetails:
 
     def copy_campaign_data_to_incident(self, incident_id: str, merged_campaign: dict, append: bool) -> dict:
 
-        args = {'key': EMAIL_CAMPAIGN_KEY, 'value': merged_campaign, 'append': append, "id": incident_id}
+        args = {'key': EMAIL_CAMPAIGN_KEY, 'value': merged_campaign, 'append': append}
 
-        res = self.execute_command('SetByIncidentId', args)
-
+        res = demisto.executeCommand("executeCommandAt",
+                               {'command': 'SetByIncidentId', 'incidents': incident_id, 'arguments': args})
+        return_results(res)
         return res
 
     def run(self, campaign_incident_id: str, append: bool) -> dict:
