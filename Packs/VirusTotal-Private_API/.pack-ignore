@@ -2,7 +2,7 @@
 ignore=BA101
 
 [file:VirusTotal-Private_API.yml]
-ignore=IN135,BA108,BA109
+ignore=IN135,BA108,BA109,IN145
 
 [file:README.md]
 ignore=RM104

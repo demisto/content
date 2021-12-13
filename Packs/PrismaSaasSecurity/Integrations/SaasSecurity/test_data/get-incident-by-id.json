@@ -17,6 +17,7 @@
   "policy_page_uri": "https://xsoartest.com/data_policies/6109a5d0e64152534b240f48",
   "severity": "Low",
   "status": "Closed-Business Justified",
+  "state": "closed",
   "category": "business_justified",
   "resolved_by": "api",
   "resolution_date": "2021-08-24T07:44:21.608Z",

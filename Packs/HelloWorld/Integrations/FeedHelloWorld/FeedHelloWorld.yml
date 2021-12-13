@@ -90,6 +90,11 @@ configuration:
   name: feedTags
   required: false
   type: 0
+- defaultvalue: 'true'
+  display: Create relationships
+  name: create_relationships
+  required: false
+  type: 8
 display: HelloWorld Feed
 name: HelloWorld Feed
 script:
@@ -106,7 +111,7 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: helloworld-get-indicators
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   feed: true
   isfetch: false
   longRunning: false

@@ -1,5 +1,5 @@
 [file:GoogleChronicleBackstory.yml]
-ignore=IN126,IN135
+ignore=IN126,IN135,IN145
 
 [file:playbook-ChronicleAsset_Investigation_-_Chronicle.yml]
 ignore=PB110

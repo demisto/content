@@ -1,0 +1,52 @@
+{
+  "meta": {
+    "version": "1.1.11"
+  },
+  "data": [
+    {
+      "type": "exposures",
+      "attributes": {
+        "login_name": "test@example.local",
+        "password": "SuperSecretPassword",
+        "source_name": "combo-BigComboList",
+        "timestamps": [
+          {
+            "context": "loaded",
+            "value": 1612499733,
+            "iso": "2021-02-05T04:35:33"
+          }
+        ]
+      }
+    },
+    {
+      "type": "exposures",
+      "attributes": {
+        "login_name": "test@example.local",
+        "password": "SuperSecretPassword",
+        "source_name": "dump-example.local",
+        "timestamps": [
+          {
+            "context": "loaded",
+            "value": 1598305816,
+            "iso": "2020-08-24T21:50:16"
+          }
+        ]
+      }
+    },
+        {
+      "type": "exposures",
+      "attributes": {
+        "login_name": "test@example.local",
+        "password": "SuperSecretPassword",
+        "source_name": "malware-evilbot_March_22_2020",
+        "timestamps": [
+          {
+            "context": "loaded",
+            "value": 1585172320,
+            "iso": "2020-03-25T21:38:40"
+          }
+        ]
+      }
+    }
+  ]
+}

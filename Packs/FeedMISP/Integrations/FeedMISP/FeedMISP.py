@@ -560,7 +560,7 @@ def main():
     """
 
     params = demisto.params()
-    base_url = params.get('url')
+    base_url = urljoin(params.get('url').rstrip('/'), '/')
     insecure = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     command = demisto.command()

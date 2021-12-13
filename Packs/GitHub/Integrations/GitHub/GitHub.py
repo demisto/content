@@ -1021,9 +1021,9 @@ def get_branch_command():
     branch_name = args.get('branch_name')
     response = get_branch(branch_name)
 
-    commit = response.get('commit', {})
-    author = commit.get('author', {})
-    parents = commit.get('parents', [])
+    commit = response.get('commit', {}) or {}
+    author = commit.get('author', {}) or {}
+    parents = commit.get('parents', []) or []
     ec_object = {
         'Name': response.get('name'),
         'CommitSHA': commit.get('sha'),
@@ -1221,7 +1221,6 @@ def get_project_details(project, header):
 
 
 def list_all_projects_command():
-
     project_f = demisto.args().get('project_filter', [])
     limit = demisto.args().get('limit', MAX_FETCH_PAGE_RESULTS)
 
@@ -1248,8 +1247,8 @@ def list_all_projects_command():
         else:
             projects_obj.append(get_project_details(project=proj, header=header))
 
-    human_readable_projects = [{'Name': proj['Name'], 'ID': proj['ID'], 'Number': proj['Number'], 'Columns':
-                                [column for column in proj['Columns']]} for proj in projects_obj]
+    human_readable_projects = [{'Name': proj['Name'], 'ID': proj['ID'], 'Number': proj['Number'],
+                                'Columns': [column for column in proj['Columns']]} for proj in projects_obj]
 
     if projects_obj:
         human_readable = tableToMarkdown('Projects:', t=human_readable_projects, headers=PROJECT_HEADERS,
@@ -1407,7 +1406,6 @@ def search_code_command():
 
 
 def search_issue(query, limit, page=1):
-
     params = {'q': query, 'page': page, 'per_page': MAX_FETCH_PAGE_RESULTS, }
     response = http_request(method='GET',
                             url_suffix='/search/issues',
@@ -1521,7 +1519,8 @@ def list_team_members_command():
         }
         members.append(context_data)
     if members:
-        human_readable = tableToMarkdown(f'Team Member of team {team_slug} in organization {org}', t=members, removeNull=True)
+        human_readable = tableToMarkdown(f'Team Member of team {team_slug} in organization {org}', t=members,
+                                         removeNull=True)
     else:
         human_readable = f'There is no team members under team {team_slug} in organization {org}'
 
@@ -1712,7 +1711,8 @@ def get_github_get_check_run():
 
     check_run_result = []
 
-    check_runs = list_check_runs(owner_name=owner_name, repository_name=repository_name, run_id=run_id, commit_id=commit_id)
+    check_runs = list_check_runs(owner_name=owner_name, repository_name=repository_name, run_id=run_id,
+                                 commit_id=commit_id)
 
     for check_run in check_runs:
         check_run_id = check_run.get('id', '')

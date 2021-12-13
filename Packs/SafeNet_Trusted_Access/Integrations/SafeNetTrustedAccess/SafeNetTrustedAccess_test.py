@@ -247,6 +247,127 @@ logs_result = [
 
 validate_tenant = True
 
+application_list = [
+    {
+        "id": "01985260-d205-41cc-9b77-61686688b288",
+        "name": "Application1",
+        "status": "Active"
+    },
+    {
+        "id": "01985260-d205-37mc-9b77-61686688a933",
+        "name": "Application2",
+        "status": "Active"
+    }
+]
+
+application_context = {
+    "id": "1ccbab74-01c2-4af2-bb9b-af8f861ccfab",
+    "name": "Application1",
+    "status": "Active",
+    "applicationType": "Saml",
+    "templateName": "HB_TEST_Application_Metadata",
+    "assignment": {
+        "everyone": True
+    },
+    "schemaVersionNumber": "1.0",
+    "lastModified": "2021-08-27T12:25:47.998Z"
+}
+
+application_readable = {
+    "id": "1ccbab74-01c2-4af2-bb9b-af8f861ccfab",
+    "name": "Application1",
+    "status": "Active",
+    "applicationType": "Saml",
+    "templateName": "HB_TEST_Application_Metadata",
+    "assignment": "Everyone",
+    "schemaVersionNumber": "1.0",
+    "lastModified": "2021-08-27T12:25:47.998Z"
+}
+
+application_info = (application_readable, application_context)
+
+user_applications_response = [
+    {
+        "id": "01985260-d205-41cc-9b77-61686688b288",
+        "name": "Application1",
+        "status": "Active"
+    },
+    {
+        "id": "01985260-d205-37mc-9b77-61686688a933",
+        "name": "Application2",
+        "status": "Active"
+    }
+]
+
+user_applications_context = {
+    "email": "test.user@demisto.com",
+    "firstName": "Hello",
+    "applications": [
+        {
+            "id": "01985260-d205-41cc-9b77-61686688b288",
+            "name": "Application1",
+            "status": "Active"
+        },
+        {
+            "id": "01985260-d205-37mc-9b77-61686688a933",
+            "name": "Application2",
+            "status": "Active"
+        }
+    ],
+    "id": "CNlM6rvB0uQDXA4rWyUAAAAc",
+    "isSynchronized": False,
+    "lastName": "User",
+    "schemaVersionNumber": "1.0",
+    "userName": "hellouser"
+}
+user_applications_data = (user_applications_response, user_applications_context)
+
+user_sessions_readable = {
+    "sessions": [
+        {
+            "id": "9b4c9ae7-a8b8-4ae8-a419-52ffb6c266d6",
+            "start": 1607472514000,
+            "expiry": 1607472526000,
+            "applications": ["Application1", "Application2"]
+        }
+    ]
+}
+
+user_sessions_context = {
+    "email": "test.user@demisto.com",
+    "firstName": "Hello",
+    "id": "CNlM6rvB0uQDXA4rWyUAAAAc",
+    "isSynchronized": False,
+    "lastName": "User",
+    "schemaVersionNumber": "1.0",
+    "userName": "hellouser",
+    "sessions": [
+        {
+            "id": "9b4c9ae7-a8b8-4ae8-a419-52ffb6c266d6",
+            "start": 1607472514000,
+            "expiry": 1607472526000,
+            "applications": [
+                {
+                    "id": "entity_id1",
+                    "name": "Application1"
+                },
+                {
+                    "id": "entity_id2",
+                    "name": "Application2"
+                }
+            ]
+        }
+    ]
+}
+user_sessions_data = (user_sessions_readable, user_applications_context)
+
+delete_sessions = {
+    "id": "CNlM6rvB0uQDXA4rWyUAAAAc",
+    "userName": "hellouser",
+    "sessions": {
+        "Deleted": True
+    }
+}
 
 ''' TEST COMMAND FUNCTIONS '''
 
@@ -610,3 +731,96 @@ def test_validate_tenant_sta_command(mocker, args, expected_output):
 
     assert response.outputs_prefix == 'STA.VALIDATE.TENANT'
     assert response.outputs is True
+
+
+# Tests sta-get-application-list command function.
+@pytest.mark.parametrize(
+    "args, expected_output, expected_readable",
+    [
+        ({'limit': '5'},
+         [{"id": "01985260-d205-41cc-9b77-61686688b288", "name": "Application1", "status": "Active"},
+          {"id": "01985260-d205-37mc-9b77-61686688a933", "name": "Application2", "status": "Active"}],
+         [{"id": "01985260-d205-41cc-9b77-61686688b288", "name": "Application1", "status": "Active"},
+          {"id": "01985260-d205-37mc-9b77-61686688a933", "name": "Application2", "status": "Active"}])
+    ])
+def test_get_application_list_sta_command(mocker, args, expected_output, expected_readable):
+
+    from SafeNetTrustedAccess import get_application_list_sta_command
+
+    mocker.patch.object(client, 'get_application_list_sta', return_value=application_list)
+    response = get_application_list_sta_command(client, args)
+
+    assert response.outputs_prefix == 'STA.APPLICATION'
+    assert 'Application1' in response.readable_output
+    assert 'Application2' in response.readable_output
+
+
+# Tests sta-get-application-info command function.
+@pytest.mark.parametrize(
+    "args, expected_output, expected_readable",
+    [
+        ({'applicationName': 'Application1'}, application_context, application_readable)
+    ])
+def test_get_application_info_sta_command(mocker, args, expected_output, expected_readable):
+
+    from SafeNetTrustedAccess import get_application_info_sta_command
+    mocker.patch.object(client, 'get_application_info_sta', return_value=application_info)
+    response = get_application_info_sta_command(client, args)
+
+    assert response.outputs_prefix == 'STA.APPLICATION'
+    assert args['applicationName'] in response.readable_output
+    assert 'Application1' in response.readable_output
+
+
+# Tests sta-get-user-applications command function.
+@pytest.mark.parametrize(
+    "args, expected_output, expected_readable",
+    [
+        ({'userName': 'hellouser'}, user_applications_context, user_applications_response)
+    ])
+def test_get_user_applications_sta_command(mocker, args, expected_output, expected_readable):
+
+    from SafeNetTrustedAccess import get_user_applications_sta_command
+
+    mocker.patch.object(client, 'user_applications_data', return_value=user_applications_data)
+    response = get_user_applications_sta_command(client, args)
+
+    assert response.outputs_prefix == 'STA.USER'
+    assert 'Application1' in response.readable_output
+    assert 'Application2' in response.readable_output
+
+
+# Tests sta-get-user-sessions command function.
+@pytest.mark.parametrize(
+    "args, expected_output, expected_readable",
+    [
+        ({'userName': 'hellouser'}, user_sessions_context, user_sessions_readable)
+    ])
+def test_get_user_sessions_sta_command(mocker, args, expected_output, expected_readable):
+
+    from SafeNetTrustedAccess import get_user_sessions_sta_command
+
+    mocker.patch.object(client, 'user_sessions_data', return_value=user_sessions_data)
+    response = get_user_sessions_sta_command(client, args)
+
+    assert response.outputs_prefix == 'STA.USER'
+    assert 'hellouser' in response.readable_output
+    assert 'Sessions' in response.readable_output
+
+
+# Tests sta-delete-user-sessions command function.
+@pytest.mark.parametrize(
+    "args, expected_output",
+    [
+        ({'userName': 'hellouser'}, delete_sessions)
+    ])
+def test_delete_user_sessions_sta_command(mocker, args, expected_output):
+
+    from SafeNetTrustedAccess import delete_user_sessions_sta_command
+
+    mocker.patch.object(client, 'delete_sessions_sta', return_value=delete_sessions)
+    response = delete_user_sessions_sta_command(client, args)
+
+    assert response.outputs_prefix == 'STA.USER'
+    assert 'hellouser' in response.readable_output
+    assert 'deleted' in response.readable_output

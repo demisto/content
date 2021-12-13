@@ -478,7 +478,7 @@ script:
     description: Tests connectivity to the Azure Web Application Firewall.
     execution: false
     name: azure-waf-auth-test
-  dockerimage: demisto/crypto:1.0.0.24037
+  dockerimage: demisto/crypto:1.0.0.24380
   feed: false
   isfetch: false
   longRunning: false

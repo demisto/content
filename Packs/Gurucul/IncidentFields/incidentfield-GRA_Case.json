@@ -1,0 +1,31 @@
+{
+    "id": "incident_gracase",
+    "version": -1,
+    "modified": "2021-09-14T14:09:14.412325036+05:30",
+    "name": "GRA Case",
+    "ownerOnly": false,
+    "description": "GRA Case",
+    "cliName": "gracase",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GRACase"
+    ],
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.5.0"
+}
