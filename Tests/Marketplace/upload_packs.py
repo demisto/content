@@ -960,7 +960,7 @@ def upload_packs_with_dependencies_zip(extract_destination_path, packs_dependenc
                     if not zip_pack(dep_pack, signature_key):
                         continue
                 logging.info(f"Gonna move {dep_pack.zip_path} to {os.path.join(pack_with_dep_path, dep_name + '.zip')}")
-                shutil.move(dep_pack.zip_path, os.path.join(pack_with_dep_path, dep_name + '.zip'))
+                shutil.copy(dep_pack.zip_path, os.path.join(pack_with_dep_path, dep_name + '.zip'))
             Pack.zip_folder_items(
                 pack_with_dep_path,
                 pack_with_dep_path,
