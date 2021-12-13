@@ -986,7 +986,7 @@ class Pack(object):
             return task_status, modified_rn_files_paths, pack_was_modified
 
     def upload_to_storage(self, zip_pack_path, latest_version, storage_bucket, override_pack, storage_base_path,
-                          private_content=False, pack_artifacts_path=None):
+                          private_content=False, pack_artifacts_path=None, upload_path=None):
         """ Manages the upload of pack zip artifact to correct path in cloud storage.
         The zip pack will be uploaded to following path: /content/packs/pack_name/pack_latest_version.
         In case that zip pack artifact already exist at constructed path, the upload will be skipped.
@@ -1016,7 +1016,7 @@ class Pack(object):
                 logging.warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
                 return task_status, True, None
 
-            pack_full_path = os.path.join(version_pack_path, f"{self._pack_name}.zip")
+            pack_full_path = upload_path if upload_path else os.path.join(version_pack_path, f"{self._pack_name}.zip")
             blob = storage_bucket.blob(pack_full_path)
             blob.cache_control = "no-cache,max-age=0"  # disabling caching for pack blob
 
@@ -1540,7 +1540,7 @@ class Pack(object):
                     with open(pack_file_path, 'r') as pack_file:
                         if current_directory in PackFolders.yml_supported_folders():
                             content_item = yaml.safe_load(pack_file)
-                        elif current_directory in PackFolders.json_supported_folders():
+                        elif pack_file.endswith(".json") and current_directory in PackFolders.json_supported_folders():
                             content_item = json.load(pack_file)
                         else:
                             continue

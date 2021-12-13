@@ -921,7 +921,7 @@ def map_pack_dependencies_graph(pack_name, first_level_graph, full_dep_graph):
         full_dep_graph[pack_name] = pack_deps
         deps = first_level_graph.get(pack_name, {}).get('dependencies')
         if not deps:
-            return
+            return full_dep_graph
         for dep_name, dep_val in deps.items():
             if dep_val.get('mandatory'):
                 pack_deps.add(dep_name)
@@ -942,6 +942,7 @@ def upload_packs_with_dependencies_zip(extract_destination_path, packs_dependenc
             logging.info(f"Starting going over the dependencies of {pack.name}")
             pack_with_dep_path = os.path.join(pack.path, "with_dependencies")
             zip_with_deps_path = os.path.join(pack_with_dep_path, pack.name + "_with_dependencies.zip")
+            upload_path = os.path.join(storage_base_path, pack.name, pack.name + "_with_dependencies.zip")
             Path(pack_with_dep_path).mkdir(parents=True, exist_ok=True)
             full_deps_graph = map_pack_dependencies_graph(pack.name, packs_dependencies_mapping, full_deps_graph)
             if pack.name not in full_deps_graph:
@@ -951,12 +952,9 @@ def upload_packs_with_dependencies_zip(extract_destination_path, packs_dependenc
             if not (pack.zip_path and os.path.isfile(pack.zip_path)):
                 if not zip_pack(pack, signature_key):
                     continue
-            shutil.move(pack.zip_path, os.path.join(pack_with_dep_path, zip_with_deps_path))
+            shutil.copy(pack.zip_path, os.path.join(pack_with_dep_path, pack.name + ".zip"))
             for dep_name in pack_deps:
                 logging.info(f"Starting going over {dep_name} dependency")
-                if 'Base' in dep_name:
-                    logging.info("Skipping Base")
-                    continue
                 if dep_name not in packs_dict:
                     logging.info(f"Couldn't find {dep_name} in packs - creating it")
                     dep_pack = Pack(dep_name, os.path.join(extract_destination_path, dep_name))
@@ -974,11 +972,11 @@ def upload_packs_with_dependencies_zip(extract_destination_path, packs_dependenc
                 zip_with_deps_path
             )
             task_status, skipped_upload, _ = pack.upload_to_storage(zip_with_deps_path, pack.latest_version,
-                                                                    storage_bucket, True, storage_base_path)
+                                                                    storage_bucket, True, storage_base_path,
+                                                                    upload_path)
             if not task_status:
                 pack.status = PackStatus.FAILED_UPLOADING_PACK.name
                 pack.cleanup()
-            shutil.rmtree(pack_with_dep_path)
     except Exception as e:
         logging.error(traceback.format_exc())
         logging.error(f"Failed uploading packs with dependencies: {e}")
