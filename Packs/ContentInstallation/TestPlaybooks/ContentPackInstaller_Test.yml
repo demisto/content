@@ -1,6 +1,6 @@
-id: MarketplacePackInstaller_Test
+id: ContentPackInstaller_Test
 version: -1
-name: MarketplacePackInstaller_Test
+name: ContentPackInstaller_Test
 starttaskid: "0"
 tasks:
   "0":
@@ -39,9 +39,9 @@ tasks:
     task:
       id: bad2b6c0-4b4f-4c52-8ceb-51fddd7e0317
       version: -1
-      name: MarketplacePackInstaller
+      name: ContentPackInstaller
       description: Marketplace packs installer for the content management pack.
-      scriptName: MarketplacePackInstaller
+      scriptName: ContentPackInstaller
       type: regular
       iscommand: false
       brand: ""

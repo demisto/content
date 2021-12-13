@@ -31,7 +31,7 @@
           "threatcategoryconfidence": 0,
           "threatcategory": "C2"
         },
-        "cofensefeedthreatid": "<a href=\"https://www.threathq.comno-secret\">35225</a>",
+        "cofensefeedthreatid": "[35225](https://www.threathq.comno-secret)",
         "cofensefeedroledescription": "Command and control location used by malware",
         "asn": null,
         "cofensefeedasnorganization": null,
@@ -371,7 +371,7 @@
         "malwarefamily": "Agent Tesla",
         "description": "Agent Tesla collects sensitive information, such as saved credentials for web, ftp, email, and instant messaging clients. Additionally, Tesla gathers data about the victim's PC and captures keystrokes.",
         "sourceoriginalseverity": "Major",
-        "cofensefeedthreatid": "<a href=\"https://www.threathq.comno-secret\">35225</a>",
+        "cofensefeedthreatid": "[35225](https://www.threathq.comno-secret)",
         "cofensefeedfilename": "Shiping document.exe",
         "filetype": "File",
         "fileextension": "exe",
