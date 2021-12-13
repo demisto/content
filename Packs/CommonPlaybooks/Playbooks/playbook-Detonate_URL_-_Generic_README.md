@@ -7,12 +7,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Detonate URL - ThreatGrid
 * Detonate URL - CrowdStrike
 * Detonate URL - JoeSecurity
-* Detonate URL - Group-IB TDS Polygon
 * Detonate URL - Lastline v2
+* Detonate URL - Group-IB TDS Polygon
+* Detonate URL - ANYRUN
 * Detonate URL - McAfee ATD
 * Detonate URL - Cuckoo
-* Detonate URL - CrowdStrike Falcon X
-* Detonate URL - ANYRUN
 
 ### Integrations
 This playbook does not use any integrations.
@@ -53,7 +52,7 @@ This playbook does not use any commands.
 | Joe.Analysis.Status | Analysis Status | string |
 | Joe.Analysis.Comments | Analysis Comments | string |
 | Joe.Analysis.Time | Submitted Time | date |
-| Joe.Analysis.Runs | Sub-Analysis Information | unknown |
+| Joe.Analysis.Runs | Sub\-Analysis Information | unknown |
 | Joe.Analysis.Result | Analysis Results | string |
 | Joe.Analysis.Errors | Raised errors during sampling | unknown |
 | Joe.Analysis.Systems | Analysis OS | unknown |
@@ -144,11 +143,11 @@ This playbook does not use any commands.
 | ANYRUN.Task.Process.Version.Company | Company responsible for the program executed. | String |
 | ANYRUN.Task.Process.Version.Description | Description of the type of program. | String |
 | ANYRUN.Task.Process.Version.Version | Version of the program executed. | String |
+| DBotScore.Indicator | The indicator that was tested. | String |
+| DBotScore.Score | The actual score. | Number |
+| DBotScore.Type | Type of indicator. | String |
+| DBotScore.Vendor | Vendor used to calculate the score. | String |
 | URL.Data | URL data. | String |
 | URL.Malicious.Vendor | For malicious URLs, the vendor that made the decision. | String |
 | URL.Malicious.Description | For malicious URLs, the reason for the vendor to make the decision. | String |
 | ANYRUN.Task.Status | Task analysis status. | String |
-
-## Playbook Image
----
-![Detonate URL - Generic](Insert the link to your image here)
