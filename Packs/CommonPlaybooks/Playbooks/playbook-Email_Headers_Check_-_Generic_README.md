@@ -22,8 +22,8 @@ This playbook does not use any integrations.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| AuthenticateEmail | Whether the authenticity of the email should be verified, using SPF, DKIM and DMARC. | False | Optional |
-| CheckMicrosoftHeaders | Whether to Check Microsoft's headers for BCL/PCL/SCL scores and set the "Severity" and "Email Classification" accordingly. | False | Optional |
+| AuthenticateEmail | Whether the authenticity of the email should be verified, using SPF, DKIM and DMARC. |  | Optional |
+| CheckMicrosoftHeaders | Whether to Check Microsoft's headers for BCL/PCL/SCL scores and set the "Severity" and "Email Classification" accordingly. |  | Optional |
 
 ## Playbook Outputs
 ---

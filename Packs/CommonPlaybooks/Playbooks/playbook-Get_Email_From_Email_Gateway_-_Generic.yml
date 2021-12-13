@@ -1,29 +1,49 @@
-id: Get Email From Email Gateway - Generic
-version: -1
-contentitemexportablefields:
-  contentitemfields: {}
-name: Get Email From Email Gateway - Generic
 description: Retrieve a specified eml/msg file directly from the email security gateway
   product.
+id: Get Email From Email Gateway - Generic
+inputs:
+- description: The message ID received by the Email Security product.
+  key: MessageID
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: The Id of user.
+  key: UserID
+  playbookInputQuery:
+  required: false
+  value: {}
+name: Get Email From Email Gateway - Generic
+outputs:
+- contextPath: File
+  description: The MSG/EML File Entry ID
+  type: string
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 4601bd5d-21a9-4f61-8148-7efbd545c017
-    type: start
-    task:
-      id: 4601bd5d-21a9-4f61-8148-7efbd545c017
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-      description: ''
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "5"
-      - "3"
-      - "4"
+      - "10"
+      - "8"
+      - "9"
+      - "7"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4601bd5d-21a9-4f61-8148-7efbd545c017
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 4601bd5d-21a9-4f61-8148-7efbd545c017
+    timertriggers: []
+    type: start
     view: |-
       {
         "position": {
@@ -31,179 +51,216 @@ tasks:
           "y": 190
         }
       }
-    note: false
-    timertriggers: []
+  "5":
+    id: "5"
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
     isautoswitchedtoquietmode: false
-  "1":
-    id: "1"
-    taskid: 0be9c4cd-925c-4085-8451-c5a948407d97
-    type: title
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: 0be9c4cd-925c-4085-8451-c5a948407d97
-      version: -1
+      brand: ""
+      id: 14daa7d5-080e-4db6-8bae-c43b3189df09
+      iscommand: false
       name: Done
       type: title
-      iscommand: false
-      brand: ""
+      version: -1
       description: ''
-    separatecontext: false
+    taskid: 14daa7d5-080e-4db6-8bae-c43b3189df09
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 530
+          "y": 560
         }
       }
-    note: false
-    timertriggers: []
+  "7":
+    id: "7"
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
     isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
-    taskid: b32916b5-8000-4c43-80d6-fc491edfedd6
-    type: playbook
-    task:
-      id: b32916b5-8000-4c43-80d6-fc491edfedd6
-      version: -1
-      name: Get Email From Email Gateway - FireEye
-      description: Retrieve a specified eml/msg file directly from FireEye Email Security
-        or Central Management.
-      playbookName: Get Email From Email Gateway - FireEye
-      type: playbook
+    isoversize: false
+    loop:
+      exitCondition: ""
       iscommand: false
-      brand: ""
+      max: 100
+      wait: 1
     nexttasks:
       '#none#':
-      - "1"
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      MessageID:
+        complex:
+          root: inputs.MessageID
+      UserID:
+        complex:
+          root: inputs.UserID
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ""
+      description: Retrieve Email Data from one of the Integrations of Gmail, Mail
+        Listener v2, EWS O365, Microsoft Graph Mail.
+      id: 31d44c85-5583-4826-8618-a09680af641e
+      iscommand: false
+      name: Get Email From Email Gateway - Agari
+      playbookId: Get Email From Email Gateway - Agari
+      type: playbook
+      version: -1
+    taskid: 31d44c85-5583-4826-8618-a09680af641e
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1130,
+          "y": 330
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
     scriptarguments:
       EmailTimestamp:
         complex:
-          root: incident
           accessor: occurred
+          root: incident
       MessageID:
         complex:
           root: inputs.MessageID
     separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ""
+      description: Retrieve a specified eml/msg file directly from FireEye Email Security
+        or Central Management.
+      id: e99c1e30-b056-4a54-8123-d0b5df592312
+      iscommand: false
+      name: Get Email From Email Gateway - FireEye
+      playbookId: Get Email From Email Gateway - FireEye
+      type: playbook
+      version: -1
+    taskid: e99c1e30-b056-4a54-8123-d0b5df592312
+    timertriggers: []
+    type: playbook
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 200,
           "y": 360
         }
       }
-    note: false
-    timertriggers: []
+  "9":
+    id: "9"
     ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
     isautoswitchedtoquietmode: false
-  "4":
-    id: "4"
-    taskid: 3415ba42-7642-4fd4-8b5c-85e1b3b7004c
-    type: playbook
-    task:
-      id: 3415ba42-7642-4fd4-8b5c-85e1b3b7004c
-      version: -1
-      name: Get Email From Email Gateway - Mimecast
-      description: Retrieve a specified eml/msg file directly from Mimecast.
-      playbookName: Get Email From Email Gateway - Mimecast
-      type: playbook
+    isoversize: false
+    loop:
+      exitCondition: ""
       iscommand: false
-      brand: ""
+      max: 100
+      wait: 1
     nexttasks:
       '#none#':
-      - "1"
+      - "5"
+    note: false
+    quietmode: 0
     scriptarguments:
       MessageID:
         complex:
           root: inputs.MessageID
     separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ""
+      description: Retrieve a specified eml/msg file directly from Mimecast.
+      id: b0d5dc7f-ab2c-41c7-8a93-09322abf2648
+      iscommand: false
+      name: Get Email From Email Gateway - Mimecast
+      playbookId: Get Email From Email Gateway - Mimecast
+      type: playbook
+      version: -1
+    taskid: b0d5dc7f-ab2c-41c7-8a93-09322abf2648
+    timertriggers: []
+    type: playbook
     view: |-
       {
         "position": {
-          "x": 890,
-          "y": 330
+          "x": 690,
+          "y": 360
         }
       }
-    note: false
-    timertriggers: []
+  "10":
+    id: "10"
     ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
     isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
-    taskid: 8c2ce613-3539-48f2-84a9-fecf1d7c0ee3
-    type: playbook
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      MessageID:
+        complex:
+          root: inputs.MessageID
+    separatecontext: true
+    skipunavailable: true
     task:
-      id: 8c2ce613-3539-48f2-84a9-fecf1d7c0ee3
-      version: -1
-      name: Get Email From Email Gateway - Proofpoint Protection Server
+      brand: ""
       description: Retrieve a specified eml/msg file directly from Proofpoint Protection
         Server.
-      playbookName: Get Email From Email Gateway - Proofpoint Protection Server
-      type: playbook
+      id: 2e412fff-3285-45fe-8522-a882c10006e7
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    scriptarguments:
-      MessageID:
-        complex:
-          root: inputs.MessageID
-    separatecontext: true
+      name: Get Email From Email Gateway - Proofpoint Protection Server
+      playbookId: Get Email From Email Gateway - Proofpoint Protection Server
+      type: playbook
+      version: -1
+    taskid: 2e412fff-3285-45fe-8522-a882c10006e7
+    timertriggers: []
+    type: playbook
     view: |-
       {
         "position": {
-          "x": 10,
+          "x": -240,
           "y": 330
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-system: true
+version: -1
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 405,
-        "width": 1260,
-        "x": 10,
+        "height": 435,
+        "width": 1750,
+        "x": -240,
         "y": 190
       }
     }
   }
-inputs:
-- key: MessageID
-  value: {}
-  required: false
-  description: The message ID received by the Email Security product.
-  playbookInputQuery:
-- key: UserID
-  value: {}
-  required: false
-  description: The Id of user.
-  playbookInputQuery:
-outputs:
-- contextPath: File
-  description: The MSG/EML File Entry ID
-  type: string
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0

@@ -151,4 +151,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![Detonate URL - Generic](../doc_files/playbook-Detonate_URL_-_Generic.yml)
+![Detonate URL - Generic](Insert the link to your image here)

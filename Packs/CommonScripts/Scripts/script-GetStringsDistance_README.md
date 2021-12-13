@@ -1,4 +1,4 @@
-Gets the string distance between *inputString* and *compareString* (*compareString* can be a comma-separated list) based on the Levenshtein Distance algorithm.
+Gets the string distance between `inputString` and `compareString` (can be a comma separated list) based on the Levenshtein Distance algorithm.
 
 ## Script Data
 ---
@@ -6,7 +6,7 @@ Gets the string distance between *inputString* and *compareString* (*compareStri
 | **Name** | **Description** |
 | --- | --- |
 | Script Type | python |
-| Tags | server, phishing |
+| Tags | server, phishing, Condition |
 
 
 ## Inputs
@@ -14,7 +14,7 @@ Gets the string distance between *inputString* and *compareString* (*compareStri
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| compareString | A comma-separated list of strings to compare with the input string. |
+| compareString | The string(s) to compare with the input string. Can be multiple strings with a comma-separator. |
 | inputString | The input string to compare. |
 | distance | The distance that is considered close. |
 
