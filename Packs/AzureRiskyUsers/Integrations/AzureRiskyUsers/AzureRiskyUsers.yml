@@ -68,7 +68,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Sets the Risk Level to retrieve. Possible values are: "low", "medium", or "high"
+      description: 'Sets the Risk Level to retrieve. Possible values are: "low", "medium", or "high"'
       isArray: false
       name: risk_level
       predefined:
@@ -184,7 +184,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Sets the Risk State to retrieve. Possible values are: "atRisk", "confirmedCompromised", "remediated", or "dismissed"
+      description: 'Sets the Risk State to retrieve. Possible values are: "atRisk", "confirmedCompromised", "remediated", or "dismissed"'
       isArray: false
       name: risk_state
       predefined:
@@ -197,7 +197,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Sets the Risk Level to retrieve. Possible values are: "low", "medium", or "high".
+      description: 'Sets the Risk Level to retrieve. Possible values are: "low", "medium", or "high".'
       isArray: false
       name: risk_level
       predefined:
@@ -230,13 +230,13 @@ script:
         adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, unknownFutureValue.'
       type: String
     - contextPath: AzureRiskyUsers.RiskDetection.riskEventType
-      description: The type of risk event detected. Possible values are: unlikelyTravel,
+      description: 'The type of risk event detected. Possible values are: unlikelyTravel,
         anonymizedIPAddress, maliciousIPAddress, unfamiliarFeatures, malwareInfectedIPAddress,
         suspiciousIPAddress, leakedCredentials, investigationsThreatIntelligence,
         generic,adminConfirmedUserCompromised, mcasImpossibleTravel, mcasSuspiciousInboxManipulationRules,
         investigationsThreatIntelligenceSigninLinked, maliciousIPAddressValidCredentialsBlockedIP,
         and unknownFutureValue. If the risk detection is a premium detection, will
-        show generic.
+        show generic.'
       type: String
     - contextPath: AzureRiskyUsers.RiskDetection.riskLevel
       description: 'Level of the detected risk. Possible values are: low, medium,
