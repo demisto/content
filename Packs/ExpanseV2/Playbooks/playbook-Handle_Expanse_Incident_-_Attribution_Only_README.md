@@ -39,7 +39,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * createNewIncident
 * expanse-get-issue-comments
 * closeInvestigation
-* expanse-get-risky-flows
 * setIncident
 * linkIncidents
 * getList
@@ -56,7 +55,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | WriteToExpanse | Write data back to Expanse? | True | Optional |
 | OwnerNotificationSubject | Subject of the email to send to the OU Owner. | New security issue on a public service owned by your team | Optional |
 | OwnerNotificationBody | Body of the email to send to the OU Owner. | Infosec identified a security issue on a service owned by your team and exposed on Internet. Please get in touch with your Infosec team to define proper remediation access. | Optional |
-| UseBehavior | Enrich flows using Expanse Behavior. | True | Optional |
 | OrganizationUnitsToOwnerName | Name of XSOAR List that contains the mapping between OU and Owners | ExpanseOrganizationUnitsToOwner | Optional |
 | OrganizationUnitsToTagName | Name of XSOAR List that contains the mapping between OU and Tag names | ExpanseOrganizationUnitsToTag | Optional |
 | NumberOfDaysInThePast | How many days to go back in time when searching logs | 7 | Optional |
