@@ -8360,6 +8360,7 @@ def signal_handler_threads_dump(_sig, _frame):
     demisto.info(thread_dump_msg)
 
 
+# DEPRECATED - use register_signal_handler_threads_and_memory_dump instead
 def register_signal_handler_threads_dump(signal_type=signal.SIGUSR1):
     """
     Function that registers the threads dump signal listener
