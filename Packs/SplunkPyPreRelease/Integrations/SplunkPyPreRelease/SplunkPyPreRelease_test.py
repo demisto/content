@@ -190,6 +190,53 @@ def test_raw_to_dict():
     assert splunk.rawToDict(RAW_STANDARD) == RAW_JSON_AND_STANDARD_OUTPUT
 
 
+@pytest.mark.parametrize('text, output', [
+    ('', ['']),
+    ('"",', ['"",']),
+    #   a value shouldn't do anything special
+    ('woopwoop', ['woopwoop']),
+    #  a normal key value without quotes
+    ('abc=123', ['abc="123"']),
+    #  add a comma at the end
+    ('abc=123,', ['abc="123"']),
+    #  a normal key value with quotes
+    ('cbd="123"', ['cbd="123"']),
+    #  check all wrapped with quotes removed
+    ('"abc="123""', ['abc="123"']),
+    #   we need to remove 111 at the start.
+    ('111, cbd="123"', ['cbd="123"']),
+    # Testing with/without quotes and/or spaces:
+    ('abc=123,cbd=123', ['abc="123"', 'cbd="123"']),
+    ('abc=123,cbd="123"', ['abc="123"', 'cbd="123"']),
+    ('abc="123",cbd=123', ['abc="123"', 'cbd="123"']),
+    ('abc="123",cbd="123"', ['abc="123"', 'cbd="123"']),
+    ('abc=123, cbd=123', ['abc="123"', 'cbd="123"']),
+    ('abc=123, cbd="123"', ['abc="123"', 'cbd="123"']),
+    ('cbd="123", abc=123', ['abc="123"', 'cbd="123"']),
+    ('cbd="123",abc=123', ['abc="123"', 'cbd="123"']),
+    # Continue testing quotes with more values:
+    ('xyz=321,cbd=123,abc=123', ['xyz="321"', 'abc="123"', 'cbd="123"']),
+    ('xyz=321,cbd="123",abc=123', ['xyz="321"', 'abc="123"', 'cbd="123"']),
+    ('xyz="321",cbd="123",abc=123', ['xyz="321"', 'abc="123"', 'cbd="123"']),
+    ('xyz="321",cbd="123",abc="123"', ['xyz="321"', 'abc="123"', 'cbd="123"']),
+    # Testing nested quotes (the main reason for quote_group):
+    #   Try to remove the start 111.
+    ('111, cbd="a="123""', ['cbd="a="123""']),
+    ('cbd="a="123""', ['cbd="a="123""']),
+    ('cbd="a="123", b=321"', ['cbd="a="123", b="321""']),
+    ('cbd="a=123, b=321"', ['cbd="a="123", b="321""']),
+    ('cbd="a=123, b="321""', ['cbd="a="123", b="321""']),
+    ('cbd="a="123", b="321""', ['cbd="a="123", b="321""']),
+    ('cbd="a=123, b=321"', ['cbd="a="123", b="321""']),
+    ('xyz=123, cbd="a="123", b=321"', ['xyz="123"', 'cbd="a="123", b="321""']),
+    ('xyz="123", cbd="a="123", b="321""', ['xyz="123"', 'cbd="a="123", b="321""']),
+    ('xyz="123", cbd="a="123", b="321"", qqq=2', ['xyz="123"', 'cbd="a="123", b="321""', 'qqq="2"']),
+    ('xyz="123", cbd="a="123", b="321"", qqq="2"', ['xyz="123"', 'cbd="a="123", b="321""', 'qqq="2"']),
+])
+def test_quote_group(text, output):
+    assert sorted(splunk.quote_group(text)) == sorted(output)
+
+
 data_test_replace_keys = [
     ({}, {}),
     ({'test': 'test'}, {'test': 'test'}),

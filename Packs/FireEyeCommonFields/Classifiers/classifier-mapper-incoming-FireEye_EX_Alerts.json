@@ -78,7 +78,10 @@
                     "complex": null,
                     "simple": "rootInfection"
                 },
-                "FireEye Malware Informationֿ": {
+                "FireEye Malware Information": {
+                    "simple": "explanation.malwareDetected.malware"
+                },
+                "FireEye Malware Info": {
                     "simple": "explanation.malwareDetected.malware"
                 },
                 "MD5": {

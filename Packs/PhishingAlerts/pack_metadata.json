@@ -14,6 +14,6 @@
         "Spam",
         "Email"],
     "itemPrefix": ["Email"],
-    "useCases": [],
+    "useCases": ["Phishing"],
     "keywords": []
 }

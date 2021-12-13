@@ -995,7 +995,7 @@ inputs:
   value: {}
   required: true
   description: The integration in which to run the search and delete action. Can be
-    O365, or EWS.
+    O365, Gmail, EWS or Agari Phishing Defense.
   playbookInputQuery:
 - key: O365ExchangeLocation
   value:
@@ -1020,23 +1020,20 @@ inputs:
 - key: |
     O365AllowNotFoundExchangeLocations
   value:
-    simple: "false"
+    simple: "False"
   required: false
   description: Used only in O365. Whether to include mailboxes other than regular
     user mailboxes in the compliance search. Default is "false".
   playbookInputQuery:
 - key: O365DeleteType
-  value:
-    simple: inputs.O365DeleteType
+  value: {}
   required: false
   description: Used only in O365. The delete type to perform on the search results.
     Possible values are Hard and Soft or leave empty to select manually. (Hard = Unrecoverable,
     Soft=Recoverable)
   playbookInputQuery:
 - key: O365ExchangeLocationExclusion
-  value:
-    complex:
-      root: inputs.O365ExchangeLocationExclusion
+  value: {}
   required: false
   description: Used only when searching and deleting emails in O365. The exchange
     location. Determines from where to search and delete emails searched using O365

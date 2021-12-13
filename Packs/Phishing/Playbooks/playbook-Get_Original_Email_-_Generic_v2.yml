@@ -5,18 +5,19 @@ description: |-
 
   You must have the necessary permissions in your email service to execute a global search.
 
-  Optional email brand inputs and their required permissions:
+  To retrieve the email files directly from the email service providers, please use one of the provided inputs below:
+  (Agari Phishing Defense customers should use the following as well)
 
   - EWS: eDiscovery
   - Gmail: Google Apps Domain-Wide Delegation of Authority
   - MSGraph: As described here:
       * https://docs.microsoft.com/en-us/graph/api/message-get
       * https://docs.microsoft.com/en-us/graph/api/user-list-messages
+
   - EmailSecurityGateway: Will retrieve eml files from:
       * FireEye EX
       * FireEye CM
       * Proofpoint Protection Server
-      * Agari Phishing Defense
       * Mimecast
 id: Get Original Email - Generic v2
 inputs:
@@ -38,16 +39,17 @@ inputs:
   required: false
   value: {}
 - description: |-
-    When this value supplied, only the relevant playbook will run.
+    When this value provided, only the relevant playbook will run.
     Possible values:
     - Gmail
     - EWS v2
     - MicrosoftGraphMail
     - EmailSecurityGateway
-        * FireEye EX (Email Security)
-        * Proofpoint TAP
-        * Agari Phishing Defense
-        * Mimecast
+
+    Choosing the EmailSecurityGateway will execute the following if enabled:
+        - FireEye EX (Email Security)
+        - Proofpoint TAP
+        - Mimecast
 
     If none of the above values is supplied, all of the playbooks will run.
   key: EmailBrand

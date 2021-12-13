@@ -21,8 +21,8 @@ This playbook does not use any integrations.
 * IncreaseIncidentSeverity
 
 ### Commands
-* setIncident
 * send-mail
+* setIncident
 
 ## Playbook Inputs
 ---
@@ -30,14 +30,13 @@ This playbook does not use any integrations.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | Role | The default role to assign the incident to. |  | Optional |
-| escalationRole | A higher tier role to assign the incident to. |  | Optional |
-| OnCall | Set to true to assign only a user that is currently on shift. Requires. |  | Optional |
+| escalationRole | Higher Tier role to assign the incident to. |  | Optional |
+| OnCall | Use to assign only for analysts who're on current shift. |  | Optional |
 | AuthenticityCheck | Indicates the email authenticity resulting from the EmailAuthenticityCheck script. Possible values are: Pass, Fail, Suspicious, and Undetermined. |  | Optional |
 | MicrosoftHeadersSeverityCheck | The value is set by the "Process Microsoft's Anti-Spam Headers" Playbook, which calculates the severity after processing the PCL, BCL and PCL values inside Microsoft's headers. |  | Optional |
 | SOCEmailAddress | The SOC email address to set in case the playbook handles an Email Security alert. |  | Optional |
 | EmailTo | The email recipient. |  | Optional |
 | blockedAlertActionValue | List of optional values the email security device returns for blocked\\denied\\etc. emails. |  | Optional |
-| SensitiveMailboxesList | A list that contains the organization sensitive mailboxes. |  | Optional |
 
 ## Playbook Outputs
 ---
@@ -45,4 +44,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Phishing Alerts - Check Severity](https://raw.githubusercontent.com/demisto/content/5153dd815b5288877b560e3fdcc3d9ab28cda57e/Packs/PhishingAlerts/doc_files/Phishing_Alerts_-_Check_Severity.png)
+![Phishing Alerts - Check Severity](https://raw.githubusercontent.com/demisto/content/f49c8d86d18876948cd50ba32befb4f575420024/Packs/PhishingAlerts/doc_files/Phishing_Alerts_-_Check_Severity.png)

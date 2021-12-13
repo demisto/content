@@ -1,13 +1,12 @@
-Retrieve a specified eml/msg file directly from the email security gateway product.
+This playbook retrieves a specified eml/msg file directly from the email security gateway product.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Get_Email_From_Email_Gateway_-_FireEye
-* Get_Email_From_Email_Gateway_-_Agari
-* Get_Email_From_Email_Gateway_-_Proofpoint_Protection_Server
-* Get_Email_From_Email_Gateway_-_Mimecast
+* Get Email From Email Gateway - Mimecast
+* Get Email From Email Gateway - FireEye
+* Get Email From Email Gateway - Proofpoint Protection Server
 
 ### Integrations
 This playbook does not use any integrations.
@@ -23,16 +22,16 @@ This playbook does not use any commands.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| MessageID | The message ID received by the Email Security product. |  | Optional |
-| UserID | The Id of user. |  | Optional |
+| MessageID | The message ID received by the email security gateway product. |  | Optional |
+| UserID | The user ID. |  | Optional |
 
 ## Playbook Outputs
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| File | The MSG/EML File Entry ID | string |
+| File | The MSG/EML file entry ID | String |
 
 ## Playbook Image
 ---
-![Get Email From Email Gateway - Generic](https://raw.githubusercontent.com/demisto/content/3c9155b3aa3a3c5e0f4f11bf52b48c9e0bf12ef4/Packs/CommonPlaybooks/doc_files/Get_Email_From_Email_Gateway_-_Generic.png)
+![Get Email From Email Gateway - Generic](https://raw.githubusercontent.com/demisto/content/f0c79b8df5ea669b1eed6f75037867f8b0a89eeb/Packs/CommonPlaybooks/doc_files/Get_Email_From_Email_Gateway_-_Generic.png)
