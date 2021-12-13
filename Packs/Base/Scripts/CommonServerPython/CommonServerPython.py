@@ -8486,7 +8486,7 @@ def print_global_vars():
     globals_sorted_by_size = sorted(globals_dict_full.values(), key=lambda d: d['size'], reverse=True)
     message += 'Size\t\tName\t\tValue\n'
     for current_global in globals_sorted_by_size[:PROFILING_DUMP_ROWS_LIMIT]:
-        message += f'{current_global["size"]}\t\t{current_global["name"]}\t\t{current_global["value"]}\n'.format(current_global["size"], current_global["name"], current_global["value"])
+        message += '{c}\t\t{}\t\t{}\n'.format(current_global["size"], current_global["name"], current_global["value"])
     message += '\n--- End Top {} Globals by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
 
     demisto.info(message)
