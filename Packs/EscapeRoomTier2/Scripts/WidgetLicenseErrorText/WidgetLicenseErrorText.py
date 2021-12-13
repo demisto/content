@@ -43,20 +43,20 @@ def utc_to_time(naive: datetime, time_zone: str = 'Asia/Tel_Aviv'):
     return naive.replace(tzinfo=pytz.utc).astimezone(pytz.timezone(time_zone))
 
 
-def is_correct_date_range(time_from: datetime, time_to: datetime):
+def is_correct_date_range(from_times: Set[str], to_times: Set[str]):
     validate = [
-        time_from.date().strftime('%Y-%m-%d') == '2020-10-31',
-        time_to.date().strftime('%Y-%m-%d') == '2020-12-25',
+        '2020-10-31' in from_times,
+        '2020-12-25' in to_times,
     ]
 
     demisto.info(f'WidgetLicenseErrorText - check_time_frame: {validate}')
     return all(validate)
 
 
-def is_valid_license_temp(time_from: datetime, time_to: datetime):
+def is_valid_license_temp(from_times: Set[str], to_times: Set[str]):
     validate = [
-        time_from.date().strftime('%Y-%m-%d') == '2020-12-01',
-        time_to.date().strftime('%Y-%m-%d') == '2020-12-25',
+        '2020-12-01' in from_times,
+        '2020-12-25' in to_times,
     ]
 
     demisto.info(f'WidgetLicenseErrorText - is_correct_date_range: {validate}')
@@ -64,16 +64,10 @@ def is_valid_license_temp(time_from: datetime, time_to: datetime):
 
 
 def is_valid_license():
-    # TODO: if server 6.2:
-    #  res = demisto.internalHttpRequest('GET', '/license')
-    #  license_info = res.get('body')
-    res = demisto.executeCommand('demisto-api-get', {'uri': '/license'})
-    if is_error(res):
-        raise DemistoException('Failed to run command: demisto-api-get')
+    res = demisto.internalHttpRequest('GET', '/license')
+    license_info = res.get('body')
 
-    license_info = res[0]['Contents']
     demisto.info(f'license info:\n {license_info}')
-
     if dict_safe_get(license_info, ['customFields', 'EscapeRoomKey']):
         return True
 
@@ -81,22 +75,16 @@ def is_valid_license():
 
 
 def create_starting_incident():
-    res = demisto.executeCommand('getIncidents', args={'name': 'Springdfield', 'raw-reponse': 'true'})
-    if is_error(res):
-        raise DemistoException('failed to search incident', res=res)
-
-    if res[0]['Contents']['total']:
+    res = execute_command('getIncidents', args={'name': 'Springdfield', 'raw-reponse': 'true'})
+    if res['total']:
         # already created an incident
         return
 
-    res = demisto.executeCommand('createNewIncident',
-                                 args={
-                                     'name': 'Springfield Nuclear Power Plant',
-                                     'severity': IncidentSeverity.CRITICAL,
-                                     'type': "D'oh!⚠️",
-                                 })
-    if is_error(res):
-        raise DemistoException('failed to create incident', res=res)
+    res = execute_command('createNewIncident', args={
+        'name': 'Springfield Nuclear Power Plant',
+        'severity': IncidentSeverity.CRITICAL,
+        'type': "D'oh!⚠️",
+    })
 
 
 def v_for_vendetta(time_from: datetime, time_to: datetime):
@@ -124,16 +112,25 @@ def main():
     try:
         args = demisto.args()
         demisto.info(str(args))
+        # Sometimes UTC time and local time doesn't return the same date in XSOAR when choosing specific time frames.
         time_from = dateparser.parse(args.get('from', '0001-01-01T00:00:00Z'))
         local_time_from = utc_to_time(time_from)
+        from_times = {
+            time_from.date().strftime('%Y-%m-%d'),
+            local_time_from.date().strftime('%Y-%m-%d'),
+        }
         time_to = dateparser.parse(args.get('to', '0001-01-01T00:00:00Z'))
         local_time_to = utc_to_time(time_to)
+        to_times = {
+            time_to.date().strftime('%Y-%m-%d'),
+            local_time_to.date().strftime('%Y-%m-%d'),
+        }
 
-        if not is_correct_date_range(local_time_from, local_time_to):
+        if not is_correct_date_range(from_times, to_times):
             text = WRONG_DATE_RANGE_HINT
-        # elif not is_valid_license():
-        # elif not is_valid_license_temp(local_time_from, local_time_to):
-        #     text = INVALID_LICENSE_HINT
+        elif not is_valid_license():
+        # elif not is_valid_license_temp(from_times, to_times):
+            text = INVALID_LICENSE_HINT
         else:
             create_starting_incident()
             text = SUCCESS_MESSAGE

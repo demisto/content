@@ -40,34 +40,31 @@ def utc_to_time(naive: datetime, time_zone: str = 'Asia/Tel_Aviv'):
     return naive.replace(tzinfo=pytz.utc).astimezone(pytz.timezone(time_zone))
 
 
-def is_correct_date_range(time_from: datetime, time_to: datetime):
+def is_correct_date_range(from_times: Set[str], to_times: Set[str]):
     validate = [
-        time_from.date().strftime('%Y-%m-%d') == '2020-12-01',
-        time_to.date().strftime('%Y-%m-%d') == '2020-12-25',
+        '2020-10-31' in from_times,
+        '2020-12-25' in to_times,
     ]
 
-    demisto.debug(f'WidgetLicenseErrorGifs - is_correct_date_range: {validate}')
+    demisto.info(f'WidgetLicenseErrorText - check_time_frame: {validate}')
     return all(validate)
 
 
-def is_valid_license_temp(time_from: datetime, time_to: datetime):
+def is_valid_license_temp(from_times: Set[str], to_times: Set[str]):
     validate = [
-        time_from.date().strftime('%Y-%m-%d') == '2020-10-31',
-        time_to.date().strftime('%Y-%m-%d') == '2020-12-25',
+        '2020-12-01' in from_times,
+        '2020-12-25' in to_times,
     ]
 
-    demisto.debug(f'WidgetLicenseErrorGifs - is_correct_date_range: {validate}')
+    demisto.info(f'WidgetLicenseErrorText - is_correct_date_range: {validate}')
     return all(validate)
 
 
 def is_valid_license():
-    res = demisto.executeCommand('demisto-api-get', {'uri': '/license'})
-    if is_error(res):
-        raise DemistoException('Failed to run command: demisto-api-get')
+    res = demisto.internalHttpRequest('GET', '/license')
+    license_info = res.get('body')
 
-    license_info = res[0]['Contents']
     demisto.info(f'license info:\n {license_info}')
-
     if dict_safe_get(license_info, ['customFields', 'EscapeRoomKey']):
         return True
 
@@ -81,15 +78,24 @@ def main():
     try:
         args = demisto.args()
         demisto.info(str(args))
+        # Sometimes UTC time and local time doesn't return the same date in XSOAR when choosing specific time frames.
         time_from = dateparser.parse(args.get('from', '0001-01-01T00:00:00Z'))
         local_time_from = utc_to_time(time_from)
+        from_times = {
+            time_from.date().strftime('%Y-%m-%d'),
+            local_time_from.date().strftime('%Y-%m-%d'),
+        }
         time_to = dateparser.parse(args.get('to', '0001-01-01T00:00:00Z'))
         local_time_to = utc_to_time(time_to)
+        to_times = {
+            time_to.date().strftime('%Y-%m-%d'),
+            local_time_to.date().strftime('%Y-%m-%d'),
+        }
 
-        if not is_correct_date_range(local_time_from, local_time_to):
+        if not is_correct_date_range(from_times, to_times):
             gifs = WRONG_DATE_RANGE_GIFS
         # elif not is_valid_license():
-        elif not is_valid_license_temp(local_time_from, local_time_to):
+        elif not is_valid_license_temp(from_times, to_times):
             gifs = (
                 f'![]({random.choice(INVALID_LICENSE_GIFS)})'
                 f'![]({random.choice(INVALID_LICENSE_GIFS)})'
