@@ -764,9 +764,20 @@ class TestPanoramaEditRuleCommand:
             Panorama.panorama_edit_rule_command(args)
 
 
-# @pytest.mark.parametrize('args, expected_url',
-#                          [])
-# def test_panorama_commit_command(mocker, args, expected_url):
-#     """
-#     """
-#     return get_offense_enrichment(enrichment) == expected
+@pytest.mark.parametrize('args, expected_url',
+                         [])
+def test_panorama_commit_command(mocker, args, expected_url):
+    """
+    """
+    import Panorama
+    import requests
+    from Panorama import panorama_commit_command
+
+    return_results_mock = mocker.patch.object(Panorama, 'return_results')
+    request_mock = mocker.patch.object(requests, 'request')
+    panorama_commit_command(args)
+
+    # assert requests_mock called with right params
+    # callback func of request output
+    # assert return_results mock looks right
+

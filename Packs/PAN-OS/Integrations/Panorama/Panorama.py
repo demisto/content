@@ -109,7 +109,7 @@ def http_request(uri: str, method: str, headers: dict = {},
     if is_pcap:
         return result
 
-    demisto.debug(f'THIS IS THE RESULT TEXT {result.text} STATUS CODE {result.status_code}')
+    # demisto.debug(f'THIS IS THE RESULT TEXT {result.text} STATUS CODE {result.status_code}')
 
     json_result = json.loads(xml2json(result.text))
 
@@ -630,7 +630,8 @@ def panorama_commit_status_command(args: dict):
 @logger
 def panorama_push_to_device_group(args: dict):
     command: str = ''
-    command += f'<device-group><entry name="{DEVICE_GROUP}"/></device-group>'
+    device_group = args.get('device-group', DEVICE_GROUP)
+    command += f'<device-group><entry name="{device_group}"/></device-group>'
 
     vsys_name = args.get('vsys_name')
     serial_number = args.get('serial_number')
@@ -639,8 +640,9 @@ def panorama_push_to_device_group(args: dict):
         raise Exception('Cannot preform virtual system commit without a serial_number and a vsys_name')
 
     if vsys_name and serial_number:
-        command = f'<device-group><entry name="{DEVICE_GROUP}"/><devices><entry name="{serial_number}">' \
+        command = f'<device-group><entry name="{device_group}"/><devices><entry name="{serial_number}">' \
                   f'<vsys><member>{vsys_name}</member></vsys></entry></devices></device-group>'
+
     if argToBoolean(args.get('validate-only', 'false')):
         command += '<validate-only>yes</validate-only>'
     if not argToBoolean(args.get('include-template', 'true')):
@@ -654,6 +656,8 @@ def panorama_push_to_device_group(args: dict):
         'cmd': f'<commit-all><shared-policy>{command}</shared-policy></commit-all>',
         'key': API_KEY
     }
+
+    demisto.debug(f"DDDDD: The command is {params['cmd']}")
 
     result = http_request(
         URL,
