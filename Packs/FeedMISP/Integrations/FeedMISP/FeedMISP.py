@@ -575,7 +575,7 @@ def main():
 
     params = demisto.params()
     base_url = urljoin(params.get('url').rstrip('/'), '/')
-    timeout = int(demisto.get(demisto.params(), 'timeout'))
+    timeout = arg_to_number(params.get('timeout', 60))
     insecure = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     command = demisto.command()

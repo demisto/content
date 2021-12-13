@@ -17,7 +17,7 @@ configuration:
   name: timeout
   defaultvalue: "60"
   type: 0
-  required: true
+  required: false
   additionalinfo: The timeout of the HTTP requests sent to MISP API (in seconds).
 - display: Fetch indicators
   name: feed
