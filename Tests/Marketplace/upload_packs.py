@@ -9,6 +9,7 @@ import glob
 import requests
 from datetime import datetime
 from google.cloud.storage import Bucket
+from pathlib import Path
 
 from zipfile import ZipFile
 from typing import Any, Tuple, Union, Optional
@@ -17,7 +18,7 @@ from requests import Response
 
 from Tests.Marketplace.marketplace_services import init_storage_client, Pack, \
     load_json, get_content_git_client, get_recent_commits_data, store_successful_and_failed_packs_in_ci_artifacts, \
-    json_write
+    json_write, zip_pack
 from Tests.Marketplace.marketplace_statistics import StatisticsHandler
 from Tests.Marketplace.marketplace_constants import PackStatus, Metadata, GCPConfig, BucketUploadFlow, \
     CONTENT_ROOT_PATH, PACKS_FOLDER, PACKS_FULL_PATH, IGNORED_FILES, IGNORED_PATHS, LANDING_PAGE_SECTIONS_PATH
@@ -932,41 +933,44 @@ def map_pack_dependencies_graph(pack_name, first_level_graph, full_dep_graph):
     return full_dep_graph
 
 
-def upload_packs_with_dependencies_zip(extract_destination_path, packs_dependencies_mapping, packs_list, packs_dict):
+def upload_packs_with_dependencies_zip(extract_destination_path, packs_dependencies_mapping, packs_list, packs_dict,
+                                       signature_key, storage_bucket, storage_base_path):
     logging.info("Starting to collect pack with dependencies zips")
     full_deps_graph = {}
-    for pack in packs_list:
-        pack_with_dep_path = os.path.join(pack.path, "with_dependencies")
-        zip_with_deps_path = pack.path + "with_dependencies.zip"
-        full_deps_graph = map_pack_dependencies_graph(pack.name, packs_dependencies_mapping, full_deps_graph)
-        pack_deps = full_deps_graph[pack.name]
-        if not os.path.isfile(pack.zip_path):
-            task_status, _ = pack.zip_pack()
-            if not task_status:
-                pack.status = PackStatus.FAILED_ZIPPING_PACK_ARTIFACTS.name
-                pack.cleanup()
-                continue
-        shutil.move(pack.zip_path, os.path.join(pack_with_dep_path, pack.name + '.zip'))
-        for dep_name in pack_deps:
-            if dep_name not in packs_dict:
-                dep_pack = Pack(dep_name, os.path.join(extract_destination_path, dep_name))
-                packs_dict[dep_name] = dep_pack
-            else:
-                dep_pack = packs_dict[dep_name]
-            if not os.path.isfile(dep_pack.zip_path):
-                task_status, _ = dep_pack.zip_pack()
-                if not task_status:
-                    dep_pack.status = PackStatus.FAILED_ZIPPING_PACK_ARTIFACTS.name
-                    dep_pack.cleanup()
+    try:
+        for pack in packs_list:
+            pack_with_dep_path = os.path.join(pack.path, "with_dependencies")
+            zip_with_deps_path = os.path.join(pack_with_dep_path, pack.name + "_with_dependencies.zip")
+            Path(pack_with_dep_path).mkdir(parents=True, exist_ok=True)
+            full_deps_graph = map_pack_dependencies_graph(pack.name, packs_dependencies_mapping, full_deps_graph)
+            pack_deps = full_deps_graph[pack.name]
+            if not (pack.zip_path and os.path.isfile(pack.zip_path)):
+                if not zip_pack(pack, signature_key):
                     continue
-            shutil.move(dep_pack.zip_path, os.path.join(pack_with_dep_path, dep_name + '.zip'))
-        Pack.zip_folder_items(
-            pack_with_dep_path,
-            pack_with_dep_path,
-            zip_with_deps_path
-        )
-        os.remove(pack_with_dep_path)
-        # TODO: upload zip_with_deps_path
+            shutil.move(pack.zip_path, os.path.join(pack_with_dep_path, zip_with_deps_path))
+            for dep_name in pack_deps:
+                if dep_name not in packs_dict:
+                    dep_pack = Pack(dep_name, os.path.join(extract_destination_path, dep_name))
+                    packs_dict[dep_name] = dep_pack
+                else:
+                    dep_pack = packs_dict[dep_name]
+                if not (dep_pack.zip_path and os.path.isfile(dep_pack.zip_path)):
+                    if not zip_pack(dep_pack, signature_key):
+                        continue
+                shutil.move(dep_pack.zip_path, os.path.join(pack_with_dep_path, dep_name + '.zip'))
+            Pack.zip_folder_items(
+                pack_with_dep_path,
+                pack_with_dep_path,
+                zip_with_deps_path
+            )
+            task_status, skipped_upload, _ = pack.upload_to_storage(zip_with_deps_path, pack.latest_version,
+                                                                    storage_bucket, True, storage_base_path)
+            if not task_status:
+                pack.status = PackStatus.FAILED_UPLOADING_PACK.name
+                pack.cleanup()
+            shutil.rmtree(pack_with_dep_path)
+    except Exception as e:
+        logging.error(f"Failed uploading packs with dependencies: {e}")
 
 
 def main():
@@ -1203,13 +1207,19 @@ def main():
     print_packs_summary(successful_packs, skipped_packs, failed_packs, not is_bucket_upload_flow)
 
     # handle packs with dependencies zip
-    upload_packs_with_dependencies_zip(extract_destination_path, packs_dependencies_mapping, packs_list, packs_dict)
+    upload_packs_with_dependencies_zip(extract_destination_path, packs_dependencies_mapping, packs_list, packs_dict,
+                                       signature_key, storage_bucket, storage_base_path)
 
 
 if __name__ == '__main__':
-    # main()
-    full_graph = {}
-    with open("/Users/darbel/Downloads/packs_dependencies_outputs_example.json") as f:
-        a = json.load(f)
-    map_pack_dependencies_graph("Malware", a, full_graph)
-    print('ok')
+    main()
+    # full_graph = {}
+    # with open("/Users/darbel/Downloads/packs_dependencies_outputs_example.json") as f:
+    #     packs_dependencies_mapping = json.load(f)
+    # extract_destination_path = "/Users/darbel/dev/demisto/content/Packs"
+    # pack_names = ["Phishing"]
+    # packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in pack_names
+    #               if os.path.exists(os.path.join(extract_destination_path, pack_name))]
+    # packs_dict = {pack.name: pack for pack in packs_list}
+    # upload_packs_with_dependencies_zip(extract_destination_path, packs_dependencies_mapping, packs_list, packs_dict)
+    # print('ok')

@@ -23,7 +23,7 @@ from google.cloud import storage
 
 import Tests.Marketplace.marketplace_statistics as mp_statistics
 from Tests.Marketplace.marketplace_constants import PackFolders, Metadata, GCPConfig, BucketUploadFlow, PACKS_FOLDER, \
-    PackTags, PackIgnored, Changelog
+    PackTags, PackIgnored, Changelog, PackStatus
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace
 from Tests.scripts.utils import logging_wrapper as logging
 
@@ -913,12 +913,12 @@ class Pack(object):
         source_path = self._pack_path
         source_name = self._pack_name
         task_status = self.zip_folder_items(source_path, source_name, self._zip_path)
+        zip_pack_path = f"{source_path}.zip"
         if encryption_key:
             try:
                 Pack.encrypt_pack(self._zip_path, source_name, encryption_key, extract_destination_path,
                                   private_artifacts_dir, secondary_encryption_key)
                 # If the pack needs to be encrypted, it is initially at a different location than this final path
-                zip_pack_path = f"{source_path}.zip"
             except Exception:
                 task_status = False
                 logging.exception(f"Failed in encrypting {source_name} folder")
@@ -3059,3 +3059,32 @@ def underscore_file_name_to_dotted_version(file_name: str) -> str:
         (str): Dotted version of file name
     """
     return os.path.splitext(file_name)[0].replace('_', '.')
+
+
+def zip_pack(pack, signature_key):
+    task_status = pack.load_user_metadata()
+    if not task_status:
+        pack.status = PackStatus.FAILED_LOADING_USER_METADATA.value
+        pack.cleanup()
+        return False
+    task_status = pack.collect_content_items()
+    if not task_status:
+        pack.status = PackStatus.FAILED_COLLECT_ITEMS.name
+        pack.cleanup()
+        return False
+    task_status = pack.remove_unwanted_files(True)
+    if not task_status:
+        pack.status = PackStatus.FAILED_REMOVING_PACK_SKIPPED_FOLDERS
+        pack.cleanup()
+        return False
+    task_status = pack.sign_pack(signature_key)
+    if not task_status:
+        pack.status = PackStatus.FAILED_SIGNING_PACKS.name
+        pack.cleanup()
+        return False
+    task_status, _ = pack.zip_pack()
+    if not task_status:
+        pack.status = PackStatus.FAILED_ZIPPING_PACK_ARTIFACTS.name
+        pack.cleanup()
+        return False
+    return True
