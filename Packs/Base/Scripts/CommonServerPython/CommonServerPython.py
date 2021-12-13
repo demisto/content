@@ -8416,7 +8416,7 @@ def signal_handler_memory_dump(_sig, _frame):
     demisto.info('\n--- End Variables Dump ---\n\n')
 
 
-def print_memory_dump(classes_as_list: list):
+def print_memory_dump(classes_as_list):
     """
     A function that prints the memory dump to log info
 
