@@ -89,8 +89,8 @@ class SetPhishingCampaignDetails:
 
         args = {'key': EMAIL_CAMPAIGN_KEY, 'value': merged_campaign, 'append': append}
 
-        res = demisto.executeCommand("executeCommandAt",
-                               {'command': 'SetByIncidentId', 'incidents': incident_id, 'arguments': args})
+        res = self.execute_command("executeCommandAt",
+                                   {'command': 'SetByIncidentId', 'incidents': incident_id, 'arguments': args})
         return_results(res)
         return res
 

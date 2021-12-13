@@ -78,9 +78,9 @@ def test_copy_campaign_data_to_incident(context_mock, expected_results):
     """
 
     def _validate_execute_command_set(cmd, args):
-        assert cmd == 'SetByIncidentId'
-        assert args.get('key') == expected_results.get('key')
-        assert args.get('value') == expected_results.get('value')
+        assert cmd == 'executeCommandAt'
+        assert args['arguments'].get('key') == expected_results.get('key')
+        assert args['arguments'].get('value') == expected_results.get('value')
 
     test_obj = SetPhishingCampaignDetails()
     test_obj.execute_command = _validate_execute_command_set
@@ -280,6 +280,8 @@ def test_run_flow(mocker, campaign_id, incident_to_add_id, expected):
                         return_value=INCIDENTS_BY_ID[incident_to_add_id].get(EMAIL_CAMPAIGN_KEY))
     mocker.patch.object(demisto, 'incident', return_value={'id': incident_to_add_id})
     res = test_obj.run(campaign_id, False)
-    assert res[0] == 'SetByIncidentId'
-    assert res[1]['key'] == EMAIL_CAMPAIGN_KEY
-    assert res[1]['value']['incidents'] == expected
+    assert res[0] == 'executeCommandAt'
+    assert res[1]['command'] == 'SetByIncidentId'
+    assert res[1]['incidents'] == campaign_id
+    assert res[1]['arguments']['value']['incidents'] == expected
+    assert res[1]['arguments']['key'] == EMAIL_CAMPAIGN_KEY
