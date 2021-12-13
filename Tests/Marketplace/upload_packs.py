@@ -26,7 +26,7 @@ from demisto_sdk.commands.common.tools import run_command, str2bool
 
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
-
+import traceback
 
 def get_packs_names(target_packs: str, previous_commit_hash: str = "HEAD^") -> set:
     """Detects and returns packs names to upload.
@@ -970,6 +970,7 @@ def upload_packs_with_dependencies_zip(extract_destination_path, packs_dependenc
                 pack.cleanup()
             shutil.rmtree(pack_with_dep_path)
     except Exception as e:
+        logging.error(traceback.format_exc())
         logging.error(f"Failed uploading packs with dependencies: {e}")
 
 
