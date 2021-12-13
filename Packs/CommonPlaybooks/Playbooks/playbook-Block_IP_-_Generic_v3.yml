@@ -2656,10 +2656,10 @@ tasks:
     task:
       id: 9c275081-8770-40c6-8c5d-9041e5da00bb
       version: -1
-      name: f110702f-70b8-4c74-8438-829d4ec553c1
+      name: Cisco FirePower- Append network group object
       description: This playbook will append a network group object with new elements
         (IPs or network objects).
-      playbookId: f110702f-70b8-4c74-8438-829d4ec553c1
+      playbookName: Cisco FirePower- Append network group object
       type: playbook
       iscommand: false
       brand: ""
@@ -3450,8 +3450,8 @@ inputs:
   value: {}
   required: false
   description: Insert a tag name with which indicators will get tagged. This tag can
-    be used later in the External Dynamic Lists integration by using the tag for
-    filtering IPs in the indicator query.
+    be used later in the External Dynamic Lists integration by using the tag for filtering
+    IPs in the indicator query.
   playbookInputQuery:
 - key: DAG
   value: {}
