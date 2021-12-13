@@ -107,6 +107,11 @@ GALAXY_MAP = {
 
 
 class Client(BaseClient):
+
+    def __init__(self, timeout, base_url, verify, proxy):
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
+        self.timeout = timeout
+
     def search_query(self, body: Dict[str, Any]) -> Dict[str, Any]:
         """
         Creates a request to MISP to get all attributes filtered by query in the body argument
@@ -124,7 +129,7 @@ class Client(BaseClient):
                                       resp_type='json',
                                       headers=headers,
                                       data=json.dumps(body),
-                                      timeout=int(demisto.get(demisto.params(), 'timeout')))
+                                      timeout=self.timeout)
         return response
 
 
@@ -570,6 +575,7 @@ def main():
 
     params = demisto.params()
     base_url = urljoin(params.get('url').rstrip('/'), '/')
+    timeout = int(demisto.get(demisto.params(), 'timeout'))
     insecure = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     command = demisto.command()
@@ -577,7 +583,7 @@ def main():
 
     demisto.debug(f'Command being called is {command}')
     try:
-        client = Client(base_url=base_url, verify=insecure, proxy=proxy,)
+        client = Client(base_url=base_url, verify=insecure, proxy=proxy, timeout=timeout)
 
         if command == 'test-module':
             return_results(test_module(client, params))

@@ -10,6 +10,7 @@ This integration was integrated and tested with version 1.0 of MISP Feed.
     | --- | --- | --- |
     | Your server URL |  | True |
     | API Key | The API Key to use for the connection. | True |
+    | Timeout | The timeout of the HTTP requests sent to MISP API (in seconds). | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Fetch indicators |  | False |
