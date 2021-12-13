@@ -1067,7 +1067,7 @@ class TestHappyPath:
         assert context['Tags'][0] == 'wereplacedthetag'
 
     @pytest.mark.parametrize('args, client', [  # disable-secrets-detection
-        ({'indicator_name': 'ind_name'}, mock_client())])
+        ({'indicator_names': ['ind_name', 'ind2_name']}, mock_client())])
     def test_delete_threat_indicator_command(self, args, client, mocker):
         """
                 Given:
@@ -1086,7 +1086,7 @@ class TestHappyPath:
         readable_output = command_res.readable_output
 
         # validate
-        assert 'Threat Intelligence Indicators were deleted successfully.' in readable_output
+        assert "Threat Intelligence Indicators 'ind_name', 'ind2_name' were deleted successfully" in readable_output
 
     @pytest.mark.parametrize('args, client', [  # disable-secrets-detection
         ({'indicator_name': 'ind_name', 'tags': 'wereplacedthetag'}, mock_client())])

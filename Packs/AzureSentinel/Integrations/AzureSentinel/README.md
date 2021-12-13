@@ -1583,7 +1583,7 @@ There is no context output for this command.
 
 #### Human Readable Output
 
-Threat Intelligence Indicators were deleted successfully.
+Threat Intelligence Indicators 1286115b-3b65-5537-e831-969045792910 were deleted successfully.
 
 
 ### azure-sentinel-threat-indicator-tags-append

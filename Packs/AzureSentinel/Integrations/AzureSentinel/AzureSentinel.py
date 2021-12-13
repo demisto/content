@@ -934,7 +934,8 @@ def threat_indicators_data_to_xsoar_format(ind_data):
         'PatternType': properties.get('patternType', ''),
         'ValidFrom': format_date(properties.get('validFrom', '')),
         'ValidUntil': format_date(properties.get('validUntil', '')),
-        'Values': pattern.get('patternTypeValues')[0].get('value')
+        'Values': pattern.get('patternTypeValues')[0].get('value'),
+        'Deleted': False
     }
     remove_nulls_from_dictionary(formatted_data)
 
@@ -1189,15 +1190,21 @@ def update_threat_indicator_command(client, args):
 
 def delete_threat_indicator_command(client, args):
     indicator_names = argToList(args.get('indicator_names'))
+    outputs = []
 
     for indicator_name in indicator_names:
         url_suffix = f'threatIntelligence/main/indicators/{indicator_name}'
         client.http_request('DELETE', url_suffix)
+        outputs.append({
+            'Name': indicator_name,
+            'Deleted': True
+        })
 
     return CommandResults(
-        readable_output='Threat Intelligence Indicators were deleted successfully.',
+        readable_output='Threat Intelligence Indicators '+str(indicator_names).strip("[]")+' were deleted successfully',
         outputs_prefix='AzureSentinel.ThreatIndicator',
-        outputs=[],
+        outputs_key_field='Name',
+        outputs=outputs,
         raw_response={},
     )
 
