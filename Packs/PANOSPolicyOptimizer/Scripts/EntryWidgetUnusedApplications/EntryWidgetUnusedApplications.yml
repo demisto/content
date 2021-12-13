@@ -3,7 +3,7 @@ comment: Entry widget that returns the number of rules with unused applications 
 commonfields:
   id: EntryWidgetUnusedApplications
   version: -1
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.9.8.24399
 enabled: true
 name: EntryWidgetUnusedApplications
 runas: DBotWeakRole

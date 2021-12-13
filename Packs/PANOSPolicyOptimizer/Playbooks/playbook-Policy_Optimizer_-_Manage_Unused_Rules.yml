@@ -847,6 +847,7 @@ tasks:
       id: 9e0da4cd-1eff-4b44-8508-0c48fd7593d0
       version: -1
       name: Choose rules to delete
+      description: "Choose rules to be deleted by the playbook."
       type: collection
       iscommand: false
       brand: ""
