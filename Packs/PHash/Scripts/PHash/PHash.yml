@@ -5,25 +5,18 @@ args:
 comment: Script to create a  perceptual hash of an image (or file) stored in the incident.  Wrapps
   https://pypi.org/project/ImageHash/
 commonfields:
-  id: 744b19e2-06c6-4f3f-8f13-a5d4e333082b
+  id: PHash
   version: -1
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-    itemVersion: ""
-    packID: ba68f027-788d-4825-8ed8-ab6a31086b08
-    propagationLabels:
-    - all
-    toServerVersion: ""
 dockerimage: python-phash:latest
 enabled: true
-engineinfo: {}
-name: CreatePHash
+name: PHash
 outputs:
 - contextPath: phash
   description: Hash of the image
   type: string
-pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''
@@ -31,3 +24,6 @@ scripttarget: 0
 subtype: python3
 tags: []
 type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
