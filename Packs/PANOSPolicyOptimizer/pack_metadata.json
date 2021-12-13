@@ -10,6 +10,10 @@
     "categories": [
         "Network Security"
     ],
+    "itemPrefix": [
+        "PAN-OS",
+        "Policy Optimizer"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],
