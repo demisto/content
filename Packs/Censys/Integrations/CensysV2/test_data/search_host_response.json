@@ -1,0 +1,48 @@
+{
+    "code": 200,
+    "result": {
+        "hits": [
+            {
+                "autonomous_system": {
+                    "asn": 13335,
+                    "bgp_prefix": "1.0.0.0/24",
+                    "country_code": "US",
+                    "description": "CLOUDFLARENET",
+                    "name": "CLOUDFLARENET"
+                },
+                "ip": "1.0.0.0",
+                "location": {
+                    "continent": "Oceania",
+                    "coordinates": {
+                        "latitude": -33.494,
+                        "longitude": 143.2104
+                    },
+                    "country": "Australia",
+                    "country_code": "AU",
+                    "registered_country": "Australia",
+                    "registered_country_code": "AU",
+                    "timezone": "Australia/Sydney"
+                },
+                "services": [
+                    {
+                        "port": 80,
+                        "service_name": "HTTP",
+                        "transport_protocol": "TCP"
+                    },
+                    {
+                        "port": 443,
+                        "service_name": "HTTP",
+                        "transport_protocol": "TCP"
+                    }
+                ]
+            }
+        ],
+        "links": {
+            "next": "eyJBZnRlciI6WyIxLjAuMC40OSIsIlx1MDAzY25pbFx1MDAzZSIsIjAuMzk4MDY2NTUiXSwiUmV2ZXJzZSI6ZmFsc2V9",
+            "prev": ""
+        },
+        "query": "services.service_name:HTTP",
+        "total": 182406783
+    },
+    "status": "OK"
+}
