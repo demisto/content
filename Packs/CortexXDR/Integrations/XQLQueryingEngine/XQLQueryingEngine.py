@@ -298,7 +298,7 @@ def get_process_causality_network_activity_query(endpoint_ids: str, args: dict) 
 # =========================================== Helper Functions ===========================================#
 
 
-def convert_timeframe_string_to_json(time_to_convert: str) -> Dict[str, Any]:
+def convert_timeframe_string_to_json(time_to_convert: str) -> Dict[str, int]:
     """Convert a timeframe string to a json requred for XQL queries.
 
     Args:
