@@ -2717,10 +2717,10 @@ def main() -> None:
             return_results(get_cloud_resource_command(client, args))
 
         elif command == "expanse-get-risky-flows":
-            get_risky_flows_command(client, args) # deprecated
+            get_risky_flows_command(client, args)  # deprecated
 
         elif command == "expanse-list-risk-rules":
-            list_risk_rules_command(client, args) # deprecated
+            list_risk_rules_command(client, args)  # deprecated
 
         elif command == "expanse-get-services":
             return_results(get_services_command(client, args))
