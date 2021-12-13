@@ -995,7 +995,7 @@ inputs:
   value: {}
   required: true
   description: The integration in which to run the search and delete action. Can be
-    O365, Gmail, EWS or Agari Phishing Defense.
+    O365, Gmail, EWS, or Agari Phishing Defense.
   playbookInputQuery:
 - key: O365ExchangeLocation
   value:
@@ -1003,7 +1003,7 @@ inputs:
       root: incident
       accessor: emailto
   required: false
-  description: Used only in O365. Comma-separated list of mailboxes/distribution groups
+  description: Used only in O365. A comma-separated list of mailboxes/distribution groups
     to include, or use the value "All" to include all.
   playbookInputQuery:
 - key: O365KQL
@@ -1023,7 +1023,7 @@ inputs:
     simple: "False"
   required: false
   description: Used only in O365. Whether to include mailboxes other than regular
-    user mailboxes in the compliance search. Default is "false".
+    user mailboxes in the compliance search.
   playbookInputQuery:
 - key: O365DeleteType
   value: {}
@@ -1038,8 +1038,8 @@ inputs:
   description: Used only when searching and deleting emails in O365. The exchange
     location. Determines from where to search and delete emails searched using O365
     playbooks. Use the value "All" to search all mailboxes, use "SingleMailbox" to
-    search and delete the email only from the recipient's inbox, or specify "Manual"
-    to decide manually for every incident. Note - searching all mailboxes may take
+    search and delete the email only from the recipient's inbox, or use "Manual"
+    to decide manually for every incident. Note: Searching all mailboxes may take
     a significant amount of time.
   playbookInputQuery:
 - key: To
@@ -1056,7 +1056,7 @@ inputs:
   value:
     simple: "true"
   required: false
-  description: Limit the search to the current week (true/false).
+  description: Whether to limit the search to the current week.
   playbookInputQuery:
 outputs: []
 tests:
