@@ -90,7 +90,7 @@ tasks:
       {
         "position": {
           "x": 370,
-          "y": 2800
+          "y": 2980
         }
       }
     note: false
@@ -470,10 +470,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: aea82ba9-2d53-430c-8c78-9609937cad2f
+    taskid: cbdb7aa6-09e0-4c1b-8a07-f84bd528955d
     type: regular
     task:
-      id: aea82ba9-2d53-430c-8c78-9609937cad2f
+      id: cbdb7aa6-09e0-4c1b-8a07-f84bd528955d
       version: -1
       name: PAN-OS - Delete Rule
       description: Deletes a policy rule.
@@ -487,14 +487,14 @@ tasks:
     scriptarguments:
       rulename:
         complex:
-          root: PanOS.PolicyOptimizer.NoApps
-          accessor: '@name'
+          root: Port based policy rules to delete.Answers
+          accessor: "0"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 1270,
-          "y": 1770
+          "y": 1950
         }
       }
     note: false
@@ -525,7 +525,7 @@ tasks:
       {
         "position": {
           "x": 690,
-          "y": 1770
+          "y": 1780
         }
       }
     note: false
@@ -553,7 +553,7 @@ tasks:
       '#default#':
       - "16"
       "yes":
-      - "14"
+      - "28"
     scriptarguments:
       brandname:
         simple: Panorama
@@ -635,7 +635,7 @@ tasks:
       {
         "position": {
           "x": 690,
-          "y": 2455
+          "y": 2635
         }
       }
     note: false
@@ -666,7 +666,7 @@ tasks:
       {
         "position": {
           "x": 970,
-          "y": 2630
+          "y": 2810
         }
       }
     note: false
@@ -712,7 +712,7 @@ tasks:
       {
         "position": {
           "x": 1270,
-          "y": 1940
+          "y": 2120
         }
       }
     note: false
@@ -743,7 +743,7 @@ tasks:
       {
         "position": {
           "x": 1460,
-          "y": 2280
+          "y": 2460
         }
       }
     note: false
@@ -775,7 +775,7 @@ tasks:
       {
         "position": {
           "x": 1060,
-          "y": 2110
+          "y": 2290
         }
       }
     note: false
@@ -805,7 +805,7 @@ tasks:
       {
         "position": {
           "x": 920,
-          "y": 2280
+          "y": 2460
         }
       }
     note: false
@@ -870,6 +870,72 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: a57564d7-6407-4b7a-8cc7-88cd817b6011
+    type: collection
+    task:
+      id: a57564d7-6407-4b7a-8cc7-88cd817b6011
+      version: -1
+      name: Choose rules to delete
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1270,
+          "y": 1780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body:
+        simple: Choose policy rules to delete
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Port based policy rules to delete
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: PanOS.PolicyOptimizer.NoApps
+            accessor: '@name'
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Choose the policy rules to be deleted by the PAN-OS integration.
+        readonly: false
+      title: Port based policy rules to delete
+      description: Choose the policy rules to be deleted by the PAN-OS integration.
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -886,7 +952,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2845,
+        "height": 3025,
         "width": 1870,
         "x": 370,
         "y": 20
