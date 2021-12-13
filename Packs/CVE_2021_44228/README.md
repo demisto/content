@@ -15,4 +15,4 @@ More information:
 
 Note: This is a beta playbook, which lets you implement and test pre-release software. Since the playbook is beta, it might contain bugs. Updates to the pack during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the pack to help us identify issues, fix them, and continually improve.
 
-![CVE-2021-44228 - Log4j RCE](https://raw.githubusercontent.com/demisto/content/34a15a13c678a384821ced6f26d612409761b17d/Packs/CVE_2021_44228/doc_files/CVE-2021-44228_-_Log4j_RCE.png)
+![CVE-2021-44228 - Log4j RCE](https://raw.githubusercontent.com/demisto/content/8eaaef9d93f7c126d8592101f95e4a757d90b8e0/Packs/CVE_2021_44228/doc_files/CVE-2021-44228_-_Log4j_RCE.png)
