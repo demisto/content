@@ -186,7 +186,7 @@ class Client(BaseClient):
                         "geolocation": f'{ip_detail.get("latitude", "")},{ip_detail.get("longitude", "")}' if ip_detail
                         else "",
                         "asn": ip_detail.get("asn"),
-                        "cofensefeedthreatid": f'<a href="{threat.get("threatDetailURL")}">{threat_id}</a>',
+                        "cofensefeedthreatid": f'[{threat_id}]({threat.get("threatDetailURL")})',
                         "cofensefeedcontinentcode": ip_detail.get("continentCode"),
                         "cofensefeedlookupon": ip_detail.get("lookupOn"),
                         "cofensefeedroledescription": block.get("roleDescription"),
@@ -250,7 +250,7 @@ class Client(BaseClient):
                         "malwarefamily": malware_family.get("familyName"),
                         "description": malware_family.get("description"),
                         "sourceoriginalseverity": file.get("severityLevel"),
-                        "cofensefeedthreatid": f'<a href="{threat.get("threatDetailURL")}">{threat_id}</a>',
+                        "cofensefeedthreatid": f'[{threat_id}]({threat.get("threatDetailURL")})',
                         "cofensefeedfilename": file.get("fileName"),
                         "filetype": file_type,
                         "md5": file.get("md5Hex"),
