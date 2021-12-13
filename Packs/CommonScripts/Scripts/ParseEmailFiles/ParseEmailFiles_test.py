@@ -1101,7 +1101,6 @@ def test_eml_contains_attachment_with_unknown_encoded_file_name(mocker):
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(demisto, 'debug')
 
-
     main()
     results = demisto.results.call_args[0]
     debug = demisto.debug.call_args[0]
