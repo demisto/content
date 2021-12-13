@@ -35,4 +35,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Policy Optimizer - Generic](https://github.com/demisto/content/blob/82df056cff9dc4ce8b0753b341a4434593fa4608/Packs/PANOSPolicyOptimizer/doc_files/Policy_Optimizer_-_Generic.png?raw=true)
+![Policy Optimizer - Generic](https://github.com/demisto/content/raw/82df056cff9dc4ce8b0753b341a4434593fa4608/Packs/PANOSPolicyOptimizer/doc_files/Policy_Optimizer_-_Generic.png?raw=true)

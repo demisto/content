@@ -34,4 +34,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![Policy Optimizer - Add Applications to Policy Rules](https://github.com/demisto/content/blob/82df056cff9dc4ce8b0753b341a4434593fa4608/Packs/PANOSPolicyOptimizer/doc_files/Policy_Optimizer_-_Add_Applications_to_Policy_Rules.png?raw=true)
+![Policy Optimizer - Add Applications to Policy Rules](https://github.com/demisto/content/raw/82df056cff9dc4ce8b0753b341a4434593fa4608/Packs/PANOSPolicyOptimizer/doc_files/Policy_Optimizer_-_Add_Applications_to_Policy_Rules.png?raw=true)
