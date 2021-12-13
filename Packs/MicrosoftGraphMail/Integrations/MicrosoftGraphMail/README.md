@@ -42,6 +42,16 @@ The query parameter '$filter' is not supported when using the 'search' parameter
 | incidentType | The incident type. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+### Using National Cloud
+Using a national cloud endpoint is supported by setting the *Server URL* parameter to one of the following options:
+* US Government GCC-High Endpoint: `https://graph.microsoft.us`
+* US Government Department of Defence (DoD) Endpoint: `https://dod-graph.microsoft.us`
+* Microsoft 365 Germany Endpoint: `https://graph.microsoft.de`
+* Microsoft Operated by 21Vianet Endpoint: `https://microsoftgraph.chinacloudapi.cn`
+
+Refer to [Microsoft Integrations - Using National Cloud](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud) for more information.
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
