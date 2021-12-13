@@ -1,5 +1,5 @@
 Use the Azure Sentinel integration to get and manage incidents and get related entity information for incidents.
-This integration was integrated and tested with version xx of Azure Sentinel
+This integration was integrated and tested with version 2021-04-01 of Azure Sentinel
 
 ## Configure Azure Sentinel on Cortex XSOAR
 
