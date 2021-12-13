@@ -221,6 +221,15 @@ class PrismaCloudComputeClient(BaseClient):
         """
         return self._http_request(method="GET", url_suffix="/cves", params={"id": cve})
 
+    def get_defenders(self, params):
+        """
+        Sends a request to get defenders information
+
+        Returns:
+            list[dict]: defenders information.
+        """
+        return self._http_request(method="GET", url_suffix="/defenders", params=params)
+
 
 def str_to_bool(s):
     """
@@ -1015,6 +1024,56 @@ def get_cves(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
     )
 
 
+def get_defenders(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
+    """
+    Retrieve a list of defenders and their information.
+    Implement the command 'prisma-cloud-compute-defenders-list'.
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): cve command arguments.
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    args["limit"], args["offset"] = parse_limit_and_offset_values(
+        limit=args.get("limit", "20"), offset=args.get("offset", "0")
+    )
+
+    defenders = client.get_defenders(params=assign_params(**args))
+    if defenders:
+        for defender in defenders:
+            if "lastModified" in defender:
+                defender["lastModified"] = parse_date_string_format(date_string=defender.get("lastModified"))
+
+        table = tableToMarkdown(
+            name="Defenders Information",
+            t=[
+                {
+                    "hostname": defender.get("hostname"),
+                    "version": defender.get("version"),
+                    "cluster": defender.get("cluster"),
+                    "status": f"Connected since {defender.get('lastModified')}"
+                    if defender.get("connected") else f"Disconnected since {defender.get('lastModified')}",
+                    "listener": defender.get("features", {}).get("proxyListenerType")
+                } for defender in defenders
+            ],
+            headers=["hostname", "version", "cluster", "status", "listener"],
+            removeNull=True,
+            headerTransform=lambda word: word[0].upper() + word[1:]
+        )
+    else:
+        table = "No results found"
+
+    return CommandResults(
+        outputs_prefix="PrismaCloudCompute.DefenderDetails",
+        outputs_key_field="hostname",
+        outputs=defenders,
+        readable_output=table,
+        raw_response=defenders
+    )
+
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -1084,6 +1143,8 @@ def main():
             return_results(results=add_custom_malware_feeds(client=client, args=demisto.args()))
         elif requested_command == 'cve':
             return_results(results=get_cves(client=client, args=demisto.args()))
+        elif requested_command == 'prisma-cloud-compute-defenders-list':
+            return_results(results=get_defenders(client=client, args=demisto.args()))
     # Log exceptions
     except Exception as e:
         return_error(f'Failed to execute {requested_command} command. Error: {str(e)}')

@@ -1057,3 +1057,163 @@ Get infomration about the cves in the system, will return maximum of 50 records,
 | CVE-2021-44420 | python-django | ubuntu | 0 | low |
 
 
+
+
+### prisma-cloud-compute-defenders-list
+***
+Retrieve a list of defenders and their information
+
+
+#### Base Command
+
+`prisma-cloud-compute-defenders-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| cluster | Scopes the query by cluster name. | Optional | 
+| hostname | Name of a specific defender to retrieve. | Optional | 
+| type | Indicates the Defender types to return (e.g., docker, dockerWindows, cri, etc). | Optional | 
+| connected | Indicates whether to return only connected Defenders (true) or disconnected Defenders (false). | Optional | 
+| limit | The maximum of defender records to return. Default is 20. | Optional | 
+| offset | The offset number to begin listing defenders and their information. Default is 0. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaCloudCompute.DefenderDetails.category | String | Category is the category of the defender type \(host/container/serverless\). Range of acceptable values: container, host, serverless, appEmbedded | 
+| PrismaCloudCompute.DefenderDetails.certificateExpiration | Date | CertificateExpiration is the client's certificate expiry time | 
+| PrismaCloudCompute.DefenderDetails.cloudMetadata | Unknown | CloudMetadata is the cloud provider metadata of the host | 
+| PrismaCloudCompute.DefenderDetails.cluster | String | Cluster is the provided cluster name \(fallback is internal IP\) | 
+| PrismaCloudCompute.DefenderDetails.clusterID | String | ClusterID is a unique ID generated for each daemon set, and used to group Defenders by clustersNote - Kubernetes does not provide a cluster name as part of its API | 
+| PrismaCloudCompute.DefenderDetails.compatibleVersion | Boolean | CompatibleVersion indicates if the defender has a compatible version for communication \(e.g. request logs\) | 
+| PrismaCloudCompute.DefenderDetails.connected | Boolean | Connected indicates whether the defender is connected | 
+| PrismaCloudCompute.DefenderDetails.features | Unknown | Features are feature that are enabled in the defender such as listener type | 
+| PrismaCloudCompute.DefenderDetails.firewallProtection | Unknown | FirewallProtection describes the firewall protection status of app embedded defenders | 
+| PrismaCloudCompute.DefenderDetails.fqdn | String | FQDN is the full domain name used in audit alerts to identify specific hosts | 
+| PrismaCloudCompute.DefenderDetails.hostname | String | Hostname is the defender hostname | 
+| PrismaCloudCompute.DefenderDetails.lastModified | Date | LastModified is the last time the defender connectivity was modified | 
+| PrismaCloudCompute.DefenderDetails.port | Number | Port is the communication port between defender to console | 
+| PrismaCloudCompute.DefenderDetails.proxy | Unknown | Proxy is the proxy options of the defender | 
+| PrismaCloudCompute.DefenderDetails.remoteLoggingSupported | Boolean | RemoteLoggingSupported indicates if the defender logs can be retrieved from remote | 
+| PrismaCloudCompute.DefenderDetails.remoteMgmtSupported | Boolean | RemoteMgmtSupported indicated if the defender can be remotely managed \(upgrade, restart\) | 
+| PrismaCloudCompute.DefenderDetails.status | Unknown | Status is the feature status of the defender | 
+| PrismaCloudCompute.DefenderDetails.systemInfo | Unknown | SystemInfo is the system information of the defender host | 
+| PrismaCloudCompute.DefenderDetails.tasClusterID | String | TASClusterID is the ID used to identify the TAS cluster of the defender. Typically will be the Cloud controller API address | 
+| PrismaCloudCompute.DefenderDetails.type | String | Type is the type of the defender \(registry scanner/kubernetes node/etc...\). | 
+| PrismaCloudCompute.DefenderDetails.version | String | Version is the agent version | 
+
+
+#### Command Example
+```!prisma-cloud-compute-defenders-list connected=true limit=1```
+
+#### Context Example
+```json
+{
+    "PrismaCloudCompute": {
+        "DefenderDetails": {
+            "category": "container", 
+            "cloudMetadata": {
+                "resourceID": "123", 
+                "image": "image name", 
+                "provider": "aws", 
+                "type": "c5.xlarge", 
+                "region": "aws region", 
+                "accountID": "1234"
+            }, 
+            "hostname": "host1", 
+            "features": {
+                "proxyListenerType": "none"
+            }, 
+            "compatibleVersion": true, 
+            "lastModified": "September 02, 2021 11:05:08 AM", 
+            "firewallProtection": {
+                "supported": false, 
+                "enabled": false
+            }, 
+            "fqdn": "host1.lab.com", 
+            "remoteMgmtSupported": true, 
+            "status": {
+                "container": {
+                    "scanTime": "2021-12-13T11:05:14.178Z", 
+                    "completed": true
+                }, 
+                "features": {
+                    "err": ""
+                }, 
+                "process": {
+                    "enabled": true, 
+                    "err": ""
+                }, 
+                "lastModified": "0001-01-01T00:00:00Z", 
+                "appFirewall": {
+                    "enabled": true, 
+                    "err": ""
+                }, 
+                "hostNetworkFirewall": {
+                    "enabled": true, 
+                    "err": ""
+                }, 
+                "hostCustomCompliance": {
+                    "err": ""
+                }, 
+                "filesystem": {
+                    "enabled": true, 
+                    "err": ""
+                }, 
+                "runtime": {
+                    "enabled": true, 
+                    "err": ""
+                }, 
+                "image": {
+                    "scanTime": "2021-12-13T14:19:36.09Z", 
+                    "completed": true
+                }, 
+                "containerNetworkFirewall": {
+                    "enabled": true, 
+                    "err": ""
+                }, 
+                "network": {
+                    "enabled": true, 
+                    "err": ""
+                }
+            }, 
+            "version": "21.04.439", 
+            "collections": [
+                "All", 
+                "676921422616"
+            ], 
+            "proxy": {
+                "httpProxy": "", 
+                "ca": "", 
+                "password": {
+                    "encrypted": ""
+                }, 
+                "noProxy": "", 
+                "user": ""
+            }, 
+            "systemInfo": {
+                "kernelVersion": "4.14.123-111.109.amzn2.x86_64", 
+                "totalDiskSpaceGB": 199, 
+                "cpuCount": 4, 
+                "freeDiskSpaceGB": 180, 
+                "memoryGB": 7.446006774902344
+            }, 
+            "connected": true, 
+            "remoteLoggingSupported": true, 
+            "type": "docker", 
+            "port": 8084, 
+            "certificateExpiration": "2024-09-01T11:00:00Z"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+### Defenders Information
+|Hostname|Version|Status|Listener|
+|---|---|---|---|
+| host1 | 21.04.439 | Connected since September 02, 2021 11:05:08 AM | none |
+

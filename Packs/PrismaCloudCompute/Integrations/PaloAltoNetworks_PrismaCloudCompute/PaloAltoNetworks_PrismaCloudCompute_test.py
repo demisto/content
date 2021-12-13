@@ -5,7 +5,7 @@ from PaloAltoNetworks_PrismaCloudCompute import (
     HEADERS_BY_NAME, get_profile_host_list, get_container_profile_list, get_container_hosts_list,
     get_profile_container_forensic_list, get_profile_host_forensic_list, get_console_version, get_custom_feeds_ip_list,
     add_custom_ip_feeds, filter_api_response, parse_date_string_format, get_custom_malware_feeds,
-    add_custom_malware_feeds, get_cves
+    add_custom_malware_feeds, get_cves, get_defenders
 )
 
 from CommonServerPython import DemistoException
@@ -485,6 +485,12 @@ HTTP_REQUEST_URL_WITH_QUERY_PARAMS = [
         get_cves,
         "/cves",
         "https://test.com/cves?id=cve-2104"
+    ),
+    (
+        OrderedDict(cluster="cluster", hostname="hostname", type="type", offset="0", limit="20", connected=True),
+        get_defenders,
+        "/defenders",
+        "https://test.com/defenders?cluster=cluster&hostname=hostname&type=type&offset=0&limit=20&connected=true"
     )
 ]
 
@@ -975,6 +981,55 @@ EXPECTED_CONTEXT_OUTPUT_DATA = [
                 "Modified": "November 23, 2020 12:50:03 PM"
             }
         ]
+    ),
+    (
+        {"limit": "20", "offset": "0"},
+        get_defenders,
+        "/defenders",
+        [
+            {
+                "hostname": "host1",
+                "version": "24.04",
+                "connected": True,
+                "features": {
+                    "proxyListenerType": "none"
+                },
+                "category": "docker",
+                "lastModified": "2021-09-02T11:05:08.8Z",
+            },
+            {
+                "hostname": "host2",
+                "version": "24.04",
+                "connected": False,
+                "features": {
+                    "proxyListenerType": "none"
+                },
+                "category": "docker",
+                "lastModified": "2021-09-02T11:05:08.8Z",
+            }
+        ],
+        [
+            {
+                "hostname": "host1",
+                "version": "24.04",
+                "connected": True,
+                "features": {
+                    "proxyListenerType": "none"
+                },
+                "category": "docker",
+                "lastModified": "September 02, 2021 11:05:08 AM",
+            },
+            {
+                "hostname": "host2",
+                "version": "24.04",
+                "connected": False,
+                "features": {
+                    "proxyListenerType": "none"
+                },
+                "category": "docker",
+                "lastModified": "September 02, 2021 11:05:08 AM",
+            }
+        ],
     )
 ]
 

@@ -885,7 +885,9 @@ script:
             - ""
       outputs: []
     - name: cve
-      description: Get infomration about the cves in the system, will return maximum of 50 records, it is possible to query for partial cve description such as cve-2020 or cve-2014 or by severity/distro/package
+      description: Get infomration about the cves in the system, will return maximum
+        of 50 records, it is possible to query for partial cve description such
+        as cve-2020 or cve-2014 or by severity/distro/package
       deprecated: false
       arguments:
         - name: cve
@@ -896,16 +898,119 @@ script:
           defaultValue: ""
       outputs:
         - contextPath: CVE.ID
-          description: 'The ID of the CVE, for example: CVE-2015-1653'
+          description: "The ID of the CVE, for example: CVE-2015-1653"
           type: String
         - contextPath: CVE.CVSS
-          description: 'The CVSS of the CVE, for example: 10.0'
+          description: "The CVSS of the CVE, for example: 10.0"
           type: String
         - contextPath: CVE.Modified
           description: The timestamp of when the CVE was last modified.
           type: Date
         - contextPath: CVE.Description
           description: A description of the CVE.
+          type: String
+    - name: prisma-cloud-compute-defenders-list
+      description: Retrieve a list of defenders and their information
+      deprecated: false
+      arguments:
+        - name: cluster
+          description: Scopes the query by cluster name
+          required: false
+          isArray: false
+          defaultValue: ""
+        - name: hostname
+          description: Name of a specific defender to retrieve.
+          required: false
+          isArray: false
+          defaultValue: ""
+        - name: type
+          description: Indicates the Defender types to return (e.g., docker,
+            dockerWindows, cri, etc).
+          required: false
+          isArray: false
+          defaultValue: ""
+        - name: connected
+          description: Indicates whether to return only connected Defenders (true) or
+            disconnected Defenders (false).
+          required: false
+          isArray: false
+          defaultValue: ""
+        - name: limit
+          description: The maximum of defender records to return
+          required: false
+          isArray: false
+          defaultValue: "20"
+        - name: offset
+          description: The offset number to begin listing defenders and their information
+          required: false
+          isArray: false
+          defaultValue: "0"
+      outputs:
+        - contextPath: PrismaCloudCompute.DefenderDetails.category
+          description: "Category is the category of the defender type
+            (host/container/serverless). Range of acceptable values: container,
+            host, serverless, appEmbedded"
+          type: String
+        - contextPath: PrismaCloudCompute.DefenderDetails.certificateExpiration
+          description: CertificateExpiration is the client's certificate expiry time
+          type: Date
+        - contextPath: PrismaCloudCompute.DefenderDetails.cloudMetadata
+          description: CloudMetadata is the cloud provider metadata of the host
+          type: Unknown
+        - contextPath: PrismaCloudCompute.DefenderDetails.cluster
+          description: Cluster is the provided cluster name (fallback is internal IP)
+          type: String
+        - contextPath: PrismaCloudCompute.DefenderDetails.clusterID
+          description: ClusterID is a unique ID generated for each daemon set, and used to group Defenders by 
+            clustersNote - Kubernetes does not provide a cluster name as part of its API
+          type: String
+        - contextPath: PrismaCloudCompute.DefenderDetails.compatibleVersion
+          description: CompatibleVersion indicates if the defender has a compatible version for communication (e.g. request logs)
+          type: Boolean
+        - contextPath: PrismaCloudCompute.DefenderDetails.connected
+          description: Connected indicates whether the defender is connected
+          type: Boolean
+        - contextPath: PrismaCloudCompute.DefenderDetails.features
+          description: Features are feature that are enabled in the defender such as listener type
+          type: Unknown
+        - contextPath: PrismaCloudCompute.DefenderDetails.firewallProtection
+          description: FirewallProtection describes the firewall protection status of app embedded defenders
+          type: Unknown
+        - contextPath: PrismaCloudCompute.DefenderDetails.fqdn
+          description: FQDN is the full domain name used in audit alerts to identify specific hosts
+          type: String
+        - contextPath: PrismaCloudCompute.DefenderDetails.hostname
+          description: Hostname is the defender hostname
+          type: String
+        - contextPath: PrismaCloudCompute.DefenderDetails.lastModified
+          description: LastModified is the last time the defender connectivity was modified
+          type: Date
+        - contextPath: PrismaCloudCompute.DefenderDetails.port
+          description: Port is the communication port between defender to console
+          type: Number
+        - contextPath: PrismaCloudCompute.DefenderDetails.proxy
+          description: Proxy is the proxy options of the defender
+          type: Unknown
+        - contextPath: PrismaCloudCompute.DefenderDetails.remoteLoggingSupported
+          description: RemoteLoggingSupported indicates if the defender logs can be retrieved from remote
+          type: Boolean
+        - contextPath: PrismaCloudCompute.DefenderDetails.remoteMgmtSupported
+          description: RemoteMgmtSupported indicated if the defender can be remotely managed (upgrade, restart)
+          type: Boolean
+        - contextPath: PrismaCloudCompute.DefenderDetails.status
+          description: Status is the feature status of the defender
+          type: Unknown
+        - contextPath: PrismaCloudCompute.DefenderDetails.systemInfo
+          description: SystemInfo is the system information of the defender host
+          type: Unknown
+        - contextPath: PrismaCloudCompute.DefenderDetails.tasClusterID
+          description: TASClusterID is the ID used to identify the TAS cluster of the defender. Typically will be the Cloud controller API address
+          type: String
+        - contextPath: PrismaCloudCompute.DefenderDetails.type
+          description: Type is the type of the defender (registry scanner/kubernetes node/etc...). 
+          type: String
+        - contextPath: PrismaCloudCompute.DefenderDetails.version
+          description: Version is the agent version
           type: String
 tests:
   - No test
