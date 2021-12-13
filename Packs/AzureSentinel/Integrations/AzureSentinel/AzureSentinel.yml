@@ -14,7 +14,6 @@ configuration:
   required: true
   type: 4
 - display: Client ID
-  displaypassword: Client Secret
   name: credentials
   required: true
   type: 9
@@ -956,6 +955,7 @@ script:
       description: |-
         A link that specifies a starting point to use for subsequent calls.
         This argument overrides all of the other command arguments.
+        There may be no support for pagination.
       isArray: false
       name: next_link
       required: false
@@ -1012,7 +1012,7 @@ script:
       type: Unknown
     - contextPath: AzureSentinel.ThreatIndicator.KillChainPhases.KillChainName
       description: The kill chains name of the indicator.
-      type: Unknown
+      type: String
     - contextPath: AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeKey
       description: The pattern type key of the indicator.
       type: Unknown
@@ -1058,6 +1058,7 @@ script:
       description: |-
         A link that specifies a starting point to use for subsequent calls.
         This argument overrides all of the other command arguments.
+        There may be no support for pagination.
       isArray: false
       name: next_link
       required: false
@@ -1190,7 +1191,7 @@ script:
       type: Unknown
     - contextPath: AzureSentinel.ThreatIndicator.KillChainPhases.KillChainName
       description: The kill chains name of the indicator.
-      type: Unknown
+      type: String
     - contextPath: AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeKey
       description: The pattern type key of the indicator.
       type: Unknown
@@ -1385,7 +1386,7 @@ script:
       type: Unknown
     - contextPath: AzureSentinel.ThreatIndicator.KillChainPhases.KillChainName
       description: The kill chains name of the indicator.
-      type: Unknown
+      type: String
     - contextPath: AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeKey
       description: The pattern type key of the indicator.
       type: Unknown
@@ -1574,7 +1575,7 @@ script:
       type: Unknown
     - contextPath: AzureSentinel.ThreatIndicator.KillChainPhases.KillChainName
       description: The kill chains name of the indicator.
-      type: Unknown
+      type: String
     - contextPath: AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeKey
       description: The pattern type key of the indicator.
       type: Unknown
@@ -1684,7 +1685,7 @@ script:
       type: Unknown
     - contextPath: AzureSentinel.ThreatIndicator.KillChainPhases.KillChainName
       description: The kill chains name of the indicator.
-      type: Unknown
+      type: String
     - contextPath: AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeKey
       description: The pattern type key of the indicator.
       type: Unknown
@@ -1783,7 +1784,7 @@ script:
       type: Unknown
     - contextPath: AzureSentinel.ThreatIndicator.KillChainPhases.KillChainName
       description: The kill chains name of the indicator.
-      type: Unknown
+      type: String
     - contextPath: AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeKey
       description: The pattern type key of the indicator.
       type: Unknown
