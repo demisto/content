@@ -1201,7 +1201,8 @@ def delete_threat_indicator_command(client, args):
         })
 
     return CommandResults(
-        readable_output='Threat Intelligence Indicators '+str(indicator_names).strip("[]")+' were deleted successfully',
+        readable_output='Threat Intelligence Indicators ' + str(indicator_names).strip("[]") +
+                        ' were deleted successfully',
         outputs_prefix='AzureSentinel.ThreatIndicator',
         outputs_key_field='Name',
         outputs=outputs,
