@@ -79,7 +79,7 @@ ZERO = timedelta(0)
 HOUR = timedelta(hours=1)
 
 # The max number of profiling related rows to print to the log on memory dump
-PROFILING_DUMP_ROWS_LIMIT: int = 20
+PROFILING_DUMP_ROWS_LIMIT = 20
 
 
 if IS_PY3:
