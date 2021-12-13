@@ -109,8 +109,6 @@ def http_request(uri: str, method: str, headers: dict = {},
     if is_pcap:
         return result
 
-    demisto.debug(f'THIS IS THE RESULT TEXT \n\n{result.text}\n\n STATUS CODE {result.status_code}')
-
     json_result = json.loads(xml2json(result.text))
 
     # handle raw response that does not contain the response key, e.g configuration export
