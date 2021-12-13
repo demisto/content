@@ -13,6 +13,12 @@ configuration:
   type: 9
   required: true
   hiddenusername: true
+- display: Timeout
+  name: timeout
+  defaultvalue: "60"
+  type: 0
+  required: false
+  additionalinfo: The timeout of the HTTP requests sent to MISP API (in seconds). If no value is provided the timeout will be set to 60 seconds.
 - display: Fetch indicators
   name: feed
   required: false
