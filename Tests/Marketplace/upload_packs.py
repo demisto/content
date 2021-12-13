@@ -943,6 +943,9 @@ def upload_packs_with_dependencies_zip(extract_destination_path, packs_dependenc
             zip_with_deps_path = os.path.join(pack_with_dep_path, pack.name + "_with_dependencies.zip")
             Path(pack_with_dep_path).mkdir(parents=True, exist_ok=True)
             full_deps_graph = map_pack_dependencies_graph(pack.name, packs_dependencies_mapping, full_deps_graph)
+            if pack.name not in full_deps_graph:
+                logging.error(f"{pack.name} is missing from full_deps_graph")
+                continue
             pack_deps = full_deps_graph[pack.name]
             if not (pack.zip_path and os.path.isfile(pack.zip_path)):
                 if not zip_pack(pack, signature_key):
