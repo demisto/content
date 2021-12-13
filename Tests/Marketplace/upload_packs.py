@@ -950,7 +950,7 @@ def upload_packs_with_dependencies_zip(extract_destination_path, packs_dependenc
             shutil.move(pack.zip_path, os.path.join(pack_with_dep_path, zip_with_deps_path))
             for dep_name in pack_deps:
                 logging.info(f"Starting going over {dep_name} dependency")
-                if dep_name == 'Base':
+                if 'Base' in dep_name:
                     logging.info("Skipping Base")
                     continue
                 if dep_name not in packs_dict:
