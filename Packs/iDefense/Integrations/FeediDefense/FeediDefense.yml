@@ -8,11 +8,11 @@ configuration:
   name: feed
   required: false
   type: 8
-- display: API Key
-  hidden: false
-  name: api_token
+- displaypassword: API Token
+  name: credentials
+  type: 9
   required: true
-  type: 4
+  hiddenusername: true
 - additionalinfo: Indicators from this integration instance will be marked with this
     reputation
   defaultvalue: Bad

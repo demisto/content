@@ -137,7 +137,7 @@ def main():
     params['feed_name_to_config'] = create_fetch_configuration(indicators_type, filters, params)
 
     params['headers'] = {"Content-Type": "application/json",
-                         'auth-token': params.get('api_token')}
+                         'auth-token': demisto.get(params, 'credentials.password')}
 
     feed_main(params, 'iDefense Feed', 'idefense')
 

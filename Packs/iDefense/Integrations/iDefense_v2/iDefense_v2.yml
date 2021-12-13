@@ -8,11 +8,11 @@ configuration:
   defaultvalue: https://api.intelgraph.idefense.com/
   type: 0
   required: true
-- display: API Token
-  name: api_token
-  defaultvalue: ""
-  type: 4
+- displaypassword: API Token
+  name: credentials
+  type: 9
   required: true
+  hiddenusername: true
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
