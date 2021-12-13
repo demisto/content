@@ -1,5 +1,5 @@
 {
-	"id": "incident_otsubstationcontact",
+	"id": "incident_otsecuritysubstationcontact",
 	"version": -1,
 	"modified": "2021-11-29T06:36:45.975750149Z",
 	"sortValues": null,
@@ -11,11 +11,11 @@
 	"vcShouldKeepItemLegacyProdMachine": false,
 	"commitMessage": "",
 	"shouldCommit": false,
-	"name": "OT Substation Contact",
+	"name": "OTSecurity Substation Contact",
 	"ownerOnly": false,
 	"placeholder": "",
 	"description": "",
-	"cliName": "otsubstationcontact",
+	"cliName": "otsecuritysubstationcontact",
 	"type": "shortText",
 	"closeForm": false,
 	"editForm": true,
@@ -35,7 +35,7 @@
 	"mergeStrategy": "",
 	"hidden": false,
 	"associatedTypes": [
-		"OT Rogue Device Found"
+		"OTSecurity Rogue Device Found"
 	],
 	"systemAssociatedTypes": null,
 	"associatedToAll": false,
