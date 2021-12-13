@@ -109,7 +109,7 @@ def http_request(uri: str, method: str, headers: dict = {},
     if is_pcap:
         return result
 
-    # demisto.debug(f'THIS IS THE RESULT TEXT {result.text} STATUS CODE {result.status_code}')
+    demisto.debug(f'THIS IS THE RESULT TEXT \n\n{result.text}\n\n STATUS CODE {result.status_code}')
 
     json_result = json.loads(xml2json(result.text))
 
@@ -499,6 +499,7 @@ def panorama_command(args: dict):
 @logger
 def panorama_commit(args):
     command: str = ''
+    partial_command: str = ''
     is_partial = False
     if device_group := args.get('device-group'):
         command += f'<device-group><entry name="{device_group}"/></device-group>'
@@ -506,7 +507,7 @@ def panorama_commit(args):
     admin_name = args.get('admin_name')
     if admin_name:
         is_partial = True
-        command += f'<partial><admin><member>{admin_name}</member></admin></partial>'
+        partial_command += f'<admin><member>{admin_name}</member></admin>'
 
     force_commit = argToBoolean(args.get('force_commit')) if args.get('force_commit') else None
     if force_commit:
@@ -516,13 +517,16 @@ def panorama_commit(args):
     exclude_device_network_configuration = argToBoolean(exclude_device_network) if exclude_device_network else None
     if exclude_device_network_configuration:
         is_partial = True
-        command += '<partial><device-and-network>excluded</device-and-network></partial>'
+        partial_command += '<device-and-network>excluded</device-and-network>'
 
     exclude_shared_objects_str = args.get('exclude_shared_objects')
     exclude_shared_objects = argToBoolean(exclude_shared_objects_str) if exclude_shared_objects_str else None
     if exclude_shared_objects:
         is_partial = True
-        command += '<partial><shared-object>excluded</shared-object></partial>'
+        partial_command += '<shared-object>excluded</shared-object>'
+
+    if is_partial:
+        command = f'{command}<partial>{partial_command}</partial>'
 
     params = {
         'type': 'commit',
@@ -633,15 +637,10 @@ def panorama_push_to_device_group(args: dict):
     device_group = args.get('device-group', DEVICE_GROUP)
     command += f'<device-group><entry name="{device_group}"/></device-group>'
 
-    vsys_name = args.get('vsys_name')
     serial_number = args.get('serial_number')
-    # Check that either both are specified either both are empty.
-    if bool(vsys_name) != bool(serial_number):
-        raise Exception('Cannot preform virtual system commit without a serial_number and a vsys_name')
-
-    if vsys_name and serial_number:
-        command = f'<device-group><entry name="{device_group}"/><devices><entry name="{serial_number}">' \
-                  f'<vsys><member>{vsys_name}</member></vsys></entry></devices></device-group>'
+    if serial_number:
+        command = f'<device-group><entry name="{device_group}"><devices><entry name="{serial_number}"/>' \
+                  f'</devices></entry></device-group>'
 
     if argToBoolean(args.get('validate-only', 'false')):
         command += '<validate-only>yes</validate-only>'
@@ -656,8 +655,6 @@ def panorama_push_to_device_group(args: dict):
         'cmd': f'<commit-all><shared-policy>{command}</shared-policy></commit-all>',
         'key': API_KEY
     }
-
-    demisto.debug(f"DDDDD: The command is {params['cmd']}")
 
     result = http_request(
         URL,

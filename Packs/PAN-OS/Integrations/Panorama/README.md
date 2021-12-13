@@ -268,7 +268,11 @@ Commits a configuration to Palo Alto Firewall or Panorama, but does not validate
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| description | Commit description. | Optional | 
+| description | Commit description. | Optional |
+| admin_name | To commit admin-level changes on a firewall, include the administrator name in the request. | Optional |
+| force_commit | (True/False) Force Commit | Optional |
+| exclude_device_network_configuration | (True/False) Partial commit while excluding shared objects and device and network configuration. | Optional | 
+| exclude_shared_objects | (True/False) Partial commit while excluding shared objects and device and network configuration.| Optional |
 
 #### Context Output
 
@@ -317,6 +321,7 @@ Pushes rules from PAN-OS to the configured device group. In order to push the co
 | validate-only | Pre policy validation. | Optional. |
 | include-template | Whether to include template changes. | Optional. |
 | description | Push description. | Optional |
+| serial_number | The serial number for a virtual system commit. If provided, the commit will be a virtual system commit. | Optional |
 
 
 #### Context Output

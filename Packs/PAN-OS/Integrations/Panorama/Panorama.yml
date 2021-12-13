@@ -176,13 +176,28 @@ script:
     - description: To commit admin-level changes on a firewall, include the administrator
         name in the request.
       name: admin_name
-    - description: (True/False) Force Commit
+    - auto: PREDEFINED
+      description: (True/False) Force Commit
       name: force_commit
-    - description: Partial commit while excluding shared objects and device and network configuration.
+      defaultValue: 'false'
+      predefined:
+        - 'true'
+        - 'false'
+    - auto: PREDEFINED
+      description: (True/False) Partial commit while excluding shared objects and device and network configuration.
       name: exclude_device_network_configuration
-    - description: (True/False) Partial commit while excluding shared objects and
+      defaultValue: 'false'
+      predefined:
+        - 'true'
+        - 'false'
+    - auto: PREDEFINED
+      description: (True/False) Partial commit while excluding shared objects and
         device and network configuration.
       name: exclude_shared_objects
+      defaultValue: 'false'
+      predefined:
+        - 'true'
+        - 'false'
     description: Commits a configuration to the Palo Alto firewall or Panorama, but
       does not validate if the commit was successful. Committing to Panorama does
       not push the configuration to the firewalls. To push the configuration, run
@@ -215,9 +230,7 @@ script:
       - 'false'
     - description: Push description.
       name: description
-    - description: The virtual system name. If provided, the commit will be a virtual system commit and a serial number must be provided.
-      name: vsys_name
-    - description: The serial number for a virtual system commit. If provided, the commit will be a virtual system commit and a vsys_name must be provided.
+    - description: The serial number for a virtual system commit. If provided, the commit will be a virtual system commit.
       name: serial_number
     description: Pushes rules from PAN-OS to the configured device group. In order
       to push the configuration to Prisma Access managed tenants (single or multi
