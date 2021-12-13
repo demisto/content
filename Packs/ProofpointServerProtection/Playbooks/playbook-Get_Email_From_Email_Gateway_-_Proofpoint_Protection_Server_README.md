@@ -1,4 +1,4 @@
-Retrieve a specified eml/msg file directly from Proofpoint Protection Server.
+This playbook retrieves a specified EML/MSG file directly from the Proofpoint Protection Server.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -7,20 +7,20 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* ProofpointProtectionServerV2
+ProofpointProtectionServerV2
 
 ### Scripts
 This playbook does not use any scripts.
 
 ### Commands
-* proofpoint-pps-quarantine-message-download
+proofpoint-pps-quarantine-message-download
 
 ## Playbook Inputs
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| MessageID | The Proofpoint message GUID |  | Optional |
+| MessageID | The Proofpoint message GUID. |  | Optional |
 
 ## Playbook Outputs
 ---
