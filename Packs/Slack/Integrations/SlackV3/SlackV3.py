@@ -219,7 +219,7 @@ def paginated_search_for_user(user_to_search: str):
         workspace_users = response['members'] if response and response.get('members',
                                                                            []) else []
         cursor = response.get('response_metadata', {}).get('next_cursor')
-        user = return_user_filter(user_to_search, workspace_users)
+        user = return_user_filter(user_to_search.lower(), workspace_users)
         if user:
             break
         if not cursor:
@@ -288,7 +288,7 @@ def get_user_by_name_safe_mode_disabled(user_to_search, add_to_context):
         demisto.debug(f"Checking in context for {user_to_search}")
         # Check if we already have the user to prevent call to users.lookupByEmail
         users = json.loads(integration_context['users'])
-        user = return_user_filter(user_to_search, users)
+        user = return_user_filter(user_to_search.lower(), users)
 
     if not user and re.match(emailRegex, user_to_search):
         demisto.debug(f"Checking via API for email of {user_to_search}")
