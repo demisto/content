@@ -611,8 +611,8 @@ def send_mail(args: dict, sg_from_email: str, sg_sender_name: str, sg):
     reply_to_email = args.get('ReplyTo')
     if reply_to_email:
         message.reply_to = ReplyTo(reply_to_email, None)  # type: ignore[name-defined]
-    elif reply_to_email == "":
-        return "Send-email failed: replyTo email is empty, please provide valid email"
+    else:
+        raise DemistoException('ReplyTo email is invalid, please provide a valid email.')
 
     message.from_email = From(sg_from_email, sg_sender_name)  # type: ignore[name-defined]
 
