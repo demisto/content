@@ -170,22 +170,22 @@ script:
       type: Unknown
     - contextPath: Ticket.Priority
       description: The priority of the ticket.
-      type: Unknown
+      type: String
     - contextPath: Ticket.ProjectName
       description: The ticket project name.
-      type: Unknown
+      type: String
     - contextPath: Ticket.DueDate
       description: The due date.
-      type: Unknown
+      type: Date
     - contextPath: Ticket.Created
       description: The time the ticket was created.
-      type: Unknown
+      type: Date
     - contextPath: Ticket.LastSeen
       description: The last time the ticket was viewed.
-      type: Unknown
+      type: Date
     - contextPath: Ticket.LastUpdate
       description: The last time the ticket was updated.
-      type: Unknown
+      type: Date
   - arguments:
     - default: false
       description: The user's attribute value. Can be Username or Email address. When
@@ -291,22 +291,22 @@ script:
       type: Unknown
     - contextPath: Ticket.Priority
       description: The priority of the ticket.
-      type: Unknown
+      type: String
     - contextPath: Ticket.ProjectName
       description: The ticket project name.
-      type: Unknown
+      type: String
     - contextPath: Ticket.DueDate
       description: The due date.
-      type: Unknown
+      type: Date
     - contextPath: Ticket.Created
       description: The time the ticket was created.
-      type: Unknown
+      type: Date
     - contextPath: Ticket.LastSeen
       description: The last time the ticket was viewed.
-      type: Unknown
+      type: Date
     - contextPath: Ticket.LastUpdate
       description: The last time the ticket was updated.
-      type: Unknown
+      type: Date
   - arguments:
     - default: false
       description: The issue object (in JSON format).
