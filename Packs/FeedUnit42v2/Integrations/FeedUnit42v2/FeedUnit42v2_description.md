@@ -1,6 +1,6 @@
 
-## Unit42
-In order to access the Unit42 feed, you first must register for an account.
+## Unit 42
+In order to access the Unit 42 feed, you first must register for an account.
 
 1. Go to https://stix2.unit42.org/ to sign up.
 2. Log in and create an API key for the service using the 'API Keys' page.
