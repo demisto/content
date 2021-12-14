@@ -976,10 +976,15 @@ def upload_packs_with_dependencies_zip(extract_destination_path, packs_dependenc
                 pack_with_dep_path,
                 zip_with_deps_path
             )
-            task_status, skipped_upload, _ = pack.upload_to_storage(zip_with_deps_path, pack.latest_version,
-                                                                    storage_bucket, True, storage_base_path,
-                                                                    upload_path)
+            logging.info(
+                f"#### {pack.name} is now being uploaded to marketplace in {upload_path}")
+            task_status, skipped_upload, _ = pack.upload_to_storage(zip_with_deps_path, '', storage_bucket, True,
+                                                                    storage_base_path, upload_path)
+            logging.info(
+                f"#### {pack.name} upload is done")
             if not task_status:
+                logging.info(
+                    f"#### {pack.name} upload failed")
                 pack.status = PackStatus.FAILED_UPLOADING_PACK.name
                 pack.cleanup()
     except Exception as e:
@@ -1226,7 +1231,7 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    # main()
     # full_graph = {}
     # with open("/Users/darbel/Downloads/packs_dependencies_outputs_example.json") as f:
     #     packs_dependencies_mapping = json.load(f)
@@ -1237,3 +1242,4 @@ if __name__ == '__main__':
     # packs_dict = {pack.name: pack for pack in packs_list}
     # upload_packs_with_dependencies_zip(extract_destination_path, packs_dependencies_mapping, packs_list, packs_dict)
     # print('ok')
+    Pack.zip_folder_items('/Users/darbel/dev/demisto/content/Packs/PhishLabs/with_dependencies', 'lo', '/Users/darbel/dev/demisto/content/Packs/PhishLabs/PhishLabs.zip')
