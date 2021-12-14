@@ -125,28 +125,9 @@ def format_url(non_formatted_url: str) -> str:
     return formatted_url
 
 
-def expand_url(formatted_url: str) -> Set[str]:
-    """
-    Expands given URL. Returns a set of one URL if the URL is not a shorten URL, else returns shorten URL and
-    its expanded URL as a set.
-    Args:
-        formatted_url (set): URL.
-
-    Returns:
-        (Set[str]): Set of URL, and its expanded URL if such exists and is different than the given URL.
-    """
-    try:
-        expanded_url: str = urlopen(formatted_url, timeout=1).url
-        return {formatted_url, expanded_url}
-    # In case expanded URL is broken or does not exist anymore
-    except (HTTPError, ValueError, URLError):
-        pass
-    return {formatted_url}
-
-
 def main():
     try:
-        demisto.results(format_url(expand_url(demisto.args().get('input'))))
+        demisto.results(format_url(demisto.args().get('input')))
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute ExtractURL. Error: {str(e)}')

@@ -282,38 +282,9 @@ def test_main_flow_valid(mocker):
     - Ensure URL are formatted as expected.
     """
     from ExtractURL import main
-    from ExtractURL import CommandResults
-    import ExtractURL
     import demistomock as demisto
     mocker.patch.object(demisto, 'args', return_value={'input': f'{TEST_URL_HTTP}'})
     mock_results = mocker.patch.object(demisto, 'results')
     main()
     result_ = mock_results.call_args.args[0]
     assert result_ == TEST_URL_HTTP
-
-
-class MockHTTPResponse:
-    def __init__(self, url: str):
-        self.url = url
-
-
-@pytest.mark.parametrize('formatted_url, urlopen_answer, expected', [(TEST_URL_HTTP, TEST_URL_HTTP, {TEST_URL_HTTP}),
-                                                                     ('https://expand.com', 'https://expanded_url.com',
-                                                                      {'https://expand.com',
-                                                                       'https://expanded_url.com'})])
-def test_expand_url_redirect(mocker, formatted_url: str, urlopen_answer: str, expected: set):
-    from ExtractURL import expand_url
-    import ExtractURL
-    mocker.patch.object(ExtractURL, 'urlopen', return_value=MockHTTPResponse(urlopen_answer))
-    assert expand_url(formatted_url) == expected
-
-
-def raise_exception(exc: Exception):
-    raise exc
-
-
-def test_expand_url_failed_redirect(mocker, exception_type):
-    from ExtractURL import expand_url
-    import ExtractURL
-    mocked_obj = mocker.patch.object(ExtractURL, 'urlopen', side_effect=raise_exception)
-    assert expand_url(TEST_URL_HTTP) == TEST_URL_HTTP
