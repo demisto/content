@@ -25,7 +25,7 @@
 <strong>Name</strong>: a textual name for the integration instance.</li>
 <li><strong>Server URL (e.g. <a href="https://192.168.0.1/" rel="nofollow">https://192.168.0.1</a>)</strong></li>
 <li><strong>Username (Only if your Cuckoo service requires HTTP auth)</strong></li>
-<li><strong>API Key</strong></li>
+<li1>In order to authenticate with a Cluster Authentication Token, insert \`__token\` in the "Username" textbox, and the token itself in the "Password" textbox.</li1>
 <li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy settings</strong></li>
 </ul>
