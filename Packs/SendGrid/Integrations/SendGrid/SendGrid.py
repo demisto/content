@@ -634,8 +634,8 @@ def send_mail(args: dict, sg_from_email: str, sg_sender_name: str, sg):
         bcc_emails = bcc_emails if isinstance(bcc_emails, list) else bcc_emails.split(",")
         for email in bcc_emails:
             message.bcc = Bcc(email, None, p=0)  # type: ignore[name-defined]
-    elif bcc_emails == "":
-        return "Send-email failed: BCC list is empty, please provide valid email"
+    else:
+        raise DemistoException('BCC list is empty, please provide valid email.')
 
     response = sg.send(message)
     if response.status_code == 202:
