@@ -1,0 +1,800 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: TrustwaveFusion
+  version: -1
+configuration:
+- defaultvalue: https://api.fusion.trustwave.com
+  display: Fusion API URL
+  name: url
+  required: true
+  type: 0
+- additionalinfo: The API Key to use for connection
+  display: API Key
+  name: apikey
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: '100'
+  display: Maximum number of incidents per fetch
+  hidden: false
+  name: max_fetch
+  required: false
+  type: 0
+- additionalinfo: 'The format: <number> <time unit>. e.g., 12 hours, 7 days, 2 seconds
+    etc.'
+  defaultvalue: 5 days
+  display: First fetch time
+  hidden: false
+  name: first_fetch
+  required: false
+  type: 0
+- additionalinfo: Types of tickets to fetch
+  defaultvalue: INCIDENT
+  display: Ticket Types
+  name: ticket_types
+  options:
+  - CASE
+  - INCIDENT
+  - CHANGE
+  required: false
+  type: 16
+description: Trustwave Fusion Integration
+display: TrustwaveFusion
+name: TrustwaveFusion
+script:
+  commands:
+  - arguments:
+    - default: true
+      defaultValue:
+      description: Incident ID
+      name: id
+      required: true
+    description: Get a single incident
+    name: trustwave-get-ticket
+    outputs:
+    - contextPath: Trustwave.Ticket.number
+      description: ''
+      type: String
+    - contextPath: Trustwave.Ticket.subject
+      description: ''
+      type: String
+    - contextPath: Trustwave.Ticket.status
+      description: ''
+      type: String
+    - contextPath: Trustwave.Ticket.description
+      description: ''
+      type: String
+    - contextPath: Trustwave.Ticket.createdBy
+      description: ''
+      type: String
+    - contextPath: Trustwave.Ticket.createdOn
+      description: ''
+      type: Date
+    - contextPath: Trustwave.Ticket.customerId
+      description: ''
+      type: Number
+    - contextPath: Trustwave.Ticket.customerName
+      description: ''
+      type: String
+    - contextPath: Trustwave.Ticket.impact
+      description: ''
+      type: String
+    - contextPath: Trustwave.Ticket.notes.actor
+      description: ''
+      type: String
+    - contextPath: Trustwave.Ticket.notes.text
+      description: ''
+      type: String
+    - contextPath: Trustwave.Ticket.notes.timestamp
+      description: ''
+      type: Date
+    - contextPath: Trustwave.Ticket.performedBy
+      description: ''
+      type: String
+    - contextPath: Trustwave.Ticket.priority
+      description: ''
+      type: String
+    - contextPath: Trustwave.Ticket.soarActions
+      description: ''
+      type: Unknown
+    - contextPath: Trustwave.Ticket.soarActionsTaken
+      description: ''
+      type: Unknown
+    - contextPath: Trustwave.Ticket.survey
+      description: ''
+      type: Boolean
+    - contextPath: Trustwave.Ticket.type
+      description: ''
+      type: String
+    - contextPath: Trustwave.Ticket.updatedBy
+      description: ''
+      type: String
+    - contextPath: Trustwave.Ticket.updatedOn
+      description: ''
+      type: Date
+    - contextPath: Trustwave.Ticket.urgency
+      description: ''
+      type: String
+  - arguments:
+    - default: false
+      defaultValue:
+      description: Ticket ID
+      name: id
+      required: false
+    - default: false
+      defaultValue:
+      description: Ticket Subject
+      name: subject
+      required: false
+    - auto: PREDEFINED
+      defaultValue: 
+      description: Ticket type to query
+      isArray: true
+      name: type
+      predefined:
+      - INCIDENT
+      - CASE
+      - CHANGE
+    - auto: PREDEFINED
+      defaultValue: 
+      description: Ticket status
+      isArray: true
+      name: status
+      predefined:
+      - NEW
+      - OPEN
+      - IN_PROGRESS
+      - AWAITING_INFO
+      - ON_HOLD
+      - RESOLVED
+      - CLOSED
+      - CANCELED
+      - SCHEDULED
+    - auto: PREDEFINED
+      defaultValue: 
+      description: Ticket priority
+      isArray: true
+      name: priority
+      predefined:
+      - CRITICAL
+      - HIGH
+      - MEDIUM
+      - LOW
+    - auto: PREDEFINED
+      defaultValue: 
+      description: Ticket impact
+      isArray: true
+      name: impact
+      predefined:
+      - HIGH
+      - MEDIUM
+      - LOW
+    - auto: PREDEFINED
+      defaultValue: 
+      description: Ticket urgency
+      isArray: true
+      name: urgency
+      predefined:
+      - HIGH
+      - MEDIUM
+      - LOW
+    description: Search tickets
+    name: trustwave-search-tickets
+    outputs:
+    - contextPath: Trustwave.Ticket.number
+      description: ''
+      type: String
+    - contextPath: Trustwave.Ticket.subject
+      description: ''
+      type: String
+    - contextPath: Trustwave.Ticket.status
+      description: ''
+      type: String
+    - contextPath: Trustwave.Ticket.description
+      description: ''
+      type: String
+    - contextPath: Trustwave.Ticket.createdBy
+      description: ''
+      type: String
+    - contextPath: Trustwave.Ticket.createdOn
+      description: ''
+      type: Date
+    - contextPath: Trustwave.Ticket.customerId
+      description: ''
+      type: Number
+    - contextPath: Trustwave.Ticket.customerName
+      description: ''
+      type: String
+    - contextPath: Trustwave.Ticket.impact
+      description: ''
+      type: String
+    - contextPath: Trustwave.Ticket.notes.actor
+      description: ''
+      type: String
+    - contextPath: Trustwave.Ticket.notes.text
+      description: ''
+      type: String
+    - contextPath: Trustwave.Ticket.notes.timestamp
+      description: ''
+      type: Date
+    - contextPath: Trustwave.Ticket.performedBy
+      description: ''
+      type: String
+    - contextPath: Trustwave.Ticket.priority
+      description: ''
+      type: String
+    - contextPath: Trustwave.Ticket.soarActions
+      description: ''
+      type: Unknown
+    - contextPath: Trustwave.Ticket.soarActionsTaken
+      description: ''
+      type: Unknown
+    - contextPath: Trustwave.Ticket.survey
+      description: ''
+      type: Boolean
+    - contextPath: Trustwave.Ticket.type
+      description: ''
+      type: String
+    - contextPath: Trustwave.Ticket.updatedBy
+      description: ''
+      type: String
+    - contextPath: Trustwave.Ticket.updatedOn
+      description: ''
+      type: Date
+    - contextPath: Trustwave.Ticket.urgency
+      description: ''
+      type: String
+  - arguments:
+    - default: false
+      defaultValue:
+      description: Incident ID
+      name: id
+      required: true
+    - default: false
+      defaultValue:
+      description: Comment text
+      name: comment
+      required: true
+    description: Add a comment to an incident
+    name: trustwave-add-ticket-comment
+  - arguments:
+    - default: false
+      defaultValue:
+      description: Incident ID
+      name: id
+      required: true
+    - default: false
+      defaultValue:
+      description: Comment text
+      name: comment
+      required: true
+    description: Close an Incident
+    name: trustwave-close-ticket
+  - arguments:
+    - default: false
+      defaultValue:
+      description: Absolute or relative date to check for updates
+      name: since
+      required: true
+    - default: false
+      defaultValue: 100
+      description: Maximum number of tickets to fetch
+      name: fetch_limit
+      required: false
+    - auto: PREDEFINED
+      defaultValue: INCIDENT
+      description: Ticket type to query
+      isArray: true
+      name: ticket_types
+      predefined:
+      - INCIDENT
+      - CASE
+      - CHANGE
+    description: Get updated tickets.
+    name: trustwave-get-updated-tickets
+    outputs:
+    - contextPath: Trustwave.Ticket.number
+      description: ''
+      type: String
+    - contextPath: Trustwave.Ticket.subject
+      description: ''
+      type: String
+    - contextPath: Trustwave.Ticket.status
+      description: ''
+      type: String
+    - contextPath: Trustwave.Ticket.description
+      description: ''
+      type: String
+    - contextPath: Trustwave.Ticket.createdBy
+      description: ''
+      type: String
+    - contextPath: Trustwave.Ticket.createdOn
+      description: ''
+      type: Date
+    - contextPath: Trustwave.Ticket.customerId
+      description: ''
+      type: Number
+    - contextPath: Trustwave.Ticket.customerName
+      description: ''
+      type: String
+    - contextPath: Trustwave.Ticket.impact
+      description: ''
+      type: String
+    - contextPath: Trustwave.Ticket.notes.actor
+      description: ''
+      type: String
+    - contextPath: Trustwave.Ticket.notes.text
+      description: ''
+      type: String
+    - contextPath: Trustwave.Ticket.notes.timestamp
+      description: ''
+      type: Date
+    - contextPath: Trustwave.Ticket.performedBy
+      description: ''
+      type: String
+    - contextPath: Trustwave.Ticket.priority
+      description: ''
+      type: String
+    - contextPath: Trustwave.Ticket.soarActions
+      description: ''
+      type: Unknown
+    - contextPath: Trustwave.Ticket.soarActionsTaken
+      description: ''
+      type: Unknown
+    - contextPath: Trustwave.Ticket.survey
+      description: ''
+      type: Boolean
+    - contextPath: Trustwave.Ticket.type
+      description: ''
+      type: String
+    - contextPath: Trustwave.Ticket.updatedBy
+      description: ''
+      type: String
+    - contextPath: Trustwave.Ticket.updatedOn
+      description: ''
+      type: Date
+    - contextPath: Trustwave.Ticket.urgency
+      description: ''
+      type: String
+  - arguments:
+    - default: false
+      defaultValue:
+      description: Finding ID
+      name: id
+      required: false
+    - default: false
+      defaultValue: 100
+      description: Maximum number of Findings to return
+      name: limit
+      required: false
+    - default: false
+      defaultValue: 
+      description: Name of the Finding
+      isArray: false
+      name: name
+      required: false
+    - default: false
+      defaultValue: 
+      description: Finding Classification
+      isArray: false
+      name: classification
+      required: false
+    - default: false
+      defaultValue: 
+      description: Finding summary
+      isArray: false
+      name: summary
+      required: false
+    - default: false
+      defaultValue: 
+      description: Finding detail
+      isArray: false
+      name: detail
+      required: false
+    - default: false
+      defaultValue: 
+      description: Finding priority
+      isArray: true
+      name: priority
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - CRITICAL
+      - HIGH
+      - MEDIUM
+      - LOW
+    - default: false
+      defaultValue: 
+      description: Finding severity
+      isArray: true
+      name: severity
+      required: false
+    - default: false
+      defaultValue: 
+      description: created_since
+      isArray: false
+      name: created_since
+      required: false
+    - default: false
+      defaultValue: 
+      description: Updated since.
+      isArray: false
+      name: updated_since
+      required: false      
+    description: Search for Findings
+    name: trustwave-search-findings
+    outputs:
+    - contextPath: Trustwave.Finding.analystNotes.actor
+      description: ''
+      type: String
+    - contextPath: Trustwave.Finding.analystNotes.text
+      description: ''
+      type: String
+    - contextPath: Trustwave.Finding.analystNotes.timestamp
+      description: ''
+      type: Date
+    - contextPath: Trustwave.Finding.assetsIds
+      description: ''
+      type: String
+    - contextPath: Trustwave.Finding.child
+      description: ''
+      type: Boolean
+    - contextPath: Trustwave.Finding.classification
+      description: ''
+      type: String
+    - contextPath: Trustwave.Finding.createdOn
+      description: ''
+      type: Date
+    - contextPath: Trustwave.Finding.customerId
+      description: ''
+      type: Number
+    - contextPath: Trustwave.Finding.customerName
+      description: ''
+      type: String
+    - contextPath: Trustwave.Finding.destination
+      description: ''
+      type: Unknown
+    - contextPath: Trustwave.Finding.detail
+      description: ''
+      type: String
+    - contextPath: Trustwave.Finding.eventsIds
+      description: ''
+      type: String
+    - contextPath: Trustwave.Finding.id
+      description: ''
+      type: String
+    - contextPath: Trustwave.Finding.parentId
+      description: ''
+      type: Unknown
+    - contextPath: Trustwave.Finding.priority
+      description: ''
+      type: Number
+    - contextPath: Trustwave.Finding.severity
+      description: ''
+      type: Number
+    - contextPath: Trustwave.Finding.soarAction
+      description: ''
+      type: Unknown
+    - contextPath: Trustwave.Finding.source
+      description: ''
+      type: Unknown
+    - contextPath: Trustwave.Finding.sourceSystem
+      description: ''
+      type: String
+    - contextPath: Trustwave.Finding.status.code
+      description: ''
+      type: String
+    - contextPath: Trustwave.Finding.status.description
+      description: ''
+      type: String
+    - contextPath: Trustwave.Finding.summary
+      description: ''
+      type: String
+    - contextPath: Trustwave.Finding.type
+      description: ''
+      type: String
+    - contextPath: Trustwave.Finding.updatedOn
+      description: ''
+      type: Date
+  - arguments:
+    - default: true
+      defaultValue:
+      description: Finding ID
+      name: id
+      required: true
+    description: Get a Finding
+    name: trustwave-get-finding
+    outputs:
+    - contextPath: Trustwave.Finding.analystNotes.actor
+      description: ''
+      type: String
+    - contextPath: Trustwave.Finding.analystNotes.text
+      description: ''
+      type: String
+    - contextPath: Trustwave.Finding.analystNotes.timestamp
+      description: ''
+      type: Date
+    - contextPath: Trustwave.Finding.assetsIds
+      description: ''
+      type: String
+    - contextPath: Trustwave.Finding.child
+      description: ''
+      type: Boolean
+    - contextPath: Trustwave.Finding.classification
+      description: ''
+      type: String
+    - contextPath: Trustwave.Finding.createdOn
+      description: ''
+      type: Date
+    - contextPath: Trustwave.Finding.customerId
+      description: ''
+      type: Number
+    - contextPath: Trustwave.Finding.customerName
+      description: ''
+      type: String
+    - contextPath: Trustwave.Finding.destination
+      description: ''
+      type: Unknown
+    - contextPath: Trustwave.Finding.detail
+      description: ''
+      type: String
+    - contextPath: Trustwave.Finding.eventsIds
+      description: ''
+      type: String
+    - contextPath: Trustwave.Finding.id
+      description: ''
+      type: String
+    - contextPath: Trustwave.Finding.parentId
+      description: ''
+      type: Unknown
+    - contextPath: Trustwave.Finding.priority
+      description: ''
+      type: Number
+    - contextPath: Trustwave.Finding.severity
+      description: ''
+      type: Number
+    - contextPath: Trustwave.Finding.soarAction
+      description: ''
+      type: Unknown
+    - contextPath: Trustwave.Finding.source
+      description: ''
+      type: Unknown
+    - contextPath: Trustwave.Finding.sourceSystem
+      description: ''
+      type: String
+    - contextPath: Trustwave.Finding.status.code
+      description: ''
+      type: String
+    - contextPath: Trustwave.Finding.status.description
+      description: ''
+      type: String
+    - contextPath: Trustwave.Finding.summary
+      description: ''
+      type: String
+    - contextPath: Trustwave.Finding.type
+      description: ''
+      type: String
+    - contextPath: Trustwave.Finding.updatedOn
+      description: ''
+      type: Date
+  - arguments:
+    - default: true
+      defaultValue:
+      description: Asset ID
+      name: id
+      required: true
+    description: Get an Asset
+    name: trustwave-get-asset
+    outputs:
+    - contextPath: Trustwave.Asset.cidr
+      description: ''
+      type: Unknown
+    - contextPath: Trustwave.Asset.createdOn
+      description: ''
+      type: Date
+    - contextPath: Trustwave.Asset.customerId
+      description: ''
+      type: Number
+    - contextPath: Trustwave.Asset.customerName
+      description: ''
+      type: String
+    - contextPath: Trustwave.Asset.id
+      description: ''
+      type: String
+    - contextPath: Trustwave.Asset.ips
+      description: ''
+      type: String
+    - contextPath: Trustwave.Asset.lastActivity
+      description: ''
+      type: Date
+    - contextPath: Trustwave.Asset.name
+      description: ''
+      type: String
+    - contextPath: Trustwave.Asset.networkInterfaces.gateway
+      description: ''
+      type: Unknown
+    - contextPath: Trustwave.Asset.networkInterfaces.hostnames
+      description: ''
+      type: Unknown
+    - contextPath: Trustwave.Asset.networkInterfaces.ip
+      description: ''
+      type: String
+    - contextPath: Trustwave.Asset.networkInterfaces.macAddress
+      description: ''
+      type: Unknown
+    - contextPath: Trustwave.Asset.networkInterfaces.macVendor
+      description: ''
+      type: Unknown
+    - contextPath: Trustwave.Asset.networkInterfaces.subnet
+      description: ''
+      type: Unknown
+    - contextPath: Trustwave.Asset.os
+      description: ''
+      type: Unknown
+    - contextPath: Trustwave.Asset.sourceSystem
+      description: ''
+      type: String
+    - contextPath: Trustwave.Asset.status
+      description: ''
+      type: Unknown
+    - contextPath: Trustwave.Asset.type
+      description: ''
+      type: String
+    - contextPath: Trustwave.Asset.updatedOn
+      description: ''
+      type: Date
+    - contextPath: Trustwave.Asset.uri
+      description: ''
+      type: String
+  - arguments:
+    - default: true
+      defaultValue:
+      description: Asset ID
+      name: id
+      required: false
+    - default: false
+      defaultValue: 100
+      description: Maximum number of Assets to return
+      name: limit
+      required: false
+    - default: false
+      defaultValue: 
+      description: Name of the Asset
+      isArray: false
+      name: name
+      required: false
+    - default: false
+      defaultValue: 
+      description: OS for the Asset
+      isArray: true
+      name: os
+      required: false
+    - default: false
+      defaultValue: 
+      description: Asset Tags to search for
+      isArray: true
+      name: tags
+      required: false
+    - default: false
+      defaultValue: 
+      description: port
+      isArray: true
+      name: port
+      required: false
+    - default: false
+      defaultValue: 
+      description: Application Protocol
+      isArray: true
+      name: app_protocol
+      required: false
+    - default: false
+      defaultValue: 
+      description: Transport Protocol
+      isArray: true
+      name: transport
+      required: false
+    - default: false
+      defaultValue: 
+      description: Asset Type
+      isArray: true
+      name: type
+      required: false
+    - default: false
+      defaultValue: 
+      description: created_since
+      isArray: false
+      name: created_since
+      required: false
+    - default: false
+      defaultValue: 
+      description: Updated since.
+      isArray: false
+      name: updated_since
+      required: false
+    description: Search for Assets
+    name: trustwave-search-assets
+    outputs:
+    - contextPath: Trustwave.Asset.cidr
+      description: ''
+      type: Unknown
+    - contextPath: Trustwave.Asset.createdOn
+      description: ''
+      type: Date
+    - contextPath: Trustwave.Asset.customerId
+      description: ''
+      type: Number
+    - contextPath: Trustwave.Asset.customerName
+      description: ''
+      type: String
+    - contextPath: Trustwave.Asset.id
+      description: ''
+      type: String
+    - contextPath: Trustwave.Asset.ips
+      description: ''
+      type: String
+    - contextPath: Trustwave.Asset.lastActivity
+      description: ''
+      type: Date
+    - contextPath: Trustwave.Asset.name
+      description: ''
+      type: String
+    - contextPath: Trustwave.Asset.networkInterfaces.gateway
+      description: ''
+      type: Unknown
+    - contextPath: Trustwave.Asset.networkInterfaces.hostnames
+      description: ''
+      type: Unknown
+    - contextPath: Trustwave.Asset.networkInterfaces.ip
+      description: ''
+      type: String
+    - contextPath: Trustwave.Asset.networkInterfaces.macAddress
+      description: ''
+      type: Unknown
+    - contextPath: Trustwave.Asset.networkInterfaces.macVendor
+      description: ''
+      type: Unknown
+    - contextPath: Trustwave.Asset.networkInterfaces.subnet
+      description: ''
+      type: Unknown
+    - contextPath: Trustwave.Asset.os
+      description: ''
+      type: Unknown
+    - contextPath: Trustwave.Asset.sourceSystem
+      description: ''
+      type: String
+    - contextPath: Trustwave.Asset.status
+      description: ''
+      type: Unknown
+    - contextPath: Trustwave.Asset.type
+      description: ''
+      type: String
+    - contextPath: Trustwave.Asset.updatedOn
+      description: ''
+      type: Date
+    - contextPath: Trustwave.Asset.uri
+      description: ''
+      type: String
+  dockerimage: demisto/python3:3.9.8.24399
+  isfetch: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
