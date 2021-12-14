@@ -2,13 +2,13 @@ id: QRadar Build Query and Search
 version: -1
 name: QRadar Build Query and Search
 description: |-
-  The Playbook creates an AQL query for the  QRadar SIEM using the QRadarCreateAQLQuery automation queries. Complex queries take into consideration several inputs and allow to include or exclude each of the values as well as perform a full or partial search. Each of the values can be searched across several fields.
+  The QRadar Build Query and Search playbook creates an AQL query for the QRadar SIEM using the QRadarCreateAQLQuery automation queries. Complex queries take into consideration several inputs and allow including or excluding each of the values as well as performing a full or partial search. Each of the values can be searched across several fields.
 
-  The playbook supports 3 full separate conditions to be evaluated
-  For example in the first inputs will evaluate several user names that may or may not exist in several fields. The second input can for example evaluate for IP addresses in several fields that may or may not exist in several fields and a third value can search for an event id that may or may not exist in several fields. The results of all of the inputs will create an AQL query that covers all of the inputs combining all of the different conditions.
+  The playbook supports 3 separate conditions to be evaluated.
+  For example, in the first condition, inputs will evaluate several user names that may or may not exist in several fields. The second input, can for example, evaluate for IP addresses in several fields that may or may not exist in several fields, and a third value can search for an event ID that may or may not exist in several fields. The results of all of the inputs will create an AQL query that covers all of the inputs combining all of the different conditions.
 
-  Each of the inputs is validated so in case the inputs are not set correctly the user can review and run again.
-  Also notice that populated inputs will be combined, meaning by populating the first and second values the resulting AQL query will be a combination of all of them and not 3 separate searches. In addition to that make sure to populate the inputs in order both according to the indexed fields in QRadar (indexed fields should be provided before non indexed ones).
+  Each of the inputs is validated so in case the inputs are not set correctly, the user can review and run them again.
+  Also, populated inputs will be combined, meaning by populating the first and second values the resulting AQL query will be a combination of all of the values and not 3 separate searches. In addition, make sure to populate the inputs in order according to the indexed fields in QRadar (indexed fields should be provided before non indexed ones).
 starttaskid: "0"
 tasks:
   "0":
@@ -310,82 +310,82 @@ inputs:
   value: {}
   required: false
   description: The values of the first field to search. This can be a single value
-    or a list of comma delimited values. For example admin1,admin2
+    or a comma-separated list of values. For example, admin1,admin2
   playbookInputQuery:
 - key: BaseFieldsToSearch
   value: {}
   required: false
   description: The field names of the first field to search. This can be a single
-    value or a list of comma delimited values. For example username,user
+    value or a comma-separated list of values. For example, username,user
   playbookInputQuery:
 - key: BaseFieldState
   value:
     simple: include
   required: false
-  description: The state of the first field to search, meaning are the values in the
-    field should be included or excluded. Valid options are include or exclude.
+  description: The state of the first field to search, meaning whether the values in the
+    field be included or excluded. Valid options are include or exclude.
   playbookInputQuery:
 - key: BaseFieldMatch
   value:
     simple: exact
   required: false
-  description: Are the values of the first field suppose to be exact match or partial
-    match. Valid options are exact or partial. When choosing exact the AQL query will
-    use the = operator. When choosing partial the AQL query will ILIKE and add '%%'
+  description: Whether the values of the first field should be an exact match or a partial
+    match. Valid options are exact or partial. When choosing exact, the AQL query will
+    use the = operator. When choosing partial, the AQL query will ILIKE and add '%%'
     to the values.
   playbookInputQuery:
 - key: FirstAdditionalValues
   value: {}
   required: false
   description: The values of the second field to search. This can be a single value
-    or a list of comma delimited values. For example admin1,admin2
+    or a comma-separated list of values. For example admin1,admin2
   playbookInputQuery:
 - key: FirstAdditionalFields
   value: {}
   required: false
   description: The field names of the second field to search. This can be a single
-    value or a list of comma delimited values. For example admin1,admin2
+    value or a comma-separated list of values. For example admin1,admin2
   playbookInputQuery:
 - key: FirstAdditionalFieldState
   value:
     simple: include
   required: false
-  description: The state of the second field to search, meaning are the values in
+  description: The state of the second field to search, meaning whether the values in
     the field should be included or excluded. Valid options are include or exclude.
   playbookInputQuery:
 - key: FirstAdditionalFieldMatch
   value:
     simple: exact
   required: false
-  description: Are the values of the second field suppose to be exact match or partial
+  description: Whether the values of the second field should be an exact match or a partial
     match. Valid options are exact or partial.
   playbookInputQuery:
 - key: SecondAdditionalValues
   value: {}
   required: false
   description: The values of the third field to search. This can be a single value
-    or a list of comma delimited values. For example admin1,admin2
+    or a comma-separated list of values. For example admin1,admin2
   playbookInputQuery:
 - key: SecondAdditionalFields
   value: {}
   required: false
   description: The field names of the third field to search. This can be a single
-    value or a list of comma delimited values. For example username,user
+    value or a comma-separated list of values. For example username,user
   playbookInputQuery:
 - key: SecondAdditionalFieldState
   value:
     simple: include
   required: false
-  description: The state of the third field to search, meaning are the values in the
-    field should be included or excluded. Valid options are include or exclude.
+  description: The state of the third field to search, meaning should the values in the
+    field be included or excluded. Valid options are include or exclude.
   playbookInputQuery:
 - key: SecondAdditionalFieldMatch
   value:
     simple: exact
   required: false
-  description: Are the values of the third field suppose to be exact match or partial
-    match. Valid options are exact or partial. When choosing exact the AQL query will
-    use the = operator. When choosing partial the AQL query will ILIKE and add '%%'
+  description: Should the values of the third field be an exact match or a partial
+    match. Valid options are exact or partial. When choosing exact, the AQL query will
+    use the = operator. When choosing partial, the AQL query will ILIKE and add '%%'
     to the values.
   playbookInputQuery:
 - key: SelectFields
@@ -393,7 +393,7 @@ inputs:
     simple: DATEFORMAT(devicetime,'dd-MM-yyyy hh:mm'),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid),sourceip,destinationip,username
   required: false
   description: |-
-    The list of fields to select within the AQL query
+    The list of fields to select within the AQL query.
     The default fields are
     DATEFORMAT(devicetime,'dd-MM-yyyy hh:mm'),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid),sourceip,destinationip,username
   playbookInputQuery:
@@ -402,22 +402,22 @@ inputs:
     simple: LAST 1 HOURS
   required: false
   description: |-
-    Time frame as used in AQL
-    Examples can be
+    Time frame as used in AQL.
+    For example: 
     LAST 7 DAYS
     START '2019-09-25 15:51' STOP '2019-09-25 17:51'
-    For more examples review IBM's AQL documentation.
+    For more examples, see IBM's AQL documentation.
   playbookInputQuery:
 - key: UseHuntingResults
   value:
     simple: "false"
   required: false
   description: The QRadar Get Hunting Results playbook outputs the detected hosts,
-    users and IP addresses detected in the QRadar search results.
+    users, and IP addresses detected in the QRadar search results.
   playbookInputQuery:
 outputs:
 - contextPath: QRadar.Search.Result
-  description: The result of the search
+  description: The result of the search.
   type: string
 - contextPath: QRadar.DetectedUsers
   description: Users detected based on the username field in your search.
@@ -430,11 +430,11 @@ outputs:
   type: string
 - contextPath: QRadar.DetectedInternalHosts
   description: Internal host names detected based on hosts in your assets table. Note
-    that the data accuracy depends on how the Asset mapping is configured in QRadar.
+    that the data accuracy depends on how the asset mapping is configured in QRadar.
   type: string
 - contextPath: QRadar.DetectedExternalHosts
   description: External host names detected based on hosts in your assets table. Note
-    that the data accuracy depends on how the Asset mapping is configured in QRadar.
+    that the data accuracy depends on how the asset mapping is configured in QRadar.
   type: string
 tests:
 - no test
