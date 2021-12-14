@@ -2082,6 +2082,17 @@ def test_send_request(mocker):
 
 
 def test_send_request_channel_id(mocker):
+    """
+    Given:
+        Test Case 1: A valid Channel ID as a destination to send a message to.
+        Test Case 2: A valid Channel ID as a destination to send a file to.
+    When:
+        Test Case 1: Sending a message using a channel_id
+        Test Case 2: Sending a file using a channel_id
+    Then:
+        Test Case 1: Assert that the endpoint was called using only the channel_id, and no other calls were made.
+        Test Case 2: Assert that the endpoint was called using only the channel_id, and no other calls were made.
+    """
     import SlackV3
 
     # Set
