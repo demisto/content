@@ -629,7 +629,7 @@ inputs:
 - key: OnCall
   value: {}
   required: false
-  description: "Assign only to analysts on the current shift."
+  description: "Set to True to assign only to analysts on the current shift."
   playbookInputQuery:
 - key: AuthenticityCheck
   value: {}
