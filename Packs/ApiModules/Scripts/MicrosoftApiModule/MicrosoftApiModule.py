@@ -336,7 +336,7 @@ class MicrosoftClient(BaseClient):
             data['scope'] = scope if scope else self.scope
 
         if self.resource or resource:
-            data['resource'] = resource if resource else self.resource  # type: ignore
+            data['resource'] = resource or self.resource  # type: ignore
 
         response_json: dict = {}
         try:
