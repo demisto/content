@@ -320,6 +320,14 @@ tasks:
                     right:
                       value:
                         simple: message/rfc822
+                - - operator: isNotEqualString
+                      left:
+                        value:
+                          simple: File.Info
+                        iscontext: true
+                      right:
+                        value:
+                          simple: p7m
                 accessor: EntryID
                 transformers:
                 - operator: uniq
