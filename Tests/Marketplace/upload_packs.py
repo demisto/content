@@ -1237,15 +1237,4 @@ def main():
 
 
 if __name__ == '__main__':
-    # main()
-    # full_graph = {}
-    # with open("/Users/darbel/Downloads/packs_dependencies_outputs_example.json") as f:
-    #     packs_dependencies_mapping = json.load(f)
-    # extract_destination_path = "/Users/darbel/dev/demisto/content/Packs"
-    # pack_names = ["Phishing"]
-    # packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in pack_names
-    #               if os.path.exists(os.path.join(extract_destination_path, pack_name))]
-    # packs_dict = {pack.name: pack for pack in packs_list}
-    # upload_packs_with_dependencies_zip(extract_destination_path, packs_dependencies_mapping, packs_list, packs_dict)
-    # print('ok')
-    Pack.zip_folder_items('/Users/darbel/dev/demisto/content/Packs/Phishing/with_dependencies', 'lo', '/Users/darbel/dev/demisto/content/Packs/Phishing/Phishing.zip')
+    main()
