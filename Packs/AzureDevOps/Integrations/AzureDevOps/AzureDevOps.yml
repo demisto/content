@@ -83,13 +83,13 @@ script:
     execution: false
     name: azure-devops-auth-complete
   - deprecated: false
-    description: Run this command if for some reason you need to rerun the authentication
-      process.
+    description: Run this command if you need to rerun the authentication
+      process for some reason,.
     execution: false
     name: azure-devops-auth-reset
   - deprecated: false
     description: Get mapping fields from remote incident. Please note that this method
-      will not update the current incident, it's here for debugging purposes.
+      will not update the current incident. It's here for debugging purposes.
     execution: false
     name: get-mapping-fields
   - arguments:
@@ -114,7 +114,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: Use XSOAR built-in polling to retrieve the result when it's ready.
+      description: Use Cortex XSOAR built-in polling to retrieve the result when it's ready.
       isArray: false
       name: polling
       predefined:
@@ -124,7 +124,7 @@ script:
       secret: false
     - default: false
       defaultValue: '30'
-      description: Indicates how long to wait between commands execution (in seconds)
+      description: Indicates how long to wait between command execution (in seconds)
         when 'polling' argument is true. Minimum value is 10 seconds.
       isArray: false
       name: interval
@@ -160,13 +160,13 @@ script:
       description: The ID of the pipeline.
       type: Number
     - contextPath: AzureDevOps.PipelineRun.pipeline.name
-      description: Pipeline repository name
+      description: The pipeline repository name.
       type: String
     - contextPath: AzureDevOps.PipelineRun.state
       description: The run state.
       type: String
     - contextPath: AzureDevOps.PipelineRun.createdDate
-      description: The run creation date.
+      description: 'The run creation date, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: '2022-01-01T00:00:00Z'.'
       type: Date
     - contextPath: AzureDevOps.PipelineRun.run_id
       description: The ID of the run.
@@ -180,14 +180,14 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The Email of the user to add to the organization.
+      description: The email address of the user to add to the organization.
       isArray: false
       name: user_email
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The type of account license (e.g. Express, Stakeholder etc.).
+      description: 'The type of account license. Possible values: "express", "stakeholder", "advanced", "earlyAdopter", and "professional".
         More information can be found here: https://docs.microsoft.com/en-us/rest/api/azure/devops/memberentitlementmanagement/user-entitlements/add?view=azure-devops-rest-6.1#accountlicensetype
         .'
       isArray: false
@@ -202,7 +202,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Project Group type (e.g. Contributor, Reader etc.). More information
+      description: 'The project group type. Possible values: "projectReader", "projectContributor", "projectAdministrator", and "projectStakeholder". More information
         can be found here: https://docs.microsoft.com/en-us/rest/api/azure/devops/memberentitlementmanagement/user-entitlements/add?view=azure-devops-rest-6.1#grouptype
         .'
       isArray: false
@@ -221,8 +221,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Add a user, assign license and extensions and make them a member
-      of a project group in an account.
+    description: Add a user, assign the user a license and extensions, and make the user a member of a project group in an account.
     execution: false
     name: azure-devops-user-add
     outputs:
@@ -231,7 +230,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The ID of the user to remove from the organization. A user ID can be obtained by running the 'azure-devops-user-list' command.
+      description: The ID of the user to be removed from the organization. A user ID can be obtained by running the 'azure-devops-user-list' command.
       isArray: false
       name: user_id
       required: true
@@ -248,7 +247,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The repository ID of the pull request's target branch. A repository ID can be obtained by running the 'azure-devops-repository-list'.
+      description: The repository ID of the pull request's target branch. A repository ID can be obtained by running the 'azure-devops-repository-list' command.
       isArray: false
       name: repository_id
       required: true
@@ -319,7 +318,7 @@ script:
       description: The unique name of the pull request creator.
       type: String
     - contextPath: AzureDevOps.PullRequest.creationDate
-      description: The creation date of the pull request.
+      description: 'The creation date of the pull request, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: '2022-01-01T00:00:00Z'.'
       type: Date
     - contextPath: AzureDevOps.PullRequest.title
       description: The title of the pull request
@@ -337,7 +336,7 @@ script:
       description: The current status of the pull request merge.
       type: String
     - contextPath: AzureDevOps.PullRequest.isDraft
-      description: Draft / WIP pull request.
+      description: Whether the pull request is a draft / WIP.
       type: Boolean
     - contextPath: AzureDevOps.PullRequest.lastMergeSourceCommit.commitId
       description: The ID of the commit at the head of the source branch at the time
@@ -386,7 +385,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The updated pull-request status.
+      description: 'The updated pull-request status. Possible values: "abandoned", "completed", and "active".'
       isArray: false
       name: status
       predefined:
@@ -396,8 +395,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'Update a pull request. At least one of the arguments: title, description,
-      or status must be provided.'
+    description: 'Update a pull request. At least one of the following arguments must be provided: title, description,
+      or status.'
     execution: false
     name: azure-devops-pull-request-update
     outputs:
@@ -432,7 +431,7 @@ script:
       description: The unique name of the pull request creator.
       type: String
     - contextPath: AzureDevOps.PullRequest.creationDate
-      description: The creation date of the pull request.
+      description: 'The creation date of the pull request, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: '2022-01-01T00:00:00Z'.'
       type: Date
     - contextPath: AzureDevOps.PullRequest.title
       description: The title of the pull request
@@ -450,7 +449,7 @@ script:
       description: The current status of the pull request merge.
       type: String
     - contextPath: AzureDevOps.PullRequest.isDraft
-      description: Draft / WIP pull request.
+      description: Whether the pull request is a draft / WIP.
       type: Boolean
     - contextPath: AzureDevOps.PullRequest.lastMergeSourceCommit.commitId
       description: The ID of the commit at the head of the source branch at the time
@@ -526,7 +525,7 @@ script:
       description: The unique name of the pull request creator.
       type: String
     - contextPath: AzureDevOps.PullRequest.creationDate
-      description: The creation date of the pull request.
+      description: 'The creation date of the pull request, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: '2022-01-01T00:00:00Z'.'
       type: Date
     - contextPath: AzureDevOps.PullRequest.title
       description: The title of the pull request
@@ -544,7 +543,7 @@ script:
       description: The current status of the pull request merge.
       type: String
     - contextPath: AzureDevOps.PullRequest.isDraft
-      description: Draft / WIP pull request.
+      description: Whether the pull request is a draft / WIP.
       type: Boolean
     - contextPath: AzureDevOps.PullRequest.lastMergeSourceCommit.commitId
       description: The ID of the commit at the head of the source branch at the time
@@ -594,7 +593,7 @@ script:
       description: Indicates whom the project is visible to.
       type: String
     - contextPath: AzureDevOps.Project.lastUpdateTime
-      description: Project last update time.
+      description: 'The project last update time, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: '2022-01-01T00:00:00Z'.'
       type: Date
     - contextPath: AzureDevOps.Project.id
       description: The ID of the Project.
@@ -642,9 +641,9 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: Users or organization query prefix. For example, If we want to
-        retrieve information about the user 'Tom' we can enter the value of this argument
-        as 'Tom' .
+      description: Users or organization query prefix. For example, if you want to
+        retrieve information about the user 'Tom', you can enter the value of this argument
+        as 'Tom'.
       isArray: false
       name: query
       required: true
@@ -654,8 +653,6 @@ script:
       description: The page number of the results to retrieve. Minimum value is 1.
       isArray: false
       name: page
-      predefined:
-      - ''
       required: false
       secret: false
     - default: false
@@ -687,7 +684,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The repository ID of the pull request's target branch. A repository ID can be obtained by running the 'azure-devops-repository-list'.
+      description: The repository ID of the pull request's target branch. A repository ID can be obtained by running the 'azure-devops-repository-list' command.
       isArray: false
       name: repository_id
       required: true
@@ -734,7 +731,7 @@ script:
       description: The unique name of the pull request creator.
       type: String
     - contextPath: AzureDevOps.PullRequest.creationDate
-      description: The creation date of the pull request.
+      description: 'The creation date of the pull request, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: '2022-01-01T00:00:00Z'.'
       type: Date
     - contextPath: AzureDevOps.PullRequest.title
       description: The title of the pull request
@@ -752,21 +749,21 @@ script:
       description: The current status of the pull request merge.
       type: String
     - contextPath: AzureDevOps.PullRequest.isDraft
-      description: Draft / WIP pull request.
+      description: Whether the pull request is a draft / WIP.
       type: Boolean
     - contextPath: AzureDevOps.PullRequest.lastMergeSourceCommit.commitId
       description: The ID of the commit at the head of the source branch at the time
         of the last pull request merge.
       type: String
     - contextPath: AzureDevOps.PullRequest.lastMergeSourceCommit.url
-      description: The REST URL for this resource.
+      description: The REST URL for the merge source commit.
       type: String
     - contextPath: AzureDevOps.PullRequest.lastMergeTargetCommit.commitId
       description: The ID of the commit at the head of the target branch at the time
         of the last pull request merge.
       type: String
     - contextPath: AzureDevOps.PullRequest.lastMergeTargetCommit.url
-      description: The REST URL for this resource.
+      description: The REST URL for the merge target commit.
       type: String
   - arguments:
     - default: false
@@ -790,7 +787,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: Indicates if the command was scheduled.
+      description: 'Indicates if the command was scheduled. Possible values: "True" or "False".'
       isArray: false
       name: scheduled
       predefined:
@@ -800,7 +797,7 @@ script:
       secret: false
     - default: false
       defaultValue: '30'
-      description: Indicates how long to wait between commands execution (in seconds)
+      description: Indicates how long to wait between command execution (in seconds)
         when 'polling' argument is true. Minimum value is 10 seconds.
       isArray: false
       name: interval
@@ -814,7 +811,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retrieve a pipeline run information.
+    description: Retrieve information for a pipeline run.
     execution: false
     polling: true
     name: azure-devops-pipeline-run-get
@@ -832,7 +829,7 @@ script:
       description: The run state.
       type: String
     - contextPath: AzureDevOps.PipelineRun.createdDate
-      description: The run creation date.
+      description: 'The run creation date, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: '2022-01-01T00:00:00Z'.' 
       type: Date
     - contextPath: AzureDevOps.PipelineRun.run_id
       description: The ID of the run.
@@ -846,7 +843,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The name of the organizaion project.
+      description: The name of the organization project.
       isArray: false
       name: project
       required: true
@@ -890,7 +887,7 @@ script:
       description: The run state.
       type: String
     - contextPath: AzureDevOps.PipelineRun.createdDate
-      description: The run creation date.
+      description: 'The run creation date, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: '2022-01-01T00:00:00Z'.'
       type: Date
     - contextPath: AzureDevOps.PipelineRun.run_id
       description: The ID of the run.
@@ -904,7 +901,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The name of the organizaion project.
+      description: The name of the organization project.
       isArray: false
       name: project
       required: true
@@ -945,7 +942,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The name of the organizaion project.
+      description: The name of the organization project.
       isArray: false
       name: project
       required: true
