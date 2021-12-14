@@ -67,7 +67,7 @@ script:
       name: summary
     description: Resolves an existing event in iLert
     name: ilert-resolve-event
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   runonce: false
   script: ''
   subtype: python3
