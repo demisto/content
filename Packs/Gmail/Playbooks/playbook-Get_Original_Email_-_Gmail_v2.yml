@@ -339,7 +339,7 @@ inputs:
 - key: UserID
   value: {}
   required: false
-  description: The email address of the authenticated user to fetch the original email for.
+  description: The email address of the authenticated user to fetch the original email for. For gmail, the authenticated user.
   playbookInputQuery:
 outputs:
 - contextPath: Email
