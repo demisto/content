@@ -3,13 +3,10 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Phishing Alerts Investigation
-description: "Use this playbook to investigate and remediate a potential phishing\
-  \ incident produced by either your Email Security Gateway or SIEM product.\n\nOne\
-  \ of the playbook's main tasks is retrieving the original email file from your Email\
-  \ Security Gateway or Email Service Provider.\n\nThe playbook response tasks take\
-  \ under consideration the initial severity, hunting results and also the existence\
-  \ of similar phishing incidents in XSOAR. \n\nNo action will be taken without an\
-  \ initial approval given by the analyst using the playbook inputs."
+description: "This playbook investigates and remediates potential phishing incidents produced by either an email security gateway or a SIEM product. It retrieves original email files from the email security gateway or email service provider and generates a response based on the initial severity, hunting results, and the existence of similar phishing incidents in XSOAR. 
+
+No action is taken without an initial approval given by the analyst using the playbook inputs.""
+
 starttaskid: "0"
 tasks:
   "0":
@@ -49,7 +46,7 @@ tasks:
       id: fae83d54-5f46-4748-8f2a-a7b74f3b2bb1
       version: -1
       name: Detonate File - Generic
-      description: Detonate file through active integrations that support file detonation
+      description: Detonates a file through active integrations that support file detonation.
       playbookName: Detonate File - Generic
       type: playbook
       iscommand: false
@@ -282,11 +279,11 @@ tasks:
     task:
       id: da40f1b0-63d4-46ad-8d40-c614360db893
       version: -1
-      name: Manually remediate  the incident
-      description: "Consider the following:\n1. Search for and delete similar emails\n\
-        2. Inform the organization about the threat\n3. Hunt the relevant IOCs\n4.\
-        \ Update proxies and firewalls as necessary\n5. Block the malicious sender/\
-        \ domain in the mail-gateway "
+      name: Manually remediate the incident
+      description: "Manually remediating an incident involves the following:\n1. Search for and delete similar emails.\n\
+        2. Inform the organization about the threat.\n3. Hunt the relevant IOCs.\n4.\
+        \ Update proxies and firewalls as necessary.\n5. Block the malicious sender/\
+        \ domain in the mail-gateway."
       type: regular
       iscommand: false
       brand: ""
@@ -1104,8 +1101,7 @@ tasks:
       version: -1
       name: Phishing Alerts - Check Severity
       description: |-
-        Calculate and assign the incident severity based on the highest returned severity level from the following calculations:
-
+      This playbook calculates and assigns the incident severity based on the highest returned severity level from the following calculations:
         Email security alert action
         DBotScores of indicators
         Critical assets
@@ -1197,7 +1193,7 @@ tasks:
       version: -1
       name: Search And Delete Emails - Generic v2
       description: This playbook searches and delete emails with similar attributes
-        of a malicious email using EWS, Office 365 and Gmail.
+        of a malicious email using EWS, Office 365, and Gmail.
       playbookName: Search And Delete Emails - Generic v2
       type: playbook
       iscommand: false
@@ -1270,12 +1266,19 @@ tasks:
       version: -1
       name: Process Email - Generic v2
       description: |
-        Add email details to the relevant context entities and handle the case where original emails are attached.
+        This playbook adds email details to the relevant context entities and handles original email attachments.
 
-        Added on this v2 playbook:
-        - Uses incident fields and not incident labels.
-        - Provides separate paths to "Phishing Alerts".
-        - Uses the new "Get Original Email - Generic v2" playbook to retrieve original emails as eml files from EWS v2, Microsoft Graph Mail and multiple email security gateway integrations. This will assist with parsing the email artifacts in a more efficient way.
+        The v2 playbook enables parsing email artifacts more efficiently, including:
+        - Using incident fields and not incident labels.
+        - Providing separate paths to "Phishing Alerts".
+        - Using the new "Get Original Email - Generic v2" playbook to retrieve original emails as EML files from the following integrations:
+            * EWS v2
+            * Microsoft Graph Mail integration
+            * Gmail
+            * FireEye EX and FireEye CM
+            * Proofpoint Protection Server
+            * Agari Phishing Defense (EWS v2, MSGraph Mail, Gmail)
+            * Mimecast
       playbookName: Process Email - Generic v2
       type: playbook
       iscommand: false
@@ -1872,37 +1875,35 @@ inputs:
     simple: "True"
   required: false
   description: |-
-    Enable the "Search and Delete" capability (can be either "True" or "False").
-    In case of a malicious email, the "Search and Delete" sub-playbook will look for other instances of the email and delete them pending analyst approval.
+    Whether to enable the "Search and Delete" capability.
+    For a malicious email, the Search and Delete sub-playbook looks for other instances of the email and deletes them pending analyst approval.
   playbookInputQuery:
 - key: BlockIndicators
   value:
     simple: "False"
   required: false
   description: |-
-    Enable the "Block Indicators" capability (can be either "True" or "False").
-    In case of a malicious email, the "Block Indicators" sub-playbook will block all malicious indicators in the relevant integrations.
+    Whether to enable the "Block Indicators" capability.
+    For a malicious email, the Block Indicators sub-playbook blocks all malicious indicators in the relevant integrations.
   playbookInputQuery:
 - key: AuthenticateEmail
   value:
     simple: "True"
   required: false
-  description: Whether the authenticity of the email should be verified, using SPF,
-    DKIM and DMARC.
+  description: Whether the authenticity of the email should be verified using SPF, DKIM, and DMARC.
   playbookInputQuery:
 - key: OnCall
   value:
     simple: "False"
   required: false
-  description: Set to true to assign only user that is currently on shift. Requires
-    Cortex XSOAR v5.5 or later.
+  description: Set to True to assign only to analysts on the current shift. Requires Cortex XSOAR v5.5 or later.
   playbookInputQuery:
 - key: SearchAndDeleteIntegration
   value:
     simple: EWS
   required: false
   description: |-
-    Determines which product and playbook will be used to search and delete the phishing email from users' inboxes.
+    Determines which product and playbook is used to search and delete the phishing email from user inboxes.
     Set this to "O365" to use the O365 - Security And Compliance - Search And Delete playbook.
     Set this to "EWS" to use the Search And Delete Emails - EWS playbook.
   playbookInputQuery:
@@ -1911,7 +1912,7 @@ inputs:
     simple: Soft
   required: false
   description: |-
-    The method by which to delete emails using the O365 - Security And Compliance - Search And Delete playbook. Could be "Soft" (recoverable), or "Hard" (unrecoverable). Leave empty to decide manually for each email incident.
+    The method to delete emails using the O365 - Security And Compliance - Search And Delete playbook. Can be "Soft" (recoverable), or "Hard" (unrecoverable). Leave empty to decide manually for each email incident.
     This is only applicable if the SearchAndDeleteIntegration input is set to O365.
   playbookInputQuery:
 - key: O365DeleteTarget
@@ -1921,7 +1922,7 @@ inputs:
   description: The exchange location. Determines from where to search and delete emails
     searched using O365 playbooks. Use the value "All" to search all mailboxes, use
     "SingleMailbox" to search and delete the email only from the recipient's inbox,
-    or specify "Manual" to decide manually for every incident. Note - searching all
+    or use "Manual" to decide manually for every incident. Note: Searching all
     mailboxes may take a significant amount of time. This input is only applicable
     if the SearchAndDeleteIntegration input is set to O365.
   playbookInputQuery:
@@ -1929,26 +1930,25 @@ inputs:
   value:
     simple: demistoadmin@demisto.int
   required: false
-  description: The SOC email address to set in case the playbook handles phishing
-    alert.
+  description: The SOC email address to set if the playbook handles phishing alerts.
   playbookInputQuery:
 - key: closeIfBlocked
   value:
     simple: "False"
   required: false
-  description: Whether to close the investigation in cases where the email has already
+  description: Whether to close the investigation if the email has already
     been blocked.
   playbookInputQuery:
 - key: escalationRole
   value: {}
   required: false
-  description: The role to assign the incident to if the incident severity is critical
+  description: The role to assign the incident to if the incident severity is critical.
   playbookInputQuery:
 - key: blockedAlertActionValue
   value:
     simple: block, deny, denied, delete
   required: false
-  description: List of optional values the email security device returns for blocked\denied\etc.
+  description: A comma-separated list of optional values the email security device returns for blocked\denied\etc.
     emails.
   playbookInputQuery:
 - key: SensitiveMailboxesList
@@ -1963,14 +1963,14 @@ inputs:
   value:
     simple: "true"
   required: false
-  description: Whether to search for similar emails in a week's time range or all
+  description: Whether to search for similar emails in a week's time range or for all
     time.
   playbookInputQuery:
 - key: CheckMicrosoftHeaders
   value:
     simple: "True"
   required: false
-  description: Check Microsoft's headers for BCL/PCL/SCL scores and set the "Severity"
+  description: Check Microsoft headers for BCL/PCL/SCL scores and set the "Severity"
     and "Email Classification" accordingly.
   playbookInputQuery:
 outputs: []
