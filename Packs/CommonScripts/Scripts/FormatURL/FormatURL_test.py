@@ -114,7 +114,7 @@ def test_replace_protocol(non_formatted_url: str, expected: str):
     Then:
     - Ensure for every expected protocol given, it is replaced with the expected value.
     """
-    from ExtractURL import replace_protocol
+    from FormatURL import replace_protocol
     assert replace_protocol(non_formatted_url) == expected
 
 
@@ -130,7 +130,7 @@ def test_format_url(url_, expected):
     Then:
     - Ensure URL is formatted as expected
     """
-    from ExtractURL import format_url
+    from FormatURL import format_url
     assert format_url(url_).outputs == [expected]
 
 
@@ -153,7 +153,7 @@ def test_get_redirect_url_proof_point_v2(url_: str, expected: str):
     Then:
     - Ensure redirected URL is returned.
     """
-    from ExtractURL import get_redirect_url_proof_point_v2
+    from FormatURL import get_redirect_url_proof_point_v2
     assert get_redirect_url_proof_point_v2(url_, urlparse(url_)) == expected
 
 
@@ -176,7 +176,7 @@ def test_get_redirect_url_proof_point_v3(url_: str, expected: str):
     Then:
     - Ensure redirected URL is returned.
     """
-    from ExtractURL import get_redirect_url_proof_point_v3
+    from FormatURL import get_redirect_url_proof_point_v3
     assert get_redirect_url_proof_point_v3(url_) == expected
 
 
@@ -202,7 +202,7 @@ def test_get_redirect_url_from_query(non_formatted_url: str, redirect_param_name
     Then:
     - Ensure redirected URL is returned.
     """
-    from ExtractURL import get_redirect_url_from_query
+    from FormatURL import get_redirect_url_from_query
     assert get_redirect_url_from_query(non_formatted_url, urlparse(non_formatted_url), redirect_param_name) == expected
 
 
@@ -225,7 +225,7 @@ def test_get_redirect_url_proof_point_v3_invalid(mocker, url_):
     """
     import demistomock as demisto
     mocker.patch.object(demisto, 'error')
-    from ExtractURL import get_redirect_url_proof_point_v3
+    from FormatURL import get_redirect_url_proof_point_v3
     assert get_redirect_url_proof_point_v3(url_) == url_
     assert demisto.error.called
 
@@ -242,7 +242,7 @@ def test_get_redirect_url_from_query_no_url_query_param(mocker):
     - Ensure the full URL is returned.
     - Ensure a call to demisto.error is made.
     """
-    from ExtractURL import get_redirect_url_from_query
+    from FormatURL import get_redirect_url_from_query
     import demistomock as demisto
     url_ = 'https://urldefense.proofpoint.com/v1/url?x=bla'
     mocker.patch.object(demisto, 'error')
@@ -262,7 +262,7 @@ def test_get_redirect_url_from_query_duplicate_url_query_param(mocker):
     - Ensure the full URL is returned.
     - Ensure a call to demisto.debug is made.
     """
-    from ExtractURL import get_redirect_url_from_query
+    from FormatURL import get_redirect_url_from_query
     import demistomock as demisto
     url_ = 'https://urldefense.proofpoint.com/v1/url?u=url_1&u=url_2'
     mocker.patch.object(demisto, 'debug')
@@ -281,11 +281,11 @@ def test_main_flow_valid(mocker):
     Then:
     - Ensure URL are formatted as expected.
     """
-    from ExtractURL import main
-    import ExtractURL
+    from FormatURL import main
+    import FormatURL
     import demistomock as demisto
     mocker.patch.object(demisto, 'args', return_value={'input': f'{TEST_URL_HTTP}'})
-    mock_results = mocker.patch.object(ExtractURL, 'return_results')
+    mock_results = mocker.patch.object(FormatURL, 'return_results')
     main()
     result_ = mock_results.call_args.args[0]
     assert result_.outputs == [TEST_URL_HTTP]

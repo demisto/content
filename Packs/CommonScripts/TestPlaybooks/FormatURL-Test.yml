@@ -1,7 +1,7 @@
-id: ExtractURL-Test
+id: FormatURL-Test
 version: 3
 vcShouldKeepItemLegacyProdMachine: false
-name: ExtractURL-Test
+name: FormatURL-Test
 starttaskid: "0"
 tasks:
   "0":

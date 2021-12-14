@@ -4813,7 +4813,7 @@
             "playbookID": "KafkaV3 Test"
         },
         {
-            "playbookID": "ExtractURL-Test"
+            "playbookID": "FormatURL-Test"
         }
     ],
     "skipped_tests": {
