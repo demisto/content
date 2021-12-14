@@ -955,7 +955,7 @@ def upload_packs_with_dependencies_zip(extract_destination_path, packs_dependenc
             if not (pack.zip_path and os.path.isfile(pack.zip_path)):
                 if not zip_pack(pack, signature_key):
                     continue
-            logging.info(f"#### {pack.name} will be moved")
+            logging.info(f"#### {pack.name} will be copied")
             shutil.copy(pack.zip_path, os.path.join(pack_with_dep_path, pack.name + ".zip"))
             for dep_name in pack_deps:
                 logging.info(f"Starting going over {dep_name} dependency")
@@ -970,6 +970,7 @@ def upload_packs_with_dependencies_zip(extract_destination_path, packs_dependenc
                         continue
                 logging.info(f"Gonna copy {dep_pack.zip_path} to {os.path.join(pack_with_dep_path, dep_name + '.zip')}")
                 shutil.copy(dep_pack.zip_path, os.path.join(pack_with_dep_path, dep_name + '.zip'))
+            logging.info(f"#### {pack.name} is now being zipped together from {pack_with_dep_path} to {zip_with_deps_path}")
             Pack.zip_folder_items(
                 pack_with_dep_path,
                 pack_with_dep_path,
