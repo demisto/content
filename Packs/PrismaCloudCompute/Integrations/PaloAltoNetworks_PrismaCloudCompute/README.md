@@ -1217,3 +1217,97 @@ Retrieve a list of defenders and their information
 |---|---|---|---|
 | host1 | 21.04.439 | Connected since September 02, 2021 11:05:08 AM | none |
 
+### prisma-cloud-compute-collections-list
+***
+Retrieves a list of all collections
+
+
+#### Base Command
+
+`prisma-cloud-compute-collections-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | The maximum records of collections to return. Default is 50. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaCloudCompute.Collection.accountIDs | String | AccountIDs is a list of the cloud account IDs | 
+| PrismaCloudCompute.Collection.appIDs | String | AppIDs is a list of application IDs | 
+| PrismaCloudCompute.Collection.clusters | String | Clusters is a list of kubernetes cluster names | 
+| PrismaCloudCompute.Collection.codeRepos | String | CodeRepos is a list of remote code repositories | 
+| PrismaCloudCompute.Collection.color | String | Color is a color code associated with the collection | 
+| PrismaCloudCompute.Collection.containers | String | Containers is a list of containers that are associated to this collection | 
+| PrismaCloudCompute.Collection.description | String | Description is a free-text description of the collection | 
+| PrismaCloudCompute.Collection.functions | String | Functions is a list of functions that are associated to this collection | 
+| PrismaCloudCompute.Collection.hosts | String | Hosts is a list of hosts that are associated to this collection | 
+| PrismaCloudCompute.Collection.images | String | Images is a list of images that are associated to this collection | 
+| PrismaCloudCompute.Collection.labels | String | Labels is a list of labels that are associated to this collection | 
+| PrismaCloudCompute.Collection.modified | Date | Modified is a timestamp if when the collection was last modified | 
+| PrismaCloudCompute.Collection.name | String | Name is a unique name associated with the collection | 
+| PrismaCloudCompute.Collection.namespaces | String | Namespaces are the k8s namespaces | 
+| PrismaCloudCompute.Collection.owner | String | Owner is the collection owner \(the last user who modified the collection\) | 
+| PrismaCloudCompute.Collection.system | Boolean | System indicates whether that this collection was created by the system or by the user | 
+
+
+#### Command Example
+```!prisma-cloud-compute-collections-list limit=1```
+
+
+#### Context Example
+```json
+{
+    "PrismaCloudCompute": {
+        "Collection": {
+            "functions": [
+                "*"
+            ], 
+            "appIDs": [
+                "*"
+            ], 
+            "description": "System - all resources collection", 
+            "color": "#602DFB", 
+            "prisma": false, 
+            "labels": [
+                "*"
+            ], 
+            "modified": "September 02, 2021 11:05:06 AM", 
+            "system": true, 
+            "owner": "system", 
+            "hosts": [
+                "*"
+            ], 
+            "namespaces": [
+                "*"
+            ], 
+            "codeRepos": [
+                "*"
+            ], 
+            "images": [
+                "*"
+            ], 
+            "clusters": [
+                "*"
+            ], 
+            "accountIDs": [
+                "*"
+            ], 
+            "containers": [
+                "*"
+            ], 
+            "name": "All"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+### Collections Information
+|Name|Description|Owner|Modified|
+|---|---|---|---|
+| All | System - all resources collection | system | September 02, 2021 11:05:06 AM |
+

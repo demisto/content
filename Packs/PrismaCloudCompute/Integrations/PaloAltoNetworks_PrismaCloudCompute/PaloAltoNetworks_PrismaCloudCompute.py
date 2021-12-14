@@ -223,12 +223,33 @@ class PrismaCloudComputeClient(BaseClient):
 
     def get_defenders(self, params):
         """
-        Sends a request to get defenders information
+        Sends a request to get defenders information.
 
         Returns:
             list[dict]: defenders information.
         """
         return self._http_request(method="GET", url_suffix="/defenders", params=params)
+
+    def get_collections(self):
+        """
+        Sends a request to get the collections information.
+
+        Returns:
+            list[dict]: collections information.
+        """
+        return self._http_request(method="GET", url_suffix="/collections")
+
+    def get_namespaces(self, params):
+        """
+        Sends a request to get the namespaces.
+
+        Args:
+            params (dict): query parameters.
+
+        Returns:
+            list[str]: available namespaces
+        """
+        return self._http_request(method="GET", url_suffix="/radar/container/namespaces", params=params)
 
 
 def str_to_bool(s):
@@ -1031,7 +1052,7 @@ def get_defenders(client: PrismaCloudComputeClient, args: dict) -> CommandResult
 
     Args:
         client (PrismaCloudComputeClient): prisma-cloud-compute client.
-        args (dict): cve command arguments.
+        args (dict): prisma-cloud-compute-defenders-list command arguments.
 
     Returns:
         CommandResults: command-results object.
@@ -1071,6 +1092,78 @@ def get_defenders(client: PrismaCloudComputeClient, args: dict) -> CommandResult
         outputs=defenders,
         readable_output=table,
         raw_response=defenders
+    )
+
+
+def get_collections(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
+    """
+    Get collections information, implement the 'command prisma-cloud-compute-collections-list'
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-collections-list command arguments
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    limit, _ = parse_limit_and_offset_values(limit=args.get("limit", "50"))
+
+    if collections := filter_api_response(api_response=client.get_collections(), limit=limit):
+        for collection in collections:
+            if "modified" in collection:
+                collection["modified"] = parse_date_string_format(date_string=collection.get("modified"))
+
+        table = tableToMarkdown(
+            name="Collections Information",
+            t=collections,
+            headers=["name", "description", "owner", "modified"],
+            removeNull=True,
+            headerTransform=lambda word: word[0].upper() + word[1:]
+        )
+    else:
+        collections, table = [], "No results found"
+
+    return CommandResults(
+        outputs_prefix="PrismaCloudCompute.Collection",
+        outputs_key_field=["name", "owner", "description"],
+        outputs=collections if collections else None,
+        readable_output=table,
+        raw_response=collections
+    )
+
+
+def get_namespaces(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
+    """
+    Get the list of the namespaces.
+    Implement the command 'prisma-cloud-compute-container-namespace-list'
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-container-namespace-list command arguments
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    limit, _ = parse_limit_and_offset_values(limit=args.pop("limit", "50"))
+    clusters, collections = argToList(arg=args.get("cluster")), argToList(arg=args.get("collections"))
+
+    if namespaces := filter_api_response(api_response=client.get_namespaces(params=assign_params(**args)), limit=limit):
+        # when the api returns [""] it means that the system does not have any namespaces
+        if len(namespaces) == 1 and namespaces[0] == "":
+            namespaces, table = [], "No results found"
+        else:
+            table = tableToMarkdown(
+                name="Namespaces", t=[{"Name": namespace} for namespace in namespaces], headers=["Name"]
+            )
+    else:
+        namespaces, table = [], "No results found"
+
+    return CommandResults(
+        outputs_prefix="PrismaCloudCompute.RadarContainerNamespace",
+        outputs_key_field="RadarContainerNamespace",
+        outputs=namespaces if namespaces else None,
+        readable_output=table,
+        raw_response=namespaces
     )
 
 
@@ -1145,6 +1238,10 @@ def main():
             return_results(results=get_cves(client=client, args=demisto.args()))
         elif requested_command == 'prisma-cloud-compute-defenders-list':
             return_results(results=get_defenders(client=client, args=demisto.args()))
+        elif requested_command == 'prisma-cloud-compute-collections-list':
+            return_results(results=get_collections(client=client, args=demisto.args()))
+        elif requested_command == 'prisma-cloud-compute-container-namespace-list':
+            return_results(results=get_namespaces(client=client, args=demisto.args()))
     # Log exceptions
     except Exception as e:
         return_error(f'Failed to execute {requested_command} command. Error: {str(e)}')

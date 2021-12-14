@@ -874,15 +874,11 @@ script:
           required: true
           isArray: false
           defaultValue: ""
-          predefined:
-            - ""
         - name: md5
           description: Comma-seperated list of md5 hashes to be added
           required: true
           isArray: true
           defaultValue: ""
-          predefined:
-            - ""
       outputs: []
     - name: cve
       description: Get infomration about the cves in the system, will return maximum
@@ -961,23 +957,28 @@ script:
           description: Cluster is the provided cluster name (fallback is internal IP)
           type: String
         - contextPath: PrismaCloudCompute.DefenderDetails.clusterID
-          description: ClusterID is a unique ID generated for each daemon set, and used to group Defenders by 
-            clustersNote - Kubernetes does not provide a cluster name as part of its API
+          description: ClusterID is a unique ID generated for each daemon set, and used to
+            group Defenders by clustersNote - Kubernetes does not provide a
+            cluster name as part of its API
           type: String
         - contextPath: PrismaCloudCompute.DefenderDetails.compatibleVersion
-          description: CompatibleVersion indicates if the defender has a compatible version for communication (e.g. request logs)
+          description: CompatibleVersion indicates if the defender has a compatible
+            version for communication (e.g. request logs)
           type: Boolean
         - contextPath: PrismaCloudCompute.DefenderDetails.connected
           description: Connected indicates whether the defender is connected
           type: Boolean
         - contextPath: PrismaCloudCompute.DefenderDetails.features
-          description: Features are feature that are enabled in the defender such as listener type
+          description: Features are feature that are enabled in the defender such as
+            listener type
           type: Unknown
         - contextPath: PrismaCloudCompute.DefenderDetails.firewallProtection
-          description: FirewallProtection describes the firewall protection status of app embedded defenders
+          description: FirewallProtection describes the firewall protection status of app
+            embedded defenders
           type: Unknown
         - contextPath: PrismaCloudCompute.DefenderDetails.fqdn
-          description: FQDN is the full domain name used in audit alerts to identify specific hosts
+          description: FQDN is the full domain name used in audit alerts to identify
+            specific hosts
           type: String
         - contextPath: PrismaCloudCompute.DefenderDetails.hostname
           description: Hostname is the defender hostname
@@ -992,10 +993,12 @@ script:
           description: Proxy is the proxy options of the defender
           type: Unknown
         - contextPath: PrismaCloudCompute.DefenderDetails.remoteLoggingSupported
-          description: RemoteLoggingSupported indicates if the defender logs can be retrieved from remote
+          description: RemoteLoggingSupported indicates if the defender logs can be
+            retrieved from remote
           type: Boolean
         - contextPath: PrismaCloudCompute.DefenderDetails.remoteMgmtSupported
-          description: RemoteMgmtSupported indicated if the defender can be remotely managed (upgrade, restart)
+          description: RemoteMgmtSupported indicated if the defender can be remotely
+            managed (upgrade, restart)
           type: Boolean
         - contextPath: PrismaCloudCompute.DefenderDetails.status
           description: Status is the feature status of the defender
@@ -1004,13 +1007,100 @@ script:
           description: SystemInfo is the system information of the defender host
           type: Unknown
         - contextPath: PrismaCloudCompute.DefenderDetails.tasClusterID
-          description: TASClusterID is the ID used to identify the TAS cluster of the defender. Typically will be the Cloud controller API address
+          description: TASClusterID is the ID used to identify the TAS cluster of the
+            defender. Typically will be the Cloud controller API address
           type: String
         - contextPath: PrismaCloudCompute.DefenderDetails.type
-          description: Type is the type of the defender (registry scanner/kubernetes node/etc...). 
+          description: Type is the type of the defender (registry scanner/kubernetes
+            node/etc...).
           type: String
         - contextPath: PrismaCloudCompute.DefenderDetails.version
           description: Version is the agent version
+          type: String
+    - name: prisma-cloud-compute-collections-list
+      description: Retrieves a list of all collections
+      deprecated: false
+      arguments:
+        - name: limit
+          description: The maximum records of collections to return
+          required: false
+          isArray: false
+          defaultValue: "50"
+      outputs:
+        - contextPath: PrismaCloudCompute.Collection.accountIDs
+          description: AccountIDs is a list of the cloud account IDs
+          type: String
+        - contextPath: PrismaCloudCompute.Collection.appIDs
+          description: AppIDs is a list of application IDs
+          type: String
+        - contextPath: PrismaCloudCompute.Collection.clusters
+          description: Clusters is a list of kubernetes cluster names
+          type: String
+        - contextPath: PrismaCloudCompute.Collection.codeRepos
+          description: CodeRepos is a list of remote code repositories
+          type: String
+        - contextPath: PrismaCloudCompute.Collection.color
+          description: Color is a color code associated with the collection
+          type: String
+        - contextPath: PrismaCloudCompute.Collection.containers
+          description: Containers is a list of containers that are associated to this
+            collection
+          type: String
+        - contextPath: PrismaCloudCompute.Collection.description
+          description: Description is a free-text description of the collection
+          type: String
+        - contextPath: PrismaCloudCompute.Collection.functions
+          description: Functions is a list of functions that are associated to this
+            collection
+          type: String
+        - contextPath: PrismaCloudCompute.Collection.hosts
+          description: Hosts is a list of hosts that are associated to this collection
+          type: String
+        - contextPath: PrismaCloudCompute.Collection.images
+          description: Images is a list of images that are associated to this collection
+          type: String
+        - contextPath: PrismaCloudCompute.Collection.labels
+          description: Labels is a list of labels that are associated to this collection
+          type: String
+        - contextPath: PrismaCloudCompute.Collection.modified
+          description: Modified is a timestamp if when the collection was last modified
+          type: Date
+        - contextPath: PrismaCloudCompute.Collection.name
+          description: Name is a unique name associated with the collection
+          type: String
+        - contextPath: PrismaCloudCompute.Collection.namespaces
+          description: Namespaces are the k8s namespaces
+          type: String
+        - contextPath: PrismaCloudCompute.Collection.owner
+          description: Owner is the collection owner (the last user who modified the
+            collection)
+          type: String
+        - contextPath: PrismaCloudCompute.Collection.system
+          description: System indicates whether that this collection was created by the
+            system or by the user
+          type: Boolean
+    - name: prisma-cloud-compute-container-namespace-list
+      description: Get the containers namespaces names
+      deprecated: false
+      arguments:
+        - name: cluster
+          description: Clusters is the cluster name to filter by
+          required: false
+          isArray: false
+          defaultValue: ""
+        - name: collections
+          description: Collections are collections to filter by
+          required: false
+          isArray: true
+          defaultValue: ""
+        - name: limit
+          description: The maximum number of namespace names records to return
+          required: false
+          isArray: true
+          defaultValue: "50"
+      outputs:
+        - contextPath: PrismaCloudCompute.RadarContainerNamespace
+          description: The names of the container namespaces
           type: String
 tests:
   - No test

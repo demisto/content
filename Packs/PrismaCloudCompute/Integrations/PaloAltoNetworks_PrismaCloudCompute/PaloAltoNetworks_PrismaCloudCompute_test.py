@@ -5,7 +5,7 @@ from PaloAltoNetworks_PrismaCloudCompute import (
     HEADERS_BY_NAME, get_profile_host_list, get_container_profile_list, get_container_hosts_list,
     get_profile_container_forensic_list, get_profile_host_forensic_list, get_console_version, get_custom_feeds_ip_list,
     add_custom_ip_feeds, filter_api_response, parse_date_string_format, get_custom_malware_feeds,
-    add_custom_malware_feeds, get_cves, get_defenders
+    add_custom_malware_feeds, get_cves, get_defenders, get_collections
 )
 
 from CommonServerPython import DemistoException
@@ -491,6 +491,12 @@ HTTP_REQUEST_URL_WITH_QUERY_PARAMS = [
         get_defenders,
         "/defenders",
         "https://test.com/defenders?cluster=cluster&hostname=hostname&type=type&offset=0&limit=20&connected=true"
+    ),
+    (
+        OrderedDict(limit="20"),
+        get_collections,
+        "/collections",
+        "https://test.com/collections"
     )
 ]
 
@@ -1030,6 +1036,51 @@ EXPECTED_CONTEXT_OUTPUT_DATA = [
                 "lastModified": "September 02, 2021 11:05:08 AM",
             }
         ],
+    ),
+    (
+        {"limit": "20"},
+        get_collections,
+        "/collections",
+        [
+            {
+                "hosts": ["*"],
+                "images": ["*"],
+                "labels": ["*"],
+                "containers": ["*"],
+                "functions": ["*"],
+                "namespaces": ["*"],
+                "appIDs": ["*"],
+                "accountIDs": ["*"],
+                "codeRepos": ["*"],
+                "clusters": ["*"],
+                "name": "All",
+                "owner": "system",
+                "modified": "2021-12-02T07:54:42.517Z",
+                "color": "#3FA2F7",
+                "description": "System - all resources collection",
+                "system": True,
+            }
+        ],
+        [
+            {
+                "hosts": ["*"],
+                "images": ["*"],
+                "labels": ["*"],
+                "containers": ["*"],
+                "functions": ["*"],
+                "namespaces": ["*"],
+                "appIDs": ["*"],
+                "accountIDs": ["*"],
+                "codeRepos": ["*"],
+                "clusters": ["*"],
+                "name": "All",
+                "owner": "system",
+                "modified": "December 02, 2021 07:54:42 AM",
+                "color": "#3FA2F7",
+                "description": "System - all resources collection",
+                "system": True,
+            }
+        ]
     )
 ]
 
