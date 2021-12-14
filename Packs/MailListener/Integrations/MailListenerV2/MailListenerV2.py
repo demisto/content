@@ -340,10 +340,10 @@ def generate_search_query(time_to_fetch_from: Optional[datetime],
         ['OR',
          'HEADER',
          'FROM',
-         'test1@mail.com',
+         'test1.com',
          'HEADER',
          'FROM',
-         'test1.com',
+         'test1@mail.com',
          'SINCE',
          datetime.datetime(2020, 8, 7, 12, 14, 32, 918634, tzinfo=datetime.timezone.utc)]
     Input example #2:
@@ -354,9 +354,9 @@ def generate_search_query(time_to_fetch_from: Optional[datetime],
     output example #2:
         ['OR',
          'FROM',
-         'test1@mail.com',
-         'FROM',
          'test1.com',
+         'FROM',
+         'test1@mail.com',
          'SINCE',
          datetime.datetime(2020, 8, 7, 12, 14, 32, 918634, tzinfo=datetime.timezone.utc)]
     Args:

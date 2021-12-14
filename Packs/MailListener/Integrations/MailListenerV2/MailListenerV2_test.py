@@ -98,13 +98,13 @@ def test_convert_to_incident():
                 'OR',
                 'OR',
                 'FROM',
-                'test1@mail.com',
-                'FROM',
-                'test2@mail.com',
+                'domain2.com',
                 'FROM',
                 'test1.com',
                 'FROM',
-                'domain2.com',
+                'test1@mail.com',
+                'FROM',
+                'test2@mail.com',
                 'SINCE',
                 datetime(year=2020, month=10, day=1),
                 'UID',
@@ -123,16 +123,16 @@ def test_convert_to_incident():
                 'OR',
                 'HEADER',
                 'FROM',
-                'test1@mail.com',
-                'HEADER',
-                'FROM',
-                'test2@mail.com',
+                'domain2.com',
                 'HEADER',
                 'FROM',
                 'test1.com',
                 'HEADER',
                 'FROM',
-                'domain2.com',
+                'test1@mail.com',
+                'HEADER',
+                'FROM',
+                'test2@mail.com',
                 'SINCE',
                 datetime(year=2020, month=10, day=1),
                 'UID',
@@ -170,9 +170,9 @@ def test_generate_search_query(
         - Validate query has SINCE before the datetime object
     """
     from MailListenerV2 import generate_search_query
-    assert generate_search_query(
-        time_to_fetch_from, with_header, permitted_from_addresses, permitted_from_domains, uid_to_fetch_from
-    ) == expected_query
+    generated_query = generate_search_query(
+        time_to_fetch_from, with_header, permitted_from_addresses, permitted_from_domains, uid_to_fetch_from)
+    assert generated_query == expected_query
 
 
 def test_generate_labels():
