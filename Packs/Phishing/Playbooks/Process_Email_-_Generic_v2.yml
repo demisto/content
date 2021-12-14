@@ -1,23 +1,22 @@
-id: Process Email - Generic v2
+id: Process Email - Generic v2_test
 version: -1
-name: Process Email - Generic v2
+name: Process Email - Generic v2_test
 description: |
-  Add email details to the relevant context entities and handle the case where original emails are attached.
+This playbook adds email details to the relevant context entities and handles original email attachments.
 
-  Added on this v2 playbook:
-  - Uses incident fields and not incident labels.
-  - Provides separate paths to "Phishing Alerts".
-  - Uses the new "Get Original Email - Generic v2" playbook to retrieve original emails as eml files from the following integrations:
-      * EWS v2
-      * Microsoft Graph Mail integration
-      * Gmail
-      * FireEye EX and FireEye CM
-      * Proofpoint Protection Server
-      * Agari Phishing Defense (EWS v2, MSGraph Mail, Gmail)
-      * Mimecast
+The v2 playbook enables parsing email artifacts more efficiently, including:
+- Using incident fields and not incident labels.
+- Providing separate paths to "Phishing Alerts".
+- Using the new "Get Original Email - Generic v2" playbook to retrieve original emails as EML files from the following integrations:
+    * EWS v2
+    * Microsoft Graph Mail integration
+    * Gmail
+    * FireEye EX and FireEye CM
+    * Proofpoint Protection Server
+    * Agari Phishing Defense (EWS v2, MSGraph Mail, Gmail)
+    * Mimecast
 
-  This will assist with parsing the email artifacts in a more efficient way.
-starttaskid: "0"
+ starttaskid: "0"
 tasks:
   "0":
     id: "0"
@@ -57,7 +56,7 @@ tasks:
       version: -1
       name: Do we have original emails attached?
       description: Identify whether the incident includes an email message attached
-        as an eml or msg file and return the answer to playbook. Also saves the identified
+        as an EML or MSG file and return the answer to playbook. Also saves the identified
         entry ID to context for use for later. Commonly used in automated playbooks
         that handle phishing reports sent to a special phishing mailbox set up by
         the security team.
@@ -99,7 +98,7 @@ tasks:
       id: 3594df61-f404-418b-8d61-8e516b29108b
       version: -1
       name: Add original email details to context
-      description: Sets the details of the email that was forwarded under the Email
+      description: Sets the details of the email that was forwarded under the email
         context key.
       scriptName: Set
       type: regular
@@ -248,7 +247,7 @@ tasks:
       id: db697829-30c4-4af4-8a13-c610488132fc
       version: -1
       name: Render HTML to an image
-      description: Rasterize an email body into an image
+      description: Rasterizes an email body into an image.
       tags:
       - email_html_image
       script: '|||rasterize-email'
@@ -346,7 +345,7 @@ tasks:
       id: 9996c9bc-f6ae-4dfe-84b4-9ffc68cc37fa
       version: -1
       name: Should the original email be retrieved?
-      description: If True, retrieve the original email in the thread
+      description: Determines whether to retrieve the original email in the thread.
       type: condition
       iscommand: false
       brand: ""
@@ -411,7 +410,7 @@ tasks:
       id: 182a8a03-eeb6-4780-8384-e115db2b9851
       version: -1
       name: Was the original email retrieved?
-      description: Is there an "Email" object in the context?
+      description: Determines whether there is an email object in the context.
       type: condition
       iscommand: false
       brand: ""
@@ -643,7 +642,7 @@ tasks:
       id: 1a8cd39f-2278-4286-897d-a8233df11163
       version: -1
       name: Display email headers in layout - Email.Headers
-      description: Fills the "Email Headers" grid field in the incident layout with
+      description: Fills the "Email Headers" field in the incident layout with
         the retrieved email headers.
       scriptName: SetGridField
       type: regular
@@ -816,7 +815,7 @@ tasks:
       version: -1
       name: Save incident files separately from email attachments
       description: Saves the files that were initially involved with the incident
-        in a separate context key so that they are available separate from email attachment
+        in a separate context key so they are available separate from email attachment
         files.
       scriptName: SetAndHandleEmpty
       type: regular
@@ -1214,8 +1213,8 @@ tasks:
       id: e7851ac8-e073-4265-80a6-5672bc266563
       version: -1
       name: Normalize Reporter Email Headers
-      description: This task normalizes the keys names of the headers which are different
-        with each client. It will assist with extracting the relevant values for the
+      description: This task normalizes the keys names of the headers, which are different
+        with each client. It facilitates extracting the relevant values for the
         next tasks.
       scriptName: SetGridField
       type: regular
@@ -1301,26 +1300,18 @@ tasks:
       version: -1
       name: Get Original Email - Generic v2
       description: |-
-        This v2 playbook is being used inside the "Phishing" flow. It will retrieve an original mail based on the inputs.
+      This v2 playbook is used inside the phishing flow. The inputs in this version do not use labels and also allow the user to supply an email brand.
+      Note: You must have the necessary permissions in your email service to execute a global search.
 
-        The inputs in this version are not using any labels and also allow the user to supply an email brand.
-
-        You must have the necessary permissions in your email service to execute a global search.
-
-        To retrieve the email files directly from the email service providers, please use one of the provided inputs below:
-        (Agari Phishing Defense customers should use the following as well)
-
-        - EWS: eDiscovery
-        - Gmail: Google Apps Domain-Wide Delegation of Authority
-        - MSGraph: As described here:
-            * https://docs.microsoft.com/en-us/graph/api/message-get
-            * https://docs.microsoft.com/en-us/graph/api/user-list-messages
-
-        - EmailSecurityGateway: Will retrieve eml files from:
-            * FireEye EX
-            * FireEye CM
-            * Proofpoint Protection Server
-            * Mimecast
+      To retrieve the email files directly from the email service providers, use one of the provided inputs (Agari Phishing Defense customers should also use the following):
+      - EWS: eDiscovery
+      - Gmail: Google Apps Domain-Wide Delegation of Authority
+      - MSGraph: As described in the <a href="https://docs.microsoft.com/en-us/graph/api/message-get">message-get API</a> and the <a href="https://docs.microsoft.com/en-us/graph/api/user-list-messages">user-list-messages API</a>
+      - EmailSecurityGateway retrieves eml files from:
+          * FireEye EX
+          * FireEye CM
+          * Proofpoint Protection Server
+          * Mimecast
       playbookName: Get Original Email - Generic v2
       type: playbook
       iscommand: false
@@ -1370,7 +1361,7 @@ tasks:
       version: -1
       name: Do we have original emails attached?
       description: Identifies whether the incident includes an email message attached
-        as an eml or msg file and returns the answer to a playbook. Also saves the
+        as an EML or MSG file and returns the answer to playbook. Also saves the
         identified entry ID to context for later use. Commonly used in automated playbooks
         that handle phishing reports sent to a special phishing mailbox set up by
         the security team.
@@ -1412,7 +1403,7 @@ tasks:
       id: 9bbbf2fa-0874-4bb0-8e61-d939725d4e3d
       version: -1
       name: Display email headers in layout - Email.HeadersMap
-      description: Fills the "Email Headers" grid field in the incident layout with
+      description: Fills the "Email Headers" field in the incident layout with
         the retrieved email headers.
       scriptName: SetGridField
       type: regular
@@ -1460,15 +1451,18 @@ tasks:
       version: -1
       name: Get Original Email - Generic v2
       description: |-
-        Use this playbook to retrieve the original email in the thread, including headers and attahcments, when the reporting user forwarded the original email not as an attachment.
+        This playbook retrieves the original email in the thread including headers and attachments, when the reporting user forwarded the original email not as an attachment.
 
-        You must have the necessary permissions in your email service to execute global search.
+        Note: You must have the necessary permissions in your email service to execute a global search.
 
         - EWS: eDiscovery
         - Gmail: Google Apps Domain-Wide Delegation of Authority
-        - MSGraph: As described here:
-            * https://docs.microsoft.com/en-us/graph/api/message-get
-            * https://docs.microsoft.com/en-us/graph/api/user-list-messages
+        - MSGraph: As described in the <a href="https://docs.microsoft.com/en-us/graph/api/message-get">message-get API</a> and the <a href="https://docs.microsoft.com/en-us/graph/api/user-list-messages">user-list-messages API</a>
+        - EmailSecurityGateway retrieves eml files from:
+            * FireEye EX
+            * FireEye CM
+            * Proofpoint Protection Server
+            * Mimecast
       playbookName: Get Original Email - Generic v2
       type: playbook
       iscommand: false
@@ -1538,7 +1532,7 @@ tasks:
       id: 00aaa8aa-1f4b-4390-88ed-89618d43e85e
       version: -1
       name: Check if attachments were found in eml file
-      description: Checks if attachments were found in an eml file to display their
+      description: Checks if attachments were found in an EML file to display their
         details in the layout.
       type: condition
       iscommand: false
@@ -1624,8 +1618,8 @@ tasks:
       id: 710b0ea5-cc2e-4fb5-80b6-89764e57459a
       version: -1
       name: Did the automation find more than one email?
-      description: Checks if the 'Get Original Email - Generic v2' found more than
-        one eml file.
+      description: Checks if the Get Original Email - Generic v2 playbook found more than
+        one EML file.
       type: condition
       iscommand: false
       brand: ""
@@ -1692,7 +1686,7 @@ tasks:
       id: 524c2ea5-8d47-40e4-8295-03b16a635355
       version: -1
       name: Handling multiple email files
-      description: Asks the user to provide the EntryID of one of the eml files found.
+      description: Asks the user to provide the EntryID of one of the EML files found.
       type: collection
       iscommand: false
       brand: ""
@@ -1763,8 +1757,8 @@ tasks:
         tooltip: ""
         readonly: false
       title: Handling multiple email files
-      description: Please review the email files retrieved under "Get Original Email
-        - Generic v2" playbook and insert the relevant entry id to process
+      description: Please review the email files retrieved using the Get Original Email
+        - Generic v2 playbook and insert the relevant entry ID to process.
       sender: Your SOC team
       expired: false
       totalanswers: 0
@@ -1838,7 +1832,7 @@ inputs:
     complex:
       root: File
   required: false
-  description: An EML or MSG file with
+  description: An EML or MSG file.
   playbookInputQuery:
 - key: Email
   value:
@@ -1846,7 +1840,7 @@ inputs:
       root: incident
       accessor: emailto
   required: false
-  description: The receiving email address.
+  description: The receiver email address.
   playbookInputQuery:
 - key: EmailCC
   value:
@@ -1854,7 +1848,7 @@ inputs:
       root: incident
       accessor: emailcc
   required: false
-  description: CC addresses.
+  description: The email CC addresses.
   playbookInputQuery:
 - key: EmailFrom
   value:
@@ -1862,7 +1856,7 @@ inputs:
       root: incident
       accessor: emailfrom
   required: false
-  description: The originator of the email.
+  description: The sender email address.
   playbookInputQuery:
 - key: EmailSubject
   value:
@@ -1886,7 +1880,7 @@ inputs:
       root: incident
       accessor: emailhtml
   required: false
-  description: The email’s html.
+  description: The email’s HTML.
   playbookInputQuery:
 - key: EmailHeaders
   value:
@@ -1909,15 +1903,13 @@ inputs:
     simple: "False"
   required: false
   description: |-
-    Retrieves the original email in the thread. Default is "False".
+    Retrieves the original email in the thread.
 
     You must have the necessary permissions in your email service to execute global search.
 
-    - EWS: eDiscovery
-    - Gmail: Google Apps Domain-Wide Delegation of Authority
-    - MSGraph: As described here:
-      * https://docs.microsoft.com/en-us/graph/api/message-get
-      * https://docs.microsoft.com/en-us/graph/api/user-list-messages
+    - For EWS: eDiscovery
+    - For Gmail: Google Apps Domain-Wide Delegation of Authority
+    - For MSGraph: As described in the <a href="https://docs.microsoft.com/en-us/graph/api/message-get">message-get API</a> and the <a href="https://docs.microsoft.com/en-us/graph/api/user-list-messages">user-list-messages API</a>
   playbookInputQuery:
 - key: MessageID
   value:
@@ -1925,9 +1917,9 @@ inputs:
       root: incident
       accessor: emailmessageid
   required: false
-  description: The original email message id to retrieve. Holds the value of the "Message-ID"
-    header of the original email. This value will be passed as an input to the playbook
-    "Get Original Email - Generic v2"
+  description: The original email message ID to retrieve. Holds the value of the "Message-ID"
+    header of the original email. This value is passed as an input to the 
+    Get Original Email - Generic v2 playbook.
   playbookInputQuery:
 - key: UserID
   value:
@@ -1944,9 +1936,9 @@ inputs:
             value:
               simple: $1
   required: false
-  description: The user's email address for which to retrieve the original email.
-    This value will be passed as an input to the playbook "Get Original Email - Generic
-    v2".
+  description: The user's email address to retrieve the original email.
+    This value is passed as an input to the Get Original Email - Generic
+    v2 playbook.
   playbookInputQuery:
 - key: Thread-Topic
   value:
@@ -1954,50 +1946,46 @@ inputs:
       root: incident
       accessor: emailsubject
   required: false
-  description: The value of the "Thread-Topic" header which holds the original email
-    subject. This is necessary for forwarded emails scenarios. It will be passed as
-    an input to the "Get Original Email - Generic v2" playbook to be used in the relevant
-    sub-playbooks.
+  description:  The value of the "Thread-Topic" header which holds the original email subject, needed for forwarded email scenarios. It is passed as an input to the Get Original Email - Generic v2 playbook to use in the relevant sub-playbooks.
   playbookInputQuery:
 - key: EmailBrand
   value: {}
   required: false
   description: |-
-    When this value provided, only the relevant playbook will run.
+    If this value is provided, only the relevant playbook runs. If no value is provided, all sub-playbooks are run..
     Possible values:
     - Gmail
     - EWS v2
     - MicrosoftGraphMail
     - EmailSecurityGateway
 
-    Choosing the EmailSecurityGateway will execute the following if enabled:
+    Choosing the EmailSecurityGateway executes the following if enabled:
         - FireEye EX (Email Security)
         - Proofpoint TAP
         - Mimecast
 
-    If none of the above values will be provided, all of the sub-playbooks will be executed.
-  playbookInputQuery:
+   playbookInputQuery:
 outputs:
 - contextPath: Email.HTML
-  description: Email 'html' body if exists.
+  description: The email HTML body if it exists.
   type: string
 - contextPath: Email
-  description: Email object.
+  description: The email object.
   type: string
 - contextPath: Email.CC
-  description: Email 'cc' addresses.
+  description: The email CC addresses.
   type: string
 - contextPath: Email.From
-  description: Email 'from' sender.
+  description: The email sender address.
   type: string
 - contextPath: Email.Subject
-  description: Email subject.
+  description: The email subject.
   type: string
 - contextPath: Email.To
-  description: Email 'to' addresses.
+  description: The email receiver addresses.
   type: string
 - contextPath: Email.Text
-  description: Email 'text' body if exists.
+  description: The email text body if it exists.
   type: string
 - contextPath: Email.Headers
   description: The full email headers as a single string.
@@ -2009,7 +1997,7 @@ outputs:
   description: The format of the email if available.
   type: string
 - contextPath: File
-  description: The File object.
+  description: The file object.
   type: string
 tests:
 - Process Email - Generic - Test - Incident Starter
