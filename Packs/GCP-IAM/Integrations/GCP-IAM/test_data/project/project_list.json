@@ -1,0 +1,24 @@
+{
+  "projects": [
+    {
+      "name": "projects/project-name-1",
+      "parent": "organizations/xsoar-organization",
+      "projectId": "project-id-1",
+      "state": "ACTIVE",
+      "displayName": "My First Project",
+      "createTime": "2021-11-01T10:43:50.858Z",
+      "updateTime": "2021-11-01T10:43:53.026Z",
+      "etag": "SIVTMlYY9sE1j3K0iNDLcw=="
+    },
+    {
+      "name": "projects/project-name-2",
+      "parent": "organizations/xsoar-organization",
+      "projectId": "clear-safeguard-330810",
+      "state": "ACTIVE",
+      "displayName": "My Project 44494",
+      "createTime": "2021-11-01T10:44:44.036Z",
+      "updateTime": "2021-11-01T10:44:45.556Z",
+      "etag": "oiySuFOOcyU7r9CWJN1Tfg=="
+    }
+  ]
+}
