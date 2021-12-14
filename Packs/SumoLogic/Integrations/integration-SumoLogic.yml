@@ -45,7 +45,7 @@ configuration:
   name: escape_urls
   defaultvalue: "false"
   type: 8
-  additionalinfo: "Whether to add escaping before equality chars in URLs. For further information, see the pack README"
+  additionalinfo: "Whether to add escaping before `=` chars in URLs. For further information, see the pack README"
   required: false
 - display: Seconds to sleep between checking for results
   name: sleepBetweenChecks
