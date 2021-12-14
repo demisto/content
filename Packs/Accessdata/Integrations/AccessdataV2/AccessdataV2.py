@@ -92,23 +92,19 @@ def _process_evidence(client, caseid, evidence_path, evidence_type, options):
         jobs = case.evidence.process(evidence_path, evidence_type,
                                      completeprocessingoptions=options)
         return CommandResults(
-            outputs_prefix="Accessdata.Case.Jobs",
-            outputs=[
-                {"ID": job["id"]} for job in jobs
-            ],
+            outputs_prefix="Accessdata.Case.Job",
+            outputs={"ID": jobs[0]["id"]},
             outputs_key_field="ID",
-            readable_output=tableToMarkdown("Job", list(map(lambda x: dict(x), jobs)))
+            readable_output=tableToMarkdown("Job", dict(jobs[0]))
         )
     elif options_type is dict:
         jobs = case.evidence.process(evidence_path, evidence_type,
                                      processingoptions=options)
         return CommandResults(
-            outputs_prefix="Accessdata.Case.Jobs",
-            outputs=[
-                {"ID": job["id"]} for job in jobs
-            ],
+            outputs_prefix="Accessdata.Case.Job",
+            outputs={"ID": jobs[0]["id"]},
             outputs_key_field="ID",
-            readable_output=tableToMarkdown("Job", list(map(lambda x: dict(x), jobs)))
+            readable_output=tableToMarkdown("Job", dict(jobs[0]))
         )
     # if bad, raise error
     else:

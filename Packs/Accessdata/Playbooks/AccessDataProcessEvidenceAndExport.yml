@@ -1,16 +1,16 @@
-id: AccessData_Process_Evidence
-version: 37
-fromversion: 6.0.0
-name: 'AccessData_Process_Evidence'
+id: AccessData-Process-Evidence
+version: 54
+vcShouldKeepItemLegacyProdMachine: false
+name: 'AccessData: Process Evidence and Export'
 description: Creates a new case and processes targetted evidence.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 1262e6e9-7db6-4037-8ff2-75ad3a33d36c
+    taskid: 5bb4a8f5-e250-4612-8156-779de32e115e
     type: start
     task:
-      id: 1262e6e9-7db6-4037-8ff2-75ad3a33d36c
+      id: 5bb4a8f5-e250-4612-8156-779de32e115e
       version: -1
       name: Client construction.
       description: Provides the client with all relevant information to communicate
@@ -37,12 +37,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: c98606b8-1953-49a7-8480-547a506518d2
+    taskid: d3fe8441-12c2-4de5-88a9-13b90c5431e6
     type: regular
     task:
-      id: c98606b8-1953-49a7-8480-547a506518d2
+      id: d3fe8441-12c2-4de5-88a9-13b90c5431e6
       version: -1
-      name: AccessDataFindCase
+      name: Locate Case
       description: Returns a case's information determined by matching names.
       script: AccessData|||accessdata-api-get-case-by-name
       type: regular
@@ -59,7 +59,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 290
+          "y": 230
         }
       }
     note: false
@@ -71,12 +71,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 28ee9e38-c21f-45e6-88b1-4ef86fc5a753
+    taskid: 6136a8ac-b3e8-4807-8450-6c64d44b3a89
     type: regular
     task:
-      id: 28ee9e38-c21f-45e6-88b1-4ef86fc5a753
+      id: 6136a8ac-b3e8-4807-8450-6c64d44b3a89
       version: -1
-      name: AccessDataProcessEvidence
+      name: Process Evidence
       description: Processes evidence of file, directory or image type within the
         specified case.
       script: AccessData|||accessdata-api-process-evidence
@@ -85,10 +85,10 @@ tasks:
       brand: AccessData
     nexttasks:
       '#none#':
-      - "3"
+      - "11"
     scriptarguments:
       caseid:
-        simple: ${accessdata.case.id}
+        simple: ${Accessdata.Case.ID}
       evidence_path:
         simple: \\ec2amaz-ka8r2lu\E$\TestData\Mantooth.E01\Mantooth.E01
       evidence_type:
@@ -355,43 +355,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 510
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
-    taskid: 4f50feb3-5990-4cac-8dc6-3d91cae06fc8
-    type: regular
-    task:
-      id: 4f50feb3-5990-4cac-8dc6-3d91cae06fc8
-      version: -1
-      name: AccessDataAwaitJob
-      description: Awaits an end status for the specified job and returns when complete.
-      scriptName: AccessDataAwaitJob
-      type: regular
-      iscommand: false
-      brand: AccessData
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      caseid:
-        simple: ${accessdata.case.id}
-      jobid:
-        simple: ${accessdata.case.job.id}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
+          "y": 390
         }
       }
     note: false
@@ -403,14 +367,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 60489f84-e932-4c6f-8d85-aebe43f2c02e
+    taskid: 8648e3e2-d17a-41cf-81ee-b2866cd4f85e
     type: condition
     task:
-      id: 60489f84-e932-4c6f-8d85-aebe43f2c02e
+      id: 8648e3e2-d17a-41cf-81ee-b2866cd4f85e
       version: -1
-      name: AreValuesEqual
+      name: Is Completed?
       description: Check whether the values provided in arguments are equal. If either
         of the arguments are missing, no is returned.
+      tags:
+      - evidence-polling
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
@@ -422,7 +388,7 @@ tasks:
       - "7"
     scriptarguments:
       left:
-        simple: ${state}
+        simple: ${Accessdata.Case.Job.State}
       right:
         simple: JobState.Completed
     results:
@@ -432,7 +398,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 920
+          "y": 870
         }
       }
     note: false
@@ -444,10 +410,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 7afc8f8a-f161-4851-8442-3b1b59671552
+    taskid: 4d1168cd-4c0e-437c-883b-4a35f4089d7f
     type: regular
     task:
-      id: 7afc8f8a-f161-4851-8442-3b1b59671552
+      id: 4d1168cd-4c0e-437c-883b-4a35f4089d7f
       version: -1
       name: Send Email on Failure
       description: Send an approval email to the manager of the employee with the
@@ -461,7 +427,7 @@ tasks:
       {
         "position": {
           "x": -420,
-          "y": 1140
+          "y": 1100
         }
       }
     note: false
@@ -473,32 +439,29 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 795e3186-b278-4830-8c9e-e074374ad3f9
+    taskid: a25fec82-556e-41ad-8da6-6703f02c5325
     type: regular
     task:
-      id: 795e3186-b278-4830-8c9e-e074374ad3f9
+      id: a25fec82-556e-41ad-8da6-6703f02c5325
       version: -1
-      name: AccessDataExportNatives
+      name: Export Native Files
       description: Exports native files from the case to a directory reduced by the
         filter specified.
       script: AccessData|||accessdata-api-export-natives
       type: regular
       iscommand: true
       brand: AccessData
-    nexttasks:
-      '#none#':
-      - "8"
     scriptarguments:
       caseid:
-        simple: ${id}
+        simple: ${Accessdata.Case.ID}
       filter_json:
-        simple: ${filter}
+        simple: ${Accessdata.Filter}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1340
+          "y": 1300
         }
       }
     note: false
@@ -510,13 +473,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 642adf15-4c7d-44f6-8945-23465102264c
+    taskid: a809fec4-b2c5-4c39-84cb-9f7c5f6ad5ed
     type: regular
     task:
-      id: 642adf15-4c7d-44f6-8945-23465102264c
+      id: a809fec4-b2c5-4c39-84cb-9f7c5f6ad5ed
       version: -1
-      name: AccessDataCreateFilter
-      description: ''
+      name: Create Filter
       script: AccessData|||accessdata-api-create-filter
       type: regular
       iscommand: true
@@ -536,7 +498,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1140
+          "y": 1100
         }
       }
     note: false
@@ -546,30 +508,87 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
-    taskid: 505994bf-0e5c-4cc6-87b2-b458c1cb5f52
+  "10":
+    id: "10"
+    taskid: 574efb98-e290-47dc-810a-b5e8c99c4ba7
     type: regular
     task:
-      id: 505994bf-0e5c-4cc6-87b2-b458c1cb5f52
+      id: 574efb98-e290-47dc-810a-b5e8c99c4ba7
       version: -1
-      name: AccessDataAwaitJob
-      description: Awaits an end status for the specified job and returns when complete.
-      scriptName: AccessDataAwaitJob
+      name: Await Job Status
+      description: Called by the GenericPolling playbook, schedules the polling task.
+      scriptName: ScheduleGenericPolling
       type: regular
       iscommand: false
-      brand: ""
+      brand: AccessData
+    nexttasks:
+      '#none#':
+      - "4"
     scriptarguments:
-      caseid:
-        simple: ${id}
-      jobid:
-        simple: ${id}
+      additionalPollingCommandArgNames:
+        simple: caseid
+      additionalPollingCommandArgValues:
+        complex:
+          root: Accessdata.Case
+          accessor: ID
+          transformers:
+          - operator: Stringify
+      dt:
+        simple: ${Accessdata.Case.Job(val.State !== 'JobState.Completed').ID}
+      ids:
+        simple: ${Accessdata.Case.Job.ID}
+      interval:
+        simple: "1"
+      pollingCommand:
+        simple: accessdata-api-get-job-status
+      pollingCommandArgName:
+        simple: jobid
+      tag:
+        simple: evidence-polling
+      timeout:
+        simple: "5"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1550
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: f6b52d91-14d8-4222-8c17-8105697f5abe
+    type: regular
+    task:
+      id: f6b52d91-14d8-4222-8c17-8105697f5abe
+      version: -1
+      name: Get Job Status
+      description: Gathers state and information about the specified job.
+      script: AccessData|||accessdata-api-get-job-status
+      type: regular
+      iscommand: true
+      brand: AccessData
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      caseid:
+        simple: ${Accessdata.Case.ID}
+      jobid:
+        simple: ${Accessdata.Case.Job.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 550
         }
       }
     note: false
@@ -584,7 +603,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1545,
+        "height": 1295,
         "width": 850,
         "x": -420,
         "y": 100
@@ -596,22 +615,20 @@ inputs:
   value: {}
   required: true
   description: The protocol to use for accessing the REST API.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: SERVER
   value: {}
   required: true
   description: The address of the REST API service.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: PORT
   value: {}
   required: true
   description: The port to reach the REST API service.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: APIKEY
   value: {}
   required: true
   description: The API key used for authentication with the REST API.
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs: []
-tests:
-- No tests (auto formatted)
