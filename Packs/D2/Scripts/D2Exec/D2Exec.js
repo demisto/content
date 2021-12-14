@@ -1,0 +1,1 @@
+packOutput(args.cmd);
