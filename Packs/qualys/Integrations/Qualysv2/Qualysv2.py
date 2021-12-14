@@ -14,14 +14,23 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 API_SUFFIX = '/api/2.0/fo/'
 
 # Arguments that need to be parsed as dates
-DATE_ARGUMENTS = [
-    'launched_after_datetime', 'launched_before_datetime',
-    'expires_before_datetime', 'no_vm_scan_since',
-    'vm_scan_since', 'no_compliance_scan_since', 'last_modified_after',
-    'last_modified_before', 'last_modified_by_user_after', 'last_modified_by_user_before',
-    'last_modified_by_service_after', 'last_modified_by_service_before', 'published_after',
-    'published_before'
-]
+DATE_ARGUMENTS = {
+    'launched_after_datetime': '%Y-%m-%d',
+    'launched_before_datetime': '%Y-%m-%d',
+    'expires_before_datetime': '%Y-%m-%d',
+    'no_vm_scan_since': '%Y-%m-%d',
+    'vm_scan_since': '%Y-%m-%d',
+    'no_compliance_scan_since': '%Y-%m-%d',
+    'last_modified_after': '%Y-%m-%d',
+    'last_modified_before': '%Y-%m-%d',
+    'last_modified_by_user_after': '%Y-%m-%d',
+    'last_modified_by_user_before': '%Y-%m-%d',
+    'last_modified_by_service_after': '%Y-%m-%d',
+    'last_modified_by_service_before': '%Y-%m-%d',
+    'published_after': '%Y-%m-%d',
+    'published_before': '%Y-%m-%d',
+    'start_date': '%m/%d/%Y'
+}
 
 # Data for parsing and creating output
 COMMANDS_PARSE_AND_OUTPUT_DATA: Dict[str, Dict[Any, Any]] = {
@@ -221,6 +230,26 @@ COMMANDS_PARSE_AND_OUTPUT_DATA: Dict[str, Dict[Any, Any]] = {
         'table_name': 'Host updated',
         'json_path': ['HOST_UPDATE_OUTPUT', 'RESPONSE'],
     },
+    'qualys-scan-delete': {
+        'table_name': 'Deleted Scan',
+        'json_path': ['SIMPLE_RETURN', 'RESPONSE', 'ITEM_LIST', 'ITEM'],
+        'table_headers': ['Deleted', 'ID']
+    },
+    'qualys-asset-group-manage': {
+        'table_name': 'Asset Group Manage',
+        'json_path': ['SIMPLE_RETURN', 'RESPONSE'],
+        'collection_name': 'ITEM_LIST'
+    },
+    'qualys-schedule-scan-create': {
+        'table_name': 'Schedule Scan Create',
+        'json_path': ['SIMPLE_RETURN', 'RESPONSE'],
+        'collection_name': 'ITEM_LIST'
+    },
+    'qualys-schedule-scan-update': {
+        'table_name': 'Schedule Scan Update',
+        'json_path': ['SIMPLE_RETURN', 'RESPONSE'],
+        'collection_name': 'ITEM_LIST'
+    }
 }
 
 # Context prefix and key for each command
@@ -377,6 +406,22 @@ COMMANDS_CONTEXT_DATA = {
         'context_prefix': 'Qualys.Endpoint.Update',
         'context_key': 'ID',
     },
+    'qualys-scan-delete': {
+        'context_prefix': 'Qualys.ScheduleScan',
+        'context_key': 'ID',
+    },
+    'qualys-asset-group-manage': {
+        'context_prefix': 'Qualys.AssetGroup',
+        'context_key': 'KEY'
+    },
+    'qualys-schedule-scan-create': {
+        'context_prefix': 'Qualys.ScheduleScan',
+        'context_key': 'KEY'
+    },
+    'qualys-schedule-scan-update': {
+        'context_prefix': 'Qualys.ScheduleScan',
+        'context_key': 'KEY'
+    }
 }
 
 # Information about the API request of the commands
@@ -581,6 +626,26 @@ COMMANDS_API_DATA: Dict[str, Dict[str, str]] = {
         'call_method': 'POST',
         'resp_type': 'text',
     },
+    'qualys-scan-delete': {
+        'api_route': API_SUFFIX + 'schedule/scan/?action=update',
+        'call_method': 'POST',
+        'resp_type': 'text',
+    },
+    'qualys-asset-group-manage': {
+        'api_route': API_SUFFIX + 'asset/group/',
+        'call_method': 'POST',
+        'resp_type': 'text'
+    },
+    'qualys-schedule-scan-create': {
+        'api_route': API_SUFFIX + 'schedule/scan/?action=create&active=1',
+        'call_method': 'POST',
+        'resp_type': 'text'
+    },
+    'qualys-schedule-scan-update': {
+        'api_route': API_SUFFIX + 'schedule/scan/?action=update',
+        'call_method': 'POST',
+        'resp_type': 'text'
+    }
 }
 
 # Arguments' names of each command
@@ -832,6 +897,51 @@ COMMANDS_ARGS_DATA: Dict[str, Any] = {
             'new_owner', 'new_comment', 'new_ud1', 'new_ud2', 'new_ud3'
         ],
     },
+    'qualys-scan-delete': {
+        'args': [
+            'scan_id'
+        ],
+    },
+    'qualys-asset-group-manage': {
+        'args': ['action', 'title', 'id', 'network_id', 'add_ips', 'set_ip', 'remove_ips', 'add_domains', 'set_domains',
+                 'remove_domains', 'add_dns', 'set_dns', 'remove_dns', 'add_netbios_names', 'set_netbios_names',
+                 'remove_netbios_names', 'cvss_enviro_td', 'cvss_enviro_cr', 'cvss_enviro_ir', 'cvss_enviro_ar',
+                 'add_appliance_ids', 'set_appliance_ids', 'remove_appliance_ids']
+    },
+    'qualys-schedule-scan-create': {
+        'args': ['scan_title', 'asset_group_ids', 'asset_groups', 'ip', 'option_title', 'frequency_days',
+                 'frequency_weeks', 'frequency_months', 'day_of_month', 'day_of_week', 'week_of_month', 'start_date',
+                 'start_hour', 'start_minute', 'time_zone_code', 'exclude_ip_per_scan', 'default_scanner',
+                 'scanners_in_ag'],
+        'required_groups': [['asset_group_ids', 'asset_groups', 'ip'],
+                            ['frequency_days', 'frequency_weeks', 'frequency_months'],
+                            ['scanners_in_ag', 'default_scanner']],
+        'required_depended_args': {'day_of_month': 'frequency_months', 'day_of_week': 'frequency_months',
+                                   'week_of_month': 'frequency_months', 'weekdays': 'frequency_weeks'},
+        'default_added_depended_args': {'frequency_days': {'occurrence': 'daily'},
+                                        'frequency_weeks': {'occurrence': 'weekly'},
+                                        'frequency_months': {'occurrence': 'monthly'},
+                                        'scan_title': {'active': '1'}},
+    },
+    'qualys-schedule-scan-update': {
+        'args': ['scan_title', 'asset_group_ids', 'asset_groups', 'ip', 'scan_id', 'frequency_days',
+                 'frequency_weeks', 'frequency_months', 'day_of_month', 'day_of_week', 'week_of_month', 'start_date',
+                 'start_hour', 'start_minute', 'time_zone_code', 'exclude_ip_per_scan', 'default_scanner',
+                 'scanners_in_ag', 'active'],
+        'required_groups': [['asset_group_ids', 'asset_groups', 'ip'],
+                            ['frequency_days', 'frequency_weeks', 'frequency_months'],
+                            ['scanners_in_ag', 'default_scanner']],
+        'default_added_depended_args': {'frequency_days': {'occurrence': 'daily'},
+                                        'frequency_weeks': {'occurrence': 'weekly'},
+                                        'frequency_months': {'occurrence': 'monthly'}},
+        'required_depended_args': {'day_of_month': 'frequency_months', 'day_of_week': 'frequency_months',
+                                   'week_of_month': 'frequency_months', 'weekdays': 'frequency_weeks',
+                                   'start_hour': 'start_date', 'start_minute': 'start_date',
+                                   'time_zone_code': 'start_date'},
+        'at_most_one_groups': [['asset_group_ids', 'asset_groups', 'ip'],
+                               ['frequency_days', 'frequency_weeks', 'frequency_months'],
+                               ['scanners_in_ag', 'default_scanner']],
+    }
 }
 
 # Dictionary for arguments used by Qualys API
@@ -1024,8 +1134,13 @@ def build_args_dict(args: Optional[Dict[str, str]], command_args_data: Dict[str,
                 if arg in DATE_ARGUMENTS:
                     datetime_arg = arg_to_datetime(args.get(arg))
                     if datetime_arg:
-                        args[arg] = datetime_arg.strftime('%Y-%m-%d')
+                        args[arg] = datetime_arg.strftime(DATE_ARGUMENTS.get(arg))
                 args_dict[arg] = args.get(arg)
+
+    # If some args are given, we want to add more args with default value.
+    for arg_depending_on, depended_args_dict in command_args_data.get('default_added_depended_args', {}).items():
+        if arg_depending_on in args_dict:
+            args_dict.update(depended_args_dict)
 
     if type_of_args_name == 'inner_args':
         inner_args_values = args_dict
@@ -1132,20 +1247,32 @@ def input_validation(command_name: str) -> None:
     Raises:
         DemistoException: Will be raised if input failed the validation
     """
-
+    command_data = COMMANDS_ARGS_DATA[command_name]
     if limit := inner_args_values.get('limit'):
         try:
             if int(limit) < 1:
                 raise ValueError()
         except ValueError as exc:
             raise DemistoException('Limit parameter must be an integer bigger than 0') from exc
-    if required_groups := COMMANDS_ARGS_DATA[command_name].get('required_groups'):
-        for group in required_groups:
-            for arg in group:
-                if arg in inner_args_values or arg in args_values:
-                    break
-            else:
-                raise DemistoException(f'At least one of the arguments {group} must be provided')
+
+    for group in command_data.get('required_groups', []):
+        existing_args = [arg for arg in group if arg in inner_args_values or arg in args_values]
+        if len(existing_args) != 1:
+            raise DemistoException(f'Exactly least one of the arguments {group} must be provided')
+
+    # Args that are required depending if other argument was given.
+    for required_depended_arg, depended_on_arg in command_data.get('required_depended_args', {}).items():
+        if depended_on_arg not in args_values and depended_on_arg not in inner_args_values:
+            continue
+        if required_depended_arg not in args_values and required_depended_arg not in inner_args_values:
+            raise DemistoException(
+                f'Argument {required_depended_arg} is required when argument {depended_on_arg} is given.')
+
+    #   At most one argument can be given
+    for group in command_data.get('at_most_one_groups', []):
+        existing_args = [arg for arg in group if arg in inner_args_values or arg in args_values]
+        if len(existing_args) > 1:
+            raise DemistoException(f'At most one of the following args can be given: {existing_args}')
 
 
 ''' PARSERS '''
@@ -1688,6 +1815,10 @@ def main():
             'result_handler': handle_general_result,
             'output_builder': build_one_value_parsed_output,
         },
+        'qualys-scan-delete': {
+            'result_handler': handle_general_result,
+            'output_builder': build_one_value_parsed_output,
+        },
         # *** Commands which need parsing with multiple values ***
         'qualys-report-list': {
             'result_handler': handle_general_result,
@@ -1734,6 +1865,18 @@ def main():
             'output_builder': build_multiple_values_parsed_output,
         },
         'qualys-host-list-detection': {
+            'result_handler': handle_general_result,
+            'output_builder': build_multiple_values_parsed_output
+        },
+        'qualys-asset-group-manage': {
+            'result_handler': handle_general_result,
+            'output_builder': build_multiple_values_parsed_output
+        },
+        'qualys-schedule-scan-create': {
+            'result_handler': handle_general_result,
+            'output_builder': build_multiple_values_parsed_output
+        },
+        'qualys-schedule-scan-update': {
             'result_handler': handle_general_result,
             'output_builder': build_multiple_values_parsed_output
         },
@@ -1816,3 +1959,59 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
+# <?xml version="1.0" encoding="UTF-8" ?>
+# <!DOCTYPE SIMPLE_RETURN SYSTEM
+# "https://qualysapi.qualys.com/api/2.0/simple_return.dtd">
+# <SIMPLE_RETURN>
+#  <RESPONSE>
+#  <DATETIME>2019-01-14T11:57:42Z</DATETIME>
+#  <TEXT>Edit scheduled Scan Completed successfully</TEXT>
+#  <ITEM_LIST>
+#  <ITEM>
+#  <KEY>ID</KEY>
+#  <VALUE>146754</VALUE>
+#  </ITEM>
+#  </ITEM_LIST>
+#  </RESPONSE>
+# </SIMPLE_RETURN>
+
+# option_title
+
+# scan_title
+# asset_group_ids
+# asset_group
+# ip
+# frequency_days
+# frequency_weeks
+# frequency_months
+# day_of_month
+# day_of_week
+# week_of_month
+# start_date
+# start_hour
+# start_minute
+# time_zone_code
+# exclude_ip_per_scan
+# default_scanner
+# scanners_in_ag
+# active
+
+# scan_id
+# scan_title
+# asset_group_ids
+# asset_group
+# ip
+# frequency_days
+# frequency_weeks
+# frequency_months
+# day_of_month
+# day_of_week
+# week_of_month
+# start_date
+# start_hour
+# start_minute
+# time_zone_code
+# exclude_ip_per_scan
+# default_scanner
+# scanners_in_ag
+# active

@@ -2560,6 +2560,295 @@ script:
     description: Update host attributes using new update parameters (new_tracking_method, new_owner, new_ud1, new_ud2, new_ud3, and new_comment).
     execution: true
 
+
+  - name: qualys-schedule-scan-create
+    arguments:
+    - default: false
+      description: The scan title.
+      isArray: false
+      name: scan_title
+      required: true
+      secret: false
+    - name: ip
+      isArray: true
+      description: 'The IP addresses to be scanned. You may enter individual IP addresses
+        and/or ranges. Multiple entries are comma separated. One of these parameters
+        is required: ip, asset_groups or asset_group_ids.'
+    - name: asset_group_ids
+      isArray: true
+      description: 'The IDs of asset groups containing the hosts to be scanned. Multiple
+        IDs are comma separated. One of these parameters is required: ip, asset_groups
+        or asset_group_ids.'
+    - name: asset_groups
+      isArray: true
+      description: 'The titles of asset groups containing the hosts to be scanned.
+        Multiple titles are comma separated. One of these parameters is required:
+        ip, asset_groups or asset_group_ids.'
+    - name: option_title
+      description: The title of the compliance option profile to be used.
+      required: true
+    - default: false
+      description: "Frequency scan occurs, value between 1-365. For example: if specified '1', the schedule will occur every day. If specified '2', the schedule will occur every 2 days. One of these parameters is required: 'frequency_days', 'frequency_weeks', 'frequency_months'."
+      name: frequency_days
+      required: false
+      secret: false
+    - default: false
+      description: "Frequency scan occurs, value between 1-52. For example: if specified '1', the schedule will occur every week. If specified '2', the schedule will occur every 2 weeks. The argument 'weekdays' is required when frequency_weeks is given. Scan will occur only on specified days given in the 'weekdays' argument. One of these parameters is required: 'frequency_days', 'frequency_weeks', 'frequency_months'."
+      name: frequency_weeks
+      required: false
+      secret: false
+    - default: false
+      description: "Frequency scan occurs, value between 1-12. For example: if specified '1', the schedule will occur every month. If specified '2', the schedule will occur every 2 months. Either the argument 'day_of_month' or the arguments 'day_of_week' and 'week_of_month' are required when frequency_months is given. Scan will occur only on specified days given in the those arguments argument. One of these parameters is required: 'frequency_days', 'frequency_weeks', 'frequency_months'."
+      name: frequency_months
+      required: false
+      secret: false
+    - name: weekdays
+      auto: PREDEFINED
+      predefined:
+      - "sunday"
+      - "monday"
+      - "tuesday"
+      - "wednesday"
+      - "thursday"
+      - "friday"
+      - "saturday"
+      description: Required when 'frequency_weeks' is given. Days of when the scan will occur every week. E.g, weekdays='sunday,tuesday' along with 'frequency_weeks=2' means the scan will happen on sunday and tuesday every two weeks.
+      isArray: true
+    - default: false
+      description: Only relevant when 'frequency_months' value was given. Day of month that the monthly schedule will run on. Between 1-31 depending on the month. For example, day_of_month=15 along with frequency_months=2 will result in the scan running every 2 months in the 15th of the month.
+      name: day_of_month
+      required: false
+      secret: false
+    - default: false
+      description: Only relevant when 'frequency_months' value was given. Must be given with 'week_of_month' as well. Day of week that the schedule will run on. Between 0-6, where 0 is Sunday, and 6 is Saturday depending on the month. For example, day_of_week=2, week_of_month=second along with frequency_months=2 will result in the scan running every 2 months on Tuesday in the second week of the month.
+      name: day_of_week
+      required: false
+      secret: false
+      auto: PREDEFINED
+      predefined:
+        - "0"
+        - "1"
+        - "2"
+        - "3"
+        - "4"
+        - "5"
+        - "6"
+    - default: false
+      description: Comma separated list. Only relevant when 'frequency_months' value was given. Must be given with 'week_of_month' as well. Day of week that the schedule will run on. Between 0-6, where 0 is Sunday, and 6 is Saturday depending on the month. For example, day_of_week=2, week_of_month=second along with frequency_months=2 will result in the scan running every 2 months on Tuesday in the second week of the month.
+      name: week_of_month
+      required: false
+      isArray: true
+      secret: false
+      auto: PREDEFINED
+      predefined:
+      - "first"
+      - "second"
+      - "third"
+      - "fourth"
+      - "last"
+    - default: false
+      description: The start date of the schedule. Format of mm/dd/yyyy. For example, 12/15/2020.
+      name: start_date
+      required: true
+      secret: false
+    - default: false
+      description: The start hour of the scheduled scan. Value between 0-23.
+      name: start_hour
+      required: true
+      secret: false
+    - default: false
+      description: The start minute of the scheduled scan. Value between 0-59.
+      name: start_minute
+      required: true
+      secret: false
+    - default: false
+      description: Time zone code of the given schedule scan. For example, US-CA for time zone California in US.
+      name: time_zone_code
+      required: true
+      secret: false
+    - name: exclude_ip_per_scan
+      description: "The IP addresses to be excluded from the scan when the scan target
+        is specified as IP addresses (not asset tags). You may enter individual IP
+        addresses and/or ranges. Multiple entries are comma separated.
+       One of these parameters must be set: 'scanners_in_ag', 'default_scanner'."
+      isArray: true
+    - name: default_scanner
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: "Specify 1 to use the default scanner in each target asset group.
+        For an Express Lite user, Internal Scanning must be enabled in the user’s
+        account. One of these parameters must be set: 'scanners_in_ag', 'default_scanner'."
+    - name: scanners_in_ag
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: "Specify 1 to distribute the scan to the target asset groups’ scanner
+        appliances. Appliances in each asset group are tasked with scanning the IPs
+        in the group. By default up to 5 appliances per group will be used and this
+        can be configured for your account (please contact your Account Manager or
+        Support). For an Express Lite user, Internal Scanning must be enabled in the
+        user’s account. One of these parameters must be set: 'scanners_in_ag', 'default_scanner'."
+    outputs:
+    - contextPath: Qualys.ScheduleScan.Update.Status
+      description: TODO
+    - contextPath: Qualys.ScheduleScan.Update.Timestamp
+      description: TODO
+    description: Create a scan schedule in the user’s account.
+    execution: true
+
+  - name: qualys-schedule-scan-update
+    arguments:
+    - default: false
+      description: The scan ID to update.
+      isArray: false
+      name: scan_id
+      required: true
+      secret: false
+    - default: false
+      description: The scan title.
+      isArray: false
+      name: scan_title
+      required: false
+      secret: false
+    - name: ip
+      isArray: true
+      description: 'The IP addresses to be scanned. You may enter individual IP addresses
+        and/or ranges. Multiple entries are comma separated. At most one of these parameters
+        can be supplied: ip, asset_groups or asset_group_ids.'
+    - name: asset_group_ids
+      isArray: true
+      description: 'The IDs of asset groups containing the hosts to be scanned. Multiple
+        IDs are comma separated. At most one of these parameters can be supplied: ip, asset_groups
+        or asset_group_ids.'
+    - name: asset_groups
+      isArray: true
+      description: 'The titles of asset groups containing the hosts to be scanned.
+        Multiple titles are comma separated. At most one of these parameters can be supplied:
+        ip, asset_groups or asset_group_ids.'
+    - name: option_title
+      description: The title of the compliance option profile to be used.
+      required: true
+    - default: false
+      description: "Frequency scan occurs, value between 1-365. For example: if specified '1', the schedule will occur every day. If specified '2', the schedule will occur every 2 days. At most one of these parameters can be supplied: 'frequency_days', 'frequency_weeks', 'frequency_months'."
+      name: frequency_days
+      required: false
+      secret: false
+    - default: false
+      description: "Frequency scan occurs, value between 1-52. For example: if specified '1', the schedule will occur every week. If specified '2', the schedule will occur every 2 weeks. The argument 'weekdays' is required when frequency_weeks is given. Scan will occur only on specified days given in the 'weekdays' argument. At most one of these parameters can be supplied: 'frequency_days', 'frequency_weeks', 'frequency_months'."
+      name: frequency_weeks
+      required: false
+      secret: false
+    - default: false
+      description: "Frequency scan occurs, value between 1-12. For example: if specified '1', the schedule will occur every month. If specified '2', the schedule will occur every 2 months. Either the argument 'day_of_month' or the arguments 'day_of_week' and 'week_of_month' are required when frequency_months is given. Scan will occur only on specified days given in the those arguments argument. At most one of these parameters can be supplied: 'frequency_days', 'frequency_weeks', 'frequency_months'."
+      name: frequency_months
+      required: false
+      secret: false
+    - name: weekdays
+      auto: PREDEFINED
+      predefined:
+      - "sunday"
+      - "monday"
+      - "tuesday"
+      - "wednesday"
+      - "thursday"
+      - "friday"
+      - "saturday"
+      description: Required when 'frequency_weeks' is given. Days of when the scan will occur every week. E.g, weekdays='sunday,tuesday' along with 'frequency_weeks=2' means the scan will happen on sunday and tuesday every two weeks.
+      isArray: true
+    - default: false
+      description: Only relevant when 'frequency_months' value was given. Day of month that the monthly schedule will run on. Between 1-31 depending on the month. For example, day_of_month=15 along with frequency_months=2 will result in the scan running every 2 months in the 15th of the month.
+      name: day_of_month
+      required: false
+      secret: false
+    - default: false
+      description: Only relevant when 'frequency_months' value was given. Must be given with 'week_of_month' as well. Day of week that the schedule will run on. Between 0-6, where 0 is Sunday, and 6 is Saturday depending on the month. For example, day_of_week=2, week_of_month=second along with frequency_months=2 will result in the scan running every 2 months on Tuesday in the second week of the month.
+      name: day_of_week
+      required: false
+      secret: false
+      auto: PREDEFINED
+      predefined:
+        - "0"
+        - "1"
+        - "2"
+        - "3"
+        - "4"
+        - "5"
+        - "6"
+    - default: false
+      description: Comma separated list. Only relevant when 'frequency_months' value was given. Must be given with 'week_of_month' as well. Day of week that the schedule will run on. Between 0-6, where 0 is Sunday, and 6 is Saturday depending on the month. For example, day_of_week=2, week_of_month=second along with frequency_months=2 will result in the scan running every 2 months on Tuesday in the second week of the month.
+      name: week_of_month
+      required: false
+      isArray: true
+      secret: false
+      auto: PREDEFINED
+      predefined:
+      - "first"
+      - "second"
+      - "third"
+      - "fourth"
+      - "last"
+    - default: false
+      description: The start date of the schedule. Format of mm/dd/yyyy. For example, 12/15/2020.
+      name: start_date
+      required: false
+      secret: false
+    - default: false
+      description: Required when 'start_date' is given. The start hour of the scheduled scan. Value between 0-23.
+      name: start_hour
+      required: false
+      secret: false
+    - default: false
+      description: Required when 'start_date' is given. The start minute of the scheduled scan. Value between 0-59.
+      name: start_minute
+      required: false
+      secret: false
+    - default: false
+      description: Required when 'start_date' is given. Time zone code of the given schedule scan. For example, US-CA for time zone California in US.
+      name: time_zone_code
+      required: false
+      secret: false
+    - name: exclude_ip_per_scan
+      description: "The IP addresses to be excluded from the scan when the scan target
+        is specified as IP addresses (not asset tags). You may enter individual IP
+        addresses and/or ranges. Multiple entries are comma separated.
+       One of these parameters must be set: 'scanners_in_ag', 'default_scanner'."
+      isArray: true
+    - name: default_scanner
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: "Specify 1 to use the default scanner in each target asset group.
+        For an Express Lite user, Internal Scanning must be enabled in the user’s
+        account. At most one of these parameters can be supplied: 'scanners_in_ag', 'default_scanner'."
+    - name: scanners_in_ag
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: "Specify 1 to distribute the scan to the target asset groups’ scanner
+        appliances. Appliances in each asset group are tasked with scanning the IPs
+        in the group. By default up to 5 appliances per group will be used and this
+        can be configured for your account (please contact your Account Manager or
+        Support). For an Express Lite user, Internal Scanning must be enabled in the
+        user’s account. At most one of these parameters can be supplied: 'scanners_in_ag', 'default_scanner'."
+    - name: active
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: Whether schedule scan is activated.
+    outputs:
+    - contextPath: Qualys.ScheduleScan.Update.Status
+      description: TODO
+    - contextPath: Qualys.ScheduleScan.Update.Timestamp
+      description: TODO
+    description: Updates a scan schedule in the user’s account.
+    execution: true
+
   dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: false
