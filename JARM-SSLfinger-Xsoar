@@ -1,0 +1,116 @@
+
+
+  #Fuzzy hash for ciphers is the index number (in hex) of the cipher in the list
+  def cipher_bytes(cipher):
+      if cipher == "":
+          return "00"
+      list = [b"\x00\x04", b"\x00\x05", b"\x00\x07", b"\x00\x0a", b"\x00\x16", b"\x00\x2f", b"\x00\x33", b"\x00\x35", b"\x00\x39", b"\x00\x3c", b"\x00\x3d", b"\x00\x41", b"\x00\x45", b"\x00\x67", b"\x00\x6b", b"\x00\x84", b"\x00\x88", b"\x00\x9a", b"\x00\x9c", b"\x00\x9d", b"\x00\x9e", b"\x00\x9f", b"\x00\xba", b"\x00\xbe", b"\x00\xc0", b"\x00\xc4", b"\xc0\x07", b"\xc0\x08", b"\xc0\x09", b"\xc0\x0a", b"\xc0\x11", b"\xc0\x12", b"\xc0\x13", b"\xc0\x14", b"\xc0\x23", b"\xc0\x24", b"\xc0\x27", b"\xc0\x28", b"\xc0\x2b", b"\xc0\x2c", b"\xc0\x2f", b"\xc0\x30", b"\xc0\x60", b"\xc0\x61", b"\xc0\x72", b"\xc0\x73", b"\xc0\x76", b"\xc0\x77", b"\xc0\x9c", b"\xc0\x9d", b"\xc0\x9e", b"\xc0\x9f", b"\xc0\xa0", b"\xc0\xa1", b"\xc0\xa2", b"\xc0\xa3",  b"\xc0\xac", b"\xc0\xad", b"\xc0\xae", b"\xc0\xaf", b'\xcc\x13', b'\xcc\x14', b'\xcc\xa8', b'\xcc\xa9', b'\x13\x01', b'\x13\x02', b'\x13\x03', b'\x13\x04', b'\x13\x05']
+      count = 1
+      for bytes in list:
+          strtype_bytes = codecs.encode(bytes, 'hex').decode('ascii')
+          if cipher == strtype_bytes:
+              break
+          count += 1
+      hexvalue = str(hex(count))[2:]
+      #This part must always be two bytes
+      if len(hexvalue) < 2:
+          return_bytes = "0" + hexvalue
+      else:
+          return_bytes = hexvalue
+      return return_bytes
+
+  #This captures a single version byte based on version
+  def version_byte(version):
+      if version == "":
+          return "0"
+      options = "abcdef"
+      count = int(version[3:4])
+      byte = options[count]
+      return byte
+
+  def ParseNumber(number):
+      if number.startswith('0x'):
+          return int(number[2:], 16)
+      else:
+          return int(number)
+
+
+  def jarm():
+      #Select the packets and formats to send
+      #Array format = [destination_host,destination_port,version,cipher_list,cipher_order,GREASE,RARE_APLN,1.3_SUPPORT,extension_orders]
+      tls1_2_forward = [destination_host, destination_port, "TLS_1.2", "ALL", "FORWARD", "NO_GREASE", "APLN", "1.2_SUPPORT", "REVERSE"]
+      tls1_2_reverse = [destination_host, destination_port, "TLS_1.2", "ALL", "REVERSE", "NO_GREASE", "APLN", "1.2_SUPPORT", "FORWARD"]
+      tls1_2_top_half = [destination_host, destination_port, "TLS_1.2", "ALL", "TOP_HALF", "NO_GREASE", "APLN", "NO_SUPPORT", "FORWARD"]
+      tls1_2_bottom_half = [destination_host, destination_port, "TLS_1.2", "ALL", "BOTTOM_HALF", "NO_GREASE", "RARE_APLN", "NO_SUPPORT", "FORWARD"]
+      tls1_2_middle_out = [destination_host, destination_port, "TLS_1.2", "ALL", "MIDDLE_OUT", "GREASE", "RARE_APLN", "NO_SUPPORT", "REVERSE"]
+      tls1_1_middle_out = [destination_host, destination_port, "TLS_1.1", "ALL", "FORWARD", "NO_GREASE", "APLN", "NO_SUPPORT", "FORWARD"]
+      tls1_3_forward = [destination_host, destination_port, "TLS_1.3", "ALL", "FORWARD", "NO_GREASE", "APLN", "1.3_SUPPORT", "REVERSE"]
+      tls1_3_reverse = [destination_host, destination_port, "TLS_1.3", "ALL", "REVERSE", "NO_GREASE", "APLN", "1.3_SUPPORT", "FORWARD"]
+      tls1_3_invalid = [destination_host, destination_port, "TLS_1.3", "NO1.3", "FORWARD", "NO_GREASE", "APLN", "1.3_SUPPORT", "FORWARD"]
+      tls1_3_middle_out = [destination_host, destination_port, "TLS_1.3", "ALL", "MIDDLE_OUT", "GREASE", "APLN", "1.3_SUPPORT", "REVERSE"]
+      #Possible versions: SSLv3, TLS_1, TLS_1.1, TLS_1.2, TLS_1.3
+      #Possible cipher lists: ALL, NO1.3
+      #GREASE: either NO_GREASE or GREASE
+      #APLN: either APLN or RARE_APLN
+      #Supported Verisons extension: 1.2_SUPPPORT, NO_SUPPORT, or 1.3_SUPPORT
+      #Possible Extension order: FORWARD, REVERSE
+      queue = [tls1_2_forward, tls1_2_reverse, tls1_2_top_half, tls1_2_bottom_half, tls1_2_middle_out, tls1_1_middle_out, tls1_3_forward, tls1_3_reverse, tls1_3_invalid, tls1_3_middle_out]
+      jarm = ""
+      #Assemble, send, and decipher each packet
+      iterate = 0
+      while iterate < len(queue):
+          payload = packet_building(queue[iterate])
+          server_hello, ip = send_packet(payload)
+          #Deal with timeout error
+          if server_hello == "TIMEOUT":
+              jarm = "|||,|||,|||,|||,|||,|||,|||,|||,|||,|||"
+              break
+          ans = read_packet(server_hello, queue[iterate])
+          jarm += ans
+          iterate += 1
+          if iterate == len(queue):
+              break
+          else:
+              jarm += ","
+      #Fuzzy hash
+      result = jarm_hash(jarm)
+      #Write to file
+
+      #Print to STDOUT
+
+      if str(demisto.args()) != None:
+          print("JARM: " + result)
+
+
+
+  #set proxy
+
+
+  #Set destination host and port
+
+
+
+
+  jarm()
+
+
+
+
+
+
+  # The command demisto.command() holds the command sent from the user.
+
+  # You can use demisto.args()[argName] to get a specific arg. args are strings.
+  # You can use demisto.params()[paramName] to get a specific params.
+  # Params are of the type given in the integration page creation.
+type: python
+tags: []
+enabled: true
+args:
+- name: IP
+  required: true
+  defaultValue: 8.8.8.8
+scripttarget: 0
+runonce: false
+dockerimage: demisto/python3:3.8.5.10845
+runas: DBotWeakRole
