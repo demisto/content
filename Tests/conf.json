@@ -4853,6 +4853,7 @@
         "forcepoint test": "Issue 28043",
         "Test-VulnDB": "Issue 30875",
         "Malware Domain List Active IPs Feed Test": "Issue 30878",
+        "CuckooTest": "Issue 25601",
         "PhishlabsIOC_DRP-Test": "Issue 29589",
         "Carbon Black Live Response Test": "Issue 28237",
         "FeedThreatConnect-Test": "Issue 32317",
