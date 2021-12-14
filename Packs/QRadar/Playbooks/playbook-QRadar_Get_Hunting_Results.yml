@@ -1,10 +1,10 @@
 id: QRadar Get Hunting Results
 version: -1
 description: This playbook is used to to sort the QRadar search results to display
-  the IP addresses, assets and usernames that the search provided. In addition results
-  allow to to differentiate between internal and external IP addresses as well as
+  the IP addresses, assets, and usernames that the search provided. In addition, the results
+  allow you to differentiate between internal and external IP addresses as well as
   query the QRadar assets API in order to get the assets details from the IP addresses.
-  The user can provide the QRadar fields names and the organizations IP ranges in
+  You can provide the QRadar fields names and the organizations' IP ranges in
   order to properly sort the data. The end result of the playbook will be the internal
   and external IP addresses detected as well as the assets and users.
 name: QRadar Get Hunting Results
@@ -78,7 +78,7 @@ tasks:
       version: -1
       name: Set detected IP addresses as external
       description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set it context.
+        it will be set in context, otherwise no value will be set in context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -169,7 +169,7 @@ tasks:
       id: 7ddc4c58-95a6-41ef-8369-01bf13913b89
       version: -1
       name: Determine whether the IP address is internal or external
-      description: Returns yes if the IP is in one of the ranges provided, returns
+      description: Returns yes if the IP address is in one of the ranges provided. Returns
         no otherwise.
       scriptName: IsIPInRanges
       type: regular
@@ -207,7 +207,7 @@ tasks:
       version: -1
       name: Set detected IP addresses as internal
       description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set it context.
+        it will be set in context, otherwise no value will be set in context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -258,7 +258,7 @@ tasks:
       id: 167285fd-2777-4725-8bc3-f4105974f7b0
       version: -1
       name: Set detected source and destination IP addresses
-      description: Sets a value into the context with the given context key
+      description: Sets a value in context with the given context key.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -309,7 +309,7 @@ tasks:
       id: dffced59-ddf3-456a-8b37-64b06d19bccd
       version: -1
       name: Set detected usernames
-      description: Sets a value into the context with the given context key
+      description: Sets a value in context with the given context key.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -360,7 +360,7 @@ tasks:
       id: 8b6eae0b-939e-4fd8-86ec-62f4b674e7dd
       version: -1
       name: Get hostnames from assets
-      description: List all assets found in the model
+      description: List all assets found in the model.
       script: '|||qradar-get-assets'
       type: regular
       iscommand: true
@@ -411,7 +411,7 @@ tasks:
       id: bd2ea70a-3518-4fbb-8c5e-4cb156123200
       version: -1
       name: Set detected hostnames from assets
-      description: Sets a value into the context with the given context key
+      description: Sets a value in context with the given context key.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -453,7 +453,7 @@ tasks:
       id: 29ec4a5c-63de-49b7-8d46-90a7fd110c62
       version: -1
       name: Have results been detected?
-      description: Is domain or url detected by QRadar?
+      description: Was the domain or URL detected by QRadar?
       type: condition
       iscommand: false
       brand: ""
@@ -519,7 +519,7 @@ tasks:
     task:
       id: fe022e8b-a53c-4fe3-8f81-549b70d3d215
       version: -1
-      name: Set detecetd Values
+      name: Set detected values
       type: title
       iscommand: false
       brand: ""
@@ -717,7 +717,7 @@ inputs:
   description: 'A list of internal IP ranges to check IP addresses against. The list
     should be provided in CIDR notation, separated by commas. An example of a list
     of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).
-    If a list is not provided, will use default list provided in the IsIPInRanges
+    If a list is not provided, will use the default list provided in the IsIPInRanges
     script (the known IPv4 private address ranges).'
   playbookInputQuery:
 - key: InvestigationIPFields
@@ -751,11 +751,11 @@ outputs:
   type: string
 - contextPath: QRadar.DetectedInternalHosts
   description: Internal host names detected based on hosts in your assets table. Note
-    that the data accuracy depends on how the Asset mapping is configured in QRadar.
+    that the data accuracy depends on how the asset mapping is configured in QRadar.
   type: string
 - contextPath: QRadar.DetectedExternalHosts
   description: External host names detected based on hosts in your assets table. Note
-    that the data accuracy depends on how the Asset mapping is configured in QRadar.
+    that the data accuracy depends on how the asset mapping is configured in QRadar.
   type: string
 tests:
 - no test
