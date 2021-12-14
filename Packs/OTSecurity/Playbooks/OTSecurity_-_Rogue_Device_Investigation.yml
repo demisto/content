@@ -469,7 +469,7 @@ tasks:
     ignoreworker: false
     message:
       to:
-        simple: omar@ayman.online
+        simple: admin@domain.local
       subject:
         simple: A New Device Discover in Substation ${incident.otsubstationname}
       body: {}
