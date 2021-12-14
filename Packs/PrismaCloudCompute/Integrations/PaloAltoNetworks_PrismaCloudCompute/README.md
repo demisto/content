@@ -1311,3 +1311,51 @@ Retrieves a list of all collections
 |---|---|---|---|
 | All | System - all resources collection | system | September 02, 2021 11:05:06 AM |
 
+### prisma-cloud-compute-container-namespace-list
+***
+Get the containers namespaces names
+
+
+#### Base Command
+
+`prisma-cloud-compute-container-namespace-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| cluster | Clusters is the cluster name to filter by. | Optional | 
+| collections | Collections are collections to filter by. | Optional | 
+| limit | The maximum number of namespace names records to return. Default is 50. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaCloudCompute.RadarContainerNamespace | String | The names of the container namespaces | 
+
+
+#### Command Example
+```!prisma-cloud-compute-container-namespace-list limit=3```
+
+#### Context Example
+```json
+{
+    "PrismaCloudCompute": {
+        "RadarContainerNamespace": [
+            "namespace1", 
+            "namespace2", 
+            "namespace3"
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+### Collections Information
+|Name|
+|---|
+| namespace1 |
+| namespace2 |
+| namespace3 |
+

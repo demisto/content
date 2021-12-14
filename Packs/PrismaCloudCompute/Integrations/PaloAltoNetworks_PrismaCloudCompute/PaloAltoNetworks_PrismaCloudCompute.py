@@ -239,7 +239,7 @@ class PrismaCloudComputeClient(BaseClient):
         """
         return self._http_request(method="GET", url_suffix="/collections")
 
-    def get_namespaces(self, params):
+    def get_namespaces(self, params=None):
         """
         Sends a request to get the namespaces.
 
@@ -1145,22 +1145,24 @@ def get_namespaces(client: PrismaCloudComputeClient, args: dict) -> CommandResul
         CommandResults: command-results object.
     """
     limit, _ = parse_limit_and_offset_values(limit=args.pop("limit", "50"))
-    clusters, collections = argToList(arg=args.get("cluster")), argToList(arg=args.get("collections"))
 
-    if namespaces := filter_api_response(api_response=client.get_namespaces(params=assign_params(**args)), limit=limit):
-        # when the api returns [""] it means that the system does not have any namespaces
+    if namespaces := filter_api_response(
+        api_response=client.get_namespaces(params=assign_params(**args)), limit=limit
+    ):
+        # when the api returns [""] (a list with empty string), it means that the system does not have any namespaces
         if len(namespaces) == 1 and namespaces[0] == "":
             namespaces, table = [], "No results found"
         else:
             table = tableToMarkdown(
-                name="Namespaces", t=[{"Name": namespace} for namespace in namespaces], headers=["Name"]
+                name="Namespaces",
+                t=[{"Name": namespace} for namespace in namespaces],
+                headers=["Name"]
             )
     else:
         namespaces, table = [], "No results found"
 
     return CommandResults(
         outputs_prefix="PrismaCloudCompute.RadarContainerNamespace",
-        outputs_key_field="RadarContainerNamespace",
         outputs=namespaces if namespaces else None,
         readable_output=table,
         raw_response=namespaces

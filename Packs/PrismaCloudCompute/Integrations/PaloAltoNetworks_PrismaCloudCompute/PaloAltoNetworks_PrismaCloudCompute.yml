@@ -1091,7 +1091,7 @@ script:
         - name: collections
           description: Collections are collections to filter by
           required: false
-          isArray: true
+          isArray: false
           defaultValue: ""
         - name: limit
           description: The maximum number of namespace names records to return

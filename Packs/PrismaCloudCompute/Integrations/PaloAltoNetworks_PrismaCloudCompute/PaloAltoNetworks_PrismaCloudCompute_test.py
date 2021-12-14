@@ -5,7 +5,7 @@ from PaloAltoNetworks_PrismaCloudCompute import (
     HEADERS_BY_NAME, get_profile_host_list, get_container_profile_list, get_container_hosts_list,
     get_profile_container_forensic_list, get_profile_host_forensic_list, get_console_version, get_custom_feeds_ip_list,
     add_custom_ip_feeds, filter_api_response, parse_date_string_format, get_custom_malware_feeds,
-    add_custom_malware_feeds, get_cves, get_defenders, get_collections
+    add_custom_malware_feeds, get_cves, get_defenders, get_collections, get_namespaces
 )
 
 from CommonServerPython import DemistoException
@@ -497,6 +497,12 @@ HTTP_REQUEST_URL_WITH_QUERY_PARAMS = [
         get_collections,
         "/collections",
         "https://test.com/collections"
+    ),
+    (
+        OrderedDict(limit="20", cluster="cluster", collections="collections"),
+        get_namespaces,
+        "/radar/container/namespaces",
+        "https://test.com/radar/container/namespaces?cluster=cluster&collections=collections"
     )
 ]
 
@@ -1081,6 +1087,13 @@ EXPECTED_CONTEXT_OUTPUT_DATA = [
                 "system": True,
             }
         ]
+    ),
+    (
+        {"limit": "20"},
+        get_namespaces,
+        "/radar/container/namespaces",
+        ["namespace1", "namespace2", "namespace3"],
+        ""
     )
 ]
 

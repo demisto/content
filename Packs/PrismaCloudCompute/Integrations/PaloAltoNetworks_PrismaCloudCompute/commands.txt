@@ -11,3 +11,4 @@
 !cve cve=cve-2016-223,cve-2020-3546
 !prisma-cloud-compute-defenders-list connected=true limit=1
 !prisma-cloud-compute-collections-list limit=1
+!prisma-cloud-compute-container-namespace-list limit=3
