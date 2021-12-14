@@ -99,7 +99,7 @@ def replace_protocol(url_: str) -> str:
     return url_
 
 
-def format_url(non_formatted_url: str) -> str:
+def format_url(non_formatted_url: str) -> CommandResults:
     """
     Formats a single URL.
     Args:
@@ -122,12 +122,16 @@ def format_url(non_formatted_url: str) -> str:
     # Common handling for unescape and normalizing
     non_formatted_url = unquote(unescape(non_formatted_url.replace('[.]', '.')))
     formatted_url = replace_protocol(non_formatted_url)
-    return formatted_url
+    return CommandResults(
+        outputs_prefix='URL',
+        outputs=[formatted_url],
+        readable_output=formatted_url
+    )
 
 
 def main():
     try:
-        demisto.results(format_url(demisto.args().get('input')))
+        return_results(format_url(demisto.args().get('input')))
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute ExtractURL. Error: {str(e)}')

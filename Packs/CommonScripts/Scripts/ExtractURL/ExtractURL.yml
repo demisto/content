@@ -5,7 +5,7 @@ args:
   name: input
   required: true
   secret: false
-comment: Formats URL to indicator. Expands short URLs, extracts redirect URL from Proof Point or ATP URLs. Strips and unquotes and unescapes URLs
+comment: "Formats URL to indicator: extracts redirect URL from Proof Point or ATP URLs. Strips and unquotes and unescapes URLs"
 commonfields:
   id: ExtractURL
   version: -1
@@ -13,8 +13,8 @@ enabled: false
 name: ExtractURL
 outputs:
 - contextPath: URL
-  description: URLs formatted.
-  type: Unknown
+  description: URL formatted.
+  type: String
 script: '-'
 system: false
 tags:
@@ -25,4 +25,4 @@ subtype: python3
 dockerimage: demisto/python3:3.9.8.24399
 fromversion: 5.5.0
 tests:
-- No tests (auto formatted)
+- ExtractURL-Test
