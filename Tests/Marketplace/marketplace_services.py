@@ -1540,7 +1540,7 @@ class Pack(object):
                     with open(pack_file_path, 'r') as pack_file:
                         if current_directory in PackFolders.yml_supported_folders():
                             content_item = yaml.safe_load(pack_file)
-                        elif pack_file.endswith(".json") and current_directory in PackFolders.json_supported_folders():
+                        elif current_directory in PackFolders.json_supported_folders():
                             content_item = json.load(pack_file)
                         else:
                             continue
