@@ -8333,7 +8333,7 @@ def indicators_value_to_clickable(indicators):
     return res
 
 
-def signal_handler_threads_dump(_sig, _frame):
+def get_message_threads_dump(_sig, _frame):
     """
     Listener function to dump the threads to log info
 
@@ -8343,8 +8343,8 @@ def signal_handler_threads_dump(_sig, _frame):
     :type _frame: ``Any``
     :param _frame: The current stack frame
 
-    :return: No data returned
-    :rtype: ``None``
+    :return: Message to print.
+    :rtype: ``str``
     """
     code = []
     for threadId, stack in sys._current_frames().items():
@@ -8354,13 +8354,13 @@ def signal_handler_threads_dump(_sig, _frame):
             if line:
                 code.append("  %s" % (line.strip()))
 
-    thread_dump_msg = '\n\n--- Start Threads Dump ---\n'\
+    ret_value = '\n\n--- Start Threads Dump ---\n'\
         + '\n'.join(code)\
         + '\n\n--- End Threads Dump ---\n'
-    demisto.info(thread_dump_msg)
+    return ret_value
 
 
-# DEPRECATED - use register_signal_handler_threads_and_memory_dump instead
+# DEPRECATED - use register_signal_handler_profiling_dump instead
 def register_signal_handler_threads_dump(signal_type=signal.SIGUSR1):
     """
     Function that registers the threads dump signal listener
@@ -8371,10 +8371,10 @@ def register_signal_handler_threads_dump(signal_type=signal.SIGUSR1):
     :return: No data returned
     :rtype: ``None``
     """
-    signal.signal(signal_type, signal_handler_threads_dump)
+    signal.signal(signal_type, signal_handler_profiling_dump)
 
 
-def signal_handler_memory_dump(_sig, _frame):
+def get_message_memory_dump(_sig, _frame):
     """
     Listener function to dump the memory to log info
 
@@ -8384,8 +8384,8 @@ def signal_handler_memory_dump(_sig, _frame):
     :type _frame: ``Any``
     :param _frame: The current stack frame
 
-    :return: No data returned
-    :rtype: ``None``
+    :return: Message to print.
+    :rtype: ``str``
     """
     classes_dict = {}
     for obj in gc.get_objects():
@@ -8406,71 +8406,73 @@ def signal_handler_memory_dump(_sig, _frame):
                 classes_dict[cls] = current_class
 
     classes_as_list = list(classes_dict.values())
-    print_memory_dump(classes_as_list)
+    ret_value = '\n\n--- Start Variables Dump ---\n'
+    ret_value += get_message_classes_dump(classes_as_list)
+    ret_value += '\n--- End Variables Dump ---\n\n'
 
-    demisto.info('\n\n--- Start Variables Dump ---\n')
+    ret_value = '\n\n--- Start Variables Dump ---\n'
+    ret_value += get_message_local_vars()
+    ret_value += get_message_global_vars()
+    ret_value += '\n--- End Variables Dump ---\n\n'
 
-    print_local_vars()
-    print_global_vars()
-
-    demisto.info('\n--- End Variables Dump ---\n\n')
+    return ret_value
 
 
-def print_memory_dump(classes_as_list):
+def get_message_classes_dump(classes_as_list):
     """
     A function that prints the memory dump to log info
 
     :type classes_as_list: ``list``
     :param classes_as_list: The classes to print to the log
 
-    :return: No data returned
-    :rtype: ``None``
+    :return: Message to print.
+    :rtype: ``str``
     """
 
-    message = '\n\n--- Start Memory Dump ---\n'
+    ret_value = '\n\n--- Start Memory Dump ---\n'
 
-    message += '\n--- Start Top {} Classes by Count ---\n\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+    ret_value += '\n--- Start Top {} Classes by Count ---\n\n'.format(PROFILING_DUMP_ROWS_LIMIT)
     classes_sorted_by_count = sorted(classes_as_list, key=lambda d: d['count'], reverse=True)
-    message += 'Count\t\tSize\t\tName\n'
+    ret_value += 'Count\t\tSize\t\tName\n'
     for current_class in classes_sorted_by_count[:PROFILING_DUMP_ROWS_LIMIT]:
-        message += '{}\t\t{}\t\t{}\n'.format(current_class["count"], current_class["size"], current_class["name"])
-    message += '\n--- End Top {} Classes by Count ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+        ret_value += '{}\t\t{}\t\t{}\n'.format(current_class["count"], current_class["size"], current_class["name"])
+    ret_value += '\n--- End Top {} Classes by Count ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
 
-    message += '\n--- Start Top {} Classes by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+    ret_value += '\n--- Start Top {} Classes by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
     classes_sorted_by_size = sorted(classes_as_list, key=lambda d: d['size'], reverse=True)
-    message += 'Size\t\tCount\t\tName\n'
+    ret_value += 'Size\t\tCount\t\tName\n'
     for current_class in classes_sorted_by_size[:PROFILING_DUMP_ROWS_LIMIT]:
-        message += '{}\t\t{}\t\t{}\n'.format(current_class["size"], current_class["count"], current_class["name"])
-    message += '\n--- End Top {} Classes by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+        ret_value += '{}\t\t{}\t\t{}\n'.format(current_class["size"], current_class["count"], current_class["name"])
+    ret_value += '\n--- End Top {} Classes by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
 
-    message += '\n--- End Memory Dump ---\n\n'
+    ret_value += '\n--- End Memory Dump ---\n\n'
 
-    demisto.info(message)
+    return ret_value
 
 
-def print_local_vars():
+def get_message_local_vars():
     """
     A function that prints the local variables to log info
 
-    :return: No data returned
-    :rtype: ``None``
+    :return: Message to print.
+    :rtype: ``str``
     """
     local_vars = list(locals().items())
-    message = '\n\n--- Start Local Vars ---\n\n'
+    ret_value = '\n\n--- Start Local Vars ---\n\n'
     for current_local_var in local_vars:
-        message += str(current_local_var) + '\n'
+        ret_value += str(current_local_var) + '\n'
 
-    message += '\n--- End Local Vars ---\n\n'
+    ret_value += '\n--- End Local Vars ---\n\n'
 
-    demisto.info(message)
+    return ret_value
 
 
-def print_global_vars():
+def get_message_global_vars():
     """
     A function that prints the global variables to log info
 
-    :return: No data returned
-    :rtype: ``None``
+    :return: Message to print.
+    :rtype: ``str``
     """
     globals_dict = dict(globals())
     globals_dict_full = {}
@@ -8482,30 +8484,17 @@ def print_global_vars():
             'size': sys.getsizeof(current_value)
         }
 
-    message = '\n\n--- Start Top {} Globals by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+    ret_value = '\n\n--- Start Top {} Globals by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
     globals_sorted_by_size = sorted(globals_dict_full.values(), key=lambda d: d['size'], reverse=True)
-    message += 'Size\t\tName\t\tValue\n'
+    ret_value += 'Size\t\tName\t\tValue\n'
     for current_global in globals_sorted_by_size[:PROFILING_DUMP_ROWS_LIMIT]:
-        message += '{}\t\t{}\t\t{}\n'.format(current_global["size"], current_global["name"], current_global["value"])
-    message += '\n--- End Top {} Globals by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+        ret_value += '{}\t\t{}\t\t{}\n'.format(current_global["size"], current_global["name"], current_global["value"])
+    ret_value += '\n--- End Top {} Globals by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
 
-    demisto.info(message)
-
-
-def register_signal_handler_memory_dump(signal_type=signal.SIGUSR2):
-    """
-    Function that registers the memory dump signal listener
-
-    :type signal_type: ``int``
-    :param signal_type: The type of the signal to register
-
-    :return: No data returned
-    :rtype: ``None``
-    """
-    signal.signal(signal_type, signal_handler_memory_dump)
+    return ret_value
 
 
-def signal_handler_threads_and_memory_dump(_sig, _frame):
+def signal_handler_profiling_dump(_sig, _frame):
     """
     Listener function to dump the threads and memory to log info
 
@@ -8518,13 +8507,14 @@ def signal_handler_threads_and_memory_dump(_sig, _frame):
     :return: No data returned
     :rtype: ``None``
     """
-    demisto.info('\n\n--- Start Profiling Dump ---\n')
-    signal_handler_threads_dump(_sig, _frame)
-    signal_handler_memory_dump(_sig, _frame)
-    demisto.info('\n--- End Profiling Dump ---\n\n')
+    msg = '\n\n--- Start Profiling Dump ---\n'
+    msg += get_message_threads_dump(_sig, _frame)
+    msg += get_message_memory_dump(_sig, _frame)
+    msg += '\n--- End Profiling Dump ---\n\n'
+    demisto.info(msg)
 
 
-def register_signal_handler_threads_and_memory_dump(signal_type=signal.SIGUSR1, profiling_dump_rows_limit=20):
+def register_signal_handler_profiling_dump(signal_type=signal.SIGUSR1, profiling_dump_rows_limit=20):
     """
     Function that registers the threads and memory dump signal listener
 
@@ -8540,4 +8530,4 @@ def register_signal_handler_threads_and_memory_dump(signal_type=signal.SIGUSR1, 
     globals_ = globals()
     globals_[PROFILING_DUMP_ROWS_LIMIT] = profiling_dump_rows_limit
 
-    signal.signal(signal_type, signal_handler_threads_and_memory_dump)
+    signal.signal(signal_type, signal_handler_profiling_dump)
