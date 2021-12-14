@@ -42,6 +42,18 @@ INTEGRATION_NAME = 'Feed SOCRadar ThreatFeed'
 ''' HELPER FUNCTIONS '''
 
 
+def parse_int_or_raise(str_to_parse: Any, error_msg=None) -> int:
+    """Parse a string to integer. Raise ValueError exception if fails with given error_msg
+    """
+    try:
+        res = int(str_to_parse)
+    except (TypeError, ValueError):
+        if not error_msg:
+            error_msg = f"Error while parsing integer! Provided string: {str_to_parse}"
+        raise ValueError(error_msg)
+    return res
+
+
 def build_entry_context(indicators: Union[Dict, List]) -> List[Dict]:
     """Formatting indicators from SOCRadar Threat Feed/IOC API to Demisto Context
 
@@ -320,7 +332,7 @@ def get_indicators_command(client: Client, args: Dict[str, str]) -> CommandResul
     :return: A ``CommandResults`` object that is then passed to ``return_results``.
     :rtype: ``CommandResults``
     """
-    limit = int(args.get('limit', 10))
+    limit = parse_int_or_raise(args.get('limit', 10))
     collections_to_fetch = argToList(args.get('collections_to_fetch'))
     if 'ALL' in collections_to_fetch:
         collections_to_fetch = SOCRADAR_RECOMMENDED_COLLECTIONS
