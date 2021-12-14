@@ -310,7 +310,6 @@ script:
     };
 
     var createTaskFromURL = function(args, params){
-        console.log("im in create task from url");
         var res = cuckooPost(args, params, 'tasks/create/url');
         return {
             Type: entryTypes.note,
