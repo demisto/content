@@ -108,7 +108,7 @@ configuration:
   name: safe_mode
   required: false
   type: 8
-  defaultvalue: true
+  defaultvalue: false
 - display: Common Channels
   name: common_channels
   type: 12
