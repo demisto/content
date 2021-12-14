@@ -1,0 +1,106 @@
+category: Utilities
+commonfields:
+  id: Netskope v1_for contribution to marketplace
+  version: -1
+configuration:
+- display: URL of Netskope Tenant (e.g. https://tenant.goskope.com)
+  name: url
+  required: true
+  type: 0
+- display: XSOAR API Key
+  name: xsoar_api_key
+  required: true
+  type: 4
+- display: Netskope API Key
+  name: netskope_api_key
+  required: true
+  type: 4
+- defaultvalue: Netskope URL Block List via XSOAR
+  display: XSOAR URL Block List Name
+  name: xsoar_url_block_list_name
+  required: true
+  type: 0
+- defaultvalue: Netskope File Hash Block List via XSOAR
+  display: XSOAR File Hash Block List Name
+  name: xsoar_filehash_block_list_name
+  required: true
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: e1d4e968-3572-4dff-877a-5544bb7dd497
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: Block URLs, domains and file hashes.
+display: Netskope v1_for contribution to marketplace
+name: Netskope v1_for contribution to marketplace
+script:
+  commands:
+  - arguments:
+    - description: URLs to add to XSOAR URL block list. Can be single URL or list
+        of URLs
+      isArray: true
+      name: url
+      required: true
+    description: Add a URL to the XSOAR Netskope URL block list
+    name: netskopev1-add-url
+    outputs:
+    - contextPath: XSOAR.URLList
+  - arguments:
+    - isArray: true
+      name: url
+      required: true
+    description: Remove a URL from the XSOAR Netskope URL block list
+    name: netskopev1-remove-url
+    outputs:
+    - contextPath: XSOAR.URLList
+  - arguments: []
+    description: Send the URL block list to Netskope. The URL block list name is configured
+      within the instance configuration.
+    name: netskopev1-update-url-list
+    outputs:
+    - contextPath: Netskope.URLList
+  - arguments:
+    - description: file hashes to add to XSOAR file hash block list. Can be single
+        file hash or list of file hashes
+      isArray: true
+      name: filehash
+      required: true
+    description: 'Add a file hash to the XSOAR Netskope file hash block list. File
+      hash types supported: MD5 or SHA256.'
+    name: netskopev1-add-filehash
+    outputs:
+    - contextPath: XSOAR.FileHashList
+  - arguments:
+    - description: file hashes to remove from XSOAR file hash block list. Can be single
+        file hash or list of file hashes
+      isArray: true
+      name: filehash
+      required: true
+    description: 'Remove a file hash from the XSOAR Netskope file hash block list.
+      File hash types supported: MD5 or SHA256.'
+    name: netskopev1-remove-filehash
+    outputs:
+    - contextPath: XSOAR.FileHashList
+  - arguments: []
+    description: Send the file hash block list to Netskope. The file hash block list
+      name is configured within the instance configuration.
+    name: netskopev1-update-filehash-list
+    outputs:
+    - contextPath: Netskope.FileHashList
+  dockerimage: demisto/python3:3.9.8.24399
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+sourcemoduleid: SCE - Netskope
