@@ -1,5 +1,7 @@
 id: Rapid Breach Response - Set Incident Info
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Rapid Breach Response - Set Incident Info
 description: This playbook is responsible for setting up the Rapid Breach Response
   Incident Info tab in the layout.
@@ -113,10 +115,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: d782af8d-e28a-48a1-8675-aa50fac0d192
+    taskid: 0f82d5fb-fe68-4303-81f1-2dfbdd7403ed
     type: regular
     task:
-      id: d782af8d-e28a-48a1-8675-aa50fac0d192
+      id: 0f82d5fb-fe68-4303-81f1-2dfbdd7403ed
       version: -1
       name: Set Source of Indicators
       description: Set a value in context under the key you entered.
@@ -133,6 +135,8 @@ tasks:
       value:
         complex:
           root: inputs.SourceOfIndicators
+          transformers:
+          - operator: StringToArray
     separatecontext: false
     view: |-
       {
@@ -382,6 +386,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
