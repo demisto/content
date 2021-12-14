@@ -1,8 +1,8 @@
 {
 	"description": "OT Security Rogue Device Found Layout",
-	"details": null,
+	"details": {},
+	"fromVersion": "6.0.0",
 	"detailsV2": {
-		"TypeName": "",
 		"tabs": [
 			{
 				"id": "summary",
@@ -458,22 +458,9 @@
 			}
 		]
 	},
-	"edit": null,
-	"fromServerVersion": "",
 	"group": "incident",
 	"id": "OTSecurity Rogue Device Found",
-	"indicatorsDetails": null,
-	"indicatorsQuickView": null,
-	"itemVersion": "",
-	"locked": false,
-	"mobile": null,
 	"name": "OTSecurity Rogue Device Found",
-	"packID": "",
-	"propagationLabels": [
-		"all"
-	],
-	"quickView": null,
 	"system": false,
-	"toServerVersion": "",
 	"version": -1
 }

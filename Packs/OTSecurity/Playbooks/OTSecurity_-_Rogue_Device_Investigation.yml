@@ -1,5 +1,6 @@
 id: OTSecurity - Rogue Device Investigation
 version: -1
+fromversion: 6.0.0
 name: OTSecurity - Rogue Device Investigation
 description: OT Security playbook  to investigate rogue device incidents
 starttaskid: "0"
@@ -12,6 +13,7 @@ tasks:
       id: 1d077e42-6337-4fe9-8f72-d9e4f8da45c5
       version: -1
       name: ""
+      description: Playbook start.
       iscommand: false
       brand: ""
     nexttasks:
@@ -40,6 +42,7 @@ tasks:
       id: df9b0208-80e0-4911-824e-889ff09a6292
       version: -1
       name: Engage with the Owner
+      description: Engage with the Owner.
       type: title
       iscommand: false
       brand: ""
@@ -69,6 +72,7 @@ tasks:
       id: 66ccdef9-1bfc-4385-8bf5-ede5ef2714f4
       version: -1
       name: Get Device Details
+      description: Get Device Details.
       type: title
       iscommand: false
       brand: ""
@@ -98,6 +102,7 @@ tasks:
       id: 0cf546e8-f5c2-45ad-8d9e-700eaad639d4
       version: -1
       name: Done
+      description: Playbook End
       type: title
       iscommand: false
       brand: ""
@@ -118,13 +123,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: a153170b-fb52-4b11-8605-11762d9d4384
+    taskid: d6d5efb4-f6db-4ae2-80ed-3f88ff5b9981
     type: condition
     task:
-      id: a153170b-fb52-4b11-8605-11762d9d4384
+      id: d6d5efb4-f6db-4ae2-80ed-3f88ff5b9981
       version: -1
       name: Owner Acknowledges
-      description: Use the user response (yes or no) to direct the playbook.
+      description: Check if the owner acknowledges the rouge device
       tags:
       - AccessQ1
       type: condition
@@ -165,10 +170,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 79a60140-c2d3-41ca-8d10-010ec46a29ff
+    taskid: 23059882-476c-4a7c-80d3-fbf563d7271e
     type: regular
     task:
-      id: 79a60140-c2d3-41ca-8d10-010ec46a29ff
+      id: 23059882-476c-4a7c-80d3-fbf563d7271e
       version: -1
       name: Set severity to low
       description: Set the incident severity to low.
@@ -199,10 +204,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 77229243-5059-468d-8bf7-0305846bff8a
+    taskid: fc366045-a5c2-4e20-8d58-5e6a1e59336b
     type: regular
     task:
-      id: 77229243-5059-468d-8bf7-0305846bff8a
+      id: fc366045-a5c2-4e20-8d58-5e6a1e59336b
       version: -1
       name: Close Investigation
       description: Close the investigation.
@@ -233,10 +238,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 7ec99808-c377-4ec8-8ad5-c3e6fdbd9dc2
+    taskid: 3ccd7262-cff7-400e-895c-47a746fd74ce
     type: regular
     task:
-      id: 7ec99808-c377-4ec8-8ad5-c3e6fdbd9dc2
+      id: 3ccd7262-cff7-400e-895c-47a746fd74ce
       version: -1
       name: Set severity to high
       description: Set the incident severity to high.
@@ -267,17 +272,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 26aaddcc-f485-4336-878f-494613b210d8
+    taskid: 209dc21b-d70f-41e7-874a-42f106aaed3c
     type: regular
     task:
-      id: 26aaddcc-f485-4336-878f-494613b210d8
+      id: 209dc21b-d70f-41e7-874a-42f106aaed3c
       version: -1
       name: Confirm Before Closing
-      description: "Review the incident to determine if the account activity is malicious.\n\nIf
-        malicious, consider the following:\n* Quarantine the account/ endpoint \n*
-        Revoke the account password\n* Query the account/ IPs logs in the SIEM\n*
-        Block the external IPs in the firewall/ proxy\n* Check the account's privileges
-        and change if needed"
+      description: Manually incident review
       type: regular
       iscommand: false
       brand: ""
@@ -301,13 +302,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 329e39b4-ce17-43cb-8b36-9ceee6ba3d72
+    taskid: c9b63d8c-3e84-472a-8e62-e3a3f536a800
     type: regular
     task:
-      id: 329e39b4-ce17-43cb-8b36-9ceee6ba3d72
+      id: c9b63d8c-3e84-472a-8e62-e3a3f536a800
       version: -1
       name: Update the Incident with Device Details
-      description: Change the properties of an incident
+      description: Update the Incident with Device Details
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -344,7 +345,6 @@ tasks:
                 iscontext: true
       vendorname:
         simple: ${MACVendors.Vendor}
-    continueonerror: true
     separatecontext: false
     view: |-
       {
@@ -362,13 +362,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 89f51138-a837-41a9-8f42-82a4718b234d
+    taskid: b95b267f-8801-441e-8e6a-1d53f72d30b2
     type: regular
     task:
-      id: 89f51138-a837-41a9-8f42-82a4718b234d
+      id: b95b267f-8801-441e-8e6a-1d53f72d30b2
       version: -1
       name: Search Nozomi for the IP of the Device MAC
-      description: Find a node ip from a mac address
+      description: Search Nozomi for the IP of the Device MAC
       script: '|||nozomi-find-ip-by-mac'
       type: regular
       iscommand: true
@@ -399,16 +399,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 68b916db-ed6f-4ead-8aa0-2f4994748f09
+    taskid: eab0c8ec-fb60-48c6-8999-e944e564a62d
     type: regular
     task:
-      id: 68b916db-ed6f-4ead-8aa0-2f4994748f09
+      id: eab0c8ec-fb60-48c6-8999-e944e564a62d
       version: -1
       name: Get The Device Details
-      description: |-
-        Can execute a nozomi query to get all the information you want.
-        A query can be something like that: "alerts | select id name status ack | where status == open"
-        Take a look to n2os manual to know how to do a query.
+      description: Get device details by the MAC address
       script: '|||nozomi-query'
       type: regular
       iscommand: true
@@ -429,13 +426,12 @@ tasks:
                   simple: 'assets | where mac_address match '
               suffix: {}
     reputationcalc: 2
-    continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 592.5,
-          "y": -20
+          "y": -30
         }
       }
     note: false
@@ -447,12 +443,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 3f216d79-cbe2-4be9-8419-6e523ffd9e0f
+    taskid: 90df22b3-a550-4c61-8f1f-bd29a229b9ab
     type: collection
     task:
-      id: 3f216d79-cbe2-4be9-8419-6e523ffd9e0f
+      id: 90df22b3-a550-4c61-8f1f-bd29a229b9ab
       version: -1
       name: Request Owner to Confirm Device Activity
+      description: Request Owner to Confirm Device Activity
       type: collection
       iscommand: false
       brand: ""
@@ -522,6 +519,7 @@ tasks:
       id: 2d8f8b51-ed33-4808-8cf5-9aa4d1cdfe66
       version: -1
       name: Remediation
+      description: Remediation Section
       type: title
       iscommand: false
       brand: ""
@@ -546,10 +544,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: eed02eb0-8611-4feb-8916-d42f4fac05d6
+    taskid: 988fd89c-fbf9-47fe-8e86-4f87f283b7d3
     type: playbook
     task:
-      id: eed02eb0-8611-4feb-8916-d42f4fac05d6
+      id: 988fd89c-fbf9-47fe-8e86-4f87f283b7d3
       version: -1
       name: PAN-OS - Block IP - Static Address Group
       description: |-
@@ -634,13 +632,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: ebe70d42-0589-4a08-8f0a-649cc3c5264f
+    taskid: 60c593ce-01ef-4d10-8bca-eda853a80d43
     type: regular
     task:
-      id: ebe70d42-0589-4a08-8f0a-649cc3c5264f
+      id: 60c593ce-01ef-4d10-8bca-eda853a80d43
       version: -1
       name: Create a  MAC Indicator
-      description: commands.local.cmd.new.indicator
+      description: Create a new  MAC indicator with rouge device MAC address
       script: Builtin|||createNewIndicator
       type: regular
       iscommand: true
@@ -684,7 +682,7 @@ inputs:
 - key: SubStationsList
   value: {}
   required: false
-  description: ""
+  description: Sub-Stations List
   playbookInputQuery: null
 outputs:
 - contextPath: Account.Email.Address
@@ -746,3 +744,4 @@ outputs:
 - contextPath: Endpoint.Domain
   description: Endpoint domain name
   type: string
+sourceplaybookid: access_investigation_-_generic

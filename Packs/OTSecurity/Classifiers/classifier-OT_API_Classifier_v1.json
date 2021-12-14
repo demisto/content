@@ -1,20 +1,16 @@
 {
-	"defaultIncidentType": "",
-    "name": "OTSecurity API Classifier v1",
-	"id": "OTSecurity_API_Classifier_v1",
-	"description": "Sample API classifier of OT incidents",
-	"feed": false,
-    "fromVersion": "6.0.0",
-	"keyTypeMap": {
-		"Rogue Device Found Incident": "OTSecurity Rogue Device Found"
-	},
-	"propagationLabels": [
-		"all"
-	],
-	"transformer": {
-		"complex": null,
-		"simple": "category"
-	},
-	"type": "classification",
-	"version": -1
+ "name": "OTSecurity API Classifier v1",
+ "id": "OTSecurity_API_Classifier_v1",
+ "description": "Sample API classifier of OT incidents",
+ "feed": false,
+ "fromVersion": "6.0.0",
+ "keyTypeMap": {
+  "Rogue Device Found Incident": "OTSecurity Rogue Device Found"
+ },
+ "transformer": {
+  "complex": null,
+  "simple": "category"
+ },
+ "type": "classification",
+ "version": -1
 }
