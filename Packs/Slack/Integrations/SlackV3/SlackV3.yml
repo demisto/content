@@ -508,7 +508,7 @@ script:
     - contextPath: Slack.Thread.Text
       description: The text the message was updated with.
       type: String
-  dockerimage: demisto/slackv3:1.0.0.23423
+  dockerimage: demisto/slackv3:1.0.0.25130
   feed: false
   isfetch: false
   longRunning: true
