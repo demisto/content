@@ -37,6 +37,18 @@ Please refer to the video tutorial [found here](https://live.paloaltonetworks.co
 
 When Safe Mode is enabled, there are no pagination calls made to Slack. This is to avoid rate limiting which can occur in workspaces where there are excessive amounts of channels or users. If a command worked for you prior to version 2.3.0, please try disabling the Safe Mode parameter.
 
+Safe Mode introduces the use of the `Common Channels` parameter. When configured, channels, and their ID's found in this parameter will be accessible to the integration to use while in Safe Mode.
+
+#### Finding a Channel ID
+`Common Channels` follows the format, `First ChannelName:FirstChannelID, Second ChannelName:SecondChannelID`. To find the channel ID for the channels that are frequently used, please refer to the following steps:
+1. Navigate to the channel you wish to retrieve an ID for.
+2. Click the name of the channel.
+3. On the bottom of the presented menu, the channel ID can be found.
+
+Channel IDs typically follow the format `C` + Alphanumeric string.
+
+![locate-channel-id](../../doc_files/SlackDocs_channel_id.png)
+
 **Warning** - Disabling `Safe Mode` can lead to the integration context becoming too large. This can adversely effect performance.
 
 ### Creating a Custom App

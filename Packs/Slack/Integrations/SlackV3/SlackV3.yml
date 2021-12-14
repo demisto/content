@@ -101,7 +101,9 @@ configuration:
   name: enable_dm
   required: false
   type: 8
-- display: Enable Safe Mode
+- display: Safe Mode
+  additionalinfo: The Safe Mode parameter prevents this integration from storing Users and Channels into the integration
+    context. This parameter also prevents paginated calls which can result in timeout errors for large workspaces.
   hidden: false
   name: safe_mode
   required: false

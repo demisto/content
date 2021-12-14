@@ -105,7 +105,7 @@ def test_module():
     else:
         channel = get_conversation_by_name(DEDICATED_CHANNEL)
         if not channel:
-            return_error('Dedicated channel not found.')
+            return_error(CHANNEL_NOT_FOUND_ERROR_MSG)
         message = 'Hi there! This is a test message.'
 
         CLIENT.chat_postMessage(channel=channel.get('id'), text=message)  # type: ignore
@@ -124,8 +124,9 @@ def get_current_utc_time() -> datetime:
 def format_user_not_found_error(user: str) -> str:
     err_str = f'User {user} not found in Slack'
     if SAFE_MODE:
-        err_str += ' and Safe Mode is enabled. If this command worked previously for you, please try disabling' \
-                   ' Safe Mode from the instance configuration or use the users email instead. Please refer to ' \
+        err_str += ' and Safe Mode is enabled. While in Safe Mode, it is advised to perform actions using a users email.' \
+                   ' If this command worked previously for you, you may try disabling Safe Mode from the instance ' \
+                   'configuration, however, this is not recommended. Please refer to ' \
                    'https://xsoar.pan.dev/docs/reference/integrations/slack-v3#safe-mode for more details.'
     return err_str
 
@@ -2356,11 +2357,12 @@ def init_globals(command_name: str = ''):
     # Formats the error message for the 'Channel Not Found' errors
     error_str = 'The channel was not found'
     if SAFE_MODE:
-        error_str += ' and Safe Mode is enabled. If this command worked previously for you, please try disabling Safe ' \
-                     'Mode from the instance configuration. Please refer to ' \
+        error_str += ' and Safe Mode is enabled. While in Safe Mode. Please use the `channel_id` argument, or configure' \
+                     ' the Common Channels parameter. If this command worked for you previously consider disabling ' \
+                     'Safe Mode. However, note that it is recommended to use Safe Mode. Please refer to ' \
                      'https://xsoar.pan.dev/docs/reference/integrations/slack-v3#safe-mode for more details.'
     else:
-        error_str += ' Either the Slack app is not a member of the channel, or the slack app does not have permission' \
+        error_str += '. Either the Slack app is not a member of the channel, or the slack app does not have permission' \
                      ' to find the channel.'
     CHANNEL_NOT_FOUND_ERROR_MSG = error_str
 
