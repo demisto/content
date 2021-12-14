@@ -1,5 +1,3 @@
-**This integration is part of the PrismaCloudCompute Pack**
-
 Prisma™ Cloud Compute Edition delivers cloud workload protection (CWPP) for modern
 enterprises, providing holistic protection across hosts, containers, and serverless deployments in any cloud, 
 throughout the application lifecycle. Prisma Cloud Compute Edition is cloud native and API-enabled, 
@@ -38,7 +36,8 @@ To send alerts from Prisma Cloud Compute to Cortex XSOAR, you need to create an 
 5. Click **Done** to save the integration.
 
 
-#### Commands
+Commands
+--------
 
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
