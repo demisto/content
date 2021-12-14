@@ -1,5 +1,5 @@
 [file:README.md]
 ignore=RM104
 
-[file:integration-Carbon_Black_Enterprise_Live_Response.yml]
+[file:Carbonblackliveresponse.yml]
 ignore=IN145

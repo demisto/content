@@ -1,0 +1,762 @@
+commonfields:
+  id: Carbon Black Defense
+  version: -1
+name: Carbon Black Defense
+display: VMware Carbon Black Endpoint Standard (Deprecated)
+deprecated: true
+category: Endpoint
+description: Deprecated. Use Carbon Black Endpoint Standard instead.
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: API Key
+  name: key
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: API Version
+  name: version
+  defaultvalue: v3
+  type: 0
+  required: true
+- display: Connector ID
+  name: connectorId
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- display: SIEM key. Use to fetch incidents.
+  name: siemKey
+  defaultvalue: ""
+  type: 4
+  required: false
+- display: SIEM Connector ID. Use to fetch incidents.
+  name: siemConnector
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: cbd-get-devices-status
+    arguments:
+    - name: hostName
+      description: Query parameter. Filter on hostnames based on a case insensitive
+        token search.
+    - name: hostNameExact
+      description: Query parameter. Filter on the exact hostname
+    - name: ownerName
+      description: Query parameter. Filter on owner name case insensitively.
+    - name: ownerNameExact
+      description: Query parameter. Same as ownerName but with case sensitivity
+    - name: ipAddress
+      description: Query parameter. Filter on devices with a given external or internal
+        IP address
+    - name: start
+      description: Wanted first row number from the result (starting from 1).
+    - name: rows
+      description: Wanted maximum number of rows from the result. This parameter can
+        be limited on the Cb Defense server side.
+    outputs:
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.ActivationCodeExpiryTime
+      description: Activation Code Expiry Time
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.LastExternalIpAddress
+      description: Last External IpAddress
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.LastLocation
+      description: Last Location
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.LastReportedTime
+      description: Last Reported Time
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.LastShutdownTime
+      description: Last Shutdown Time
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.OsVersion
+      description: Os Version
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.PolicyId
+      description: Policy Id
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.RegisteredTime
+      description: Registered Time
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.Status
+      description: Status
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.DeviceId
+      description: Device Id
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.DeviceOwnerId
+      description: Device Owner Id
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.DeviceType
+      description: Device Type
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.OrganizationId
+      description: Organization Id
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.SensorVersion
+      description: Sensor Version
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.TargetPriorityType
+      description: Target Priority Type
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.Email
+      description: Email
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.LastContact
+      description: Last Contact
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.OrganizationName
+      description: Organization Name
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.SensorStates
+      description: SensorStates
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.AvStatus
+      description: AvStatus
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.LastInternalIpAddress
+      description: Last Internal IpAddress
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.Name
+      description: Name
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.PolicyName
+      description: Policy Name
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.SensorOutOfDate
+      description: Sensor Out OfDate
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.TestId
+      description: Test Id
+    description: 'Get a status of all devices. Optionally you can include a query
+      parameter to filter the results. Combining these query parameters is an implicit
+      “AND”. '
+  - name: cbd-get-device-status
+    arguments:
+    - name: deviceId
+      required: true
+      description: Individual device id.
+    outputs:
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.TargetPriorityType
+      description: Target Priority Type
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.OrganizationId
+      description: Organization Id
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.CreateTime
+      description: Create Time
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.DeviceId
+      description: Device Id
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.Email
+      description: Email
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.LastInternalIpAddress
+      description: Last Internal IpAddress
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.LastLocation
+      description: Last Location
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.OsVersion
+      description: Os Version
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.AvStatus
+      description: AvStatus
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.LastExternalIpAddress
+      description: Last External IpAddress
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.RegisteredTime
+      description: Registered Time
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.LastContact
+      description: Last Contact
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.Status
+      description: Status
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.TestId
+      description: Test Id
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.PolicyId
+      description: Policy Id
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.UpdateVersion
+      description: Update Version
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.OrganizationName
+      description: Organization Name
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.RootedByAnalytics
+      description: Rooted ByAnalytics
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.SensorVersion
+      description: Sensor Version
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.DeviceType
+      description: Device Type
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.PolicyName
+      description: Policy Name
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.RootedByAnalyticsTime
+      description: Rooted ByAnalytics Time
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.SensorOutOfDate
+      description: Sensor Out OfDate
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.SensorStates
+      description: SensorStates
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.Name
+      description: Name
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.Id
+      description: Id
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.LastReportedTime
+      description: Last Reported Time
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.DeviceOwnerId
+      description: Device Owner Id
+    description: Retrieve details for an individual device given the device ID.
+  - name: cbd-change-device-status
+    arguments:
+    - name: deviceId
+      required: true
+      description: The device id.
+    - name: policyId
+      description: Policy id.
+    - name: policyName
+      description: Policy name.
+    description: 'Change status of an individual device by its device ID. The requested
+      security policy can be indicated either as a policy ID (policyId) or policy
+      name (policyName).The current revision of the Cb Defense backend only allows
+      one element to be changed with this call: the security policy assigned to the
+      device. For example policyName=Restrictive_Windows_Workstation'
+  - name: cbd-find-events
+    arguments:
+    - name: hostName
+      description: 'Query parameter. Filter on hostnames case insensitive. '
+    - name: hostNameExact
+      description: Query parameter. Filter on the exact hostname
+    - name: ownerName
+      description: Query parameter. Filter on owner name case insensitive.
+    - name: ownerNameExact
+      description: Query parameter. Same as ownerName but with case sensitivity
+    - name: ipAddress
+      description: Query parameter. Filter on events generated by a device with a
+        given external or internal IP address
+    - name: sha256Hash
+      description: Query parameter. Filter on events generated by a process with the
+        given SHA-256 hash. Note that this hash must be lowercase.
+    - name: applicationName
+      description: Query parameter. Filter on events generated by a process with the
+        given application name. Note that this name must be lowercase
+    - name: eventType
+      auto: PREDEFINED
+      predefined:
+      - NETWORK
+      - FILE_CREATE
+      - REGISTRY_ACCESS
+      - SYSTEM_API_CALL
+      - CREATE_PROCESS
+      - DATA_ACCESS
+      - INJECT_CODE
+      description: Query parameter. Filter on events with a given event type.
+    - name: searchWindow
+      description: 'Query parameter. Filter on events generated within a given relative
+        time frame. Note that the default is one day if a searchWindow is not specified.
+        Note that events may not be available past 30 days due to retention policies. '
+    - name: start
+      description: Wanted first row number from the result (starting from 1).
+    - name: rows
+      description: Wanted maximum number of rows from the result. This parameter can
+        be limited on the Cb Defense server side.
+    outputs:
+    - contextPath: CarbonBlackDefense.FindEvents.Results.EventType
+      description: Event Type
+    - contextPath: CarbonBlackDefense.FindEvents.Results.ProcessDetails.MilisSinceProcessStart
+      description: Milis Since Process Start
+    - contextPath: CarbonBlackDefense.FindEvents.Results.ProcessDetails.Name
+      description: Name
+    - contextPath: CarbonBlackDefense.FindEvents.Results.ProcessDetails.PrivatePid
+      description: Private Pid
+    - contextPath: CarbonBlackDefense.FindEvents.Results.ProcessDetails.ProcessId
+      description: Process Id
+    - contextPath: CarbonBlackDefense.FindEvents.Results.ShortDescription
+      description: Short Description
+    - contextPath: CarbonBlackDefense.FindEvents.Results.CreateTime
+      description: Create Time
+    - contextPath: CarbonBlackDefense.FindEvents.Results.DeviceDetails.DeviceName
+      description: Device Name
+    - contextPath: CarbonBlackDefense.FindEvents.Results.DeviceDetails.DeviceVersion
+      description: Device Version
+    - contextPath: CarbonBlackDefense.FindEvents.Results.DeviceDetails.PolicyName
+      description: Policy Name
+    - contextPath: CarbonBlackDefense.FindEvents.Results.DeviceDetails.TargetPriorityType
+      description: Target Priority Type
+    - contextPath: CarbonBlackDefense.FindEvents.Results.DeviceDetails.AgentLocation
+      description: Agent Location
+    - contextPath: CarbonBlackDefense.FindEvents.Results.DeviceDetails.DeviceId
+      description: Device Id
+    - contextPath: CarbonBlackDefense.FindEvents.Results.DeviceDetails.DeviceIpV4Address
+      description: Device IpV4Address
+    - contextPath: CarbonBlackDefense.FindEvents.Results.DeviceDetails.DeviceLocation.AreaCode
+      description: Area Code
+    - contextPath: CarbonBlackDefense.FindEvents.Results.DeviceDetails.DeviceLocation.CountryCode
+      description: Country Code
+    - contextPath: CarbonBlackDefense.FindEvents.Results.DeviceDetails.DeviceLocation.Latitude
+      description: Latitude
+    - contextPath: CarbonBlackDefense.FindEvents.Results.DeviceDetails.DeviceLocation.Longitude
+      description: Longitude
+    - contextPath: CarbonBlackDefense.FindEvents.Results.DeviceDetails.DeviceLocation.City
+      description: City
+    - contextPath: CarbonBlackDefense.FindEvents.Results.DeviceDetails.DeviceLocation.CountryName
+      description: Country Name
+    - contextPath: CarbonBlackDefense.FindEvents.Results.DeviceDetails.DeviceLocation.DmaCode
+      description: Dma Code
+    - contextPath: CarbonBlackDefense.FindEvents.Results.DeviceDetails.DeviceLocation.MetroCode
+      description: Metro Code
+    - contextPath: CarbonBlackDefense.FindEvents.Results.DeviceDetails.DeviceLocation.PostalCode
+      description: Postal Code
+    - contextPath: CarbonBlackDefense.FindEvents.Results.DeviceDetails.DeviceLocation.Region
+      description: Region
+    - contextPath: CarbonBlackDefense.FindEvents.Results.DeviceDetails.DeviceIpAddress
+      description: Device IpAddress
+    - contextPath: CarbonBlackDefense.FindEvents.Results.DeviceDetails.DeviceType
+      description: Device Type
+    - contextPath: CarbonBlackDefense.FindEvents.Results.DeviceDetails.Email
+      description: Email
+    - contextPath: CarbonBlackDefense.FindEvents.Results.DeviceDetails.TargetPriorityCode
+      description: Target Priority Code
+    - contextPath: CarbonBlackDefense.FindEvents.Results.EventId
+      description: Event Id
+    - contextPath: CarbonBlackDefense.FindEvents.Results.EventTime
+      description: Event Time
+    - contextPath: CarbonBlackDefense.FindEvents.Results.LongDescription
+      description: Long Description
+    - contextPath: CarbonBlackDefense.FindEvents.Results.NetFlow.DestAddress
+      description: Dest Address
+    - contextPath: CarbonBlackDefense.FindEvents.Results.NetFlow.DestPort
+      description: Dest Port
+    - contextPath: CarbonBlackDefense.FindEvents.Results.NetFlow.PeerFqdn
+      description: Peer Fqdn
+    - contextPath: CarbonBlackDefense.FindEvents.Results.NetFlow.PeerIpAddress
+      description: Peer IpAddress
+    - contextPath: CarbonBlackDefense.FindEvents.Results.NetFlow.PeerIpV4Address
+      description: Peer IpV4Address
+    - contextPath: CarbonBlackDefense.FindEvents.Results.NetFlow.Service
+      description: Service
+    - contextPath: CarbonBlackDefense.FindEvents.Results.NetFlow.SourceAddress
+      description: Source Address
+    - contextPath: CarbonBlackDefense.FindEvents.Results.NetFlow.SourcePort
+      description: Source Port
+    - contextPath: CarbonBlackDefense.FindEvents.Results.SelectedApp.ApplicationName
+      description: Application Name
+    - contextPath: CarbonBlackDefense.FindEvents.Results.SelectedApp.ApplicationPath
+      description: Application Path
+    - contextPath: CarbonBlackDefense.FindEvents.Results.SelectedApp.Md5Hash
+      description: Md5Hash
+    - contextPath: CarbonBlackDefense.FindEvents.Results.SelectedApp.Sha256Hash
+      description: Sha256Hash
+    - contextPath: CarbonBlackDefense.FindEvents.Results.ThreatIndicators
+      description: Threat Indicators
+    description: Retrieves all events matching the input search criteria.
+  - name: cbd-find-event
+    arguments:
+    - name: eventId
+      required: true
+      description: The event id.
+    outputs:
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.ShortDescription
+      description: Short Description
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.TargetHash.ApplicationName
+      description: Application Name
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.TargetHash.ReputationProperty
+      description: Reputation Property
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.TargetHash.Sha256Hash
+      description: Sha256Hash
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.EventType
+      description: Event Type
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.ProcessHash.Md5Hash
+      description: Md5Hash
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.ProcessHash.Sha256Hash
+      description: Sha256Hash
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.ProcessHash.ApplicationPath
+      description: Application Path
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.ProcessHash.ReputationProperty
+      description: Reputation Property
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.ProcessHash.ApplicationName
+      description: Application Name
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.OrgDetails.OrganizationId
+      description: Organization Id
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.OrgDetails.OrganizationName
+      description: Organization Name
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.OrgDetails.OrganizationType
+      description: Organization Type
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.ParentHash.ApplicationName
+      description: Application Name
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.ParentHash.Sha256Hash
+      description: Sha256Hash
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.EventId
+      description: Event Id
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.LongDescription
+      description: Long Description
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.DeviceDetails.DeviceIpV4Address
+      description: Device IpV4Address
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.DeviceDetails.DeviceType
+      description: Device Type
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.DeviceDetails.Email
+      description: Email
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.DeviceDetails.TargetPriorityCode
+      description: Target Priority Code
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.DeviceDetails.AgentLocation
+      description: Agent Location
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.DeviceDetails.DeviceHostName
+      description: Device Host Name
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.DeviceDetails.DeviceId
+      description: Device Id
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.DeviceDetails.GroupName
+      description: Group Name
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.DeviceDetails.DeviceVersion
+      description: Device Version
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.DeviceDetails.TargetPriorityType
+      description: Target Priority Type
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.DeviceDetails.DeviceIpAddress
+      description: Device IpAddress
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.DeviceDetails.DeviceLocation.Latitude
+      description: Latitude
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.DeviceDetails.DeviceLocation.City
+      description: City
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.DeviceDetails.DeviceLocation.CountryCode
+      description: Country Code
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.DeviceDetails.DeviceLocation.DmaCode
+      description: Dma Code
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.DeviceDetails.DeviceLocation.Longitude
+      description: Longitude
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.DeviceDetails.DeviceLocation.MetroCode
+      description: Metro Code
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.DeviceDetails.DeviceLocation.PostalCode
+      description: Postal Code
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.DeviceDetails.DeviceLocation.Region
+      description: Region
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.DeviceDetails.DeviceLocation.AreaCode
+      description: Area Code
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.DeviceDetails.DeviceLocation.CountryName
+      description: Country Name
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.DeviceDetails.DeviceName
+      description: Device Name
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.CreateTime
+      description: Create Time
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.EventTime
+      description: Event Time
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.ProcessDetails.FullUserName
+      description: Full User Name
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.ProcessDetails.Name
+      description: Name
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.ProcessDetails.ParentCommandLine
+      description: Parent Command Line
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.ProcessDetails.ParentName
+      description: Parent Name
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.ProcessDetails.ParentPid
+      description: Parent Pid
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.ProcessDetails.ProcessId
+      description: Process Id
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.ProcessDetails.CommandLine
+      description: Command Line
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.ProcessDetails.MilisSinceProcessStart
+      description: Milis Since Process Start
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.ProcessDetails.TargetCommandLine
+      description: Target Command Line
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.ProcessDetails.TargetPid
+      description: Target Pid
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.ProcessDetails.UserName
+      description: User Name
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.ProcessDetails.ParentPrivatePid
+      description: Parent Private Pid
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.ProcessDetails.PrivatePid
+      description: Private Pid
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.ProcessDetails.TargetName
+      description: Target Name
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.ProcessDetails.TargetPrivatePid
+      description: Target Private Pid
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.ThreatIndicators
+      description: Threat Indicators
+    description: 'Retrieve details for an individual event given the event ID '
+  - name: cbd-find-processes
+    arguments:
+    - name: hostNameExact
+      description: 'Query parameter. Filter on hostnames case insensitive. '
+    - name: ownerName
+      description: Query parameter. Filter on owner name case insensitive.
+    - name: ownerNameExact
+      description: Query parameter. Same as ownerName but with case sensitivity
+    - name: ipAddress
+      description: Query parameter. Filter on events generated by a device with a
+        given external or internal IP address
+    - name: searchWindow
+      description: 'Query parameter. Filter on events generated within a given relative
+        time frame. Note that the default is one day if a searchWindow is not specified.
+        Note that events may not be available past 30 days due to retention policies. '
+    - name: start
+      description: Wanted first row number from the result (starting from 1).
+    - name: rows
+      description: Wanted maximum number of rows from the result. This parameter can
+        be limited on the Cb Defense server side.
+    outputs:
+    - contextPath: CarbonBlackDefense.GetProcesses.ApplicationName
+      description: Application name
+    - contextPath: CarbonBlackDefense.GetProcesses.ProcessId
+      description: Process id
+    - contextPath: CarbonBlackDefense.GetProcesses.NumEvents
+      description: Number of events
+    - contextPath: CarbonBlackDefense.GetProcesses.ApplicationPath
+      description: Application path
+    - contextPath: CarbonBlackDefense.GetProcesses.PrivatePid
+      description: Private pid
+    - contextPath: CarbonBlackDefense.GetProcesses.Sha256Hash
+      description: sha256Hash
+    - contextPath: CarbonBlackDefense.GetProcesses.TotalResults
+      description: Total results
+    description: Find processes associated with a specific indicator or IP address
+      filter. Only API keys of type “API” can call the processes API.
+  - name: cbd-get-alert-details
+    arguments:
+    - name: alertId
+      required: true
+      description: The alert id
+    outputs:
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.DeviceInfo.DeviceType
+      description: Device Type
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.DeviceInfo.Group
+      description: Group
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.DeviceInfo.GroupId
+      description: Group Id
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.DeviceInfo.RegisteredTime
+      description: Registered Time
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.DeviceInfo.DeviceId
+      description: Device Id
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.DeviceInfo.DeviceName
+      description: Device Name
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.DeviceInfo.Status
+      description: Status
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.DeviceInfo.OsVersion
+      description: Os Version
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.DeviceInfo.SensorVersion
+      description: Sensor Version
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.DeviceInfo.UserName
+      description: User Name
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.DeviceInfo.Importance
+      description: Importance
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.DeviceInfo.Message
+      description: Message
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.DeviceInfo.Success
+      description: Success
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.Events.ParentHash
+      description: Parent Hash
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.Events.PolicyState
+      description: Policy State
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.Events.LongDescription
+      description: Long Description
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.Events.CommandLine
+      description: Command Line
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.Events.ParentPid
+      description: Parent Pid
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.Events.ProcessId
+      description: Process Id
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.Events.ThreatIndicators
+      description: Threat Indicators
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.Events.ApplicationPath
+      description: Application Path
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.Events.ProcessHash
+      description: Process Hash
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.Events.ProcessMd5Hash
+      description: Process Md5Hash
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.Events.EventId
+      description: Event Id
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.Events.EventTime
+      description: Event Time
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.Events.EventType
+      description: Event Type
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.Events.KillChainStatus
+      description: Kill Chain Status
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.Events.ParentName
+      description: Parent Name
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.Events.ParentPPid
+      description: ParentP Pid
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.Events.ProcessPPid
+      description: ProcessP Pid
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.ThreatInfo.IncidentId
+      description: Incident Id
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.ThreatInfo.Indicators.ApplicationName
+      description: Application Name
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.ThreatInfo.Indicators.IndicatorName
+      description: Indicator Name
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.ThreatInfo.Indicators.Sha256Hash
+      description: Sha256Hash
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.ThreatInfo.Summary
+      description: Summary
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.ThreatInfo.ThreatId
+      description: Threat Id
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.ThreatInfo.ThreatScore
+      description: Threat Score
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.ThreatInfo.Time
+      description: Time
+    description: Get details on the events that led to an alert. This includes retrieving
+      metadata around the alert as well as a list of all the events associated with
+      the alert. Only API keys of type “API” can call the alerts API.
+  - name: cbd-get-policies
+    arguments: []
+    outputs:
+    - contextPath: CarbonBlackDefense.GetPolicies.Id
+      description: The policy id.
+    - contextPath: CarbonBlackDefense.GetPolicies.PriorityLevel
+      description: The policy priority level.
+    - contextPath: CarbonBlackDefense.GetPolicies.SystemPolicy
+      description: Is system policy (boolean).
+    - contextPath: CarbonBlackDefense.GetPolicies.LatestRevision
+      description: Policy latest revision.
+    - contextPath: CarbonBlackDefense.GetPolicies.Policy
+      description: The policy object.
+    description: Get the list of policies available in your organization.
+  - name: cbd-get-policy
+    arguments:
+    - name: policyId
+      required: true
+      description: The policy id.
+    outputs:
+    - contextPath: CarbonBlackDefense.GetPolicy.Id
+      description: The policy id.
+    - contextPath: CarbonBlackDefense.GetPolicy.PriorityLevel
+      description: The policy priority level.
+    - contextPath: CarbonBlackDefense.GetPolicy.SystemPolicy
+      description: Is system policy (boolean).
+    - contextPath: CarbonBlackDefense.GetPolicy.LatestRevision
+      description: Policy latest revision.
+    - contextPath: CarbonBlackDefense.GetPolicy.Policy
+      description: The policy object.
+    description: Retrieve a policy object by ID.
+  - name: cbd-create-policy
+    arguments:
+    - name: description
+      required: true
+      description: A description of the policy
+    - name: name
+      required: true
+      description: A one-line name for the policy
+    - name: priorityLevel
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - HIGH
+      - MEDIUM
+      - LOW
+      description: The priority score associated with sensors assigned to this policy.
+    - name: policy
+      required: true
+      description: The JSON object containing the policy details. Make sure a valid
+        policy object is passed. You may use 'get-policy' in order to receive a similar
+        policy object, then re-set some of the policy's fields with 'set-policy'.
+        Finally pass the mutated object.
+    outputs:
+    - contextPath: CarbonBlackDefense.CreatePolicy.PolicyId
+      description: The new policy id.
+    description: Create a new Policy on the Cb Defense backend.
+  - name: cbd-update-policy
+    arguments:
+    - name: description
+      required: true
+      description: A description of the policy.
+    - name: name
+      required: true
+      description: A one-line name for the policy.
+    - name: priorityLevel
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - HIGH
+      - MEDIUM
+      - LOW
+      description: The priority score associated with sensors assigned to this policy.
+    - name: id
+      required: true
+      description: The ID of the policy to replace.
+    - name: policy
+      required: true
+      description: The JSON object containing the policy details. The JSON object
+        containing the policy details. Make sure a valid policy object is passed.
+        You may use 'get-policy' in order to receive the policy object you wish to
+        update, then re-set some of the policy's fields with 'set-policy'. Finally
+        pass the mutated object.
+    description: Update an existing policy with a new policy. Please note that system
+      policies cannot be modified.
+  - name: cbd-delete-policy
+    arguments:
+    - name: policyId
+      required: true
+      description: The policy id.
+    description: Delete a policy from the Cb Defense backend. This may return an error
+      if devices are actively assigned to the policy id requested for deletion. Please
+      note that system policies cannot be deleted.
+  - name: cbd-add-rule-to-policy
+    arguments:
+    - name: action
+      required: true
+      description: Rule action.
+    - name: operation
+      required: true
+      description: Rule operation.
+    - name: required
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      description: Rule required
+    - name: id
+      required: true
+      description: Rule id.
+    - name: type
+      required: true
+      description: Application type.
+    - name: value
+      required: true
+      description: Application value.
+    - name: policyId
+      required: true
+      description: The policy id.
+    description: Add a new rule to an existing policy. Please note that system policies
+      cannot be modified.
+  - name: cbd-delete-rule-from-policy
+    arguments:
+    - name: policyId
+      required: true
+      description: The policy id.
+    - name: ruleId
+      required: true
+      description: The rule id.
+    description: Removes a rule from an existing policy. Please note that system policies
+      cannot be modified.
+  - name: cbd-update-rule-in-policy
+    arguments:
+    - name: action
+      required: true
+      description: Rule action.
+    - name: operation
+      required: true
+      description: Rule operation.
+    - name: required
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Rule required
+    - name: id
+      required: true
+      description: Rule id.
+    - name: type
+      required: true
+      description: Application type.
+    - name: value
+      required: true
+      description: Application value.
+    - name: policyId
+      required: true
+      description: The policy id.
+    description: Update an existing rule with a new rule. Please note that system
+      policies cannot be modified.
+  - name: cbd-set-policy
+    arguments:
+    - name: keyValue
+      required: true
+      description: 'A json object that holds key/value pairs. Key is the field path
+        in the policy object you wish to update with value.  '
+    - name: policy
+      required: true
+      description: 'The policy to be set. '
+    outputs:
+    - contextPath: CarbonBlackDefense.SetPolicy.Policy
+      description: The modified policy
+    description: Re-set policy fields.
+  isfetch: true
+  runonce: false
+tests:
+- No test
+fromversion: 5.0.0
