@@ -30,7 +30,7 @@ This playbook does not use any integrations.
 | --- | --- | --- | --- |
 | Role | The default role to assign the incident to. |  | Optional |
 | escalationRole | The higher tier role to assign the incident to. |  | Optional |
-| OnCall | Assigns only to analysts on the current shift. |  | Optional |
+| OnCall | Set to True to assign only to analysts on the current shift. |  | Optional |
 | AuthenticityCheck | Indicates the email authenticity resulting from the EmailAuthenticityCheck script. Possible values are: Pass, Fail, Suspicious, and Undetermined. |  | Optional |
 | MicrosoftHeadersSeverityCheck | This value is set by the "Process Microsoft's Anti-Spam Headers" playbook, which calculates the severity after processing the PCL, BCL and PCL values in Microsoft headers. |  | Optional |
 | SOCEmailAddress | The SOC email address to set if the playbook handles an email security alert. |  | Optional |
