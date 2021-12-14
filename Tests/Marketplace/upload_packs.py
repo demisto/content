@@ -1231,7 +1231,7 @@ def main():
 
 
 if __name__ == '__main__':
-    # main()
+    main()
     # full_graph = {}
     # with open("/Users/darbel/Downloads/packs_dependencies_outputs_example.json") as f:
     #     packs_dependencies_mapping = json.load(f)
@@ -1242,4 +1242,4 @@ if __name__ == '__main__':
     # packs_dict = {pack.name: pack for pack in packs_list}
     # upload_packs_with_dependencies_zip(extract_destination_path, packs_dependencies_mapping, packs_list, packs_dict)
     # print('ok')
-    Pack.zip_folder_items('/Users/darbel/dev/demisto/content/Packs/PhishLabs/with_dependencies', 'lo', '/Users/darbel/dev/demisto/content/Packs/PhishLabs/PhishLabs.zip')
+    # Pack.zip_folder_items('/Users/darbel/dev/demisto/content/Packs/PhishLabs/with_dependencies', 'lo', '/Users/darbel/dev/demisto/content/Packs/PhishLabs/PhishLabs.zip')
