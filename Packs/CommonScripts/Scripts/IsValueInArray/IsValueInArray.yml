@@ -1,0 +1,24 @@
+commonfields:
+  id: IsValueInArray
+  version: -1
+name: IsValueInArray
+script: ''
+type: javascript
+tags:
+- Condition
+comment: Indicates whether a given value is a member of given array
+enabled: true
+args:
+- name: array
+  description: Array to look for the value
+  isArray: true
+- name: value
+  description: Value to look for in the array
+outputs:
+- contextPath: "yes"
+  description: The list contains the value
+- contextPath: "no"
+  description: The list does not contain the value
+scripttarget: 0
+runonce: false
+fromversion: 5.0.0

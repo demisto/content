@@ -1,0 +1,24 @@
+commonfields:
+  id: ShowOnMap
+  version: -1
+name: ShowOnMap
+script: ''
+type: javascript
+tags:
+- Utility
+comment: Returns a map entry with a marker on the given coordinates (lat,lng), or
+  address (requires a configured GoogleMaps instance).
+enabled: true
+args:
+- name: lat
+  required: false
+  default: true
+  description: Latitude (e.g. `32.064622`)
+- name: lng
+  required: false
+  description: Longitude (e.g. `34.774131`)
+- name: address
+  required: false
+  description: Address (e.g., `1600 Pennsylvania ave, DC`)
+scripttarget: 0
+fromversion: 5.0.0

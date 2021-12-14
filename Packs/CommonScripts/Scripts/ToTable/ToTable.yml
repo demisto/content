@@ -1,0 +1,23 @@
+commonfields:
+  id: ToTable
+  version: -1
+name: ToTable
+script: ''
+type: javascript
+tags:
+- Utility
+comment: Convert an array to a nice table display. Usually, from the context.
+enabled: true
+args:
+- name: data
+  required: true
+  default: true
+  description: The data to display as table - expecting array of objects
+  isArray: true
+- name: title
+  description: Title for the table
+- name: columns
+  description: Comma-separated list of columns to display. Accepts nested columns
+    using dot notation.
+scripttarget: 0
+fromversion: 5.0.0

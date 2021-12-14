@@ -1,0 +1,25 @@
+commonfields:
+  id: PublishEntriesToContext
+  version: -1
+name: PublishEntriesToContext
+script: ''
+type: javascript
+tags:
+- Utility
+comment: Publish entries to incident's context
+enabled: true
+args:
+- name: ids
+  required: true
+  default: true
+  description: The entry IDs we want to publish. Accepts comma separated IDs or a
+    list of strings.
+- name: out
+  description: The name of the context key. Default is "entries".
+outputs:
+- contextPath: entries
+  description: The entries published to context if out key was not provided
+scripttarget: 0
+dependson: {}
+timeout: 0s
+fromversion: 5.0.0
