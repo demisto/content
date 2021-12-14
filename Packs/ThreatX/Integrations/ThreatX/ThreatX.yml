@@ -31,7 +31,8 @@ configuration:
   name: insecure
   required: false
   type: 8
-description: The ThreatX integration allows automated enforcement and intel gathering actions.
+description: The ThreatX integration allows automated enforcement and intel gathering
+  actions.
 display: ThreatX
 name: ThreatX
 script:
@@ -75,25 +76,25 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: 'IP address or CIDR, for example: "10.1.1.1" or "10.1.1.0/24".'
-      isArray: false
+      description: 'IP address or CIDR in CSV format, for example: "10.1.1.1,10.1.1.0/24".'
+      isArray: true
       name: ip
       required: true
       secret: false
     - default: false
       defaultValue: 'Added by ThreatX Demisto Integration'
-      description: 'The description of the IP record in the blacklist.'
+      description: 'The description of the IP record in the block list.'
       isArray: false
       name: description
       required: false
       secret: false
     deprecated: false
-    description: Adds an IP address or CIDR to the blacklist.
+    description: Adds an IP address or CIDR to the block list.
     execution: true
     name: threatx-blacklist-ip
     outputs:
     - contextPath: IP.Address
-      description: IP address or CIDR that was added to the blacklist.
+      description: IP address or CIDR that was added to the block list.
       type: string
   - arguments:
     - default: false
@@ -103,12 +104,12 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Removes an IP or CIDR from the blacklist.
+    description: Removes an IP or CIDR from the block list.
     execution: true
     name: threatx-unblacklist-ip
     outputs:
     - contextPath: IP.Address
-      description: IP address or CIDR that was removed from the blacklist.
+      description: IP address or CIDR that was removed from the block list.
       type: string
   - arguments:
     - default: false
@@ -119,18 +120,18 @@ script:
       secret: false
     - default: false
       defaultValue: 'Added by ThreatX Demisto Integration'
-      description: 'The description of the IP record in the whitelist.'
+      description: 'The description of the IP record in the allow list.'
       isArray: false
       name: description
       required: false
       secret: false
     deprecated: false
-    description: Adds an IP address or CIDR to the whitelist.
+    description: Adds an IP address or CIDR to the allow list.
     execution: true
     name: threatx-whitelist-ip
     outputs:
     - contextPath: IP.Address
-      description: IP address or CIDR was added to the whitelist.
+      description: IP address or CIDR was added to the allow list.
       type: string
   - arguments:
     - default: false
@@ -140,12 +141,12 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Removes an IP address or CIDR from the whitelist.
+    description: Removes an IP address or CIDR from the allow list.
     execution: true
     name: threatx-unwhitelist-ip
     outputs:
     - contextPath: IP.Address
-      description: IP address or CIDR that was removed from the whitelist.
+      description: IP address or CIDR that was removed from the allow list.
       type: string
   - arguments:
     - default: false
@@ -169,7 +170,9 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 1-Hour
-      description: 'Look-back timeframe for the query. Options are 1-Hour, 1-Day, 1-Week, 1-Month, or 3-Months. Note: long look-back timeframes for a large number of Entities can timeout.'
+      description: 'Look-back timeframe for the query. Options are 1-Hour, 1-Day,
+        1-Week, 1-Month, or 3-Months. Note: long look-back timeframes for a large
+        number of Entities can timeout.'
       isArray: false
       name: timeframe
       predefined:
@@ -181,7 +184,10 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: 'Get high-level Entity information using the Entity ID, Entity Name, or Entity IP. For example: !threatx-get-entities timeframe=1-Day entity_name=CynicalGraaf,MJ12Bot entity_id= 566056709675514809 entity_ip=12.12.12.12,14.14.14.14. Note: long look-back timeframes for a large number of Entities can timeout.'
+    description: 'Get high-level Entity information using the Entity ID, Entity Name,
+      or Entity IP. For example: !threatx-get-entities timeframe=1-Day entity_name=CynicalGraaf,MJ12Bot
+      entity_id= 566056709675514809 entity_ip=12.12.12.12,14.14.14.14. Note: long
+      look-back timeframes for a large number of Entities can timeout.'
     execution: false
     name: threatx-get-entities
     outputs:
@@ -199,7 +205,8 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: 'ID hash of the Entity. Note: this value can be retrieved using the "!threatx-get-entities" command.'
+      description: 'ID hash of the Entity. Note: this value can be retrieved using
+        the "!threatx-get-entities" command.'
       isArray: false
       name: entity_id
       required: true
@@ -226,7 +233,8 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: 'ID hash of the Entity. To retrieve this value, run the "!threatx-get-entities" command.'
+      description: 'ID hash of the Entity. To retrieve this value, run the "!threatx-get-entities"
+        command.'
       isArray: false
       name: entity_id
       required: true
@@ -238,7 +246,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: 'Add a new note to the entity. For example: !threatx-add-entity-note entity_id=566056709695514809 message="test note"'
+    description: 'Add a new note to the entity. For example: !threatx-add-entity-note
+      entity_id=566056709695514809 message="test note"'
     execution: true
     name: threatx-add-entity-note
   isfetch: false
@@ -246,5 +255,7 @@ script:
   script: '-'
   type: python
   subtype: python2
-  dockerimage: demisto/python:2.7.18.24066
+  dockerimage: demisto/python:2.7.18.24398
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

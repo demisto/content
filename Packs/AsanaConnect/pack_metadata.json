@@ -7,7 +7,9 @@
     "url": "",
     "email": "",
     "created": "2021-01-18T04:27:25Z",
-    "categories": [],
+    "categories": [
+        "Case Management"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],
