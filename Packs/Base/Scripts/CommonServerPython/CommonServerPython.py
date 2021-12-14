@@ -8511,7 +8511,8 @@ def signal_handler_profiling_dump(_sig, _frame):
     msg += get_message_threads_dump(_sig, _frame)
     msg += get_message_memory_dump(_sig, _frame)
     msg += '\n--- End Profiling Dump ---\n\n'
-    demisto.info(msg)
+    LOG(msg)
+    LOG.print_log()
 
 
 def register_signal_handler_profiling_dump(signal_type=signal.SIGUSR1, profiling_dump_rows_limit=20):
