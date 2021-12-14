@@ -1,7 +1,7 @@
 {
 	"autorun": false,
 	"closureScript": "",
-	"color": "#7C71F5",
+	"color": "#00C853",
 	"days": 0,
 	"daysR": 0,
 	"default": false,
@@ -9,12 +9,13 @@
 	"fromServerVersion": "",
 	"hours": 0,
 	"hoursR": 0,
-	"id": "ServiceNowTicket",
+	"id": "FieldsType",
 	"itemVersion": "",
 	"layout": "",
 	"locked": false,
-	"name": "ServiceNowTicket",
+	"name": "FieldsType",
 	"packID": "c51ed6ea-3b89-4a07-8bd7-8eaf0749e1e6",
+	"playbookId": "access_investigation_-_generic",
 	"preProcessingScript": "",
 	"propagationLabels": [
 		"all"
