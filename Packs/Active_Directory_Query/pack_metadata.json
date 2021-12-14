@@ -2,11 +2,7 @@
     "name": "Active Directory Query",
     "description": "Active Directory Query integration enables you to access and manage Active Directory objects (users, contacts, and computers).",
     "support": "xsoar",
-<<<<<<< HEAD
-    "currentVersion": "1.3.7",
-=======
-    "currentVersion": "1.3.8",
->>>>>>> b87709fc8e3c37df23b7ac60f58e0991a617804b
+    "currentVersion": "1.3.9",
     "author": "Cortex XSOAR",
     "url": "",
     "email": "",

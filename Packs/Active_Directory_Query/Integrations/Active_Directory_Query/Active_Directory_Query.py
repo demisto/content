@@ -611,12 +611,8 @@ def get_user_iam(default_base_dn, args, mapper_in, mapper_out):
         default_attribute = "sAMAccountName"
 
         iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta,
-<<<<<<< HEAD
-                                          mapper=mapper_out, incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
-=======
                                           mapper=mapper_out,
                                           incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
->>>>>>> b87709fc8e3c37df23b7ac60f58e0991a617804b
 
         # we use the outgoing mapper to get all the AD attributes which will be later passed to search_with_paging()
         ad_user = iam_user_profile.map_object(mapper_name=mapper_out,
@@ -880,11 +876,7 @@ def create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn):
         user_profile = args.get("user-profile")
         user_profile_delta = args.get('user-profile-delta')
         iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta,
-<<<<<<< HEAD
-                                          mapper=mapper_out, incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
-=======
                                           mapper=mapper_out, incident_type=IAMUserProfile.CREATE_INCIDENT_TYPE)
->>>>>>> b87709fc8e3c37df23b7ac60f58e0991a617804b
         ad_user = iam_user_profile.map_object(mapper_name=mapper_out, incident_type=IAMUserProfile.CREATE_INCIDENT_TYPE)
         ad_user = {k: v for k, v in ad_user.items() if v}
 
