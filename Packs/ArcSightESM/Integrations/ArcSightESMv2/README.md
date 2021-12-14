@@ -66,7 +66,7 @@ Cortex XSOAR is designed for an automatic response, so make sure to define condi
 - **Fetch events** - New events that match the predefined condition will be fetched to Cortex XSOAR as an incident and will trigger playbooks for automation and response. Such events could be any kind of security events.
 - **Fetch cases** - New cases that match the predefined condition will be fetched to Cortex XSOAR as an incident and will trigger playbooks for automation and response. Such cases could include any kind of security events. The final step of the playbook could be updating, closing or deleting the case.
 - **Search events** - Query specific events based on an existing query viewer.
-- **Getting active** list entries - Returning active list entries (such as “Blacklist IPS”, “Malicious MD5s”, etc) by using as-get-entries and providing the resource ID of the active list. The entries can be added as a list in Cortex XSOAR for cross-platform usage, additional automation, and data enrichment.
+- **Getting active** list entries - Returning active list entries (such as “Block list IPS”, “Malicious MD5s”, etc) by using as-get-entries and providing the resource ID of the active list. The entries can be added as a list in Cortex XSOAR for cross-platform usage, additional automation, and data enrichment.
 
 ## Fetched Incidents Data
 The integration can fetch events and cases.

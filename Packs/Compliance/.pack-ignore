@@ -88,6 +88,5 @@ ignore=IF107
 [file:incidentfield-affectedindividualscontactinformation.json]
 ignore=IF107
 
-
-[file:Compliance]
+[file:pack_metadata.json]
 ignore=PA129
