@@ -999,6 +999,7 @@ class Pack(object):
             override_pack (bool): whether to override existing pack.
             private_content (bool): Is being used in a private content build.
             pack_artifacts_path (str): Path to where we are saving pack artifacts.
+            upload_path (str): Absolute path to the destination upload path.
 
         Returns:
             bool: whether the operation succeeded.
@@ -1028,7 +1029,7 @@ class Pack(object):
                                                                     secondary_encryption_key_pack_name)
 
                 #  In some cases the path given is actually a zip.
-                if pack_artifacts_path.endswith('content_packs.zip'):
+                if pack_artifacts_path and pack_artifacts_path.endswith('content_packs.zip'):
                     _pack_artifacts_path = pack_artifacts_path.replace('/content_packs.zip', '')
                 else:
                     _pack_artifacts_path = pack_artifacts_path
