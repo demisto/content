@@ -1,4 +1,4 @@
-This playbook retrieves a specified eml/msg file directly from Mimecast.
+This playbook retrieves a specified EML/MSG file directly from Mimecast.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
