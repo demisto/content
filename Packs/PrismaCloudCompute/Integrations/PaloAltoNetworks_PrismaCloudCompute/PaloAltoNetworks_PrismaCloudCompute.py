@@ -829,7 +829,6 @@ def get_custom_feeds_ip_list(client: PrismaCloudComputeClient) -> CommandResults
             removeNull=True,
             headerTransform=lambda word: word[0].upper() + word[1:]
         )
-
     else:
         table = "No results found"
 
