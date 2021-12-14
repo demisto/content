@@ -7,10 +7,10 @@ args:
   secret: false
 comment: "Formats URL to indicator: extracts redirect URL from Proof Point or ATP URLs. Strips and unquotes and unescapes URLs"
 commonfields:
-  id: ExtractURL
+  id: FormatURL
   version: -1
 enabled: false
-name: ExtractURL
+name: FormatURL
 outputs:
 - contextPath: URL
   description: URL formatted.

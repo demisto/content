@@ -132,7 +132,7 @@ def main():
         return_results(format_url(demisto.args().get('input')))
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute ExtractURL. Error: {str(e)}')
+        return_error(f'Failed to execute FormatURL. Error: {str(e)}')
 
 
 ''' ENTRY POINT '''
