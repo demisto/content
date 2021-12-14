@@ -41,6 +41,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "CensysV2",
+            "playbookID": "CensysV2-Test",
+            "fromversion": "6.1.0"
+        },
+        {
             "playbookID": "Generic Polling Test",
             "timeout": 250
         },
@@ -1176,7 +1181,7 @@
             "playbookID": "TestEditServerConfig"
         },
         {
-            "playbookID": "MarketplacePackInstaller_Test",
+            "playbookID": "ContentPackInstaller_Test",
             "integrations": "Demisto REST API",
             "fromversion": "6.0.0"
         },
@@ -4300,6 +4305,18 @@
             "fromversion": "6.0.0"
         },
         {
+            "playbookID": "Phishing Investigation - Generic v2 - Campaign Test",
+            "fromversion": "6.0.0",
+            "timeout": 4600,
+            "integrations": [
+                "EWS Mail Sender",
+                "Demisto REST API",
+                "Rasterize",
+                "Demisto Lock"
+            ],
+            "instance_names": "sync"
+        },
+        {
             "playbookID": "PCAP Search test",
             "fromversion": "5.0.0"
         },
@@ -4374,6 +4391,13 @@
             "fromversion": "5.0.0",
             "integrations": [
                 "Google Cloud Storage"
+            ]
+        },
+        {
+            "playbookID": "GetStringsDistance - Test",
+            "fromversion": "5.0.0",
+            "scripts": [
+                "GetStringsDistance"
             ]
         },
         {
