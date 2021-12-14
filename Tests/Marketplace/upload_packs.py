@@ -948,10 +948,14 @@ def upload_packs_with_dependencies_zip(extract_destination_path, packs_dependenc
             if pack.name not in full_deps_graph:
                 logging.error(f"{pack.name} is missing from full_deps_graph")
                 continue
+            else:
+                logging.info(f"#### {pack.name} was found in full_deps_graph")
             pack_deps = full_deps_graph[pack.name]
+            logging.info(f"#### {pack.name} will be zipped")
             if not (pack.zip_path and os.path.isfile(pack.zip_path)):
                 if not zip_pack(pack, signature_key):
                     continue
+            logging.info(f"#### {pack.name} will be moved")
             shutil.copy(pack.zip_path, os.path.join(pack_with_dep_path, pack.name + ".zip"))
             for dep_name in pack_deps:
                 logging.info(f"Starting going over {dep_name} dependency")
