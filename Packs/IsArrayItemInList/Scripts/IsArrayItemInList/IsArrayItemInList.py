@@ -10,5 +10,3 @@ for item in array:
     if str(item) in res['Contents']:
         demisto.results('yes')
         break
-    else:
-        continue
