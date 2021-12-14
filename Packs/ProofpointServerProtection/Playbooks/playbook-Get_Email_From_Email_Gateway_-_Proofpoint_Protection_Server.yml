@@ -1,8 +1,7 @@
-description: Retrieve a specified eml/msg file directly from Proofpoint Protection
-  Server.
+description: This playbook retrieves a specified EML/MSG file directly from the Proofpoint Protection Server.
 id: Get Email From Email Gateway - Proofpoint Protection Server
 inputs:
-- description: The Proofpoint message GUID
+- description: The Proofpoint message GUID.
   key: MessageID
   playbookInputQuery:
   required: false
@@ -58,7 +57,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Downloads a quarantine email message's raw data.
+      description: Downloads a quarantined email message's raw data.
       id: 501388a7-2349-43aa-8cd4-0cbabd8f2436
       iscommand: true
       name: Retrieve Email File
@@ -118,7 +117,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Checks if Proofpoint Protection Server is enabled.
+      description: Checks if the Proofpoint Protection Server is enabled.
       id: 61398950-e1d0-402d-8f81-e73c093a3833
       iscommand: false
       name: Is Proofpoint Protection Server Enabled?
