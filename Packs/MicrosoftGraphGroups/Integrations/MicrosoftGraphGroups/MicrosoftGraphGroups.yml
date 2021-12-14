@@ -136,7 +136,7 @@ script:
       description: 'Specifies the visibility of an Office 365 group. Can be: "Private",
         "Public", or "Hiddenmembership". Blank values are treated as public.'
       type: String
-    - contextPath: MSGraphGroup.NextLink
+    - contextPath: MSGraphGroupsNextLink.GroupsNextLink
       description: The URL of the next results page.
       type: String
   - arguments:
@@ -409,6 +409,9 @@ script:
       type: String
     - contextPath: MSGraphGroups.Members.ID
       description: The unique identifier for the user.
+      type: String
+    - contextPath: MSGraphGroups.MembersNextLink
+      description: The URL to the next results page.
       type: String
   - arguments:
     - default: false
