@@ -170,9 +170,9 @@ def test_generate_search_query(
         - Validate query has SINCE before the datetime object
     """
     from MailListenerV2 import generate_search_query
-    generated_query = generate_search_query(
-        time_to_fetch_from, with_header, permitted_from_addresses, permitted_from_domains, uid_to_fetch_from)
-    assert generated_query == expected_query
+    assert generate_search_query(
+        time_to_fetch_from, with_header, permitted_from_addresses, permitted_from_domains, uid_to_fetch_from
+    ) == expected_query
 
 
 def test_generate_labels():
