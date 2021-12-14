@@ -1833,6 +1833,12 @@ script:
       name: fields_delimiter
       required: false
       secret: false
+    - default: false
+      description: Comma-seperated list of fields to clear.
+      isArray: true
+      name: clear_fields
+      required: false
+      secret: false
     deprecated: false
     description: Updates a record in the specified ServiceNow table.
     execution: false
