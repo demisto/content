@@ -941,7 +941,7 @@ def upload_packs_with_dependencies_zip(extract_destination_path, packs_dependenc
         for pack in packs_list:
             logging.info(f"Starting going over the dependencies of {pack.name}")
             pack_with_dep_path = os.path.join(pack.path, "with_dependencies")
-            zip_with_deps_path = os.path.join(pack_with_dep_path, pack.name + "_with_dependencies.zip")
+            zip_with_deps_path = os.path.join(pack.path, pack.name + "_with_dependencies.zip")
             upload_path = os.path.join(storage_base_path, pack.name, pack.name + "_with_dependencies.zip")
             Path(pack_with_dep_path).mkdir(parents=True, exist_ok=True)
             full_deps_graph = map_pack_dependencies_graph(pack.name, packs_dependencies_mapping, full_deps_graph)
