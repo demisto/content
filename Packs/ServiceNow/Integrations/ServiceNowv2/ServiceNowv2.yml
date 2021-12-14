@@ -1834,7 +1834,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Comma-seperated list of fields to clear.
+      description: A comma-separated list of fields to clear.
       isArray: true
       name: clear_fields
       required: false
