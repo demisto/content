@@ -5861,21 +5861,20 @@ def test_arg_to_number():
 def test_get_message_threads_dump():
     from CommonServerPython import get_message_threads_dump
     result = str(get_message_threads_dump(None, None))
-    assert result.find(' Start Threads Dump ') > -1
-    assert result.find(' End Threads Dump ') > -1
-    assert result.find('CommonServerPython.py') > -1
-    assert result.find('get_message_threads_dump') > -1
+    assert ' Start Threads Dump ' in result
+    assert ' End Threads Dump ' in result
+    assert 'CommonServerPython.py' in result
+    assert 'get_message_threads_dump' in result
 
 
 def test_get_message_memory_dump():
     from CommonServerPython import get_message_memory_dump
     result = str(get_message_memory_dump(None, None))
-    print('*** , result: ' + str(result))
-    assert result.find(' Start Variables Dump ') > -1
-    assert result.find(' Start Local Vars ') > -1
-    assert result.find(' End Local Vars ') > -1
-    assert result.find(' Start Top ') > -1
-    assert result.find(' Globals by Size ') > -1
-    assert result.find(' End Top ') > -1
-    assert result.find(' End Variables Dump ') > -1
-    assert result.find(' <class \'') > -1
+    assert ' Start Variables Dump ' in result
+    assert ' Start Local Vars ' in result
+    assert ' End Local Vars ' in result
+    assert ' Start Top ' in result
+    assert ' Globals by Size ' in result
+    assert ' End Top ' in result
+    assert ' End Variables Dump ' in result
+    assert ' <class \'' in result
