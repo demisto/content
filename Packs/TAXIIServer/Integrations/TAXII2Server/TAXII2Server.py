@@ -115,8 +115,8 @@ class TAXII2Server:
         if not (version == TAXII_VER_2_0 or version == TAXII_VER_2_1):
             raise Exception(f'Wrong TAXII 2 Server version: {version}. '
                             f'Possible values: {TAXII_VER_2_0}, {TAXII_VER_2_1}.')
-        self._collections_resource = []
-        self.collections_by_id = dict()
+        self._collections_resource: list = []
+        self.collections_by_id: dict = dict()
         self.namespace_uuid = uuid.uuid5(PAWN_UUID, demisto.getLicenseID())
         self.create_collections(collections)
 
@@ -236,7 +236,7 @@ class TAXII2Server:
         Returns:
             The objects from given collection ID.
         """
-        found_collection = self.collections_by_id.get(collection_id)
+        found_collection = self.collections_by_id.get(collection_id, {})
         query = found_collection.get('description')
         new_limit = offset + limit
         new_query = create_query(query, types)
@@ -269,7 +269,7 @@ class TAXII2Server:
             The objects from given collection ID.
         """
 
-        found_collection = self.collections_by_id.get(collection_id)
+        found_collection = self.collections_by_id.get(collection_id, {})
         query = found_collection.get('description')
         new_limit = offset + limit
         new_query = create_query(query, types)
@@ -321,8 +321,11 @@ def taxii_validate_request_headers(f):
         credentials = request.authorization
 
         if SERVER.auth:
-            auth_success = (compare_digest(credentials.username, SERVER.auth[0])
-                            and compare_digest(credentials.password, SERVER.auth[1]))
+            try:
+                auth_success = (compare_digest(credentials.username, SERVER.auth[0])    # type: ignore
+                                and compare_digest(credentials.password, SERVER.auth[1]))   # type: ignore
+            except TypeError:
+                auth_success = False
             if not auth_success:
                 handle_long_running_error('Authorization failed')
                 return handle_response(HTTP_401_UNAUTHORIZED, {'title': 'Authorization failed'})
@@ -399,7 +402,7 @@ def handle_response(status_code, content, date_added_first=None, date_added_last
         'Content-Type': content_type,
     }
     if status_code == HTTP_401_UNAUTHORIZED:
-        headers['WWW-Authenticate'] = f'Basic realm="Authentication Required"'
+        headers['WWW-Authenticate'] = 'Basic realm="Authentication Required"'
     if date_added_first:
         headers['X-TAXII-Date-Added-First'] = date_added_first
     if date_added_last:
@@ -413,11 +416,12 @@ def create_query(query, types):
         try:
             xsoar_types = [STIX2_TYPES_TO_XSOAR[t] for t in types if t != 'domain-name']
             if 'domain-name' in types:
-                xsoar_types.append(STIX2_TYPES_TO_XSOAR['domain-name'])
+                xsoar_types.extend(STIX2_TYPES_TO_XSOAR['domain-name'])
         except KeyError as e:
             raise Exception(f'Unsupported object type: {e}.')
         new_query = query + ' '
-        new_query += ' or '.join(['type:' + x for x in xsoar_types])
+        new_query += ' or '.join(['type:' + x for x in xsoar_types])    # type: ignore
+        demisto.debug(f'new query: {new_query}')
         return new_query
     else:
         return query
@@ -518,7 +522,7 @@ def create_stix_object(xsoar_indicator, xsoar_type):
         'description': 'This schema adds TIM data to the object',
         'created': xsoar_indicator.get('timestamp'),
         'modified': xsoar_indicator.get('modified'),
-        'created_by_ref': 'identity--<UUID of creator>',  # todo: change it
+        'created_by_ref': f'identity--{str(PAWN_UUID)}',
         'schema': '<Link to JSON schema or a description>',  # todo: change it
         'version': '1.0',
         'extension_types': ['property-extension']
@@ -573,7 +577,8 @@ def get_collections(params: dict = demisto.params()) -> dict:
 def taxii2_server_discovery():
     """
     Defines TAXII API - Server Information:
-    Server Discovery section (4.1) `here  for v2.1 <https://docs.oasis-open.org/cti/taxii/v2.1/cs01/taxii-v2.1-cs01.html#_Toc31107526>`__
+    Server Discovery section (4.1) `here  for v2.1
+    <https://docs.oasis-open.org/cti/taxii/v2.1/cs01/taxii-v2.1-cs01.html#_Toc31107526>`__
     and `here for v2.0 <http://docs.oasis-open.org/cti/taxii/v2.0/cs01/taxii-v2.0-cs01.html#_Toc496542727>`__
     Returns:
         discovery: A Discovery Resource upon successful requests.
@@ -595,7 +600,8 @@ def taxii2_server_discovery():
 def taxii2_api_root(api_root: str):
     """
      Defines TAXII API - Server Information:
-     Get API Root Information section (4.2) `here <https://docs.oasis-open.org/cti/taxii/v2.1/cs01/taxii-v2.1-cs01.html#_Toc31107528>`__
+     Get API Root Information section (4.2) `here
+     <https://docs.oasis-open.org/cti/taxii/v2.1/cs01/taxii-v2.1-cs01.html#_Toc31107528>`__
      Args:
          api_root (str): the base URL of the API Root
      Returns:
@@ -615,7 +621,7 @@ def taxii2_api_root(api_root: str):
 @APP.route('/<api_root>/status/<status_id>/', methods=['GET'])
 @taxii_validate_request_headers
 @taxii_validate_url_param
-def taxii2_status(api_root, status_id):
+def taxii2_status(api_root):
     """Status API call used to check status for adding object to the system.
     Our collections are read only. No option to add objects.
     Then All status requests ending with error.
@@ -633,7 +639,8 @@ def taxii2_status(api_root, status_id):
 def taxii2_collections(api_root: str):
     """
     Defines TAXII API - Collections:
-    Get Collection section (5.1) `here for v.2 <https://docs.oasis-open.org/cti/taxii/v2.1/csprd01/taxii-v2.1-csprd01.html#_Toc532988049>`__
+    Get Collection section (5.1) `here for v.2
+    <https://docs.oasis-open.org/cti/taxii/v2.1/csprd01/taxii-v2.1-csprd01.html#_Toc532988049>`__
     Args:
         api_root (str): the base URL of the API Root
     Returns:
@@ -656,7 +663,8 @@ def taxii2_collections(api_root: str):
 def taxii2_collection_by_id(api_root: str, collection_id: str):
     """
     Defines TAXII API - Collections:
-    Get Collection section (5.2) `here for v.2.0 <http://docs.oasis-open.org/cti/taxii/v2.0/cs01/taxii-v2.0-cs01.html#_Toc496542736>`__
+    Get Collection section (5.2) `here for v.2.0
+    <http://docs.oasis-open.org/cti/taxii/v2.0/cs01/taxii-v2.0-cs01.html#_Toc496542736>`__
     and `here for v.2.1 <https://docs.oasis-open.org/cti/taxii/v2.1/csprd01/taxii-v2.1-csprd01.html#_Toc532988051>`__
     Args:
         collection_id: the is of the collection, can be obtained using `collection` request.
@@ -700,9 +708,9 @@ def taxii2_manifest(api_root: str, collection_id: str):
 
         elif SERVER.version == TAXII_VER_2_1:
             next = request.args.get('next')
-            limit = request.args.get('limit')
+            limit_arg = request.args.get('limit')
             offset = int(next) if next else 0
-            limit = int(limit) if limit else 100
+            limit = int(limit_arg) if limit_arg else 100
 
         manifest_response, date_added_first, date_added_last = SERVER.get_manifest(
             collection_id=collection_id,
@@ -731,7 +739,8 @@ def taxii2_manifest(api_root: str, collection_id: str):
 def taxii2_objects(api_root: str, collection_id: str):
     """
     Defines TAXII API - Collections Objects:
-    Get Collection section (5.4) `here <https://docs.oasis-open.org/cti/taxii/v2.1/csprd01/taxii-v2.1-csprd01.html#_Toc532988055>`__
+    Get Collection section (5.4) `here
+    <https://docs.oasis-open.org/cti/taxii/v2.1/csprd01/taxii-v2.1-csprd01.html#_Toc532988055>`__
     Args:
         collection_id:
         api_root (str): the base URL of the API Root
@@ -759,10 +768,10 @@ def taxii2_objects(api_root: str, collection_id: str):
 
         elif SERVER.version == TAXII_VER_2_1:
             next = request.args.get('next')
-            limit = request.args.get('limit')
+            limit_arg = request.args.get('limit')
 
             offset = int(next) if next else 0
-            limit = int(limit) if limit else 100
+            limit = int(limit_arg) if limit_arg else 100
 
         objects_response, date_added_first, date_added_last = SERVER.get_objects(
             collection_id=collection_id,
@@ -811,10 +820,13 @@ def run_server(port: int, certificate: str, private_key: str):
     else:
         demisto.debug('Starting HTTP Server')
 
-    # log=DEMISTO_LOGGER
     wsgi_server = WSGIServer(('0.0.0.0', port), APP, **ssl_args)
     demisto.updateModuleHealth('')
     wsgi_server.serve_forever()
+
+
+def test_module():
+    return 'ok'
 
 
 def main():
@@ -864,7 +876,7 @@ def main():
             run_server(port, certificate, private_key)
 
         elif command == 'test-module':
-            return_results('ok')
+            return_results(test_module())
 
     except Exception as e:
         err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
