@@ -2,14 +2,13 @@ id: Phishing Alerts - Check Severity
 version: -1
 name: Phishing Alerts - Check Severity
 description: |-
-  Calculate and assign the incident severity based on the highest returned severity level from the following calculations:
-
-  Email security alert action
-  DBotScores of indicators
-  Critical assets
-  Email authenticity
-  Current incident severity
-  Microsoft Headers
+This playbook calculates and assigns the incident severity based on the highest returned severity level from the following calculations:
+- Email security alert action
+- DBotScores of indicators
+- Critical assets
+- Email authenticity
+- Current incident severity
+- Microsoft Headers
 starttaskid: "0"
 tasks:
   "0":
@@ -90,7 +89,7 @@ tasks:
       version: -1
       name: Calculate Severity - Generic v2
       description: |-
-        Calculate and assign the incident severity based on the highest returned severity level from the following calculations:
+        This playbook calculates and assigns the incident severity based on the highest returned severity level from the following calculations:
         - DBotScores of indicators
         - Critical assets
         - Email authenticity
@@ -409,7 +408,7 @@ tasks:
       id: 85dc6008-922c-4f8b-89f9-9794bfd6a728
       version: -1
       name: Set incident severity to "Critical"
-      description: Set the incident severity to "Critical"
+      description: Sets the incident severity to "Critical"
       scriptName: IncreaseIncidentSeverity
       type: regular
       iscommand: false
@@ -625,12 +624,12 @@ inputs:
 - key: escalationRole
   value: {}
   required: false
-  description: "Higher Tier role to assign the incident to."
+  description: "The higher tier role to assign the incident to."
   playbookInputQuery:
 - key: OnCall
   value: {}
   required: false
-  description: "Use to assign only for analysts who're on current shift."
+  description: "Assign only to analysts on the current shift."
   playbookInputQuery:
 - key: AuthenticityCheck
   value: {}
@@ -648,8 +647,8 @@ inputs:
 - key: SOCEmailAddress
   value: {}
   required: false
-  description: The SOC email address to set in case the playbook handles an Email
-    Security alert.
+  description: The SOC email address to set if the playbook handles an email
+    security alert.
   playbookInputQuery:
 - key: EmailTo
   value: {}
@@ -659,7 +658,7 @@ inputs:
 - key: blockedAlertActionValue
   value: {}
   required: false
-  description: List of optional values the email security device returns for blocked\denied\etc.
+  description: A comma-separated list of optional values the email security device returns for blocked\denied\etc.
     emails.
   playbookInputQuery:
 outputs: []
