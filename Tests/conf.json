@@ -4811,6 +4811,9 @@
         {
             "integrations": "KafkaV3",
             "playbookID": "KafkaV3 Test"
+        },
+        {
+            "playbookID": "ExtractURL-Test"
         }
     ],
     "skipped_tests": {

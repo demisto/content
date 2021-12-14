@@ -1,8 +1,6 @@
 from html import unescape
 from typing import Tuple
-from urllib.error import HTTPError, URLError
 from urllib.parse import urlparse, parse_qs, ParseResult, unquote
-from urllib.request import urlopen
 
 from CommonServerPython import *
 

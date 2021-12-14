@@ -131,7 +131,7 @@ def test_format_url(url_, expected):
     - Ensure URL is formatted as expected
     """
     from ExtractURL import format_url
-    assert format_url(url_) == expected
+    assert format_url(url_).outputs == [expected]
 
 
 @pytest.mark.parametrize('url_, expected', [
@@ -282,9 +282,10 @@ def test_main_flow_valid(mocker):
     - Ensure URL are formatted as expected.
     """
     from ExtractURL import main
+    import ExtractURL
     import demistomock as demisto
     mocker.patch.object(demisto, 'args', return_value={'input': f'{TEST_URL_HTTP}'})
-    mock_results = mocker.patch.object(demisto, 'results')
+    mock_results = mocker.patch.object(ExtractURL, 'return_results')
     main()
     result_ = mock_results.call_args.args[0]
-    assert result_ == TEST_URL_HTTP
+    assert result_.outputs == [TEST_URL_HTTP]
