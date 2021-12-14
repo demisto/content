@@ -10,6 +10,40 @@ DEFAULT_ALGORITHM = 'literal'
 DEFAULT_PRIORITY = 'first_match'
 
 
+def demisto_get(obj: Any, path: Any) -> Any:
+    """
+    demisto.get(), this supports a syntax of path escaped with backslash.
+    """
+    def split_context_path(path: str):
+        nodes = []
+        node = []
+        itr = iter(path)
+        for c in itr:
+            if c == '\\':
+                try:
+                    node.append(next(itr))
+                except StopIteration:
+                    node.append('\\')
+            elif c == '.':
+                nodes.append(''.join(node))
+                node = []
+            else:
+                node.append(c)
+        nodes.append(''.join(node))
+        return nodes
+
+    if not isinstance(obj, dict):
+        return None
+
+    parts = split_context_path(path)
+    for part in parts:
+        if obj and part in obj:
+            obj = obj[part]
+        else:
+            return None
+    return obj
+
+
 def make_regex(pattern: str, algorithm: str) -> str:
     """ Transform a pattern to a regex pattern.
 
@@ -33,76 +67,17 @@ def make_regex(pattern: str, algorithm: str) -> str:
         raise ValueError(f'Invalid algorithm: {algorithm}')
 
 
-def extract_value(source: str,
-                  extractor: Callable[[str, Optional[Dict[str, Any]]], Any],
-                  dx: Optional[Dict[str, Any]]) -> Any:
-    """ Extract value including dt expression
-
-      :param source: The value to be extracted that may include dt expressions.
-      :param extractor: The extractor to get real value within ${dt}.
-      :param dx: The demisto context.
-      :return: The value extracted.
-    """
-    def _extract(source: str,
-                 extractor: Optional[Callable[[str,
-                                               Optional[Dict[str, Any]]],
-                                              Any]],
-                 dx: Optional[Dict[str, Any]],
-                 si: int,
-                 endc: Optional[str]) -> Tuple[str, int]:
-        val = ''
-        ci = si
-        while ci < len(source):
-            if endc is not None and source[ci] == endc:
-                if not extractor:
-                    return '', ci + len(endc)
-                xval = extractor(source[si:ci], dx)
-                val += str(xval) if xval is not None else ''
-                si = ci = ci + len(endc)
-                endc = None
-            else:
-                nextec = {'(': ')', '{': '}',
-                          '[': ']', '"': '"', "'": "'"}.get(source[ci])
-                if nextec:
-                    _, ci = _extract(source, None, dx, ci + 1, nextec)
-                elif extractor and source[ci:ci + 2] == '${':
-                    val += source[si:ci]
-                    si = ci = ci + 2
-                    endc = '}'
-                elif source[ci] == '\\':
-                    ci += 2
-                else:
-                    ci += 1
-        return (val + source[si:], 0) if extractor else ('', ci)
-
-    if source.startswith('${') and source.endswith('}'):
-        return extractor(source[2:-1], dx)
-    else:
-        dst, _ = _extract(source, extractor, dx, 0, None)
-        return dst
-
-
-def extract_dt(dtstr: str, dx: Optional[Dict[str, Any]]) -> Any:
-    """ Extract dt expression
-
-      :param dtstr: The dt expressions (string within ${}).
-      :param dx: The demisto context.
-      :return: The value extracted.
-    """
-    return demisto.dt(dx, dtstr) if dx else dtstr
-
-
-def iterate_mapping(mappings: Union[List[Dict[str, Any]], Dict[str, Any]]):
+def iterate_pattern_mapping(pattern_mapping: Union[List[Dict[str, Any]], Dict[str, Any]]):
     """ Iterate mapping entry.
 
-    :param mappings: The mapping table given.
+    :param pattern_mapping: The pattern mapping table.
     :return: Each mapping entry. {pattern:, exclude:, algorithm:, output:, next:}
     """
-    if isinstance(mappings, list):
-        for m in mappings:
-            yield from iterate_mapping(m)
-    elif isinstance(mappings, dict):
-        for k, v in mappings.items():
+    if isinstance(pattern_mapping, list):
+        for m in pattern_mapping:
+            yield from iterate_pattern_mapping(m)
+    elif isinstance(pattern_mapping, dict):
+        for k, v in pattern_mapping.items():
             d = v if isinstance(v, dict) else {'output': v}
             exclude = d.get('exclude') or []
             exclude = exclude if isinstance(exclude, list) else [exclude]
@@ -112,94 +87,277 @@ def iterate_mapping(mappings: Union[List[Dict[str, Any]], Dict[str, Any]]):
                 'exclude': exclude,
                 'output': d.get('output'),
                 'algorithm': d.get('algorithm'),
-                'next': d.get('next')
+                'next': d.get('next'),
+                'comparison_fields': d.get('comparison_fields')
             }
     else:
-        raise ValueError(f'mappings must be an array or an object: {mappings}')
+        raise ValueError(f'pattern-mapping must be an array or an object: {pattern_mapping}')
 
 
-def translate(source: Any,
-              mappings: Union[List[Dict[str, Any]], Dict[str, Any]],
-              caseless: bool,
-              priority: str,
-              algorithm: str,
-              context: Any) -> Tuple[Optional[List[str]], Any]:
-    """ Replace the string given with the patterns.
+class ContextData:
+    def __init__(self,
+                 context: Optional[Dict[str, Any]] = None,
+                 arg_value: Optional[Dict[str, Any]] = None):
+        """
+        :param context: The demisto context.
+        :param arg_value: The data of the `value` given in the argument parameters.
+        """
+        self.__demisto = context
+        self.__value = arg_value
 
-    :param source: The string to be replaced.
-    :param mappings: The mapping table to translate.
-    :param caseless: Set to True for caseless comparation, False otherwise.
-    :param priority: The priority order (first_match, last_match or longest_pattern).
-    :param algorithm: The default algorithm for pattern match.
-    :param context: The demisto context.
-    :return: The mapping matched and the new value replaced by it.
-    """
-    matched_mapping = None
-    matched_output = source
-    source = str(source)
-    for mapping in iterate_mapping(mappings):
-        flags = re.IGNORECASE if caseless else 0
-        algorithm = mapping.get('algorithm') or algorithm
+    def get(self, key: Optional[str] = None,) -> Any:
+        """ Get the context value given the key
 
-        # Check if the source matches a pattern
-        pattern = make_regex(mapping['pattern'], algorithm)
-        match = re.fullmatch(pattern, source, flags=flags)
-        if not match:
-            continue
+        :param key: The dt expressions (string within ${})
+        :return: The value.
+        """
+        if key is not None:
+            dx = self.__demisto
+            if key != '.' and key.startswith('.'):
+                dx = self.__value
+                key = key[1:]
 
-        # Check if the source matches any of exclusion patterns.
-        exclude = [make_regex(x, algorithm) for x in mapping['exclude']]
-        if any([re.fullmatch(x, source, flags=flags) for x in exclude]):
-            continue
+            if not key or key == '.':
+                return dx
+            elif isinstance(dx, (list, dict)):
+                return demisto.dt(dx, key)
+        return None
 
-        # Set the output
-        output = mapping.get('output')
-        if output is None:
-            output = demisto.args()['value']
-        elif algorithm == 'regex' and isinstance(output, str):
-            output = match.expand(output.replace(r'\0', r'\g<0>'))
-        if isinstance(context, dict) and isinstance(output, str):
-            output = extract_value(output, extract_dt, context)
 
-        next_mappings = mapping.get('next')
-        if next_mappings:
-            mapping, output = translate(output, next_mappings, caseless, priority, algorithm, context)
-            if not mapping:
+class Translator:
+    def __init__(self, context: Any, arg_value: Any, fields_comp_mode: bool):
+        """
+        :param context: The demisto context.
+        :param arg_value: The data of the `value` given in the argument parameters.
+        :param fields_comp_mode: True - Fields comp mode, otherwise False.
+        """
+        self.__arg_value = arg_value
+        self.__fields_comp_mode = fields_comp_mode
+        self.__context = None
+        if isinstance(context, dict):
+            self.__context = ContextData(context=context,
+                                         arg_value=arg_value if isinstance(arg_value, dict) else None)
+
+    def __extract_value(self,
+                        source: str,
+                        extractor: Callable[[str, Optional[ContextData]], Any],
+                        dx: Optional[ContextData]) -> Any:
+        """ Extract value including dt expression
+
+          :param source: The value to be extracted that may include dt expressions.
+          :param extractor: The extractor to get real value within ${dt}.
+          :param dx: The demisto context.
+          :return: The value extracted.
+        """
+        def _extract(source: str,
+                     extractor: Optional[Callable[[str, Optional[ContextData]], Any]],
+                     dx: Optional[ContextData],
+                     si: int,
+                     endc: Optional[str]) -> Tuple[Any, int]:
+            val = None
+            ci = si
+            while ci < len(source):
+                if endc is not None and source[ci] == endc:
+                    if not extractor:
+                        return '', ci + len(endc)
+                    xval = extractor(source[si:ci], dx)
+                    if val is None:
+                        val = xval
+                    elif xval is not None:
+                        val = str(val) + str(xval)
+                    si = ci = ci + len(endc)
+                    endc = None
+                else:
+                    nextec = {'(': ')', '{': '}',
+                              '[': ']', '"': '"', "'": "'"}.get(source[ci])
+                    if nextec:
+                        _, ci = _extract(source, None, dx, ci + 1, nextec)
+                    elif extractor and source[ci:ci + 2] == '${':
+                        if si != ci:
+                            val = source[si:ci] if val is None else str(val) + source[si:ci]
+                        si = ci = ci + 2
+                        endc = '}'
+                    elif source[ci] == '\\':
+                        ci += 2
+                    else:
+                        ci += 1
+            if not extractor:
+                return ('', ci)
+            elif si >= len(source):
+                return (val, 0)
+            elif val is None:
+                return (source[si:], 0)
+            else:
+                return (str(val) + source[si:], 0)
+
+        return _extract(source, extractor, dx, 0, None)[0] if source else ''
+
+    def __extract_dt(self, dtstr: str, dx: Optional[ContextData]) -> Any:
+        """ Extract dt expression
+
+          :param dtstr: The dt expressions (string within ${}).
+          :param dx: The demisto context.
+          :return: The value extracted.
+        """
+        return dx.get(dtstr) if dx else dtstr
+
+    def translate(self,
+                  source: Any,
+                  pattern_mapping: Union[List[Dict[str, Any]], Dict[str, Any]],
+                  regex_flags: int,
+                  priority: str,
+                  algorithm: str) -> Tuple[Optional[List[str]], Any, bool]:
+        """ Replace the string given with the patterns.
+
+        :param source: The string to be replaced.
+        :param pattern_mapping: The mapping table to translate.
+        :param regex_flags: The regex flags for pattern matching.
+        :param priority: The priority order (first_match, last_match or longest_pattern).
+        :param algorithm: The default algorithm for pattern match.
+        :return: The mapping matched, a new value replaced by it, and a flag if a pattern has matched or not.
+        """
+        matched = False
+        matched_mapping = None
+        matched_output = source
+        source = '' if source is None else str(source)
+        for mapping in iterate_pattern_mapping(pattern_mapping):
+            algorithm = mapping.get('algorithm') or algorithm
+
+            # Check if the source matches a pattern
+            pattern = make_regex(mapping['pattern'], algorithm)
+            match = re.fullmatch(pattern, source, flags=regex_flags)
+            if not match:
                 continue
 
-        if priority in ('first_match', 'last_match'):
-            matched_output = output
-            matched_mapping = mapping
-            if priority == 'first_match':
-                break
-        else:
-            raise ValueError(f'Invalid priority: {priority}')
+            # Check if the source matches any of exclusion patterns.
+            exclude = [make_regex(x, algorithm) for x in mapping['exclude']]
+            if any([re.fullmatch(x, source, flags=regex_flags) for x in exclude]):
+                continue
 
-    return matched_mapping, matched_output
+            # Set the output
+            fields_comp_mode = False
+            output = mapping.get('output')
+            next_mappings = mapping.get('next')
+            if output is None:
+                output = self.__arg_value
+                if next_mappings and isinstance(output, dict):
+                    fields_comp_mode = self.__fields_comp_mode
+
+            elif algorithm == 'regex' and isinstance(output, str):
+                output = match.expand(output.replace(r'\0', r'\g<0>'))
+            if self.__context is not None and isinstance(output, str):
+                output = self.__extract_value(output, self.__extract_dt, self.__context)
+
+            if next_mappings:
+                if fields_comp_mode:
+                    mapping, output, matched = self.translate_fields(
+                        obj_value=output,
+                        field_mapping=next_mappings,
+                        regex_flags=regex_flags,
+                        priority=priority,
+                        algorithm=algorithm)
+                else:
+                    mapping, output, matched = self.translate(
+                        source=output,
+                        pattern_mapping=next_mappings,
+                        regex_flags=regex_flags,
+                        priority=priority,
+                        algorithm=algorithm)
+                if not matched:
+                    continue
+
+            if priority in ('first_match', 'last_match'):
+                matched = True
+                matched_output = output
+                matched_mapping = mapping
+                if priority == 'first_match':
+                    break
+            else:
+                raise ValueError(f'Invalid priority: {priority}')
+
+        return matched_mapping, matched_output, matched
+
+    def translate_fields(self,
+                         obj_value: Dict[str, Any],
+                         field_mapping: Dict[str, Any],
+                         regex_flags: int,
+                         priority: str,
+                         algorithm: str) -> Tuple[Optional[List[str]], Any, bool]:
+        """ Replace the string given with the field mapping.
+
+        :param obj_value: The object whose values to be replaced.
+        :param field_mapping: The mapping table to translate.
+        :param regex_flags: The regex flags for pattern matching.
+        :param priority: The priority order (first_match, last_match or longest_pattern).
+        :param algorithm: The default algorithm for pattern match.
+        :return: The mapping matched, a new value replaced by it, and a flag if a pattern has matched or not.
+        """
+        if not isinstance(field_mapping, dict):
+            raise ValueError(f'field-mapping must be an array or an object in JSON: type={type(field_mapping)}')
+
+        for path, mapping in field_mapping.items():
+            if not isinstance(mapping, (dict, list)):
+                raise ValueError(f'pattern-mapping must be an array or an object in JSON: type={type(mapping)}')
+
+            # Get a value for pattern matching
+            comparison_value = demisto_get(obj_value, path)
+            if not isinstance(comparison_value, (dict, list)):
+                matched_mapping, matched_output, matched = self.translate(
+                    comparison_value, mapping, regex_flags, priority, algorithm)
+                if matched:
+                    return matched_mapping, matched_output, matched
+        return None, obj_value, False
 
 
 def main():
     args = demisto.args()
-    value = args['value']
-    mappings = args['mappings']
-    algorithm = args.get('algorithm') or DEFAULT_ALGORITHM
-    priority = args.get('priority') or DEFAULT_PRIORITY
-    caseless = argToBoolean(args.get('caseless') or 'true')
-    context = args.get('context')
+    value = args.get('value')
+    try:
+        mappings = args['mappings']
+        algorithm = args.get('algorithm') or DEFAULT_ALGORITHM
+        priority = args.get('priority') or DEFAULT_PRIORITY
+        context = args.get('context')
+        fields_comp_mode = argToBoolean(args.get('compare_fields') or 'false')
+        regex_flags = re.IGNORECASE if argToBoolean(args.get('caseless') or 'true') else 0
+        for flag in argToList(args.get('flags', '')):
+            if flag in ('dotall', 's'):
+                regex_flags |= re.DOTALL
+            elif flag in ('multiline', 'm'):
+                regex_flags |= re.MULTILINE
+            elif flag in ('ignorecase', 'i'):
+                regex_flags |= re.IGNORECASE
+            elif flag in ('unicode', 'u'):
+                regex_flags |= re.UNICODE
+            else:
+                raise ValueError(f'Unknown flag: {flag}')
 
-    if not isinstance(value, (dict, list)):
         if isinstance(mappings, str):
             try:
                 mappings = json.loads(mappings)
             except ValueError:
                 raise ValueError(f'Unable to decode mappings in JSON: {mappings}')
 
-        if isinstance(mappings, (dict, list)):
-            _, value = translate(value, mappings, caseless, priority, algorithm, context)
+        tr = Translator(context=context, arg_value=value, fields_comp_mode=fields_comp_mode)
+        if fields_comp_mode:
+            if isinstance(value, dict):
+                _, value, matched = tr.translate_fields(
+                    obj_value=value,
+                    field_mapping=mappings,
+                    regex_flags=regex_flags,
+                    priority=priority,
+                    algorithm=algorithm)
         else:
-            raise ValueError(f'mappings must be an array or an object in JSON: type={type(mappings)}')
+            if not isinstance(value, (dict, list)):
+                _, value, _ = tr.translate(
+                    source=value,
+                    pattern_mapping=mappings,
+                    regex_flags=regex_flags,
+                    priority=priority,
+                    algorithm=algorithm)
+    except Exception as err:
+        return_error(err)
 
-    demisto.results(value)
+    return_results(value)
 
 
 if __name__ in ('__builtin__', 'builtins'):

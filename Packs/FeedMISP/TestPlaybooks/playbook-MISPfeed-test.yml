@@ -1,0 +1,149 @@
+id: MISPfeed Test
+version: -1
+name: MISPfeed Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: af72defd-249a-4613-8131-59b64c334783
+    type: start
+    task:
+      id: af72defd-249a-4613-8131-59b64c334783
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 24e5660c-c701-4dca-8475-9541a3894070
+    type: regular
+    task:
+      id: 24e5660c-c701-4dca-8475-9541a3894070
+      version: -1
+      name: Delete context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 1efef504-e265-44da-88ee-0a4269d2d7ed
+    type: regular
+    task:
+      id: 1efef504-e265-44da-88ee-0a4269d2d7ed
+      version: -1
+      name: misp-feed-get-indicators
+      description: Gets indicators from the feed.
+      script: MISP Feed|||misp-feed-get-indicators
+      type: regular
+      iscommand: true
+      brand: MISP Feed
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      attribute_type:
+        simple: ip-src
+      limit:
+        simple: "10"
+      tags:
+        simple: tlp:%
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: d880ddb0-b0d2-4c5b-8d39-76bbaaa8f1d8
+    type: title
+    task:
+      id: d880ddb0-b0d2-4c5b-8d39-76bbaaa8f1d8
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.5.0
+description: Testing get indicators command of MISP Feed integration

@@ -303,27 +303,27 @@ def fetch_incidents(client: AADClient, params: Dict[str, str]):
     demisto.debug(f'last_fetch_datetime: {last_fetch_datetime}')
 
     all_incidents: List = []
-    do_fetch_call: bool = True
     next_link: str = ''
     filter_expression = params.get('fetch_filter_expression', f'lastUpdatedDateTime gt {last_fetch}')
-    while do_fetch_call:
-        risk_detection_list_raw: Dict = client.azure_ad_identity_protection_risk_detection_list_raw(
-            limit=int(params.get('max_fetch', '50')),
-            filter_expression=filter_expression,
-            next_link=next_link,
-            user_id=params.get('fetch_user_id', ''),
-            user_principal_name=params.get('fetch_user_principal_name', ''),
-            country='',
-        )
 
-        next_link = get_next_link_url(risk_detection_list_raw)
-        if not next_link:
-            do_fetch_call = False
-        values: list = risk_detection_list_raw.get('value', [])
-        demisto.debug('len(values): ' + str(len(values)))
+    risk_detection_list_raw: Dict = client.azure_ad_identity_protection_risk_detection_list_raw(
+        limit=int(params.get('max_fetch', '50')),
+        filter_expression=filter_expression,
+        next_link=next_link,
+        user_id=params.get('fetch_user_id', ''),
+        user_principal_name=params.get('fetch_user_principal_name', ''),
+        country='',
+    )
 
-        incidents, last_item_time = create_incidents_from_input(values, last_fetch_datetime=last_fetch_datetime)
-        all_incidents.extend(incidents)
+    next_link = get_next_link_url(risk_detection_list_raw)
+    values: list = risk_detection_list_raw.get('value', [])
+    if next_link:
+        demisto.debug('More incidents available, stopping after getting the first ' + str(len(values)) + ' incidents')
+    else:
+        demisto.debug('Fetched ' + str(len(values)) + ' incidents')
+
+    incidents, last_item_time = create_incidents_from_input(values, last_fetch_datetime=last_fetch_datetime)
+    all_incidents.extend(incidents)
 
     demisto.incidents(all_incidents)
     demisto.setLastRun({

@@ -72,6 +72,7 @@ class TestReadAndFormatReleaseNote:
         assert formatted_text == ''
 
 
+# pylint: disable=W0201
 class TestGenerateReleaseNotesSummary:
     def setup(self):
         self._version = VERSION

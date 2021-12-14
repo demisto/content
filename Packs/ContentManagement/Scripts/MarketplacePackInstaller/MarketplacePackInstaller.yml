@@ -23,7 +23,7 @@ commonfields:
   version: -1
 enabled: false
 name: MarketplacePackInstaller
-comment: Marketplace packs installer for the content management pack.
+comment: Deprecated. Use ContentPackInstaller instead.
 outputs:
 - contextPath: ConfigurationSetup.MarketplacePackInstaller.packname
   description: The name of the pack.
@@ -37,12 +37,13 @@ outputs:
 script: '-'
 subtype: python3
 system: false
+deprecated: true
 tags:
 - configuration
 - Content Management
 timeout: 600ns
 type: python
 dockerimage: demisto/xsoar-tools:1.0.0.23423
+fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
-fromversion: 6.0.0

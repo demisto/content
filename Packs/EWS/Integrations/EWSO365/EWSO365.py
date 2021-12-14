@@ -192,7 +192,7 @@ class EWSClient:
         )
         self.folder_name = folder
         self.is_public_folder = is_public_folder
-        self.access_type = kwargs.get('access_type') or IMPERSONATION
+        self.access_type = (kwargs.get('access_type', IMPERSONATION) or IMPERSONATION).lower()
         self.max_fetch = min(MAX_INCIDENTS_PER_FETCH, int(max_fetch))
         self.last_run_ids_queue_size = 500
         self.client_id = client_id

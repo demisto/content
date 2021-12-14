@@ -466,7 +466,7 @@ script:
       description: info about the landing page
       type: string
     description: Gets a landing page info
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   runonce: false
   subtype: python3
 tests:

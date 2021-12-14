@@ -3,18 +3,17 @@ commonfields:
   id: Azure Sentinel
   version: -1
 configuration:
-- display: Server URL
-  defaultvalue: https://management.azure.com
+- defaultvalue: https://management.azure.com
+  display: Server URL
   hidden: false
   name: server_url
-  required: false
+  required: true
   type: 0
 - display: Tenant ID
   name: tenant_id
   required: true
   type: 4
 - display: Client ID
-  displaypassword: Client Secret
   name: credentials
   required: true
   type: 9
@@ -145,11 +144,14 @@ script:
     - contextPath: AzureSentinel.Incident.Etag
       description: The Etag of the incident.
       type: String
+    - contextPath: AzureSentinel.Incident.IncidentUrl
+      description: The deep-link url to the incident in Azure portal.
+      type: String
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximum number of incidents to return. The default value is 50 and maximum
-        value is 200.
+      description: The maximum number of incidents to return. The default value is
+        50 and maximum value is 200.
       isArray: false
       name: limit
       required: false
@@ -444,7 +446,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The incident severity. Possible values: "High", "Medium", "Low", and  "Informational".'
+      description: 'The incident severity. Possible values: "High", "Medium", "Low",
+        and  "Informational".'
       isArray: false
       name: severity
       predefined:
@@ -468,7 +471,8 @@ script:
     - auto: PREDEFINED
       default: false
       description: 'The reason the incident was closed. Required when updating the
-        status to Closed. Possible values: "BenignPositive", "FalsePositive", "TruePositive", and "Undetermined".'
+        status to Closed. Possible values: "BenignPositive", "FalsePositive", "TruePositive",
+        and "Undetermined".'
       isArray: false
       name: classification
       predefined:
@@ -487,7 +491,9 @@ script:
     - auto: PREDEFINED
       default: false
       description: 'The classification reason the incident was closed with. Required
-        when updating the status to Closed and the classification is determined. Possible values: "InaccurateData", "IncorrectAlertLogic", "SuspiciousActivity", and "SuspiciousButExpected".'
+        when updating the status to Closed and the classification is determined. Possible
+        values: "InaccurateData", "IncorrectAlertLogic", "SuspiciousActivity", and
+        "SuspiciousButExpected".'
       isArray: false
       name: classification_reason
       predefined:
@@ -681,6 +687,23 @@ script:
     - contextPath: AzureSentinel.IncidentComment.CreatedTimeUTC
       description: The date and time that the incident comment was created.
       type: Date
+  - arguments:
+    - default: false
+      description: The incident ID.
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    - default: false
+      description: The comment ID.
+      isArray: false
+      name: comment_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Deletes a comment from incident in Azure Sentinel.
+    execution: false
+    name: azure-sentinel-incident-delete-comment
   - arguments:
     - default: false
       description: The incident ID.
@@ -914,7 +937,7 @@ script:
     - contextPath: AzureSentinel.WatchlistItem.ItemsKeyValue
       description: Key-value pairs for a watchlist item.
       type: Unknown
-  dockerimage: demisto/crypto:1.0.0.24037
+  dockerimage: demisto/crypto:1.0.0.24380
   feed: false
   isfetch: true
   longRunning: false
@@ -925,5 +948,6 @@ script:
   type: python
 tests:
 - TestAzureSentinelPlaybookV2
-- No test - Manual test playbook-TestAzureSentinelPlaybook is available in NonCircleTests folder
+- No test - Manual test playbook-TestAzureSentinelPlaybook is available in NonCircleTests
+  folder
 fromversion: 5.0.0

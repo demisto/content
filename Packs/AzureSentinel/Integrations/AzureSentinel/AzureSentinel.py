@@ -26,7 +26,7 @@ XSOAR_USER_AGENT = 'SentinelPartner-PaloAltoNetworks-CortexXsoar/1.0.0'
 AUTHORIZATION_ERROR_MSG = 'There was a problem in retrieving an updated access token.\n'\
                           'The response from the server did not contain the expected content.'
 
-INCIDENT_HEADERS = ['ID', 'IncidentNumber', 'Title', 'Description', 'Severity', 'Status', 'AssigneeName',
+INCIDENT_HEADERS = ['ID', 'IncidentNumber', 'Title', 'Description', 'Severity', 'Status', 'IncidentUrl', 'AssigneeName',
                     'AssigneeEmail', 'Label', 'FirstActivityTimeUTC', 'LastActivityTimeUTC', 'LastModifiedTimeUTC',
                     'CreatedTimeUTC', 'AlertsCount', 'BookmarksCount', 'CommentsCount', 'AlertProductNames',
                     'Tactics', 'FirstActivityTimeGenerated', 'LastActivityTimeGenerated']
@@ -110,6 +110,8 @@ class AzureSentinelClient:
         if res.content:
             return res.json()
 
+        return res
+
 
 ''' INTEGRATION HELPER METHODS '''
 
@@ -144,6 +146,7 @@ def incident_data_to_xsoar_format(inc_data):
     formatted_data = {
         'ID': inc_data.get('name'),
         'IncidentNumber': properties.get('incidentNumber'),
+        'IncidentUrl': properties.get('incidentUrl'),
         'Title': properties.get('title'),
         'Description': properties.get('description'),
         'Severity': properties.get('severity'),
@@ -403,7 +406,7 @@ def get_incident_by_id_command(client, args):
 
     result = client.http_request('GET', url_suffix)
     incident = incident_data_to_xsoar_format(result)
-    readable_output = tableToMarkdown(f'Incident {inc_id} details', incident,
+    readable_output = tableToMarkdown(f'Incident {inc_id} details', incident, url_keys=['IncidentUrl'],
                                       headers=INCIDENT_HEADERS,
                                       headerTransform=pascalToSpace,
                                       removeNull=True)
@@ -722,6 +725,21 @@ def incident_add_comment_command(client, args):
     )
 
 
+def incident_delete_comment_command(client, args):
+
+    inc_id = args.get('incident_id')
+    comment_id = args.get('comment_id')
+    url_suffix = f'incidents/{inc_id}/comments/{comment_id}'
+
+    res = client.http_request('DELETE', url_suffix)
+    if isinstance(res, requests.Response) and res.status_code == 204:
+        readable_output = f'Comment {comment_id} does not exist.'
+    else:
+        readable_output = f'Comment {comment_id} was deleted successfully.'
+
+    return CommandResults(readable_output=readable_output)
+
+
 def list_incident_entities_command(client, args):
     """
     Get a list of incident's entities.
@@ -872,7 +890,7 @@ def main():
     LOG(f'Command being called is {demisto.command()}')
     try:
         client = AzureSentinelClient(
-            server_url=params.get('server_url', DEFAULT_AZURE_SERVER_URL),
+            server_url=params.get('server_url') or DEFAULT_AZURE_SERVER_URL,
             tenant_id=params.get('tenant_id', ''),
             client_id=params.get('credentials', {}).get('identifier'),
             client_secret=params.get('credentials', {}).get('password'),
@@ -890,6 +908,7 @@ def main():
             'azure-sentinel-delete-incident': delete_incident_command,
             'azure-sentinel-list-incident-comments': list_incident_comments_command,
             'azure-sentinel-incident-add-comment': incident_add_comment_command,
+            'azure-sentinel-incident-delete-comment': incident_delete_comment_command,
             'azure-sentinel-list-incident-relations': list_incident_relations_command,
             'azure-sentinel-list-incident-entities': list_incident_entities_command,
             'azure-sentinel-list-incident-alerts': list_incident_alerts_command,
