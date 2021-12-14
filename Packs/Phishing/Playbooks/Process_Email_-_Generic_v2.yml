@@ -1,6 +1,6 @@
-id: Process Email - Generic v2_test
+id: Process Email - Generic v2
 version: -1
-name: Process Email - Generic v2_test
+name: Process Email - Generic v2
 description: |
 This playbook adds email details to the relevant context entities and handles original email attachments.
 
