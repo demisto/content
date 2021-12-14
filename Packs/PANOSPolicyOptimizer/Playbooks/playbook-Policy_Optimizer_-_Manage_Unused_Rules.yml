@@ -236,11 +236,12 @@ tasks:
       '#none#':
       - "9"
       - "10"
+      - "28"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1360,
+          "x": 1570,
           "y": 810
         }
       }
@@ -253,24 +254,22 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 805eb63e-31b2-43c3-8912-fb9ea0e3cc87
-    type: regular
+    taskid: b985b89f-ba1c-4b8d-842c-8c1f65feea63
+    type: collection
     task:
-      id: 805eb63e-31b2-43c3-8912-fb9ea0e3cc87
+      id: b985b89f-ba1c-4b8d-842c-8c1f65feea63
       version: -1
       name: Send mail
       description: Sends an email using Gmail.
-      script: '|||send-mail'
-      type: regular
-      iscommand: true
+      type: collection
+      iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "12"
     scriptarguments:
       body:
-        simple: "PAN-OS Policy Optimizer has discovered unused rules in your environment.\
-          \ \nView them here ->"
+        simple: "PAN-OS Policy Optimizer has discovered unused rules in your environment."
       subject:
         simple: PAN-OS Policy Optimizer has discovered unused rules
       to:
@@ -287,6 +286,47 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    message:
+      to:
+        complex:
+          root: inputs.email_address
+      subject:
+        simple: PAN-OS Policy Optimizer has discovered unused rules in your environment.
+      body: null
+      methods:
+      - email
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Please choose the action for the playbook to continue
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: Delete rule
+        - simple: Manual action
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Unused Rules
+      description: PAN-OS Policy Optimizer has discovered unused rules in your environment.
+        Use the playbook to to see the rules' information and have the option to remove
+        them from your policy.
+      sender: ""
+      expired: false
+      totalanswers: 0
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -339,8 +379,7 @@ tasks:
     task:
       id: 87b68c73-1d25-4d7c-81d5-c3e5bff91d09
       version: -1
-      name: Is there a slack user?
-      description: "Is there a slack user input configured?"
+      name: Slack user?
       type: condition
       iscommand: false
       brand: ""
@@ -348,7 +387,7 @@ tasks:
       '#default#':
       - "12"
       "yes":
-      - "11"
+      - "27"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -362,45 +401,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1580,
+          "x": 1570,
           "y": 950
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "11":
-    id: "11"
-    taskid: c6880a43-0274-4a7a-81cb-d6b3623c44f2
-    type: regular
-    task:
-      id: c6880a43-0274-4a7a-81cb-d6b3623c44f2
-      version: -1
-      name: Send slack message
-      description: Sends a message to a user, group, or channel.
-      script: '|||send-notification'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "12"
-    scriptarguments:
-      message:
-        simple: 'PAN-OS Policy Optimizer has discovered unused rules in your environment. '
-      to:
-        complex:
-          root: inputs.slack_user
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1830,
-          "y": 1120
         }
       }
     note: false
@@ -442,10 +444,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: c13fff07-7013-4cb5-88f0-c5299cbb5b10
+    taskid: 62282a57-cb86-4336-8281-337551c12d45
     type: condition
     task:
-      id: c13fff07-7013-4cb5-88f0-c5299cbb5b10
+      id: 62282a57-cb86-4336-8281-337551c12d45
       version: -1
       name: Choose action to take
       description: "Choose an action for the playbook."
@@ -453,11 +455,26 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      Delete rules:
-      - "14"
-      Manual Remediation:
+      '#default#':
       - "15"
+      Delete rule:
+      - "14"
     separatecontext: false
+    conditions:
+    - label: Delete rule
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Unused Rules.Answers
+                accessor: "0"
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: delete rule
     view: |-
       {
         "position": {
@@ -906,12 +923,218 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 4e24957c-6ba5-4d53-8bfa-7289ed5d0747
+    type: collection
+    task:
+      id: 4e24957c-6ba5-4d53-8bfa-7289ed5d0747
+      version: -1
+      name: Send Slack message
+      description: Sends an email using Gmail.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      body:
+        simple: "PAN-OS Policy Optimizer has discovered unused rules in your environment."
+      subject:
+        simple: PAN-OS Policy Optimizer has discovered unused rules
+      to:
+        complex:
+          root: inputs.email_address
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1760,
+          "y": 1120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        complex:
+          root: inputs.email_address
+      subject:
+        simple: PAN-OS Policy Optimizer has discovered unused rules in your environment.
+      body:
+        simple: PAN-OS Policy Optimizer has discovered unused rules in your environment.
+      methods:
+      - SlackV2
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Please choose the action for the playbook to continue
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: Delete rule
+        - simple: Manual action
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Unused Rules
+      description: PAN-OS Policy Optimizer has discovered unused rules in your environment.
+        Use the playbook to to see the rules' information and have the option to remove
+        them from your policy.
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: a31f15dc-9733-4282-8649-0d44fbf58f92
+    type: condition
+    task:
+      id: a31f15dc-9733-4282-8649-0d44fbf58f92
+      version: -1
+      name: No communication input configured?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: inputs.slack_user
+            iscontext: true
+      - - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: inputs.email_address
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2130,
+          "y": 950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: f8a1f7c1-899d-4f5b-8cd6-5ad66a9ef65c
+    type: collection
+    task:
+      id: f8a1f7c1-899d-4f5b-8cd6-5ad66a9ef65c
+      version: -1
+      name: Ask by task only
+      description: Sends an email using Gmail.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      body:
+        simple: "PAN-OS Policy Optimizer has discovered unused rules in your environment."
+      subject:
+        simple: PAN-OS Policy Optimizer has discovered unused rules
+      to:
+        complex:
+          root: inputs.email_address
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2290,
+          "y": 1120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        complex:
+          root: inputs.email_address
+      subject:
+        simple: PAN-OS Policy Optimizer has discovered unused rules in your environment.
+      body:
+        simple: PAN-OS Policy Optimizer has discovered unused rules in your environment.
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Please choose the action for the playbook to continue
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: Delete rule
+        - simple: Manual action
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Unused Rules
+      description: PAN-OS Policy Optimizer has discovered unused rules in your environment.
+        Use the playbook to to see the rules' information and have the option to remove
+        them from your policy.
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
       "10_12_#default#": 0.44,
       "20_3_#default#": 0.22,
       "22_23_yes": 0.3,
+      "28_12_#default#": 0.17,
       "2_3_#default#": 0.16,
       "5_3_#default#": 0.18,
       "9_12_#default#": 0.41
@@ -919,7 +1142,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 3105,
-        "width": 2130,
+        "width": 2220,
         "x": 450,
         "y": 50
       }
@@ -929,7 +1152,7 @@ inputs:
 - key: slack_user
   value: {}
   required: false
-  description: Slack user to notify about port based rules.
+  description: Slack user to notify about unused rules.
   playbookInputQuery:
 - key: email_address
   value: {}

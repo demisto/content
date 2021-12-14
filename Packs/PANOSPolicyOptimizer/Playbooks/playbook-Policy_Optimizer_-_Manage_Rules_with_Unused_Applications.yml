@@ -232,11 +232,12 @@ tasks:
       '#none#':
       - "8"
       - "9"
+      - "30"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1190,
+          "x": 1390,
           "y": 820
         }
       }
@@ -304,7 +305,7 @@ tasks:
       '#default#':
       - "10"
       "yes":
-      - "12"
+      - "29"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -318,7 +319,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1420,
+          "x": 1390,
           "y": 960
         }
       }
@@ -343,7 +344,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "13"
+      - "18"
     separatecontext: false
     view: |-
       {
@@ -361,16 +362,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: c3f0aef8-9bb2-4c92-8632-9aaa619afb0f
-    type: regular
+    taskid: 1e0cedbc-1392-4933-8e5a-e609ba080139
+    type: collection
     task:
-      id: c3f0aef8-9bb2-4c92-8632-9aaa619afb0f
+      id: 1e0cedbc-1392-4933-8e5a-e609ba080139
       version: -1
       name: Send mail
       description: Sends an email using Gmail.
-      script: '|||send-mail'
-      type: regular
-      iscommand: true
+      type: collection
+      iscommand: false
       brand: ""
     nexttasks:
       '#none#':
@@ -378,7 +378,7 @@ tasks:
     scriptarguments:
       subject:
         simple: "PAN-OS Policy Optimizer has discovered rules with unused applications\
-          \ in your environment. \nView them here ->"
+          \ in your environment."
       to:
         complex:
           root: inputs.email_address
@@ -393,54 +393,61 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "12":
-    id: "12"
-    taskid: f8833a3e-f576-425f-8f7f-a1a8a56cb56d
-    type: regular
-    task:
-      id: f8833a3e-f576-425f-8f7f-a1a8a56cb56d
-      version: -1
-      name: Send slack message
-      description: Sends a message to a user, group, or channel.
-      script: '|||send-notification'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "10"
-    scriptarguments:
       message:
-        simple: 'PAN-OS Policy Optimizer has discovered rules with unused applications
-          in your environment. '
       to:
         complex:
-          root: inputs.slack_user
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1650,
-          "y": 1130
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
+          root: inputs.email_address
+      subject:
+        simple: PAN-OS Policy Optimizer has discovered rules with unused applications
+          in your environment.
+      body: null
+      methods:
+      - email
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Please choose the action for the playbook to continue
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: Edit rule
+        - simple: Delete rule
+        - simple: Manual action
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Rules with Unused Applications
+      description: PAN-OS Policy Optimizer has discovered rules with unused applications
+        in your environment. If you have application-based Security policy rules that
+        allow a large number of applications, you can remove unused applications (applications
+        never seen on the rules) from those rules to tighten them so that they only
+        allow applications actually seen in the rule’s traffic.
+      sender: ""
+      expired: false
+      totalanswers: 0
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: ac1a5f02-e7af-4edd-8525-1c0899b886a8
+    taskid: 0e9d7e5e-330e-44e5-8d9d-e142e0446c70
     type: condition
     task:
-      id: ac1a5f02-e7af-4edd-8525-1c0899b886a8
+      id: 0e9d7e5e-330e-44e5-8d9d-e142e0446c70
       version: -1
       name: Choose action to take
       description: "Choose an action for the playbook."
@@ -451,15 +458,44 @@ tasks:
       '#default#':
       - "16"
       Delete rule:
-      - "17"
+      - "28"
       Edit rule:
-      - "18"
+      - "27"
     separatecontext: false
+    conditions:
+    - label: Edit rule
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Rules with Unused Applications.Answers
+                accessor: "0"
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: edit rule
+    - label: Delete rule
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Rules with Unused Applications.Answers
+                accessor: "0"
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: delete rule
     view: |-
       {
         "position": {
-          "x": 1190,
-          "y": 1430
+          "x": 1560,
+          "y": 1600
         }
       }
     note: false
@@ -535,45 +571,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "17":
-    id: "17"
-    taskid: 10f17e44-d325-468d-8223-11c28ae09587
-    type: condition
-    task:
-      id: 10f17e44-d325-468d-8223-11c28ae09587
-      version: -1
-      name: Is PAN-OS integration available?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
-      scriptName: IsIntegrationAvailable
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "16"
-      "yes":
-      - "28"
-    scriptarguments:
-      brandname:
-        simple: Panorama
-    results:
-    - brandInstances
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1260,
-          "y": 1600
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "18":
     id: "18"
     taskid: 9b1c4aec-8a27-4229-8516-4215627511a8
@@ -592,7 +589,7 @@ tasks:
       '#default#':
       - "16"
       "yes":
-      - "27"
+      - "13"
     scriptarguments:
       brandname:
         simple: Panorama
@@ -602,8 +599,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1700,
-          "y": 1600
+          "x": 1190,
+          "y": 1430
         }
       }
     note: false
@@ -937,12 +934,224 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: f1706759-07e9-4a87-8437-e7035349cdb4
+    type: collection
+    task:
+      id: f1706759-07e9-4a87-8437-e7035349cdb4
+      version: -1
+      name: Send Slack message
+      description: Sends an email using Gmail.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      subject:
+        simple: "PAN-OS Policy Optimizer has discovered rules with unused applications
+          in your environment."
+      to:
+        complex:
+          root: inputs.email_address
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1600,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        complex:
+          root: inputs.slack_user
+      subject:
+        simple: PAN-OS Policy Optimizer has discovered rules with unused applications
+          in your environment.
+      body:
+        simple: PAN-OS Policy Optimizer has discovered rules with unused applications
+          in your environment.
+      methods:
+      - SlackV2
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Please choose the action for the playbook to continue
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: Edit rule
+        - simple: Delete rule
+        - simple: Manual action
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Rules with Unused Applications
+      description: PAN-OS Policy Optimizer has discovered rules with unused applications
+        in your environment. If you have application-based Security policy rules that
+        allow a large number of applications, you can remove unused applications (applications
+        never seen on the rules) from those rules to tighten them so that they only
+        allow applications actually seen in the rule’s traffic.
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 7a6c3b11-3c90-4062-81d8-47284a147f55
+    type: condition
+    task:
+      id: 7a6c3b11-3c90-4062-81d8-47284a147f55
+      version: -1
+      name: No communication input configured?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: inputs.slack_user
+            iscontext: true
+      - - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: inputs.email_address
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2000,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: e1b4f120-f9e0-4cbb-85d1-4d3795746b1f
+    type: collection
+    task:
+      id: e1b4f120-f9e0-4cbb-85d1-4d3795746b1f
+      version: -1
+      name: Ask by task only
+      description: Sends an email using Gmail.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      subject:
+        simple: "PAN-OS Policy Optimizer has discovered rules with unused applications
+          in your environment."
+      to:
+        complex:
+          root: inputs.email_address
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2180,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        complex:
+          root: inputs.email_address
+      subject:
+        simple: PAN-OS Policy Optimizer has discovered rules with unused applications
+          in your environment.
+      body:
+        simple: PAN-OS Policy Optimizer has discovered rules with unused applications
+          in your environment.
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Please choose the action for the playbook to continue
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: Edit rule
+        - simple: Delete rule
+        - simple: Manual action
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Rules with Unused Applications
+      description: PAN-OS Policy Optimizer has discovered rules with unused applications
+        in your environment. If you have application-based Security policy rules that
+        allow a large number of applications, you can remove unused applications (applications
+        never seen on the rules) from those rules to tighten them so that they only
+        allow applications actually seen in the rule’s traffic.
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
-      "13_16_#default#": 0.41,
-      "17_16_#default#": 0.25,
-      "18_16_#default#": 0.29,
+      "13_16_#default#": 0.44,
+      "18_16_#default#": 0.2,
       "19_2_#default#": 0.16,
       "1_2_#default#": 0.35,
       "23_24_yes": 0.4,
@@ -954,7 +1163,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 2995,
-        "width": 1910,
+        "width": 2190,
         "x": 370,
         "y": 20
       }
