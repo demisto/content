@@ -5,16 +5,12 @@ from CommonServerPython import *
 
 
 def set_indicator_hint(indicator_id):
-    res = demisto.executeCommand('setIndicator', {
+    execute_command('setIndicator', {
         'id': indicator_id,
         'customFields': {
             'userpswdhint': ' ',
         },
     })
-
-    if is_error(res):
-        demisto.error(f'oh no!\n{res}\n\n')
-
 
 # MAIN FUNCTION #
 
