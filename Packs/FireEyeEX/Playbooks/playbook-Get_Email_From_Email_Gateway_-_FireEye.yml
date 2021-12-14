@@ -1,4 +1,4 @@
-description: Retrieve a specified eml/msg file directly from FireEye Email Security
+description: This playbook retrieves a specified EML/MSG file directly from FireEye Email Security
   or Central Management.
 id: Get Email From Email Gateway - FireEye
 inputs:
@@ -16,13 +16,13 @@ inputs:
 name: Get Email From Email Gateway - FireEye
 outputs:
 - contextPath: File
-  description: The MSG/EML File
+  description: The MSG/EML file.
   type: unknown
 - contextPath: FireEyeCM.QuarantinedEmail
-  description: The Queue Email
+  description: The queue email.
   type: unknown
 - contextPath: FireEyeEX.QuarantinedEmail
-  description: The Queue Email
+  description: The queue email.
   type: unknown
 starttaskid: "0"
 tasks:
@@ -221,7 +221,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Download quarantined emails.
+      description: Downloads quarantined emails.
       id: 1d04c5fd-3274-4dc3-8ba7-96b3e6e9e14d
       iscommand: true
       name: Download Quarantined Email
@@ -446,7 +446,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Download quarantined emails.
+      description: Downloads quarantined emails.
       id: 6e863d78-f48b-4a6a-8560-6bf0895c4e4e
       iscommand: true
       name: Download Quarantined Email
@@ -489,7 +489,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Checks if the eml file retrieved successfully.
+      description: Checks if the EML file was successfully retrieved.
       id: 5eba4443-4bde-48a5-8b25-4f20da843ed3
       iscommand: false
       name: Does the email retrieved successfully?
@@ -531,7 +531,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Checks if the eml file retrieved successfully.
+      description: Checks if the EML file was successfully retrieved.
       id: 0c03f95f-5d9a-4881-8b60-c3e9d7c5d6cb
       iscommand: false
       name: Does the email retrieved successfully?
