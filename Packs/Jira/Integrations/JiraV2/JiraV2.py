@@ -297,6 +297,10 @@ def generate_md_context_get_issue(data):
         context_obj['Key'] = md_obj['key'] = demisto.get(element, 'key')
         context_obj['Summary'] = md_obj['summary'] = demisto.get(element, 'fields.summary')
         context_obj['Status'] = md_obj['status'] = demisto.get(element, 'fields.status.name')
+        context_obj['Priority'] = md_obj['priority'] = demisto.get(element, 'fields.priority.name')
+        context_obj['ProjectName'] = md_obj['project'] = demisto.get(element, 'fields.project.name')
+        context_obj['DueDate'] = md_obj['duedate'] = demisto.get(element, 'fields.duedate')
+        context_obj['Created'] = md_obj['created'] = demisto.get(element, 'fields.created')
 
         assignee = demisto.get(element, 'fields.assignee')
         context_obj['Assignee'] = md_obj['assignee'] = "{name}({email})".format(
@@ -316,15 +320,16 @@ def generate_md_context_get_issue(data):
             email=reporter.get('emailAddress', 'null')
         ) if reporter else 'null(null)'
 
+        context_obj.update({
+            'LastSeen': demisto.get(element, 'fields.lastViewed'),
+            'LastUpdate': demisto.get(element, 'fields.updated'),
+        })
+
         md_obj.update({
             'issueType': demisto.get(element, 'fields.issuetype.description'),
-            'priority': demisto.get(element, 'fields.priority.name'),
-            'project': demisto.get(element, 'fields.project.name'),
             'labels': demisto.get(element, 'fields.labels'),
             'description': demisto.get(element, 'fields.description'),
-            'duedate': demisto.get(element, 'fields.duedate'),
             'ticket_link': demisto.get(element, 'self'),
-            'created': demisto.get(element, 'fields.created'),
         })
         attachments = demisto.get(element, 'fields.attachment')
         if isinstance(attachments, list):
