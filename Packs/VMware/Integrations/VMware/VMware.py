@@ -1,4 +1,3 @@
-from typing import *  # noqa: F401
 # pylint: disable=no-member
 # pylint: disable=no-name-in-module
 import ssl
@@ -29,8 +28,8 @@ def login(params):
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
     # Connect to a vCenter Server using username and password
-    # vsphere_client = create_vsphere_client(server=full_url, username=user_name, password=passsword, session=session)
-    vsphere_client = None
+    vsphere_client = create_vsphere_client(server=full_url, username=user_name, password=passsword, session=session)
+    # vsphere_client = None
     try:
         si = SmartConnect(host=url,
                           user=user_name,
@@ -408,34 +407,42 @@ def get_snapshots(snapshots, snapname):
 
 
 def get_events(si, args):
-    vm = get_vm(si, args.get('uuid'))
+    vm = get_vm(si, args.get('vm-uuid'))
     hr = []
     content = si.RetrieveServiceContent()  # type: ignore
     eventManager = content.eventManager
+
     time = vim.event.EventFilterSpec.ByTime()
     time.beginTime = arg_to_datetime(args.get('start-date'))
     time.endTime = arg_to_datetime(args.get('end-date'))
+    by_user_name = vim.event.EventFilterSpec.ByUsername()
+    by_user_name.userList = args.get('user', '').split(',') if args.get('user') else None
     filter = vim.event.EventFilterSpec.ByEntity(entity=vm, recursion="self")  # type: ignore
-    filterSpec = vim.event.EventFilterSpec()
     ids = args.get('event-type').split(',')
+
+    filterSpec = vim.event.EventFilterSpec()
     filterSpec.eventTypeId = ids  # type: ignore
     filterSpec.entity = filter  # type: ignore
     filterSpec.time = time
-    filterSpec.userName = args.get('user')
-    filterSpec.maxCount = arg_to_number(args.get('limit', 50))
+    filterSpec.userName = by_user_name
+    filterSpec.maxCount = arg_to_number(args.get('limit'))
     eventRes = eventManager.QueryEvents(filterSpec)
     for e in eventRes:
         hr.append({
+            'id': e.key,
             'Event': e.fullFormattedMessage,
-            'Created Time': e.createdTime.strftime("%Y-%m-%d %H:%M:%S")
+            'Created Time': e.createdTime.strftime("%Y-%m-%d %H:%M:%S"),
+            'User Name': e.userName,
         })
+    ec = {'VMWareEvenet(val.UUID && val.UUID === obj.UUID)': hr}
     return {
         'ContentsFormat': formats['json'],
         'Type': entryTypes['note'],
         'Contents': hr,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('VM ' + vm.summary.config.name + ' Events',
-                                         hr) if hr else 'No result were found'
+                                         hr) if hr else 'No result were found',
+        'EntryContext': ec
     }
 
 

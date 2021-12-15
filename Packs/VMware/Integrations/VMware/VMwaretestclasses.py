@@ -237,3 +237,10 @@ class FileInfo:
 
 class ResourceAllocationInfo:
     limit = None
+
+class FilterSpec:
+    eventTypeId = None
+    entity = None
+    time = None
+    userName = None
+    maxCount = None

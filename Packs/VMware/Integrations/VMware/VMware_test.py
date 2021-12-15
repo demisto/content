@@ -6,7 +6,7 @@ import VMware
 from collections import namedtuple
 from pyVmomi import vim
 from VMwaretestclasses import Si, VsphereClient, VM, VirtualMachineRelocateSpec, Task, Folder, CloneSpec, Summary, \
-    Content, Child, ViewManager, Snapshot, Host, ConfigSpec, FileInfo, ResourceAllocationInfo, EventManager
+    Content, Child, ViewManager, Snapshot, Host, ConfigSpec, FileInfo, ResourceAllocationInfo, EventManager, FilterSpec
 
 # sys.modules['vmware.vapi.vsphere.client'] = MagicMock()
 # sys.modules['com.vmware.vapi.std_client'] = MagicMock()
@@ -67,6 +67,9 @@ PARAMS_GET_SNAPSHOTS = [
 def create_children():
     return [Child(Summary(args.get('ip'), args.get('hostname'), args.get('name'), args.get('uuid'))) for args in
             PARAMS_GET_VMS]
+
+def create_events():
+
 
 
 @pytest.mark.parametrize('args, params, res', PARAMS_GET_VM_FILTERS)
@@ -314,12 +317,14 @@ def test_get_snapshots(monkeypatch, snapshots, snapname, res):
         assert len(res) == 0
 
 
-def test_get_events(monkeypatch):
+def test_get_events(monkeypatch, events):
     si = Si()
     monkeypatch.setattr(si, 'RetrieveServiceContent', lambda: Content())
     monkeypatch.setattr(VMware, 'get_vm', lambda v_client, uuid: VM('powerOn'))
-    monkeypatch.setattr(EventManager, 'QueryEvents', lambda: Content())
-    monkeypatch.setattr(vim.event.EventFilterSpec, 'QueryEvents', lambda: Content())
+    monkeypatch.setattr(vim.event.EventFilterSpec, 'ByEntity', lambda entity, recursion: 'test_entity')
+    monkeypatch.setattr(vim.event, 'EventFilterSpec', lambda entity, recursion: FilterSpec())
+    monkeypatch.setattr(EventManager, 'QueryEvents', lambda filter_spec: events)
+
 
     monkeypatch.setattr(ViewManager, 'CreateContainerView',
                         lambda this, container, view_type, recursive: ViewManager(create_children()))
