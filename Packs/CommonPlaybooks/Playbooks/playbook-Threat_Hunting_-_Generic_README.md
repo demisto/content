@@ -27,12 +27,12 @@ This playbook does not use any commands.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| MD5 | The MD5 hash file or a comma-separated list of hashes to search. |  | Optional |
-| SHA256 | The SHA256 hash file or a comma-separated list of hashes to search. |  | Optional |
+| MD5 | The MD5 hash file or an array of hashes to search. |  | Optional |
+| SHA256 | The SHA256 hash file or an array of hashes to search. |  | Optional |
 | Hostname | Hostname of the machine on which the file is located. |  | Optional |
-| SHA1 | The SHA1 hash file or a comma-separated list of hashes to search. |  | Optional |
-| IPAddress | The source or destination IP address to search. Can be a single address or a comma-separated list of addresses |  | Optional |
-| URLDomain | Domain or URL to search. Can be a single domain or URL or a comma-separated list of
+| SHA1 | The SHA1 hash file or an array of hashes to search. |  | Optional |
+| IPAddress | The source or destination IP address to search. Can be a single address or an array of addresses |  | Optional |
+| URLDomain | Domain or URL to search. Can be a single domain or URL or an array of
     domains or URLs to search. By default, the LIKE clause is used.  | | Optional |
 | InternalRange | A comma-separated list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). If a list is not provided, the playbook uses the default list provided in the IsIPInRanges script \(the known IPv4 private address ranges\). |  | Optional |
 | InternalDomainName | The organization's internal domain name. This is provided for the script IsInternalHostName that checks if the detected hostnames are internal or external, if the hosts contain the internal domains suffix. For example, demisto.com. If there is more than one domain, use the \| character to separate values such as \(demisto.com\|test.com\) |  | Optional |
@@ -51,7 +51,7 @@ This playbook does not use any commands.
 | Splunk.DetectedExternalIPs | External IP addresses detected by your search. | string |
 | Splunk.DetectedInternalHosts | Internal hostnames detected based on the fields in your search. | string |
 | Splunk.DetectedExternalHosts | External hostnames detected based on the fields in your search. | string |
-| PANWHunting.DetectedUsers | User or a comma-separated list of users detected during hunting. | string |
+| PANWHunting.DetectedUsers | User or an array of users detected during hunting. | string |
 | PANWHunting.DetectedInternalIPs | Internal IP addresses detected based on fields and inputs in your search. | string |
 | PANWHunting.DetectedExternalIPs | External IP addresses detected based on fields and inputs in your search. | string |
 | PANWHunting.DetectedInternalHosts | Internal hostnames detected based on fields and inputs in your search. | string |
