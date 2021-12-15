@@ -66,10 +66,10 @@ tasks:
       version: -1
       name: Isolate hostname
       description: Carbon Black Response - isolate the host
-      script: carbonblack|||cb-quarantine-device
+      script: carbonblack-v2|||cb-quarantine-device
       type: regular
       iscommand: true
-      brand: carbonblack
+      brand: carbonblack-v2
     nexttasks:
       '#none#':
       - "6"
