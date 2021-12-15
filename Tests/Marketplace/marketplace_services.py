@@ -3060,32 +3060,3 @@ def underscore_file_name_to_dotted_version(file_name: str) -> str:
         (str): Dotted version of file name
     """
     return os.path.splitext(file_name)[0].replace('_', '.')
-
-
-def zip_pack(pack, signature_key):
-    task_status = pack.load_user_metadata()
-    if not task_status:
-        pack.status = PackStatus.FAILED_LOADING_USER_METADATA.value
-        pack.cleanup()
-        return False
-    task_status = pack.collect_content_items()
-    if not task_status:
-        pack.status = PackStatus.FAILED_COLLECT_ITEMS.name
-        pack.cleanup()
-        return False
-    task_status = pack.remove_unwanted_files(True)
-    if not task_status:
-        pack.status = PackStatus.FAILED_REMOVING_PACK_SKIPPED_FOLDERS
-        pack.cleanup()
-        return False
-    task_status = pack.sign_pack(signature_key)
-    if not task_status:
-        pack.status = PackStatus.FAILED_SIGNING_PACKS.name
-        pack.cleanup()
-        return False
-    task_status, _ = pack.zip_pack()
-    if not task_status:
-        pack.status = PackStatus.FAILED_ZIPPING_PACK_ARTIFACTS.name
-        pack.cleanup()
-        return False
-    return True
