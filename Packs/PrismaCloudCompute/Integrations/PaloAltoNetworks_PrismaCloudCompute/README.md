@@ -495,12 +495,12 @@ Get information about the containers and their profile events. This command supp
 |---|---|---|---|---|---|
 | container123 | twistlock/private:defender_21_04_439 | Red Hat Enterprise Linux 8.4 (Ootpa) | active | September 02, 2020 11:05:08 AM | /usr/local/bin/defender |
 ### Processes
-|Type|Path|DetectionTime|Md5|
+|Type|Path|DetectionTime|
 |---|---|---|---|
-| static | /usr/bin/mongodump | January 01, 2021 00:00:00 AM |  |
-| static | /usr/bin/mongorestore | January 01, 2021 00:00:00 AM |  |
-| behavioral | /usr/local/bin/fsmon | September 02, 2021 11:05:08 AM |  |
-| behavioral | /usr/lib/apt/methods/gpgv | November 24, 2021 15:12:28 PM |  |
+| static | /usr/bin/mongodump | January 01, 2021 00:00:00 AM |
+| static | /usr/bin/mongorestore | January 01, 2021 00:00:00 AM |
+| behavioral | /usr/local/bin/fsmon | September 02, 2021 11:05:08 AM |
+| behavioral | /usr/lib/apt/methods/gpgv | November 24, 2021 15:12:28 PM |
 
 #### Human Readable Output - Multiple Containers
 ### Container Description
@@ -556,7 +556,7 @@ Get the hosts where a specific container is running.
 ### Hosts
 |HostsIDs|
 |---|
-| ip-172-31-5-163.eu-west-1.compute.internal,<br>ip-172-31-23-249.eu-west-1.compute.internal |
+| host1,<br>host2 |
 
 ### prisma-cloud-compute-profile-container-forensic-list
 ***
