@@ -130,9 +130,9 @@ def build_incident_fields_query(incident_data):
     for key, value in incident_data.items():
         str_value_list = prepare_value_to_query_with(value)
         for str_value in str_value_list:
-            query_template = '{}="{}"' if isinstance(value, str) else '{}:="{}"'
+            query_template = '{}="{}"' if isinstance(value, unicode) else '{}:="{}"'
             similar_key = query_template.format(key, str_value)
-            similar_keys_list.append(str(similar_key).decode('utf-8')) if isinstance(value, str) else \
+            similar_keys_list.append(str(similar_key).decode('utf-8')) if isinstance(value, unicode) else \
                 similar_keys_list.append(similar_key)
 
     return similar_keys_list
@@ -143,7 +143,7 @@ def get_incidents_by_keys(similar_incident_keys, time_field, incident_time, inci
     condition_string = ' %s ' % applied_condition.lower()
 
     incident_fields_query = build_incident_fields_query(similar_incident_keys)
-    # demisto.log("the  query is: %s" % incident_fields_query)
+    demisto.log("the  query is: %s" % incident_fields_query)
 
     similar_keys_query = condition_string.join(incident_fields_query)
     incident_time = parse_datetime(incident_time)
