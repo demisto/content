@@ -252,7 +252,7 @@ def test_hash_command():
         'FILE': {'SHA1': '0a30b5b24196e503c4a21dcfd1447b28a39af314'},
         'DBOTSCORE': {'Indicator': 'bf0fea133818387cca7eaef5a52c0aed', 'Type': 'file', 'Vendor': 'ACTI',
                       'Score': 2, 'Reliability': 'B - Usually reliable'}}
-    hash_to_check = {'hash': '0a30b5b24196e503c4a21dcfd1447b28a39af314'}
+    hash_to_check = {'file': '0a30b5b24196e503c4a21dcfd1447b28a39af314'}
     with requests_mock.Mocker() as m:
         m.get(url, status_code=status_code, json=json_data)
         m.get(doc_url, status_code=status_code, json=intel_json_data)
@@ -293,7 +293,7 @@ def test_hash_command_when_api_key_not_authorized_for_document_search():
         'DBOTSCORE': {'Indicator': 'bf0fea133818387cca7eaef5a52c0aed', 'Type': 'file', 'Vendor': 'ACTI',
                       'Score': 2, 'Reliability': 'B - Usually reliable'}}
 
-    hash_to_check = {'hash': '0a30b5b24196e503c4a21dcfd1447b28a39af314'}
+    hash_to_check = {'file': '0a30b5b24196e503c4a21dcfd1447b28a39af314'}
     with requests_mock.Mocker() as m:
         m.get(url, status_code=status_code, json=json_data)
         m.get(doc_url, status_code=error_status_code, json=doc_search_exception_response)
@@ -328,7 +328,7 @@ def test_hash_not_found():
     status_code = 200
     json_data = {'total_size': 0, 'page': 1, 'page_size': 1, 'more': False}
     expected_output = "Invalid hash value: 5857a7dd621c4c3ebb0b5"
-    hash_to_check = {'hash': '5857a7dd621c4c3ebb0b5'}
+    hash_to_check = {'file': '5857a7dd621c4c3ebb0b5'}
     with requests_mock.Mocker() as m:
         m.get(url, status_code=status_code, json=json_data)
         client = Client(API_URL, 'api_token', True, False, ENDPOINTS['threatindicator'])
