@@ -4,7 +4,7 @@ Note: You must have the necessary permissions in your email service to execute a
 To retrieve the email files directly from the email service providers, use one of the provided inputs (Agari Phishing Defense customers should also use the following):
 - EWS: eDiscovery
 - Gmail: Google Apps Domain-Wide Delegation of Authority
-- MSGraph: As described in the <a href="https://docs.microsoft.com/en-us/graph/api/message-get">message-get API</a> and the <a href="https://docs.microsoft.com/en-us/graph/api/user-list-messages">user-list-messages API</a>.
+- MSGraph: As described in the [message-get API](https://docs.microsoft.com/en-us/graph/api/message-get) and the [user-list-messages API](https://docs.microsoft.com/en-us/graph/api/user-list-messages).
 - EmailSecurityGateway retrieves EML files from:
     * FireEye EX
     * FireEye CM
