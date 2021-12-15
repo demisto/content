@@ -693,20 +693,3 @@ def test_update_zone_command(mocker, args):
     mocker.patch.object(client, 'update_zone', return_value=my_okta_zone)
     readable, outputs, _ = update_zone_command(client, args)
     assert 'NewZoneName' == outputs.get('Okta.Zone(val.id && val.id === obj.id)').get('name', '')
-
-
-# #
-# #
-
-
-# def test_say_hello_over_http(requests_mock):
-#     mock_response = {'result': 'Hello Dbot'}
-#     requests_mock.get('https://test.com/hello/Dbot', json=mock_response)
-# #
-#     client = Client(base_url='https://test.com', verify=False, auth=('test', 'test'))
-#     args = {
-#         'name': 'Dbot'
-#     }
-#     _, outputs, _ = say_hello_over_http_command(client, args)
-#
-#     assert outputs['hello'] == 'Hello Dbot'
