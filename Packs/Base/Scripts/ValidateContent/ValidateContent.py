@@ -20,7 +20,7 @@ from demisto_sdk.commands.init.contribution_converter import (
     AUTOMATION, INTEGRATION, INTEGRATIONS_DIR, SCRIPT, SCRIPTS_DIR,
     ContributionConverter, get_child_directories, get_child_files)
 from demisto_sdk.commands.lint.lint_manager import LintManager
-from demisto_sdk.commands.split_yml.extractor import Extractor
+from demisto_sdk.commands.split.ymlsplitter import YmlSplitter
 from demisto_sdk.commands.validate.validate_manager import ValidateManager
 from ruamel.yaml import YAML
 
@@ -46,7 +46,7 @@ def _create_pack_base_files(self):
     fp.close()
 
 
-def get_extracted_code_filepath(extractor: Extractor) -> str:
+def get_extracted_code_filepath(extractor: YmlSplitter) -> str:
     output_path = extractor.get_output_path()
     base_name = os.path.basename(output_path) if not extractor.base_name else extractor.base_name
     code_file = f'{output_path}/{base_name}'
@@ -68,7 +68,7 @@ def content_item_to_package_format(
             file_type = find_type(content_item_file_path)
             file_type = file_type.value if file_type else file_type
             try:
-                extractor = Extractor(
+                extractor = YmlSplitter(
                     input=content_item_file_path, file_type=file_type, output=content_item_dir, no_logging=True,
                     no_pipenv=True, no_basic_fmt=True)
                 extractor.extract_to_package_format()
@@ -182,7 +182,7 @@ def run_validate(file_path: str, json_output_file: str) -> None:
         print_ignored_files=False, skip_conf_json=True, validate_id_set=False, file_path=file_path,
         validate_all=False, is_external_repo=False, skip_pack_rn_validation=False, print_ignored_errors=False,
         silence_init_prints=False, no_docker_checks=False, skip_dependencies=False, id_set_path=None,
-        staged=False, json_file_path=json_output_file, skip_schema_check=True, create_id_set=False)
+        staged=False, json_file_path=json_output_file, skip_schema_check=True, create_id_set=False, check_is_unskipped=False)
     v_manager.run_validation()
 
 
@@ -195,8 +195,8 @@ def run_lint(file_path: str, json_output_file: str) -> None:
     )
     lint_manager.run_dev_packages(
         parallel=1, no_flake8=False, no_xsoar_linter=False, no_bandit=False, no_mypy=False,
-        no_vulture=False, keep_container=False, no_pylint=True, no_test=True, no_pwsh_analyze=True,
-        no_pwsh_test=True, test_xml='', failure_report=lint_log_dir
+        no_pylint=True, no_coverage=True, coverage_report='', no_vulture=False, no_test=True, no_pwsh_analyze=True,
+        no_pwsh_test=True, keep_container=False, test_xml='', failure_report=lint_log_dir, docker_timeout=60,
     )
 
 
@@ -240,7 +240,7 @@ def prepare_single_content_item_for_validation(filename: str, data: bytes, tmp_d
     file_type = file_type.value if file_type else file_type
     if is_json or file_type in (FileType.PLAYBOOK.value, FileType.TEST_PLAYBOOK.value):
         return str(file_path), {}
-    extractor = Extractor(
+    extractor = YmlSplitter(
         input=str(file_path), file_type=file_type, output=containing_dir,
         no_logging=True, no_pipenv=True, no_basic_fmt=True
     )
@@ -332,6 +332,18 @@ def get_content_modules(content_tmp_dir: str, verify_ssl: bool = True) -> None:
             'github_url': 'https://raw.githubusercontent.com/demisto/content/master/Tests/scripts/dev_envs/pytest'
                           '/conftest.py',
             'content_path': 'Tests/scripts/dev_envs/pytest'
+        },
+        {
+            'file': 'approved_usecases.json',
+            'github_url': 'https://raw.githubusercontent.com/demisto/content/master/'
+                          'Tests/Marketplace/approved_usecases.json',
+            'content_path': 'Tests/Marketplace',
+        },
+        {
+            'file': 'approved_tags.json',
+            'github_url': 'https://raw.githubusercontent.com/demisto/content/master/'
+                          'Tests/Marketplace/approved_tags.json',
+            'content_path': 'Tests/Marketplace',
         },
 
     ]
