@@ -281,6 +281,14 @@ class TestHelperFunctions:
         assert "25.24.23.22" in ip_range_list
         assert "3.3.3.0/30" in ip_range_list
 
+    def test_ips_to_ranges_bad_ip(self):
+        from EDL import ips_to_ranges, COLLAPSE_TO_CIDR
+        ip_list = ["1.1.1.1", "1.2.3.5", "1.1.1.2", "1.2.3.4", "1.1.1.3", "hello"]
+
+        ip_range_list = ips_to_ranges(ip_list, COLLAPSE_TO_CIDR)
+        assert "1.1.1.1-1.1.1.3" in ip_range_list
+        assert "1.2.3.4-1.2.3.5" in ip_range_list
+
     def test_get_bool_arg_or_param(self):
         """
         Given:

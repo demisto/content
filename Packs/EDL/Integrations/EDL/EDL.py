@@ -12,6 +12,7 @@ from math import ceil
 import urllib3
 import dateparser
 import hashlib
+import ipaddress
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -216,14 +217,25 @@ def ips_to_ranges(ips: Iterable, collapse_ips: str):
     Returns:
         Set. a list to Ranges or CIDRs.
     """
+    invalid_ips = []
+    valid_ips = []
+
+    for ip in ips:
+        try:
+            ipaddress.IPv4Address(ip)
+            valid_ips.append(ip)
+        except ValueError:
+            invalid_ips.append(ip)
 
     if collapse_ips == COLLAPSE_TO_RANGES:
-        ips_range_groups = IPSet(ips).iter_ipranges()
-        return ip_groups_to_ranges(ips_range_groups)
-
+        ips_range_groups = IPSet(valid_ips).iter_ipranges()
+        collapsed_list = ip_groups_to_ranges(ips_range_groups)
+        collapsed_list.update(invalid_ips)
     else:
-        cidrs = IPSet(ips).iter_cidrs()
-        return ip_groups_to_cidrs(cidrs)
+        cidrs = IPSet(valid_ips).iter_cidrs()
+        collapsed_list = ip_groups_to_cidrs(cidrs)
+        collapsed_list.update(invalid_ips)
+    return collapsed_list
 
 
 def format_indicators(iocs: list, request_args: RequestArguments) -> set:
