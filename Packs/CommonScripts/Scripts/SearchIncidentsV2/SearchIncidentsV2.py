@@ -42,13 +42,13 @@ def is_valid_args(args: Dict):
 
 
 def apply_filters(incidents: List, args: Dict):
-    acceptable_names = set(argToList(args.get('name')))
-    acceptable_types = set(argToList(args.get('type')))
+    names_to_filter = set(argToList(args.get('name')))
+    types_to_filter = set(argToList(args.get('type')))
     filtered_incidents = []
     for incident in incidents:
-        if acceptable_names and incident['name'] not in acceptable_names:
+        if names_to_filter and incident['name'] not in names_to_filter:
             continue
-        if acceptable_types and incident['type'] not in acceptable_types:
+        if types_to_filter and incident['type'] not in types_to_filter:
             continue
 
         filtered_incidents.append(incident)
