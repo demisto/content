@@ -1,0 +1,28 @@
+{
+    "dataType": "scripts",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "fromDateLicense": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byFrom": "",
+            "byTo": "",
+            "field": "",
+            "fromValue": null,
+            "toValue": null
+        },
+        "toDate": "0001-01-01T00:00:00Z"
+    },
+    "id": "24b8c823-873e-4153-81bf-a79d04743d28",
+    "isPredefined": true,
+    "name": "Unit 42 Blog Feed",
+    "params": {
+        "insecure": "true",
+        "url": "https://unit42.paloaltonetworks.com/feed/"
+    },
+    "query": "RSSWidget",
+    "version": -1,
+    "widgetType": "text",
+    "fromVersion": "6.2.0",
+    "description": ""
+}

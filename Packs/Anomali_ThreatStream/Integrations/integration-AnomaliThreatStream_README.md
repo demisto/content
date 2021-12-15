@@ -19,7 +19,7 @@
 </ul>
 <p>If you do not have these credentials, register at <a href="http://ui.threatstream.com/" rel="nofollow">http://ui.threatstream.com</a>. </p>
 <hr>
-<h2>Configure Cortex XSOAR to Integrate with Anamoli ThreatStream</h2>
+<h2>Configure Cortex XSOAR to Integrate with Anomali ThreatStream</h2>
 <ol>
 <li>Navigate to to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services.</strong>
 </li>

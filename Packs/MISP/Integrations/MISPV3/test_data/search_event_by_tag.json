@@ -35,6 +35,7 @@
         {
           "id": "69548",
           "type": "sha256",
+          "Feed" : [],
           "category": "Payload delivery",
           "to_ids": true,
           "uuid": "5fd0c620-4c60-47a4-91c7-a37bc0a8ab16",
@@ -55,6 +56,7 @@
         },
         {
           "id": "69549",
+          "Feed" : [],
           "type": "sha256",
           "category": "Payload delivery",
           "to_ids": true,
@@ -258,6 +260,7 @@
           "to_ids": false,
           "uuid": "5e6b336d-13f0-4705-b353-457dd7dd9f6d",
           "event_id": "149",
+          "Feed" : [],
           "distribution": "5",
           "timestamp": "1584083963",
           "comment": "Warning: Potential false positives",
@@ -285,6 +288,7 @@
           "sharing_group_id": "0",
           "deleted": false,
           "disable_correlation": false,
+          "Feed" : [],
           "object_id": "0",
           "object_relation": null,
           "first_seen": null,

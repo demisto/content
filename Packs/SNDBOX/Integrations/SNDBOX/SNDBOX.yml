@@ -235,7 +235,7 @@ script:
       type: string
     description: Download the sample file of an analysis. for security reasons, the extension will be "dontrun"
   runonce: false
-  dockerimage: demisto/python:2.7.18.24066
+  dockerimage: demisto/python:2.7.18.24398
 tests:
 - SNDBOX_Test
 fromversion: 5.0.0
