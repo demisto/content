@@ -11,9 +11,11 @@ The actionable items report will contain recommendations based on errors found o
 
 **Multi-Tenants Deployment**
 
-1. Create API Key on Main Tenant 
-2. Propogate the instance to All tenants or to the required tenant using the labels. in the instance settings define as URL https://127.0.0.1
-make sure not to define the tenant name in the URL.
+1. Create API Key on Main Tenant
+2. Create **Demisto REST API** integration on Main Tenant and use the API Key you created in previous step.
+   On instance settings define in URL field *https://127.0.0.1*
+   make sure not to set the tenant name in the URL.
+2. Propogate **Demisto REST API** instance to All tenants or to the required tenant using propogation labels.
 
 
 **How to**:
