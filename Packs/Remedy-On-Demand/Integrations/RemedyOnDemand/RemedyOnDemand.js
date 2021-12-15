@@ -255,7 +255,7 @@ switch (command) {
     case 'remedy-incident-create':
         return createIncident(
             args['first-name'],
-            args['last_name'],
+            args['last-name'],
             args.description,
             args.status,
             args.source,
