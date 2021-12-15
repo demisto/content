@@ -259,7 +259,7 @@ switch (command) {
             args.description,
             args.status,
             args.source,
-            args['service_type'],
+            args['service-type'],
             args.impact,
             args.urgency,
             args['custom-fields']
