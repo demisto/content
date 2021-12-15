@@ -648,7 +648,7 @@ def checkpoint_add_group_command(client: Client, name) -> CommandResults:
 
 
 def checkpoint_update_group_command(client: Client, identifier: str, ignore_warnings: bool,
-                                    ignore_errors: bool, action: str, members=None, new_name: str = None,
+                                    ignore_errors: bool, action: str = None, members=None, new_name: str = None,
                                     comments: str = None) -> CommandResults:
     """
     Edit existing group using object name or uid.
