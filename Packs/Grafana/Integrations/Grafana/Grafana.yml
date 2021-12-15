@@ -211,15 +211,15 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Number of results to return per page.
+      description: Number of results to return on a page. Default is 1000.
       isArray: false
-      name: perpage
+      name: page_size
       required: false
       secret: false
     - default: false
-      description: Index of the page of results to retrieve.
+      description: Index of the page of results to retrieve. Default is 1.
       isArray: false
-      name: page
+      name: page_number
       required: false
       secret: false
     - default: false
@@ -419,15 +419,15 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: Number of results to return on a page.
+      description: Number of results to return on a page. Default is 1000.
       isArray: false
-      name: perpage
+      name: page_size
       required: false
       secret: false
     - default: false
-      description: Index of the page of results to retrieve.
+      description: Index of the page of results to retrieve. Default is 1.
       isArray: false
-      name: page
+      name: page_number
       required: false
       secret: false
     - default: false
@@ -648,15 +648,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: The maximum number of dashboards to return.
+      description: The maximum number of dashboards to return. Maximum is 5000.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: Page
+      description: Index of the page of results to retrieve, when "limit" acts as page size. Numbering starts at 1.
       isArray: false
-      name: page
+      name: page_number
       required: false
       secret: false
     deprecated: false
@@ -852,15 +852,15 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: Number of results to return on a page.
+      description: Number of results to return on a page. Default is 1000.
       isArray: false
-      name: perpage
+      name: page_size
       required: false
       secret: false
     - default: false
-      description: Index of the page of results to retrieve.
+      description: Index of the page of results to retrieve. Default is 0.
       isArray: false
-      name: page
+      name: page_number
       required: false
       secret: false
     deprecated: false

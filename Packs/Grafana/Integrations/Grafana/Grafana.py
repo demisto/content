@@ -49,8 +49,8 @@ class Client(BaseClient):
 
         return response
 
-    def users_search_request(self, perpage: str = None, page: str = None, query: str = None):
-        params = assign_params(perpage=perpage, page=page, query=query)
+    def users_search_request(self, page_size: str = None, page_number: str = None, query: str = None):
+        params = assign_params(perpage=page_size, page=page_number, query=query)
 
         response = self._http_request('GET', 'api/users', params=params, headers=self._headers)
         response = self._concatenate_urls(response, 'avatarUrl')
@@ -91,8 +91,8 @@ class Client(BaseClient):
 
         return response
 
-    def teams_search_request(self, perpage: str = None, page: str = None, query: str = None, name: str = None):
-        params = assign_params(perpage=perpage, page=page, query=query, name=name)
+    def teams_search_request(self, page_size: str = None, page_number: str = None, query: str = None, name: str = None):
+        params = assign_params(perpage=page_size, page=page_number, query=query, name=name)
 
         response = self._http_request('GET', 'api/teams/search', params=params, headers=self._headers)
         response = self._concatenate_urls(response['teams'], 'avatarUrl')
@@ -144,8 +144,8 @@ class Client(BaseClient):
 
         return response
 
-    def org_list_request(self, perpage: str = None, page: str = None):
-        params = assign_params(perpage=perpage, page=page)
+    def org_list_request(self, page_size: str = None, page_number: str = None):
+        params = assign_params(perpage=page_size, page=page_number)
 
         response = self._http_request('GET', 'api/orgs', params=params, headers=self._headers)
 
@@ -163,9 +163,9 @@ class Client(BaseClient):
 
     def dashboards_search_request(self, query: str = None, tag: List[str] = None, type_: str = None,
                                   dashboard_ids: List[str] = None, folder_ids: List[str] = None, starred: str = None,
-                                  limit: str = None, page: str = None):
+                                  limit: str = None, page_number: str = None):
         params = assign_params(query=query, tag=tag, type=type_, dashboardIds=dashboard_ids,
-                               folderIds=folder_ids, starred=starred, limit=limit, page=page)
+                               folderIds=folder_ids, starred=starred, limit=limit, page=page_number)
 
         response = self._http_request('GET', 'api/search', params=params, headers=self._headers)
         response = self._concatenate_urls(response)
@@ -230,6 +230,13 @@ def decapitalize(s: str):
         return s
     demisto.debug(f'de-capitalizing key: {s}')
     return s[0].lower() + s[1:]
+
+
+def paging_heading(page_number: str = None, page_size: str = None):
+    if page_number or page_size:
+        return f'Showing' + (f' {page_size}' if page_size else '') + ' results' +\
+               (f' from page {page_number}' if page_number else '') + ':\n'
+    return ''
 
 
 def set_state(states: str = ''):
@@ -388,11 +395,11 @@ def alert_get_by_id_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
 
 def users_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    perpage = args.get('perpage')
-    page = args.get('page')
+    page_size = args.get('page_size')
+    page_number = args.get('page_number')
     query = args.get('query')
 
-    response = client.users_search_request(perpage, page, query)
+    response = client.users_search_request(page_size, page_number, query)
     headers = ['id', 'email', 'name', 'login', 'isAdmin', 'isDisabled', 'avatarUrl', 'lastSeenAt', 'lastSeenAtAge', 'authLabels']
 
     command_results = CommandResults(
@@ -400,7 +407,8 @@ def users_search_command(client: Client, args: Dict[str, Any]) -> CommandResults
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=tableToMarkdown('Existing Users:', response, headers=headers, removeNull=True,
+        readable_output=paging_heading(page_number, page_size) +
+                        tableToMarkdown('Existing Users:', response, headers=headers, removeNull=True,
                                         headerTransform=pascalToSpace, url_keys=['avatarUrl'])
     )
 
@@ -507,12 +515,12 @@ def annotation_create_command(client: Client, args: Dict[str, Any]) -> CommandRe
 
 
 def teams_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    perpage = args.get('perpage')
-    page = args.get('page')
+    page_size = args.get('page_size')
+    page_number = args.get('page_number')
     query = args.get('query')
     name = args.get('name')
 
-    response = client.teams_search_request(perpage, page, query, name)
+    response = client.teams_search_request(page_size, page_number, query, name)
     headers = ['id', 'orgId', 'name', 'email', 'avatarUrl', 'memberCount', 'permission']
 
     command_results = CommandResults(
@@ -520,7 +528,8 @@ def teams_search_command(client: Client, args: Dict[str, Any]) -> CommandResults
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=tableToMarkdown('Teams Search Results:', response, headers=headers, removeNull=True,
+        readable_output=paging_heading(page_number, page_size) +
+                        tableToMarkdown('Teams Search Results:', response, headers=headers, removeNull=True,
                                         headerTransform=pascalToSpace, url_keys=['avatarUrl'])
     )
 
@@ -639,16 +648,17 @@ def org_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def org_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    perpage = args.get('perpage')
-    page = args.get('page')  # reply doesn't show this and total
+    page_size = args.get('page_size')
+    page_number = args.get('page_number')  # reply doesn't show this and total
 
-    response = client.org_list_request(perpage, page)
+    response = client.org_list_request(page_size, page_number)
     command_results = CommandResults(
         outputs_prefix='Grafana.Organization',
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=tableToMarkdown('Existing Organizations:', response, removeNull=True, headerTransform=pascalToSpace)
+        readable_output=paging_heading(page_number, page_size) +
+                        tableToMarkdown('Existing Organizations:', response, removeNull=True, headerTransform=pascalToSpace)
     )
 
     return command_results
@@ -696,16 +706,17 @@ def dashboards_search_command(client: Client, args: Dict[str, Any]) -> CommandRe
     folder_ids = argToList(args.get('folder_ids', ''))
     starred = args.get('starred')
     limit = args.get('limit')
-    page = args.get('page')
+    page_number = args.get('page_number')
 
-    response = client.dashboards_search_request(query, tag, type_, dashboard_ids, folder_ids, starred, limit, page)
+    response = client.dashboards_search_request(query, tag, type_, dashboard_ids, folder_ids, starred, limit, page_number)
     headers = ['id', 'uid', 'title', 'isStarred', 'tags', 'uri', 'url', 'slug', 'type']
     command_results = CommandResults(
         outputs_prefix='Grafana.Dashboard',
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=tableToMarkdown('Existing Dashboards:', response, headers=headers, removeNull=True,
+        readable_output=paging_heading(page_number, limit) +
+                        tableToMarkdown('Existing Dashboards:', response, headers=headers, removeNull=True,
                                         headerTransform=pascalToSpace, url_keys=['url'])
     )
 
