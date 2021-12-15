@@ -14,6 +14,12 @@ configuration:
   defaultvalue: '45'
   required: false
   type: 0
+- display: Read Timeout
+  additionalinfo: Default is 10 seconds. In cases content is long, Read Timeout Error Exception is raised, to handlr it increase read timeout value.
+  name: read_timeout
+  defaultvalue: '10'
+  required: false
+  type: 0
 - display: Fetch indicators
   name: feed
   defaultvalue: 'true'

@@ -19,7 +19,8 @@ class Client(BaseClient):
         proxy(str): Use system proxy.
     """
 
-    def __init__(self, server_url, use_ssl, proxy, reliability, feed_tags, tlp_color, content_max_size=45):
+    def __init__(self, server_url, use_ssl, proxy, reliability, feed_tags, tlp_color, content_max_size=45,
+                 read_timeout=10):
         super().__init__(base_url=server_url, proxy=proxy, verify=use_ssl)
         self.feed_tags = feed_tags
         self.tlp_color = tlp_color
@@ -27,9 +28,10 @@ class Client(BaseClient):
         self.parsed_indicators = []
         self.feed_data = None
         self.reliability = reliability
+        self.read_timeout = read_timeout
 
     def request_feed_url(self):
-        return self._http_request(method='GET', resp_type='response')
+        return self._http_request(method='GET', resp_type='response', timeout=self.read_timeout, headers=headers)
 
     def parse_feed_data(self, feed_response):
         try:
@@ -83,7 +85,7 @@ class Client(BaseClient):
         """Returns the link content only from the relevant tags (listed on HTML_TAGS). For better performance - if the
          extracted content is bigger than "content_max_size" we trim him"""
 
-        response_url = self._http_request(method='GET', full_url=link, resp_type='str')
+        response_url = self._http_request(method='GET', full_url=link, resp_type='str', timeout=self.read_timeout)
         report_content = 'This is a dumped content of the article. Use the link under Publications field to read ' \
                          'the full article. \n\n'
         soup = BeautifulSoup(response_url.text, "html.parser")
@@ -98,7 +100,7 @@ class Client(BaseClient):
             return ""
         if len(encoded_content) > self.content_max_size:  # Ensure report_content does not exceed the
             # indicator size limit (~50KB)
-            report_content = encoded_content[:self.content_max_size].decode('utf-8')
+            report_content = encoded_content[:self.content_max_size].decode('utf-8', errors='replace')
             report_content += ' This is truncated text, report content was too big.'
 
         return report_content
@@ -162,7 +164,8 @@ def main():
                         reliability=reliability,
                         feed_tags=argToList(params.get('feedTags')),
                         tlp_color=params.get('tlp_color'),
-                        content_max_size=int(params.get('max_size', '45')))
+                        content_max_size=int(params.get('max_size', '45')),
+                        read_timeout=int(params.get('read_timeout', '10')))
 
         if command == 'test-module':
             return_results(check_feed(client))
