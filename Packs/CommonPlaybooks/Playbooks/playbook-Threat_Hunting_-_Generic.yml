@@ -272,12 +272,12 @@ inputs:
 - key: MD5
   value: {}
   required: false
-  description: The MD5 hash file or a comma-separated list of hashes to search.
+  description: The MD5 hash file or an array of hashes to search.
   playbookInputQuery:
 - key: SHA256
   value: {}
   required: false
-  description: The SHA256 hash file or a comma-separated list of hashes to search.
+  description: The SHA256 hash file or an array of hashes to search.
   playbookInputQuery:
 - key: Hostname
   value: {}
@@ -287,18 +287,18 @@ inputs:
 - key: SHA1
   value: {}
   required: false
-  description: The SHA1 hash file or a comma-separated list hashes to search.
+  description: The SHA1 hash file or an array of hashes to search.
   playbookInputQuery:
 - key: IPAddress
   value: {}
   required: false
   description: |
-    The source or destination IP address to search. Can be a single address or a comma-separated list of addresses.
+    The source or destination IP address to search. Can be a single address or an array of list of addresses.
   playbookInputQuery:
 - key: URLDomain
   value: {}
   required: false
-  description: Domain or URL to search. Can be a single domain or URL or a comma-separated list of
+  description: Domain or URL to search. Can be a single domain or URL or or an array of
     domains or URLs to search. By default, the LIKE clause is used.
   playbookInputQuery:
 - key: InternalRange
@@ -362,7 +362,7 @@ outputs:
   description: External hostnames detected based on the fields in your search.
   type: string
 - contextPath: PANWHunting.DetectedUsers
-  description: User or a comma-separated list of users that were detected during hunting.
+  description: User or array of users that were detected during hunting.
   type: string
 - contextPath: PANWHunting.DetectedInternalIPs
   description: Internal IP addresses detected based on fields and inputs in your search.
