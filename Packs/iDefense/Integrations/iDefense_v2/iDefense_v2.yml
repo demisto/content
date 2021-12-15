@@ -53,6 +53,12 @@ script:
     - contextPath: IP.Address
       description: The IP address that was checked.
       type: String
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IP addresses, the vendor that made the decision.
+      type: String
+    - contextPath: IP.Malicious.Description
+      description: For malicious IP addresses, the reason the vendor made that decision.
+      type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: String
@@ -79,6 +85,12 @@ script:
     outputs:
     - contextPath: Domain.Name
       description: The name of the domain that was checked.
+      type: String
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision.
+      type: String
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason the vendor made that decision.
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -107,6 +119,12 @@ script:
     - contextPath: URL.Data
       description: The URL that was checked.
       type: String
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision.
+      type: String
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason the vendor made that decision.
+      type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: String
@@ -133,11 +151,29 @@ script:
     - contextPath: IP.Address
       description: The IP address.
       type: String
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IP addresses, the vendor that made the decision.
+      type: String
+    - contextPath: IP.Malicious.Description
+      description: For malicious IP addresses, the reason the vendor made that decision.
+      type: String
     - contextPath: Domain.Name
       description: The domain name.
       type: String
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision.
+      type: String
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason the vendor made that decision.
+      type: String
     - contextPath: URL.Data
       description: The URL.
+      type: String
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision.
+      type: String
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason the vendor made that decision.
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
