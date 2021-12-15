@@ -1658,15 +1658,15 @@ def checkpoint_show_task_command(client: Client, task_id: str) -> CommandResults
     return command_results
 
 
-def checkpoint_add_objects_batch_command(client: Client, object_type: str, ipaddress, object_names):
+def checkpoint_add_objects_batch_command(client: Client, object_type: str, ipaddress, name):
     context_data = {}
     readable_output = ''
 
-    ipaddress = argToList(ipaddress, ',')
-    names = argToList(name, ',')
+    ip_addresses = argToList(ipaddress, ',')
+    ip_object_names = argToList(name, ',')
     add_list = []
-    for ip, n in zip(ipaddress, names):
-        tmp_dict = {'name': n, 'ip-address': ip}
+    for ip, name in zip(ip_addresses, ip_object_names):
+        tmp_dict = {'name': name, 'ip-address': ip}
         add_list.append(tmp_dict)
 
     result = client.add_objects_batch(object_type, add_list)
