@@ -5,13 +5,13 @@ import json
 import time
 import argparse
 import requests
-import logging
 from typing import List
 import demisto_sdk.commands.common.tools as tools
 from Tests.scripts.utils.log_util import install_logging
+from Tests.scripts.utils import logging_wrapper as logging
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 PRIVATE_BUILD_INFRA_SCRIPTS = ['Tests/scripts/validate_premium_packs.sh', 'Tests/scripts/validate_premium_packs.py',
                                'Tests/scripts/validate_index.py']
@@ -107,7 +107,7 @@ def get_dispatch_workflows_ids(github_token: str, branch: str) -> List[int]:
 
 
 def main():
-    install_logging("TriggerPrivateBuild.log")
+    install_logging("TriggerPrivateBuild.log", logger=logging)
     # get github token parameter
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument('--github-token', help='Github token')
@@ -118,7 +118,8 @@ def main():
     # get branch name
     branches = tools.run_command("git branch")
     branch_name_regex = re.search(r"\* (.*)", branches)
-    branch_name = branch_name_regex.group(1)
+    if branch_name_regex:
+        branch_name = branch_name_regex.group(1)
 
     if branch_has_private_build_infra_change(branch_name):
         # get the workflows ids before triggering the build

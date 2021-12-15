@@ -2341,6 +2341,8 @@ tasks:
                 value:
                   simple: connected
           accessor: id
+          transformers:
+          - operator: FirstArrayElement
       ptid:
         complex:
           root: Tanium.ProcessParent
@@ -2499,6 +2501,8 @@ tasks:
         simple: "150"
       offset:
         simple: "30"
+      type:
+        simple: "event"
     separatecontext: false
     view: |-
       {
@@ -2753,6 +2757,8 @@ tasks:
                 value:
                   simple: connected
           accessor: id
+          transformers:
+          - operator: FirstArrayElement
       hostname:
         complex:
           root: Tanium.Connection
@@ -3021,7 +3027,17 @@ tasks:
               right:
                 value:
                   simple: connected
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Tanium.Connection.platform
+                iscontext: true
+              right:
+                value:
+                  simple: Windows
           accessor: id
+          transformers:
+          - operator: FirstArrayElement
       path:
         simple: C:\Users\Administrator\Desktop\
     separatecontext: false

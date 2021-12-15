@@ -1,0 +1,12 @@
+{
+    "id": "ThreatIntelReport_Malware",
+    "layout": "Malware Report",
+    "locked": false,
+    "name": "Malware",
+    "color": "#E87F24",
+    "definitionId": "ThreatIntelReport",
+    "genericModuleId": "threatIntel",
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

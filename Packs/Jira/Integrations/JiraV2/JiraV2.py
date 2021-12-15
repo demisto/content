@@ -9,7 +9,7 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 BASE_URL = demisto.getParam('url').rstrip('/') + '/'
-API_TOKEN = demisto.getParam('APItoken')
+API_TOKEN = demisto.getParam('APItoken') or (demisto.getParam('credentials') or {}).get('password')
 USERNAME = demisto.getParam('username')
 PASSWORD = demisto.getParam('password')
 COMMAND_NOT_IMPELEMENTED_MSG = 'Command not implemented'
@@ -45,14 +45,17 @@ def jira_req(
         files: Optional[dict] = None
 ):
     url = resource_url if link else (BASE_URL + resource_url)
+    AUTH = get_auth()
+    if headers and HEADERS.get('Authorization'):
+        headers['Authorization'] = HEADERS.get('Authorization')
     try:
         result = requests.request(
             method=method,
             url=url,
             data=body,
-            headers=headers or HEADERS,
+            auth=AUTH,
+            headers=headers if headers else HEADERS,
             verify=USE_SSL,
-            auth=get_auth(),
             files=files
         )
     except ValueError:
@@ -102,8 +105,10 @@ def generate_basic_oauth():
 
 
 def get_auth():
+    access_token = demisto.getParam('accessToken')
     is_basic = USERNAME and (PASSWORD or API_TOKEN)
-    is_oauth1 = demisto.getParam('consumerKey') and demisto.getParam('accessToken') and demisto.getParam('privateKey')
+    is_oauth1 = demisto.getParam('consumerKey') and access_token and demisto.getParam('privateKey')
+    is_bearer = access_token and not is_oauth1
 
     if is_basic:
         return generate_basic_oauth()
@@ -112,10 +117,16 @@ def get_auth():
         HEADERS.update({'X-Atlassian-Token': 'nocheck'})
         return generate_oauth1()
 
+    elif is_bearer:
+        # Personal Access Token Authentication
+        HEADERS.update({'Authorization': f'Bearer {access_token}'})
+        return
+
     return_error(
         'Please provide the required Authorization information:'
         '- Basic Authentication requires user name and password or API token'
         '- OAuth 1.0 requires ConsumerKey, AccessToken and PrivateKey'
+        '- Personal Access Tokens requires AccessToken'
     )
 
 
@@ -286,6 +297,10 @@ def generate_md_context_get_issue(data):
         context_obj['Key'] = md_obj['key'] = demisto.get(element, 'key')
         context_obj['Summary'] = md_obj['summary'] = demisto.get(element, 'fields.summary')
         context_obj['Status'] = md_obj['status'] = demisto.get(element, 'fields.status.name')
+        context_obj['Priority'] = md_obj['priority'] = demisto.get(element, 'fields.priority.name')
+        context_obj['ProjectName'] = md_obj['project'] = demisto.get(element, 'fields.project.name')
+        context_obj['DueDate'] = md_obj['duedate'] = demisto.get(element, 'fields.duedate')
+        context_obj['Created'] = md_obj['created'] = demisto.get(element, 'fields.created')
 
         assignee = demisto.get(element, 'fields.assignee')
         context_obj['Assignee'] = md_obj['assignee'] = "{name}({email})".format(
@@ -305,15 +320,16 @@ def generate_md_context_get_issue(data):
             email=reporter.get('emailAddress', 'null')
         ) if reporter else 'null(null)'
 
+        context_obj.update({
+            'LastSeen': demisto.get(element, 'fields.lastViewed'),
+            'LastUpdate': demisto.get(element, 'fields.updated'),
+        })
+
         md_obj.update({
             'issueType': demisto.get(element, 'fields.issuetype.description'),
-            'priority': demisto.get(element, 'fields.priority.name'),
-            'project': demisto.get(element, 'fields.project.name'),
             'labels': demisto.get(element, 'fields.labels'),
             'description': demisto.get(element, 'fields.description'),
-            'duedate': demisto.get(element, 'fields.duedate'),
             'ticket_link': demisto.get(element, 'self'),
-            'created': demisto.get(element, 'fields.created'),
         })
         attachments = demisto.get(element, 'fields.attachment')
         if isinstance(attachments, list):
