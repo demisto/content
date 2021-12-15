@@ -496,7 +496,7 @@ Get information about the containers and their profile events. This command supp
 | container123 | twistlock/private:defender_21_04_439 | Red Hat Enterprise Linux 8.4 (Ootpa) | active | September 02, 2020 11:05:08 AM | /usr/local/bin/defender |
 ### Processes
 |Type|Path|DetectionTime|
-|---|---|---|---|
+|---|---|---|
 | static | /usr/bin/mongodump | January 01, 2021 00:00:00 AM |
 | static | /usr/bin/mongorestore | January 01, 2021 00:00:00 AM |
 | behavioral | /usr/local/bin/fsmon | September 02, 2021 11:05:08 AM |
