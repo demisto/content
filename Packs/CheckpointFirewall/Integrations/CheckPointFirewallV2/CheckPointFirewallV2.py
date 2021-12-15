@@ -648,7 +648,7 @@ def checkpoint_add_group_command(client: Client, name) -> CommandResults:
 
 
 def checkpoint_update_group_command(client: Client, identifier: str, ignore_warnings: bool,
-                                    ignore_errors: bool, add: bool, remove: bool, members=None, new_name: str = None,
+                                    ignore_errors: bool, action: str, members=None, new_name: str = None,
                                     comments: str = None) -> CommandResults:
     """
     Edit existing group using object name or uid.
@@ -657,6 +657,7 @@ def checkpoint_update_group_command(client: Client, identifier: str, ignore_warn
         client (Client): CheckPoint client.
         identifier(str): uid or name.
         ignore_warnings(bool):Apply changes ignoring warnings.
+        action(str): The action to take towards the modified objects.
         ignore_errors(bool): Apply changes ignoring errors. You won't be able to publish such
                              a changes. If ignore-warnings flag was omitted- warnings will also
                              be ignored
@@ -667,7 +668,7 @@ def checkpoint_update_group_command(client: Client, identifier: str, ignore_warn
     if members:
         # noinspection PyTypeChecker
         members = argToList(members)
-    result = client.update_group(identifier, ignore_warnings, ignore_errors, add, remove, members, new_name, comments)
+    result = client.update_group(identifier, ignore_warnings, ignore_errors, action, members, new_name, comments)
     headers = ['name', 'uid', 'type', 'domain-name', 'domain-type', 'domain-uid', 'creator',
                'last-modifier', 'read-only']
     printable_result = build_printable_result(headers, result)
