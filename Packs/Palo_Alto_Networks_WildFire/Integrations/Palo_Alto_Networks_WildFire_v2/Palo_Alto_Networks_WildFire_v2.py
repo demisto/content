@@ -557,9 +557,9 @@ def run_polling_command(args: dict, cmd: str, upload_function: Callable, results
 def wildfire_get_verdict(file_hash: Optional[str] = None, url: Optional[str] = None):
     get_verdict_uri = URL + URL_DICT["verdict"]
     if file_hash:
-        body = 'apikey=' + TOKEN + '&hash=' + file_hash
+        body = 'apikey=' + TOKEN + '&hash=' + file_hash  # type: ignore
     else:
-        body = 'apikey=' + TOKEN + '&url=' + url
+        body = 'apikey=' + TOKEN + '&url=' + url  # type: ignore
 
     result = http_request(get_verdict_uri, 'POST', headers=DEFAULT_HEADERS, body=body)
     verdict_data = result["wildfire"]["get-verdict-info"]
