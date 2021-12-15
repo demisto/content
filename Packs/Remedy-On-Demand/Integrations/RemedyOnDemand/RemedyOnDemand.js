@@ -262,7 +262,7 @@ switch (command) {
             args['service_type'],
             args.impact,
             args.urgency,
-            args['custom_fields']
+            args['custom-fields']
         );
     case 'remedy-get-incident':
         return getIncident(args.ID);
