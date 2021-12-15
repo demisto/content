@@ -10,7 +10,7 @@ requests.packages.urllib3.disable_warnings()
 ''' GLOBALS/PARAMS '''
 PARAMS = demisto.params()
 URL = PARAMS.get('server')
-TOKEN = PARAMS.get('token')
+TOKEN = PARAMS.get('token') or (PARAMS.get('credentials') or {}).get('password')
 USE_SSL = not PARAMS.get('insecure', False)
 FILE_TYPE_SUPPRESS_ERROR = PARAMS.get('suppress_file_type_error')
 RELIABILITY = PARAMS.get('integrationReliability', DBotScoreReliability.B) or DBotScoreReliability.B
