@@ -20,7 +20,7 @@ configuration:
   - name: insecure
     display: Trust any certificate (not secure)
     required: false
-    defaultvalue: ""
+    defaultvalue: "true"
     type: 8
     additionalinfo: null
   - name: proxy
@@ -66,48 +66,48 @@ script:
             - ""
       description: Returns all virtual machines on a system.
       important:
-        - contextPath: VMWare.UUID
+        - contextPath: VMWare.VM.UUID
           description: VM instance UUID.
           related: ""
-        - contextPath: VMWare.State
+        - contextPath: VMWare.VM.State
           description: VM State (i.e., poweredOn, poweredOff, suspended, HardRebooted).
           related: ""
       name: vmware-get-vms
       outputs:
-        - contextPath: VMWare.Name
+        - contextPath: VMWare.VM.Name
           description: VM name.
           type: String
-        - contextPath: VMWare.Template
+        - contextPath: VMWare.VM.Template
           description: true if template, else false.
           type: bool
-        - contextPath: VMWare.Path
+        - contextPath: VMWare.VM.Path
           description: Path to VM.
           type: String
-        - contextPath: VMWare.Guest
+        - contextPath: VMWare.VM.Guest
           description: Guest full name.
           type: String
-        - contextPath: VMWare.UUID
+        - contextPath: VMWare.VM.UUID
           description: VM instance UUID.
           type: String
-        - contextPath: VMWare.IP
+        - contextPath: VMWare.VM.IP
           description: VM IP address.
           type: String
-        - contextPath: VMWare.State
+        - contextPath: VMWare.VM.State
           description: VM state (i.e., poweredOn, poweredOff, suspended, HardRebooted).
           type: String
-        - contextPath: VMWare.HostName
+        - contextPath: VMWare.VM.HostName
           description: Host name of VM.
           type: String
-        - contextPath: VMWare.MACAddress
+        - contextPath: VMWare.VM.MACAddress
           description: MAC address of VM.
           type: String
-        - contextPath: VMWare.SnapshotCreateDate
+        - contextPath: VMWare.VM.SnapshotCreateDate
           description: Create date of the last snapshot of the VM.
           type: String
-        - contextPath: VMWare.SnapshotUUID
+        - contextPath: VMWare.VM.SnapshotUUID
           description: UUID of the last snapshot of the VM.
           type: String
-        - contextPath: VMWare.Deleted
+        - contextPath: VMWare.VM.Deleted
           description: If set to true, the VM was deleted.
           type: Boolean
     - arguments:
@@ -117,18 +117,18 @@ script:
       description: Powers on a powered-off or suspended virtual machine.
       execution: true
       important:
-        - contextPath: VMWare.UUID
+        - contextPath: VMWare.VM.UUID
           description: VM instance UUID.
           related: ""
-        - contextPath: VMWare.State
+        - contextPath: VMWare.VM.State
           description: VM state (i.e., poweredOn, poweredOff, suspended, HardRebooted).
           related: ""
       name: vmware-poweron
       outputs:
-        - contextPath: VMWare.UUID
+        - contextPath: VMWare.VM.UUID
           description: VM instance UUID.
           type: String
-        - contextPath: VMWare.State
+        - contextPath: VMWare.VM.State
           description: VM state (i.e., poweredOn, poweredOff, suspended, HardRebooted).
           type: String
     - arguments:
@@ -138,18 +138,18 @@ script:
       description: Powers off a powered-on or suspended virtual machine.
       execution: true
       important:
-        - contextPath: VMWare.UUID
+        - contextPath: VMWare.VM.UUID
           description: VM instance UUID.
           related: ""
-        - contextPath: VMWare.State
+        - contextPath: VMWare.VM.State
           description: VM state (i.e., poweredOn, poweredOff, suspended, HardRebooted).
           related: ""
       name: vmware-poweroff
       outputs:
-        - contextPath: VMWare.UUID
+        - contextPath: VMWare.VM.UUID
           description: VM instance UUID.
           type: String
-        - contextPath: VMWare.State
+        - contextPath: VMWare.VM.State
           description: VM state (i.e., poweredOn, poweredOff, suspended, HardRebooted).
           type: String
     - arguments:
@@ -159,18 +159,18 @@ script:
       description: Reboots a powered-on virtual machine.
       execution: true
       important:
-        - contextPath: VMWare.UUID
+        - contextPath: VMWare.VM.UUID
           description: VM instance UUID.
           related: ""
-        - contextPath: VMWare.State
+        - contextPath: VMWare.VM.State
           description: VM state (i.e., poweredOn, poweredOff, suspended, HardRebooted).
           related: ""
       name: vmware-hard-reboot
       outputs:
-        - contextPath: VMWare.UUID
+        - contextPath: VMWare.VM.UUID
           description: VM instance UUID.
           type: String
-        - contextPath: VMWare.State
+        - contextPath: VMWare.VM.State
           description: VM state (i.e., poweredOn, poweredOff, suspended, HardRebooted).
           type: String
     - arguments:
@@ -180,18 +180,18 @@ script:
       description: Suspends a powered-on virtual machine.
       execution: true
       important:
-        - contextPath: VMWare.UUID
+        - contextPath: VMWare.VM.UUID
           description: VM instance UUID.
           related: ""
-        - contextPath: VMWare.State
+        - contextPath: VMWare.VM.State
           description: VM state (i.e., poweredOn, poweredOff, suspended, HardRebooted).
           related: ""
       name: vmware-suspend
       outputs:
-        - contextPath: VMWare.UUID
+        - contextPath: VMWare.VM.UUID
           description: VM instance UUID.
           type: String
-        - contextPath: VMWare.State
+        - contextPath: VMWare.VM.State
           description: VM state (i.e,. poweredOn, poweredOff, suspended, HardRebooted).
           type: String
     - arguments:
@@ -238,18 +238,18 @@ script:
       description: Reverts VM to snapshot.
       execution: true
       important:
-        - contextPath: VMWare.UUID
+        - contextPath: VMWare.VM.UUID
           description: VM instance UUID.
           related: ""
-        - contextPath: VMWare.Snapshot
+        - contextPath: VMWare.VM.Snapshot
           description: Name of the snapshot reverted to.
           related: ""
       name: vmware-revert-snapshot
       outputs:
-        - contextPath: VMWare.UUID
+        - contextPath: VMWare.VM.UUID
           description: VM instance UUID.
           type: String
-        - contextPath: VMWare.Snapshot
+        - contextPath: VMWare.VM.Snapshot
           description: Name of the snapshot reverted to.
           type: String
     - arguments:
@@ -312,18 +312,18 @@ script:
           required: true
       description: Changes the state of a VM NIC.
       important:
-        - contextPath: VMWare.UUID
+        - contextPath: VMWare.VM.UUID
           description: VM instance UUID.
           related: ""
-        - contextPath: VMWare.NICState
+        - contextPath: VMWare.VM.NICState
           description: VM NIC state (i.e., connected, disconnected, delete).
           related: ""
       name: vmware-change-nic-state
       outputs:
-        - contextPath: VMWare.UUID
+        - contextPath: VMWare.VM.UUID
           description: VM instance UUID.
           type: String
-        - contextPath: VMWare.NICState
+        - contextPath: VMWare.VM.NICState
           description: VM NIC state (i.e., connected, disconnected, delete).
           type: String
     - name: vmware-list-vm-tags
@@ -467,41 +467,48 @@ script:
           defaultValue: ""
           predefined:
             - ""
+        - name: host
+          description: The target host on which the virtual machine will run.
+          required: true
+          isArray: false
+          defaultValue: ""
+          predefined:
+            - ""
       outputs:
-        - contextPath: VMWare.Name
+        - contextPath: VMWare.vName
           description: VM name.
           type: String
-        - contextPath: VMWare.Template
+        - contextPath: VMWare.VM.Template
           description: true if template, else false.
           type: bool
-        - contextPath: VMWare.Path
+        - contextPath: VMWare.VM.Path
           description: Path to VM.
           type: String
-        - contextPath: VMWare.Guest
+        - contextPath: VMWare.VM.Guest
           description: Guest full name.
           type: String
-        - contextPath: VMWare.UUID
+        - contextPath: VMWare.VM.UUID
           description: VM instance UUID.
           type: String
-        - contextPath: VMWare.IP
+        - contextPath: VMWare.VM.IP
           description: VM IP address.
           type: String
-        - contextPath: VMWare.State
+        - contextPath: VMWare.VM.State
           description: VM state (i.e., poweredOn, poweredOff, suspended, HardRebooted).
           type: String
-        - contextPath: VMWare.HostName
+        - contextPath: VMWare.VM.HostName
           description: Host name of VM.
           type: String
-        - contextPath: VMWare.MACAddress
+        - contextPath: VMWare.VM.MACAddress
           description: MAC address of VM.
           type: String
-        - contextPath: VMWare.SnapshotCreateDate
+        - contextPath: VMWare.VM.SnapshotCreateDate
           description: Create date of the last snapshot of the VM.
           type: String
-        - contextPath: VMWare.SnapshotUUID
+        - contextPath: VMWare.VM.SnapshotUUID
           description: UUID of the last snapshot of the VM.
           type: String
-        - contextPath: VMWare.Deleted
+        - contextPath: VMWare.VM.Deleted
           description: If set to true, the VM was deleted.
           type: Boolean
     - name: vmware-clone-vm
@@ -538,14 +545,16 @@ script:
           defaultValue: ""
           predefined:
             - ""
-        - name: powerOn
+        - auto: PREDEFINED
+          name: powerOn
           description: Specifies whether or not the new VirtualMachine should be powered
             on after creation.
           required: true
           isArray: false
-          defaultValue: ""
+          defaultValue: "False"
           predefined:
-            - ""
+            - "true"
+            - "false"
         - name: datastore
           description: The datastore where the virtual machine should be located.
           required: false
@@ -568,40 +577,40 @@ script:
           predefined:
             - ""
       outputs:
-        - contextPath: VMWare.Name
+        - contextPath: VMWare.VM.Name
           description: VM name.
           type: String
-        - contextPath: VMWare.Template
+        - contextPath: VMWare.VM.Template
           description: true if template, else false.
           type: bool
-        - contextPath: VMWare.Path
+        - contextPath: VMWare.VM.Path
           description: Path to VM.
           type: String
-        - contextPath: VMWare.Guest
+        - contextPath: VMWare.VM.Guest
           description: Guest full name.
           type: String
-        - contextPath: VMWare.UUID
+        - contextPath: VMWare.VM.UUID
           description: VM instance UUID.
           type: String
-        - contextPath: VMWare.IP
+        - contextPath: VMWare.VM.IP
           description: VM IP address.
           type: String
-        - contextPath: VMWare.State
+        - contextPath: VMWare.VM.State
           description: VM state (i.e., poweredOn, poweredOff, suspended, HardRebooted).
           type: String
-        - contextPath: VMWare.HostName
+        - contextPath: VMWare.VM.HostName
           description: Host name of VM.
           type: String
-        - contextPath: VMWare.MACAddress
+        - contextPath: VMWare.VM.MACAddress
           description: MAC address of VM.
           type: String
-        - contextPath: VMWare.SnapshotCreateDate
+        - contextPath: VMWare.VM.SnapshotCreateDate
           description: Create date of the last snapshot of the VM.
           type: String
-        - contextPath: VMWare.SnapshotUUID
+        - contextPath: VMWare.VM.SnapshotUUID
           description: UUID of the last snapshot of the VM.
           type: String
-        - contextPath: VMWare.Deleted
+        - contextPath: VMWare.VM.Deleted
           description: If set to true, the VM was deleted.
           type: Boolean
     - name: vmware-relocate-vm
@@ -683,10 +692,10 @@ script:
           predefined:
             - ""
       outputs:
-        - contextPath: VMWare.UUID
+        - contextPath: VMWare.VM.UUID
           description: VM instance UUID.
           type: String
-        - contextPath: VMWare.Deleted
+        - contextPath: VMWare.VM.Deleted
           description: If set to true, the VM was deleted.
           type: String
     - name: vmware-register-vm
@@ -750,7 +759,7 @@ script:
           predefined:
             - ""
       outputs: []
-  dockerimage: demisto/vmware:1.0.0.24293
+  dockerimage: devdemisto/vmware:1.0.0.25146
   runonce: false
   script: ""
   subtype: python2

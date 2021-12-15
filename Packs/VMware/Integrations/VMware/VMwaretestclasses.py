@@ -1,4 +1,16 @@
+class Runtime:
+    powerState = None
+
+    def __init__(self, powerState):
+        self.powerState = powerState
+
+
 class VM:
+    runtime = None
+
+    def __init__(self, powerState='poweredOn'):
+        self.runtime = Runtime(powerState)
+
     def RelocateVM_Task(self):
         pass
 
@@ -15,6 +27,24 @@ class VM:
         pass
 
     def FilterSpec(self):
+        pass
+
+    def PowerOn(self):
+        pass
+
+    def PowerOff(self):
+        pass
+
+    def Suspend(self):
+        pass
+
+    def ResetVM_Task(self):
+        pass
+
+    def RebootGuest(self):
+        pass
+
+    def CreateSnapshot(self):
         pass
 
 
@@ -72,6 +102,9 @@ class Si:
     def RetrieveContent(self):
         pass
 
+    def RetrieveServiceContent(self):
+        pass
+
 
 class VirtualMachineRelocateSpec:
     folder = None
@@ -103,8 +136,6 @@ class Config:
         self.instanceUuid = instanceUuid
 
 
-
-
 class Guest:
     ipAddress = None
     hostName = None
@@ -112,11 +143,6 @@ class Guest:
     def __init__(self, ipAddress, hostName):
         self.ipAddress = ipAddress
         self.hostName = hostName
-
-
-
-class Runtime:
-    powerState = None
 
 
 class Summary:
@@ -127,10 +153,7 @@ class Summary:
     def __init__(self, ipAddress=None, hostName=None, name='test_name', instanceUuid='12345'):
         self.config = Config(name, instanceUuid)
         self.guest = Guest(ipAddress, hostName)
-        self.runtime = Runtime()
-
-
-
+        self.runtime = Runtime('poweredOff')
 
 
 class Result:
@@ -145,3 +168,72 @@ class Info:
 
 class Task:
     info = Info()
+
+
+class Child:
+    summary = Summary()
+    snapshot = None
+
+    def __init__(self, summary):
+        self.summary = summary
+
+
+class ViewManager:
+    view = None
+
+    def __init__(self, children):
+        self.view = children
+
+    def CreateContainerView(self):
+        pass
+
+
+class EventManager:
+    def QueryEvents(self):
+        pass
+
+
+class Content:
+    viewManager = ViewManager({})
+    eventManager = EventManager()
+    rootFolder = None
+
+
+class Snapshot:
+    name = None
+    childSnapshotList = None
+
+    def __init__(self, name, childSnapshotList):
+        self.name = name
+        self.childSnapshotList = childSnapshotList
+
+
+class Datastore:
+    name = None
+
+    def __init__(self, name):
+        self.name = name
+
+
+class Host:
+    datastore = []
+
+    def __init__(self, names):
+        for name in names:
+            self.datastore.append(Datastore(name))
+
+
+class ConfigSpec:
+    name = None
+    numCPUs = None
+    cpuAllocation = None
+    memoryAllocation = None
+    memoryMB = None
+    files = None
+    guestId = None
+
+class FileInfo:
+    vmPathName = None
+
+class ResourceAllocationInfo:
+    limit = None

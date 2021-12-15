@@ -1,27 +1,17 @@
+from typing import *  # noqa: F401
 # pylint: disable=no-member
 # pylint: disable=no-name-in-module
-
-import enum
 import ssl
-from cStringIO import StringIO
 import urllib3
-from pyvim.connect import Disconnect, SmartConnect
-from pyvim.task import WaitForTask
+import demistomock as demisto  # noqa: F401
+import pyVim.task
+from CommonServerPython import *  # noqa: F401
+from cStringIO import StringIO
+
+from pyVim.connect import Disconnect, SmartConnect
 from pyVmomi import vim, vmodl
 from vmware.vapi.vsphere.client import create_vsphere_client
 from com.vmware.vapi.std_client import DynamicID
-from com.vmware.cis.tagging_client import CategoryModel
-from com.vmware.vcenter_client import VM
-
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-
-FULL_URL_ARR = demisto.params()['url'].split(':')
-FULL_URL = demisto.params()['url']
-URL = FULL_URL_ARR[0]
-USERNAME = demisto.params()['credentials']['identifier']
-PASSWORD = demisto.params()['credentials']['password']
-PORT = str(FULL_URL_ARR[1])
 
 
 def login(params):
@@ -31,26 +21,26 @@ def login(params):
     port = str(url_arr[1])
     user_name = params['credentials']['identifier']
     passsword = params['credentials']['password']
-    client = Client(full_url, params.get('insecure'), params.get('proxy'), {}, user_name, passsword)
 
     s = ssl.SSLContext(ssl.PROTOCOL_TLS)
     s.verify_mode = ssl.CERT_NONE
     session = requests.session()
     session.verify = False
-    # urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
     # Connect to a vCenter Server using username and password
-    vsphere_client = create_vsphere_client(server=FULL_URL, username=USERNAME, password=PASSWORD, session=session)
+    # vsphere_client = create_vsphere_client(server=full_url, username=user_name, password=passsword, session=session)
+    vsphere_client = None
     try:
-        si = SmartConnect(host=URL,
-                          user=USERNAME,
-                          pwd=PASSWORD,
-                          port=PORT)
+        si = SmartConnect(host=url,
+                          user=user_name,
+                          pwd=passsword,
+                          port=port)
     except Exception:
-        si = SmartConnect(host=URL,
-                          user=USERNAME,
-                          pwd=PASSWORD,
-                          port=PORT,
+        si = SmartConnect(host=url,
+                          user=user_name,
+                          pwd=passsword,
+                          port=port,
                           sslContext=s)
     return si, vsphere_client
 
@@ -62,7 +52,7 @@ def logout(si):
 def get_vm(si, uuid):
     vm = si.content.searchIndex.FindByUuid(None, uuid, True, True)  # type: ignore
     if vm is None:
-        raise SystemExit('Unable to locate Virtual Machine.')
+        raise Exception('Unable to locate Virtual Machine.')
     return vm
 
 
@@ -202,7 +192,7 @@ def get_vms(si, args):
                 'Deleted': 'False'
             })
     ec = {
-        'VMWare(val.UUID && val.UUID === obj.UUID)': data
+        'VMWare.VM(val.UUID && val.UUID === obj.UUID)': data
     }
     return create_entry(data, ec)
 
@@ -213,22 +203,26 @@ def create_entry(data, ec):
         'Type': entryTypes['note'],
         'Contents': data,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Virtual Machines', data) if data else 'No result were found',
+        'HumanReadable': tableToMarkdown('Virtual Machines', data, headers=['Name', 'Template', 'Path', 'Guest', 'UUID',
+                                                                            'IP', 'State', 'HostName', 'MACAddress',
+                                                                            'SnapshotCreateDate',
+                                                                            'SnapshotUUID',
+                                                                            'Deleted']) if data else 'No result were found',
         'EntryContext': ec
     }
 
 
-def power_on(uuid):
-    vm = get_vm(uuid)
+def power_on(si, uuid):
+    vm = get_vm(si, uuid)
 
     if vm.runtime.powerState == 'poweredOn':
-        raise SystemExit('Virtual Machine is already powered on.')
+        raise Exception('Virtual Machine is already powered on.')
     task = vm.PowerOn()
     while task.info.state not in [vim.TaskInfo.State.success, vim.TaskInfo.State.error]:  # type: ignore
         time.sleep(1)
     if task.info.state == 'success':
         ec = {
-            'VMWare(val.UUID && val.UUID === obj.UUID)': {
+            'VMWare.VM(val.UUID && val.UUID === obj.UUID)': {
                 'UUID': uuid,
                 'State': 'poweredOn'
             }
@@ -242,19 +236,19 @@ def power_on(uuid):
             'EntryContext': ec
         }
     elif task.info.state == 'error':
-        raise SystemExit('Error occured while trying to power on Virtual Machine.')
+        raise Exception('Error occured while trying to power on Virtual Machine.')
 
 
-def power_off(uuid):
-    vm = get_vm(uuid)
+def power_off(si, uuid):
+    vm = get_vm(si, uuid)
     if vm.runtime.powerState == 'poweredOff':
-        raise SystemExit('Virtual Machine is already powered off.')
+        raise Exception('Virtual Machine is already powered off.')
     task = vm.PowerOff()
     while task.info.state not in [vim.TaskInfo.State.success, vim.TaskInfo.State.error]:  # type: ignore
         time.sleep(1)
     if task.info.state == 'success':
         ec = {
-            'VMWare(val.UUID && val.UUID === obj.UUID)': {
+            'VMWare.VM(val.UUID && val.UUID === obj.UUID)': {
                 'UUID': uuid,
                 'State': 'poweredOff'
             }
@@ -268,19 +262,19 @@ def power_off(uuid):
             'EntryContext': ec
         }
     elif task.info.state == 'error':
-        raise SystemExit('Error occured while trying to power off Virtual Machine.')
+        raise Exception('Error occured while trying to power off Virtual Machine.')
 
 
-def suspend(uuid):
-    vm = get_vm(uuid)
+def suspend(si, uuid):
+    vm = get_vm(si, uuid)
     if vm.runtime.powerState == 'suspended':
-        raise SystemExit('Virtual Machine is already suspended.')
+        raise Exception('Virtual Machine is already suspended.')
     task = vm.Suspend()
     while task.info.state not in [vim.TaskInfo.State.success, vim.TaskInfo.State.error]:  # type: ignore
         time.sleep(1)
     if task.info.state == 'success':
         ec = {
-            'VMWare(val.UUID && val.UUID === obj.UUID)': {
+            'VMWare.VM(val.UUID && val.UUID === obj.UUID)': {
                 'UUID': uuid,
                 'State': 'suspended'
             }
@@ -294,16 +288,16 @@ def suspend(uuid):
             'EntryContext': ec
         }
     elif task.info.state == 'error':
-        raise SystemExit('Error occured while trying to power on Virtual Machine.')
+        raise Exception('Error occured while trying to power on Virtual Machine.')
 
 
 def hard_reboot(si, uuid):
-    vm = get_vm(uuid)
+    vm = get_vm(si, uuid)
     task = vm.ResetVM_Task()
     wait_for_tasks(si, [task])
     if task.info.state == 'success':
         ec = {
-            'VMWare(val.UUID && val.UUID === obj.UUID)': {
+            'VMWare.VM(val.UUID && val.UUID === obj.UUID)': {
                 'UUID': uuid,
                 'State': 'HardRebooted'
             }
@@ -317,7 +311,7 @@ def hard_reboot(si, uuid):
             'EntryContext': ec
         }
     elif task.info.state == 'error':
-        raise SystemExit('Error occured while trying to reboot Virtual Machine.')
+        raise Exception('Error occured while trying to reboot Virtual Machine.')
 
 
 def wait_for_tasks(si, tasks):
@@ -355,15 +349,15 @@ def wait_for_tasks(si, tasks):
             pcfilter.Destroy()
 
 
-def soft_reboot(uuid):
-    vm = get_vm(uuid)
+def soft_reboot(si, uuid):
+    vm = get_vm(si, uuid)
     vm.RebootGuest()
     return 'A request to reboot the guest has been sent.'
 
 
-def create_snapshot(args):
+def create_snapshot(si, args):
     uuid = args['vm-uuid']
-    vm = get_vm(uuid)
+    vm = get_vm(si, uuid)
     d = str(datetime.now())
     if args['memory'] == 'True':
         mem = True
@@ -375,18 +369,18 @@ def create_snapshot(args):
         qui = False
     name = args.get('name', uuid + ' snapshot ' + d)
     desc = args.get('description', 'Snapshot of VM UUID ' + uuid + ' taken on ' + d)
-    WaitForTask(vm.CreateSnapshot(name=name, description=desc, memory=mem, quiesce=qui))
+    pyVim.task.WaitForTask(vm.CreateSnapshot(name=name, description=desc, memory=mem, quiesce=qui))
     return 'Snapshot ' + name + ' completed.'
 
 
-def revert_snapshot(name, uuid):
-    vm = get_vm(uuid)
+def revert_snapshot(si, name, uuid):
+    vm = get_vm(si, uuid)
     snapObj = get_snapshots(vm.snapshot.rootSnapshotList, name)
     if len(snapObj) == 1:
         snapObj = snapObj[0].snapshot
-        WaitForTask(snapObj.RevertToSnapshot_Task())
+        pyVim.task.WaitForTask(snapObj.RevertToSnapshot_Task())
         ec = {
-            'VMWare(val.UUID && val.UUID === obj.UUID)': {
+            'VMWare.VM(val.UUID && val.UUID === obj.UUID)': {
                 'UUID': uuid,
                 'Snapshot': 'Reverted to ' + name
             }
@@ -414,7 +408,7 @@ def get_snapshots(snapshots, snapname):
 
 
 def get_events(si, args):
-    vm = get_vm(args.get('uuid'))
+    vm = get_vm(si, args.get('uuid'))
     hr = []
     content = si.RetrieveServiceContent()  # type: ignore
     eventManager = content.eventManager
@@ -445,11 +439,11 @@ def get_events(si, args):
     }
 
 
-def change_nic_state(si, args):
+def change_nic_state(si, args): # pragma: no cover
     uuid = args['vm-uuid']
     new_nic_state = args['nic-state']
     nic_number = args['nic-number']
-    vm = get_vm(uuid)
+    vm = get_vm(si, uuid)
     nic_prefix_header = "Network adapter "
     nic_label = nic_prefix_header + str(nic_number)
     virtual_nic_device = None
@@ -457,7 +451,7 @@ def change_nic_state(si, args):
         if isinstance(dev, vim.vm.device.VirtualEthernetCard) and dev.deviceInfo.label == nic_label:  # type: ignore
             virtual_nic_device = dev
     if not virtual_nic_device:
-        raise SystemExit("Virtual {} could not be found.".format(nic_label))
+        raise Exception("Virtual {} could not be found.".format(nic_label))
 
     virtual_nic_spec = vim.vm.device.VirtualDeviceSpec()  # type: ignore
     if new_nic_state == 'delete':
@@ -490,7 +484,7 @@ def change_nic_state(si, args):
 
     if task.info.state == 'success':
         ec = {
-            'VMWare(val.UUID && val.UUID === obj.UUID)': {
+            'VMWare.VM(val.UUID && val.UUID === obj.UUID)': {
                 'UUID': uuid,
                 'NICState': res_new_nic_state
             }
@@ -504,38 +498,11 @@ def change_nic_state(si, args):
             'EntryContext': ec
         }
     elif task.info.state == 'error':
-        raise SystemExit('Error occurred while trying to clone VM.')
-
-
-def list_vm_tags(vsphere_client, uuid):
-    dynamic_id = DynamicID(type='VirtualMachine', id=uuid)
-    categories = vsphere_client.tagging.Category.list()
-    x = vsphere_client.tagging.Category.get(categories[0])
-    test = vsphere_client.tagging.TagAssociation.list_attached_tags(dynamic_id)
-    tags = vsphere_client.tagging.Tag.list()
-    tag = vsphere_client.tagging.Tag.get(tags[0])
-    y = vsphere_client.tagging.TagAssociation.list_attached_objects(tag.id)
-    te = vsphere_client.vcenter.VM.list()
-    z = vsphere_client.vcenter.VM.get(dynamic_id.id)
-    x = 2
-
-
-def add_tag(vsphere_client, args):
-    dynamic_id = DynamicID(type='VirtualMachine', id=args.get('uuid'))
-    relevant_tag = get_tag(args)
-    vsphere_client.tagging.TagAssociation.attach(relevant_tag, dynamic_id)
-    return {
-        'ContentsFormat': formats['json'],
-        'Type': entryTypes['note'],
-        'Contents': {},
-        'ReadableContentsFormat': formats['text'],
-        'HumanReadable': 'Tag {} was added successfully.'.format(args.get('tag')),
-        'EntryContext': {}
-    }
+        raise Exception('Error occurred while trying to clone VM.')
 
 
 def list_vms_by_tag(vsphere_client, args):
-    relevant_tag = get_tag(args)
+    relevant_tag = get_tag(vsphere_client, args)
     vms = vsphere_client.tagging.TagAssociation.list_attached_objects(relevant_tag)
     vms = filter(lambda vm: vm.type == 'VirtualMachine', vms)
     vms_details = vsphere_client.vcenter.VM.list(
@@ -554,7 +521,7 @@ def list_vms_by_tag(vsphere_client, args):
         'ContentsFormat': formats['json'],
         'Type': entryTypes['note'],
         'Contents': data,
-        'ReadableContentsFormat': formats['text'],
+        'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Virtual Machines with Tag {}'.format(args.get('tag')), data),
         'EntryContext': ec
     }
@@ -566,7 +533,8 @@ def create_vm(si, args):
     host = search_for_obj(content, [vim.HostSystem], args.get('host'))
     pool = search_for_obj(content, [vim.ResourcePool], args.get('pool'))
     spec = create_vm_config_creator(host, args)
-
+    if not host:
+        raise Exception('The host provided is not valid.')
     task = folder.CreateVM_Task(config=spec, pool=pool, host=host)
     wait_for_tasks(si, [task])
 
@@ -593,25 +561,30 @@ def create_vm(si, args):
             'HostName': summary.guest.hostName if summary.guest.hostName else ' ',
             'MACAddress': mac_address,
             'Snapshot': task.info.result.snapshot.currentSnapshot if task.info.result.snapshot else ' ',
+            'SnapshotCreateDate': '',
+            'SnapshotUUID': '',
             'Deleted': 'False'
         }
         ec = {
-            'VMWare(val.UUID && val.UUID === obj.UUID)': data
+            'VMWare.VM(val.UUID && val.UUID === obj.UUID)': data
         }
         return {
             'ContentsFormat': formats['json'],
             'Type': entryTypes['note'],
             'Contents': data,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Virtual Machine', data),
+            'HumanReadable': tableToMarkdown('Virtual Machine', data,
+                                             headers=['Name', 'Template', 'Path', 'Guest', 'UUID',
+                                                      'IP', 'State', 'HostName', 'MACAddress', 'SnapshotCreateDate',
+                                                      'SnapshotUUID', 'Deleted']),
             'EntryContext': ec
         }
     elif task.info.state == 'error':
-        raise SystemExit('Error occurred while trying to create a VM.')
+        raise Exception('Error occurred while trying to create a VM.')
 
 
 def clone_vm(si, args):
-    vm = get_vm(args.get('uuid'))
+    vm = get_vm(si, args.get('uuid'))
     content = si.RetrieveContent()
     spec = vim.vm.CloneSpec()
     relocate_spec = vim.vm.RelocateSpec()
@@ -619,8 +592,8 @@ def clone_vm(si, args):
     relocate_spec.host = search_for_obj(content, [vim.HostSystem], args.get('host'))
     relocate_spec.pool = search_for_obj(content, [vim.ResourcePool], args.get('pool'))
     spec.location = relocate_spec
-    spec.template = args.get('template', False)
-    spec.powerOn = args.get('powerOn', False)
+    spec.template = argToBoolean(args.get('template', False))
+    spec.powerOn = argToBoolean(args.get('powerOn'))
 
     folder = search_for_obj(content, [vim.Folder], args.get('folder'))
     task = vm.CloneVM_Task(folder=folder, name=args.get('name'), spec=spec)
@@ -629,7 +602,6 @@ def clone_vm(si, args):
     if task.info.state == 'success':
         mac_address = ''
         summary = task.info.result.summary
-
         try:
             for dev in task.info.result.config.hardware.device:
                 if isinstance(dev, vim.vm.device.VirtualEthernetCard):  # type: ignore
@@ -648,27 +620,31 @@ def clone_vm(si, args):
             'State': summary.runtime.powerState,
             'HostName': summary.guest.hostName if summary.guest.hostName else ' ',
             'MACAddress': mac_address,
-            'Snapshot': task.info.result.snapshot.currentSnapshot if task.info.result.snapshot else ' ',
+            'SnapshotCreateDate': '',
+            'SnapshotUUID': '',
             'Deleted': 'False'
         }
         ec = {
-            'VMWare(val.UUID && val.UUID === obj.UUID)': data
+            'VMWare.VM(val.UUID && val.UUID === obj.UUID)': data
         }
         return {
             'ContentsFormat': formats['json'],
             'Type': entryTypes['note'],
             'Contents': data,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Virtual Machine', data),
+            'HumanReadable': tableToMarkdown('Virtual Machine', data,
+                                             headers=['Name', 'Template', 'Path', 'Guest', 'UUID',
+                                                      'IP', 'State', 'HostName', 'MACAddress', 'SnapshotCreateDate',
+                                                      'SnapshotUUID', 'Deleted']),
             'EntryContext': ec
         }
     elif task.info.state == 'error':
-        raise SystemExit('Error occurred while trying to clone VM.')
+        raise Exception('Error occurred while trying to clone VM.')
 
 
 def relocate_vm(si, args):
     content = si.RetrieveContent()
-    vm = get_vm(args.get('uuid'))
+    vm = get_vm(si, args.get('uuid'))
 
     priority = get_priority(args.get('priority'))
     spec = vim.VirtualMachineRelocateSpec()
@@ -693,11 +669,13 @@ def relocate_vm(si, args):
             'EntryContext': {}
         }
     elif task.info.state == 'error':
-        raise SystemExit('Error occurred while trying to relocate VM.')
+        raise Exception('Error occurred while trying to relocate VM.')
 
 
 def delete_vm(si, args):
-    vm = get_vm(args.get('uuid'))
+    vm = get_vm(si, args.get('uuid'))
+    if vm.runtime.powerState == 'poweredOff':
+        raise Exception("Virtual Machine should be powered off before deleting.")
     task = vm.Destroy_Task()
     wait_for_tasks(si, [task])
     if task.info.state == 'success':
@@ -706,7 +684,7 @@ def delete_vm(si, args):
             'Deleted': 'True'
         }
         ec = {
-            'VMWare(val.UUID && val.UUID === obj.UUID)': data
+            'VMWare.VM(val.UUID && val.UUID === obj.UUID)': data
         }
         return {
             'ContentsFormat': formats['json'],
@@ -717,7 +695,7 @@ def delete_vm(si, args):
             'EntryContext': ec
         }
     elif task.info.state == 'error':
-        raise SystemExit('Error occurred while trying to delete VM.')
+        raise Exception('Error occurred while trying to delete VM.')
 
 
 def register_vm(si, args):
@@ -739,11 +717,11 @@ def register_vm(si, args):
             'EntryContext': {}
         }
     elif task.info.state == 'error':
-        raise SystemExit('Error occurred while trying to register VM.')
+        raise Exception('Error occurred while trying to register VM.')
 
 
-def unregister_vm(args):
-    vm = get_vm(args.get('uuid'))
+def unregister_vm(si, args):
+    vm = get_vm(si, args.get('uuid'))
     vm.UnregisterVM()
     return {
         'ContentsFormat': formats['json'],
@@ -769,27 +747,23 @@ def main():  # pragma: no cover
         if demisto.command() == 'vmware-get-vms':
             result = get_vms(si, demisto.args())
         if demisto.command() == 'vmware-poweron':
-            result = power_on(demisto.args()['vm-uuid'])
+            result = power_on(si, demisto.args()['vm-uuid'])
         if demisto.command() == 'vmware-poweroff':
-            result = power_off(demisto.args()['vm-uuid'])
+            result = power_off(si, demisto.args()['vm-uuid'])
         if demisto.command() == 'vmware-hard-reboot':
             result = hard_reboot(si, demisto.args()['vm-uuid'])
         if demisto.command() == 'vmware-suspend':
-            result = suspend(demisto.args()['vm-uuid'])
+            result = suspend(si, demisto.args()['vm-uuid'])
         if demisto.command() == 'vmware-soft-reboot':
-            result = soft_reboot(demisto.args()['vm-uuid'])
+            result = soft_reboot(si, demisto.args()['vm-uuid'])
         if demisto.command() == 'vmware-create-snapshot':
-            result = create_snapshot(demisto.args())
+            result = create_snapshot(si, demisto.args())
         if demisto.command() == 'vmware-revert-snapshot':
-            result = revert_snapshot(demisto.args()['snapshot-name'], demisto.args()['vm-uuid'])
+            result = revert_snapshot(si, demisto.args()['snapshot-name'], demisto.args()['vm-uuid'])
         if demisto.command() == 'vmware-get-events':
             result = get_events(si, demisto.args())
         if demisto.command() == 'vmware-change-nic-state':
             result = change_nic_state(si, demisto.args())
-        if demisto.command() == 'vmware-list-vm-tags':
-            result = list_vm_tags(vsphere_client, demisto.args()['uuid'])
-        if demisto.command() == 'vmware-add-tag':
-            result = add_tag(vsphere_client, demisto.args())
         if demisto.command() == 'vmware-list-vms-by-tag':
             result = list_vms_by_tag(vsphere_client, demisto.args())
         if demisto.command() == 'vmware-create-vm':
@@ -803,7 +777,7 @@ def main():  # pragma: no cover
         if demisto.command() == 'vmware-register-vm':
             result = register_vm(si, demisto.args())
         if demisto.command() == 'vmware-unregister-vm':
-            result = unregister_vm(demisto.args())
+            result = unregister_vm(si, demisto.args())
         res.append(result)
     except Exception as ex:
         res.append(
