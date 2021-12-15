@@ -131,6 +131,23 @@ script:
       type: number
     description: Exports native files from the case to a directory reduced by the filter specified.
 
+  - name: accessdata-api-label-search-term
+    arguments:
+    - name: caseid
+      required: true
+      description: The identifier of the case.
+    - name: keyword
+      required: true
+      description: The term to label object upon. The same label name is used.
+    - name: filter_json
+      required: true
+      description: The JSON representation of the filter to apply.
+    outputs:
+    - contextPath: Accessdata.Case.Label.Name
+      description: A name of the label created.
+      type: number
+    description: Labels items that contain the keyword specified from the case evidence.
+
   - name: accessdata-api-endpoint-volatile-analysis
     arguments:
     - name: caseid

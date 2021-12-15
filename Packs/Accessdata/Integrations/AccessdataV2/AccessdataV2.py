@@ -139,11 +139,11 @@ def _label_search_term(client, caseid, keyword, filter_json):
     return CommandResults(
         outputs_prefix="Accessdata.Case.Label",
         outputs={
-            "name": keyword
+            "Name": keyword
         },
-        outputs_key_field="name",
+        outputs_key_field="Name",
         readable_output=tableToMarkdown("Accessdata.Case.Label", {
-            "name": keyword
+            "Name": keyword
         })
     )
 
