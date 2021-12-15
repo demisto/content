@@ -1359,3 +1359,574 @@ Get the containers namespaces names
 | namespace2 |
 | namespace3 |
 
+### prisma-cloud-compute-images-scan-list
+***
+Get images scan report, the report includes vulnerabilities, compliance issues, binaries, etc.
+
+
+#### Base Command
+
+`prisma-cloud-compute-images-scan-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| clusters | Filters results by cluster name. | Optional | 
+| compact | Indicates if only minimal image data is to be returned (i.e., skip vulnerabilities, compliance, and extended image metadata) (true) or not (false). Possible values are: true, false. Default is true. | Optional | 
+| fields | List of fields to retrieve. | Optional | 
+| hostname | Filters results by hostnames. | Optional | 
+| id | Filters the results by image ID. | Optional | 
+| name | Filters results by image name. | Optional | 
+| registry | Filters results by image registry. | Optional | 
+| repository | Filters results by image repository. | Optional | 
+| limit_record | maximum scan images records to return. Default is 10. | Optional | 
+| limit_stats | maximum of compliance/vulnerability records to return. Default is 10. | Optional | 
+| offset | The offset to begin listing images scan results. Default is 0. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaCloudCompute.ReportsImagesScan._id | String | Image identifier \(image ID or repo:tag\). | 
+| PrismaCloudCompute.ReportsImagesScan.allCompliance | Unknown | AllCompliance contains data regarding passed compliance checks | 
+| PrismaCloudCompute.ReportsImagesScan.appEmbedded | Boolean | Indicates that this image was scanned by an App-Embedded Defender. | 
+| PrismaCloudCompute.ReportsImagesScan.applications | Unknown | Products in the image. | 
+| PrismaCloudCompute.ReportsImagesScan.baseImage | String | Image’s base image name. Used when filtering the vulnerabilities by base images. | 
+| PrismaCloudCompute.ReportsImagesScan.binaries | Unknown | Binaries in the image. | 
+| PrismaCloudCompute.ReportsImagesScan.cloudMetadata | Unknown | CloudMetadata is the metadata for an instance running in a cloud provider \(AWS/GCP/Azure\) | 
+| PrismaCloudCompute.ReportsImagesScan.clusters | String | Cluster names. | 
+| PrismaCloudCompute.ReportsImagesScan.collections | String | Collections to which this result applies. | 
+| PrismaCloudCompute.ReportsImagesScan.complianceDistribution | Unknown | Distribution counts the number of vulnerabilities per type | 
+| PrismaCloudCompute.ReportsImagesScan.complianceIssues | Unknown | Number of compliance issues. | 
+| PrismaCloudCompute.ReportsImagesScan.complianceRiskScore | Number | Compliance risk score for the image. | 
+| PrismaCloudCompute.ReportsImagesScan.creationTime | Date | Date/time when the image was created. | 
+| PrismaCloudCompute.ReportsImagesScan.distro | String | Full name of the distribution. | 
+| PrismaCloudCompute.ReportsImagesScan.ecsClusterName | String | ECS cluster name. | 
+| PrismaCloudCompute.ReportsImagesScan.err | String | Description of an error that occurred during image health scan. | 
+| PrismaCloudCompute.ReportsImagesScan.externalLabels | Unknown | Kubernetes external labels of all containers running this image. | 
+| PrismaCloudCompute.ReportsImagesScan.files | Unknown | Files in the container. | 
+| PrismaCloudCompute.ReportsImagesScan.firewallProtection | Unknown | ProtectionStatus describes the status of the WAAS protection | 
+| PrismaCloudCompute.ReportsImagesScan.firstScanTime | Date | Date/time when this image was first scanned \(preserved during version updates\). | 
+| PrismaCloudCompute.ReportsImagesScan.history | Unknown | Docker image history. | 
+| PrismaCloudCompute.ReportsImagesScan.hostDevices | String | Map from host network device name to IP address. | 
+| PrismaCloudCompute.ReportsImagesScan.hostname | String | Name of the host that was scanned. | 
+| PrismaCloudCompute.ReportsImagesScan.hosts | Unknown | ImageHosts is a fast index for image scan results metadata per host | 
+| PrismaCloudCompute.ReportsImagesScan.id | String | Image ID | 
+| PrismaCloudCompute.ReportsImagesScan.image | Unknown | Image represents a container image | 
+| PrismaCloudCompute.ReportsImagesScan.installedProducts | Unknown | InstalledProducts contains data regarding products running in environment | 
+| PrismaCloudCompute.ReportsImagesScan.instances | Unknown | Details about each occurrence of the image \(tag \+ host\). | 
+| PrismaCloudCompute.ReportsImagesScan.k8sClusterAddr | String | Endpoint of the Kubernetes API server. | 
+| PrismaCloudCompute.ReportsImagesScan.labels | String | Image labels. | 
+| PrismaCloudCompute.ReportsImagesScan.layers | String | Image's filesystem layers. Each layer is a SHA256 digest of the filesystem diff See: https://windsock.io/explaining-docker-image-ids/. | 
+| PrismaCloudCompute.ReportsImagesScan.missingDistroVulnCoverage | Boolean | Indicates if the image OS is covered in the IS \(true\) or not \(false\). | 
+| PrismaCloudCompute.ReportsImagesScan.namespaces | String | k8s namespaces of all the containers running this image. | 
+| PrismaCloudCompute.ReportsImagesScan.osDistro | String | Name of the OS distribution. | 
+| PrismaCloudCompute.ReportsImagesScan.osDistroRelease | String | OS distribution release. | 
+| PrismaCloudCompute.ReportsImagesScan.osDistroVersion | String | OS distribution version. | 
+| PrismaCloudCompute.ReportsImagesScan.packageManager | Boolean | Indicates if the package manager is installed for the OS. | 
+| PrismaCloudCompute.ReportsImagesScan.packages | Unknown | Packages which exist in the image. | 
+| PrismaCloudCompute.ReportsImagesScan.registryNamespace | String | IBM cloud namespace to which the image belongs. | 
+| PrismaCloudCompute.ReportsImagesScan.repoDigests | String | Digests of the image. Used for content trust \(notary\). Has one digest per tag. | 
+| PrismaCloudCompute.ReportsImagesScan.repoTag | Unknown | ImageTag represents an image repository and its associated tag or registry digest | 
+| PrismaCloudCompute.ReportsImagesScan.rhelRepos | String | RhelRepositories are the \(RPM\) repositories IDs from which the packages in this image were installed Used for matching vulnerabilities by Red Hat CPEs. | 
+| PrismaCloudCompute.ReportsImagesScan.riskFactors | Unknown | RiskFactors maps the existence of vulnerability risk factors | 
+| PrismaCloudCompute.ReportsImagesScan.scanID | String | Scan ID | 
+| PrismaCloudCompute.ReportsImagesScan.scanTime | Date | Date/time of the last scan of the image. | 
+| PrismaCloudCompute.ReportsImagesScan.scanVersion | String | Defender version that published the image. | 
+| PrismaCloudCompute.ReportsImagesScan.startupBinaries | Unknown | Binaries which are expected to run when the container is created from this image. | 
+| PrismaCloudCompute.ReportsImagesScan.tags | Unknown | Tags associated with the given image. | 
+| PrismaCloudCompute.ReportsImagesScan.topLayer | String | SHA256 of the image's last layer that is the last element of the Layers field. | 
+| PrismaCloudCompute.ReportsImagesScan.trustResult | Unknown | ImageResult represents an aggregated image trust result | 
+| PrismaCloudCompute.ReportsImagesScan.trustStatus | String | Status is the trust status for an image | 
+| PrismaCloudCompute.ReportsImagesScan.twistlockImage	 | Boolean | Indicates if the image is a Twistlock image \(true\) or not \(false\). | 
+| PrismaCloudCompute.ReportsImagesScan.type	 | Unknown | ScanType represents the scanning type performed | 
+| PrismaCloudCompute.ReportsImagesScan.vulnerabilities | Unknown | CVE vulnerabilities of the image. | 
+| PrismaCloudCompute.ReportsImagesScan.vulnerabilitiesCount | Number | Total number of vulnerabilities. | 
+| PrismaCloudCompute.ReportsImagesScan.vulnerabilityDistribution | Unknown | Distribution counts the number of vulnerabilities per type | 
+| PrismaCloudCompute.ReportsImagesScan.vulnerabilityRiskScore | Number | Image's CVE risk score. | 
+| PrismaCloudCompute.ReportsImagesScan.wildFireUsage | Unknown | Usage holds wildfire usage stats, period for the usage varies with context | 
+
+
+#### Command Example
+```!prisma-cloud-compute-images-scan-list id=image123 limit_stats=2 compact=false```
+
+
+#### Context Example
+```json
+{
+    "PrismaCloudCompute": {
+        "ReportsImagesScan": {
+            "cloudMetadata": {
+                "resourceID": "123", 
+                "image": "ami-7448d60d", 
+                "provider": "aws", 
+                "type": "t2.large", 
+                "region": "eu-west-1", 
+                "accountID": "123"
+            }, 
+            "hostname": "", 
+            "vulnerabilityDistribution": {
+                "high": 28, 
+                "total": 60, 
+                "medium": 20, 
+                "critical": 12, 
+                "low": 0
+            }, 
+            "image": {
+                "created": "2018-05-10T10:32:49.309Z"
+            }, 
+            "instances": [
+                {
+                    "image": "demisto/python:1.3-alpine", 
+                    "modified": "2021-12-14T14:19:36.091Z", 
+                    "repo": "demisto/python", 
+                    "host": "host123", 
+                    "tag": "1.3-alpine", 
+                    "registry": ""
+                }
+            ], 
+            "complianceIssues": [
+                {
+                    "templates": [
+                        "PCI", 
+                        "DISA STIG"
+                    ], 
+                    "vecStr": "", 
+                    "text": "", 
+                    "discovered": "0001-01-01T00:00:00Z", 
+                    "exploit": "", 
+                    "layerTime": 0, 
+                    "id": 41, 
+                    "severity": "high", 
+                    "title": "(CIS_Docker_v1.2.0 - 4.1) Image should be created with a non-root user", 
+                    "packageVersion": "", 
+                    "cause": "", 
+                    "cvss": 0, 
+                    "status": "", 
+                    "twistlock": false, 
+                    "fixDate": "", 
+                    "description": "It is a good practice to run the container as a non-root user, if possible. Though user\nnamespace mapping is now available, if a user is already defined in the container image, the\ncontainer is run as that user by default and specific user namespace remapping is not\nrequired", 
+                    "link": "", 
+                    "cri": false, 
+                    "riskFactors": null, 
+                    "type": "image", 
+                    "packageName": "", 
+                    "functionLayer": "", 
+                    "published": 0, 
+                    "cve": ""
+                }
+            ], 
+            "repoTag": {
+                "repo": "demisto/python", 
+                "tag": "1.3-alpine", 
+                "registry": ""
+            }, 
+            "packageManager": true, 
+            "repoDigests": [
+                "demisto/python@sha256:0bfa24a116efb99c51076ee3801ee8de80e5998a0f85522599c7036dea8a67f1"
+            ], 
+            "id": "image123", 
+            "layers": [
+                "sha256:04a094fe844e055828cb2d64ead6bd3eb4257e7c7b5d1e2af0da89fa20472cf4", 
+                "sha256:b901e62fe587b147e801712b7833942a540492af8f67cc683ac5a3b7bcbf7eda", 
+                "sha256:240070abd5cc482cbe83e70710e9c161105bf1b69fc4551ceedac541aec1e552", 
+                "sha256:08ed7077578e63f32e98ec38644705d67aec68661663cfa43e7e771f37ac781b", 
+                "sha256:25f89c88aa30915565de42481044fdc3edcde2edcd88c32098b16adbe09c65ec", 
+                "sha256:607e311316ef7ea1437fe4b8f7a6f04f9a61b0f21e2d4ee0611c05bd1d245ff7", 
+                "sha256:21511d4e2cf5964090236c3db6aa38c23f8937aab18226dd1898ef4346fa9a3c", 
+                "sha256:9ec31cab0619e95e88291cd611370e4d0f61d540862496b89eed00845d48a3a8", 
+                "sha256:ce388cb57837216290c2ec5c33ee70ff50ee70a479fdc401f9170f278e68c15d", 
+                "sha256:887b26e25244256638869a154e4b7427f124a1ef64723ea7082096025e7f1520", 
+                "sha256:40c6aaccab9bea3953dfa459e3426d0f8a23fda23ec5495404ae21afa94af475", 
+                "sha256:082ca23ed20f62157e6b3958ed4899fccd6de2501468f668874d746f0af1bc69", 
+                "sha256:e252153001780e97deed131418ef8ed0ad8176f55e14916a338120cc8a464af8", 
+                "sha256:11f9d19047c7dfc84742694c7c7db04ceb346bf60e44a8a28947937aa3408ba2", 
+                "sha256:1945710968a74b7692f635829f9dac189df097b8f7d135aa51f6726dccb2a2be", 
+                "sha256:9dfc2f79a6a83bd3791f4b6c621850b49db37ff729cdc17fd0a7b0ec373338c6"
+            ], 
+            "packages": [
+                {
+                    "pkgsType": "package", 
+                    "pkgs": [
+                        {
+                            "name": "busybox", 
+                            "version": "1.27.2-r8", 
+                            "cveCount": 450, 
+                            "license": "GPL2", 
+                            "layerTime": 1525948365
+                        }, 
+                        {
+                            "name": "apk-tools", 
+                            "version": "2.9.1-r2", 
+                            "cveCount": 25, 
+                            "license": "GPL2", 
+                            "layerTime": 1512154128
+                        }
+                    ]
+                }, 
+                {
+                    "pkgsType": "python", 
+                    "pkgs": [
+                        {
+                            "name": "python", 
+                            "version": "2.7.14", 
+                            "cveCount": 65, 
+                            "license": "PSF license", 
+                            "layerTime": 1513722622
+                        }, 
+                        {
+                            "name": "certifi", 
+                            "version": "2017.11.5", 
+                            "cveCount": 0, 
+                            "license": "MPL-2.0", 
+                            "layerTime": 1515337812
+                        }
+                    ]
+                }
+            ], 
+            "complianceDistribution": {
+                "high": 1, 
+                "total": 1, 
+                "medium": 0, 
+                "critical": 0, 
+                "low": 0
+            }, 
+            "firewallProtection": {
+                "supported": false, 
+                "enabled": false
+            }, 
+            "allCompliance": {}, 
+            "appEmbedded": false, 
+            "installedProducts": {
+                "docker": "17.06.0-ce", 
+                "osDistro": "Alpine Linux v3.7", 
+                "hasPackageManager": true
+            }, 
+            "collections": [
+                "All", 
+                "676921422616", 
+                "Test Collection"
+            ], 
+            "startupBinaries": [
+                {
+                    "path": "/usr/local/bin/python2.7", 
+                    "cveCount": 0, 
+                    "name": "python", 
+                    "md5": "dc8c57a9674d54da18637ffea29eeaba"
+                }
+            ], 
+            "scanVersion": "21.04.439", 
+            "type": "image", 
+            "distro": "Alpine Linux v3.7", 
+            "files": [], 
+            "scanID": 0, 
+            "osDistro": "alpine", 
+            "tags": [
+                {
+                    "repo": "demisto/python", 
+                    "tag": "1.3-alpine", 
+                    "registry": ""
+                }
+            ], 
+            "Secrets": [], 
+            "applications": [
+                {
+                    "knownVulnerabilities": 26, 
+                    "path": "/bin/busybox", 
+                    "version": "1.27.2", 
+                    "layerTime": 1525948355, 
+                    "name": "busybox"
+                }
+            ], 
+            "osDistroRelease": "3.7.0", 
+            "topLayer": "sha256:9dfc2f79a6a83bd3791f4b6c621850b49db37ff729cdc17fd0a7b0ec373338c6", 
+            "osDistroVersion": "3.7.0", 
+            "trustStatus": "trusted", 
+            "firstScanTime": "2021-09-02T11:05:27.439Z", 
+            "_id": "image123", 
+            "riskFactors": {
+                "Remote execution": {}, 
+                "High severity": {}, 
+                "Has fix": {}, 
+                "Attack complexity: low": {}, 
+                "Recent vulnerability": {}, 
+                "Attack vector: network": {}, 
+                "Critical severity": {}, 
+                "Medium severity": {}, 
+                "DoS": {}
+            }, 
+            "err": "", 
+            "vulnerabilitiesCount": 60, 
+            "scanTime": "2021-12-14T14:19:36.091Z", 
+            "complianceIssuesCount": 1, 
+            "creationTime": "2018-05-10T10:32:49.309Z", 
+            "vulnerabilities": [
+                {
+                    "templates": null, 
+                    "vecStr": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N", 
+                    "text": "", 
+                    "discovered": "2021-09-02T11:05:27Z", 
+                    "exploit": "", 
+                    "layerTime": 1525948365, 
+                    "id": 46, 
+                    "applicableRules": [
+                        "<1.30.0"
+                    ], 
+                    "severity": "high", 
+                    "title": "", 
+                    "packageVersion": "1.27.2-r8", 
+                    "cause": "", 
+                    "cvss": 7.5, 
+                    "status": "fixed in 1.30.1-r5", 
+                    "twistlock": false, 
+                    "fixDate": "January 09, 2019 16:29:00 PM", 
+                    "description": "An issue was discovered in BusyBox before 1.30.0. An out of bounds read in udhcp components (consumed by the DHCP server, client, and relay) allows a remote attacker to leak sensitive information from the stack by sending a crafted DHCP message. This is related to verification in udhcp_get_option() in networking/udhcp/common.c that 4-byte options are indeed 4 bytes.", 
+                    "link": "https://nvd.nist.gov/vuln/detail/CVE-2018-20679", 
+                    "cri": false, 
+                    "riskFactors": {
+                        "Attack complexity: low": {}, 
+                        "High severity": {}, 
+                        "Attack vector: network": {}, 
+                        "Has fix": {}
+                    }, 
+                    "type": "image", 
+                    "packageName": "busybox", 
+                    "functionLayer": "", 
+                    "published": 1547051340, 
+                    "cve": "CVE-2018-20679"
+                }, 
+                {
+                    "templates": null, 
+                    "vecStr": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H", 
+                    "text": "", 
+                    "discovered": "2021-09-02T11:05:27Z", 
+                    "exploit": "", 
+                    "layerTime": 1525948365, 
+                    "id": 46, 
+                    "applicableRules": [
+                        "<1.29.0"
+                    ], 
+                    "severity": "critical", 
+                    "title": "", 
+                    "packageVersion": "1.27.2-r8", 
+                    "cause": "", 
+                    "cvss": 9.8, 
+                    "status": "fixed in 1.29.3-r10", 
+                    "twistlock": false, 
+                    "fixDate": "June 26, 2018 16:29:00 PM", 
+                    "description": "BusyBox project BusyBox wget version prior to commit 8e2174e9bd836e53c8b9c6e00d1bc6e2a718686e contains a Buffer Overflow vulnerability in Busybox wget that can result in heap buffer overflow. This attack appear to be exploitable via network connectivity. This vulnerability appears to have been fixed in after commit 8e2174e9bd836e53c8b9c6e00d1bc6e2a718686e.", 
+                    "link": "https://nvd.nist.gov/vuln/detail/CVE-2018-1000517", 
+                    "cri": false, 
+                    "riskFactors": {
+                        "Attack complexity: low": {}, 
+                        "Attack vector: network": {}, 
+                        "Has fix": {}, 
+                        "Critical severity": {}
+                    }, 
+                    "type": "image", 
+                    "packageName": "busybox", 
+                    "functionLayer": "", 
+                    "published": 1530030540, 
+                    "cve": "CVE-2018-1000517"
+                }
+            ], 
+            "hosts": {
+                "host123": {
+                    "modified": "2021-12-14T14:19:36.091Z"
+                }
+            }, 
+            "complianceRiskScore": 10000, 
+            "wildFireUsage": null, 
+            "binaries": [
+                {
+                    "path": "/bin/busybox", 
+                    "version": "1.27.2", 
+                    "cveCount": 0, 
+                    "name": "busybox", 
+                    "md5": "17890907c72a9aa14c5580faf4f6a30a"
+                }, 
+                {
+                    "path": "/sbin/apk", 
+                    "cveCount": 0, 
+                    "name": "apk", 
+                    "md5": "8f77c14fa2ab4f668f6af4bfa3e12587"
+                }
+            ], 
+            "vulnerabilityRiskScore": 12282000, 
+            "history": [
+                {
+                    "sizeBytes": 4143684, 
+                    "instruction": "ADD file:2b00f26f6004576e2f8faeb3fb0517a14f79ea89a059fe096b54cbecf5da512e in / ", 
+                    "emptyLayer": false, 
+                    "id": "<missing>", 
+                    "created": 1512154128
+                }, 
+                {
+                    "instruction": "CMD [\"/bin/sh\"]", 
+                    "emptyLayer": true, 
+                    "id": "<missing>", 
+                    "created": 1512154128
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+### Image description
+|ID|Image|OS Distribution|Vulnerabilities Count|Compliance Issues Count|
+|---|---|---|---|---|
+| image123 | demisto/python:1.3-alpine | Alpine Linux v3.7 | 60 | 1 |
+### Vulnerabilities
+|Cve|Description|Severity|Package Name|Status|Fix Date|
+|---|---|---|---|---|---|
+| CVE-2018-20679 | An issue was discovered in BusyBox before 1.30.0. An out of bounds read in udhcp components (consumed by the DHCP server, client, and relay) allows a remote attacker to leak sensitive information from the stack by sending a crafted DHCP message. This is related to verification in udhcp_get_option() in networking/udhcp/common.c that 4-byte options are indeed 4 bytes. | high | busybox | fixed in 1.30.1-r5 | January 09, 2019 16:29:00 PM |
+| CVE-2018-1000517 | BusyBox project BusyBox wget version prior to commit 8e2174e9bd836e53c8b9c6e00d1bc6e2a718686e contains a Buffer Overflow vulnerability in Busybox wget that can result in heap buffer overflow. This attack appear to be exploitable via network connectivity. This vulnerability appears to have been fixed in after commit 8e2174e9bd836e53c8b9c6e00d1bc6e2a718686e. | critical | busybox | fixed in 1.29.3-r10 | June 26, 2018 16:29:00 PM |
+### Compliances
+|Id|Severity|Description|
+|---|---|---|
+| 41 | high | It is a good practice to run the container as a non-root user, if possible. Though user<br>namespace mapping is now available, if a user is already defined in the container image, the<br>container is run as that user by default and specific user namespace remapping is not<br>required |
+
+
+
+#### Command Example
+```!prisma-cloud-compute-images-scan-list id=image123 limit_stats=2 compact=true```
+
+
+#### Context Example
+```json
+{
+    "PrismaCloudCompute": {
+        "ReportsImagesScan": {
+            "cloudMetadata": {
+                "resourceID": "123", 
+                "image": "ami-7448d60d", 
+                "provider": "aws", 
+                "type": "t2.large", 
+                "region": "eu-west-1", 
+                "accountID": "123"
+            }, 
+            "hostname": "", 
+            "vulnerabilityDistribution": {
+                "high": 28, 
+                "total": 60, 
+                "medium": 20, 
+                "critical": 12, 
+                "low": 0
+            }, 
+            "image": {
+                "created": "2018-05-10T10:32:49.309Z"
+            }, 
+            "instances": [
+                {
+                    "image": "demisto/python:1.3-alpine", 
+                    "modified": "2021-12-14T14:19:36.091Z", 
+                    "repo": "demisto/python", 
+                    "host": "host123", 
+                    "tag": "1.3-alpine", 
+                    "registry": ""
+                }
+            ], 
+            "complianceIssues": null, 
+            "repoTag": {
+                "repo": "demisto/python", 
+                "tag": "1.3-alpine", 
+                "registry": ""
+            }, 
+            "packageManager": false, 
+            "repoDigests": [
+                "123"
+            ], 
+            "id": "image123", 
+            "packages": null, 
+            "complianceDistribution": {
+                "high": 1, 
+                "total": 1, 
+                "medium": 0, 
+                "critical": 0, 
+                "low": 0
+            }, 
+            "firewallProtection": {
+                "supported": false, 
+                "enabled": false
+            }, 
+            "allCompliance": {}, 
+            "appEmbedded": false, 
+            "installedProducts": {
+                "docker": "17.06.0-ce", 
+                "osDistro": "Alpine Linux v3.7", 
+                "hasPackageManager": true
+            }, 
+            "collections": [
+                "All", 
+                "676921422616", 
+                "Test Collection"
+            ], 
+            "startupBinaries": null, 
+            "scanVersion": "21.04.439", 
+            "type": "image", 
+            "distro": "Alpine Linux v3.7", 
+            "files": null, 
+            "scanID": 0, 
+            "osDistro": "alpine", 
+            "tags": [
+                {
+                    "repo": "demisto/python", 
+                    "tag": "1.3-alpine", 
+                    "registry": ""
+                }
+            ], 
+            "Secrets": null, 
+            "osDistroRelease": "3.7.0", 
+            "topLayer": "sha256:9dfc2f79a6a83bd3791f4b6c621850b49db37ff729cdc17fd0a7b0ec373338c6", 
+            "osDistroVersion": "", 
+            "trustStatus": "trusted", 
+            "firstScanTime": "2021-09-02T11:05:27.439Z", 
+            "_id": "image123", 
+            "riskFactors": {
+                "Remote execution": {}, 
+                "High severity": {}, 
+                "Has fix": {}, 
+                "Attack complexity: low": {}, 
+                "Recent vulnerability": {}, 
+                "Attack vector: network": {}, 
+                "Critical severity": {}, 
+                "Medium severity": {}, 
+                "DoS": {}
+            }, 
+            "err": "", 
+            "vulnerabilitiesCount": 60, 
+            "scanTime": "2021-12-14T14:19:36.091Z", 
+            "complianceIssuesCount": 1, 
+            "creationTime": "2018-05-10T10:32:49.309Z", 
+            "vulnerabilities": null, 
+            "hosts": {
+                "host123": {
+                    "modified": "2021-12-14T14:19:36.091Z"
+                }
+            }, 
+            "complianceRiskScore": 10000, 
+            "wildFireUsage": null, 
+            "binaries": null, 
+            "vulnerabilityRiskScore": 12282000, 
+            "history": null
+        }
+    }
+}
+```
+
+#### Human Readable Output
+### Image description
+|ID|Image|OS Distribution|Vulnerabilities Count|Compliance Issues Count|
+|---|---|---|---|---|
+| image123 | demisto/python:1.3-alpine | Alpine Linux v3.7 | 60 | 1 |
+### Vulnerability Statistics
+|Critical|High|Medium|Low|
+|---|---|---|---|
+| 12 | 28 | 20 | 0 |
+### Compliance Statistics
+|Critical|High|Medium|Low|
+|---|---|---|---|
+| 0 | 1 | 0 | 0 |

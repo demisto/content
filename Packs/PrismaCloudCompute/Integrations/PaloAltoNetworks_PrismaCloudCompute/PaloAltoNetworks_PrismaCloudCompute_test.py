@@ -5,7 +5,7 @@ from PaloAltoNetworks_PrismaCloudCompute import (
     HEADERS_BY_NAME, get_profile_host_list, get_container_profile_list, get_container_hosts_list,
     get_profile_container_forensic_list, get_profile_host_forensic_list, get_console_version, get_custom_feeds_ip_list,
     add_custom_ip_feeds, filter_api_response, parse_date_string_format, get_custom_malware_feeds,
-    add_custom_malware_feeds, get_cves, get_defenders, get_collections, get_namespaces
+    add_custom_malware_feeds, get_cves, get_defenders, get_collections, get_namespaces, get_images_scan_list
 )
 
 from CommonServerPython import DemistoException
@@ -503,6 +503,16 @@ HTTP_REQUEST_URL_WITH_QUERY_PARAMS = [
         get_namespaces,
         "/radar/container/namespaces",
         "https://test.com/radar/container/namespaces?cluster=cluster&collections=collections"
+    ),
+    (
+        OrderedDict(
+            clusters="clusters", compact="true", fields="fields", hostname="hostname", id="123", name="name",
+            registry="registry", repository="repository", offset="1", limit_record="3", limit_stats="3"
+        ),
+        get_images_scan_list,
+        "/images",
+        "https://test.com/images?clusters=clusters&compact=true&fields=fields"
+        "&hostname=hostname&id=123&name=name&registry=registry&repository=repository&offset=1&limit=3"
     )
 ]
 
@@ -1094,6 +1104,48 @@ EXPECTED_CONTEXT_OUTPUT_DATA = [
         "/radar/container/namespaces",
         ["namespace1", "namespace2", "namespace3"],
         ""
+    ),
+    (
+        {"limit_stats": "1", "limit_records": "20"},
+        get_images_scan_list,
+        "/images",
+        [
+            {
+                "id": "123",
+                "osDistro": "alpine",
+                "vulnerabilities": [
+                    {
+                        "cvss": 7.5,
+                        "status": "fixed in 1.30.1-r5",
+                        "cve": "CVE-2018-20679",
+                        "packageName": "busybox",
+                        "fixDate": 1547051340,
+                    },
+                    {
+                        "cvss": 8.5,
+                        "status": "fixed in 1.30.1-r5",
+                        "cve": "CVE-2019-20679",
+                        "packageName": "busybox2",
+                        "fixDate": 1547059999,
+                    },
+                ]
+            }
+        ],
+        [
+            {
+                "id": "123",
+                "osDistro": "alpine",
+                "vulnerabilities": [
+                    {
+                        "cvss": 7.5,
+                        "status": "fixed in 1.30.1-r5",
+                        "cve": "CVE-2018-20679",
+                        "packageName": "busybox",
+                        "fixDate": "January 09, 2019 16:29:00 PM",
+                    }
+                ]
+            }
+        ]
     )
 ]
 

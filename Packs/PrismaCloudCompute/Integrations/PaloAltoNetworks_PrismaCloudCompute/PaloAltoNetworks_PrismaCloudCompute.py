@@ -251,6 +251,18 @@ class PrismaCloudComputeClient(BaseClient):
         """
         return self._http_request(method="GET", url_suffix="/radar/container/namespaces", params=params)
 
+    def get_images_scan_info(self, params):
+        """
+        Sends a request to get information about images scans.
+
+        Args:
+            params (dict): query parameters.
+
+        Returns:
+            list[dict]: images scan information.
+        """
+        return self._http_request(method="GET", url_suffix="/images", params=params)
+
 
 def str_to_bool(s):
     """
@@ -461,6 +473,8 @@ def epochs_to_timestamp(epochs: int, date_format: str = "%B %d, %Y %H:%M:%S %p")
         str: timestamp in the new format, empty string in case of a failure
     """
     try:
+        if epochs == 0:  # when the api returns epochs as 0, it means that the api returns 'None' on the timestamp
+            return ""
         return datetime.utcfromtimestamp(epochs).strftime(date_format)
     except TypeError:
         return ""
@@ -1169,6 +1183,133 @@ def get_namespaces(client: PrismaCloudComputeClient, args: dict) -> CommandResul
     )
 
 
+def get_image_descriptions(images_scans: List[dict]) -> List[dict]:
+    """
+    Get the image descriptions
+
+    Args:
+        images_scans (list[dict]): images scans information.
+
+    Returns:
+        List[dict]: images descriptions.
+
+    """
+    return [
+        {
+            "Image": image_scan.get("instances", [{}])[0].get("image"),
+            "ID": image_scan.get("_id"),
+            "OS Distribution": image_scan.get("distro"),
+            "Vulnerabilities Count": image_scan.get("vulnerabilitiesCount"),
+            "Compliance Issues Count": image_scan.get("complianceIssuesCount")
+        } for image_scan in images_scans
+    ]
+
+
+def get_images_scan_list(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
+    """
+    Get the images scan list.
+    Implement the command 'prisma-cloud-compute-images-scan-list'
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-images-scan-list command arguments
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    args["limit"], args["offset"] = parse_limit_and_offset_values(
+        limit=args.pop("limit_record", "10"), offset=args.get("offset", "0")
+    )
+    stats_limit, _ = parse_limit_and_offset_values(limit=args.pop("limit_stats", "10"))
+    args["compact"] = argToBoolean(value=args.get("compact", "true"))
+
+    if images_scans := client.get_images_scan_info(params=assign_params(**args)):
+        for scan in images_scans:
+            if "vulnerabilities" in scan:
+                scan["vulnerabilities"] = filter_api_response(
+                    api_response=scan.get("vulnerabilities"), limit=stats_limit
+                )
+                if vulnerabilities := scan.get("vulnerabilities"):
+                    for vuln in vulnerabilities:
+                        if "fixDate" in vuln:
+                            vuln["fixDate"] = epochs_to_timestamp(epochs=vuln.get("fixDate", 0))
+            if "complianceIssues" in scan:
+                scan["complianceIssues"] = filter_api_response(
+                    api_response=scan.get("complianceIssues"), limit=stats_limit
+                )
+                if compliances := scan.get("complianceIssues"):
+                    for compliance in compliances:
+                        if "fixDate" in compliance:
+                            compliance["fixDate"] = epochs_to_timestamp(epochs=compliance.get("fixDate", 0))
+
+        image_description_table = tableToMarkdown(
+            name="Image description",
+            t=get_image_descriptions(images_scans=images_scans),
+            headers=["ID", "Image", "OS Distribution", "Vulnerabilities Count", "Compliance Issues Count"],
+            removeNull=True
+        )
+
+        if len(images_scans) == 1:  # then there is only one image scan report
+            if args.get("compact", True):
+                # if the compact is True, the api will filter
+                # the response and send back only vulnerability/compliance statistics
+                vuln_statistics_table = tableToMarkdown(
+                    name="Vulnerability Statistics",
+                    t=images_scans[0].get("vulnerabilityDistribution"),
+                    headers=["critical", "high", "medium", "low"],
+                    removeNull=True,
+                    headerTransform=lambda word: word[0].upper() + word[1:]
+                )
+
+                compliance_statistics_table = tableToMarkdown(
+                    name="Compliance Statistics",
+                    t=images_scans[0].get("complianceDistribution"),
+                    headers=["critical", "high", "medium", "low"],
+                    removeNull=True,
+                    headerTransform=lambda word: word[0].upper() + word[1:]
+                )
+
+                table = image_description_table + vuln_statistics_table + compliance_statistics_table
+            else:
+                # handle the case where there is an image without vulnerabilities
+                vulnerabilities = images_scans[0].get("vulnerabilities")
+                if vulnerabilities is None:
+                    vulnerabilities = []
+
+                vulnerabilities_table = tableToMarkdown(
+                    name="Vulnerabilities",
+                    t=vulnerabilities,
+                    headers=["cve", "description", "severity", "packageName", "status", "fixDate"],
+                    removeNull=True,
+                    headerTransform=pascalToSpace,
+                )
+                # handle the case where there is an image without compliances
+                compliances = images_scans[0].get("complianceIssues")
+                if compliances is None:
+                    compliances = []
+
+                compliances_table = tableToMarkdown(
+                    name="Compliances",
+                    t=compliances,
+                    headers=["id", "severity", "status", "description", "packageName", "fixDate"],
+                    removeNull=True,
+                    headerTransform=pascalToSpace
+                )
+
+                table = image_description_table + vulnerabilities_table + compliances_table
+        else:
+            table = image_description_table
+    else:
+        images_scans, table = None, "No results found"
+
+    return CommandResults(
+        outputs_prefix="PrismaCloudCompute.ReportsImagesScan",
+        outputs_key_field="id",
+        outputs=images_scans,
+        readable_output=table,
+    )
+
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -1244,6 +1385,8 @@ def main():
             return_results(results=get_collections(client=client, args=demisto.args()))
         elif requested_command == 'prisma-cloud-compute-container-namespace-list':
             return_results(results=get_namespaces(client=client, args=demisto.args()))
+        elif requested_command == 'prisma-cloud-compute-images-scan-list':
+            return_results(results=get_images_scan_list(client=client, args=demisto.args()))
     # Log exceptions
     except Exception as e:
         return_error(f'Failed to execute {requested_command} command. Error: {str(e)}')

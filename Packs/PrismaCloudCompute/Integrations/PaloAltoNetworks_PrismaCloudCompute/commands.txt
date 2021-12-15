@@ -12,3 +12,4 @@
 !prisma-cloud-compute-defenders-list connected=true limit=1
 !prisma-cloud-compute-collections-list limit=1
 !prisma-cloud-compute-container-namespace-list limit=3
+```!prisma-cloud-compute-images-scan-list id=image123 limit_stats=2 compact=false```
