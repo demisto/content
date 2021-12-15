@@ -536,7 +536,7 @@ Get the hosts where a specific container is running.
 
 #### Command Example
 ```!prisma-cloud-compute-profile-container-hosts-list id=container123```
-!prisma-cloud-compute-profile-container-hosts-list id=sha256%3A8d82e2c21c33e1ffb37ea901d18df15c08123258609e6d7c4aecc7fb4a5a8738_twistlock_
+
 #### Context Example
 ```json
 {

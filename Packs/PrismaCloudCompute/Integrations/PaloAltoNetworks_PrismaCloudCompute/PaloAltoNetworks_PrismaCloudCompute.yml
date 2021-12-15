@@ -459,7 +459,7 @@ script:
     - contextPath: PrismaCloudCompute.ProfileContainer.network.outboundPorts.portsData.ports.port
       description: The port number.
       type: Number
-    - contextPath: outboundPorts.portsData.all PrismaCloudCompute.ProfileContainer.network.static.listeningPorts.ports.time
+    - contextPath: PrismaCloudCompute.ProfileContainer.network.static.listeningPorts.ports.time
       description: The learning timestamp of this port.
       type: Date
     - contextPath: PrismaCloudCompute.ProfileContainer.network.static.listeningPorts.app
