@@ -380,7 +380,7 @@
 </tr>
 <tr>
 <td style="width: 140px;">ip</td>
-<td style="width: 529px;">The IP address to add to the site’s allow list.</td>
+<td style="width: 529px;">The IP address to add to the site’s allow list in CSV format.</td>
 <td style="width: 71px;">Required</td>
 </tr>
 <tr>
@@ -533,7 +533,7 @@
 </tr>
 <tr>
 <td style="width: 141px;">ip</td>
-<td style="width: 528px;">The IP address to add to the site’s block list.</td>
+<td style="width: 528px;">The IP address to add to the site’s block list in CSV format.</td>
 <td style="width: 71px;">Required</td>
 </tr>
 <tr>
