@@ -7,15 +7,16 @@ configuration:
   name: server
   required: true
   type: 0
+- displaypassword: API Key (Recommended)
+  name: credentials
+  required: true
+  type: 9
+  hiddenusername: true
 - defaultvalue: '443'
   display: Port (e.g 443)
   name: port
   required: false
   type: 0
-- display: API Key
-  name: key
-  required: true
-  type: 4
 - additionalinfo: Located in the Panorama UI. Go to Panorama, Device Groups and select
     the desired Device Group
   display: Device group - Panorama instances only (write shared for Shared location)
@@ -56,6 +57,11 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: API Key (Deprecated)
+  name: key
+  required: false
+  type: 4
+  additionalinfo: Use the "API Key (Recommended)" parameter instead.
 description: Manage Palo Alto Networks Firewall and Panorama. For more information
   see Panorama documentation.
 display: Palo Alto Networks PAN-OS
