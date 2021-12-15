@@ -966,7 +966,7 @@ def test_filter_list_evidence(requests_mock, command_args, expected_output_len):
     _, outputs, _ = TaniumThreatResponseV2.list_evidence(MOCK_CLIENT, command_args)
     response = outputs.get('Tanium.Evidence(val.uuid && val.uuid === obj.uuid)', {})
     assert (
-            len(response) == expected_output_len
+        len(response) == expected_output_len
     ), f'Actual length: {len(response)}, Expected length: {expected_output_len}'
 
 
