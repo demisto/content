@@ -35,7 +35,7 @@ This playbook does not use any integrations.
 | MicrosoftHeadersSeverityCheck | This value is set by the "Process Microsoft's Anti-Spam Headers" playbook, which calculates the severity after processing the PCL, BCL and PCL values in Microsoft headers. |  | Optional |
 | SOCEmailAddress | The SOC email address to set if the playbook handles an email security alert. |  | Optional |
 | EmailTo | The email recipient. |  | Optional |
-| blockedAlertActionValue | The list of optional values the email security device returns for blocked\\denied\\etc. emails. |  | Optional |
+| blockedAlertActionValue | A comma-separated list of optional values the email security device returns for blocked\\denied\\etc. emails. |  | Optional |
 
 ## Playbook Outputs
 ---
