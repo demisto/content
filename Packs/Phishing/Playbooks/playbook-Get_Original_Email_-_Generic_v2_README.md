@@ -5,7 +5,7 @@ To retrieve the email files directly from the email service providers, use one o
 - EWS: eDiscovery
 - Gmail: Google Apps Domain-Wide Delegation of Authority
 - MSGraph: As described in the <a href="https://docs.microsoft.com/en-us/graph/api/message-get">message-get API</a> and the <a href="https://docs.microsoft.com/en-us/graph/api/user-list-messages">user-list-messages API</a>.
-- EmailSecurityGateway retrieves eml files from:
+- EmailSecurityGateway retrieves EML files from:
     * FireEye EX
     * FireEye CM
     * Proofpoint Protection Server
