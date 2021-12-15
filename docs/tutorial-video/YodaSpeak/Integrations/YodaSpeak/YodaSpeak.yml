@@ -39,10 +39,10 @@ script:
     execution: false
     name: yoda-speak-translate
     outputs:
-    - contextPath: YodaSpeak.TheForce.Translation
+    - contextPath: YodaSpeak.Translation
       description: The translated text, in Yodish.
       type: String
-    - contextPath: YodaSpeak.TheForce.Original
+    - contextPath: YodaSpeak.Original
       description: The original (English) text we translated.
       type: String
   isfetch: false

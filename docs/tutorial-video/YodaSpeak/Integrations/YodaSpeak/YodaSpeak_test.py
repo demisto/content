@@ -36,7 +36,7 @@ def test_translate(requests_mock):
                         'Translation': 'Some sentence for translation, this is.'}
 
     expected_result = CommandResults(outputs_prefix='YodaSpeak',
-                                     outputs_key_field='TheForce',
+                                     outputs_key_field='Original',
                                      outputs=expected_outputs,
                                      raw_response=raw_response,
                                      readable_output=tableToMarkdown(name='Yoda Says...', t=expected_outputs))
