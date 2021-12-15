@@ -1,6 +1,4 @@
-"""Trustwave Fusion Ticket Integration for Cortex XSOAR (aka Demisto)
-
-"""
+"""Trustwave Fusion Integration for Cortex XSOAR"""
 
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
@@ -33,13 +31,8 @@ SEVERITY_MAP = {
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
-
-    This Client implements API calls, and does not contain any XSOAR logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this  implementation, no special attributes defined
+    """
+    Trustwave Fusion API Client
     """
 
     def search_tickets(self, **kwargs):
@@ -248,7 +241,7 @@ def fetch_incidents(client, max_results, first_fetch):
     demisto.debug(f"Fetching {max_results}, {first_fetch} {type(first_fetch)}")
     last_run = demisto.getLastRun()
     last_fetch = last_run.get("last_fetch", None)
-    demisto.debug("last_run: {}".format(last_run))
+    demisto.debug(f"last_run: {last_run}")
     if last_fetch is None:
         # if missing, use what provided via first_fetch
         last_fetch = first_fetch
@@ -275,7 +268,7 @@ def fetch_incidents(client, max_results, first_fetch):
         tickets = client.search_tickets(**params)
         latest_timestamp = search_since
         if tickets:
-            demisto.debug("Found {} tickets from Fusion".format(len(tickets)))
+            demisto.debug(f"Found {len(tickets)} tickets from Fusion")
             for tkt in tickets:
                 incident = {
                     "name": tkt["subject"],
@@ -288,7 +281,7 @@ def fetch_incidents(client, max_results, first_fetch):
                 latest_timestamp = max(dt.timestamp(), latest_timestamp)
                 incidents.append(incident)
     except DemistoException as e:
-        demisto.error("ERROR: {}".format(e))
+        demisto.error(f"ERROR: {e}")
         demisto.error(e.res)
 
     # One second in the future to prevent duplicates
@@ -416,7 +409,7 @@ def search_findings_command(client, args):
             outputs_prefix="Trustwave.Finding", outputs_key_field="id", outputs=findings
         )
     else:
-        command_results = CommandResults(readable_output="No matching findingd found")
+        command_results = CommandResults(readable_output="No matching findings found")
     return command_results
 
 
