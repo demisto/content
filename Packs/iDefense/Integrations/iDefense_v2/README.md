@@ -248,7 +248,7 @@ Returns contextual properties related to file hash(MD5/SHA1/SHA256).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hash | file hash (an MD5/SHA1/SHA256) | Required | 
+| file | file hash (an MD5/SHA1/SHA256) | Required | 
 
 
 #### Context Output
@@ -270,7 +270,7 @@ Returns contextual properties related to file hash(MD5/SHA1/SHA256).
 
 
 #### Command Example
-```!file hash=a1b2c3d4e5f6g7h8i9jklqwertyuiopa```
+```!file file=a1b2c3d4e5f6g7h8i9jklqwertyuiopa```
 
 #### Context Example
 ```json

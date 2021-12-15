@@ -9,7 +9,7 @@ configuration:
   type: 0
   required: true
 - displaypassword: API Token
-  name: credentials
+  name: api_token
   type: 9
   required: true
   hiddenusername: true
@@ -48,6 +48,7 @@ script:
       default: true
       description: IP address to check.
       isArray: true
+      required: true
     outputs:
     - contextPath: IP.Address
       description: The IP address that was checked.
@@ -74,6 +75,7 @@ script:
       default: true
       description: The domain to check.
       isArray: true
+      required: true
     outputs:
     - contextPath: Domain.Name
       description: The name of the domain that was checked.
@@ -100,6 +102,7 @@ script:
       default: true
       description: The URL to check (must start with "http://").
       isArray: true
+      required: true
     outputs:
     - contextPath: URL.Data
       description: The URL that was checked.
@@ -109,7 +112,7 @@ script:
       type: String
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.
-      type: String      
+      type: String
     - contextPath: DBotScore.Type
       description: The indicator type.
       type: String
@@ -141,7 +144,7 @@ script:
       type: String
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.
-      type: String      
+      type: String
     - contextPath: DBotScore.Type
       description: The indicator type.
       type: String
@@ -154,10 +157,12 @@ script:
     description: Get specific indicator reputation
   - name: file
     arguments:
-    - name: hash
-      default: false
+    - default: true
       description: To check contextual properties by hash(MD5/SHA1/SHA256).
-      #isArray: true
+      isArray: true
+      name: file
+      required: false
+      secret: false
     outputs:
     - contextPath: File.ThreatTypes
       description: Threat Type associated with the hash.
@@ -166,7 +171,7 @@ script:
       description: Confidence of the file associated with the hash.
       type: String
     - contextPath: File.MalwareFamily
-      description: Malware family of the file associated with the hash belongs to. 
+      description: Malware family of the file associated with the hash belongs to.
       type: String
     - contextPath: File.SHA1
       description: SHA1 hash.
@@ -195,8 +200,9 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
-    description: Retrieves contextual data related to file hashes. Enter either sha1 or sha256 or a MD5 hash.
-  
+    description: Retrieves contextual data related to file hashes. Enter either sha1
+      or sha256 or a MD5 hash.
+
   dockerimage: demisto/python3:3.9.8.24399
   feed: false
   isfetch: false

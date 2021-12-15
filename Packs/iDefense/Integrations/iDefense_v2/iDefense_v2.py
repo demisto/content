@@ -338,7 +338,7 @@ def hash_command(client: Client, args: dict, reliability: DBotScoreReliability, 
         CommandResults containing the indicator, the response and a readable output.
     """
     try:
-        hash: str = str(args.get('hash'))
+        hash: str = str(args.get('file'))
         key_type: str = ""
 
         # For MD5   --->
@@ -501,7 +501,7 @@ def _get_ia_for_indicator(indicator: str, doc_search_client: Client):
 
 def main():
     params = demisto.params()
-    api_key = demisto.get(params, 'credentials.password')
+    api_key = params.get('api_token').get("password")
     base_url = urljoin(params.get('url', ''))
     reliability = params.get('integrationReliability', 'B - Usually reliable')
 

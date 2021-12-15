@@ -9,7 +9,7 @@ configuration:
   required: false
   type: 8
 - displaypassword: API Token
-  name: credentials
+  name: api_token
   type: 9
   required: true
   hiddenusername: true
