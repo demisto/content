@@ -149,21 +149,17 @@ class Client(BaseClient):
         return self._http_request(method='POST', url_suffix='add-group', headers=self.headers,
                                   json_data={"name": name})
 
-    def update_group(self, identifier: str, ignore_warnings: bool, ignore_errors: bool, add: bool, remove: bool, members,
+    def update_group(self, identifier: str, ignore_warnings: bool, ignore_errors: bool, action: str, members,
                      new_name: Optional[str], comments: Optional[str]):
-        add = argToBoolean(add)
-        remove = argToBoolean(remove)
+        # If the desired action is to add or remove members, they should be specified differently.
+        members_value = {action: members} if action in ['add', 'remove'] else members
         body = {'name': identifier,
                 'new-name': new_name,
-                'members': members,
+                'members': members_value,
                 'comments': comments,
                 'ignore-warnings': ignore_warnings,
                 'ignore-errors': ignore_errors}
-        if add or remove:
-            if add == True:
-                body['members'] = {'add': members}
-            if remove == True:
-                body['members'] = {'remove': members}
+
         response = self._http_request(method='POST', url_suffix='set-group', headers=self.headers,
                                       json_data=body)
         return response
@@ -1662,18 +1658,18 @@ def checkpoint_show_task_command(client: Client, task_id: str) -> CommandResults
     return command_results
 
 
-def checkpoint_add_objects_batch_command(client: Client, object_type: str, ipaddress, name):
+def checkpoint_add_objects_batch_command(client: Client, object_type: str, ipaddress, object_names):
     context_data = {}
     readable_output = ''
 
     ipaddress = argToList(ipaddress, ',')
-    name = argToList(name, ',')
+    names = argToList(name, ',')
     add_list = []
-    for ip, n in zip(ipaddress, name):
+    for ip, n in zip(ipaddress, names):
         tmp_dict = {'name': n, 'ip-address': ip}
         add_list.append(tmp_dict)
 
-    result = current_result = client.add_objects_batch(object_type, add_list)
+    result = client.add_objects_batch(object_type, add_list)
 
     if result:
         context_data = {'task-id': result.get('task-id')}

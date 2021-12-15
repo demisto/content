@@ -419,19 +419,13 @@ script:
       isArray: true
       name: members
     - auto: PREDEFINED
-      defaultValue: 'false'
-      description: Adds to collection of values
-      name: add
+      defaultValue: 'modify'
+      description: The action that should be taken towards the values.
+      name: action
       predefined:
-      - 'true'
-      - 'false'
-    - auto: PREDEFINED
-      defaultValue: 'false'
-      description: Removes from collection of values
-      name: remove
-      predefined:
-      - 'true'
-      - 'false'
+      - 'add'
+      - 'remove'
+      - 'modify'
     description: Updates the specified group object.
     name: checkpoint-group-update
     outputs:
@@ -1608,9 +1602,9 @@ script:
       isArray: true
       name: ipaddress
       required: true
-    - description: name of the ip objects to be added
+    - description: names of the ip objects to be added
       isArray: true
-      name: name
+      name: object_names
       required: true
     description: 'Creates new objects in batch. To achieve optimum performance when
       adding more than one object, use this API. Note: Errors and warnings are ignored
@@ -1618,15 +1612,16 @@ script:
       is not possible to publish changes that contain validations errors.'
     name: checkpoint-add-objects-batch
     outputs:
-    - contextPath: CheckPoint.add_objects_batch.task-id
+    - contextPath: CheckPoint.AddObjectBatch.task-id
       description: Task id of the add-objects-batch command.
       type: string
   - arguments:
     - description: Executes the command with the specified session ID.
       name: session_id
       required: true
-    - description: name of the ip objects to be deleted
+    - description: a comma separated list of names of the ip objects to be deleted.
       name: name
+      isArray: true
       required: true
     - defaultValue: host
       description: Type of objects to be deleted.
@@ -1636,7 +1631,7 @@ script:
       optimum performance when deleting more than one object, use this API.
     name: checkpoint-delete-objects-batch
     outputs:
-    - contextPath: CheckPoint.delete_objects_batch.task-id
+    - contextPath: CheckPoint.DeleteObjectsBatch.task-id
       description: Task id of the delete-objects-batch command.
       type: string
   dockerimage: demisto/python3:3.9.7.24076
