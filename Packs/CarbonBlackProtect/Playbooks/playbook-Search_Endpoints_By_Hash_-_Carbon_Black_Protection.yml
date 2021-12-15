@@ -210,7 +210,7 @@ tasks:
       version: -1
       name: Get hostname and workgroup
       description: Get hostname and workgroup
-      script: carbonblackprotection|||cbp-computer-get
+      script: CarbonBlackProtectionV2|||cbp-computer-get
       type: regular
       iscommand: true
       brand: carbonblackprotection

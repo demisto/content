@@ -136,7 +136,7 @@ tasks:
       version: -1
       name: Get binary from MD5
       description: ""
-      script: carbonblack|||cb-binary-get
+      script: carbonblack-v2|||cb-binary-get
       type: regular
       iscommand: true
       brand: carbonblack

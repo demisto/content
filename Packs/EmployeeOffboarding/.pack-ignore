@@ -3,3 +3,9 @@ ignore=PB111
 
 [file:layoutscontainer-Employee_Offboarding.json]
 ignore=BA101
+
+[file:Employee_Offboarding_-_Gather_User_Information.yml]
+ignore=PB107
+
+[file:Employee_Offboarding_-_Revoke_Permissions.yml]
+ignore=PB107

@@ -36,7 +36,7 @@ tasks:
       version: -1
       name: Get host information from Carbon Black Enterprise Response
       description: Query  Carbon Black Enterprise Response for the host
-      script: carbonblack|||cb-sensor-info
+      script: carbonblack-v2|||cb-sensor-info
       type: regular
       iscommand: true
       brand: carbonblack
@@ -169,7 +169,7 @@ tasks:
       version: -1
       name: Get host information from Carbon Black Enterprise Response
       description: Query  Carbon Black Enterprise Response for the host
-      script: carbonblack|||cb-sensor-info
+      script: carbonblack-v2|||cb-sensor-info
       type: regular
       iscommand: true
       brand: carbonblack
