@@ -192,7 +192,7 @@ def get_vms(si, args):
                 'Deleted': 'False'
             })
     ec = {
-        'VMWare.VM(val.UUID && val.UUID === obj.UUID)': data
+        'VMWare(val.UUID && val.UUID === obj.UUID)': data
     }
     return create_entry(data, ec)
 
@@ -222,7 +222,7 @@ def power_on(si, uuid):
         time.sleep(1)
     if task.info.state == 'success':
         ec = {
-            'VMWare.VM(val.UUID && val.UUID === obj.UUID)': {
+            'VMWare(val.UUID && val.UUID === obj.UUID)': {
                 'UUID': uuid,
                 'State': 'poweredOn'
             }
@@ -248,7 +248,7 @@ def power_off(si, uuid):
         time.sleep(1)
     if task.info.state == 'success':
         ec = {
-            'VMWare.VM(val.UUID && val.UUID === obj.UUID)': {
+            'VMWare(val.UUID && val.UUID === obj.UUID)': {
                 'UUID': uuid,
                 'State': 'poweredOff'
             }
@@ -274,7 +274,7 @@ def suspend(si, uuid):
         time.sleep(1)
     if task.info.state == 'success':
         ec = {
-            'VMWare.VM(val.UUID && val.UUID === obj.UUID)': {
+            'VMWare(val.UUID && val.UUID === obj.UUID)': {
                 'UUID': uuid,
                 'State': 'suspended'
             }
@@ -297,7 +297,7 @@ def hard_reboot(si, uuid):
     wait_for_tasks(si, [task])
     if task.info.state == 'success':
         ec = {
-            'VMWare.VM(val.UUID && val.UUID === obj.UUID)': {
+            'VMWare(val.UUID && val.UUID === obj.UUID)': {
                 'UUID': uuid,
                 'State': 'HardRebooted'
             }
@@ -380,7 +380,7 @@ def revert_snapshot(si, name, uuid):
         snapObj = snapObj[0].snapshot
         pyVim.task.WaitForTask(snapObj.RevertToSnapshot_Task())
         ec = {
-            'VMWare.VM(val.UUID && val.UUID === obj.UUID)': {
+            'VMWare(val.UUID && val.UUID === obj.UUID)': {
                 'UUID': uuid,
                 'Snapshot': 'Reverted to ' + name
             }
@@ -484,7 +484,7 @@ def change_nic_state(si, args): # pragma: no cover
 
     if task.info.state == 'success':
         ec = {
-            'VMWare.VM(val.UUID && val.UUID === obj.UUID)': {
+            'VMWare(val.UUID && val.UUID === obj.UUID)': {
                 'UUID': uuid,
                 'NICState': res_new_nic_state
             }
@@ -566,7 +566,7 @@ def create_vm(si, args):
             'Deleted': 'False'
         }
         ec = {
-            'VMWare.VM(val.UUID && val.UUID === obj.UUID)': data
+            'VMWare(val.UUID && val.UUID === obj.UUID)': data
         }
         return {
             'ContentsFormat': formats['json'],
@@ -625,7 +625,7 @@ def clone_vm(si, args):
             'Deleted': 'False'
         }
         ec = {
-            'VMWare.VM(val.UUID && val.UUID === obj.UUID)': data
+            'VMWare(val.UUID && val.UUID === obj.UUID)': data
         }
         return {
             'ContentsFormat': formats['json'],
@@ -684,7 +684,7 @@ def delete_vm(si, args):
             'Deleted': 'True'
         }
         ec = {
-            'VMWare.VM(val.UUID && val.UUID === obj.UUID)': data
+            'VMWare(val.UUID && val.UUID === obj.UUID)': data
         }
         return {
             'ContentsFormat': formats['json'],
