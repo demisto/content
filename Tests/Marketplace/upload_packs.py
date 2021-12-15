@@ -783,6 +783,8 @@ def option_handler():
     parser.add_argument('-pb', '--private_bucket_name', help="Private storage bucket name", required=False)
     parser.add_argument('-c', '--ci_branch', help="CI branch of current build", required=True)
     parser.add_argument('-f', '--force_upload', help="is force upload build?", type=str2bool, required=True)
+    parser.add_argument('-dz', '--create_dependencies_zip', help="Upload packs with dependencies zip", type=str2bool,
+                        required=False)
     # disable-secrets-detection-end
     return parser.parse_args()
 
@@ -1057,6 +1059,7 @@ def main():
     private_bucket_name = option.private_bucket_name
     ci_branch = option.ci_branch
     force_upload = option.force_upload
+    is_create_dependencies_zip = option.create_dependencies_zip
 
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
@@ -1244,9 +1247,10 @@ def main():
     # summary of packs status
     print_packs_summary(successful_packs, skipped_packs, failed_packs, not is_bucket_upload_flow)
 
-    # handle packs with dependencies zip
-    upload_packs_with_dependencies_zip(extract_destination_path, packs_dependencies_mapping, packs_list, signature_key,
-                                       storage_bucket, storage_base_path)
+    if is_create_dependencies_zip:
+        # handle packs with dependencies zip
+        upload_packs_with_dependencies_zip(extract_destination_path, packs_dependencies_mapping, packs_list,
+                                           signature_key, storage_bucket, storage_base_path)
 
 
 if __name__ == '__main__':
