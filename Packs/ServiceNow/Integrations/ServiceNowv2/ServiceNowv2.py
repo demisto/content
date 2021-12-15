@@ -366,11 +366,18 @@ def get_ticket_fields(args: dict, template_name: dict = {}, ticket_type: str = '
     inv_states = {v: k for k, v in states.items()} if states else {}
     approval = TICKET_APPROVAL.get(ticket_type)
     inv_approval = {v: k for k, v in approval.items()} if approval else {}
+    fields_to_clear = argToList(args.get('clear_fields', []))  # This argument will contain fields to allow their value empty
 
     ticket_fields = {}
     for arg in SNOW_ARGS:
         input_arg = args.get(arg)
-        if input_arg:
+
+        if arg in fields_to_clear:
+            if input_arg:
+                raise DemistoException(f"Could not set a value for the argument '{arg}' and add it to the clear_fields. \
+                You can either set or clear the field value.")
+            ticket_fields[arg] = ""
+        elif input_arg:
             if arg in ['impact', 'urgency', 'severity']:
                 ticket_fields[arg] = inv_severity.get(input_arg, input_arg)
             elif arg == 'priority':
