@@ -128,6 +128,25 @@ def _export_natives(client, caseid, path, filter_json):
         readable_output=tableToMarkdown("Job", dict(job))
     )
 
+@wrap_demisto_command("accessdata-api-label-search-term")
+def _label_search_term(client, caseid, keyword, filter_json):
+    # gather the case object from it's id
+    case = client.cases.first_matching_attribute("id", caseid)
+    if not case:
+        raise ValueError(f"Failed to gather case with id ({caseid}).")
+
+    job = case.evidence.search_keyword([keyword], filter=filter_json)
+    return CommandResults(
+        outputs_prefix="Accessdata.Case.Label",
+        outputs={
+            "name": keyword
+        },
+        outputs_key_field="name",
+        readable_output=tableToMarkdown("Accessdata.Case.Label", {
+            "name": keyword
+        })
+    )
+
 
 @wrap_demisto_command("accessdata-api-get-job-status")
 def _get_job_status(client, caseid, jobid):
