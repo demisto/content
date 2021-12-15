@@ -44,6 +44,15 @@ def test_empty_incident(mocker):
     assert last_seen_time == 1625679254000
 
 
+def test_fetch():
+    from RedLock import fetch_incidents
+    all_incidents = []
+    for _ in range(10):
+        incidents, last_fetches, last_seen_time = fetch_incidents(5)
+        demisto.setLastRun({'time': last_seen_time, 'last_fetches': last_fetches})
+        all_incidents.extend(incidents)
+    print(incidents)
+
 def test_redlock_list_scans(mocker):
     """
         Given

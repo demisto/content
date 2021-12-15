@@ -1,4 +1,5 @@
 from CommonServerPython import *
+import demistomock as demisto
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
@@ -710,8 +711,10 @@ def get_incidents(alerts, last_fetches, last_seen_time):
     for alert in alerts:
         alert_id = alert.get('id')
         alert_time = alert.get('alertTime')
-        if alert_id in last_fetches:
+        # skip the alerts that were already fetched or early
+        if alert_id in last_fetches or last_seen_time > alert_time:
             continue
+        # save alerts in the same time as last_seen_time because alerts could be in the same time
         if last_seen_time == alert_time:
             last_fetches.append(alert_id)
         if last_seen_time < alert_time:
@@ -743,13 +746,16 @@ def fetch_incidents(limit: int):
         'timeRange': {
             'type': 'absolute',
             'value': {
-                'startTime': last_seen_time,
+                'startTime': last_seen_time - 5*1000,  # there could be 5 seconds round of the time
                 'endTime': now
             }
         },
         'filters':
-            [{'name': 'alert.status', 'operator': '=', 'value': 'open'}],
-        'sortBy': ['alertTime:asc'],
+            [{'name': 'alert.status', 'operator': '=', 'value': 'open'},
+             {'name': 'timeRange.type', 'operator': '=', 'value': 'ALERT_OPENED'}],  # to get the alert time
+        "sortBy": [
+            "alerttime:asc"
+        ],
         'limit': limit}
     if demisto.getParam('ruleName'):
         payload['filters'].append({'name': 'alertRule.name', 'operator': '=',  # type: ignore
@@ -764,8 +770,8 @@ def fetch_incidents(limit: int):
     response = req('POST', '/v2/alert', payload, {'detailed': 'true'})
     alerts = response.get('items')
     incidents, last_fetches, last_seen_time = get_incidents(alerts, last_fetches, last_seen_time)
-    if alerts and not incidents and response.get('nextPageToken'):  # if incidents empty, try to get next page of alerts
-        payload['nextPageToken'] = response.get('nextPageToken')
+    while alerts and not incidents and response.get('nextPageToken'):
+        payload['pageToken'] = response.get('nextPageToken')
         response = req('POST', '/v2/alert', payload, {'detailed': 'true'})
         alerts = response.get('items')
         incidents, last_fetches, last_seen_time = get_incidents(alerts, last_fetches, last_seen_time)
