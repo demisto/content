@@ -1,6 +1,6 @@
 {
     "name": "YodaSpeak",
-    "description": "Example, this is.",
+    "description": "Allows translating text to Yodish",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

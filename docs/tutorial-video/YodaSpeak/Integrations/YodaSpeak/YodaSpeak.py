@@ -12,9 +12,7 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 class Client(BaseClient):
     def __init__(self, api_key: str, base_url: str, proxy: bool, verify: bool):
-        super().__init__(base_url=base_url,
-                         proxy=proxy,
-                         verify=verify)
+        super().__init__(base_url=base_url, proxy=proxy, verify=verify)
         self.api_key = api_key
 
         if self.api_key:
@@ -50,8 +48,7 @@ def test_module(client: Client) -> str:
             raise e
 
 
-def translate_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    text = args.get('text')
+def translate_command(client: Client, text: str) -> CommandResults:
     if not text:
         raise DemistoException('the text argument cannot be empty.')
 
@@ -74,6 +71,7 @@ def translate_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 def main() -> None:
     params = demisto.params()
+    args = demisto.args()
     command = demisto.command()
 
     api_key = params.get('apikey')
@@ -87,15 +85,11 @@ def main() -> None:
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            module = test_module(client)
-            print(module)
-            return_results(module)
-
-        elif command == 'translate':
-            translate = client.translate(**demisto.args())
-            print(translate)
-            return_results(translate)
-
+            return_results(test_module(client))
+        elif command == 'yoda-speak-translate':
+            return_results(translate_command(client, **args))
+        else:
+            raise NotImplementedError(f"command {command} is not implemented.")
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
