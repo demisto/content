@@ -318,7 +318,7 @@ script:
       description: The unique name of the pull request creator.
       type: String
     - contextPath: AzureDevOps.PullRequest.creationDate
-      description: 'The creation date of the pull request, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: '2022-01-01T00:00:00Z'.'
+      description: 'The creation date of the pull request, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".'
       type: Date
     - contextPath: AzureDevOps.PullRequest.title
       description: The title of the pull request
@@ -431,7 +431,7 @@ script:
       description: The unique name of the pull request creator.
       type: String
     - contextPath: AzureDevOps.PullRequest.creationDate
-      description: 'The creation date of the pull request, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: '2022-01-01T00:00:00Z'.'
+      description: 'The creation date of the pull request, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".'
       type: Date
     - contextPath: AzureDevOps.PullRequest.title
       description: The title of the pull request
@@ -525,7 +525,7 @@ script:
       description: The unique name of the pull request creator.
       type: String
     - contextPath: AzureDevOps.PullRequest.creationDate
-      description: 'The creation date of the pull request, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: '2022-01-01T00:00:00Z'.'
+      description: 'The creation date of the pull request, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".'
       type: Date
     - contextPath: AzureDevOps.PullRequest.title
       description: The title of the pull request
@@ -593,7 +593,7 @@ script:
       description: Indicates whom the project is visible to.
       type: String
     - contextPath: AzureDevOps.Project.lastUpdateTime
-      description: 'The project last update time, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: '2022-01-01T00:00:00Z'.'
+      description: 'The project last update time, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".'
       type: Date
     - contextPath: AzureDevOps.Project.id
       description: The ID of the Project.
@@ -731,7 +731,7 @@ script:
       description: The unique name of the pull request creator.
       type: String
     - contextPath: AzureDevOps.PullRequest.creationDate
-      description: 'The creation date of the pull request, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: '2022-01-01T00:00:00Z'.'
+      description: 'The creation date of the pull request, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".'
       type: Date
     - contextPath: AzureDevOps.PullRequest.title
       description: The title of the pull request
@@ -829,7 +829,7 @@ script:
       description: The run state.
       type: String
     - contextPath: AzureDevOps.PipelineRun.createdDate
-      description: 'The run creation date, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: '2022-01-01T00:00:00Z'.' 
+      description: 'The run creation date, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".' 
       type: Date
     - contextPath: AzureDevOps.PipelineRun.run_id
       description: The ID of the run.
@@ -887,7 +887,7 @@ script:
       description: The run state.
       type: String
     - contextPath: AzureDevOps.PipelineRun.createdDate
-      description: 'The run creation date, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: '2022-01-01T00:00:00Z'.'
+      description: 'The run creation date, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".'
       type: Date
     - contextPath: AzureDevOps.PipelineRun.run_id
       description: The ID of the run.
