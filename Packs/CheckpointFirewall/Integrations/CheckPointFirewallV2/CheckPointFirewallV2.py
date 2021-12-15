@@ -1693,7 +1693,7 @@ def checkpoint_delete_objects_batch_command(client: Client, object_type: str, na
     object_names = argToList(name)
     objects_to_delete = [{'name': object_name} for object_name in object_names]
 
-    result = current_result = client.delete_objects_batch(object_type, objects_to_delete)
+    result = client.delete_objects_batch(object_type, objects_to_delete)
 
     if result:
         context_data = {'task-id': result.get('task-id')}
