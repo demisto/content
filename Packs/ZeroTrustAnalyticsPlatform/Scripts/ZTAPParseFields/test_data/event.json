@@ -1,0 +1,201 @@
+[
+  {
+    "datetime_created": "2021-06-17T14:02:06Z",
+    "product": "xdr",
+    "ata_trigger": true,
+    "fields": [
+      {
+        "key": "name",
+        "label": "Name",
+        "value": "CS19 - Unsigned process spawning svchost.exe",
+        "order": 0
+      },
+      {
+        "key": "actor_process_image_name",
+        "label": "Process Name",
+        "value": "svchost.exe",
+        "order": 1
+      },
+      {
+        "key": "actor_process_command_line",
+        "label": "Command Line",
+        "value": "C:\\WINDOWS\\system32\\svchost.exe -k LocalSystemNetworkRestricted -p -s PcaSvc",
+        "order": 2
+      },
+      {
+        "key": "host_name",
+        "label": "Host Name",
+        "value": "prod01",
+        "order": 3
+      },
+      {
+        "key": "user_name",
+        "label": "User Name",
+        "value": "NT AUTHORITY\\SYSTEM",
+        "order": 4
+      },
+      {
+        "key": "actor_process_image_path",
+        "label": "Path",
+        "value": "C:\\Windows\\System32\\svchost.exe",
+        "order": 5
+      },
+      {
+        "key": "actor_process_image_sha256",
+        "label": "Process Sha256",
+        "value": "ec24b848f97a5d5614e859859aa29883bf21e0a11a6df8d324576f31e6bc8c57",
+        "order": 6
+      },
+      {
+        "key": "actor_process_image_md5",
+        "label": "Actor Process Image Md5",
+        "value": "d3f10c16dd794987b1395823fbffeeb9",
+        "order": 7
+      },
+      {
+        "key": "actor_process_signature_status",
+        "label": "Signature Status",
+        "value": "Signed",
+        "order": 8
+      },
+      {
+        "key": "actor_process_signature_vendor",
+        "label": "Signature Vendor",
+        "value": "Microsoft Corporation",
+        "order": 9
+      },
+      {
+        "key": "causality_actor_process_image_name",
+        "label": "Causality Actor Process Image Name",
+        "value": "ClassicStartMenu.exe",
+        "order": 10
+      },
+      {
+        "key": "causality_actor_process_command_line",
+        "label": "Causality Actor Process Command Line",
+        "value": "\"C:\\Program Files\\Classic Shell\\ClassicStartMenu.exe\" -autorun",
+        "order": 11
+      },
+      {
+        "key": "causality_actor_process_image_path",
+        "label": "Causality Actor Process Image Path",
+        "value": "C:\\Program Files\\Classic Shell\\ClassicStartMenu.exe",
+        "order": 12
+      },
+      {
+        "key": "causality_actor_process_signature_status",
+        "label": "Causality Actor Process Signature Status",
+        "value": "Invalid Signature",
+        "order": 13
+      },
+      {
+        "key": "causality_actor_process_signature_vendor",
+        "label": "Causality Actor Process Signature Vendor",
+        "value": "Ivaylo Beltchev",
+        "order": 14
+      },
+      {
+        "key": "event_timestamp",
+        "label": "Event Timestamp",
+        "value": "2021-06-17T14:02:06.417426Z",
+        "order": 15
+      },
+      {
+        "key": "xdr_severity",
+        "label": "XDR Severity",
+        "value": "medium",
+        "order": 16
+      },
+      {
+        "key": "description",
+        "label": "Alert_Description",
+        "value": "Process action type = execution Process cgo signature = Unsigned, Invalid Signature AND initiated by = svchost.exe Host host os != linux",
+        "order": 17
+      },
+      {
+        "key": "action",
+        "label": "Action",
+        "value": "DETECTED",
+        "order": 18
+      },
+      {
+        "key": "action_country",
+        "label": "Action Country",
+        "value": "UNKNOWN",
+        "order": 19
+      },
+      {
+        "key": "action_process_causality_id",
+        "label": "Action Process Causality ID",
+        "value": "MTfDceuFh1j5S0AXBcWkng==",
+        "order": 20
+      },
+      {
+        "key": "action_process_image_name",
+        "label": "Child Process Name",
+        "value": "CompatTelRunner.exe",
+        "order": 21
+      },
+      {
+        "key": "action_process_image_sha256",
+        "label": "Child Process Sha256",
+        "value": "e8f88ffee8ca76dbfc5da78a7c2a1f8a826e5d1d9f21415dc7147b47e62768d5",
+        "order": 22
+      },
+      {
+        "key": "action_process_instance_id",
+        "label": "Action Process Instance Id",
+        "value": "AdchegZ034MAADNwAAAAAA==",
+        "order": 23
+      },
+      {
+        "key": "action_process_signature_status",
+        "label": "Action Process Signature Status",
+        "value": "Signed",
+        "order": 24
+      },
+      {
+        "key": "action_process_signature_vendor",
+        "label": "Child Process Signature Vendor",
+        "value": "Microsoft Corporation",
+        "order": 25
+      },
+      {
+        "key": "actor_causality_id",
+        "label": "Actor Causality ID",
+        "value": "EFIE8+iVL8ouYFBxFINyhg==",
+        "order": 26
+      },
+      {
+        "key": "actor_process_instance_id",
+        "label": "Process Instance ID",
+        "value": "EFIE8+iVL8ouYFBxFINyhg==",
+        "order": 27
+      },
+      {
+        "key": "agent_os_type",
+        "label": "Agent OS Type",
+        "value": "Windows",
+        "order": 28
+      },
+      {
+        "key": "case_id",
+        "label": "Case ID",
+        "value": "7331",
+        "order": 29
+      },
+      {
+        "key": "causality_actor_process_image_sha256",
+        "label": "Causality Actor Process Image Sha256",
+        "value": "7a964fe3de94b0fb9cece510dc6b7d5f422c54ba901ed2859a6a4ab16c1d2393",
+        "order": 30
+      },
+      {
+        "key": "event_id",
+        "label": "Event Id",
+        "value": "StQTIfgQvsiuodkZfwMQ1w==",
+        "order": 31
+      }
+    ]
+  }
+]

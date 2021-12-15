@@ -1,3 +1,5 @@
+from requests import RequestException
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -748,113 +750,128 @@ def get_domain_command():
         context = {}
         headers = []  # type: ignore
         domain = extract_domain_name(domain)
-        whois = get_whois_for_domain(domain)
-        admin = {
-            'Country': whois.get('administrativeContactCountry'),
-            'Email': whois.get('administrativeContactEmail'),
-            'Name': whois.get('administrativeContactName'),
-            'Phone': whois.get('administrativeContactTelephone')
-        }
-        registrant = {
-            'Country': whois.get('registrantCountry'),
-            'Email': whois.get('registrantEmail'),
-            'Name': whois.get('registrantName'),
-            'Phone': whois.get('registrantTelephone')
-        }
-        first_queried = whois.get('created')
-        name_servers = whois.get('nameServers')
-        emails = whois.get('emails')
-        registrar = {'Name': whois.get('registrarName')}
-        creation_date = first_queried
-        domain_status = whois.get('status')
-        updated_date = whois.get('updated')
-        expiration_date = whois.get('expires')
-
-        whois = {
-            'Name': whois.get('domainName'),
-            'Registrar Name': whois.get('registrarName'),
-            'Last Retrieved': whois.get('timeOfLatestRealtimeCheck'),
-            'Created': whois.get('created'),
-            'Updated': whois.get('updated'),
-            'Expires': whois.get('expires'),
-            'IANAID': whois.get('registrarIANAID'),
-            'Last Observed': whois.get('auditUpdatedDate')
-        }
-
-        domain_categorization = []  # type: ignore
-        domain_categorization = get_domain_categorization(domain)
-        content_categories = domain_categorization.get('content_categories')  # type: ignore
-        malware_categories = domain_categorization.get('security_categories')  # type: ignore
-        risk_score = domain_categorization.get('status')  # type: ignore
-        domain_categorization_table = {
-            'Content Categories': content_categories,
-            'Malware Categories': malware_categories
-        }
-
-        domain_details = []  # type: ignore
-        domain_details = get_domain_details(domain)
-        popularity = domain_details.get('popularity')  # type: ignore
-        secure_rank = domain_details.get('securerank2')  # type: ignore
-        dbotscore = securerank_to_dbotscore(secure_rank)
-
-        context[outputPaths['domain']] = {
-            'Name': domain,
-            'Admin': admin,
-            'Registrant': registrant,
-            'Registrar': registrar,
-            'CreationDate': creation_date,
-            'DomainStatus': domain_status,
-            'UpdatedDate': updated_date,
-            'ExpirationDate': expiration_date,
-            'Umbrella': {
-                'RiskScore': risk_score,
-                'SecureRank': secure_rank,
-                'FirstQueriedTime': first_queried,
-                'ContentCategories': content_categories,
-                'MalwareCategories': malware_categories
+        try:
+            whois = get_whois_for_domain(domain)
+            admin = {
+                'Country': whois.get('administrativeContactCountry'),
+                'Email': whois.get('administrativeContactEmail'),
+                'Name': whois.get('administrativeContactName'),
+                'Phone': whois.get('administrativeContactTelephone')
             }
-        }
+            registrant = {
+                'Country': whois.get('registrantCountry'),
+                'Email': whois.get('registrantEmail'),
+                'Name': whois.get('registrantName'),
+                'Phone': whois.get('registrantTelephone')
+            }
+            first_queried = whois.get('created')
+            name_servers = whois.get('nameServers')
+            emails = whois.get('emails')
+            registrar = {'Name': whois.get('registrarName')}
+            creation_date = first_queried
+            domain_status = whois.get('status')
+            updated_date = whois.get('updated')
+            expiration_date = whois.get('expires')
 
-        # Add malicious if needed
-        if risk_score == -1 or secure_rank < MALICIOUS_THRESHOLD:
-            context[outputPaths['domain']]['Malicious'] = {
+            whois = {
+                'Name': whois.get('domainName'),
+                'Registrar Name': whois.get('registrarName'),
+                'Last Retrieved': whois.get('timeOfLatestRealtimeCheck'),
+                'Created': whois.get('created'),
+                'Updated': whois.get('updated'),
+                'Expires': whois.get('expires'),
+                'IANAID': whois.get('registrarIANAID'),
+                'Last Observed': whois.get('auditUpdatedDate')
+            }
+
+            domain_categorization = []  # type: ignore
+            domain_categorization = get_domain_categorization(domain)
+            content_categories = domain_categorization.get('content_categories')  # type: ignore
+            malware_categories = domain_categorization.get('security_categories')  # type: ignore
+            risk_score = domain_categorization.get('status')  # type: ignore
+            domain_categorization_table = {
+                'Content Categories': content_categories,
+                'Malware Categories': malware_categories
+            }
+
+            domain_details = []  # type: ignore
+            domain_details = get_domain_details(domain)
+            popularity = domain_details.get('popularity')  # type: ignore
+            secure_rank = domain_details.get('securerank2')  # type: ignore
+            dbotscore = securerank_to_dbotscore(secure_rank)
+
+            context[outputPaths['domain']] = {
+                'Name': domain,
+                'Admin': admin,
+                'Registrant': registrant,
+                'Registrar': registrar,
+                'CreationDate': creation_date,
+                'DomainStatus': domain_status,
+                'UpdatedDate': updated_date,
+                'ExpirationDate': expiration_date,
+                'Umbrella': {
+                    'RiskScore': risk_score,
+                    'SecureRank': secure_rank,
+                    'FirstQueriedTime': first_queried,
+                    'ContentCategories': content_categories,
+                    'MalwareCategories': malware_categories
+                }
+            }
+
+            # Add malicious if needed
+            if risk_score == -1 or secure_rank < MALICIOUS_THRESHOLD:
+                context[outputPaths['domain']]['Malicious'] = {
+                    'Vendor': 'Cisco Umbrella Investigate',
+                    'Description': 'Malicious domain found with risk score -1'
+                }
+                dbotscore = 3
+
+            context[outputPaths['dbotscore']] = {
+                'Indicator': domain,
+                'Type': 'domain',
                 'Vendor': 'Cisco Umbrella Investigate',
-                'Description': 'Malicious domain found with risk score -1'
+                'Score': dbotscore,
+                'Reliability': reliability
             }
-            dbotscore = 3
 
-        context[outputPaths['dbotscore']] = {
-            'Indicator': domain,
-            'Type': 'domain',
-            'Vendor': 'Cisco Umbrella Investigate',
-            'Score': dbotscore,
-            'Reliability': reliability
-        }
+            contents.append({
+                'Risk Score': risk_score,
+                'Secure Rank': secure_rank,
+                'Populairty': popularity,
+                'Demisto Reputation': scoreToReputation(dbotscore),
+                'First Queried time': first_queried,
+            })
 
-        contents.append({
-            'Risk Score': risk_score,
-            'Secure Rank': secure_rank,
-            'Populairty': popularity,
-            'Demisto Reputation': scoreToReputation(dbotscore),
-            'First Queried time': first_queried,
-        })
+            # Domain reputation + [whois -> whois nameservers -> whois emails] + domain categorization
+            results.append({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': [contents, whois, name_servers, emails, domain_categorization_table],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable':
+                    tableToMarkdown('"Umbrella Investigate" Domain Reputation for: ' + domain, contents, headers)
+                    + tableToMarkdown('"Umbrella Investigate" WHOIS Record Data for: ' + domain, whois, headers,
+                                      date_fields=["Last Retrieved"])
+                    + tableToMarkdown('Name Servers:', {'Name Servers': name_servers}, headers)
+                    + tableToMarkdown('Emails:', emails, ['Emails'])
+                    + tableToMarkdown('Domain Categorization:', domain_categorization_table, headers),
+                'EntryContext': context
+            })
+        except RequestException as r:
+            if r.response.status_code == 404:
+                human_readable = '### Umbrella Investigate Domain for: ' + domain + '\n' \
+                    + "Failed to find " + domain + ", reason: " + r.message
 
-        # Domain reputation + [whois -> whois nameservers -> whois emails] + domain categorization
-        results.append({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': [contents, whois, name_servers, emails, domain_categorization_table],
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable':
-                tableToMarkdown('"Umbrella Investigate" Domain Reputation for: ' + domain, contents, headers)
-                + tableToMarkdown('"Umbrella Investigate" WHOIS Record Data for: ' + domain, whois, headers,
-                                  date_fields=["Last Retrieved"])
-                + tableToMarkdown('Name Servers:', {'Name Servers': name_servers}, headers)
-                + tableToMarkdown('Emails:', emails, ['Emails'])
-                + tableToMarkdown('Domain Categorization:', domain_categorization_table, headers),
-            'EntryContext': context
-        })
-
+                results.append({
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['json'],
+                    'Contents': contents,
+                    'HumanReadable': human_readable,
+                    'HumanReadableFormat': formats['markdown'],
+                    'EntryContext': None
+                })
+            else:
+                raise r
     return results
 
 

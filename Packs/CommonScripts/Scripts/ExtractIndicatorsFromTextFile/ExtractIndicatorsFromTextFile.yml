@@ -1,6 +1,6 @@
 args:
 - default: false
-  description: War Room entryID of the file to read.
+  description: The War-Room entryID of the file to read.
   isArray: false
   name: entryID
   required: true
@@ -19,6 +19,10 @@ comment: |-
   * URL
   * File Hash
   * Email Address
+
+  This automation runs using the default Limited User role, unless you explicitly change the permissions.
+  For more information, see the section about permissions here:
+  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
 commonfields:
   id: ExtractIndicatorsFromTextFile
   version: -1
@@ -51,9 +55,10 @@ system: false
 timeout: '0'
 type: python
 subtype: python2
+runas: DBotRole
 runonce: false
 tests:
 - Extract Indicators From File - Generic v2 - Test
 fromversion: 5.0.0
 tags: []
-dockerimage: demisto/python:2.7.18.24066
+dockerimage: demisto/python:2.7.18.24398
