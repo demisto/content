@@ -1,12 +1,11 @@
 import functools
 import uuid
-from ssl import SSLContext, PROTOCOL_TLSv1_2
-from tempfile import NamedTemporaryFile
 from flask import Flask, request, make_response, jsonify
 from urllib.parse import ParseResult, urlparse
 from secrets import compare_digest
 from dateutil.parser import parse
 from gevent.pywsgi import WSGIServer
+from requests.utils import requote_uri
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -185,9 +184,23 @@ class TAXII2Server:
         Returns:
             The discovery response.
         """
-        default = urljoin(self._service_address, API_ROOT)
-        default = urljoin(default, '/')
+        request_headers = request.headers
+        if self._service_address:
+            service_address = self._service_address
+        elif request_headers and '/instance/execute' in request_headers.get('X-Request-URI', ''):
+            # if the server rerouting is used, then the X-Request-URI header is added to the request by the server
+            # and we should use the /instance/execute endpoint in the address
+            self._url_scheme = 'https'
+            calling_context = get_calling_context()
+            instance_name = calling_context.get('IntegrationInstance', '')
+            endpoint = requote_uri(os.path.join('/instance', 'execute', instance_name))
+            service_address = f'{self._url_scheme}://{self._host}{endpoint}'
+        else:
+            endpoint = f':{self._port}'
+            service_address = f'{self._url_scheme}://{self._host}{endpoint}'
 
+        default = urljoin(service_address, API_ROOT)
+        default = urljoin(default, '/')
         return {
             'title': 'XSOAR TAXII2 Server',
             'description': 'This integration provides TAXII Services for system indicators (Outbound feed).',
@@ -238,7 +251,7 @@ class TAXII2Server:
         """
         found_collection = self.collections_by_id.get(collection_id, {})
         query = found_collection.get('description')
-        new_limit = offset + limit
+        new_limit = offset + limit + 1  # helps to verify that there is more indicators
         new_query = create_query(query, types)
         iocs, _ = find_indicators(query=new_query, added_after=added_after, limit=new_limit, is_manifest=True)
 
@@ -271,7 +284,7 @@ class TAXII2Server:
 
         found_collection = self.collections_by_id.get(collection_id, {})
         query = found_collection.get('description')
-        new_limit = offset + limit
+        new_limit = offset + limit + 1  # helps to verify that there is more indicators
         new_query = create_query(query, types)
         iocs, extensions = find_indicators(query=new_query, added_after=added_after, limit=new_limit)
 
@@ -298,7 +311,7 @@ class TAXII2Server:
             response = {
                 'objects': objects,
             }
-            if len(limited_iocs) > offset + limit:
+            if len(iocs) > offset + limit:
                 response['more'] = True
                 response['next'] = str(limit + offset)
 
@@ -322,8 +335,8 @@ def taxii_validate_request_headers(f):
 
         if SERVER.auth:
             try:
-                auth_success = (compare_digest(credentials.username, SERVER.auth[0])    # type: ignore
-                                and compare_digest(credentials.password, SERVER.auth[1]))   # type: ignore
+                auth_success = (compare_digest(credentials.username, SERVER.auth[0])  # type: ignore
+                                and compare_digest(credentials.password, SERVER.auth[1]))  # type: ignore
             except TypeError:
                 auth_success = False
             if not auth_success:
@@ -420,7 +433,7 @@ def create_query(query, types):
         except KeyError as e:
             raise Exception(f'Unsupported object type: {e}.')
         new_query = query + ' '
-        new_query += ' or '.join(['type:' + x for x in xsoar_types])    # type: ignore
+        new_query += ' or '.join(['type:' + x for x in xsoar_types])  # type: ignore
         demisto.debug(f'new query: {new_query}')
         return new_query
     else:
@@ -453,18 +466,28 @@ def find_indicators(query: str, added_after, limit: int, is_manifest: bool = Fal
 
 
 def create_sco_stix_uuid(xsoar_indicator, stix_type):
-    # TODO: debug to get stix id
+    value = xsoar_indicator.get('value')
     if stix_type == 'user-account':
-        unique_id = None
-        pass
+        account_type = xsoar_indicator.get('CustomFields', {}).get('accounttype')
+        user_id = xsoar_indicator.get('CustomFields', {}).get('userid')
+        unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE,
+                               '{"account_login":"' + value + '","account_type":"' + account_type + '","user_id":"' +
+                               user_id + '"}')
     elif stix_type == 'windows-registry-key':
-        unique_id = None
-        pass
+        unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, '{"key":"' + value + '"}')
     elif stix_type == 'file':
-        unique_id = None
-        pass
+        custom_fields = xsoar_indicator.get('CustomFields', {})
+        if md5 := custom_fields.get('md5'):
+            unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, '{"hashes":{"MD5":"' + md5 + '"}')
+        elif sha1 := custom_fields.get('sha1'):
+            unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, '{"hashes":{"SHA-1":"' + sha1 + '"}')
+        elif sha256 := custom_fields.get('sha256'):
+            unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, '{"hashes":{"SHA-256":"' + sha256 + '"}')
+        elif sha512 := custom_fields.get('sha512'):
+            unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, '{"hashes":{"SHA-512":"' + sha512 + '"}')
+        else:
+            unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, '{"value":"' + value + '"}')
     else:
-        value = xsoar_indicator.get('value')
         unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, '{"value":"' + value + '"}')
 
     stix_id = f'{stix_type}--{unique_id}'
@@ -472,12 +495,13 @@ def create_sco_stix_uuid(xsoar_indicator, stix_type):
 
 
 def create_sdo_stix_uuid(xsoar_indicator, stix_type):
+    value = xsoar_indicator.get('value')
     if stix_type == 'attack-pattern':
-        # todo
-        unique_id = None
-        pass
+        if mitre_id := xsoar_indicator.get('CustomFields', {}).get('mitreid'):
+            unique_id = uuid.uuid5(SERVER.namespace_uuid, f'{stix_type}:{mitre_id}')
+        else:
+            unique_id = uuid.uuid5(SERVER.namespace_uuid, f'{stix_type}:{value}')
     else:
-        value = xsoar_indicator.get('value')
         unique_id = uuid.uuid5(SERVER.namespace_uuid, f'{stix_type}:{value}')
 
     stix_id = f'{stix_type}--{unique_id}'
@@ -566,6 +590,10 @@ def get_collections(params: dict = demisto.params()) -> dict:
         raise ValueError('The collections string must be a valid JSON object.')
 
     return collections
+
+
+def get_calling_context():
+    return demisto.callingContext.get('context', {})  # type: ignore[attr-defined]
 
 
 ''' ROUTE FUNCTIONS '''
@@ -795,37 +823,8 @@ def taxii2_objects(api_root: str, collection_id: str):
     )
 
 
-''' COMMAND FUNCTIONS '''
-
-
-def run_server(port: int, certificate: str, private_key: str):
-    """
-    Start the taxii server.
-    """
-    ssl_args = dict()
-    if certificate and private_key:
-        certificate_file = NamedTemporaryFile(delete=False)
-        certificate_path = certificate_file.name
-        certificate_file.write(bytes(certificate, 'utf-8'))
-        certificate_file.close()
-
-        private_key_file = NamedTemporaryFile(delete=False)
-        private_key_path = private_key_file.name
-        private_key_file.write(bytes(private_key, 'utf-8'))
-        private_key_file.close()
-        context = SSLContext(PROTOCOL_TLSv1_2)
-        context.load_cert_chain(certificate_path, private_key_path)
-        ssl_args['ssl_context'] = context
-        demisto.debug('Starting HTTPS Server')
-    else:
-        demisto.debug('Starting HTTP Server')
-
-    wsgi_server = WSGIServer(('0.0.0.0', port), APP, **ssl_args)
-    demisto.updateModuleHealth('')
-    wsgi_server.serve_forever()
-
-
-def test_module():
+def test_module(params):
+    run_long_running(params, is_test=True)
     return 'ok'
 
 
@@ -851,10 +850,7 @@ def main():
     server_link_parts: ParseResult = urlparse(server_links.get('server'))
     host_name = server_link_parts.hostname
 
-    if service_address_param := params.get('service_address'):
-        service_address = service_address_param
-    else:
-        service_address = server_links.get('server')
+    service_address = params.get('service_address')
 
     certificate = params.get('certificate', '')
     private_key = params.get('key', '')
@@ -873,17 +869,22 @@ def main():
                               certificate, private_key, http_server, credentials, version, service_address)
 
         if command == 'long-running-execution':
-            run_server(port, certificate, private_key)
+            run_long_running(params)
+
+            # todo: remove this
+            # wsgi_server = WSGIServer(('0.0.0.0', port), APP)
+            # demisto.updateModuleHealth('')
+            # wsgi_server.serve_forever()
 
         elif command == 'test-module':
-            return_results(test_module())
+            return_results(test_module(params))
 
     except Exception as e:
         err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
         return_error(err_msg)
 
 
-# from NGINXApiModule import *  # noqa: E402
+from NGINXApiModule import *  # noqa: E402
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()

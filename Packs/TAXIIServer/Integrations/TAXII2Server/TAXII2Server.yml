@@ -50,6 +50,7 @@ configuration:
 - display: TAXII 2 Server version
   hidden: false
   name: version
+  defaultvalue: 2.0
   options:
   - 2.0
   - 2.1
