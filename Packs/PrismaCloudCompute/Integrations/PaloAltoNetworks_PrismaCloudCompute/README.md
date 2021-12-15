@@ -1439,8 +1439,8 @@ Get images scan report, the report includes vulnerabilities, compliance issues, 
 | PrismaCloudCompute.ReportsImagesScan.topLayer | String | SHA256 of the image's last layer that is the last element of the Layers field. | 
 | PrismaCloudCompute.ReportsImagesScan.trustResult | Unknown | ImageResult represents an aggregated image trust result | 
 | PrismaCloudCompute.ReportsImagesScan.trustStatus | String | Status is the trust status for an image | 
-| PrismaCloudCompute.ReportsImagesScan.twistlockImage	 | Boolean | Indicates if the image is a Twistlock image \(true\) or not \(false\). | 
-| PrismaCloudCompute.ReportsImagesScan.type	 | Unknown | ScanType represents the scanning type performed | 
+| PrismaCloudCompute.ReportsImagesScan.twistlockImage | Boolean | Indicates if the image is a Twistlock image \(true\) or not \(false\). | 
+| PrismaCloudCompute.ReportsImagesScan.type | Unknown | ScanType represents the scanning type performed | 
 | PrismaCloudCompute.ReportsImagesScan.vulnerabilities | Unknown | CVE vulnerabilities of the image. | 
 | PrismaCloudCompute.ReportsImagesScan.vulnerabilitiesCount | Number | Total number of vulnerabilities. | 
 | PrismaCloudCompute.ReportsImagesScan.vulnerabilityDistribution | Unknown | Distribution counts the number of vulnerabilities per type | 
@@ -1458,11 +1458,11 @@ Get images scan report, the report includes vulnerabilities, compliance issues, 
     "PrismaCloudCompute": {
         "ReportsImagesScan": {
             "cloudMetadata": {
-                "resourceID": "123", 
-                "image": "ami-7448d60d", 
+                "resourceID": "i-123", 
+                "image": "ami-123", 
                 "provider": "aws", 
                 "type": "t2.large", 
-                "region": "eu-west-1", 
+                "region": "eu-west-123", 
                 "accountID": "123"
             }, 
             "hostname": "", 
@@ -1801,11 +1801,11 @@ Get images scan report, the report includes vulnerabilities, compliance issues, 
     "PrismaCloudCompute": {
         "ReportsImagesScan": {
             "cloudMetadata": {
-                "resourceID": "123", 
-                "image": "ami-7448d60d", 
+                "resourceID": "i-123", 
+                "image": "ami-123", 
                 "provider": "aws", 
                 "type": "t2.large", 
-                "region": "eu-west-1", 
+                "region": "eu-west-123", 
                 "accountID": "123"
             }, 
             "hostname": "", 
@@ -1930,3 +1930,504 @@ Get images scan report, the report includes vulnerabilities, compliance issues, 
 |Critical|High|Medium|Low|
 |---|---|---|---|
 | 0 | 1 | 0 | 0 |
+
+
+
+### prisma-cloud-compute-hosts-scan-list
+***
+Get images scan report, the report includes vulnerabilities, compliance issues, binaries, etc.
+
+
+#### Base Command
+
+`prisma-cloud-compute-hosts-scan-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| clusters | Filters results by cluster name. | Optional | 
+| compact | Indicates if only minimal image data is to be returned (i.e., skip vulnerabilities, compliance, and extended image metadata) (true) or not (false). Possible values are: true, false. Default is true. | Optional | 
+| distro | Filters results by OS distro. | Optional | 
+| fields | List of fields to retrieve. | Optional | 
+| hostname | Filters results by hostnames. | Optional | 
+| provider | Filters results by cloud provider. | Optional | 
+| limit_record | maximum scan hosts records to return. Default is 10. | Optional | 
+| limit_stats | maximum of compliance/vulnerability records to return. Default is 10. | Optional | 
+| offset | The offset to begin listing hosts scan results. Default is 0. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaCloudCompute.ReportHostScan._id | String | host identifier \(host ID or hostname\). | 
+| PrismaCloudCompute.ReportHostScan.allCompliance | Unknown | AllCompliance contains data regarding passed compliance checks | 
+| PrismaCloudCompute.ReportHostScan.appEmbedded | Boolean | Indicates that this image was scanned by an App-Embedded Defender. | 
+| PrismaCloudCompute.ReportHostScan.applications | Unknown | Products in the image. | 
+| PrismaCloudCompute.ReportHostScan.binaries | Unknown | Binaries in the image. | 
+| PrismaCloudCompute.ReportHostScan.cloudMetadata | Unknown | CloudMetadata is the metadata for an instance running in a cloud provider \(AWS/GCP/Azure\) | 
+| PrismaCloudCompute.ReportHostScan.clusters | String | Cluster names. | 
+| PrismaCloudCompute.ReportHostScan.collections | String | Collections to which this result applies. | 
+| PrismaCloudCompute.ReportHostScan.complianceDistribution | Unknown | Distribution counts the number of vulnerabilities per type | 
+| PrismaCloudCompute.ReportHostScan.complianceIssues | Unknown | Number of compliance issues. | 
+| PrismaCloudCompute.ReportHostScan.complianceRiskScore | Number | Compliance risk score for the image. | 
+| PrismaCloudCompute.ReportHostScan.creationTime | Date | Date/time when the image was created. | 
+| PrismaCloudCompute.ReportHostScan.distro | String | Full name of the distribution. | 
+| PrismaCloudCompute.ReportHostScan.ecsClusterName | String | ECS cluster name. | 
+| PrismaCloudCompute.ReportHostScan.err | String | Description of an error that occurred during image health scan. | 
+| PrismaCloudCompute.ReportHostScan.externalLabels | Unknown | Kubernetes external labels of all containers running this image. | 
+| PrismaCloudCompute.ReportHostScan.firewallProtection | Unknown | ProtectionStatus describes the status of the WAAS protection | 
+| PrismaCloudCompute.ReportHostScan.firstScanTime | Date | Date/time when this image was first scanned \(preserved during version updates\). | 
+| PrismaCloudCompute.ReportHostScan.history | Unknown | Docker image history. | 
+| PrismaCloudCompute.ReportHostScan.hostDevices | String | Map from host network device name to IP address. | 
+| PrismaCloudCompute.ReportHostScan.hostname | String | Name of the host that was scanned. | 
+| PrismaCloudCompute.ReportHostScan.hosts | Unknown | ImageHosts is a fast index for image scan results metadata per host | 
+| PrismaCloudCompute.ReportHostScan.image | Unknown | Image represents a container image | 
+| PrismaCloudCompute.ReportHostScan.installedProducts | Unknown | InstalledProducts contains data regarding products running in environment | 
+| PrismaCloudCompute.ReportHostScan.instances | Unknown | Details about each occurrence of the image \(tag \+ host\). | 
+| PrismaCloudCompute.ReportHostScan.k8sClusterAddr | String | Endpoint of the Kubernetes API server. | 
+| PrismaCloudCompute.ReportHostScan.namespaces | String | k8s namespaces of all the containers running this image. | 
+| PrismaCloudCompute.ReportHostScan.osDistro | String | Name of the OS distribution. | 
+| PrismaCloudCompute.ReportHostScan.osDistroRelease | String | OS distribution release. | 
+| PrismaCloudCompute.ReportHostScan.osDistroVersion | String | OS distribution version. | 
+| PrismaCloudCompute.ReportHostScan.packageManager | Boolean | Indicates if the package manager is installed for the OS. | 
+| PrismaCloudCompute.ReportHostScan.packages | Unknown | Packages which exist in the image. | 
+| PrismaCloudCompute.ReportHostScan.repoDigests | String | Digests of the image. Used for content trust \(notary\). Has one digest per tag. | 
+| PrismaCloudCompute.ReportHostScan.repoTag | Unknown | ImageTag represents an image repository and its associated tag or registry digest | 
+| PrismaCloudCompute.ReportHostScan.riskFactors | Unknown | RiskFactors maps the existence of vulnerability risk factors | 
+| PrismaCloudCompute.ReportHostScan.scanID | String | Scan ID | 
+| PrismaCloudCompute.ReportHostScan.scanTime | Date | Date/time of the last scan of the image. | 
+| PrismaCloudCompute.ReportHostScan.scanVersion | String | Defender version that published the image. | 
+| PrismaCloudCompute.ReportHostScan.startupBinaries | Unknown | Binaries which are expected to run when the container is created from this image. | 
+| PrismaCloudCompute.ReportHostScan.tags | Unknown | Tags associated with the given image. | 
+| PrismaCloudCompute.ReportHostScan.topLayer | String | SHA256 of the image's last layer that is the last element of the Layers field. | 
+| PrismaCloudCompute.ReportHostScan.trustStatus | String | Status is the trust status for an image | 
+| PrismaCloudCompute.ReportHostScan.type | Unknown | ScanType represents the scanning type performed | 
+| PrismaCloudCompute.ReportHostScan.vulnerabilities | Unknown | CVE vulnerabilities of the host. | 
+| PrismaCloudCompute.ReportHostScan.vulnerabilitiesCount | Number | Total number of vulnerabilities. | 
+| PrismaCloudCompute.ReportHostScan.vulnerabilityDistribution | Unknown | Distribution counts the number of vulnerabilities per type | 
+| PrismaCloudCompute.ReportHostScan.vulnerabilityRiskScore | Number | Image's CVE risk score. | 
+| PrismaCloudCompute.ReportHostScan.wildFireUsage | Unknown | Usage holds wildfire usage stats, period for the usage varies with context | 
+
+
+#### Command Example
+```!prisma-cloud-compute-hosts-scan-list hostname=host123 compact=false limit_stats=2```
+
+#### Context Example
+```json
+{
+    "PrismaCloudCompute": {
+        "ReportHostScan": {
+            "cloudMetadata": {
+                "resourceID": "i-123", 
+                "image": "ami-123", 
+                "provider": "aws", 
+                "type": "t2.large", 
+                "region": "eu-west-123", 
+                "accountID": "123"
+            }, 
+            "hostname": "host123", 
+            "vulnerabilityDistribution": {
+                "high": 4, 
+                "total": 191, 
+                "medium": 78, 
+                "critical": 0, 
+                "low": 109
+            }, 
+            "creationTime": "0001-01-01T00:00:00Z", 
+            "image": {
+                "created": "0001-01-01T00:00:00Z"
+            }, 
+            "labels": [
+                "osDistro:ubuntu", 
+                "osVersion:16.04"
+            ], 
+            "instances": [], 
+            "complianceIssues": [
+                {
+                    "templates": [
+                        "GDPR"
+                    ], 
+                    "vecStr": "", 
+                    "text": "", 
+                    "discovered": "0001-01-01T00:00:00Z", 
+                    "exploit": "", 
+                    "layerTime": 0, 
+                    "id": 16, 
+                    "severity": "high", 
+                    "title": "(CIS_Docker_CE_v1.1.0 - 1.4) Only allow trusted users to control Docker daemon", 
+                    "packageVersion": "", 
+                    "cause": "1 users in docker group: demisto", 
+                    "cvss": 0, 
+                    "status": "", 
+                    "twistlock": false, 
+                    "fixDate": "", 
+                    "description": "Docker allows you to share a directory between the Docker host and a guest container\nwithout limiting the access rights of the container. This means that you can start a\ncontainer and map the / directory on your host to the container. The container will then be\nable to alter your host file system without any restrictions. In simple terms, it means that\nyou can attain elevated privileges with just being a member of the docker group and then\nstarting a container with mapped / directory on the host", 
+                    "link": "", 
+                    "cri": false, 
+                    "riskFactors": null, 
+                    "type": "host_config", 
+                    "packageName": "", 
+                    "functionLayer": "", 
+                    "published": 0, 
+                    "cve": ""
+                }, 
+                {
+                    "templates": [
+                        "PCI", 
+                        "HIPAA"
+                    ], 
+                    "vecStr": "", 
+                    "text": "", 
+                    "discovered": "0001-01-01T00:00:00Z", 
+                    "exploit": "", 
+                    "layerTime": 0, 
+                    "id": 21, 
+                    "severity": "high", 
+                    "title": "(CIS_Docker_v1.2.0 - 2.1) Restrict network traffic between containers", 
+                    "packageVersion": "", 
+                    "cause": "", 
+                    "cvss": 0, 
+                    "status": "", 
+                    "twistlock": false, 
+                    "fixDate": "", 
+                    "description": "By default, all network traffic is allowed between containers on the same host on the\ndefault network bridge. If not desired, restrict all the inter-container communication. Link\nspecific containers together that require communication. Alternatively, you can create\ncustom network and only join containers that need to communicate to that custom\nnetwork", 
+                    "link": "", 
+                    "cri": false, 
+                    "riskFactors": null, 
+                    "type": "daemon_config", 
+                    "packageName": "", 
+                    "functionLayer": "", 
+                    "published": 0, 
+                    "cve": ""
+                }
+            ], 
+            "repoTag": null, 
+            "packageManager": true, 
+            "repoDigests": [], 
+            "allCompliance": {}, 
+            "packages": [
+                {
+                    "pkgsType": "package", 
+                    "pkgs": [
+                        {
+                            "name": "kbd", 
+                            "version": "1.15.5-1ubuntu5", 
+                            "cveCount": 5, 
+                            "license": "GPL-2+", 
+                            "layerTime": 0
+                        }, 
+                        {
+                            "name": "xdg-utils", 
+                            "version": "1.1.1-1ubuntu1.16.04.5", 
+                            "cveCount": 50, 
+                            "license": "", 
+                            "layerTime": 0
+                        }
+                    ]
+                }
+            ], 
+            "complianceDistribution": {
+                "high": 16, 
+                "total": 17, 
+                "medium": 0, 
+                "critical": 1, 
+                "low": 0
+            }, 
+            "firewallProtection": {
+                "supported": false, 
+                "enabled": false
+            }, 
+            "appEmbedded": false, 
+            "installedProducts": {
+                "docker": "17.06.0-ce", 
+                "osDistro": "xenial", 
+                "hasPackageManager": true
+            }, 
+            "collections": [
+                "All", 
+                "676921422616", 
+                "Test Collection"
+            ], 
+            "startupBinaries": [], 
+            "type": "host", 
+            "distro": "Ubuntu 16.04.2 LTS", 
+            "files": [], 
+            "scanID": 0, 
+            "osDistro": "ubuntu", 
+            "tags": [], 
+            "Secrets": [], 
+            "applications": [
+                {
+                    "knownVulnerabilities": 20, 
+                    "path": "", 
+                    "version": "17.06.0-ce", 
+                    "layerTime": 0, 
+                    "name": "docker"
+                }
+            ], 
+            "osDistroRelease": "xenial", 
+            "osDistroVersion": "16.04", 
+            "trustStatus": "", 
+            "firstScanTime": "0001-01-01T00:00:00Z", 
+            "_id": "host123", 
+            "riskFactors": {
+                "Remote execution": {}, 
+                "High severity": {}, 
+                "Has fix": {}, 
+                "Exploit exists": {}, 
+                "Attack complexity: low": {}, 
+                "Recent vulnerability": {}, 
+                "Attack vector: network": {}, 
+                "Medium severity": {}, 
+                "DoS": {}, 
+                "Package in use": {}
+            }, 
+            "err": "", 
+            "vulnerabilitiesCount": 191, 
+            "scanTime": "2021-12-15T14:19:48.792Z", 
+            "complianceIssuesCount": 17, 
+            "hostDevices": [
+                {
+                    "ip": "1.1.1.1", 
+                    "name": "eth0"
+                }
+            ], 
+            "vulnerabilities": [
+                {
+                    "templates": null, 
+                    "vecStr": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H", 
+                    "text": "", 
+                    "discovered": "2020-11-04T18:15:00Z", 
+                    "exploit": "", 
+                    "layerTime": 0, 
+                    "id": 46, 
+                    "applicableRules": [
+                        "*"
+                    ], 
+                    "severity": "low", 
+                    "title": "", 
+                    "packageVersion": "4.9.3-0ubuntu0.16.04.1", 
+                    "cause": "", 
+                    "cvss": 7.5, 
+                    "status": "needed", 
+                    "twistlock": false, 
+                    "fixDate": "", 
+                    "description": "The ppp decapsulator in tcpdump 4.9.3 can be convinced to allocate a large amount of memory.", 
+                    "link": "https://people.canonical.com/~ubuntu-security/cve/2020/CVE-2020-8037", 
+                    "cri": false, 
+                    "riskFactors": {
+                        "Attack complexity: low": {}, 
+                        "Recent vulnerability": {}, 
+                        "Attack vector: network": {}
+                    }, 
+                    "type": "image", 
+                    "packageName": "tcpdump", 
+                    "functionLayer": "", 
+                    "published": 1604513700, 
+                    "cve": "CVE-2020-8037"
+                }, 
+                {
+                    "templates": null, 
+                    "vecStr": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N", 
+                    "text": "", 
+                    "discovered": "2021-04-29T05:15:00Z", 
+                    "exploit": "", 
+                    "layerTime": 0, 
+                    "id": 46, 
+                    "applicableRules": [
+                        "*"
+                    ], 
+                    "severity": "medium", 
+                    "title": "", 
+                    "packageVersion": "1.17.1-1ubuntu1.5", 
+                    "cause": "", 
+                    "cvss": 6.1, 
+                    "status": "deferred", 
+                    "twistlock": false, 
+                    "fixDate": "", 
+                    "description": "GNU Wget through 1.21.1 does not omit the Authorization header upon a redirect to a different origin, a related issue to CVE-2018-1000007.", 
+                    "link": "https://people.canonical.com/~ubuntu-security/cve/2021/CVE-2021-31879", 
+                    "cri": false, 
+                    "riskFactors": {
+                        "Medium severity": {}, 
+                        "Attack complexity: low": {}, 
+                        "Recent vulnerability": {}, 
+                        "Attack vector: network": {}
+                    }, 
+                    "type": "image", 
+                    "packageName": "wget", 
+                    "functionLayer": "", 
+                    "published": 1619673300, 
+                    "cve": "CVE-2021-31879"
+                }
+            ], 
+            "hosts": {}, 
+            "complianceRiskScore": 1160000, 
+            "wildFireUsage": null, 
+            "binaries": [
+                {
+                    "services": [
+                        "lxcfs"
+                    ], 
+                    "path": "/usr/bin/lxcfs", 
+                    "cveCount": 0, 
+                    "name": "lxcfs", 
+                    "md5": ""
+                }, 
+                {
+                    "services": [
+                        "systemd-udevd"
+                    ], 
+                    "path": "/lib/systemd/systemd-udevd", 
+                    "cveCount": 0, 
+                    "name": "systemd-udevd", 
+                    "md5": ""
+                }
+            ], 
+            "vulnerabilityRiskScore": 47909, 
+            "history": []
+        }
+    }
+}
+```
+
+#### Human Readable Output
+### Host description
+|Hostname|Docker Version|OS Distribution|Vulnerabilities Count|Compliance Issues Count|
+|---|---|---|---|---|
+| host123 | 17.06.0-ce | Ubuntu 16.04.2 LTS | 191 | 17 |
+### Vulnerabilities
+|Cve|Description|Severity|Package Name|Status|
+|---|---|---|---|---|
+| CVE-2020-8037 | The ppp decapsulator in tcpdump 4.9.3 can be convinced to allocate a large amount of memory. | low | tcpdump | needed |
+| CVE-2021-31879 | GNU Wget through 1.21.1 does not omit the Authorization header upon a redirect to a different origin, a related issue to CVE-2018-1000007. | medium | wget | deferred |
+### Compliances
+|Id|Severity|Description|
+|---|---|---|
+| 16 | high | Docker allows you to share a directory between the Docker host and a guest container<br>without limiting the access rights of the container. This means that you can start a<br>container and map the / directory on your host to the container. The container will then be<br>able to alter your host file system without any restrictions. In simple terms, it means that<br>you can attain elevated privileges with just being a member of the docker group and then<br>starting a container with mapped / directory on the host |
+| 21 | high | By default, all network traffic is allowed between containers on the same host on the<br>default network bridge. If not desired, restrict all the inter-container communication. Link<br>specific containers together that require communication. Alternatively, you can create<br>custom network and only join containers that need to communicate to that custom<br>network |
+
+
+#### Command Example
+```!prisma-cloud-compute-hosts-scan-list hostname=host123 compact=true limit_stats=2```
+
+#### Context Example
+```json
+{
+    "PrismaCloudCompute": {
+        "ReportHostScan": {
+            "cloudMetadata": {
+                "resourceID": "i-123", 
+                "image": "ami-123", 
+                "provider": "aws", 
+                "type": "t2.large", 
+                "region": "eu-west-123", 
+                "accountID": "123"
+            }, 
+            "hostname": "host123", 
+            "vulnerabilityDistribution": {
+                "high": 4, 
+                "total": 191, 
+                "medium": 78, 
+                "critical": 0, 
+                "low": 109
+            }, 
+            "creationTime": "0001-01-01T00:00:00Z", 
+            "image": {
+                "created": "0001-01-01T00:00:00Z"
+            }, 
+            "labels": [
+                "osDistro:ubuntu", 
+                "osVersion:16.04"
+            ], 
+            "instances": [], 
+            "complianceIssues": null, 
+            "repoTag": null, 
+            "packageManager": false, 
+            "repoDigests": [], 
+            "allCompliance": {}, 
+            "packages": null, 
+            "complianceDistribution": {
+                "high": 16, 
+                "total": 17, 
+                "medium": 0, 
+                "critical": 1, 
+                "low": 0
+            }, 
+            "firewallProtection": {
+                "supported": false, 
+                "enabled": false
+            }, 
+            "appEmbedded": false, 
+            "installedProducts": {
+                "docker": "17.06.0-ce", 
+                "osDistro": "xenial", 
+                "hasPackageManager": true
+            }, 
+            "collections": [
+                "All", 
+                "676921422616", 
+                "Test Collection"
+            ], 
+            "startupBinaries": null, 
+            "type": "host", 
+            "distro": "Ubuntu 16.04.2 LTS", 
+            "files": null, 
+            "scanID": 0, 
+            "osDistro": "ubuntu", 
+            "tags": [], 
+            "Secrets": null, 
+            "osDistroRelease": "xenial", 
+            "osDistroVersion": "", 
+            "trustStatus": "", 
+            "firstScanTime": "0001-01-01T00:00:00Z", 
+            "_id": "host123", 
+            "riskFactors": {
+                "Remote execution": {}, 
+                "High severity": {}, 
+                "Has fix": {}, 
+                "Exploit exists": {}, 
+                "Attack complexity: low": {}, 
+                "Recent vulnerability": {}, 
+                "Attack vector: network": {}, 
+                "Medium severity": {}, 
+                "DoS": {}, 
+                "Package in use": {}
+            }, 
+            "err": "", 
+            "vulnerabilitiesCount": 191, 
+            "scanTime": "2021-12-15T14:19:48.792Z", 
+            "complianceIssuesCount": 17, 
+            "hostDevices": [
+                {
+                    "ip": "1.1.1.1", 
+                    "name": "eth0"
+                }
+            ], 
+            "vulnerabilities": null, 
+            "hosts": {}, 
+            "complianceRiskScore": 1160000, 
+            "wildFireUsage": null, 
+            "binaries": null, 
+            "vulnerabilityRiskScore": 47909, 
+            "history": null
+        }
+    }
+}
+```
+
+#### Human Readable Output
+### Host description
+|Hostname|OS Distribution|Vulnerabilities Count|Compliance Issues Count|
+|---|---|---|---|
+| host123 | Ubuntu 16.04.2 LTS | 191 | 17 |
+### Vulnerability Statistics
+|Critical|High|Medium|Low|
+|---|---|---|---|
+| 0 | 4 | 78 | 109 |
+### Compliance Statistics
+|Critical|High|Medium|Low|
+|---|---|---|---|
+| 1 | 16 | 0 | 0 |
+

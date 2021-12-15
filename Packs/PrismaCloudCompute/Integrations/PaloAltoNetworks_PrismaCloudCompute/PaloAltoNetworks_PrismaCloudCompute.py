@@ -263,6 +263,18 @@ class PrismaCloudComputeClient(BaseClient):
         """
         return self._http_request(method="GET", url_suffix="/images", params=params)
 
+    def get_hosts_scan_info(self, params):
+        """
+        Sends a request to get information about hosts scans.
+
+        Args:
+            params (dict): query parameters.
+
+        Returns:
+            list[dict]: hosts scan information.
+        """
+        return self._http_request(method="GET", url_suffix="/hosts", params=params)
+
 
 def str_to_bool(s):
     """
@@ -1192,7 +1204,6 @@ def get_image_descriptions(images_scans: List[dict]) -> List[dict]:
 
     Returns:
         List[dict]: images descriptions.
-
     """
     return [
         {
@@ -1271,7 +1282,7 @@ def get_images_scan_list(client: PrismaCloudComputeClient, args: dict) -> Comman
 
                 table = image_description_table + vuln_statistics_table + compliance_statistics_table
             else:
-                # handle the case where there is an image without vulnerabilities
+                # handle the case where there is an image scan without vulnerabilities
                 vulnerabilities = images_scans[0].get("vulnerabilities")
                 if vulnerabilities is None:
                     vulnerabilities = []
@@ -1283,7 +1294,7 @@ def get_images_scan_list(client: PrismaCloudComputeClient, args: dict) -> Comman
                     removeNull=True,
                     headerTransform=pascalToSpace,
                 )
-                # handle the case where there is an image without compliances
+                # handle the case where there is an image scan without compliances
                 compliances = images_scans[0].get("complianceIssues")
                 if compliances is None:
                     compliances = []
@@ -1306,6 +1317,134 @@ def get_images_scan_list(client: PrismaCloudComputeClient, args: dict) -> Comman
         outputs_prefix="PrismaCloudCompute.ReportsImagesScan",
         outputs_key_field="id",
         outputs=images_scans,
+        readable_output=table,
+    )
+
+
+def get_hosts_descriptions(hosts_scans):
+    """
+    Get the hosts descriptions
+
+    Args:
+        hosts_scans (list[dict]): hosts scans information.
+
+    Returns:
+        List[dict]: images descriptions.
+    """
+    return [
+        {
+            "Hostname": scan.get("hostname"),
+            "OS Distribution": scan.get("distro"),
+            "Docker Version": scan.get("applications", [{}])[0].get("version"),
+            "Vulnerabilities Count": scan.get("vulnerabilitiesCount"),
+            "Compliance Issues Count": scan.get("complianceIssuesCount")
+        } for scan in hosts_scans
+    ]
+
+
+def get_hosts_scan_list(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
+    """
+    Get the host scan list.
+    Implement the command 'prisma-cloud-compute-hosts-scan-list'
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-hosts-scan-list command arguments
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    args["limit"], args["offset"] = parse_limit_and_offset_values(
+        limit=args.pop("limit_record", "10"), offset=args.get("offset", "0")
+    )
+    stats_limit, _ = parse_limit_and_offset_values(limit=args.pop("limit_stats", "10"))
+    args["compact"] = argToBoolean(value=args.get("compact", "true"))
+
+    if hosts_scans := client.get_hosts_scan_info(params=assign_params(**args)):
+        for scan in hosts_scans:
+            if "vulnerabilities" in scan:
+                scan["vulnerabilities"] = filter_api_response(
+                    api_response=scan.get("vulnerabilities"), limit=stats_limit
+                )
+                if vulnerabilities := scan.get("vulnerabilities"):
+                    for vuln in vulnerabilities:
+                        if "fixDate" in vuln:
+                            vuln["fixDate"] = epochs_to_timestamp(epochs=vuln.get("fixDate", 0))
+            if "complianceIssues" in scan:
+                scan["complianceIssues"] = filter_api_response(
+                    api_response=scan.get("complianceIssues"), limit=stats_limit
+                )
+                if compliances := scan.get("complianceIssues"):
+                    for compliance in compliances:
+                        if "fixDate" in compliance:
+                            compliance["fixDate"] = epochs_to_timestamp(epochs=compliance.get("fixDate", 0))
+
+        host_description_table = tableToMarkdown(
+            name="Host description",
+            t=get_hosts_descriptions(hosts_scans=hosts_scans),
+            headers=[
+                "Hostname", "Docker Version", "OS Distribution", "Vulnerabilities Count", "Compliance Issues Count"
+            ],
+            removeNull=True
+        )
+
+        if len(hosts_scans) == 1:  # then there is only one host scan report
+            if args.get("compact", True):
+                # if the compact is True, the api will filter
+                # the response and send back only vulnerability/compliance statistics
+                vuln_statistics_table = tableToMarkdown(
+                    name="Vulnerability Statistics",
+                    t=hosts_scans[0].get("vulnerabilityDistribution"),
+                    headers=["critical", "high", "medium", "low"],
+                    removeNull=True,
+                    headerTransform=lambda word: word[0].upper() + word[1:]
+                )
+
+                compliance_statistics_table = tableToMarkdown(
+                    name="Compliance Statistics",
+                    t=hosts_scans[0].get("complianceDistribution"),
+                    headers=["critical", "high", "medium", "low"],
+                    removeNull=True,
+                    headerTransform=lambda word: word[0].upper() + word[1:]
+                )
+
+                table = host_description_table + vuln_statistics_table + compliance_statistics_table
+            else:
+                # handle the case where there is an host scan without vulnerabilities
+                vulnerabilities = hosts_scans[0].get("vulnerabilities")
+                if vulnerabilities is None:
+                    vulnerabilities = []
+
+                vulnerabilities_table = tableToMarkdown(
+                    name="Vulnerabilities",
+                    t=vulnerabilities,
+                    headers=["cve", "description", "severity", "packageName", "status", "fixDate"],
+                    removeNull=True,
+                    headerTransform=pascalToSpace,
+                )
+                # handle the case where there is an host scan without compliances
+                compliances = hosts_scans[0].get("complianceIssues")
+                if compliances is None:
+                    compliances = []
+
+                compliances_table = tableToMarkdown(
+                    name="Compliances",
+                    t=compliances,
+                    headers=["id", "severity", "status", "description", "packageName", "fixDate"],
+                    removeNull=True,
+                    headerTransform=pascalToSpace
+                )
+
+                table = host_description_table + vulnerabilities_table + compliances_table
+        else:
+            table = host_description_table
+    else:
+        hosts_scans, table = None, "No results found"
+
+    return CommandResults(
+        outputs_prefix="PrismaCloudCompute.ReportHostScan",
+        outputs_key_field="id",
+        outputs=hosts_scans,
         readable_output=table,
     )
 
@@ -1387,6 +1526,8 @@ def main():
             return_results(results=get_namespaces(client=client, args=demisto.args()))
         elif requested_command == 'prisma-cloud-compute-images-scan-list':
             return_results(results=get_images_scan_list(client=client, args=demisto.args()))
+        elif requested_command == 'prisma-cloud-compute-hosts-scan-list':
+            return_results(results=get_hosts_scan_list(client=client, args=demisto.args()))
     # Log exceptions
     except Exception as e:
         return_error(f'Failed to execute {requested_command} command. Error: {str(e)}')

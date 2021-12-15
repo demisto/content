@@ -1333,10 +1333,10 @@ script:
         - contextPath: PrismaCloudCompute.ReportsImagesScan.trustStatus
           description: Status is the trust status for an image
           type: String
-        - contextPath: "PrismaCloudCompute.ReportsImagesScan.twistlockImage\t"
+        - contextPath: PrismaCloudCompute.ReportsImagesScan.twistlockImage
           description: Indicates if the image is a Twistlock image (true) or not (false).
           type: Boolean
-        - contextPath: "PrismaCloudCompute.ReportsImagesScan.type\t"
+        - contextPath: PrismaCloudCompute.ReportsImagesScan.type
           description: ScanType represents the scanning type performed
           type: Unknown
         - contextPath: PrismaCloudCompute.ReportsImagesScan.vulnerabilities
@@ -1352,6 +1352,214 @@ script:
           description: Image's CVE risk score.
           type: Number
         - contextPath: PrismaCloudCompute.ReportsImagesScan.wildFireUsage
+          description: Usage holds wildfire usage stats, period for the usage varies with
+            context
+          type: Unknown
+    - name: prisma-cloud-compute-hosts-scan-list
+      description: Get images scan report, the report includes vulnerabilities,
+        compliance issues, binaries, etc.
+      deprecated: false
+      arguments:
+        - name: clusters
+          description: Filters results by cluster name.
+          required: false
+          isArray: true
+          defaultValue: ""
+        - name: compact
+          description: Indicates if only minimal image data is to be returned (i.e., skip
+            vulnerabilities, compliance, and extended image metadata) (true) or
+            not (false).
+          required: false
+          isArray: false
+          defaultValue: "true"
+          predefined:
+            - "true"
+            - "false"
+        - name: distro
+          description: Filters results by OS distro.
+          required: false
+          isArray: true
+          defaultValue: ""
+        - name: fields
+          description: List of fields to retrieve.
+          required: false
+          isArray: true
+          defaultValue: ""
+        - name: hostname
+          description: Filters results by hostnames.
+          required: false
+          isArray: true
+          defaultValue: ""
+        - name: provider
+          description: Filters results by cloud provider.
+          required: false
+          isArray: true
+          defaultValue: ""
+        - name: limit_record
+          description: maximum scan hosts records to return
+          required: false
+          isArray: false
+          defaultValue: "10"
+        - name: limit_stats
+          description: maximum of compliance/vulnerability records to return
+          required: false
+          isArray: false
+          defaultValue: "10"
+        - name: offset
+          description: The offset to begin listing hosts scan results
+          required: false
+          isArray: false
+          defaultValue: "0"
+      outputs:
+        - contextPath: PrismaCloudCompute.ReportHostScan._id
+          description: host identifier (host ID or hostname).
+          type: String
+        - contextPath: PrismaCloudCompute.ReportHostScan.allCompliance
+          description: AllCompliance contains data regarding passed compliance checks
+          type: Unknown
+        - contextPath: PrismaCloudCompute.ReportHostScan.appEmbedded
+          description: Indicates that this image was scanned by an App-Embedded Defender.
+          type: Boolean
+        - contextPath: PrismaCloudCompute.ReportHostScan.applications
+          description: Products in the image.
+          type: Unknown
+        - contextPath: PrismaCloudCompute.ReportHostScan.binaries
+          description: Binaries in the image.
+          type: Unknown
+        - contextPath: PrismaCloudCompute.ReportHostScan.cloudMetadata
+          description: CloudMetadata is the metadata for an instance running in a cloud
+            provider (AWS/GCP/Azure)
+          type: Unknown
+        - contextPath: PrismaCloudCompute.ReportHostScan.clusters
+          description: Cluster names.
+          type: String
+        - contextPath: PrismaCloudCompute.ReportHostScan.collections
+          description: Collections to which this result applies.
+          type: String
+        - contextPath: PrismaCloudCompute.ReportHostScan.complianceDistribution
+          description: Distribution counts the number of vulnerabilities per type
+          type: Unknown
+        - contextPath: PrismaCloudCompute.ReportHostScan.complianceIssues
+          description: Number of compliance issues.
+          type: Unknown
+        - contextPath: PrismaCloudCompute.ReportHostScan.complianceRiskScore
+          description: Compliance risk score for the image.
+          type: Number
+        - contextPath: PrismaCloudCompute.ReportHostScan.creationTime
+          description: Date/time when the image was created.
+          type: Date
+        - contextPath: PrismaCloudCompute.ReportHostScan.distro
+          description: Full name of the distribution.
+          type: String
+        - contextPath: PrismaCloudCompute.ReportHostScan.ecsClusterName
+          description: ECS cluster name.
+          type: String
+        - contextPath: PrismaCloudCompute.ReportHostScan.err
+          description: Description of an error that occurred during image health scan.
+          type: String
+        - contextPath: PrismaCloudCompute.ReportHostScan.externalLabels
+          description: Kubernetes external labels of all containers running this image.
+          type: Unknown
+        - contextPath: PrismaCloudCompute.ReportHostScan.firewallProtection
+          description: ProtectionStatus describes the status of the WAAS protection
+          type: Unknown
+        - contextPath: PrismaCloudCompute.ReportHostScan.firstScanTime
+          description: Date/time when this image was first scanned (preserved during
+            version updates).
+          type: Date
+        - contextPath: PrismaCloudCompute.ReportHostScan.history
+          description: Docker image history.
+          type: Unknown
+        - contextPath: PrismaCloudCompute.ReportHostScan.hostDevices
+          description: Map from host network device name to IP address.
+          type: String
+        - contextPath: PrismaCloudCompute.ReportHostScan.hostname
+          description: Name of the host that was scanned.
+          type: String
+        - contextPath: PrismaCloudCompute.ReportHostScan.hosts
+          description: ImageHosts is a fast index for image scan results metadata per host
+          type: Unknown
+        - contextPath: PrismaCloudCompute.ReportHostScan.image
+          description: Image represents a container image
+          type: Unknown
+        - contextPath: PrismaCloudCompute.ReportHostScan.installedProducts
+          description: InstalledProducts contains data regarding products running in
+            environment
+          type: Unknown
+        - contextPath: PrismaCloudCompute.ReportHostScan.instances
+          description: Details about each occurrence of the image (tag + host).
+          type: Unknown
+        - contextPath: PrismaCloudCompute.ReportHostScan.k8sClusterAddr
+          description: Endpoint of the Kubernetes API server.
+          type: String
+        - contextPath: PrismaCloudCompute.ReportHostScan.namespaces
+          description: k8s namespaces of all the containers running this image.
+          type: String
+        - contextPath: PrismaCloudCompute.ReportHostScan.osDistro
+          description: Name of the OS distribution.
+          type: String
+        - contextPath: PrismaCloudCompute.ReportHostScan.osDistroRelease
+          description: OS distribution release.
+          type: String
+        - contextPath: PrismaCloudCompute.ReportHostScan.osDistroVersion
+          description: OS distribution version.
+          type: String
+        - contextPath: PrismaCloudCompute.ReportHostScan.packageManager
+          description: Indicates if the package manager is installed for the OS.
+          type: Boolean
+        - contextPath: PrismaCloudCompute.ReportHostScan.packages
+          description: Packages which exist in the image.
+          type: Unknown
+        - contextPath: PrismaCloudCompute.ReportHostScan.repoDigests
+          description: Digests of the image. Used for content trust (notary). Has one
+            digest per tag.
+          type: String
+        - contextPath: PrismaCloudCompute.ReportHostScan.repoTag
+          description: ImageTag represents an image repository and its associated tag or
+            registry digest
+          type: Unknown
+        - contextPath: PrismaCloudCompute.ReportHostScan.riskFactors
+          description: RiskFactors maps the existence of vulnerability risk factors
+          type: Unknown
+        - contextPath: PrismaCloudCompute.ReportHostScan.scanID
+          description: Scan ID
+          type: String
+        - contextPath: PrismaCloudCompute.ReportHostScan.scanTime
+          description: Date/time of the last scan of the image.
+          type: Date
+        - contextPath: PrismaCloudCompute.ReportHostScan.scanVersion
+          description: Defender version that published the image.
+          type: String
+        - contextPath: PrismaCloudCompute.ReportHostScan.startupBinaries
+          description: Binaries which are expected to run when the container is created
+            from this image.
+          type: Unknown
+        - contextPath: PrismaCloudCompute.ReportHostScan.tags
+          description: Tags associated with the given image.
+          type: Unknown
+        - contextPath: PrismaCloudCompute.ReportHostScan.topLayer
+          description: SHA256 of the image's last layer that is the last element of the
+            Layers field.
+          type: String
+        - contextPath: PrismaCloudCompute.ReportHostScan.trustStatus
+          description: Status is the trust status for an image
+          type: String
+        - contextPath: PrismaCloudCompute.ReportHostScan.type
+          description: ScanType represents the scanning type performed
+          type: Unknown
+        - contextPath: PrismaCloudCompute.ReportHostScan.vulnerabilities
+          description: CVE vulnerabilities of the host.
+          type: Unknown
+        - contextPath: PrismaCloudCompute.ReportHostScan.vulnerabilitiesCount
+          description: Total number of vulnerabilities.
+          type: Number
+        - contextPath: PrismaCloudCompute.ReportHostScan.vulnerabilityDistribution
+          description: Distribution counts the number of vulnerabilities per type
+          type: Unknown
+        - contextPath: PrismaCloudCompute.ReportHostScan.vulnerabilityRiskScore
+          description: Image's CVE risk score.
+          type: Number
+        - contextPath: PrismaCloudCompute.ReportHostScan.wildFireUsage
           description: Usage holds wildfire usage stats, period for the usage varies with
             context
           type: Unknown
