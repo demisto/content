@@ -485,7 +485,7 @@ tasks:
     scriptarguments:
       value:
         simple: |-
-          The following devices can't be isolated. Please validate that those devices are active in the system
+          The following device can't be isolated. Please validate that those device is active in the system
           ${MicrosoftATP.NonUnisolateList}
     separatecontext: false
     view: |-
@@ -1067,7 +1067,7 @@ tasks:
     task:
       id: 55071917-0ecf-4fc4-8e90-8c76aa7a3bc1
       version: -1
-      name: Active Devices
+      name: Active Device
       type: title
       iscommand: false
       brand: ""
