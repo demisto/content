@@ -80,7 +80,6 @@ script:
       default: true
       description: The domain to check.
       isArray: true
-      required: true
     outputs:
     - contextPath: Domain.Name
       description: The name of the domain that was checked.
@@ -113,7 +112,6 @@ script:
       default: true
       description: The URL to check (must start with "http://").
       isArray: true
-      required: true
     outputs:
     - contextPath: URL.Data
       description: The URL that was checked.
