@@ -48,7 +48,6 @@ script:
       default: true
       description: IP address to check.
       isArray: true
-      required: true
     outputs:
     - contextPath: IP.Address
       description: The IP address that was checked.
