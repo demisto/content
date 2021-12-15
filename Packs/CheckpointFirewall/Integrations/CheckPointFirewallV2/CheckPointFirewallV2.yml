@@ -1604,7 +1604,7 @@ script:
       required: true
     - description: names of the ip objects to be added
       isArray: true
-      name: object_names
+      name: name
       required: true
     description: 'Creates new objects in batch. To achieve optimum performance when
       adding more than one object, use this API. Note: Errors and warnings are ignored
