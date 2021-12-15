@@ -213,7 +213,7 @@ tasks:
       script: CarbonBlackProtectionV2|||cbp-computer-get
       type: regular
       iscommand: true
-      brand: carbonblackprotection
+      brand: CarbonBlackProtectionV2
     nexttasks:
       '#none#':
       - "14"

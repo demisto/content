@@ -192,7 +192,7 @@ tasks:
       script: Active Directory Query v2||||ad-disable-account
       type: regular
       iscommand: true
-      brand: activedir
+      brand: Active Directory Query v2
     nexttasks:
       '#none#':
       - "2"

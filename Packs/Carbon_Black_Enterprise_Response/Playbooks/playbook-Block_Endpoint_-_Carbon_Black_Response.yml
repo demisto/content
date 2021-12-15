@@ -39,7 +39,7 @@ tasks:
       script: carbonblack-v2|||cb-sensor-info
       type: regular
       iscommand: true
-      brand: carbonblack
+      brand: carbonblack-v2
     nexttasks:
       '#none#':
       - "3"
@@ -172,7 +172,7 @@ tasks:
       script: carbonblack-v2|||cb-sensor-info
       type: regular
       iscommand: true
-      brand: carbonblack
+      brand: carbonblack-v2
     nexttasks:
       '#none#':
       - "4"

@@ -139,7 +139,7 @@ tasks:
       script: carbonblack-v2|||cb-binary-get
       type: regular
       iscommand: true
-      brand: carbonblack
+      brand: carbonblack-v2
     nexttasks:
       '#none#':
       - "3"
