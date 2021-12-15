@@ -268,6 +268,9 @@ def detection_to_incident(detection, detection_date):
 
 def detections_to_incidents(detections: List[Dict[str, str]], last_fetch_datetime: datetime) -> \
         Tuple[List[Dict[str, str]], datetime]:
+    """
+    Given the detections retrieved from Azure Identity Protection, transforms their data to incidents format.
+    """
     incidents: List[Dict[str, str]] = []
     latest_incident_time = last_fetch_datetime
 
@@ -309,13 +312,18 @@ def build_filter(last_fetch, params):
 
 
 def date_str_to_azure_format(date_str):
+    """
+    Given a string representing a date in some general format, modifies the date to Azure format.
+    That means removing the Z at the end and adding nanoseconds if they don't exist.
+    Moreover, sometimes the date has too many digits for
+    """
     date_str = date_str[:-1] if date_str[-1].lower() == 'z' else date_str
     if '.' not in date_str:
         date_str = f'{date_str}.000'
     else:
-        date_without_ms, ms = date_str.split('.')
-        ms = ms[:6]
-        date_str = f'{date_without_ms}.{ms}'
+        date_without_ns, ns = date_str.split('.')
+        ns = ns[:6]
+        date_str = f'{date_without_ns}.{ns}'
 
     return date_str
 
