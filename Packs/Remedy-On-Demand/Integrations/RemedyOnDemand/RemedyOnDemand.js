@@ -254,7 +254,7 @@ switch (command) {
         return fetchIncidentsToDemisto();
     case 'remedy-incident-create':
         return createIncident(
-            args['first_name'],
+            args['first-name'],
             args['last_name'],
             args.description,
             args.status,
