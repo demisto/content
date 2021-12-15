@@ -25,7 +25,12 @@ The RSA Archer GRC Platform provides a common foundation for managing policies, 
 
 4. Click **Test** to validate the URLs, token, and connection.
 
-Note: the api_endpoint parameter should be used only if you have another API endpoint.
+Notes: 
+1. The api_endpoint parameter should be used only if you have another API endpoint.
+2. Commen values for the Server URL parameter are:
+   - https://example.net
+   - https://example.net/rsaarcher
+   - https://example.net/archer
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
