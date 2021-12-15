@@ -1,5 +1,4 @@
 An integration to translate English to Yodish.
-This integration was integrated and tested with version xx of YodaSpeak
 
 ## Configure YodaSpeak on Cortex XSOAR
 
