@@ -38,6 +38,8 @@ Checks the reputation of the given IP address.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | IP.Address | String | The IP address that was checked. |   
+| IP.Malicious.Vendor | String | For malicious IP addresses, the vendor that made the decision. | 
+| IP.Malicious.Description | String | For malicious IP addresses, the reason the vendor made that decision. |
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
 | DBotScore.Type | String | The indicator type. | 
@@ -92,6 +94,8 @@ Checks the reputation of the given domain.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Domain.Name | String | The name of the domain that was checked. | 
+| Domain.Malicious.Vendor | String | For malicious domains, the vendor that made the decision. | 
+| Domain.Malicious.Description | String | For malicious domains, the reason the vendor made that decision. | 
 | DBotScore.Indicator | String | The indicator that was tested. |
 | DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
 | DBotScore.Type | String | The indicator type. | 
@@ -146,6 +150,8 @@ Checks the reputation of the given URL.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | URL.Data | String | The URL that was checked. |
+| URL.Malicious.Vendor | String | For malicious URLs, the vendor that made the decision. | 
+| URL.Malicious.Description | String | For malicious URLs, the reason the vendor made that decision. |
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
 | DBotScore.Type | String | The indicator type. | 
@@ -200,8 +206,14 @@ Get specific indicator reputation
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | IP.Address | String | The IP address. | 
+| IP.Malicious.Vendor | String | For malicious IP addresses, the vendor that made the decision. | 
+| IP.Malicious.Description | String | For malicious IP addresses, the reason the vendor made that decision. |
 | Domain.Name | String | The domain name. | 
+| Domain.Malicious.Vendor | String | For malicious domains, the vendor that made the decision. | 
+| Domain.Malicious.Description | String | For malicious domains, the reason the vendor made that decision. |
 | URL.Data | String | The URL. | 
+| URL.Malicious.Vendor | String | For malicious URLs, the vendor that made the decision. | 
+| URL.Malicious.Description | String | For malicious URLs, the reason the vendor made that decision. |
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
 | DBotScore.Type | String | The indicator type. | 
