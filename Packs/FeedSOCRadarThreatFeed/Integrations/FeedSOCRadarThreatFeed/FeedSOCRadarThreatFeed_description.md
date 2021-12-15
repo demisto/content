@@ -15,4 +15,4 @@ Please bear in mind that you should be careful about the your API key's rate lim
 
 ### Further Information
 
-For further information please see [SOCRadar Threat Feeds/IOC API](https://platform.socradar.com/docs/api/threat_intel_api/) documentation.
+For further information please see [SOCRadar Threat Feeds/IOC API](https://platform.socradar.com/docs/api/threat_intel_api/) documentation. 
