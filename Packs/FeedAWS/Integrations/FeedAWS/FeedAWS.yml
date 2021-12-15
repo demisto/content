@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: AWS Feed test
+  id: AWS Feed
   version: -1
 configuration:
 - display: Services
@@ -144,8 +144,8 @@ configuration:
   type: 8
   hidden: true
 description: Use the AWS feed integration to fetch indicators from the feed.
-display: AWS Feed test
-name: AWS Feed test
+display: AWS Feed
+name: AWS Feed
 script:
   commands:
   - arguments:
