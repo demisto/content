@@ -332,7 +332,7 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
         pack.cleanup()
         return
 
-    task_status, _ = pack.zip_pack(extract_destination_path, enc_key,
+    task_status, zip_pack_path = pack.zip_pack(extract_destination_path, enc_key,
                                    private_artifacts_dir, secondary_enc_key)
 
     if not task_status:
@@ -348,7 +348,7 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
 
     bucket_for_uploading = private_storage_bucket if private_storage_bucket else storage_bucket
     (task_status, skipped_pack_uploading, full_pack_path) = \
-        pack.upload_to_storage(pack.zip_path, pack.latest_version,
+        pack.upload_to_storage(zip_pack_path, pack.latest_version,
                                bucket_for_uploading, override_all_packs, storage_base_path
                                or pack_was_modified, pack_artifacts_path=packs_artifacts_dir,
                                private_content=True)
