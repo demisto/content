@@ -1021,7 +1021,7 @@ def upload_packs_with_dependencies_zip(extract_destination_path, packs_dependenc
                 pack_with_dep_path,
                 zip_with_deps_path
             )
-            os.remove(pack_with_dep_path)
+            shutil.rmtree(pack_with_dep_path)
             logging.info(f"Uploading {pack.name} with dependencies")
             task_status, _, _ = pack.upload_to_storage(
                 zip_pack_path=zip_with_deps_path,
@@ -1031,7 +1031,7 @@ def upload_packs_with_dependencies_zip(extract_destination_path, packs_dependenc
                 storage_base_path=storage_base_path,
                 upload_path=upload_path
             )
-            os.remove(zip_with_deps_path)
+            shutil.rmtree(zip_with_deps_path)
             logging.info(f"{pack.name} with dependencies was{' not' if not task_status else ''} uploaded successfully")
             if not task_status:
                 pack.status = PackStatus.FAILED_UPLOADING_PACK.name
