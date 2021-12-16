@@ -100,7 +100,7 @@ class PrismaCloudComputeClient(BaseClient):
                 )
             raise e
 
-    def get_host_profiles(self, params=None):
+    def get_host_profiles(self, params: Optional[dict] = None) -> List[dict]:
         """
         Sends a request to get all the host profiles.
 
@@ -112,7 +112,7 @@ class PrismaCloudComputeClient(BaseClient):
         """
         return self._http_request(method="GET", url_suffix="/profiles/host", params=params)
 
-    def get_container_profiles(self, params=None):
+    def get_container_profiles(self, params: Optional[dict] = None) -> List[dict]:
         """
         Sends a request to get all the container profiles.
 
@@ -124,7 +124,7 @@ class PrismaCloudComputeClient(BaseClient):
         """
         return self._http_request(method="GET", url_suffix="/profiles/container", params=params)
 
-    def get_containers_hosts(self, container_id):
+    def get_containers_hosts(self, container_id: str) -> List[str]:
         """
         Sends a request to get the hosts that host a specific container.
 
@@ -136,7 +136,7 @@ class PrismaCloudComputeClient(BaseClient):
         """
         return self._http_request(method="GET", url_suffix=f"profiles/container/{container_id}/hosts")
 
-    def get_container_forensics(self, container_id, params=None):
+    def get_container_forensics(self, container_id: str, params: Optional[dict] = None) -> List[dict]:
         """
         Sends a request to get a specific container forensics.
 
@@ -149,7 +149,7 @@ class PrismaCloudComputeClient(BaseClient):
         """
         return self._http_request(method="GET", url_suffix=f"profiles/container/{container_id}/forensic", params=params)
 
-    def get_host_forensics(self, host_id, params=None):
+    def get_host_forensics(self, host_id, params: Optional[dict] = None) -> List[dict]:
         """
         Sends a request to get a specific host forensics.
 
@@ -162,7 +162,7 @@ class PrismaCloudComputeClient(BaseClient):
         """
         return self._http_request(method="GET", url_suffix=f"/profiles/host/{host_id}/forensic", params=params)
 
-    def get_console_version(self):
+    def get_console_version(self) -> str:
         """
         Sends a request to get the prisma cloud compute console version.
 
@@ -171,7 +171,7 @@ class PrismaCloudComputeClient(BaseClient):
         """
         return self._http_request(method="GET", url_suffix="/version")
 
-    def get_custom_ip_feeds(self):
+    def get_custom_ip_feeds(self) -> dict:
         """
         Sends a request to get the custom IP feeds.
 
@@ -180,7 +180,7 @@ class PrismaCloudComputeClient(BaseClient):
         """
         return self._http_request(method="GET", url_suffix="/feeds/custom/ips")
 
-    def add_custom_ip_feeds(self, feeds):
+    def add_custom_ip_feeds(self, feeds: List[str]):
         """
         Sends a request to add custom IP feeds.
 
@@ -361,11 +361,8 @@ def parse_limit_and_offset_values(limit: str, offset: str) -> Tuple[int, int]:
     """
     limit, offset = arg_to_number(arg=limit, arg_name="limit"), arg_to_number(arg=offset, arg_name="offset")
 
-    try:
-        assert offset is not None and offset >= 0
-        assert limit is not None and 0 < limit <= MAX_API_LIMIT
-    except AssertionError:
-        raise ValueError("limit/offset values are invalid, limit scope = 1-50, offset scope >= 0")
+    assert offset is not None and offset >= 0, f"offset {offset} is invalid, scope >= 0"
+    assert limit is not None and 0 < limit <= MAX_API_LIMIT, f"limit {limit} is invalid, scope = 1-50"
 
     return limit, offset
 
@@ -404,7 +401,7 @@ def epochs_to_timestamp(epochs: int, date_format: str = "%B %d, %Y %H:%M:%S %p")
         return ""
 
 
-def filter_api_response(api_response: list, offset: int, limit: int) -> Optional[list]:
+def filter_api_response(api_response: Optional[list], offset: int, limit: int) -> Optional[list]:
     """
     Filter the api response according to the offset/limit, used in case the api doesn't support limit/offset
 
@@ -416,7 +413,7 @@ def filter_api_response(api_response: list, offset: int, limit: int) -> Optional
     Returns:
         list: api filtered response, None in case the api response is empty
     """
-    if api_response is None:
+    if not api_response:
         return api_response
 
     start = min(offset, len(api_response))
