@@ -21,8 +21,8 @@ This integration was integrated and tested with version 1.0 of MISP Feed.
     |  |  | False |
     | Feed Fetch Interval |  | False |
     | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
-    | Attribute Tags | Attribute tags to get. You can enter a comma-separated list of tags, for example &amp;lt;tag1,tag2,tag3&amp;gt;. | False |
-    | Attribute Types | Attribute types to get. You can enter a comma-separated list of types, for example &amp;lt;type1,type2,type3&amp;gt;. | False |
+    | Attribute Tags | Attributes having one of the tags or being an attribute of an event having one of the tags will be returned. You can enter a comma-separated list of tags, for example &amp;lt;tag1,tag2,tag3&amp;gt;. | False |
+    | Attribute Types | Attributes of one of these types will be returned. You can enter a comma-separated list of types, for example &amp;lt;type1,type2,type3&amp;gt;. | False |
     | Query | JSON query to filter MISP attributes. When a query parameter is used, Attribute Types and Attribute Tags parameters are not used. You can check for the correct syntax at https://&amp;lt;Your MISP url&amp;gt;/servers/openapi\#operation/restSearchAttributes | False |
     | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed, | False |
 
@@ -107,7 +107,3 @@ Gets indicators from the feed.
 
 #### Human Readable Output
 Retrieved 7 indicators.
-
-
-#### No Attribute for a given Attribute Tag
-If no Attribute exist with the Attribute Tag used to filter, MISP will return existing events that have the tag instead.  
