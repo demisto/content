@@ -19,7 +19,7 @@ configuration:
   type: 0
 - displaypassword: Key (received from the admin consent - see Detailed Instructions (?) (Recommended)
   name: credentials
-  required: true
+  required: false
   type: 9
   hiddenusername: true
 - display: Trust any certificate (not secure)
