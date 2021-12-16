@@ -25,13 +25,15 @@
 <strong>Name</strong>: a textual name for the integration instance.</li>
 <li><strong>Server URL (e.g. <a href="https://192.168.0.1/" rel="nofollow">https://192.168.0.1</a>)</strong></li>
 <li><strong>Username (Only if your Cuckoo service requires HTTP auth)</strong></li>
-<li1>In order to authenticate with a Cluster Authentication Token, insert '__token' in the "Username" textbox, and the token itself in the "Password" textbox.</li1>
+<li>In order to authenticate with an API token, insert '__token' in the "Username" textbox, and the token itself in the "Password" textbox.</li>
 <li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy settings</strong></li>
 </ul>
 </li>
 <li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>
 </ol>
+<h2>Configuration params</h2>
+<p>NOTE: In order to authenticate with an API token, insert '__token' in the "Username" textbox, and the token itself in the "Password" textbox.</p>
 <h2>Commands</h2>
 <p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
