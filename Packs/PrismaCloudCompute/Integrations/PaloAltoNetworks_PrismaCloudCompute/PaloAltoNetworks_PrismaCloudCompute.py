@@ -275,6 +275,20 @@ class PrismaCloudComputeClient(BaseClient):
         """
         return self._http_request(method="GET", url_suffix="/hosts", params=params)
 
+    def get_impacted_resources(self, cve):
+        """
+        Get the impacted resources that are based on a specific CVE.
+
+        Args:
+            cve (str): The CVE from which impacted resources will be retrieved.
+
+        Returns:
+            dict: the impacted resources from the CVE.
+        """
+        return self._http_request(
+            method="GET", url_suffix="/stats/vulnerabilities/impacted-resources", params={"cve": cve}
+        )
+
 
 def str_to_bool(s):
     """
@@ -1443,8 +1457,83 @@ def get_hosts_scan_list(client: PrismaCloudComputeClient, args: dict) -> Command
 
     return CommandResults(
         outputs_prefix="PrismaCloudCompute.ReportHostScan",
-        outputs_key_field="id",
+        outputs_key_field="_id",
         outputs=hosts_scans,
+        readable_output=table,
+    )
+
+
+def get_impacted_resources(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
+    """
+    Get the impacted resources list.
+    Implement the command 'prisma-cloud-compute-vulnerabilities-impacted-resources-list'
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-vulnerabilities-impacted-resources-list command arguments
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    limit, offset = parse_limit_and_offset_values(limit=args.pop("limit", "50"), offset=args.pop("offset", "0"))
+    cves = argToList(arg=args.get("cve", []))
+
+    impacted_images, impacted_hosts, context_output = [], [], []
+    for cve in cves:
+        if cve_impacted_resources := client.get_impacted_resources(cve=cve):
+            if "riskTree" in cve_impacted_resources and cve_impacted_resources.get("riskTree") is not None:
+                cve_impacted_resources["riskTree"] = dict(
+                    filter_api_response(
+                        api_response=list(cve_impacted_resources.get("riskTree", {}).items()),  # type: ignore
+                        limit=limit,
+                        offset=offset
+                    )
+                )
+
+                for image_details in cve_impacted_resources.get("riskTree", {}).values():
+                    for image in image_details:
+                        image_table_details = {
+                            "Image": image.get("image"),
+                            "Container": image.get("container"),
+                            "Host": image.get("host"),
+                            "Namespace": image.get("namespace")
+                        }
+                        if image_table_details not in impacted_images:
+                            impacted_images.append(image_table_details)
+
+            if "hosts" in cve_impacted_resources:
+                cve_impacted_resources["hosts"] = filter_api_response(
+                    api_response=cve_impacted_resources.get("hosts"), limit=limit, offset=offset
+                )
+
+                for host in cve_impacted_resources.get("hosts"):
+                    host_table_details = {"Hostname": host}
+                    if host_table_details not in impacted_hosts:
+                        impacted_hosts.append(host_table_details)
+
+            context_output.append(cve_impacted_resources)
+
+    if context_output:
+        impacted_images_table = tableToMarkdown(
+            name="Impacted Images",
+            t=impacted_images,
+            headers=["Image", "Container", "Host", "Namespace"],
+            removeNull=True
+        )
+        impacted_hosts_table = tableToMarkdown(
+            name="Impacted Hosts",
+            t=impacted_hosts,
+            headers=["Hostname"],
+            removeNull=True
+        )
+        table = impacted_images_table + impacted_hosts_table
+    else:
+        context_output, table = [], "No results found"
+
+    return CommandResults(
+        outputs_prefix="PrismaCloudCompute.VulnerabilitiesImpactedResource",
+        outputs_key_field="_id",
+        outputs=context_output if context_output else None,
         readable_output=table,
     )
 
@@ -1528,6 +1617,8 @@ def main():
             return_results(results=get_images_scan_list(client=client, args=demisto.args()))
         elif requested_command == 'prisma-cloud-compute-hosts-scan-list':
             return_results(results=get_hosts_scan_list(client=client, args=demisto.args()))
+        elif requested_command == 'prisma-cloud-compute-vulnerabilities-impacted-resources-list':
+            return_results(results=get_impacted_resources(client=client, args=demisto.args()))
     # Log exceptions
     except Exception as e:
         return_error(f'Failed to execute {requested_command} command. Error: {str(e)}')

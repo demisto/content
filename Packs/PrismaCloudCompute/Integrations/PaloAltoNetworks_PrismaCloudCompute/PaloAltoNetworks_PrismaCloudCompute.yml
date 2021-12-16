@@ -1263,9 +1263,8 @@ script:
           description: Image labels.
           type: String
         - contextPath: PrismaCloudCompute.ReportsImagesScan.layers
-          description: "Image's filesystem layers. Each layer is a SHA256 digest of the
-            filesystem diff See:
-            https://windsock.io/explaining-docker-image-ids/."
+          description: Image's filesystem layers. Each layer is a SHA256 digest of the
+            filesystem diff
           type: String
         - contextPath: PrismaCloudCompute.ReportsImagesScan.missingDistroVulnCoverage
           description: Indicates if the image OS is covered in the IS (true) or not (false).
@@ -1562,6 +1561,39 @@ script:
         - contextPath: PrismaCloudCompute.ReportHostScan.wildFireUsage
           description: Usage holds wildfire usage stats, period for the usage varies with
             context
+          type: Unknown
+    - name: prisma-cloud-compute-vulnerabilities-impacted-resources-list
+      description: prisma-cloud-compute-vulnerabilities-impacted-resources-list
+      deprecated: false
+      arguments:
+        - name: cve
+          description: Comma seprated list of CVEs IDs that can be used to as a pivot for
+            the impacted resource search. For example cve=CVE-2018-14600,CVE-2021-31535
+          required: false
+          isArray: true
+          defaultValue: ""
+        - name: limit
+          description: The maximum records of impacted hosts/images to return
+          required: false
+          isArray: false
+          defaultValue: "50"
+        - name: offset
+          description: The offset from which to begin listing impacted hosts/images records
+          required: false
+          isArray: false
+          defaultValue: "0"
+      outputs:
+        - contextPath: PrismaCloudCompute.VulnerabilitiesImpactedResource._id
+          description: Id is the CVE ID (index for the impacted resources).
+          type: String
+        - contextPath: Path.To.PrismaCloudCompute.VulnerabilitiesImpactedResource.functions
+          description: Functions is a map between function id to its details.
+          type: Unknown
+        - contextPath: Path.To.PrismaCloudCompute.VulnerabilitiesImpactedResource.hosts
+          description: Hosts is the list of impacted hosts.
+          type: String
+        - contextPath: Path.To.PrismaCloudCompute.VulnerabilitiesImpactedResource.riskTree
+          description: RiskTree is the risk tree associated with the CVE ID.
           type: Unknown
 tests:
   - No test

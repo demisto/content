@@ -6,7 +6,7 @@ from PaloAltoNetworks_PrismaCloudCompute import (
     get_profile_container_forensic_list, get_profile_host_forensic_list, get_console_version, get_custom_feeds_ip_list,
     add_custom_ip_feeds, filter_api_response, parse_date_string_format, get_custom_malware_feeds,
     add_custom_malware_feeds, get_cves, get_defenders, get_collections, get_namespaces, get_images_scan_list,
-    get_hosts_scan_list
+    get_hosts_scan_list, get_impacted_resources
 )
 
 from CommonServerPython import DemistoException
@@ -524,6 +524,12 @@ HTTP_REQUEST_URL_WITH_QUERY_PARAMS = [
         "/hosts",
         "https://test.com/hosts?clusters=clusters&compact=true&"
         "fields=fields&hostname=hostname&provider=provider&offset=1&limit=8"
+    ),
+    (
+        OrderedDict(cve="cve"),
+        get_impacted_resources,
+        "/stats/vulnerabilities/impacted-resources",
+        "https://test.com/stats/vulnerabilities/impacted-resources?cve=cve"
     )
 ]
 
@@ -1198,6 +1204,47 @@ EXPECTED_CONTEXT_OUTPUT_DATA = [
                     }
                 ]
             }
+        ]
+    ),
+    (
+        {"limit": "2", "cve": "CVE-2018-14600"},
+        get_impacted_resources,
+        "/stats/vulnerabilities/impacted-resources",
+        {
+            "_id": "CVE-2018-1270",
+            "riskTree": {
+                "1": [
+                    {
+                        "image": "image1",
+                        "container": "container1",
+                        "host": "host1",
+                        "namespace": "namespace1",
+                        "factors": {
+                            "network": True,
+                            "noSecurityProfile": True
+                        }
+                    }
+                ],
+            },
+        },
+        [
+            {
+                "_id": "CVE-2018-1270",
+                "riskTree": {
+                    "1": [
+                        {
+                            "image": "image1",
+                            "container": "container1",
+                            "host": "host1",
+                            "namespace": "namespace1",
+                            "factors": {
+                                "network": True,
+                                "noSecurityProfile": True
+                            }
+                        }
+                    ],
+                },
+            },
         ]
     )
 ]

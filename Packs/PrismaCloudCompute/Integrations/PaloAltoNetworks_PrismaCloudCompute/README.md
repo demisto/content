@@ -1418,7 +1418,7 @@ Get images scan report, the report includes vulnerabilities, compliance issues, 
 | PrismaCloudCompute.ReportsImagesScan.instances | Unknown | Details about each occurrence of the image \(tag \+ host\). | 
 | PrismaCloudCompute.ReportsImagesScan.k8sClusterAddr | String | Endpoint of the Kubernetes API server. | 
 | PrismaCloudCompute.ReportsImagesScan.labels | String | Image labels. | 
-| PrismaCloudCompute.ReportsImagesScan.layers | String | Image's filesystem layers. Each layer is a SHA256 digest of the filesystem diff See: https://windsock.io/explaining-docker-image-ids/. | 
+| PrismaCloudCompute.ReportsImagesScan.layers | String | Image's filesystem layers. Each layer is a SHA256 digest of the filesystem diff | 
 | PrismaCloudCompute.ReportsImagesScan.missingDistroVulnCoverage | Boolean | Indicates if the image OS is covered in the IS \(true\) or not \(false\). | 
 | PrismaCloudCompute.ReportsImagesScan.namespaces | String | k8s namespaces of all the containers running this image. | 
 | PrismaCloudCompute.ReportsImagesScan.osDistro | String | Name of the OS distribution. | 
