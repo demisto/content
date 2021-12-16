@@ -1546,7 +1546,7 @@ class Pack(object):
 
                     if current_directory == PackFolders.SCRIPTS.value:
                         folder_collected_items.append({
-                            'id': content_item.get('id', ''),
+                            'id': content_item.get('commonfields', {}).get('id', ''),
                             'name': content_item.get('name', ''),
                             'description': content_item.get('comment', ''),
                             'tags': content_item_tags,
@@ -1570,7 +1570,7 @@ class Pack(object):
                         integration_commands = content_item.get('script', {}).get('commands', [])
                         self.is_feed_pack(content_item, 'Integration')
                         folder_collected_items.append({
-                            'id': content_item.get('id', ''),
+                            'id': content_item.get('commonfields', {}).get('id', ''),
                             'name': content_item.get('display', ''),
                             'description': content_item.get('description', ''),
                             'category': content_item.get('category', ''),
