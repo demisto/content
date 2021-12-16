@@ -1,4 +1,3 @@
-*draft*
 Note: Support for this pack will be moving to the partner around March, 16, 2022
 
 Guardicore delivers easy-to-use Zero Trust network segmentation to security practitioners
