@@ -177,20 +177,19 @@ script:
         name in the request.
       name: admin_name
     - auto: PREDEFINED
-      description: (True/False) Force Commit
+      description: Force Commit
       name: force_commit
       predefined:
         - 'true'
         - 'false'
     - auto: PREDEFINED
-      description: (True/False) Partial commit while excluding shared objects and device and network configuration.
+      description: Partial commit while excluding device and network configuration.
       name: exclude_device_network_configuration
       predefined:
         - 'true'
         - 'false'
     - auto: PREDEFINED
-      description: (True/False) Partial commit while excluding shared objects and
-        device and network configuration.
+      description: Partial commit while excluding shared objects.
       name: exclude_shared_objects
       predefined:
         - 'true'

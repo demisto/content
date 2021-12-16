@@ -632,12 +632,11 @@ def panorama_commit_status_command(args: dict):
 @logger
 def panorama_push_to_device_group(args: dict):
     command: str = ''
-    device_group = args.get('device-group', DEVICE_GROUP)
-    command += f'<device-group><entry name="{device_group}"/></device-group>'
+    command += f'<device-group><entry name="{DEVICE_GROUP}"/></device-group>'
 
     serial_number = args.get('serial_number')
     if serial_number:
-        command = f'<device-group><entry name="{device_group}"><devices><entry name="{serial_number}"/>' \
+        command = f'<device-group><entry name="{DEVICE_GROUP}"><devices><entry name="{serial_number}"/>' \
                   f'</devices></entry></device-group>'
 
     if argToBoolean(args.get('validate-only', 'false')):
