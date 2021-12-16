@@ -1573,7 +1573,7 @@ def main():
     self_deployed: bool = params.get('self_deployed', False)
     tenant_id: str = params.get('tenant_id', '')
     auth_and_token_url: str = params.get('auth_id', '')
-    enc_key: str = params.get('enc_key', '') or (params.get('credentials') or {}).get('password')
+    enc_key: str = params.get('enc_key', '') or (params.get('credentials') or {}).get('password', '')
     server = params.get('url', '')
     base_url: str = urljoin(server, '/v1.0')
     endpoint = GRAPH_BASE_ENDPOINTS.get(server, 'com')
