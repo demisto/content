@@ -4,11 +4,9 @@ contentitemexportablefields:
   contentitemfields: {}
 name: Content Update Manager
 description: |-
-  This playbook will check to see if there are any content updates available for chosen installed content packs, and notify users via e-mail or Slack.
-
-  The playbook will also let users decide via playbook inputs or communication tasks on whether they want to trigger an auto-update process to install all updates that were found.
-
-  This playbook can be used as an XSOAR job to help users track marketplace pack updates and install them regularly.
+  This playbook checks for any available content updates for selected installed content packs, and notifies users via e-mail or Slack. 
+  It also lets users decide via playbook inputs or communication tasks if they want to trigger an auto-update process to install all updates that were found.
+  This playbook can be used as a Cortex XSOAR job to help users track marketplace pack updates and install them regularly.
 starttaskid: "0"
 tasks:
   "0":
@@ -48,7 +46,7 @@ tasks:
       id: a52c2f3c-80f9-4ac4-8477-4526b1e22d66
       version: -1
       name: Check for updates
-      description: Send an HTTP GET requests to check for updates.
+      description: Sends an HTTP GET request to check for updates.
       script: '|||demisto-api-get'
       type: regular
       iscommand: true
@@ -177,8 +175,7 @@ tasks:
       id: f322f372-6e92-4a8b-8c85-67c509ba37a1
       version: -1
       name: Are there e-mail addresses?
-      description: This will check if e-mail addresses have been provided and that
-        there are "send-mail" compatible integrations that are enabled.
+      description: Checks if e-mail addresses are provided in the inputs and whether any "send-mail" compatible integrations are enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -242,8 +239,8 @@ tasks:
       id: c84f2fd3-e605-43d5-8b74-eda542bdcb33
       version: -1
       name: Are there Slack channels?
-      description: This task will check if any Slack integrations are configured and
-        whether a Slack channel has been provided in the inputs.
+      description: Checks if a Slack channel is provided in the inputs and
+        whether any Slack integrations are configured.
       type: condition
       iscommand: false
       brand: ""
@@ -307,8 +304,8 @@ tasks:
       id: aebffc5d-e57e-4fff-80ef-d9863fe82e4b
       version: -1
       name: Are there Slack users?
-      description: This task will check if any Slack integrations are configured and
-        whether a Slack username has been provided in the inputs.
+      description: Checks if a Slack username is provided in the inputs and
+        whether any Slack integrations are configured.
       type: condition
       iscommand: false
       brand: ""
@@ -372,7 +369,7 @@ tasks:
       id: b0e48169-e94f-4dcc-880d-4e719fae3950
       version: -1
       name: Set closing information - no updates
-      description: Set closing reason and notes for the investigation.
+      description: Sets closing reason and notes for the investigation.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -438,7 +435,7 @@ tasks:
       id: a5123e29-5c60-40b4-8f8f-d90861d36758
       version: -1
       name: Send Slack notification and question to channel
-      description: Sends a message to a user, group, or channel.
+      description: Sends a Slack message to a user, group, or channel.
       type: collection
       iscommand: false
       brand: ""
@@ -725,9 +722,8 @@ tasks:
       id: d2a57629-0340-41a4-82e7-a0e9988fb1c6
       version: -1
       name: Are there relevant updates?
-      description: This task checks to see if there are any relevant updates available.
-        It will include all updates as relevant if the user has selected "All" packs
-        to be monitored.
+      description: Checks if relevant updates are available.
+        It includes all updates if the user selects monitoring "All" packs.
       type: condition
       iscommand: false
       brand: ""
@@ -768,7 +764,7 @@ tasks:
       id: 90663c14-f5e3-426d-8dc3-432c68f1a8ec
       version: -1
       name: Set closing information - no updates
-      description: Set closing reason and notes for the investigation.
+      description: Sets closing reason and notes for the investigation.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -821,10 +817,10 @@ tasks:
       id: ab6eccd9-64b6-47b3-8879-76a0bc7aed15
       version: -1
       name: Were the packs updated?
-      description: This checks whether the packs were updated after either the sub-playbook
-        has timed out or there are no more updates to be applied. It will result in
-        the "yes" branch if the updates installed match those that were selected in
-        the Content Packs to be monitored.
+      description: Checks whether the packs were updated after either the sub-playbook 
+        timed out or there are no more updates to apply. It results in
+        the "yes" branch if the installed updates match those selected in
+        the content packs to be monitored.
       type: condition
       iscommand: false
       brand: ""
@@ -864,7 +860,7 @@ tasks:
       id: 500fa4ce-3f9a-43bb-8915-c4547fc61fc0
       version: -1
       name: Send Slack notification
-      description: Sends a message to a user, group, or channel.
+      description: Sends a Slack message to a user, group, or channel.
       script: '|||send-notification'
       type: regular
       iscommand: true
@@ -907,7 +903,7 @@ tasks:
       id: 7769a021-d0ef-49f5-819b-6d35e4bb393d
       version: -1
       name: Manual - review failed update task
-      description: Set closing reason and notes for the investigation.
+      description: Sets closing reason and notes for the investigation.
       type: regular
       iscommand: false
       brand: Builtin
@@ -937,7 +933,7 @@ tasks:
       id: d3753217-6199-45ba-8d1b-be8d92abfc0a
       version: -1
       name: Is there a user filter?
-      description: This task will check whether the user has provided a specific content
+      description: Checks whether the user provided a specific content
         pack update filter other than "All".
       type: condition
       iscommand: false
@@ -1116,7 +1112,7 @@ tasks:
       id: f587cf3c-0211-44b1-86b7-162da2891ac4
       version: -1
       name: Are there available updates?
-      description: This task will check if there are ANY updates at all available.
+      description: Checks if there are ANY available updates.
       type: condition
       iscommand: false
       brand: ""
@@ -1216,8 +1212,7 @@ tasks:
       id: cdbd4214-f433-457a-8cdf-c821beaf0f51
       version: -1
       name: Are there Slack channels?
-      description: This task will check if any Slack integrations are configured and
-        whether a Slack channel has been provided in the inputs.
+      description: Checks if a Slack channel is provided in the inputs and whether any Slack integrations are configured.
       type: condition
       iscommand: false
       brand: ""
@@ -1388,7 +1383,7 @@ tasks:
       id: f726283e-5be9-4222-898d-73a61f360b4b
       version: -1
       name: Send Slack notification and question to user
-      description: Sends a message to a user, group, or channel.
+      description: Sends a Slack message to a user, group, or channel.
       type: collection
       iscommand: false
       brand: ""
@@ -1573,7 +1568,7 @@ tasks:
       id: 506e5937-d6ea-456f-8ce3-c2870faf1309
       version: -1
       name: Send E-mail notification and question
-      description: Sends a message to a user, group, or channel.
+      description: Sends an email message to a user, group, or channel.
       type: collection
       iscommand: false
       brand: ""
@@ -1836,8 +1831,7 @@ tasks:
       id: a4c8e1d3-ff41-4ff2-828c-8bfe4147e0e1
       version: -1
       name: Are there Slack users?
-      description: This task will check if any Slack integrations are configured and
-        whether a Slack username has been provided in the inputs.
+      description: Checks if a Slack username is provided in the inputs and whether any Slack integrations are configured.
       type: condition
       iscommand: false
       brand: ""
@@ -1901,7 +1895,7 @@ tasks:
       id: caa74c3b-114a-40b0-8af8-ad8896b52ae5
       version: -1
       name: Send Slack notification
-      description: Sends a message to a user, group, or channel.
+      description: Sends a Slack message to a user, group, or channel.
       script: '|||send-notification'
       type: regular
       iscommand: true
@@ -1976,8 +1970,7 @@ tasks:
       id: 42bbe4da-be68-4936-8f06-2858559a4178
       version: -1
       name: Are there Slack channels?
-      description: This task will check if any Slack integrations are configured and
-        whether a Slack channel has been provided in the inputs.
+      description: Checks if a Slack channel is provided in the inputs and whether any Slack integrations are configured.
       type: condition
       iscommand: false
       brand: ""
@@ -2041,8 +2034,7 @@ tasks:
       id: 03688308-8a8f-4ac2-8843-d3012d2c7d22
       version: -1
       name: Are there Slack users?
-      description: This task will check if any Slack integrations are configured and
-        whether a Slack username has been provided in the inputs.
+      description: Checks if a Slack username is provided in the inputs and whether any Slack integrations are configured.
       type: condition
       iscommand: false
       brand: ""
@@ -2106,7 +2098,7 @@ tasks:
       id: c220273d-e298-4b97-8eac-e94d0eb8a24b
       version: -1
       name: Send Slack notification
-      description: Sends a message to a user, group, or channel.
+      description: Sends a Slack message to a user, group, or channel.
       script: '|||send-notification'
       type: regular
       iscommand: true
@@ -2148,7 +2140,7 @@ tasks:
       id: 13f2282a-a0b4-4cb3-881c-a5b7f97904b3
       version: -1
       name: Send Slack notification
-      description: Sends a message to a user, group, or channel.
+      description: Sends a Slack message to a user, group, or channel.
       script: '|||send-notification'
       type: regular
       iscommand: true
@@ -2326,8 +2318,7 @@ tasks:
       id: 37df4958-12a3-428e-84d2-bda313d530db
       version: -1
       name: Are there e-mail addresses?
-      description: This will check if e-mail addresses have been provided and that
-        there are "send-mail" compatible integrations that are enabled.
+      description: Checks if e-mail addresses are provided in the inputs and whether any "send-mail" compatible integrations are enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -2391,7 +2382,7 @@ tasks:
       id: 9e74e8cc-8c38-4123-8043-b2fcb21c686b
       version: -1
       name: Send Email notification
-      description: Sends an email using Gmail.
+      description: Sends an email notification using Gmail.
       script: '|||send-mail'
       type: regular
       iscommand: true
@@ -2431,7 +2422,7 @@ tasks:
       id: 7522aa82-7488-4efb-8712-a4be2b756648
       version: -1
       name: Send Email notification
-      description: Sends an email using Gmail.
+      description: Sends an email notification using Gmail.
       script: '|||send-mail'
       type: regular
       iscommand: true
@@ -2472,8 +2463,7 @@ tasks:
       id: 9c976df5-c243-42ad-84cd-e4073925e52a
       version: -1
       name: Are there e-mail addresses?
-      description: This will check if e-mail addresses have been provided and that
-        there are "send-mail" compatible integrations that are enabled.
+      description: Checks if e-mail addresses are provided in the inputs and whether any "send-mail" compatible integrations are enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -2537,7 +2527,7 @@ tasks:
       id: f1512bfa-ecbc-4e20-83f7-3887f8976d50
       version: -1
       name: Set closing information - unsuccessful update
-      description: Set closing reason and notes for the investigation.
+      description: Sets closing reason and notes for the investigation.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -2584,8 +2574,9 @@ tasks:
     scriptarguments:
       contentupdatemanagerdescription:
         simple: |-
-          This playbook will check to see if there are any content updates available for chosen installed content packs, and notify users via e-mail or Slack.
-          The playbook will also let users decide via playbook inputs or communication tasks on whether they want to trigger an auto-update process to install all updates that were found. The playbook can be used as an XSOAR job to help users track marketplace pack updates and install them regularly.
+          This playbook checks for any available content updates for selected installed content packs, and notifies users via e-mail or Slack.
+          It also lets users decide via playbook inputs or communication tasks if they want to trigger an auto-update process to install all updates that were found.
+          This playbook can be used as a Cortex XSOAR job to help users track marketplace pack updates and install them regularly.
     separatecontext: false
     view: |-
       {
@@ -2672,8 +2663,9 @@ inputs:
       root: incident
       accessor: contentnotificationemail
   required: true
-  description: Provide semi-colon delimited e-mail addresses that will be used for
-    the new content notifications. You will require an integration installed and configured
+  description: Provides semi-colon delimited e-mail addresses for
+    the new content notifications. 
+    Note: You must have an installed and configured integration
     that supports the send-mail command.
   playbookInputQuery:
 - key: slackuser
@@ -2682,8 +2674,8 @@ inputs:
       root: incident
       accessor: contentnotificationslackusername
   required: false
-  description: Provide a Slack username to which the notifications will be sent to.
-    You will require Slack integration to be installed and configured.
+  description: Provides a Slack username for the new content notifications.
+    Note: You must have an installed and configured Slack integration.
   playbookInputQuery:
 - key: slackchannel
   value:
@@ -2691,9 +2683,9 @@ inputs:
       root: incident
       accessor: contentnotificationslackchannel
   required: false
-  description: Provide a Slack channel to which the notifications will be sent to.
-    You will require Slack integration to be installed and configured. Also, ensure
-    that the XSOAR application has access to this channel.
+  description: Provides a Slack channel for the new content notifications.
+    Note: You must have an installed and configured Slack integration. Also, make sure
+    the Cortex XSOAR application has access to this channel.
   playbookInputQuery:
 - key: packs
   value:
@@ -2713,7 +2705,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    This will establish whether the content packs will be updated automatically if there are available updates or wait for an analyst's approval or manual update process.
+    Establishes whether to automatically update the content packs if there are available updates or wait for an analyst's approval or the manual update process.
     Specify 'Yes' for auto-update or 'No' for manual update.
   playbookInputQuery:
 outputs: []
