@@ -981,16 +981,6 @@ tasks:
       '#none#':
       - "71"
     scriptarguments:
-      fromdate:
-        complex:
-          root: incident
-          accessor: occurred
-          transformers:
-          - operator: ModifyDateTime
-            args:
-              variation:
-                value:
-                  simple: 1 day ago
       type:
         simple: Phishing Campaign
     separatecontext: false
