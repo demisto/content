@@ -40,10 +40,6 @@ tasks:
     nexttasks:
       '#none#':
       - "7"
-      - "8"
-      - "9"
-      - "18"
-      - "20"
     note: false
     quietmode: 0
     scriptarguments:
@@ -102,8 +98,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1280,
-          "y": 600
+          "x": 265,
+          "y": 400
         }
       }
   "3":
@@ -142,7 +138,7 @@ tasks:
       '#default#':
       - "6"
       "yes":
-      - "5"
+      - "8"
     note: false
     quietmode: 0
     separatecontext: false
@@ -160,8 +156,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1280,
-          "y": 825
+          "x": 265,
+          "y": 600
         }
       }
   "4":
@@ -190,8 +186,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1590,
-          "y": 1270
+          "x": 645,
+          "y": 1115
         }
       }
   "5":
@@ -216,8 +212,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 360,
-          "y": 2100
+          "x": 40,
+          "y": 3900
         }
       }
   "6":
@@ -249,8 +245,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1590,
-          "y": 1060
+          "x": 645,
+          "y": 880
         }
       }
   "7":
@@ -284,8 +280,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1280,
-          "y": 350
+          "x": 265,
+          "y": 220
         }
       }
   "8":
@@ -320,8 +316,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -185,
-          "y": 330
+          "x": 40,
+          "y": 840
         }
       }
   "9":
@@ -356,8 +352,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -840,
-          "y": 330
+          "x": 40,
+          "y": 1630
         }
       }
   "10":
@@ -447,8 +443,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -185,
-          "y": 560
+          "x": 40,
+          "y": 1030
         }
       }
   "12":
@@ -481,8 +477,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -840,
-          "y": 910
+          "x": 40,
+          "y": 1990
         }
       }
   "13":
@@ -525,8 +521,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -840,
-          "y": 1155
+          "x": 40,
+          "y": 2180
         }
       }
   "14":
@@ -572,8 +568,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -840,
-          "y": 1400
+          "x": 40,
+          "y": 2415
         }
       }
   "16":
@@ -606,8 +602,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -185,
-          "y": 890
+          "x": 40,
+          "y": 1220
         }
       }
   "18":
@@ -637,8 +633,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 740,
-          "y": 350
+          "x": 40,
+          "y": 3490
         }
       }
   "19":
@@ -677,8 +673,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 740,
-          "y": 630
+          "x": 40,
+          "y": 3690
         }
       }
   "20":
@@ -708,8 +704,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 280,
-          "y": 350
+          "x": 40,
+          "y": 2860
         }
       }
   "21":
@@ -764,8 +760,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 280,
-          "y": 590
+          "x": 40,
+          "y": 3070
         }
       }
   "22":
@@ -775,7 +771,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - "5"
+      - "18"
     note: false
     quietmode: 0
     scriptarguments:
@@ -798,8 +794,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 280,
-          "y": 850
+          "x": 40,
+          "y": 3280
         }
       }
   "23":
@@ -867,8 +863,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -840,
-          "y": 590
+          "x": 40,
+          "y": 1810
         }
       }
   "24":
@@ -891,7 +887,7 @@ tasks:
     isoversize: false
     nexttasks:
       "yes":
-      - "5"
+      - "9"
     note: false
     quietmode: 0
     separatecontext: false
@@ -909,8 +905,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -185,
-          "y": 1165
+          "x": 40,
+          "y": 1430
         }
       }
   "25":
@@ -933,7 +929,7 @@ tasks:
     isoversize: false
     nexttasks:
       "yes":
-      - "5"
+      - "20"
     note: false
     quietmode: 0
     separatecontext: false
@@ -951,21 +947,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -840,
-          "y": 1680
+          "x": 40,
+          "y": 2625
         }
       }
 version: -1
 view: |-
   {
-    "linkLabelsPosition": {
-      "19_5_yes": 0.34
-    },
+    "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2295,
-        "width": 2810,
-        "x": -840,
+        "height": 4095,
+        "width": 985,
+        "x": 40,
         "y": -130
       }
     }
