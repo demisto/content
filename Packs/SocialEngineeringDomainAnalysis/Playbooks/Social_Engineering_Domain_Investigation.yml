@@ -41,11 +41,11 @@ tasks:
     task:
       brand: ""
       description: start
-      id: fee06a4c-8f09-406a-8ff6-7ca4e62a8139
+      id: 8db87e78-ed65-4996-8269-59295a01f917
       iscommand: false
       name: ""
       version: -1
-    taskid: fee06a4c-8f09-406a-8ff6-7ca4e62a8139
+    taskid: 8db87e78-ed65-4996-8269-59295a01f917
     timertriggers: []
     type: start
     view: |-
@@ -85,13 +85,13 @@ tasks:
     task:
       brand: Builtin
       description: commands.local.cmd.extract.indicators
-      id: d2be0e14-a152-4fc4-8798-4e13e3901657
+      id: 26d9d82c-fb98-4dff-8183-d3de43b1daec
       iscommand: true
       name: Extract Domains (from incident details, csv, etc)
       script: Builtin|||extractIndicators
       type: regular
       version: -1
-    taskid: d2be0e14-a152-4fc4-8798-4e13e3901657
+    taskid: 26d9d82c-fb98-4dff-8183-d3de43b1daec
     timertriggers: []
     type: regular
     view: |-
@@ -150,12 +150,12 @@ tasks:
     task:
       brand: ""
       description: Data collection for analyst to specify bad domains
-      id: d409f28b-be30-49a0-8d23-5e40f2cddef0
+      id: 97eeac7f-6e9b-4a3e-8f60-584c67b0cd1e
       iscommand: false
       name: Select Bad Domains
       type: collection
       version: -1
-    taskid: d409f28b-be30-49a0-8d23-5e40f2cddef0
+    taskid: 97eeac7f-6e9b-4a3e-8f60-584c67b0cd1e
     timertriggers: []
     type: collection
     view: |-
@@ -190,12 +190,12 @@ tasks:
     task:
       brand: ""
       description: Condition to check for bad domains to block
-      id: 624197b6-205d-4f91-8dff-28ce47a0470f
+      id: 62c2fde9-4656-464e-8d77-52be7fbe8da7
       iscommand: false
       name: Are there domains to block?
       type: condition
       version: -1
-    taskid: 624197b6-205d-4f91-8dff-28ce47a0470f
+    taskid: 62c2fde9-4656-464e-8d77-52be7fbe8da7
     timertriggers: []
     type: condition
     view: |-
@@ -225,13 +225,13 @@ tasks:
     task:
       brand: Builtin
       description: commands.local.cmd.set.indicator
-      id: 98871270-f40e-43a0-88c7-2141fa6508e6
+      id: 8753cf04-5ceb-4b60-8b76-a1948a8eb3c8
       iscommand: true
       name: Tag Bad Indicators with "block"
       script: Builtin|||setIndicator
       type: regular
       version: -1
-    taskid: 98871270-f40e-43a0-88c7-2141fa6508e6
+    taskid: 8753cf04-5ceb-4b60-8b76-a1948a8eb3c8
     timertriggers: []
     type: regular
     view: |-
@@ -253,12 +253,12 @@ tasks:
     task:
       brand: ""
       description: End of playbook
-      id: cc1dcdfa-2e3f-4e6b-8afc-f2b256abca09
+      id: 34f5808d-d9dd-485b-8bbf-2e82ec2b3633
       iscommand: false
       name: Fin
       type: title
       version: -1
-    taskid: cc1dcdfa-2e3f-4e6b-8afc-f2b256abca09
+    taskid: 34f5808d-d9dd-485b-8bbf-2e82ec2b3633
     timertriggers: []
     type: title
     view: |-
@@ -293,12 +293,12 @@ tasks:
     task:
       brand: ""
       description: Check for file of domains
-      id: 341c47da-0b50-4340-89b3-ca02a537923a
+      id: ea48ad34-6af8-4b92-8150-bd7de70b4bd3
       iscommand: false
       name: Is there a File with domains attached?
       type: condition
       version: -1
-    taskid: 341c47da-0b50-4340-89b3-ca02a537923a
+    taskid: ea48ad34-6af8-4b92-8150-bd7de70b4bd3
     timertriggers: []
     type: condition
     view: |-
@@ -334,13 +334,13 @@ tasks:
     task:
       brand: ""
       description: Converts a given array to an HTML table
-      id: 2c2eb8af-f8eb-409d-88f3-ab0822e761c3
+      id: bd1107d1-02db-4df2-8cb5-41b94cb18eb0
       iscommand: false
       name: Create Domain HTML Table
       script: ConvertTableToHTML
       type: regular
       version: -1
-    taskid: 2c2eb8af-f8eb-409d-88f3-ab0822e761c3
+    taskid: bd1107d1-02db-4df2-8cb5-41b94cb18eb0
     timertriggers: []
     type: regular
     view: |-
@@ -375,19 +375,19 @@ tasks:
         simple: "10"
       RegisteredDomain:
         simple: ${inputs.SocialEngineeringRegisteredDomain}
-    separatecontext: true
+    separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: Enrich a domain and compare against your registered domain for
         potential social engineering against your organization.
-      id: 5afc67e3-5744-464c-8837-d238c8a4112d
+      id: 7a299fd5-622f-45d4-8845-0d56ff9725ab
       iscommand: false
       name: Social Engineering Domain Enrichment
       playbookId: Social Engineering Domain Enrichment
       type: playbook
       version: -1
-    taskid: 5afc67e3-5744-464c-8837-d238c8a4112d
+    taskid: 7a299fd5-622f-45d4-8845-0d56ff9725ab
     timertriggers: []
     type: playbook
     view: |-
