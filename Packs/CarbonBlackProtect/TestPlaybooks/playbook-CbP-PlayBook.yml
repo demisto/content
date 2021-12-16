@@ -38,10 +38,10 @@ tasks:
       version: -1
       name: cbp-connector-search
       description: commands.server.cbp.ConnectorSearch.description
-      script: carbonblackprotection|||cbp-connector-search
+      script: CarbonBlackProtectionV2|||cbp-connector-search
       type: regular
       iscommand: true
-      brand: carbonblackprotection
+      brand: CarbonBlackProtectionV2
     nexttasks:
       '#none#':
       - "13"
@@ -74,10 +74,10 @@ tasks:
       version: -1
       name: cbp-connector-get
       description: commands.server.cbp.ConnectorGet.description
-      script: carbonblackprotection|||cbp-connector-get
+      script: CarbonBlackProtectionV2|||cbp-connector-get
       type: regular
       iscommand: true
-      brand: carbonblackprotection
+      brand: CarbonBlackProtectionV2
     nexttasks:
       '#none#':
       - "3"
@@ -106,10 +106,10 @@ tasks:
       version: -1
       name: cbp-fileAnalysis-createOrUpdate
       description: commands.server.cbp.fileAnalysisPost.description
-      script: carbonblackprotection|||cbp-fileAnalysis-createOrUpdate
+      script: CarbonBlackProtectionV2|||cbp-fileAnalysis-createOrUpdate
       type: regular
       iscommand: true
-      brand: carbonblackprotection
+      brand: CarbonBlackProtectionV2
     nexttasks:
       '#none#':
       - "9"
@@ -144,10 +144,10 @@ tasks:
       version: -1
       name: cbp-fileAnalysis-get
       description: commands.server.cbp.fileAnalysisGet.description
-      script: carbonblackprotection|||cbp-fileAnalysis-get
+      script: CarbonBlackProtectionV2|||cbp-fileAnalysis-get
       type: regular
       iscommand: true
-      brand: carbonblackprotection
+      brand: CarbonBlackProtectionV2
     nexttasks:
       '#none#':
       - "5"
@@ -176,10 +176,10 @@ tasks:
       version: -1
       name: cbp-fileUpload-createOrUpdate
       description: commands.server.cbp.FileUploadPost.description
-      script: carbonblackprotection|||cbp-fileUpload-createOrUpdate
+      script: CarbonBlackProtectionV2|||cbp-fileUpload-createOrUpdate
       type: regular
       iscommand: true
-      brand: carbonblackprotection
+      brand: CarbonBlackProtectionV2
     nexttasks:
       '#none#':
       - "10"
@@ -211,10 +211,10 @@ tasks:
       version: -1
       name: cbp-fileUpload-get
       description: commands.server.cbp.FileUploadGet.description
-      script: carbonblackprotection|||cbp-fileUpload-get
+      script: CarbonBlackProtectionV2|||cbp-fileUpload-get
       type: regular
       iscommand: true
-      brand: carbonblackprotection
+      brand: CarbonBlackProtectionV2
     nexttasks:
       '#none#':
       - "7"
@@ -243,10 +243,10 @@ tasks:
       version: -1
       name: cbp-fileUpload-download
       description: commands.server.cbp.FileUploadGet.description
-      script: carbonblackprotection|||cbp-fileUpload-download
+      script: CarbonBlackProtectionV2|||cbp-fileUpload-download
       type: regular
       iscommand: true
-      brand: carbonblackprotection
+      brand: CarbonBlackProtectionV2
     nexttasks:
       '#none#':
       - "12"
