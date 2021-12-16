@@ -25,7 +25,8 @@
     "CVE-2021-45046",
     "CVE",
     "44228",
-    "45046"
+    "45046",
+    "Log4Shell"
     ],
     "dependencies": {
         "QRadar": {
