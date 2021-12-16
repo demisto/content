@@ -4551,6 +4551,10 @@
             "fromversion": "5.0.0"
         },
         {
+            "playbookID": "block_indicators_-_generic_-_test",
+            "fromversion": "5.0.0"
+        },
+        {
             "playbookID": "Process Email - Generic - Test - Actual Incident",
             "fromversion": "6.0.0",
             "integrations": [
