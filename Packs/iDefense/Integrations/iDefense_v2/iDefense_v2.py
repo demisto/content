@@ -364,12 +364,9 @@ def hash_command(client: Client, args: dict, reliability: DBotScoreReliability, 
                                   outputs=context,
                                   readable_output=tableToMarkdown(f'ACTI results for {printKey} hash: {hash}', analysis_info))
 
-    except Exception as e:
-        if 'Failed to parse json object from response' in e.args[0]:
+    except Exception:
             return CommandResults(indicator=None, raw_response={},
                                   readable_output=f"No results were found for hash {hash}")
-        else:
-            raise e
 
 
 def _hash_extract(Res: dict, reliability: DBotScoreReliability, key_type: str, hash: str, doc_search_client: Client):
