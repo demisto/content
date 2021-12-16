@@ -1101,7 +1101,7 @@ tasks:
       version: -1
       name: Phishing Alerts - Check Severity
       description: |-
-      This playbook calculates and assigns the incident severity based on the highest returned severity level from the following calculations:
+        This playbook calculates and assigns the incident severity based on the highest returned severity level from the following calculations:
         Email security alert action
         DBotScores of indicators
         Critical assets
@@ -1292,6 +1292,8 @@ tasks:
         complex:
           root: incident
           accessor: emailto
+      EmailBrand:
+        simple: EmailSecurityGateway
       EmailCC:
         complex:
           root: incident
