@@ -41,6 +41,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "CensysV2",
+            "playbookID": "CensysV2-Test",
+            "fromversion": "6.1.0"
+        },
+        {
             "playbookID": "Generic Polling Test",
             "timeout": 250
         },
@@ -1086,7 +1091,6 @@
         {
             "playbookID": "Endpoint Malware Investigation - Generic - Test",
             "integrations": [
-                "Traps",
                 "Cylance Protect v2",
                 "Demisto REST API"
             ],
@@ -1176,7 +1180,7 @@
             "playbookID": "TestEditServerConfig"
         },
         {
-            "playbookID": "MarketplacePackInstaller_Test",
+            "playbookID": "ContentPackInstaller_Test",
             "integrations": "Demisto REST API",
             "fromversion": "6.0.0"
         },
@@ -2450,11 +2454,6 @@
             "fromversion": "5.5.0"
         },
         {
-            "integrations": "Traps",
-            "playbookID": "Traps test",
-            "timeout": 600
-        },
-        {
             "playbookID": "TestShowScheduledEntries"
         },
         {
@@ -3599,6 +3598,10 @@
             "playbookID": "SOCRadarThreatFusion-Test"
         },
         {
+            "integrations": "FeedSOCRadarThreatFeed",
+            "playbookID": "FeedSOCRadarThreatFeed-Test"
+        },
+        {
             "integrations": "TheHive Project",
             "playbookID": "Playbook_TheHiveProject_Test",
             "fromversion": "6.0.0"
@@ -4300,6 +4303,18 @@
             "fromversion": "6.0.0"
         },
         {
+            "playbookID": "Phishing Investigation - Generic v2 - Campaign Test",
+            "fromversion": "6.0.0",
+            "timeout": 4600,
+            "integrations": [
+                "EWS Mail Sender",
+                "Demisto REST API",
+                "Rasterize",
+                "Demisto Lock"
+            ],
+            "instance_names": "sync"
+        },
+        {
             "playbookID": "PCAP Search test",
             "fromversion": "5.0.0"
         },
@@ -4374,6 +4389,13 @@
             "fromversion": "5.0.0",
             "integrations": [
                 "Google Cloud Storage"
+            ]
+        },
+        {
+            "playbookID": "GetStringsDistance - Test",
+            "fromversion": "5.0.0",
+            "scripts": [
+                "GetStringsDistance"
             ]
         },
         {
@@ -4772,12 +4794,21 @@
             "fromversion": "6.0.0"
         },
         {
+            "integrations": "OpsGenieV3",
+            "playbookID": "OpsGenieV3TestPlaybook",
+            "fromversion": "6.2.0"
+        },
+        {
             "playbookID": "test_AssignToNextShiftOOO",
             "fromversion": "5.5.0"
         },
         {
             "playbookID": "JsonToTable - Test Playbook",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "KafkaV3",
+            "playbookID": "KafkaV3 Test"
         }
     ],
     "skipped_tests": {
@@ -4890,7 +4921,6 @@
         "cisco-ise-test-playbook": "Issue 44351",
         "GuardiCoreV2-Test": "Issue 43822",
         "LogRhythm REST test": "Issue 40654",
-        "Tanium Threat Response V2 Test": "Issue 44201",
         "ExtractAttackPattern-Test": "Issue 44095"
     },
     "skipped_integrations": {
@@ -4921,7 +4951,6 @@
         "Forcepoint": "instance issues. Issue 28043",
         "ZeroFox": "Issue 29284",
         "Symantec Management Center": "Issue 23960",
-        "Traps": "Issue 24122",
         "Fidelis Elevate Network": "Issue 26453",
         "CrowdStrike Falcon X": "Issue 26209",
         "ArcSight Logger": "Issue 19117",
@@ -4967,6 +4996,7 @@
         "Freshdesk": "Trial account expired",
         "Threat Grid": "Issue 16197",
         "Kafka V2": "Can not connect to instance from remote",
+        "KafkaV3": "Can not connect to instance from remote",
         "Check Point Sandblast": "Issue 15948",
         "Remedy AR": "getting 'Not Found' in test button",
         "Salesforce": "Issue 15901",
@@ -4986,16 +5016,13 @@
         "FraudWatch": "Issue 34299",
         "Cisco Stealthwatch": "No instance - developed by Qmasters",
         "Armis": "No instance - developed by SOAR Experts",
-        
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
-        
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
-        
         "_comment4": "~~~ OTHER ~~~",
         "Anomali ThreatStream v2": "Will be deprecated soon.",
         "Anomali ThreatStream": "Will be deprecated soon.",
@@ -5177,7 +5204,6 @@
         "HelloWorldPremium-Test"
     ],
     "docker_thresholds": {
-        
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {

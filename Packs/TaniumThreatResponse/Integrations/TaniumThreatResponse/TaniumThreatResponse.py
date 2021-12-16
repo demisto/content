@@ -95,7 +95,7 @@ class Client(BaseClient):
             'password': self.password
         }
 
-        res = self._http_request('GET', '/api/v2/session/login', json_data=body, ok_codes=(200,))
+        res = self._http_request('POST', '/api/v2/session/login', json_data=body, ok_codes=(200,))
 
         self.session = res.get('data').get('session')
         return self.session
