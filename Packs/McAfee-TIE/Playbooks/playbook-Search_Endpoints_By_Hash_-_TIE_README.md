@@ -15,12 +15,14 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 * McAfee Threat Intelligence Exchange
+* McAfee ePO v2
 
 ### Scripts
 * EPOFindSystem
 
 ### Commands
 * tie-file-references
+* epo-find-system
 
 ## Playbook Inputs
 ---

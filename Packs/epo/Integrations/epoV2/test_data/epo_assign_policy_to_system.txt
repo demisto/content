@@ -1,0 +1,2 @@
+OK:
+[ { "id" : "2", "message" : "Assign policy succeeded", "name" : "192.168.1.102", "status" : 0 } ]

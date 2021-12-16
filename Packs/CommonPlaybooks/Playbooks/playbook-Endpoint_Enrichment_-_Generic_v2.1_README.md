@@ -3,6 +3,7 @@ Enriches an endpoint by hostname using one or more integrations.
 Supported integrations:
 - Active Directory Query v2
 - McAfee ePolicy Orchestrator
+- McAfee ePolicy Orchestrator v2
 - Carbon Black Enterprise Response v2
 - Cylance Protect v2
 - CrowdStrike Falcon Host
@@ -29,6 +30,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * ad-get-computer
 * cs-device-details
 * cs-device-search
+
 
 ## Playbook Inputs
 ---

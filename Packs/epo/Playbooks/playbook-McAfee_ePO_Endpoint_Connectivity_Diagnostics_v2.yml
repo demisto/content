@@ -39,8 +39,8 @@ tasks:
       id: 9c37c208-6466-4564-87db-2ebcdf47c9ad
       version: -1
       name: 'Are any endpoints in ePO listed as unmanaged? '
-      description: Place the list of non-communicating endpoints in the 
-        epoUnmanagedEndpoints incident label.
+      description: Place the list of non-communicating endpoints in the epoUnmanagedEndpoints
+        incident label.
       type: condition
       iscommand: false
       brand: ""
@@ -135,7 +135,8 @@ tasks:
       version: -1
       name: Check if there are agents which haven't communicated with ePO in the past
         3 days
-      description: Enter a comma-separated list of the system names that need to be addressed.
+      description: Enter a comma-separated list of the system names that need to be
+        addressed.
 
       type: condition
       iscommand: false

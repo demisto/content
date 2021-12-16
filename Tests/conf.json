@@ -4809,6 +4809,13 @@
         {
             "integrations": "KafkaV3",
             "playbookID": "KafkaV3 Test"
+        },
+        {
+            "integrations": "McAfee ePO v2",
+            "playbookID": "Test Playbook McAfee ePO"
+        },
+        {
+            "playbookID": "mcafee_epo_v2"
         }
     ],
     "skipped_tests": {
