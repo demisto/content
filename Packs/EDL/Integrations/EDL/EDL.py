@@ -221,21 +221,47 @@ def ips_to_ranges(ips: Iterable, collapse_ips: str):
     valid_ips = []
 
     for ip in ips:
-        try:
-            ipaddress.IPv4Address(ip)
+        if is_valid_ip(ip):
             valid_ips.append(ip)
-        except ValueError:
+        else:
             invalid_ips.append(ip)
 
     if collapse_ips == COLLAPSE_TO_RANGES:
         ips_range_groups = IPSet(valid_ips).iter_ipranges()
         collapsed_list = ip_groups_to_ranges(ips_range_groups)
-        collapsed_list.update(invalid_ips)
     else:
         cidrs = IPSet(valid_ips).iter_cidrs()
         collapsed_list = ip_groups_to_cidrs(cidrs)
-        collapsed_list.update(invalid_ips)
+
+    collapsed_list.update(invalid_ips)
     return collapsed_list
+
+
+def is_valid_ip(ip: str) -> bool:
+    """
+    Checks if the provided string is either IPv4 address, IPv4 network, IPv6 address or IPv6 network
+    Args:
+        ip: IP String
+
+    Returns: True if this is a valid IP, False otherwise
+    """
+    try:
+        ipaddress.IPv4Address(ip)
+        return True
+    except ValueError:
+        try:
+            ipaddress.IPv6Address(ip)
+            return True
+        except ValueError:
+            try:
+                ipaddress.IPv4Network(ip)
+                return True
+            except ValueError:
+                try:
+                    ipaddress.IPv6Network(ip)
+                    return True
+                except ValueError:
+                    return False
 
 
 def format_indicators(iocs: list, request_args: RequestArguments) -> set:
@@ -574,6 +600,5 @@ def main():
 
 
 from NGINXApiModule import *  # noqa: E402
-
 if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()

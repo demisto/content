@@ -281,13 +281,50 @@ class TestHelperFunctions:
         assert "25.24.23.22" in ip_range_list
         assert "3.3.3.0/30" in ip_range_list
 
-    def test_ips_to_ranges_bad_ip(self):
+    def test_ips_to_cidrs_bad_ip(self):
         from EDL import ips_to_ranges, COLLAPSE_TO_CIDR
-        ip_list = ["1.1.1.1", "1.2.3.5", "1.1.1.2", "1.2.3.4", "1.1.1.3", "hello"]
+        ip_list = ["1.1.1.1", "1.1.1.2", "1.1.1.3", "1.2.3.4", "1.2.3.5", "doesntwork/oh"]
 
         ip_range_list = ips_to_ranges(ip_list, COLLAPSE_TO_CIDR)
-        assert "1.1.1.1-1.1.1.3" in ip_range_list
-        assert "1.2.3.4-1.2.3.5" in ip_range_list
+        assert "1.1.1.1" in ip_range_list
+        assert "1.1.1.2/31" in ip_range_list
+        assert "1.2.3.4/31" in ip_range_list
+        assert "doesntwork/oh" in ip_range_list
+        assert "1.2.3.5" not in ip_range_list
+        assert "1.1.1.3" not in ip_range_list
+
+    def test_ips_to_ranges_bad_ip(self):
+        from EDL import ips_to_ranges, COLLAPSE_TO_RANGES
+        ip_list = ["1.1.1.1", "doesntwork/oh"]
+
+        ip_range_list = ips_to_ranges(ip_list, COLLAPSE_TO_RANGES)
+        assert "1.1.1.1" in ip_range_list
+        assert "doesntwork/oh" in ip_range_list
+
+    def test_is_valid_ip_ipv4(self):
+        from EDL import is_valid_ip
+        ip = '1.1.1.1'
+        assert is_valid_ip(ip)
+
+    def test_is_valid_ip_ipv6(self):
+        from EDL import is_valid_ip
+        ip = '2001:0db8:85a3:0000:0000:8a2e:0370:7334'
+        assert is_valid_ip(ip)
+
+    def test_is_valid_ip_ipv4_network(self):
+        from EDL import is_valid_ip
+        ip = '192.0.2.0/24'
+        assert is_valid_ip(ip)
+
+    def test_is_valid_ip_ipv6_network(self):
+        from EDL import is_valid_ip
+        ip = '2001:db8:0000:0000:0000:0000:0000:0000/128'
+        assert is_valid_ip(ip)
+
+    def test_is_valid_ip_invalid_ip(self):
+        from EDL import is_valid_ip
+        ip = 'This is not an IP, this is just a String'
+        assert not is_valid_ip(ip)
 
     def test_get_bool_arg_or_param(self):
         """
