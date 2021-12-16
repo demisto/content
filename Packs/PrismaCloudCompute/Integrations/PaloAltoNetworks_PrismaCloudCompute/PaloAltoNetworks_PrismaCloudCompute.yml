@@ -794,5 +794,5 @@ script:
       defaultValue: ""
     outputs: []
 tests:
-- No test
+- PaloAltoNetworks_PrismaCloudCompute-Test
 fromversion: 5.0.0
