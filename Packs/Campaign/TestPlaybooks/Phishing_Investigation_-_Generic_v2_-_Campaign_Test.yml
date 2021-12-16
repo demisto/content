@@ -981,6 +981,16 @@ tasks:
       '#none#':
       - "71"
     scriptarguments:
+      fromdate:
+        complex:
+          root: incident
+          accessor: occurred
+          transformers:
+          - operator: ModifyDateTime
+            args:
+              variation:
+                value:
+                  simple: 1 day ago
       type:
         simple: Phishing Campaign
     separatecontext: false
@@ -1102,10 +1112,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "74":
     id: "74"
-    taskid: 9350231c-1400-4b3d-8137-1bde2c153062
+    taskid: 73d02da4-a663-492b-8ab1-3e8bfe3d1c8a
     type: regular
     task:
-      id: 9350231c-1400-4b3d-8137-1bde2c153062
+      id: 73d02da4-a663-492b-8ab1-3e8bfe3d1c8a
       version: -1
       name: Get campaign context
       description: Gets a value from the specified incident's context.
@@ -1121,7 +1131,16 @@ tasks:
         simple: EmailCampaign
       incident_id:
         complex:
-          root: foundIncidents.[0]
+          root: foundIncidents
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: foundIncidents.type
+                iscontext: true
+              right:
+                value:
+                  simple: Phishing Campaign
           accessor: id
     separatecontext: false
     view: |-
