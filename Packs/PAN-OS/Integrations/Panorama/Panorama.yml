@@ -9,7 +9,7 @@ configuration:
   type: 0
 - displaypassword: API Key
   name: credentials
-  required: true
+  required: false
   type: 9
   hiddenusername: true
 - defaultvalue: '443'
