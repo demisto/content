@@ -7,7 +7,7 @@ configuration:
   name: server
   required: true
   type: 0
-- displaypassword: API Key (Recommended)
+- displaypassword: API Key
   name: credentials
   required: true
   type: 9
@@ -61,6 +61,7 @@ configuration:
   name: key
   required: false
   type: 4
+  hidden: true
   additionalinfo: Use the "API Key (Recommended)" parameter instead.
 description: Manage Palo Alto Networks Firewall and Panorama. For more information
   see Panorama documentation.
