@@ -5,7 +5,7 @@ contentitemexportablefields:
 name: Phishing Alerts Investigation
 description: "This playbook investigates and remediates potential phishing incidents produced by either an email security gateway or a SIEM product. It retrieves original email files from the email security gateway or email service provider and generates a response based on the initial severity, hunting results, and the existence of similar phishing incidents in XSOAR. 
 
-No action is taken without an initial approval given by the analyst using the playbook inputs.""
+No action is taken without an initial approval given by the analyst using the playbook inputs."
 
 starttaskid: "0"
 tasks:
@@ -1921,12 +1921,12 @@ inputs:
   value:
     simple: SingleMailbox
   required: false
-  description: The exchange location. Determines from where to search and delete emails
-    searched using O365 playbooks. Use the value "All" to search all mailboxes, use
-    "SingleMailbox" to search and delete the email only from the recipient's inbox,
-    or use "Manual" to decide manually for every incident. Note: Searching all
+  description: "The exchange location. Determines from where to search and delete emails
+    searched using O365 playbooks. Use the value 'All' to search all mailboxes, use
+    'SingleMailbox' to search and delete the email only from the recipient's inbox,
+    or use 'Manual' to decide manually for every incident. Note: Searching all
     mailboxes may take a significant amount of time. This input is only applicable
-    if the SearchAndDeleteIntegration input is set to O365.
+    if the SearchAndDeleteIntegration input is set to O365."
   playbookInputQuery:
 - key: SOCEmailAddress
   value:

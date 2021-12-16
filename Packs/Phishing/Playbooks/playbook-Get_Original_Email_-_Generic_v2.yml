@@ -1,16 +1,16 @@
 description: |-
   This v2 playbook is used inside the phishing flow. The inputs in this version do not use labels and also allow the user to supply an email brand.
-Note: You must have the necessary permissions in your email service to execute a global search.
+  Note: You must have the necessary permissions in your email service to execute a global search.
 
-To retrieve the email files directly from the email service providers, use one of the provided inputs (Agari Phishing Defense customers should also use the following):
-- EWS: eDiscovery
-- Gmail: Google Apps Domain-Wide Delegation of Authority
-- MSGraph: As described in the [message-get API](https://docs.microsoft.com/en-us/graph/api/message-get) and the [user-list-messages API](https://docs.microsoft.com/en-us/graph/api/user-list-messages)
-- EmailSecurityGateway retrieves EML files from:
-    * FireEye EX
-    * FireEye CM
-    * Proofpoint Protection Server
-    * Mimecast
+  To retrieve the email files directly from the email service providers, use one of the provided inputs (Agari Phishing Defense customers should also use the following):
+  - EWS: eDiscovery
+  - Gmail: Google Apps Domain-Wide Delegation of Authority
+  - MSGraph: As described in the [message-get API](https://docs.microsoft.com/en-us/graph/api/message-get) and the [user-list-messages API](https://docs.microsoft.com/en-us/graph/api/user-list-messages)
+  - EmailSecurityGateway retrieves EML files from:
+      * FireEye EX
+      * FireEye CM
+      * Proofpoint Protection Server
+      * Mimecast
 id: Get Original Email - Generic v2
 inputs:
 - description: The original email message ID to retrieve. This should hold the value

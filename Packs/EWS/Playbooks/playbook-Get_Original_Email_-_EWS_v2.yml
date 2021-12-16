@@ -6,7 +6,7 @@ name: Get Original Email - EWS v2
 description: |-
   This v2 playbook retrieves the original email in a thread as an EML file (and not an email object as in the previous version) by using the EWS v2 integration.
   It also reduces the number of tasks to perform the fetch action.
-Note: You must have the necessary eDiscovery permissions in the EWS integration to execute a global search.
+  Note: You must have the necessary eDiscovery permissions in the EWS integration to execute a global search.
 starttaskid: "0"
 tasks:
   "0":

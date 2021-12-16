@@ -2,13 +2,13 @@ id: Phishing Alerts - Check Severity
 version: -1
 name: Phishing Alerts - Check Severity
 description: |-
-This playbook calculates and assigns the incident severity based on the highest returned severity level from the following calculations:
-- Email security alert action
-- DBotScores of indicators
-- Critical assets
-- Email authenticity
-- Current incident severity
-- Microsoft Headers
+  This playbook calculates and assigns the incident severity based on the highest returned severity level from the following calculations:
+  - Email security alert action
+  - DBotScores of indicators
+  - Critical assets
+  - Email authenticity
+  - Current incident severity
+  - Microsoft Headers
 starttaskid: "0"
 tasks:
   "0":
