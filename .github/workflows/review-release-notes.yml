@@ -1,0 +1,20 @@
+name: Secrets Detection
+on: pull_request
+
+jobs:
+  release_notes_review:
+    runs-on: ubuntu-latest
+    if: github.repository == 'demisto/content' && github.event.pull_request.head.repo.fork == false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+      - name: Install Python Dependencies
+        run: python -m pip3 install --upgrade pip3
+      - name: Install Demisto SDK
+        run: pip3 install demisto-sdk
+      - name: Run Secrets Detection
+        run: demisto-sdk doc-review -g --release-notes
