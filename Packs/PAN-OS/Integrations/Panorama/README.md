@@ -270,9 +270,9 @@ Commits a configuration to Palo Alto Firewall or Panorama, but does not validate
 | --- | --- | --- |
 | description | Commit description. | Optional |
 | admin_name | To commit admin-level changes on a firewall, include the administrator name in the request. | Optional |
-| force_commit | (True/False) Force Commit | Optional |
-| exclude_device_network_configuration | (True/False) Partial commit while excluding shared objects and device and network configuration. | Optional | 
-| exclude_shared_objects | (True/False) Partial commit while excluding shared objects and device and network configuration.| Optional |
+| force_commit | Force Commit. | Optional |
+| exclude_device_network_configuration | Partial commit while excluding device and network configuration. | Optional | 
+| exclude_shared_objects | Partial commit while excluding shared objects.| Optional |
 
 #### Context Output
 
