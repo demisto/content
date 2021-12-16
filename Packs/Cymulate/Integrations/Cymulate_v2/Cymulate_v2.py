@@ -1642,7 +1642,7 @@ def main() -> None:
     """main function, parses params and runs command functions"""
     params = demisto.params()
 
-    api_key: str = params.get('api_key') or (params.get('credentials') or {}).get('password')  # type: ignore # [assignment]
+    api_key = params.get('api_key') or (params.get('credentials') or {}).get('password')
     base_url = params.get('base_url')
 
     verify_certificate = not params.get('insecure', False)
@@ -1663,7 +1663,7 @@ def main() -> None:
     try:
         client = Client(
             base_url=base_url,
-            token=api_key,
+            token=api_key,  # type: ignore[arg-type]
             verify=verify_certificate,
             proxy=proxy
         )
