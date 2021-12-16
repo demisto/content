@@ -1,7 +1,7 @@
-description: Retrieve a specified eml/msg file directly from Mimecast.
+description: This playbook retrieves a specified EML/MSG file directly from Mimecast.
 id: Get Email From Email Gateway - Mimecast
 inputs:
-- description: The message ID provided by Mimecast
+- description: The message ID provided by Mimecast.
   key: MessageID
   playbookInputQuery:
   required: false
@@ -9,7 +9,7 @@ inputs:
 name: Get Email From Email Gateway - Mimecast
 outputs:
 - contextPath: Mimecast.Message.ID
-  description: Message ID
+  description: The Message ID.
 - contextPath: Mimecast.Message.Subject
   description: The message subject.
 - contextPath: Mimecast.Message.HeaderDate
@@ -17,31 +17,31 @@ outputs:
 - contextPath: Mimecast.Message.Size
   description: The message size.
 - contextPath: Mimecast.Message.From
-  description: Sender of the message as defined in the message header.
+  description: The message sender as defined in the message header.
 - contextPath: Mimecast.Message.ReplyTo
   description: The value of the Reply-To header.
 - contextPath: Mimecast.Message.EnvelopeFrom
-  description: Sender of the message as defined in the message envelope.
+  description: The message sender as defined in the message envelope.
 - contextPath: Mimecast.Message.Processed
   description: The date the message was processed by Mimecast in ISO 8601 format.
 - contextPath: Mimecast.Message.HasHtmlBody
-  description: If the message has an HTML body part.
+  description: Whether the message has an HTML body part.
 - contextPath: Mimecast.Message.To.EmailAddress
-  description: Recipient of the message.
+  description: The message recipient.
 - contextPath: Mimecast.Message.CC.EmailAddress
   description: Each CC recipient of the message.
 - contextPath: Mimecast.Message.Headers.Name
-  description: Header's name.
+  description: The header's name.
 - contextPath: Mimecast.Message.Headers.Values
-  description: Header's value.
+  description: The header's value.
 - contextPath: Mimecast.Message.Attachments.FileName
-  description: Message attachment's file name.
+  description: the message attachment's file name.
 - contextPath: Mimecast.Message.Attachments.SHA256
-  description: Message attachment's SHA256.
+  description: The message attachment's SHA256.
 - contextPath: Mimecast.Message.Attachments.ID
-  description: Message attachment's ID.
+  description: The message attachment's ID.
 - contextPath: Mimecast.Message.Attachments.Size
-  description: Message attachment's file size.
+  description: The message attachment's file size.
 starttaskid: "0"
 tasks:
   "0":
@@ -97,7 +97,7 @@ tasks:
     skipunavailable: false
     task:
       brand: MimecastV2
-      description: Get the contents or metadata of a given message
+      description: Get the contents or metadata of a given message.
       id: 8ec1a452-f214-4df4-8bd1-61015c66bbee
       iscommand: true
       name: Retrieve Email File

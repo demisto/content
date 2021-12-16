@@ -204,7 +204,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Searches the Gmail records for all Google users.
+      description: Searches the Gmail records for all Google users from the last 7 days.
       id: 6f955c81-9371-410c-8bcc-a721f65608e1
       iscommand: true
       name: Search Gmail for similar emails last 7 days
@@ -392,7 +392,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: whether to limit the search to a week timerange.
+      description: Whether to limit the search time range to a week.
       id: e4fcf874-1d62-40e8-8b0b-54110b5408b6
       iscommand: false
       name: 'Search only a week time range? '
@@ -486,7 +486,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Searches the Gmail records for all Google users.
+      description: Searches the Gmail records for all Google users to find similar emails.
       id: 5a461fd8-77a4-486b-834c-10c4a9a81571
       iscommand: true
       name: Search Gmail for similar emails
@@ -521,7 +521,6 @@ tasks:
       brand: ""
       description: |-
         Review the EWS search results and decide whether to delete all of the emails.
-
         Note: You cannot delete a subset of the emails.
       id: e1299330-3365-4a15-8fc4-11a5e8be4136
       iscommand: false

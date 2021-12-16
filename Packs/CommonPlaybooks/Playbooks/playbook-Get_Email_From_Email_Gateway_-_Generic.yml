@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Get Email From Email Gateway - Generic
-description: Retrieve a specified eml/msg file directly from the email security gateway
+description: This playbook retrieves a specified EML/MSG file directly from the email security gateway
   product.
 starttaskid: "0"
 tasks:
@@ -73,7 +73,7 @@ tasks:
       id: b32916b5-8000-4c43-80d6-fc491edfedd6
       version: -1
       name: Get Email From Email Gateway - FireEye
-      description: Retrieve a specified eml/msg file directly from FireEye Email Security
+      description: This playbook retrieves a specified EML/MSG file directly from FireEye Email Security
         or Central Management.
       playbookName: Get Email From Email Gateway - FireEye
       type: playbook
@@ -113,7 +113,7 @@ tasks:
       id: 3415ba42-7642-4fd4-8b5c-85e1b3b7004c
       version: -1
       name: Get Email From Email Gateway - Mimecast
-      description: Retrieve a specified eml/msg file directly from Mimecast.
+      description: This playbook retrieves a specified EML/MSG file directly from Mimecast.
       playbookName: Get Email From Email Gateway - Mimecast
       type: playbook
       iscommand: false
@@ -148,7 +148,7 @@ tasks:
       id: 8c2ce613-3539-48f2-84a9-fecf1d7c0ee3
       version: -1
       name: Get Email From Email Gateway - Proofpoint Protection Server
-      description: Retrieve a specified eml/msg file directly from Proofpoint Protection
+      description: This playbook retrieves a specified EML/MSG file directly from the Proofpoint Protection
         Server.
       playbookName: Get Email From Email Gateway - Proofpoint Protection Server
       type: playbook
@@ -193,12 +193,12 @@ inputs:
 - key: MessageID
   value: {}
   required: false
-  description: The message ID received by the Email Security product.
+  description: The message ID received by the email security product.
   playbookInputQuery:
 - key: UserID
   value: {}
   required: false
-  description: The Id of user.
+  description: The user ID.
   playbookInputQuery:
 outputs:
 - contextPath: File

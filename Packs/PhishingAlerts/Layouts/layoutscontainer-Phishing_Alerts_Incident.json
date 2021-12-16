@@ -670,7 +670,7 @@
                         "readOnly": true,
                         "static": false,
                         "type": "indicators",
-                        "w": 3,
+                        "w": 2,
                         "x": 0,
                         "y": 7
                     },
@@ -843,6 +843,80 @@
                         "w": 1,
                         "x": 2,
                         "y": 10
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "1vduzkpmlh-4852ef90-5da3-11ec-98d7-e94cf40f110c",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "detectedendpoints",
+                                "height": 22,
+                                "id": "543b5630-5da3-11ec-98d7-e94cf40f110c",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "detectedusers",
+                                "height": 22,
+                                "id": "5fa209b0-5da3-11ec-98d7-e94cf40f110c",
+                                "index": 1,
+                                "listId": "1vduzkpmlh-4852ef90-5da3-11ec-98d7-e94cf40f110c",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "detectedexternalhosts",
+                                "height": 22,
+                                "id": "55a19cf0-5da3-11ec-98d7-e94cf40f110c",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "detectedinternalhosts",
+                                "height": 22,
+                                "id": "58c8cd90-5da3-11ec-98d7-e94cf40f110c",
+                                "index": 3,
+                                "listId": "1vduzkpmlh-4852ef90-5da3-11ec-98d7-e94cf40f110c",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "detectedexternalips",
+                                "height": 22,
+                                "id": "57152a20-5da3-11ec-98d7-e94cf40f110c",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "detectedinternalips",
+                                "height": 22,
+                                "id": "59e56120-5da3-11ec-98d7-e94cf40f110c",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Threat Hunting Results",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 7
                     }
                 ],
                 "type": "custom"
