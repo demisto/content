@@ -1642,7 +1642,7 @@ def main() -> None:
     """main function, parses params and runs command functions"""
     params = demisto.params()
 
-    api_key = params.get('api_key')
+    api_key = params.get('api_key') or (demisto.getParam('credentials') or {}).get('password')
     base_url = params.get('base_url')
 
     verify_certificate = not params.get('insecure', False)
