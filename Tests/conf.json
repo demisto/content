@@ -1507,7 +1507,7 @@
             "playbookID": "SymantecEndpointProtection_Test"
         },
         {
-            "integrations": "carbonblackprotection",
+            "integrations": "CarbonBlackProtectionV2",
             "playbookID": "search_endpoints_by_hash_-_carbon_black_protection_-_test",
             "timeout": 500
         },
@@ -2622,7 +2622,7 @@
             "playbookID": "3da2e31b-f114-4d7f-8702-117f3b498de9"
         },
         {
-            "integrations": "carbonblackprotection",
+            "integrations": "CarbonBlackProtectionV2",
             "playbookID": "67b0f25f-b061-4468-8613-43ab13147173"
         },
         {
@@ -4991,7 +4991,7 @@
         "Dell Secureworks": "No instance",
         "Netskope": "instance is down",
         "Service Manager": "Expired license",
-        "carbonblackprotection": "License expired",
+        "CarbonBlackProtectionV2": "License expired",
         "icebrg": "Issue 14312",
         "Freshdesk": "Trial account expired",
         "Threat Grid": "Issue 16197",
