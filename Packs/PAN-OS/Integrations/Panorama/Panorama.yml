@@ -177,7 +177,7 @@ script:
         name in the request.
       name: admin_name
     - auto: PREDEFINED
-      description: Force Commit
+      description: Force Commit.
       name: force_commit
       predefined:
         - 'true'
