@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: https://wildfire.paloaltonetworks.com/publicapi
-  display: Server base URL (e.g. https://192.168.0.1/publicapi)
+  display: Server base URL (e.g., https://192.168.0.1/publicapi)
   name: server
   required: true
   type: 0
@@ -44,7 +44,7 @@ configuration:
   required: false
   type: 4
   additionalinfo: Use the "API Key (Recommended)" parameter instead.
-description: Perform malware dynamic analysis
+description: Perform malware dynamic analysis.
 display: Palo Alto Networks WildFire v2
 name: WildFire-v2
 script:
@@ -69,7 +69,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retrieve results for a file hash using WildFire
+    description: Retrieve results for a file hash using WildFire.
     execution: false
     name: file
     outputs:
@@ -77,7 +77,7 @@ script:
       description: Name of the file.
       type: string
     - contextPath: File.Type
-      description: 'File type, for example: "PE"'
+      description: 'File type, for example: "PE".'
       type: string
     - contextPath: File.Size
       description: Size of the file.
@@ -131,13 +131,13 @@ script:
       description: The report file type.
       type: string
     - contextPath: File.FeedRelatedIndicators.value
-      description: Indicators that are associated with the File.
+      description: Indicators that are associated with the file.
       type: String
     - contextPath: File.FeedRelatedIndicators.type
-      description: The type of the indicators that are associated with the File.
+      description: The type of the indicators that are associated with the file.
       type: String
     - contextPath: File.Tags
-      description: Tags that are associated with the File.
+      description: Tags that are associated with the file.
       type: String
     - contextPath: File.Behavior.details
       description: File behavior details.
@@ -147,14 +147,14 @@ script:
       type: String
   - arguments:
     - default: false
-      description: ID of the entry containing the file to upload
+      description: ID of the entry containing the file to upload.
       isArray: true
       name: upload
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Use XSOAR built-in polling to retrieve the result when it's ready.
+      description: Whether to use Cortex XSOAR's built-in polling to retrieve the result when it's ready.
       isArray: false
       name: polling
       predefined:
@@ -170,8 +170,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Used for the inner polling flow, for uploading a file use the 'upload'
-        argument instead
+      description: Used for the inner polling flow. For uploading a file, use the 'upload'
+        argument instead.
       isArray: true
       name: md5
       required: false
@@ -179,8 +179,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: pdf
-      description: Request a structured report. Possible values are "XML" and "PDF".
-        Only relevant when polling=true.
+      description: The type of structured report (XML or PDF) to request. Only relevant when
+        polling=true.
       isArray: false
       name: format
       predefined:
@@ -191,7 +191,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Receive extended information from WildFire. Only relevant when
+      description: Whether to receive extended information from WildFire. Only relevant when
         polling=true.
       isArray: false
       name: verbose
@@ -224,7 +224,7 @@ script:
       description: Name of the file.
       type: string
     - contextPath: File.Type
-      description: 'File type, for example: "PE"'
+      description: 'File type, for example: "PE".'
       type: string
     - contextPath: File.Size
       description: Size of the file.
@@ -324,7 +324,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Used for the inner polling flow, for uploading a url use the 'upload'
+      description: Used for the inner polling flow. For uploading a URL, use the 'upload'
         argument instead.
       isArray: false
       name: url
@@ -332,7 +332,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Use XSOAR built-in polling to retrieve the result when it's ready.
+      description: Whether to use Cortex XSOAR's built-in polling to retrieve the result when it's ready.
       isArray: false
       name: polling
       predefined:
@@ -350,8 +350,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: pdf
-      description: Request a structured report (XML or PDF). Only relevant for when
-        using polling=true.
+      description: The type of structured report (XML or PDF) to request. Only relevant when
+        polling=true.
       isArray: false
       name: format
       predefined:
@@ -362,8 +362,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Receive extended information from WildFire. Only relevant for when
-        using polling=true.
+      description: Whether to receive extended information from WildFire. Only relevant when
+        polling=true.
       isArray: false
       name: verbose
       predefined:
@@ -392,7 +392,7 @@ script:
       description: Name of the file.
       type: string
     - contextPath: File.Type
-      description: 'File type, for example: "PE"'
+      description: 'File type, for example: "PE".'
       type: string
     - contextPath: File.Size
       description: Size of the file.
@@ -492,13 +492,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: SHA256 hash to check
+      description: SHA256 hash to check.
       isArray: true
       name: sha256
       required: false
       secret: false
     - default: false
-      description: Deprecated - Use the sha256 argument instead.
+      description: Deprecated. Use the sha256 argument instead.
       isArray: true
       name: hash
       required: false
@@ -506,7 +506,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: pdf
-      description: Request a structured report (XML or PDF).
+      description: The type of structured report (XML or PDF) to request. 
       isArray: false
       name: format
       predefined:
@@ -517,7 +517,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Receive extended information from WildFire.
+      description: Whether to receive extended information from WildFire.
       isArray: false
       name: verbose
       predefined:
@@ -541,7 +541,7 @@ script:
       description: Name of the file.
       type: string
     - contextPath: File.Type
-      description: 'File type, for example: "PE"'
+      description: 'File type, for example: "PE".'
       type: string
     - contextPath: File.Size
       description: Size of the file.
@@ -571,7 +571,7 @@ script:
       description: The actual score.
       type: number
     - contextPath: WildFire.Report.Status
-      description: The status of the submissiom.
+      description: The status of the submission.
       type: string
     - contextPath: WildFire.Report.SHA256
       description: SHA256 hash of the submission.
@@ -641,7 +641,7 @@ script:
       type: string
   - arguments:
     - default: false
-      description: Hash to get the verdict for.
+      description: Comma-separated list of hashes to get the verdict for.
       isArray: true
       name: hash
       required: false
@@ -679,7 +679,7 @@ script:
       description: The actual score.
       type: number
     - contextPath: WildFire.Verdicts.AnalysisTime
-      description: Verdict Analysis time.
+      description: Verdict analysis time.
       type: Date
     - contextPath: WildFire.Verdicts.URL
       description: The URL of the web page.
@@ -699,14 +699,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: A list of hashes to get verdicts for.
+      description: A comma-separated list of hashes to get verdicts for.
       isArray: true
       name: hash_list
       required: false
       secret: false
     deprecated: false
     description: Returns a verdict regarding multiple hashes, stored in a TXT file
-      or given as list.
+      or given as a list.
     execution: false
     name: wildfire-get-verdicts
     outputs:
@@ -742,7 +742,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Used for the inner polling flow, for uploading a url use the 'upload'
+      description: Used for the inner polling flow. For uploading a URL, use the 'upload'
         argument instead.
       isArray: true
       name: url
@@ -750,7 +750,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Use XSOAR built-in polling to retrieve the result when it's ready.
+      description: Whether to use Cortex XSOAR's built-in polling to retrieve the result when it's ready.
       isArray: false
       name: polling
       predefined:
@@ -768,8 +768,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: pdf
-      description: Request a structured report (XML or PDF). Only relevant for when
-        using polling=true.
+      description: The type of structured report (XML or PDF) to request. Only relevant when
+        polling=true.
       isArray: false
       name: format
       predefined:
@@ -780,8 +780,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Receive extended information from WildFire. Only relevant for when
-        using polling=true.
+      description: Whether to receive extended information from WildFire. Only relevant when
+        polling=true.
       isArray: false
       name: verbose
       predefined:
@@ -810,7 +810,7 @@ script:
       description: Name of the file.
       type: string
     - contextPath: File.Type
-      description: 'File type, for example: "PE"'
+      description: 'File type, for example: "PE".'
       type: string
     - contextPath: File.Size
       description: Size of the file.
@@ -939,27 +939,27 @@ script:
       secret: false
     deprecated: false
     description: Get web artifacts for a URL webpage. An empty tgz will be returned,
-      no matter what the verdict, or even if the URL is malformed.
+      no matter what the verdict is, or even if the URL is malformed.
     execution: false
     name: wildfire-get-url-webartifacts
     outputs:
     - contextPath: InfoFile.EntryID
-      description: The EntryID of the webartifacts.
+      description: The EntryID of the web artifacts.
       type: String
     - contextPath: InfoFile.Extension
-      description: Extension of the webartifacts.
+      description: Extension of the web artifacts.
       type: string
     - contextPath: InfoFile.Name
-      description: Name of the webartifacts.
+      description: Name of the web artifacts.
       type: string
     - contextPath: InfoFile.Info
-      description: Details of the webartifacts.
+      description: Details of the web artifacts.
       type: string
     - contextPath: InfoFile.Size
-      description: Size of the webartifacts.
+      description: Size of the web artifacts.
       type: number
     - contextPath: InfoFile.Type
-      description: The webartifacts file type.
+      description: The web artifacts file type.
       type: string
   dockerimage: demisto/python3:3.9.8.24399
   feed: false
