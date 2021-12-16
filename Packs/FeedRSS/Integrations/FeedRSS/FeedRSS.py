@@ -31,7 +31,7 @@ class Client(BaseClient):
         self.read_timeout = read_timeout
 
     def request_feed_url(self):
-        return self._http_request(method='GET', resp_type='response', timeout=self.read_timeout, headers=headers)
+        return self._http_request(method='GET', resp_type='response', timeout=self.read_timeout)
 
     def parse_feed_data(self, feed_response):
         try:
@@ -165,7 +165,7 @@ def main():
                         feed_tags=argToList(params.get('feedTags')),
                         tlp_color=params.get('tlp_color'),
                         content_max_size=int(params.get('max_size', '45')),
-                        read_timeout=int(params.get('read_timeout', '10')))
+                        read_timeout=int(params.get('read_timeout', '20')))
 
         if command == 'test-module':
             return_results(check_feed(client))
