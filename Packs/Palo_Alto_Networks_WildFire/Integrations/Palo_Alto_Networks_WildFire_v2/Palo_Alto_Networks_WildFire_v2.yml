@@ -10,7 +10,7 @@ configuration:
   type: 0
 - displaypassword: API Key (Recommended)
   name: credentials
-  required: true
+  required: false
   type: 9
   hiddenusername: true
 - additionalinfo: Reliability of the source providing the intelligence data.
