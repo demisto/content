@@ -4312,7 +4312,7 @@
                 "Rasterize",
                 "Demisto Lock"
             ],
-            "instance_names": "sync"
+            "instance_names": "no_sync"
         },
         {
             "playbookID": "PCAP Search test",
