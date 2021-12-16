@@ -254,11 +254,11 @@ def is_valid_ip(ip: str) -> bool:
             return True
         except ValueError:
             try:
-                ipaddress.IPv4Network(ip)
+                ipaddress.IPv4Network(ip, strict=False)
                 return True
             except ValueError:
                 try:
-                    ipaddress.IPv6Network(ip)
+                    ipaddress.IPv6Network(ip, strict=False)
                     return True
                 except ValueError:
                     return False

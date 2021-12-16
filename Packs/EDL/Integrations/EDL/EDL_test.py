@@ -313,12 +313,12 @@ class TestHelperFunctions:
 
     def test_is_valid_ip_ipv4_network(self):
         from EDL import is_valid_ip
-        ip = '192.0.2.0/24'
+        ip = '1.2.3.5/10'
         assert is_valid_ip(ip)
 
     def test_is_valid_ip_ipv6_network(self):
         from EDL import is_valid_ip
-        ip = '2001:db8:0000:0000:0000:0000:0000:0000/128'
+        ip = '2001:0db8:85a3:0000:0000:8a2e:0370:7334/10'
         assert is_valid_ip(ip)
 
     def test_is_valid_ip_invalid_ip(self):
