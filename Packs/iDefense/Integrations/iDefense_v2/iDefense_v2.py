@@ -365,7 +365,7 @@ def hash_command(client: Client, args: dict, reliability: DBotScoreReliability, 
                                   readable_output=tableToMarkdown(f'ACTI results for {printKey} hash: {hash}', analysis_info))
 
     except Exception:
-        return CommandResults(indicator=None, raw_response={},readable_output=f"No results were found for hash {hash}")
+        return CommandResults(indicator=None, raw_response={}, readable_output=f"No results were found for hash {hash}")
 
 
 def _hash_extract(Res: dict, reliability: DBotScoreReliability, key_type: str, hash: str, doc_search_client: Client):
