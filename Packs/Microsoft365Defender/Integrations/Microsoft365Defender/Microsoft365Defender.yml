@@ -3,12 +3,12 @@ commonfields:
   id: Microsoft 365 Defender
   version: -1
 configuration:
-- additionalinfo: The API key to use to connect.
-  defaultvalue: 9093c354-630a-47f1-b087-6768eb9427e6
-  display: Application ID
-  name: app_id
-  required: true
-  type: 4
+- displaypassword: Application ID (Recommended)
+  name: credentials
+  required: false
+  type: 9
+  hiddenusername: true
+  additionalinfo: The API key to use to connect.
 - additionalinfo: |-
     The United States: api-us.security.microsoft.com
     Europe: api-eu.security.microsoft.com
@@ -70,6 +70,11 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: Application ID (Deprecated)
+  name: app_id
+  required: false
+  type: 4
+  additionalinfo: Use the "Application ID (Recommended)" parameter instead.
 description: Microsoft 365 Defender is a unified pre- and post-breach enterprise defense
   suite that natively coordinates detection, prevention, investigation, and response
   across endpoints, identities, email, and applications to provide integrated protection

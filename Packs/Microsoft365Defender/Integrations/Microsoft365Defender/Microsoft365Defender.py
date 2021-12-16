@@ -530,7 +530,7 @@ def main() -> None:
     # if your Client class inherits from BaseClient, system proxy is handled
     # out of the box by it, just pass ``proxy`` to the Client constructor
     proxy = params.get('proxy', False)
-    app_id = params.get('app_id')
+    app_id = params.get('app_id') or (demisto.getParam('credentials') or {}).get('password')
     base_url = params.get('base_url')
 
     tenant_id = params.get('tenant_id')
