@@ -15,7 +15,7 @@ configuration:
   required: false
   type: 0
 - display: Read Timeout
-  additionalinfo: Default is 10 seconds. In cases content is long, Read Timeout Error Exception is raised, to handlr it increase read timeout value.
+  additionalinfo: Default is 10 seconds. In cases content is too long, Read Timeout Error is return, to handle it increase the read timeout value.
   name: read_timeout
   defaultvalue: '10'
   required: false

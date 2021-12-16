@@ -146,7 +146,7 @@ def check_feed(client: Client) -> str:
 
 def main():
     params = demisto.params()
-    server_url = params.get('server_url')
+    server_url = (params.get('server_url')).rstrip()
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
 
@@ -180,9 +180,6 @@ def main():
                 demisto.createIndicators(iter_)
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
-
-    except ValueError:
-        raise DemistoException("Article content max size must be a number, e.g 50.")
 
     except Exception as err:
         demisto.error(traceback.format_exc())  # print the traceback
