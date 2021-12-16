@@ -1,7 +1,8 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Social Engineering Domain Analysis Investigation"
+        "Social Engineering Domain Analysis Investigation",
+        "Social Engineering Domain Investigation"
     ],
     "caseInsensitive": true,
     "cliName": "socialengineeringdomainanalysissummary",
@@ -16,6 +17,7 @@
     "locked": false,
     "name": "Social Engineering Domain Analysis Summary",
     "neverSetAsRequired": false,
+    "openEnded": false,
     "ownerOnly": false,
     "required": false,
     "sla": 0,

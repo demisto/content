@@ -160,7 +160,6 @@
                         ],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Domain Investigation Summary",
                         "static": false,
@@ -235,7 +234,7 @@
                 "description": "Details around the users registered domain and domains to test.  Note you should only supply either a file attached in \"Social Engineering Domain CSV\" OR a CSV list to the \"Social Engineering Domain List\"",
                 "fields": [
                     {
-                        "fieldId": "incident_socialengineeringregistereddomain",
+                        "fieldId": "incident_socialengineeringdomainanalysisregistereddomain",
                         "isVisible": true
                     },
                     {
@@ -272,8 +271,8 @@
         ]
     },
     "group": "incident",
-    "id": "Social Engineering Domain Investigation",
-    "name": "Social Engineering Domain Investigation",
+    "id": "Social Engineering Domain Investigation Layout",
+    "name": "Social Engineering Domain Investigation Layout",
     "system": false,
     "version": -1,
     "description": ""

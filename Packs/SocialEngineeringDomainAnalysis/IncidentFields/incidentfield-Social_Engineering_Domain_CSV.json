@@ -16,6 +16,7 @@
     "locked": false,
     "name": "Social Engineering Domain Analysis CSV",
     "neverSetAsRequired": false,
+    "openEnded": false,
     "ownerOnly": false,
     "required": false,
     "sla": 0,
