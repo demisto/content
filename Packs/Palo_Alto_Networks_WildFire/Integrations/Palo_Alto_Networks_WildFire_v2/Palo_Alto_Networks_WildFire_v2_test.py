@@ -39,6 +39,16 @@ def test_prettify_verdict():
 
 
 def test_prettify_url_verdict():
+    """
+    Given:
+     - The verdict response.
+
+    When:
+     - Running prettify_url_verdict function.
+
+    Then:
+     - Verify that the dictionary is prettified.
+    """
     expected_verdict_dict = dict({'URL': 'www.some-url.com', 'Verdict': '0', 'VerdictDescription': 'benign',
                                   'Valid': 'Yes', 'AnalysisTime': '2021-12-13T11:30:55Z'})
     prettify_verdict_res = prettify_url_verdict(
@@ -47,6 +57,16 @@ def test_prettify_url_verdict():
 
 
 def test_create_dbot_score_from_url_verdict():
+    """
+    Given:
+     - A dictionary to create the dbot score from.
+
+    When:
+     - Running create_dbot_score_from_url_verdict function.
+
+    Then:
+     - Verify that the expected dbot score has been returned.
+    """
     expected_dbot_score = [
         {'Indicator': 'www.some-url.com', 'Type': 'url', 'Vendor': 'WildFire', 'Score': 1,
          'Reliability': 'B - Usually reliable'}

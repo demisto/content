@@ -177,13 +177,13 @@ def prettify_verdict(verdict_data):
     return pretty_verdict
 
 
-def prettify_url_verdict(verdict_data):
+def prettify_url_verdict(verdict_data: Dict) -> Dict:
     pretty_verdict = {
-        'URL': verdict_data['url'],
-        'Verdict': verdict_data['verdict'],
-        'VerdictDescription': VERDICTS_DICT[verdict_data['verdict']],
-        'Valid': verdict_data['valid'],
-        'AnalysisTime': verdict_data['analysis_time']
+        'URL': verdict_data.get('url'),
+        'Verdict': verdict_data.get('verdict'),
+        'VerdictDescription': VERDICTS_DICT[verdict_data.get('verdict', '')],
+        'Valid': verdict_data.get('valid'),
+        'AnalysisTime': verdict_data.get('analysis_time')
     }
 
     return pretty_verdict
@@ -213,18 +213,25 @@ def create_dbot_score_from_verdict(pretty_verdict):
     return dbot_score
 
 
-def create_dbot_score_from_url_verdict(pretty_verdict):
-    if pretty_verdict["Verdict"] not in VERDICTS_TO_DBOTSCORE:
-        raise Exception('This URL verdict is not mapped to a DBotScore. Contact Demisto support for more information.')
-
-    dbot_score = [
-        {'Indicator': pretty_verdict['URL'],
-         'Type': 'url',
-         'Vendor': 'WildFire',
-         'Score': VERDICTS_TO_DBOTSCORE[pretty_verdict['Verdict']],
-         'Reliability': RELIABILITY
-         }
-    ]
+def create_dbot_score_from_url_verdict(pretty_verdict: Dict) -> List:
+    if pretty_verdict.get('Verdict') not in VERDICTS_TO_DBOTSCORE:
+        dbot_score = [
+            {'Indicator': pretty_verdict.get('URL'),
+             'Type': 'url',
+             'Vendor': 'WildFire',
+             'Score': 0,
+             'Reliability': RELIABILITY
+             }
+        ]
+    else:
+        dbot_score = [
+            {'Indicator': pretty_verdict.get('URL'),
+             'Type': 'url',
+             'Vendor': 'WildFire',
+             'Score': VERDICTS_TO_DBOTSCORE[pretty_verdict['Verdict']],
+             'Reliability': RELIABILITY
+             }
+        ]
     return dbot_score
 
 
@@ -554,12 +561,12 @@ def run_polling_command(args: dict, cmd: str, upload_function: Callable, results
 
 
 @logger
-def wildfire_get_verdict(file_hash: Optional[str] = None, url: Optional[str] = None):
+def wildfire_get_verdict(file_hash: Optional[str] = None, url: Optional[str] = None) -> Tuple[dict, dict]:
     get_verdict_uri = URL + URL_DICT["verdict"]
     if file_hash:
-        body = 'apikey=' + TOKEN + '&hash=' + file_hash  # type: ignore
+        body = 'apikey=' + TOKEN + '&hash=' + file_hash  # type: ignore[operator]
     else:
-        body = 'apikey=' + TOKEN + '&url=' + url  # type: ignore
+        body = 'apikey=' + TOKEN + '&url=' + url  # type: ignore[operator]
 
     result = http_request(get_verdict_uri, 'POST', headers=DEFAULT_HEADERS, body=body)
     verdict_data = result["wildfire"]["get-verdict-info"]
@@ -571,7 +578,7 @@ def wildfire_get_verdict_command():
     file_hashes = hash_args_handler(demisto.args().get('hash', ''))
     urls = argToList(demisto.args().get('url', ''))
     if not urls and not file_hashes:
-        raise Exception('Specify exactly 1 of the following arguments: url, hash.')
+        raise Exception('Either hash or url must be provided.')
     if file_hashes:
         for file_hash in file_hashes:
             result, verdict_data = wildfire_get_verdict(file_hash=file_hash)

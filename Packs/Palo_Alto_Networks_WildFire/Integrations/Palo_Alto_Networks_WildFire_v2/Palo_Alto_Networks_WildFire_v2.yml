@@ -8,7 +8,7 @@ configuration:
   name: server
   required: true
   type: 0
-- displaypassword: API Key (Recommended)
+- displaypassword: API Key
   name: credentials
   required: true
   type: 9
@@ -43,7 +43,7 @@ configuration:
   name: token
   required: false
   type: 4
-  additionalinfo: Use the "API Key (Recommended)" parameter instead.
+  hidden: true
 description: Perform malware dynamic analysis
 display: Palo Alto Networks WildFire v2
 name: WildFire-v2
