@@ -22,13 +22,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-contentitemexportablefields:
-  contentitemfields:
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 4c267240-83be-4387-82bb-c4bb1be4b954
-    propagationLabels: []
-    toServerVersion: ""
 description: This API queries alerts and alert data from the MS-ISAC API to enrich
   and query alerts from the platform
 display: MS-ISAC
@@ -112,6 +105,7 @@ script:
       description: The hostname (not URL) of the attempted traffic
       type: string
     - contextPath: MSISAC.Event.Stream.tx_id
+      description: The transaction ID for the MSISAC stream
       type: number
     - contextPath: MSISAC.Event.Stream.http_content_type
       description: The content encoding used for the response traffic
@@ -192,3 +186,6 @@ script:
   script: ''
   subtype: python3
   type: python
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

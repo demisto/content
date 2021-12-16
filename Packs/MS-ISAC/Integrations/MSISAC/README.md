@@ -1,5 +1,5 @@
 This API queries alerts and alert data from the MS-ISAC API to enrich and query alerts from the platform
-This integration was integrated and tested with version xx of MS-ISAC
+This integration was integrated and tested with version 1.1 of MS-ISAC
 
 ## Configure MS-ISAC on Cortex XSOAR
 
