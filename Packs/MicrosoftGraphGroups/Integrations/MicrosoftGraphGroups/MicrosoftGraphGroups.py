@@ -413,7 +413,7 @@ def main():
     base_url = params.get('url', '').rstrip('/') + '/v1.0/'
     tenant = params.get('tenant_id')
     auth_and_token_url = params.get('auth_id')
-    enc_key = params.get('enc_key')
+    enc_key = params.get('enc_key') or (params.get('credentials') or {}).get('password')
     verify = not params.get('insecure', False)
     proxy = params.get('proxy')
     self_deployed: bool = params.get('self_deployed', False)
