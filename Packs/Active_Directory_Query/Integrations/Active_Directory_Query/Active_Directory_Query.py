@@ -1155,7 +1155,6 @@ def update_user(default_base_dn):
 def update_group(default_base_dn):
     args = demisto.args()
 
-    # get group DN
     sam_account_name = args.get('groupname')
     attribute_name = args.get('attributename')
     attribute_value = args.get('attributevalue')
@@ -1163,8 +1162,6 @@ def update_group(default_base_dn):
     dn = group_dn(sam_account_name, search_base)
 
     modification = {attribute_name: [('MODIFY_REPLACE', attribute_value)]}
-
-    # modify group
     modify_object(dn, modification)
 
     demisto_entry = {
