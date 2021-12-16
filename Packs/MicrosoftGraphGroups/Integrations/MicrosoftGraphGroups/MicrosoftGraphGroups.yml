@@ -38,6 +38,7 @@ configuration:
   name: enc_key
   required: false
   type: 4
+  hidden: true
   additionalinfo: Use the "Key (received from the admin consent - see Detailed Instructions (?) (Recommended)" parameter instead.
 description: Microsoft Graph Groups enables you to create and manage different types
   of groups and group functionality according to your requirements.
