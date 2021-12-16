@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: EDLTest
+  id: EDL
   version: -1
 configuration:
 - additionalinfo: The query to run to update the EDL. To view expected results, you
@@ -121,7 +121,7 @@ configuration:
 description: This integration provides External Dynamic List (EDL) as a service for
   the system indicators (Outbound feed).
 display: Palo Alto Networks PAN-OS EDL Service
-name: EDLTest
+name: EDL
 script:
   commands:
   - arguments:
