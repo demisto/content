@@ -4,8 +4,8 @@ contentitemexportablefields:
   contentitemfields: {}
 name: Content Update Manager
 description: |-
-  This playbook checks for any available content updates for selected installed content packs, and notifies users via e-mail or Slack. 
-  It also lets users decide via playbook inputs or communication tasks if they want to trigger an auto-update process to install all updates that were found.
+  This playbook checks for any available content updates for selected installed content packs and notifies users via e-mail or Slack. 
+  It also contains an auto-update flow that lets users decide via playbook inputs or communication tasks if they want to trigger an auto-update process to install all updates that were found.
   This playbook can be used as a Cortex XSOAR job to help users track marketplace pack updates and install them regularly.
 starttaskid: "0"
 tasks:
@@ -2574,8 +2574,8 @@ tasks:
     scriptarguments:
       contentupdatemanagerdescription:
         simple: |-
-          This playbook checks for any available content updates for selected installed content packs, and notifies users via e-mail or Slack.
-          It also lets users decide via playbook inputs or communication tasks if they want to trigger an auto-update process to install all updates that were found.
+          This playbook checks for any available content updates for selected installed content packs and notifies users via e-mail or Slack. 
+          It also contains an auto-update flow that lets users decide via playbook inputs or communication tasks if they want to trigger an auto-update process to install all updates that were found.
           This playbook can be used as a Cortex XSOAR job to help users track marketplace pack updates and install them regularly.
     separatecontext: false
     view: |-
