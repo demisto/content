@@ -16,11 +16,18 @@
         "Rapid Breach Response"
     ],
     "keywords": [
-        "zero-day",
-        "0-day",
-        "zero day",
-        "Apache"
-    ],
+    "zero-day",
+    "0-day",
+    "zero day",
+    "Apache",
+    "CVE-2021-44228",
+    "Log4j",
+    "CVE-2021-45046",
+    "CVE",
+    "44228",
+    "45046",
+    "Log4Shell"
+],
     "dependencies": {
         "QRadar": {
             "mandatory": false,
