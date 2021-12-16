@@ -26,3 +26,5 @@ args:
 - name: tags
   description: Evidence tags
 scripttarget: 0
+tests:
+- No tests

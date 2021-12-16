@@ -65,3 +65,5 @@ args:
   defaultValue: ${currentPlaybookID}
 scripttarget: 0
 runonce: false
+tests:
+- No tests

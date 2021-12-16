@@ -22,3 +22,5 @@ outputs:
   description: if  value is not True (either has object or string True/true)
 scripttarget: 0
 fromversion: 5.0.0
+tests:
+- No tests

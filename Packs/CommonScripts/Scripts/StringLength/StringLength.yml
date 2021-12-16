@@ -17,3 +17,5 @@ outputs:
   description: The length of the string passed as argument
 scripttarget: 0
 fromversion: 5.0.0
+tests:
+- No tests

@@ -20,5 +20,6 @@ outputs:
 - contextPath: false
   description: if given string does not exist in context
 scripttarget: 0
-
 fromversion: 5.0.0
+tests:
+- No tests
