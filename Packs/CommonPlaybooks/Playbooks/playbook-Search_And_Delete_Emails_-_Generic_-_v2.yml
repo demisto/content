@@ -781,12 +781,12 @@ inputs:
     complex:
       root: inputs.O365ExchangeLocationExclusion
   required: false
-  description: Used only when searching and deleting emails in O365. The exchange
+  description: "Used only when searching and deleting emails in O365. The exchange
     location. Determines from where to search and delete emails searched using O365
-    playbooks. Use the value "All" to search all mailboxes, use "SingleMailbox" to
-    search and delete the email only from the recipient's inbox, or use "Manual"
+    playbooks. Use the value 'All' to search all mailboxes, use 'SingleMailbox' to
+    search and delete the email only from the recipients inbox, or use 'Manual'
     to decide manually for every incident. Note: Searching all mailboxes may take
-    a significant amount of time.
+    a significant amount of time."
   playbookInputQuery:
 - key: To
   value:
