@@ -22,51 +22,135 @@ import requests
 import traceback
 from typing import Dict, Any
 
+from googleapiclient.discovery import build
+from google.oauth2 import service_account
+
+SERVICE_ACCOUNT_FILE = 'token.json'
+SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
+
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
-
 
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
-''' CLIENT CLASS '''
+
+def create_spread_sheet(service, args: dict):
+    # in this function I can set them to None and then remove them in
+    # the next function, or I can set them manually to the default value.
+    spreadsheet = {
+        "properties": {
+            "title": demisto.args().get('title'),
+            "locale": "en" if args.get('locale') is None else args.get('locale'),
+            "defaultFormat": {
+                "numberFormat": {
+                    "type": 'TEXT' if args.get('cell_form_at_type') is None else args.get('cell_form_at_type')
+                },
+                "backgroundColor": {
+                    "red": 1 if args.get('red') is None else args.get('red'),
+                    "green": 1 if args.get('green') is None else args.get('green'),
+                    "blue": 1 if args.get('blue') is None else args.get('blue'),
+                    "alpha": 1 if args.get('alpha') is None else args.get('alpha'),
+                },
+                "textFormat": {
+                    "fontFamily": 'ariel' if args.get('cell_format_textformat_family') is None else args.get(
+                        'cell_format_textformat_family'),
+                    "fontSize": 11 if args.get('cell_format_textformat_font_size') is None else args.get(
+                        'cell_format_textformat_font_size')
+                },
+                "textDirection": "LEFT_TO_RIGHT" if args.get('cell_format_text_direction') is None else args.get(
+                    'cell_format_text_direction')
+            }
+        },
+        "sheets": [
+            {
+                "properties": {
+                    "title": args.get('sheet_title'),
+                    "sheetType": "GRID" if args.get('sheet_type') is None else args.get('sheet_type')
+                }
+            }
+        ]
+    }
+    # this removes all None values from the json in a recursive manner.
+    spreadsheet = remove_empty_elements(spreadsheet)
+    spreadsheet = service.spreadsheets().create(body=spreadsheet, fields='spreadsheetId').execute()
+    print('Spreadsheet ID: {0}'.format(spreadsheet.get('spreadsheetId')))
+    return spreadsheet
 
 
-class Client(BaseClient):
-    """Client class to interact with the service API
+# TODO: understand better what is the type of the ranges and what is include grid data
+def get_spread_sheet(service, args: dict):
+    spreadsheet_id = args.get('spreadsheet_id')
 
-    This Client implements API calls, and does not contain any XSOAR logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this  implementation, no special attributes defined
-    """
+    # The ranges to retrieve from the spreadsheet.
+    ranges = args.get('ranges')
 
-    # TODO: REMOVE the following dummy function:
-    def baseintegration_dummy(self, dummy: str) -> Dict[str, str]:
-        """Returns a simple python dict with the information provided
-        in the input (dummy).
+    # True if grid data should be returned.
+    # This parameter is ignored if a field mask was set in the request.
+    include_grid_data = args.get('include_grid_data')
 
-        :type dummy: ``str``
-        :param dummy: string to add in the dummy dict that is returned
-
-        :return: dict as {"dummy": dummy}
-        :rtype: ``str``
-        """
-
-        return {"dummy": dummy}
-    # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
+    request = service.spreadsheets().get(spreadsheetId=spreadsheet_id, ranges=ranges, includeGridData=include_grid_data)
+    response = request.execute()
+    return response
 
 
-''' HELPER FUNCTIONS '''
+def sheet_create(service , args:dict):
 
-# TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
+    spreadsheet_id = args.get('spreadsheet_id')
+
+    request_to_update = {
+        "requests": [
+            {
+                "addSheet": {
+                    "properties": {
+                        "title": "",
+                        "sheetType": "",
+                        "rightToLeft": False,
+                        "tabColor": {
+                            "red": 0,
+                            "green": 0,
+                            "blue": 0,
+                            "alpha": 0
+                        },
+                        "hidden": False
+                    }
+                }
+            }
+        ],
+        "includeSpreadsheetInResponse": False
+    }
+
+    response = service.spreadsheets().batchUpdate(spreadsheetId=spreadsheet_id, body=request_to_update).execute()
+    # TO ACCEESS A SPECIFIC RESPONSE
+    # find_replace_response = response.get('replies')[1].get('findReplace')
+    # print('{0} replacements made.'.format(
+    #     find_replace_response.get('occurrencesChanged')))
+    return response
+
+
+def sheet_duplicatet(service , args:dict):
+
+    spreadsheet_id = args.get('spreadsheet_id')
+    request_to_update = {
+        "requests": [
+            {
+                "duplicateSheet": {
+                    "sourceSheetId": 0,
+                    "insertSheetIndex": 0,
+                    "newSheetName": ""
+                }
+            }
+        ],
+        "responseIncludeGridData": false
+    }
+    response = service.spreadsheets().batchUpdate(spreadsheetId=spreadsheet_id, body=request_to_update).execute()
+    return response
 
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client) -> str:
+def test_module() -> str:
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -94,24 +178,6 @@ def test_module(client: Client) -> str:
     return message
 
 
-# TODO: REMOVE the following dummy command function
-def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-
-    dummy = args.get('dummy', None)
-    if not dummy:
-        raise ValueError('dummy not specified')
-
-    # Call the Client function and get the raw response
-    result = client.baseintegration_dummy(dummy)
-
-    return CommandResults(
-        outputs_prefix='BaseIntegration',
-        outputs_key_field='',
-        outputs=result,
-    )
-# TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
-
-
 ''' MAIN FUNCTION '''
 
 
@@ -126,7 +192,7 @@ def main() -> None:
     # api_key = demisto.params().get('credentials', {}).get('password')
 
     # get the service API url
-    base_url = urljoin(demisto.params()['url'], '/api/v1')
+    # base_url = urljoin(demisto.params()['url'], '/api/v1')
 
     # if your Client class inherits from BaseClient, SSL verification is
     # handled out of the box by it, just pass ``verify_certificate`` to
@@ -135,30 +201,62 @@ def main() -> None:
 
     # if your Client class inherits from BaseClient, system proxy is handled
     # out of the box by it, just pass ``proxy`` to the Client constructor
-    proxy = demisto.params().get('proxy', False)
+    # proxy = demisto.params().get('proxy', False)
 
     demisto.debug(f'Command being called is {demisto.command()}')
+    num = 5
+    # TODO: Omer check where to put this. here i also need to add to take the credentials
     try:
+        servie_account_credentials = demisto.params().get('service_account_credentials')
+        creds = service_account.Credentials.from_service_account_info(servie_account_credentials, scopes=SCOPES)
+        # creds = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+        service = build('sheets', 'v4', credentials=creds)
+    except Exception as e:
+        return_error(f"Failed to connect to Google API client {e}")
 
+    # if i got here then the Google API conneccted succssefuly and i can continue with the other commands.
+    try:
         # TODO: Make sure you add the proper headers for authentication
         # (i.e. "Authorization": {api key})
         headers: Dict = {}
 
-        client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            headers=headers,
-            proxy=proxy)
-
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client)
-            return_results(result)
+            # result = test_module()
+            return_results("ok")
 
-        # TODO: REMOVE the following dummy command case:
-        elif demisto.command() == 'baseintegration-dummy':
-            return_results(baseintegration_dummy_command(client, demisto.args()))
-        # TODO: ADD command cases for the commands you will implement
+        elif demisto.command() == 'google-sheets-spreadsheet-create':
+            return_results(create_spread_sheet(service, demisto.args()))
+        elif demisto.command() == 'google-sheets-spreadsheet-get':
+            return_results(get_spread_sheet(service, demisto.args()))
+        elif demisto.command() == 'google-sheets-spreadsheet-update':
+            return_results(None)
+        elif demisto.command() == 'google-sheets-sheet-create':
+            return_results(sheet_create(service , demisto.args()))
+        elif demisto.command() == 'google-sheets-sheet-duplicate':
+            return_results(None)
+        elif demisto.command() == 'google-sheets-sheet-copy-to':
+            return_results(None)
+        elif demisto.command() == 'google-sheets-sheet-delete':
+            return_results(None)
+        elif demisto.command() == 'google-sheets-sheet-clear':
+            return_results(None)
+        elif demisto.command() == 'google-sheets-dimension-delete':
+            return_results(None)
+        elif demisto.command() == 'google-sheets-range-delete':
+            return_results(None)
+        elif demisto.command() == 'google-sheets-data-paste':
+            return_results(None)
+        elif demisto.command() == 'google-sheets-cell-update':
+            return_results(None)
+        elif demisto.command() == 'google-sheets-find-replace':
+            return_results(None)
+        elif demisto.command() == 'google-sheets-value-update':
+            return_results(None)
+        elif demisto.command() == 'google-sheets-value-append':
+            return_results(None)
+
+
 
     # Log exceptions and return errors
     except Exception as e:
@@ -167,7 +265,6 @@ def main() -> None:
 
 
 ''' ENTRY POINT '''
-
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
