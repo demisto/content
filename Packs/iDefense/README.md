@@ -1,1 +1,1 @@
-Coming soon !
+Coming soon with our new pack!!
