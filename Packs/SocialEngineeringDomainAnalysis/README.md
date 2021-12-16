@@ -14,4 +14,4 @@ Two playbooks are included with this pack:
 The Social Engineering Domain Enrichment playbook can be used as a subplaybook in other investigations and an example usage is provided in the
 Social Engineering Domain Investigation playbook.
 
-![Playbook Image](https://github.com/demisto/content/raw/fa08826577b12608a4ad9525a5a4d7fe48e63e05/Packs/SocialEngineeringDomainAnalysis/doc_files/Social_Engineering_Domain_Investigation_Mon_Nov_29_2021.png)
+![Playbook Image](https://github.com/demisto/content/raw/0da9a129a0b37eed56210d5ccc5e992d455607f1/Packs/SocialEngineeringDomainAnalysis/doc_files/Social_Engineering_Domain_Investigation_Thu_Dec_16_2021.png)
