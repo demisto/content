@@ -148,19 +148,16 @@ script:
         url = fixUrl(qParams['server']) + suffix;
         username = qParams['authentication'] ? qParams['authentication']['identifier'] : '';
         password = qParams['authentication'] ? qParams['authentication']['password'] : '';
-        full_api_key = '';
+        headers = {};
         if (username == '__token'){
-            full_api_key = 'Bearer ' + password;
             username = '';
-            passwoed = '';
+            headers = {'Authorization': ['Bearer ' + password]};
         }
         res = http(
               url,
               {
                   Method: 'GET',
-                  Headers: {
-                      'Authorization': [full_api_key]
-                  },
+                  Headers: headers,
                   Username: username,
                   Password: password
               },
@@ -174,19 +171,16 @@ script:
         url = fixUrl(qParams['server']) + suffix;
         username = qParams['authentication'] ? qParams['authentication']['identifier'] : '';
         password = qParams['authentication'] ? qParams['authentication']['password'] : '';
-        full_api_key = '';
+        headers = {};
         if (username == '__token'){
-            full_api_key = 'Bearer ' + password;
             username = '';
-            passwoed = '';
+            headers = {'Authorization': ['Bearer ' + password]};
         }
         res = http(
               url,
               {
                   Method: 'GET',
-                  Headers: {
-                      'Authorization': [full_api_key]
-                  },
+                  Headers: headers,
                   Username: username,
                   Password: password
               },
@@ -200,19 +194,16 @@ script:
         url = fixUrl(qParams['server']) + suffix;
         username = qParams['authentication'] ? qParams['authentication']['identifier'] : '';
         password = qParams['authentication'] ? qParams['authentication']['password'] : '';
-        full_api_key = '';
+        headers = {};
         if (username == '__token'){
-            full_api_key = 'Bearer ' + password;
+            headers = {'Authorization': ['Bearer ' + password]};
             username = '';
-            passwoed = '';
         }
         res = http(
               url,
               {
                 Method: 'GET',
-                Headers: {
-                      'Authorization': [full_api_key]
-                },
+                Headers: headers,
                 Username: username,
                 Password: password,
                 SaveToFile: true
@@ -240,20 +231,17 @@ script:
         url = fixUrl(qParams.server) + suffix;
         username = qParams['authentication'] ? qParams['authentication']['identifier'] : '';
         password = qParams['authentication'] ? qParams['authentication']['password'] : '';
-        full_api_key = '';
+        headers = {};
         if (username == '__token'){
-            full_api_key = 'Bearer ' + password;
+            headers = {'Authorization': ['Bearer ' + password]};
             username = '';
-            passwoed = '';
         }
         res = httpMultipart(
             url,
             '',// Optional - FilePath / EntryID
             {
                 Method: 'POST',
-                Headers: {
-                    'Authorization': [full_api_key]
-                },
+                Headers: headers,
                 Username: username,
                 Password: password
             },
@@ -273,20 +261,17 @@ script:
         delete qArgs.entryID;
         username = qParams['authentication'] ? qParams['authentication']['identifier'] : '';
         password = qParams['authentication'] ? qParams['authentication']['password'] : '';
-        full_api_key = '';
+        headers = {};
         if (username == '__token'){
-            full_api_key = 'Bearer ' + password;
+            headers = {'Authorization': ['Bearer ' + password]}
             username = '';
-            passwoed = '';
         }
         res = httpMultipart(
             url,
             fileParam,
             {
                 Method: 'POST',
-                Headers: {
-                    'Authorization': [full_api_key]
-                },
+                Headers: headers,
                 Username: username,
                 Password: password
             },
