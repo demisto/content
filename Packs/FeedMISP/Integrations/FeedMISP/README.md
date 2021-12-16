@@ -10,6 +10,7 @@ This integration was integrated and tested with version 1.0 of MISP Feed.
     | --- | --- | --- |
     | Your server URL |  | True |
     | API Key | The API Key to use for the connection. | True |
+    | Timeout | The timeout of the HTTP requests sent to MISP API (in seconds).  If no value is provided the timeout will be set to 60 seconds.| False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Fetch indicators |  | False |
@@ -107,3 +108,6 @@ Gets indicators from the feed.
 #### Human Readable Output
 Retrieved 7 indicators.
 
+
+#### No Attribute for a given Attribute Tag
+If no Attribute exist with the Attribute Tag used to filter, MISP will return existing events that have the tag instead.  
