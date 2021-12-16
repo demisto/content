@@ -126,7 +126,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: carbonblackprotection
+                        simple: CarbonBlackProtectionV2
                 - - operator: string.isEqual
                     left:
                       value:
