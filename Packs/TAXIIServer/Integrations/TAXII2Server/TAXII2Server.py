@@ -4,7 +4,6 @@ from flask import Flask, request, make_response, jsonify
 from urllib.parse import ParseResult, urlparse
 from secrets import compare_digest
 from dateutil.parser import parse
-from gevent.pywsgi import WSGIServer
 from requests.utils import requote_uri
 
 import demistomock as demisto
@@ -318,7 +317,7 @@ class TAXII2Server:
         return response, first_added, last_added
 
 
-SERVER: TAXII2Server = None
+SERVER: TAXII2Server = None  # type: ignore
 
 ''' HELPER FUNCTIONS '''
 
@@ -494,8 +493,8 @@ def create_sco_stix_uuid(xsoar_indicator, stix_type):
         account_type = xsoar_indicator.get('CustomFields', {}).get('accounttype')
         user_id = xsoar_indicator.get('CustomFields', {}).get('userid')
         unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE,
-                               '{"account_login":"' + value + '","account_type":"' + account_type + '","user_id":"' +
-                               user_id + '"}')
+                               '{"account_login":"' + value + '","account_type":"' + account_type + '","user_id":"'
+                               + user_id + '"}')
     elif stix_type == 'windows-registry-key':
         unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, '{"key":"' + value + '"}')
     elif stix_type == 'file':
@@ -701,7 +700,7 @@ def taxii2_api_root(api_root: str):
 @APP.route('/<api_root>/status/<status_id>/', methods=['GET'])
 @taxii_validate_request_headers
 @taxii_validate_url_param
-def taxii2_status(api_root, status_id):
+def taxii2_status(api_root, status_id):  # noqa: F841
     """Status API call used to check status for adding object to the system.
     Our collections are read only. No option to add objects.
     Then All status requests ending with error.
