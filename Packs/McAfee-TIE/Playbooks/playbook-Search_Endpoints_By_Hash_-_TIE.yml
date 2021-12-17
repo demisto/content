@@ -1,13 +1,7 @@
 id: search_endpoints_by_hash_-_tie
-version: 5
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: McAfee-TIE
-    itemVersion: 1.0.2
-    fromServerVersion: 5.0.0
-    toServerVersion: ""
-    definitionid: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Search Endpoints By Hash - TIE
 description: |-
   Hunt for sightings of MD5, SHA1 and/or SHA256 hashes on endpoints, using McAfee TIE (requires ePO as well).
@@ -30,6 +24,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "7"
@@ -233,6 +228,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -342,6 +338,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -371,6 +368,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -575,7 +573,7 @@ inputs:
   description: |-
     The Hash to hunt (Could be MD5,SHA1,SHA256).
     Default is set to all hashes
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: Endpoint.Hostname
   description: Hostname
@@ -583,3 +581,7 @@ outputs:
 - contextPath: Endpoint
   description: The endpoint
   type: unknown
+tests:
+- search_endpoints_by_hash_-_tie_-_test
+- McAfee-TIE Test
+fromversion: 5.0.0
