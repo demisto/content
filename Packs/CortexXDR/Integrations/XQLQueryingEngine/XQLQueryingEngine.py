@@ -338,8 +338,6 @@ def start_xql_query(client: Client, args: Dict[str, Any]) -> str:
     query = args.get('query', '')
     if not query:
         raise ValueError('query is not specified')
-    if '//' in query:
-        raise DemistoException('Please remove notes (//) from query')
 
     if 'limit' not in query:  # if user did not provide a limit in the query, we will use the default one.
         query = f'{query} | limit {str(DEFAULT_LIMIT)}'
