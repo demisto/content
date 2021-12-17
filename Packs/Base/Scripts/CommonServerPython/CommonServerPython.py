@@ -8387,15 +8387,15 @@ def get_message_memory_dump(_sig, _frame):
     :return: Message to print.
     :rtype: ``str``
     """
-    classes_dict = {}
+    classes_dict = {}  # type: Dict[str, Dict]
     for obj in gc.get_objects():
         size = sys.getsizeof(obj, 0)
         if hasattr(obj, '__class__'):
             cls = str(obj.__class__)[8:-2]
             if cls in classes_dict:
-                current_class = classes_dict.get(cls)
-                current_class['count'] += 1
-                current_class['size'] += size
+                current_class = classes_dict.get(cls, {})  # type: Dict
+                current_class['count'] += 1  # type: ignore
+                current_class['size'] += size  # type: ignore
                 classes_dict[cls] = current_class
             else:
                 current_class = {
@@ -8529,6 +8529,6 @@ def register_signal_handler_profiling_dump(signal_type=signal.SIGUSR1, profiling
     :rtype: ``None``
     """
     globals_ = globals()
-    globals_[PROFILING_DUMP_ROWS_LIMIT] = profiling_dump_rows_limit
+    globals_['PROFILING_DUMP_ROWS_LIMIT'] = profiling_dump_rows_limit
 
     signal.signal(signal_type, signal_handler_profiling_dump)
