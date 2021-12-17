@@ -1,13 +1,7 @@
 id: Endpoint Enrichment - Generic v2.1
-version: 14
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: CommonPlaybooks
-    itemVersion: 2.1.4
-    fromServerVersion: 5.0.0
-    toServerVersion: ""
-    definitionid: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Endpoint Enrichment - Generic v2.1
 description: |-
   Enrich an endpoint by hostname using one or more integrations.
@@ -30,6 +24,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -59,6 +54,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "16"
@@ -192,6 +188,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -407,6 +404,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "33"
@@ -436,6 +434,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -465,6 +464,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "26"
@@ -494,6 +494,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -622,6 +623,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "22"
@@ -820,6 +822,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "31"
@@ -936,9 +939,9 @@ tasks:
       id: cb25c554-4bce-4f19-8bf1-974a6a51c57d
       version: -1
       name: is Mcafee ePolicy Orchestrator v2 enabled
-      description: "Gets a value and return it. This is to be used in playbook conditional
-        tasks - get a value from incident field, label or context, and act accordingly.
-        \nIf an array is returned. the first value will be the decision making value."
+      description: "Gets a value and return it. This is to be used in playbook conditional\
+        \ tasks - get a value from incident field, label or context, and act accordingly.\
+        \ \nIf an array is returned. the first value will be the decision making value."
       type: condition
       iscommand: false
       brand: ""
@@ -1064,7 +1067,7 @@ inputs:
       - operator: uniq
   required: false
   description: The hostname of the endpoint to enrich.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: Endpoint
   description: The endpoint object of the endpoint that was enriched.
@@ -1166,3 +1169,28 @@ outputs:
 - contextPath: ExtraHop.Device.Url
   description: Link to the device details page in ExtraHop.
   type: string
+tests:
+- Field polling test
+- test-domain-indicator
+- Calculate Severity - Generic v2 - Test
+- Wait Until Datetime - Test
+- Calculate Severity - Standard - Test
+- Extract Indicators From File - Generic v2 - Test
+- URL Enrichment - Generic v2 - Test
+- File Enrichment - Generic v2 - Test
+- Domain Enrichment - Generic v2 - Test
+- Account Enrichment - Generic v2.1 - Test
+- IP Enrichment - Generic v2 - Test
+- Get endpoint details - Generic - test
+- Detonate URL - Generic Test
+- Email Address Enrichment - Generic v2.1 - Test
+- Generic Polling Test
+- Send Investigation Summary Reports - Test
+- Detonate File - No Files test
+- Test Convert file hash to corresponding hashes
+- Detonate File - Generic Test
+- Endpoint Enrichment - Generic v2.1 - Test
+- Retrieve File from Endpoint - Generic V2 Test
+- Isolate and unisolate endpoint - test
+- Block IP - Generic V3_Test
+fromversion: 5.0.0

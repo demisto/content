@@ -1,13 +1,5 @@
 id: MAR - Endpoint data collection
-version: 8
-contentitemexportablefields:
-  contentitemfields:
-    packID: McAfee-MAR
-    itemVersion: 1.0.2
-    fromServerVersion: 5.0.0
-    toServerVersion: ""
-    definitionid: ""
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: MAR - Endpoint data collection
 description: |-
   Use McAfee Active Response to collect data from an endpoint for IR purposes (requires ePO as well)
@@ -26,6 +18,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -57,6 +50,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: Is McAfee ePO Integration installed and configured?
     nexttasks:
       '#default#':
       - "3"
@@ -92,6 +86,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: Finds computers within the McAfee ePO system tree
     nexttasks:
       '#none#':
       - "3"
@@ -124,6 +119,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -151,6 +147,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: Is the McAfee MAR Integration installed and configured?
     nexttasks:
       '#default#':
       - "3"
@@ -186,6 +183,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
+      description: Search endpoint data crossed by multiple collectors
     nexttasks:
       '#none#':
       - "10"
@@ -229,6 +227,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
+      description: Search endpoint data crossed by multiple collectors
     nexttasks:
       '#none#':
       - "6"
@@ -272,6 +271,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
+      description: Search endpoint data crossed by multiple collectors
     nexttasks:
       '#none#':
       - "11"
@@ -315,6 +315,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
+      description: Search endpoint data crossed by multiple collectors
     nexttasks:
       '#none#':
       - "23"
@@ -358,6 +359,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
+      description: Search endpoint data crossed by multiple collectors
     nexttasks:
       '#none#':
       - "13"
@@ -401,6 +403,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
+      description: Search endpoint data crossed by multiple collectors
     nexttasks:
       '#none#':
       - "18"
@@ -444,6 +447,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
+      description: Search endpoint data crossed by multiple collectors
     nexttasks:
       '#none#':
       - "21"
@@ -487,6 +491,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
+      description: Search endpoint data crossed by multiple collectors
     nexttasks:
       '#none#':
       - "17"
@@ -530,6 +535,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
+      description: Search endpoint data crossed by multiple collectors
     nexttasks:
       '#none#':
       - "22"
@@ -573,6 +579,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
+      description: Search endpoint data crossed by multiple collectors
     nexttasks:
       '#none#':
       - "19"
@@ -616,6 +623,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
+      description: Search endpoint data crossed by multiple collectors
     nexttasks:
       '#none#':
       - "20"
@@ -659,6 +667,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
+      description: Search endpoint data crossed by multiple collectors
     nexttasks:
       '#none#':
       - "24"
@@ -702,6 +711,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
+      description: Search endpoint data crossed by multiple collectors
     nexttasks:
       '#none#':
       - "3"
@@ -745,6 +755,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
+      description: Search endpoint data crossed by multiple collectors
     nexttasks:
       '#none#':
       - "3"
@@ -788,6 +799,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
+      description: Search endpoint data crossed by multiple collectors
     nexttasks:
       '#none#':
       - "25"
@@ -831,6 +843,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
+      description: Search endpoint data crossed by multiple collectors
     nexttasks:
       '#none#':
       - "3"
@@ -874,6 +887,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
+      description: Search endpoint data crossed by multiple collectors
     nexttasks:
       '#none#':
       - "3"
@@ -916,6 +930,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "27"
@@ -948,6 +963,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "15"
@@ -977,6 +993,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -1006,6 +1023,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "12"
@@ -1035,6 +1053,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "14"
@@ -1169,5 +1188,10 @@ inputs:
     simple: TIE
   required: false
   description: Hostname to run on
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
+tests:
+- Endpoint data collection test
+- MAR - Endpoint data collection test
+- McAfee-MAR_Test
+fromversion: 5.0.0
