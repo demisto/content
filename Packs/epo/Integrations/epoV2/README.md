@@ -2351,7 +2351,7 @@ There is no context output for this command.
 
 [//]: # (## Breaking changes from the previous version of this integration - McAfee ePO v2)
 
-[//]: # (%%FILL HERE%%)
+[//]: # (%%FILL COMMENT HERE%%)
 
 [//]: # (The following sections list the changes in this version.)
 
@@ -2374,6 +2374,6 @@ There is no context output for this command.
 [//]: # ()
 [//]: # (## Additional Considerations for this version)
 
-[//]: # (%%FILL HERE%%)
+[//]: # (%%FILL COMMENT HERE%%)
 
 [//]: # (* Insert any API changes, any behavioral changes, limitations, or restrictions that would be new to this version.)
