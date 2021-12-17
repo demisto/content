@@ -1,6 +1,7 @@
-## TAXII Service Integration
+## TAXII2 Service Integration
 
-This integration provides TAXII Services for system indicators (Outbound feed).
+This integration provides TAXII2 Services for system indicators (Outbound feed).
+You can choose to use TAXII v2.0 or TAXII v2.1.
 
 ## Configure Collections
 Each TAXII collection in the integration is represented by a Cortex XSOAR indicator query.
@@ -15,9 +16,13 @@ The collections are defined by a JSON object in the following format:
 ## How to Access the TAXII Service
 
 To view the available TAXII services, visit the discovery service in one of the following options:
- 
-- **https://*demisto_address*/instance/execute/*instance_name/taxii-discovery-service*** 
-- **http://*demisto_address*:*listen_port/taxii-discovery-service***
+For TAXII v2.0:
+- **https://*demisto_address*/instance/execute/*instance_name/taxii/*** 
+- **http://*demisto_address*:*listen_port/taxii/***
+
+For TAXII v2.1:
+- **https://*demisto_address*/instance/execute/*instance_name/taxii2/*** 
+- **http://*demisto_address*:*listen_port/taxii2/***
 
 ## Access the TAXII Service by Instance Name
 To access the TAXII service by instance name, make sure ***Instance execute external*** is enabled. 

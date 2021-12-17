@@ -318,7 +318,7 @@ class TAXII2Server:
         return response, first_added, last_added
 
 
-SERVER: TAXII2Server
+SERVER: TAXII2Server = None
 
 ''' HELPER FUNCTIONS '''
 
@@ -327,17 +327,20 @@ def taxii_validate_request_headers(f):
     @functools.wraps(f)
     def validate_request_headers(*args, **kwargs):
         """
-        function of HTTP requests to validate authentication and Accept headers.
+        function for HTTP requests to validate authentication and Accept headers.
         """
         accept_headers = [MEDIA_TYPE_TAXII_ANY, MEDIA_TYPE_TAXII_V20, MEDIA_TYPE_TAXII_V21,
                           MEDIA_TYPE_STIX_V20, ACCEPT_TYPE_ALL]
         credentials = request.authorization
 
         if SERVER.auth:
-            try:
-                auth_success = (compare_digest(credentials.username, SERVER.auth[0])  # type: ignore
-                                and compare_digest(credentials.password, SERVER.auth[1]))  # type: ignore
-            except TypeError:
+            if credentials:
+                try:
+                    auth_success = (compare_digest(credentials.username, SERVER.auth[0])  # type: ignore
+                                    and compare_digest(credentials.password, SERVER.auth[1]))  # type: ignore
+                except TypeError:
+                    auth_success = False
+            else:
                 auth_success = False
             if not auth_success:
                 handle_long_running_error('Authorization failed')
@@ -360,7 +363,7 @@ def taxii_validate_url_param(f):
     @functools.wraps(f)
     def validate_url_param(*args, **kwargs):
         """
-        function of HTTP requests to validate api_root and collection_id.
+        function for HTTP/HTTPS requests to validate api_root and collection_id.
         """
         api_root = kwargs.get('api_root')
         collection_id = kwargs.get('collection_id')
@@ -400,11 +403,11 @@ def handle_response(status_code, content, date_added_first=None, date_added_last
     """
     Create an HTTP taxii response from a taxii message.
     Args:
-        status_code:
-        content_type:
-        date_added_last:
-        date_added_first:
-        content:
+        status_code: status code to return
+        content_type: response content type to return
+        date_added_last: last added item creation time
+        date_added_first: first added item creation time
+        content: response data
 
     Returns:
         A taxii HTTP response.
@@ -425,6 +428,14 @@ def handle_response(status_code, content, date_added_first=None, date_added_last
 
 
 def create_query(query, types):
+    """
+    Args:
+        query: collections query
+        types: indicator types to filter by
+
+    Returns:
+        New query with types params
+    """
     if types:
         try:
             xsoar_types = [STIX2_TYPES_TO_XSOAR[t] for t in types if t != 'domain-name']
@@ -441,6 +452,15 @@ def create_query(query, types):
 
 
 def find_indicators(query: str, added_after, limit: int, is_manifest: bool = False):
+    """
+    Args:
+        query: search indicators query
+        added_after: search indicators after this date
+        limit: response items limit
+        is_manifest: whether this call is for manifest or indicators
+
+    Returns: Created indicators and its extensions. (# Todo: add link for the model)
+    """
     iocs = []
     extensions = []
     indicator_searcher = IndicatorsSearcher(
@@ -466,6 +486,9 @@ def find_indicators(query: str, added_after, limit: int, is_manifest: bool = Fal
 
 
 def create_sco_stix_uuid(xsoar_indicator, stix_type):
+    """
+    Create uuid for sco objects.
+    """
     value = xsoar_indicator.get('value')
     if stix_type == 'user-account':
         account_type = xsoar_indicator.get('CustomFields', {}).get('accounttype')
@@ -495,6 +518,9 @@ def create_sco_stix_uuid(xsoar_indicator, stix_type):
 
 
 def create_sdo_stix_uuid(xsoar_indicator, stix_type):
+    """
+    Create uuid for sdo objects.
+    """
     value = xsoar_indicator.get('value')
     if stix_type == 'attack-pattern':
         if mitre_id := xsoar_indicator.get('CustomFields', {}).get('mitreid'):
@@ -509,6 +535,15 @@ def create_sdo_stix_uuid(xsoar_indicator, stix_type):
 
 
 def create_manifest_entry(xsoar_indicator, xsoar_type):
+    """
+
+    Args:
+        xsoar_indicator: to create manifest entry from
+        xsoar_type: type of indicator in xsoar system
+
+    Returns:
+
+    """
     if stix_type := XSOAR_TYPES_TO_STIX_SCO.get(xsoar_type):
         stix_id = create_sco_stix_uuid(xsoar_indicator, stix_type)
     elif stix_type := XSOAR_TYPES_TO_STIX_SDO.get(xsoar_type):
@@ -526,6 +561,15 @@ def create_manifest_entry(xsoar_indicator, xsoar_type):
 
 
 def create_stix_object(xsoar_indicator, xsoar_type):
+    """
+
+    Args:
+        xsoar_indicator: to create stix object entry from
+        xsoar_type: type of indicator in xsoar system
+
+    Returns:
+
+    """
     if stix_type := XSOAR_TYPES_TO_STIX_SCO.get(xsoar_type):
         stix_id = create_sco_stix_uuid(xsoar_indicator, stix_type)
         object_type = stix_type
@@ -564,6 +608,14 @@ def create_stix_object(xsoar_indicator, xsoar_type):
 
 
 def parse_content_range(content_range):
+    """
+
+    Args:
+        content_range: the content-range or range header to parse.
+
+    Returns:
+
+    """
     range_type, range_count = content_range.split(' ', 1)
 
     if range_type != 'items':
@@ -649,7 +701,7 @@ def taxii2_api_root(api_root: str):
 @APP.route('/<api_root>/status/<status_id>/', methods=['GET'])
 @taxii_validate_request_headers
 @taxii_validate_url_param
-def taxii2_status(api_root):
+def taxii2_status(api_root, status_id):
     """Status API call used to check status for adding object to the system.
     Our collections are read only. No option to add objects.
     Then All status requests ending with error.
@@ -715,6 +767,15 @@ def taxii2_collection_by_id(api_root: str, collection_id: str):
 @taxii_validate_url_param
 def taxii2_manifest(api_root: str, collection_id: str):
     """
+    Defines TAXII API - Manifest Objects:
+    Get Manifest section (5.3) `here
+    <https://docs.oasis-open.org/cti/taxii/v2.1/os/taxii-v2.1-os.html#_Toc31107537>`__
+    Args:
+        collection_id: collection id to query it objects
+        api_root (str): the base URL of the API Root
+    Returns:
+        manifest: A Manifest Resource upon successful requests. Additional information
+        `here <https://docs.oasis-open.org/cti/taxii/v2.1/os/taxii-v2.1-os.html#_Toc31107538>`__.
     """
     try:
         added_after = request.args.get('added_after')
@@ -770,7 +831,7 @@ def taxii2_objects(api_root: str, collection_id: str):
     Get Collection section (5.4) `here
     <https://docs.oasis-open.org/cti/taxii/v2.1/csprd01/taxii-v2.1-csprd01.html#_Toc532988055>`__
     Args:
-        collection_id:
+        collection_id: collection id to query it objects
         api_root (str): the base URL of the API Root
     Returns:
         envelope: A Envelope Resource upon successful requests. Additional information
@@ -824,6 +885,9 @@ def taxii2_objects(api_root: str, collection_id: str):
 
 
 def test_module(params):
+    """
+    Integration test module.
+    """
     run_long_running(params, is_test=True)
     return 'ok'
 

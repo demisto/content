@@ -1,0 +1,22 @@
+[
+    {
+        "can_read": true,
+        "can_write": false,
+        "description": "type:IP",
+        "id": "583487c2-8cea-5acd-9a44-093d15241ece",
+        "media_types": [
+            "application/vnd.oasis.stix+json; version=2.0"
+        ],
+        "title": "Collection1"
+    },
+    {
+        "can_read": true,
+        "can_write": false,
+        "description": "sourceBrands:\"Some Feed\"",
+        "id": "11ac7438-b2ef-5b0b-9447-66271317ae9f",
+        "media_types": [
+            "application/vnd.oasis.stix+json; version=2.0"
+        ],
+        "title": "Collection2"
+    }
+]
