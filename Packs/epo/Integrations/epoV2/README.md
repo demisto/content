@@ -1,8 +1,5 @@
 McAfee ePolicy Orchestrator
-This integration was integrated and tested with version xx of McAfee ePO v2
-
-Some changes have been made that might affect your existing content. 
-If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-mcafee-epo-v2).
+This integration was integrated and tested with version 5.3.2 and 5.10 of McAfee ePO 
 
 ## Configure McAfee ePO v2 on Cortex XSOAR
 
@@ -446,8 +443,7 @@ Finds computers within a specified group in the McAfee ePO system tree.
                     "Vdi": -1
                 },
                 {
-                    "AgentGUID": "CA0CE11A-DCE8-11E8-0805-000C2994FF62",
-                    "AgentVersion": "5.0.6.220",
+                    "AgentGUID": "CA0CE11A-DCE8-11E8-0805-000C2994FF62
                     "AutoID": 2,
                     "CPUSerialNum": "N/A",
                     "CPUSpeed": 2095,
@@ -461,10 +457,7 @@ Finds computers within a specified group in the McAfee ePO system tree.
                     "FreeMemory": 1195880448,
                     "Hostname": "",
                     "IPAddress": "",
-                    "IPSubnet": "0:0:0:0:0:0:0:0",
-                    "IPSubnetMask": "0:0:0:0:0:0:0:0",
                     "IPV4x": null,
-                    "IPV6": "0:0:0:0:0:0:0:0",
                     "IPXAddress": "N/A",
                     "IsPortable": 0,
                     "LastAgentHandler": 1,
@@ -611,7 +604,6 @@ Finds systems in the McAfee ePO system tree.
         "ePO": {
             "Endpoint": {
                 "AgentGUID": "E0F52A7C-A841-11E7-0467-000C2936A49A",
-                "AgentVersion": "5.6.1.157",
                 "AutoID": 3,
                 "CPUSerialNum": "N/A",
                 "CPUSpeed": 2600,
@@ -624,11 +616,7 @@ Finds systems in the McAfee ePO system tree.
                 "FreeDiskSpace": 93781,
                 "FreeMemory": 240263168,
                 "Hostname": "tie",
-                "IPAddress": "192.168.1.102",
-                "IPSubnet": "0:0:0:0:0:FFFF:C0A8:100",
-                "IPSubnetMask": "0:0:0:0:0:FFFF:FFFF:FF00",
                 "IPV4x": 1084752230,
-                "IPV6": "0:0:0:0:0:FFFF:C0A8:166",
                 "IPXAddress": "N/A",
                 "IsPortable": -1,
                 "LastAgentHandler": 1,
@@ -1258,14 +1246,14 @@ Assigns policy to a supplied list of systems or resets systems' inheritance for 
 There is no context output for this command.
 
 #### Command Example
-```!epo-assign-policy-to-system names="192.168.100.2" productId="ENDP_AM_1000" typeId="40" objectId="84"```
+```!epo-assign-policy-to-system names="TIE" productId="ENDP_AM_1000" typeId="40" objectId="84"```
 
 #### Human Readable Output
 
 >### ePO Policies:
->|name|status|id|message|
->|---|---|---|---|
->| 192.168.100.2 | -1 | -1 | Unable to take action on the computer because it may not exist |
+>| name |status|id|message|
+------|---|---|---|---|
+>| TIE | -1 | -1 | Unable to take action on the computer because it may not exist |
 
 
 ### epo-list-issues
