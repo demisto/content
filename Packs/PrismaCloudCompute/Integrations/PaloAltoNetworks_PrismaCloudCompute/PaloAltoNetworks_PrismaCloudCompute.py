@@ -353,9 +353,6 @@ def parse_limit_and_offset_values(limit: str, offset: str) -> Tuple[int, int]:
         limit (str): limit argument.
         offset (str): offset argument.
 
-    Raises:
-        ValueError: in case the offset/limit values are invalid
-
     Returns:
         Tuple[int, int]: parsed offset and parsed limit
     """
@@ -403,7 +400,7 @@ def epochs_to_timestamp(epochs: int, date_format: str = "%B %d, %Y %H:%M:%S %p")
 
 def filter_api_response(api_response: Optional[list], offset: int, limit: int) -> Optional[list]:
     """
-    Filter the api response according to the offset/limit, used in case the api doesn't support limit/offset
+    Filter the api response according to the offset/limit.
 
     Args:
         api_response (list): api response from an endpoint.
@@ -535,7 +532,7 @@ def get_profile_host_list(client: PrismaCloudComputeClient, args: dict) -> Comma
 
 def get_container_description_info(container_info: dict) -> dict:
     """
-    Build a table for a single host.
+    Get the container description information.
 
     Args:
         container_info (dict): container information from the api.
