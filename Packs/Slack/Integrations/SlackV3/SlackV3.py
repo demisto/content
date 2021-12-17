@@ -1493,12 +1493,12 @@ def handle_tags_in_message_sync(message: str) -> str:
     Returns:
         The tagged slack message
     """
-    matches = re.findall(USER_TAG_EXPRESSION, message)
+    matches = re.finditer(USER_TAG_EXPRESSION, message)
     message = re.sub(USER_TAG_EXPRESSION, r'\1', message)
     for match in matches:
-        slack_user = get_user_by_name(match)
+        slack_user = get_user_by_name(match.group(0))
         if slack_user:
-            message = message.replace(match, f"<@{slack_user.get('id')}>")
+            message = message.replace(match.group(0), f"<@{slack_user.get('id')}>")
 
     resolved_message = re.sub(URL_EXPRESSION, r'\1', message)
 
