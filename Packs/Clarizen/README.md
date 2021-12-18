@@ -7,3 +7,5 @@ Use this pack to integrate with Clarizen's Identity Access Management service to
 - Disable a user in a third-party integration.
 
 For more information, refer to the [Identity Lifecycle Management article](https://xsoar.pan.dev/docs/reference/articles/identity-lifecycle-management).
+
+"id": "User Profile - Clarizen (Incoming)",
