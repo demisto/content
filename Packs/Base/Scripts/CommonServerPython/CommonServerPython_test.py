@@ -5859,8 +5859,11 @@ def test_arg_to_number():
 
 
 def test_get_message_threads_dump():
-    from CommonServerPython import get_message_threads_dump
-    result = str(get_message_threads_dump(None, None))
+    if CommonServerPython.OS_WINDOWS:
+        assert True
+        return
+
+    result = str(CommonServerPython.get_message_threads_dump(None, None))
     assert ' Start Threads Dump ' in result
     assert ' End Threads Dump ' in result
     assert 'CommonServerPython.py' in result
@@ -5868,8 +5871,11 @@ def test_get_message_threads_dump():
 
 
 def test_get_message_memory_dump():
-    from CommonServerPython import get_message_memory_dump
-    result = str(get_message_memory_dump(None, None))
+    if CommonServerPython.OS_WINDOWS:
+        assert True
+        return
+
+    result = str(CommonServerPython.get_message_memory_dump(None, None))
     assert ' Start Variables Dump ' in result
     assert ' Start Local Vars ' in result
     assert ' End Local Vars ' in result
