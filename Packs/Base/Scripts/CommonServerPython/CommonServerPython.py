@@ -37,6 +37,7 @@ elif sys.platform == "darwin":
 elif sys.platform == "win32":
     OS_WINDOWS = True
 
+
 class WarningsHandler(object):
     #    Wrapper to handle warnings. We use a class to cleanup after execution
 
@@ -8341,6 +8342,8 @@ def indicators_value_to_clickable(indicators):
 
 
 if OS_LINUX or OS_MAC:
+
+    # flake8: noqa: E303
 
     import signal
 
