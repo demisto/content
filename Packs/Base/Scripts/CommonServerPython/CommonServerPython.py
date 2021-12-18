@@ -8509,7 +8509,7 @@ def signal_handler_profiling_dump(_sig, _frame):
     LOG.print_log()
 
 
-def register_signal_handler_profiling_dump(signal_type, profiling_dump_rows_limit=PROFILING_DUMP_ROWS_LIMIT):
+def register_signal_handler_profiling_dump(signal_type=None, profiling_dump_rows_limit=PROFILING_DUMP_ROWS_LIMIT):
     """
     Function that registers the threads and memory dump signal listener
 
