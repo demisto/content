@@ -124,10 +124,10 @@ comment: |-
   For more information, see the section about permissions here:
   https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
 commonfields:
-  id: FindSimilarIncidents
+  id: FindSimilarIncidentstest
   version: -1
 enabled: true
-name: FindSimilarIncidents
+name: FindSimilarIncidentstest
 outputs:
 - contextPath: similarIncident.rawId
   description: Similar incident ID.

@@ -334,7 +334,7 @@ def main():
                 raise ValueError("Error: Missing context key for incident: %s" % key)
     # exact_match_incident_fields = {u'filemd5': [1234, 12345]}
     # exact_match_incident_fields = {u'filemd5': []}
-
+    exact_match_incident_fields = {u'commandline': u'\\share.usll.efn.ericsson.se\AutomatedFALogs\dist\log_parser.exe "\\share.usll.efn.ericsson.se\AutomatedFALogs\log_parser.py"'}
     log_message = 'Incident fields with exact match: %s' % exact_match_incident_fields
     if len(exact_match_incident_fields) > 1:
         log_message += ', applied with %s condition' % INCIDENT_FIELDS_APPLIED_CONDITION
