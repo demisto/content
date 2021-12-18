@@ -8509,42 +8509,35 @@ def signal_handler_profiling_dump(_sig, _frame):
     LOG.print_log()
 
 
-if OS_LINUX or OS_MAC:
+# DEPRECATED - use register_signal_handler_profiling_dump instead
+def register_signal_handler_threads_dump():
+    """
+    Function that registers the threads dump signal listener
 
-    # flake8: noqa: E303
-
-    import signal
-
-    # DEPRECATED - use register_signal_handler_profiling_dump instead
-    def register_signal_handler_threads_dump(signal_type=signal.SIGUSR1):
-        """
-        Function that registers the threads dump signal listener
-
-        :type signal_type: ``int``
-        :param signal_type: The type of the signal to register
-
-        :return: No data returned
-        :rtype: ``None``
-        """
-        signal.signal(signal_type, signal_handler_profiling_dump)
+    :return: No data returned
+    :rtype: ``None``
+    """
+    register_signal_handler_profiling_dump()
 
 
-    def register_signal_handler_profiling_dump(signal_type=signal.SIGUSR1, profiling_dump_rows_limit=PROFILING_DUMP_ROWS_LIMIT):
-        """
-        Function that registers the threads and memory dump signal listener
+def register_signal_handler_profiling_dump(signal_type, profiling_dump_rows_limit=PROFILING_DUMP_ROWS_LIMIT):
+    """
+    Function that registers the threads and memory dump signal listener
 
-        :type signal_type: ``int``
-        :param signal_type: The type of the signal to register
+    :type profiling_dump_rows_limit: ``int``
+    :param profiling_dump_rows_limit: The max number of profiling related rows to print to the log
 
-        :type profiling_dump_rows_limit: ``int``
-        :param profiling_dump_rows_limit: The max number of profiling related rows to print to the log
+    :return: No data returned
+    :rtype: ``None``
+    """
+    if OS_LINUX or OS_MAC:
 
-        :return: No data returned
-        :rtype: ``None``
-        """
+        import signal
+
         globals_ = globals()
         globals_['PROFILING_DUMP_ROWS_LIMIT'] = profiling_dump_rows_limit
 
-        signal.signal(signal_type, signal_handler_profiling_dump)
-else:
-    demisto.info('Not a Linux or Mac OS, profiling using a sigmnal is not supported.')
+        requested_signal = signal_type if signal_type else signal.SIGUSR1
+        signal.signal(requested_signal, signal_handler_profiling_dump)
+    else:
+        demisto.info('Not a Linux or Mac OS, profiling using a sigmnal is not supported.')
