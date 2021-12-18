@@ -5859,10 +5859,6 @@ def test_arg_to_number():
 
 
 def test_get_message_threads_dump():
-    if CommonServerPython.OS_WINDOWS:
-        assert True
-        return
-
     result = str(CommonServerPython.get_message_threads_dump(None, None))
     assert ' Start Threads Dump ' in result
     assert ' End Threads Dump ' in result
@@ -5871,10 +5867,6 @@ def test_get_message_threads_dump():
 
 
 def test_get_message_memory_dump():
-    if CommonServerPython.OS_WINDOWS:
-        assert True
-        return
-
     result = str(CommonServerPython.get_message_memory_dump(None, None))
     assert ' Start Variables Dump ' in result
     assert ' Start Local Vars ' in result
