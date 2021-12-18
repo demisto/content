@@ -98,7 +98,7 @@ class Mapping:
         self.output: Any = repl.get('output')
         self.algorithm: Optional[str] = repl.get('algorithm')
         self.next: Any = repl.get('next')
-        self.ignore_syntax = repl.get('ignore_syntax')
+        self.ignore_syntax = bool(repl.get('ignore_syntax') or False)
 
 
 def iterate_pattern_mapping(pattern_mapping: Union[List[Dict[str, Any]], Dict[str, Any]]) -> Generator[Mapping, None, None]:
