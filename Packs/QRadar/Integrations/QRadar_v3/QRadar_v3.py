@@ -1,6 +1,5 @@
 import concurrent.futures
 import secrets
-import signal
 from enum import Enum
 from ipaddress import ip_address
 from typing import Tuple, Set, Dict, Callable
