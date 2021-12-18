@@ -173,8 +173,9 @@ script:
         password = qParams['authentication'] ? qParams['authentication']['password'] : '';
         headers = {};
         if (username == '__token'){
-            username = '';
             headers = {'Authorization': ['Bearer ' + password]};
+            username = '';
+            password = '';
         }
         res = http(
               url,
@@ -198,6 +199,7 @@ script:
         if (username == '__token'){
             headers = {'Authorization': ['Bearer ' + password]};
             username = '';
+            password = '';
         }
         res = http(
               url,
@@ -235,10 +237,11 @@ script:
         if (username == '__token'){
             headers = {'Authorization': ['Bearer ' + password]};
             username = '';
+            password = '';
         }
         res = httpMultipart(
             url,
-            '',// Optional - FilePath / EntryID
+            '', // Optional - FilePath / EntryID
             {
                 Method: 'POST',
                 Headers: headers,
@@ -263,8 +266,9 @@ script:
         password = qParams['authentication'] ? qParams['authentication']['password'] : '';
         headers = {};
         if (username == '__token'){
-            headers = {'Authorization': ['Bearer ' + password]}
+            headers = {'Authorization': ['Bearer ' + password]};
             username = '';
+            password = '';
         }
         res = httpMultipart(
             url,
