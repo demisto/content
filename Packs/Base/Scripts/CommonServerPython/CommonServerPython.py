@@ -8517,7 +8517,7 @@ def register_signal_handler_threads_dump():
     :return: No data returned
     :rtype: ``None``
     """
-    register_signal_handler_profiling_dump()
+    register_signal_handler_profiling_dump(signal_type = None)
 
 
 def register_signal_handler_profiling_dump(signal_type, profiling_dump_rows_limit=PROFILING_DUMP_ROWS_LIMIT):
