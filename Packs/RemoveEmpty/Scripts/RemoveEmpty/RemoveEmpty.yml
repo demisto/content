@@ -1,9 +1,18 @@
 args:
-- description: The value to be filtered
-  isArray: true
-  name: value
+- name: value
   required: true
-comment: Remove empty items from the array.
+  description: The value to be filtered
+  isArray: true
+- name: remove_keys
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Set to true to remove empty properties from objects, false otherwise.
+  defaultValue: "false"
+- name: empty_values
+  description: The list of particular tokens to be considerd as empty
+comment: Remove empty items, entries or nodes from the array.
 commonfields:
   id: RemoveEmpty
   version: -1
