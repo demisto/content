@@ -8509,17 +8509,6 @@ def signal_handler_profiling_dump(_sig, _frame):
     LOG.print_log()
 
 
-# DEPRECATED - use register_signal_handler_profiling_dump instead
-def register_signal_handler_threads_dump():
-    """
-    Function that registers the threads dump signal listener
-
-    :return: No data returned
-    :rtype: ``None``
-    """
-    register_signal_handler_profiling_dump(signal_type=None)
-
-
 def register_signal_handler_profiling_dump(signal_type, profiling_dump_rows_limit=PROFILING_DUMP_ROWS_LIMIT):
     """
     Function that registers the threads and memory dump signal listener
