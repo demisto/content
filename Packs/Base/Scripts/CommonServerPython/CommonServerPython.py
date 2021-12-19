@@ -6,6 +6,7 @@ Note that adding code to CommonServerUserPython can override functions in Common
 from __future__ import print_function
 
 import base64
+import gc
 import json
 import logging
 import os
@@ -25,6 +26,16 @@ from threading import Lock
 
 import demistomock as demisto
 import warnings
+
+OS_LINUX = False
+OS_MAC = False
+OS_WINDOWS = False
+if sys.platform.startswith('linux'):
+    OS_LINUX = True
+elif sys.platform.startswith('darwin'):
+    OS_MAC = True
+elif sys.platform.startswith('win32'):
+    OS_WINDOWS = True
 
 
 class WarningsHandler(object):
@@ -74,6 +85,9 @@ STIX_PREFIX = "STIX "
 
 ZERO = timedelta(0)
 HOUR = timedelta(hours=1)
+
+# The max number of profiling related rows to print to the log on memory dump
+PROFILING_DUMP_ROWS_LIMIT = 20
 
 
 if IS_PY3:
@@ -8325,3 +8339,194 @@ def indicators_value_to_clickable(indicators):
             indicator_url = os.path.join('#', 'indicator', indicator_id)
             res[indicator] = '[{indicator}]({indicator_url})'.format(indicator=indicator, indicator_url=indicator_url)
     return res
+
+
+def get_message_threads_dump(_sig, _frame):
+    """
+    Listener function to dump the threads to log info
+
+    :type _sig: ``int``
+    :param _sig: The signal number
+
+    :type _frame: ``Any``
+    :param _frame: The current stack frame
+
+    :return: Message to print.
+    :rtype: ``str``
+    """
+    code = []
+    for threadId, stack in sys._current_frames().items():
+        code.append("\n# ThreadID: %s" % threadId)
+        for filename, lineno, name, line in traceback.extract_stack(stack):
+            code.append('File: "%s", line %d, in %s' % (filename, lineno, name))
+            if line:
+                code.append("  %s" % (line.strip()))
+
+    ret_value = '\n\n--- Start Threads Dump ---\n'\
+        + '\n'.join(code)\
+        + '\n\n--- End Threads Dump ---\n'
+    return ret_value
+
+
+def get_message_memory_dump(_sig, _frame):
+    """
+    Listener function to dump the memory to log info
+
+    :type _sig: ``int``
+    :param _sig: The signal number
+
+    :type _frame: ``Any``
+    :param _frame: The current stack frame
+
+    :return: Message to print.
+    :rtype: ``str``
+    """
+    classes_dict = {}  # type: Dict[str, Dict]
+    for obj in gc.get_objects():
+        size = sys.getsizeof(obj, 0)
+        if hasattr(obj, '__class__'):
+            cls = str(obj.__class__)[8:-2]
+            if cls in classes_dict:
+                current_class = classes_dict.get(cls, {})  # type: Dict
+                current_class['count'] += 1  # type: ignore
+                current_class['size'] += size  # type: ignore
+                classes_dict[cls] = current_class
+            else:
+                current_class = {
+                    'name': cls,
+                    'count': 1,
+                    'size': size,
+                }
+                classes_dict[cls] = current_class
+
+    classes_as_list = list(classes_dict.values())
+    ret_value = '\n\n--- Start Variables Dump ---\n'
+    ret_value += get_message_classes_dump(classes_as_list)
+    ret_value += '\n--- End Variables Dump ---\n\n'
+
+    ret_value = '\n\n--- Start Variables Dump ---\n'
+    ret_value += get_message_local_vars()
+    ret_value += get_message_global_vars()
+    ret_value += '\n--- End Variables Dump ---\n\n'
+
+    return ret_value
+
+
+def get_message_classes_dump(classes_as_list):
+    """
+    A function that prints the memory dump to log info
+
+    :type classes_as_list: ``list``
+    :param classes_as_list: The classes to print to the log
+
+    :return: Message to print.
+    :rtype: ``str``
+    """
+
+    ret_value = '\n\n--- Start Memory Dump ---\n'
+
+    ret_value += '\n--- Start Top {} Classes by Count ---\n\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+    classes_sorted_by_count = sorted(classes_as_list, key=lambda d: d['count'], reverse=True)
+    ret_value += 'Count\t\tSize\t\tName\n'
+    for current_class in classes_sorted_by_count[:PROFILING_DUMP_ROWS_LIMIT]:
+        ret_value += '{}\t\t{}\t\t{}\n'.format(current_class["count"], current_class["size"], current_class["name"])
+    ret_value += '\n--- End Top {} Classes by Count ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+
+    ret_value += '\n--- Start Top {} Classes by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+    classes_sorted_by_size = sorted(classes_as_list, key=lambda d: d['size'], reverse=True)
+    ret_value += 'Size\t\tCount\t\tName\n'
+    for current_class in classes_sorted_by_size[:PROFILING_DUMP_ROWS_LIMIT]:
+        ret_value += '{}\t\t{}\t\t{}\n'.format(current_class["size"], current_class["count"], current_class["name"])
+    ret_value += '\n--- End Top {} Classes by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+
+    ret_value += '\n--- End Memory Dump ---\n\n'
+
+    return ret_value
+
+
+def get_message_local_vars():
+    """
+    A function that prints the local variables to log info
+
+    :return: Message to print.
+    :rtype: ``str``
+    """
+    local_vars = list(locals().items())
+    ret_value = '\n\n--- Start Local Vars ---\n\n'
+    for current_local_var in local_vars:
+        ret_value += str(current_local_var) + '\n'
+
+    ret_value += '\n--- End Local Vars ---\n\n'
+
+    return ret_value
+
+
+def get_message_global_vars():
+    """
+    A function that prints the global variables to log info
+
+    :return: Message to print.
+    :rtype: ``str``
+    """
+    globals_dict = dict(globals())
+    globals_dict_full = {}
+    for current_key in globals_dict.keys():
+        current_value = globals_dict[current_key]
+        globals_dict_full[current_key] = {
+            'name': current_key,
+            'value': current_value,
+            'size': sys.getsizeof(current_value)
+        }
+
+    ret_value = '\n\n--- Start Top {} Globals by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+    globals_sorted_by_size = sorted(globals_dict_full.values(), key=lambda d: d['size'], reverse=True)
+    ret_value += 'Size\t\tName\t\tValue\n'
+    for current_global in globals_sorted_by_size[:PROFILING_DUMP_ROWS_LIMIT]:
+        ret_value += '{}\t\t{}\t\t{}\n'.format(current_global["size"], current_global["name"], current_global["value"])
+    ret_value += '\n--- End Top {} Globals by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+
+    return ret_value
+
+
+def signal_handler_profiling_dump(_sig, _frame):
+    """
+    Listener function to dump the threads and memory to log info
+
+    :type _sig: ``int``
+    :param _sig: The signal number
+
+    :type _frame: ``Any``
+    :param _frame: The current stack frame
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    msg = '\n\n--- Start Profiling Dump ---\n'
+    msg += get_message_threads_dump(_sig, _frame)
+    msg += get_message_memory_dump(_sig, _frame)
+    msg += '\n--- End Profiling Dump ---\n\n'
+    LOG(msg)
+    LOG.print_log()
+
+
+def register_signal_handler_profiling_dump(signal_type=None, profiling_dump_rows_limit=PROFILING_DUMP_ROWS_LIMIT):
+    """
+    Function that registers the threads and memory dump signal listener
+
+    :type profiling_dump_rows_limit: ``int``
+    :param profiling_dump_rows_limit: The max number of profiling related rows to print to the log
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    if OS_LINUX or OS_MAC:
+
+        import signal
+
+        globals_ = globals()
+        globals_['PROFILING_DUMP_ROWS_LIMIT'] = profiling_dump_rows_limit
+
+        requested_signal = signal_type if signal_type else signal.SIGUSR1
+        signal.signal(requested_signal, signal_handler_profiling_dump)
+    else:
+        demisto.info('Not a Linux or Mac OS, profiling using a signal is not supported.')
