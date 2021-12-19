@@ -6,6 +6,7 @@ On Dec. 9, 2021, a remote code execution (RCE) vulnerability in Apache log4j 2 w
 
 On Dec. 14 2021, another vulnerability was discovered related the log4j 0-day exploit known as CVE-2021-45046.
 
+On Dec 18 2021, yet another vulnerability was discovered related the log4j 0-day exploit known as CVE-2021-45105 that allows an attacker with control over Thread Context Map data to cause a denial of service when a crafted string is interpreted. This issue was fixed in Log4j 2.17.0 and 2.12.3.
 This pack will provide you with a first response kit which includes:
 * Hunting
 * Remediation
