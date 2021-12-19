@@ -110,7 +110,13 @@ class VM:
         pass
 
 
+class ResourcePool:
+    resourcePool = None
+
+
 class Folder:
+    parent = ResourcePool()
+
     def RegisterVM_Task(self):
         pass
 

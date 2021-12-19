@@ -8,13 +8,13 @@ configuration:
     required: true
     defaultvalue: null
     type: 0
-    additionalinfo: null
+    additionalinfo: "The server URL of the VCenter."
   - name: credentials
     display: Credentials
     required: true
     defaultvalue: null
     type: 9
-    additionalinfo: null
+    additionalinfo: "Username and password used to login into the system."
     displaypassword: ""
     hiddenusername: false
   - name: insecure
@@ -22,13 +22,11 @@ configuration:
     required: false
     defaultvalue: "true"
     type: 8
-    additionalinfo: null
   - name: proxy
     display: Use system proxy settings
     required: false
     defaultvalue: "false"
     type: 8
-    additionalinfo: null
 description: VMware vCenter server is a centralized management application that
   lets you manage virtual machines and ESXi hosts centrally.
 display: VMware
@@ -51,7 +49,7 @@ script:
           predefined:
             - ""
         - name: name
-          description: List of VM names to filter VMs by.ion
+          description: List of VM names to filter VMs by.
           required: false
           isArray: true
           defaultValue: ""

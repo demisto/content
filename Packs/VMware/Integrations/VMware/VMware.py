@@ -164,8 +164,8 @@ def get_vms(si, args):
     for child in children:
         summary = child.summary
         snapshot_create_date = datetime_to_string(
-            child.snapshot.currentSnapshot.config.createDate) if child.snapshot else ' '
-        snapshot_uuid = child.snapshot.currentSnapshot.config.uuid if child.snapshot else ' '
+            child.snapshot.currentSnapshot.config.createDate) if child.snapshot else ''
+        snapshot_uuid = child.snapshot.currentSnapshot.config.uuid if child.snapshot else ''
         if apply_get_vms_filters(args, summary):
             mac_address = ''
             try:
@@ -182,9 +182,9 @@ def get_vms(si, args):
                 'Path': summary.config.vmPathName,
                 'Guest': summary.config.guestFullName,
                 'UUID': summary.config.instanceUuid,
-                'IP': summary.guest.ipAddress if summary.guest.ipAddress else ' ',
+                'IP': summary.guest.ipAddress if summary.guest.ipAddress else '',
                 'State': summary.runtime.powerState,
-                'HostName': summary.guest.hostName if summary.guest.hostName else ' ',
+                'HostName': summary.guest.hostName if summary.guest.hostName else '',
                 'MACAddress': mac_address,
                 'SnapshotCreateDate': snapshot_create_date,
                 'SnapshotUUID': snapshot_uuid,
@@ -564,11 +564,11 @@ def create_vm(si, args):
             'Path': summary.config.vmPathName,
             'Guest': summary.config.guestFullName,
             'UUID': summary.config.instanceUuid,
-            'IP': summary.guest.ipAddress if summary.guest.ipAddress else ' ',
+            'IP': summary.guest.ipAddress if summary.guest.ipAddress else '',
             'State': summary.runtime.powerState,
-            'HostName': summary.guest.hostName if summary.guest.hostName else ' ',
+            'HostName': summary.guest.hostName if summary.guest.hostName else '',
             'MACAddress': mac_address,
-            'Snapshot': task.info.result.snapshot.currentSnapshot if task.info.result.snapshot else ' ',
+            'Snapshot': task.info.result.snapshot.currentSnapshot if task.info.result.snapshot else '',
             'SnapshotCreateDate': '',
             'SnapshotUUID': '',
             'Deleted': False
@@ -624,9 +624,9 @@ def clone_vm(si, args):
             'Path': summary.config.vmPathName,
             'Guest': summary.config.guestFullName,
             'UUID': summary.config.instanceUuid,
-            'IP': summary.guest.ipAddress if summary.guest.ipAddress else ' ',
+            'IP': summary.guest.ipAddress if summary.guest.ipAddress else '',
             'State': summary.runtime.powerState,
-            'HostName': summary.guest.hostName if summary.guest.hostName else ' ',
+            'HostName': summary.guest.hostName if summary.guest.hostName else '',
             'MACAddress': mac_address,
             'SnapshotCreateDate': '',
             'SnapshotUUID': '',

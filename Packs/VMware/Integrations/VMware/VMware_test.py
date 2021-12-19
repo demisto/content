@@ -162,7 +162,7 @@ def test_create_vm(monkeypatch):
 
     data = res.get('Contents')
     assert data.get('Name') == 'test_name'
-    assert data.get('Deleted') == 'False'
+    assert not data.get('Deleted')
     assert 'Virtual Machine' in res.get('HumanReadable')
 
 
@@ -182,7 +182,7 @@ def test_get_vms(monkeypatch):
         assert data[i].get('IP') == args.get('ip')
         assert data[i].get('HostName') == args.get('hostname')
         assert data[i].get('UUID') == args.get('uuid')
-        assert data[i].get('Deleted') == 'False'
+        assert not data[i].get('Deleted')
     assert 'Virtual Machines' in res.get('HumanReadable')
 
 
@@ -200,7 +200,7 @@ def test_clone_vm(monkeypatch):
                                'datastore': 'test_datastore', 'template': False, 'powerOn': False, 'uuid': '12345'})
     data = res.get('Contents')
     assert data.get('Name') == 'test_name'
-    assert data.get('Deleted') == 'False'
+    assert not data.get('Deleted')
     assert 'Virtual Machine' in res.get('HumanReadable')
 
 
@@ -220,12 +220,12 @@ def test_relocate_vm(monkeypatch):
 def test_delete_vm(monkeypatch):
     si = Si()
     monkeypatch.setattr(VMware, 'wait_for_tasks', lambda si_obj, tasks: None)
-    monkeypatch.setattr(VMware, 'get_vm', lambda v_client, uuid: VM())
+    monkeypatch.setattr(VMware, 'get_vm', lambda v_client, uuid: VM("poweredOff"))
     monkeypatch.setattr(VM, 'Destroy_Task', lambda this: Task())
 
     res = VMware.delete_vm(si, {'uuid': '12345'})
     assert res.get('HumanReadable') == 'Virtual Machine was deleted successfully.'
-    assert {'UUID': '12345', 'Deleted': 'True'} in res.get('EntryContext').values()
+    assert {'UUID': '12345', 'Deleted': True} in res.get('EntryContext').values()
 
 
 def test_register_vm(monkeypatch):
