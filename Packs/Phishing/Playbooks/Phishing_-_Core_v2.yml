@@ -1,13 +1,13 @@
 id: Phishing - Core v2
 version: -1
 name: Phishing - Core v2
-description: |-
-  Provides a basic response to phishing incidents. Playbook features:
-  - Calculates reputation for all indicators
-  - Extracts indicators from email attachments
-  - Calculates severity for the incident based on indicator reputation
-  - Updates reporting user about investigation status
-  - Allows manual remediation of the incident
+description: "Provides a basic response to phishing incidents. Playbook features:\n\
+  - Calculates reputation for all indicators\n- Extracts indicators from email attachments\n\
+  - Calculates severity for the incident based on indicator reputation\n- Updates\
+  \ reporting user about investigation status\n- Allows manual remediation of the\
+  \ incident\n\nThe differences between this playbook and the older version are:\n\
+  \  1) This playbook uses incident fields instead of labels\n  2) This playbook uses\
+  \ the \"Process Email - Core v2\" playbook "
 starttaskid: "0"
 tasks:
   "0":
@@ -1119,10 +1119,10 @@ tasks:
     quietmode: 0
   "22":
     id: "22"
-    taskid: c27037e6-3bbc-4a1c-8859-19285b0fc806
+    taskid: 06c88f1d-eb49-4e0c-8939-a2b2b2630ad3
     type: playbook
     task:
-      id: c27037e6-3bbc-4a1c-8859-19285b0fc806
+      id: 06c88f1d-eb49-4e0c-8939-a2b2b2630ad3
       version: -1
       name: Process Email - Core v2
       description: Adds email details to the relevant context entities and handles the case where original emails are attached.
@@ -1133,6 +1133,42 @@ tasks:
     nexttasks:
       '#none#':
       - "23"
+    scriptarguments:
+      Email:
+        complex:
+          root: incident
+          accessor: emailto
+      EmailCC:
+        complex:
+          root: incident
+          accessor: emailcc
+      EmailFormat:
+        complex:
+          root: incident
+          accessor: emailformat
+      EmailFrom:
+        complex:
+          root: incident
+          accessor: emailfrom
+      EmailHeaders:
+        complex:
+          root: incident
+          accessor: phishingreporteremailheaders
+      EmailHtml:
+        complex:
+          root: incident
+          accessor: emailhtml
+      EmailSubject:
+        complex:
+          root: incident
+          accessor: emailsubject
+      EmailText:
+        complex:
+          root: incident
+          accessor: emailbody
+      File:
+        complex:
+          root: File
     separatecontext: true
     loop:
       iscommand: false
