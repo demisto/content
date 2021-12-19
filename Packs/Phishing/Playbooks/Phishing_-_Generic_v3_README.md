@@ -2,6 +2,11 @@ Use this playbook to investigate and remediate a potential phishing incident. Th
 
 The final remediation tasks are always decided by a human analyst.
 
+Main additions to this version:
+1) Changing all labels to incident fields
+2) Use "Process Email - Generic v2" (replaces the older version)
+3) Adding "Detonate URL - Generic" playbook
+
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
