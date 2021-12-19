@@ -3,7 +3,7 @@
         "can_read": true,
         "can_write": false,
         "description": "type:IP",
-        "id": "583487c2-8cea-5acd-9a44-093d15241ece",
+        "id": "4c649e16-2bb7-50f5-8826-2a2d0a0b9631",
         "media_types": [
             "application/stix+json;version=2.1"
         ],
@@ -13,7 +13,7 @@
         "can_read": true,
         "can_write": false,
         "description": "sourceBrands:\"Some Feed\"",
-        "id": "11ac7438-b2ef-5b0b-9447-66271317ae9f",
+        "id": "e46189b5-c5c8-5c7f-b947-183e0302b4d3",
         "media_types": [
             "application/stix+json;version=2.1"
         ],

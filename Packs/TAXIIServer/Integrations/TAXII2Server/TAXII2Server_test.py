@@ -1,41 +1,51 @@
+import copy
 import io
 import json
-
 import pytest
 from requests.auth import _basic_auth_str
-from TAXII2Server import TAXII2Server, APP
+from TAXII2Server import TAXII2Server, APP, uuid
 import demistomock as demisto
 
 HEADERS = {
     'Authorization': _basic_auth_str("username", "password"),
     'Accept': '*/*',
 }
-SERVER20 = TAXII2Server(url_scheme='http',
-                        host='demisto',
-                        port=7000,
-                        collections={'Collection1': 'type:IP', 'Collection2': 'sourceBrands:"Some Feed"'},
-                        certificate='',
-                        private_key='',
-                        http_server=True,
-                        credentials={'identifier': 'username',
-                                     'password': 'password'},
-                        version='2.0',
-                        service_address=None)
 
-SERVER21 = TAXII2Server(url_scheme='http',
-                        host='demisto',
-                        port=7000,
-                        collections={'Collection1': 'type:IP', 'Collection2': 'sourceBrands:"Some Feed"'},
-                        certificate='',
-                        private_key='',
-                        http_server=True,
-                        credentials={'identifier': 'username',
-                                     'password': 'password'},
-                        version='2.1',
-                        service_address=None)
 
-# todo: patch demisto.getLicenseID()
-# todo: pytest fixture server
+@pytest.fixture
+def taxii2_server_v20(mocker):
+    mocker.patch.object(demisto, 'getLicenseID', return_value='test')
+    server = TAXII2Server(url_scheme='http',
+                          host='demisto',
+                          port=7000,
+                          collections={'Collection1': 'type:IP', 'Collection2': 'sourceBrands:"Some Feed"'},
+                          certificate='',
+                          private_key='',
+                          http_server=True,
+                          credentials={'identifier': 'username',
+                                       'password': 'password'},
+                          version='2.0',
+                          service_address=None)
+
+    return server
+
+
+@pytest.fixture
+def taxii2_server_v21(mocker):
+    mocker.patch.object(demisto, 'getLicenseID', return_value='test')
+    server = TAXII2Server(url_scheme='http',
+                          host='demisto',
+                          port=7000,
+                          collections={'Collection1': 'type:IP', 'Collection2': 'sourceBrands:"Some Feed"'},
+                          certificate='',
+                          private_key='',
+                          http_server=True,
+                          credentials={'identifier': 'username',
+                                       'password': 'password'},
+                          version='2.1',
+                          service_address=None)
+
+    return server
 
 
 def util_load_json(path):
@@ -44,7 +54,7 @@ def util_load_json(path):
 
 
 @pytest.mark.parametrize('headers', [{'Authorization': _basic_auth_str("user", "pwd")}, {}])
-def test_taxii_wrong_auth(mocker, headers):
+def test_taxii_wrong_auth(mocker, headers, taxii2_server_v20):
     """
         Given
             Taxii server v2.0
@@ -53,7 +63,7 @@ def test_taxii_wrong_auth(mocker, headers):
         Then
             Validate that the error and status code right
     """
-    mocker.patch('TAXII2Server.SERVER', SERVER20)
+    mocker.patch('TAXII2Server.SERVER', taxii2_server_v20)
     mocker.patch.object(demisto, 'error')
     mocker.patch.object(demisto, 'updateModuleHealth')
     with APP.test_client() as test_client:
@@ -65,7 +75,7 @@ def test_taxii_wrong_auth(mocker, headers):
 @pytest.mark.parametrize('headers', [{'Authorization': _basic_auth_str("username", "password")},
                                      {'Authorization': _basic_auth_str("username", "password"),
                                       'Accept': 'wrong_type'}])
-def test_taxii_wrong_accept(mocker, headers):
+def test_taxii_wrong_accept(mocker, headers, taxii2_server_v20):
     """
         Given
             Taxii server v2.0
@@ -74,7 +84,7 @@ def test_taxii_wrong_accept(mocker, headers):
         Then
             Validate that the error and status code right
     """
-    mocker.patch('TAXII2Server.SERVER', SERVER20)
+    mocker.patch('TAXII2Server.SERVER', taxii2_server_v20)
     mocker.patch.object(demisto, 'error')
     mocker.patch.object(demisto, 'updateModuleHealth')
     with APP.test_client() as test_client:
@@ -82,7 +92,7 @@ def test_taxii_wrong_accept(mocker, headers):
         assert response.status_code == 406
 
 
-def test_taxii20_server_discovery(mocker):
+def test_taxii20_server_discovery(mocker, taxii2_server_v20):
     """
         Given
             Taxii server v2.0
@@ -91,7 +101,7 @@ def test_taxii20_server_discovery(mocker):
         Then
             Validate that the discovery output as expected
     """
-    mocker.patch('TAXII2Server.SERVER', SERVER20)
+    mocker.patch('TAXII2Server.SERVER', taxii2_server_v20)
     with APP.test_client() as test_client:
         response = test_client.get('/taxii/', headers=HEADERS)
         assert response.status_code == 200
@@ -99,7 +109,7 @@ def test_taxii20_server_discovery(mocker):
         assert response.json.get('default') == 'http://demisto:7000/threatintel/'
 
 
-def test_taxii21_server_discovery(mocker):
+def test_taxii21_server_discovery(mocker, taxii2_server_v21):
     """
         Given
             Taxii server v2.1
@@ -108,7 +118,7 @@ def test_taxii21_server_discovery(mocker):
         Then
             Validate that the discovery output as expected
     """
-    mocker.patch('TAXII2Server.SERVER', SERVER21)
+    mocker.patch('TAXII2Server.SERVER', taxii2_server_v21)
     with APP.test_client() as test_client:
         response = test_client.get('/taxii/', headers=HEADERS)
         assert response.status_code == 200
@@ -116,7 +126,7 @@ def test_taxii21_server_discovery(mocker):
         assert response.json.get('default') == 'http://demisto:7000/threatintel/'
 
 
-def test_taxii20_api_root(mocker):
+def test_taxii20_api_root(mocker, taxii2_server_v20):
     """
         Given
             TAXII v2.0 server, api_root
@@ -125,7 +135,7 @@ def test_taxii20_api_root(mocker):
         Then
             Validate that the api_root information returned as expected
     """
-    mocker.patch('TAXII2Server.SERVER', SERVER20)
+    mocker.patch('TAXII2Server.SERVER', taxii2_server_v20)
     with APP.test_client() as test_client:
         response = test_client.get('/threatintel/', headers=HEADERS)
         assert response.status_code == 200
@@ -133,7 +143,7 @@ def test_taxii20_api_root(mocker):
         assert response.json.get('title') == 'XSOAR TAXII2 Server ThreatIntel'
 
 
-def test_taxii_wrong_api_root(mocker):
+def test_taxii_wrong_api_root(mocker, taxii2_server_v20):
     """
         Given
             Taxii server v2.0, Not exiting api_root
@@ -142,7 +152,7 @@ def test_taxii_wrong_api_root(mocker):
         Then
             Validate that the error and status code right
     """
-    mocker.patch('TAXII2Server.SERVER', SERVER20)
+    mocker.patch('TAXII2Server.SERVER', taxii2_server_v20)
     mocker.patch.object(demisto, 'error')
     mocker.patch.object(demisto, 'updateModuleHealth')
     with APP.test_client() as test_client:
@@ -151,7 +161,7 @@ def test_taxii_wrong_api_root(mocker):
         assert response.json.get('title') == 'Unknown API Root'
 
 
-def test_taxii20_status(mocker):
+def test_taxii20_status(mocker, taxii2_server_v20):
     """
         Given
             Status api call
@@ -160,13 +170,13 @@ def test_taxii20_status(mocker):
         Then
             Validate the error returned.
     """
-    mocker.patch('TAXII2Server.SERVER', SERVER20)
+    mocker.patch('TAXII2Server.SERVER', taxii2_server_v20)
     with APP.test_client() as test_client:
         response = test_client.get('/threatintel/status/1223456/', headers=HEADERS)
         assert response.status_code == 400
 
 
-def test_taxii20_collections(mocker):
+def test_taxii20_collections(mocker, taxii2_server_v20):
     """
         Given
             TAXII Server v2.0
@@ -176,7 +186,7 @@ def test_taxii20_collections(mocker):
             Validate that collections returned as expected
     """
     collections = util_load_json('test_files/collections20.json')
-    mocker.patch('TAXII2Server.SERVER', SERVER20)
+    mocker.patch('TAXII2Server.SERVER', taxii2_server_v20)
     with APP.test_client() as test_client:
         response = test_client.get('/threatintel/collections/', headers=HEADERS)
         assert response.status_code == 200
@@ -184,7 +194,7 @@ def test_taxii20_collections(mocker):
         assert response.json == collections
 
 
-def test_taxii21_collections(mocker):
+def test_taxii21_collections(mocker, taxii2_server_v21):
     """
         Given
             TAXII Server v2.1
@@ -194,7 +204,7 @@ def test_taxii21_collections(mocker):
             Validate that collections returned as expected
     """
     collections = util_load_json('test_files/collections21.json')
-    mocker.patch('TAXII2Server.SERVER', SERVER21)
+    mocker.patch('TAXII2Server.SERVER', taxii2_server_v21)
     with APP.test_client() as test_client:
         response = test_client.get('/threatintel/collections/', headers=HEADERS)
         assert response.status_code == 200
@@ -202,7 +212,7 @@ def test_taxii21_collections(mocker):
         assert response.json == collections
 
 
-def test_taxii20_collection(mocker):
+def test_taxii20_collection(mocker, taxii2_server_v20):
     """
         Given
             TAXII Server v2.0, collection_id
@@ -212,15 +222,15 @@ def test_taxii20_collection(mocker):
             Validate that right collection returned
     """
     collections = util_load_json('test_files/collections20.json')
-    mocker.patch('TAXII2Server.SERVER', SERVER20)
+    mocker.patch('TAXII2Server.SERVER', taxii2_server_v20)
     with APP.test_client() as test_client:
-        response = test_client.get('/threatintel/collections/583487c2-8cea-5acd-9a44-093d15241ece/', headers=HEADERS)
+        response = test_client.get('/threatintel/collections/4c649e16-2bb7-50f5-8826-2a2d0a0b9631/', headers=HEADERS)
         assert response.status_code == 200
         assert response.content_type == 'application/vnd.oasis.taxii+json; version=2.0'
         assert response.json == collections[0]
 
 
-def test_taxii21_collection(mocker):
+def test_taxii21_collection(mocker, taxii2_server_v21):
     """
         Given
             TAXII Server v2.1, collection_id
@@ -230,15 +240,15 @@ def test_taxii21_collection(mocker):
             Validate that right collection returned
     """
     collections = util_load_json('test_files/collections21.json')
-    mocker.patch('TAXII2Server.SERVER', SERVER21)
+    mocker.patch('TAXII2Server.SERVER', taxii2_server_v21)
     with APP.test_client() as test_client:
-        response = test_client.get('/threatintel/collections/583487c2-8cea-5acd-9a44-093d15241ece/', headers=HEADERS)
+        response = test_client.get('/threatintel/collections/4c649e16-2bb7-50f5-8826-2a2d0a0b9631/', headers=HEADERS)
         assert response.status_code == 200
         assert response.content_type == 'application/taxii+json;version=2.1'
         assert response.json == collections[0]
 
 
-def test_taxii_wrong_collection_id(mocker):
+def test_taxii_wrong_collection_id(mocker, taxii2_server_v21):
     """
         Given
             Taxii server v2.1, Not exiting collection_id
@@ -247,7 +257,7 @@ def test_taxii_wrong_collection_id(mocker):
         Then
             Validate that the error and status code right
     """
-    mocker.patch('TAXII2Server.SERVER', SERVER21)
+    mocker.patch('TAXII2Server.SERVER', taxii2_server_v21)
     mocker.patch.object(demisto, 'error')
     mocker.patch.object(demisto, 'updateModuleHealth')
     with APP.test_client() as test_client:
@@ -256,28 +266,30 @@ def test_taxii_wrong_collection_id(mocker):
         assert response.json.get('title') == 'Unknown Collection'
 
 
-def test_taxii20_manifest(mocker):
+def test_taxii20_manifest(mocker, taxii2_server_v20):
     """
         Given
-            TAXII Server v2.0, collection_id
+            TAXII Server v2.0, collection_id, range
         When
             Calling manifest api request for given collection
         Then
             Validate that right manifest returned.
     """
-    iocs = util_load_json('test_files/iocs.json')
+    iocs = util_load_json('test_files/ip_iocs.json')
     manifest = util_load_json('test_files/manifest20.json')
-    mocker.patch('TAXII2Server.SERVER', SERVER20)
+    headers = copy.deepcopy(HEADERS)
+    headers['Range'] = 'items 0-4'
+    mocker.patch('TAXII2Server.SERVER', taxii2_server_v20)
     mocker.patch.object(demisto, 'searchIndicators', return_value=iocs)
     with APP.test_client() as test_client:
-        response = test_client.get('/threatintel/collections/583487c2-8cea-5acd-9a44-093d15241ece/manifest/',
-                                   headers=HEADERS)
+        response = test_client.get('/threatintel/collections/4c649e16-2bb7-50f5-8826-2a2d0a0b9631/manifest/',
+                                   headers=headers)
         assert response.status_code == 200
         assert response.content_type == 'application/vnd.oasis.taxii+json; version=2.0'
         assert response.json == manifest
 
 
-def test_taxii21_manifest(mocker):
+def test_taxii21_manifest(mocker, taxii2_server_v21):
     """
         Given
             TAXII Server v2.1, collection_id
@@ -286,19 +298,64 @@ def test_taxii21_manifest(mocker):
         Then
             Validate that right manifest returned.
     """
-    iocs = util_load_json('test_files/iocs.json')
+    iocs = util_load_json('test_files/ip_iocs.json')
     manifest = util_load_json('test_files/manifest21.json')
-    mocker.patch('TAXII2Server.SERVER', SERVER21)
+    mocker.patch('TAXII2Server.SERVER', taxii2_server_v21)
     mocker.patch.object(demisto, 'searchIndicators', return_value=iocs)
     with APP.test_client() as test_client:
-        response = test_client.get('/threatintel/collections/583487c2-8cea-5acd-9a44-093d15241ece/manifest/',
+        response = test_client.get('/threatintel/collections/4c649e16-2bb7-50f5-8826-2a2d0a0b9631/manifest/?limit=5',
                                    headers=HEADERS)
         assert response.status_code == 200
         assert response.content_type == 'application/taxii+json;version=2.1'
         assert response.json == manifest
 
 
-# todo: test limit, test query params, test objects
+def test_taxii20_objects(mocker, taxii2_server_v20):
+    """
+        Given
+            TAXII Server v2.0, collection_id, content-range
+        When
+            Calling get objects api request for given collection
+        Then
+            Validate that right manifest returned.
+    """
+    iocs = util_load_json('test_files/ip_iocs.json')
+    objects = util_load_json('test_files/objects20.json')
+    mocker.patch('TAXII2Server.SERVER', taxii2_server_v20)
+    mocker.patch.object(uuid, 'uuid4', return_value='1ffe4bee-95e7-4e36-9a17-f56dbab3c777')
+    headers = copy.deepcopy(HEADERS)
+    headers['Content-Range'] = 'items 0-2/5'
+    mocker.patch.object(demisto, 'searchIndicators', return_value=iocs)
+    with APP.test_client() as test_client:
+        response = test_client.get('/threatintel/collections/4c649e16-2bb7-50f5-8826-2a2d0a0b9631/objects/',
+                                   headers=headers)
+        assert response.status_code == 200
+        assert response.content_type == 'application/vnd.oasis.stix+json; version=2.0'
+        assert response.json == objects
+
+
+def test_taxii21_objects(mocker, taxii2_server_v21):
+    """
+        Given
+            TAXII Server v2.1, collection_id, limit, next, type parameter
+        When
+            Calling get objects api request for given collection
+        Then
+            Validate that right manifest returned.
+    """
+    iocs = util_load_json('test_files/malware_iocs.json')
+    objects = util_load_json('test_files/objects21.json')
+    mocker.patch('TAXII2Server.SERVER', taxii2_server_v21)
+    mocker.patch.object(uuid, 'uuid4', return_value='1ffe4bee-95e7-4e36-9a17-f56dbab3c777')
+    mocker.patch.object(demisto, 'searchIndicators', return_value=iocs)
+    with APP.test_client() as test_client:
+        response = test_client.get('/threatintel/collections/4c649e16-2bb7-50f5-8826-2a2d0a0b9631/'
+                                   'objects/?match[type]=malware&limit=2&next=1', headers=HEADERS)
+        assert response.status_code == 200
+        assert response.content_type == 'application/taxii+json;version=2.1'
+        assert response.json == objects
+
+
 def create_json_output_file(result, file_name):
     json_object = json.dumps(result, indent=4)
     # Writing to sample.json
