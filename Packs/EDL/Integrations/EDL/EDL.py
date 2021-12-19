@@ -220,11 +220,11 @@ def ips_to_ranges(ips: Iterable, collapse_ips: str):
     invalid_ips = []
     valid_ips = []
 
-    for ip in ips:
-        if is_valid_ip(ip):
-            valid_ips.append(ip)
+    for ip_or_cidr in ips:
+        if is_valid_cidr(ip_or_cidr) or is_valid_ip(ip_or_cidr):
+            valid_ips.append(ip_or_cidr)
         else:
-            invalid_ips.append(ip)
+            invalid_ips.append(ip_or_cidr)
 
     if collapse_ips == COLLAPSE_TO_RANGES:
         ips_range_groups = IPSet(valid_ips).iter_ipranges()
@@ -239,11 +239,9 @@ def ips_to_ranges(ips: Iterable, collapse_ips: str):
 
 def is_valid_ip(ip: str) -> bool:
     """
-    Checks if the provided string is either IPv4 address, IPv4 network, IPv6 address or IPv6 network
     Args:
-        ip: IP String
-
-    Returns: True if this is a valid IP, False otherwise
+        ip: IP address
+    Returns: True if the string represents an IPv4 or an IPv6 address, false otherwise.
     """
     try:
         ipaddress.IPv4Address(ip)
@@ -253,15 +251,26 @@ def is_valid_ip(ip: str) -> bool:
             ipaddress.IPv6Address(ip)
             return True
         except ValueError:
-            try:
-                ipaddress.IPv4Network(ip, strict=False)
-                return True
-            except ValueError:
-                try:
-                    ipaddress.IPv6Network(ip, strict=False)
-                    return True
-                except ValueError:
-                    return False
+            return False
+
+
+def is_valid_cidr(cidr: str) -> bool:
+    """
+    Args:
+        cidr: CIDR string
+    Returns: True if the string represents an IPv4 network or an IPv6 network, false otherwise.
+    """
+    if '/' not in cidr:
+        return False
+    try:
+        ipaddress.IPv4Network(cidr, strict=False)
+        return True
+    except ValueError:
+        try:
+            ipaddress.IPv6Network(cidr, strict=False)
+            return True
+        except ValueError:
+            return False
 
 
 def format_indicators(iocs: list, request_args: RequestArguments) -> set:

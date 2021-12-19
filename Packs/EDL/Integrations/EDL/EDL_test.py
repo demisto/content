@@ -311,20 +311,35 @@ class TestHelperFunctions:
         ip = '2001:0db8:85a3:0000:0000:8a2e:0370:7334'
         assert is_valid_ip(ip)
 
-    def test_is_valid_ip_ipv4_network(self):
+    def test_is_valid_ip_cidr(self):
         from EDL import is_valid_ip
-        ip = '1.2.3.5/10'
-        assert is_valid_ip(ip)
-
-    def test_is_valid_ip_ipv6_network(self):
-        from EDL import is_valid_ip
-        ip = '2001:0db8:85a3:0000:0000:8a2e:0370:7334/10'
-        assert is_valid_ip(ip)
+        cidr = '1.2.3.5/10'
+        assert not is_valid_ip(cidr)
 
     def test_is_valid_ip_invalid_ip(self):
         from EDL import is_valid_ip
         ip = 'This is not an IP, this is just a String'
         assert not is_valid_ip(ip)
+
+    def test_is_valid_cidr_ipv4_network(self):
+        from EDL import is_valid_cidr
+        cidr = '1.2.3.5/10'
+        assert is_valid_cidr(cidr)
+
+    def test_is_valid_cidr_ipv6_network(self):
+        from EDL import is_valid_cidr
+        cidr = '2001:0db8:85a3:0000:0000:8a2e:0370:7334/10'
+        assert is_valid_cidr(cidr)
+
+    def test_is_valid_cidr_ip_address(self):
+        from EDL import is_valid_cidr
+        ip = '1.1.1.1'
+        assert not is_valid_cidr(ip)
+
+    def test_is_valid_cidr_not_a_cidr(self):
+        from EDL import is_valid_cidr
+        cidr = 'This is not a CIDR / this is just a String'
+        assert not is_valid_cidr(cidr)
 
     def test_get_bool_arg_or_param(self):
         """
