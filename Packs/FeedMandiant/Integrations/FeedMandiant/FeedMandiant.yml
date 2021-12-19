@@ -1,0 +1,216 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: FeedMandiant
+  version: -1
+configuration:
+- defaultvalue: https://api.intelligence.fireeye.com
+  display: Server URL (e.g. https://api.intelligence.fireeye.com)
+  name: url
+  required: true
+  type: 0
+- display: Public Key
+  name: auth
+  required: true
+  type: 9
+- defaultvalue: '50'
+  display: Maximum number of indicators per fetch
+  name: max_fetch
+  required: false
+  type: 0
+- additionalinfo: 'The indicators'' type to fetch. Indicator type might include the
+    following: Domains, IPs, Files and URLs.'
+  defaultvalue: Malware,Actors,Indicators
+  display: Indicator Type
+  name: type
+  options:
+  - Malware
+  - Actors
+  - Indicators
+  required: false
+  type: 16
+- defaultvalue: Low
+  display: Minimum severity of alerts to fetch
+  name: min_severity
+  options:
+  - Low
+  - Medium
+  - High
+  - Critical
+  required: true
+  type: 15
+- defaultvalue: 3 days
+  display: First fetch time
+  name: first_fetch
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+- defaultvalue: 'true'
+  display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+- additionalinfo: Indicators from this integration instance will be marked with this
+    reputation
+  display: Indicator Reputation
+  name: feedReputation
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  required: false
+  type: 18
+- additionalinfo: Reliability of the source providing the intelligence data
+  defaultvalue: A - Completely reliable
+  display: Source Reliability
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- display: ''
+  name: feedExpirationPolicy
+  options:
+    - never
+    - interval
+    - indicatorType
+    - suddenDeath
+  required: false
+  type: 17
+- display: ''
+  name: feedExpirationInterval
+  required: false
+  type: 1
+- defaultvalue: '240'
+  display: Feed Fetch Interval
+  name: feedFetchInterval
+  required: false
+  type: 19
+- additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  required: false
+  type: 8
+- additionalinfo: Retrieve additional information for each indicator. Please note
+    that this requires additional API calls.
+  defaultvalue: 'false'
+  display: Retrieve Indicator Metadata
+  name: indicatorMetadata
+  required: false
+  type: 8
+- additionalinfo: Please note that this requires additional API calls.
+  defaultvalue: 'false'
+  display: Create Relationships.
+  name: indicatorRelationships
+  required: false
+  type: 8
+- additionalinfo: API calls timeout.
+  defaultvalue: '60'
+  display: Timeout
+  name: timeout
+  required: false
+  type: 0
+- additionalinfo: X-App-Name header is required for this API.
+  defaultvalue: content.xsoar.cortex.paloaltonetworks.v1.0
+  display: X-App-Name
+  hidden: false
+  name: xappname
+  required: true
+  type: 0
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  required: false
+  type: 0
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
+    fetched from the feed
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
+  type: 15
+description: Mandiant Feed
+display: FeedMandiant
+name: FeedMandiant
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: number of indicators to fetch
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Retrieve additional data for each indicator.
+      isArray: false
+      name: indicatorMetadata
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Create relationships
+      isArray: false
+      name: indicatorRelationships
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: '[''Malware'', ''Indicators'', ''Actors'']'
+      description: What indicators types to fetch
+      isArray: true
+      name: type
+      predefined:
+      - '[''Malware'''
+      - ' ''Indicators'''
+      - ' ''Actors'']'
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: feed-mandiant-get-indicators
+    description: get mandiant indicators
+  dockerimage: demisto/python3:3.9.8.24399
+  feed: true
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- FeedMandiant
+fromversion: 5.5.0

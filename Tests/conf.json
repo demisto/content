@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "FeedMandiant",
+            "playbookID": "FeedMandiant"
+        },
+        {
             "integrations": "LogRhythmRest V2",
             "playbookID": "LogRhythmRestV2-test"
         },
