@@ -5,7 +5,6 @@ from test_data.response_constants import RESPONSE_LIST_GROUPS, RESPONSE_GET_GROU
     RESPONSE_LIST_MEMBERS_UNDER_100, RESPONSE_LIST_MEMBERS_ABOVE_100
 from test_data.result_constants import EXPECTED_LIST_GROUPS, EXPECTED_GET_GROUP, EXPECTED_CREATE_GROUP, \
     EXPECTED_LIST_MEMBERS
-from CommonServerPython import DemistoException
 
 
 def test_camel_case_to_readable():
@@ -91,9 +90,9 @@ def test_params(mocker, params, expected_result):
     When:
       - One of the required parameters are missed.
     Then:
-      - Ensure the exception message as expected. 
+      - Ensure the exception message as expected.
     """
-    
+
     mocker.patch.object(demisto, 'params', return_value=params)
 
     with pytest.raises(Exception) as e:
