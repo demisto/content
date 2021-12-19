@@ -2992,7 +2992,6 @@ def panorama_edit_rule_command(args: dict):
             'action': 'edit',
             'key': API_KEY
         }
-
         if element_to_change in ['action', 'description', 'log-setting']:
             params['element'] = add_argument_open(element_value, element_to_change, False)
         elif element_to_change in ['source', 'destination', 'application', 'category', 'source-user', 'service', 'tag']:
@@ -3003,6 +3002,7 @@ def panorama_edit_rule_command(args: dict):
         elif element_to_change == 'profile-setting':
             params['element'] = add_argument_profile_setting(element_value, 'profile-setting')
         else:
+            # element_to_change == 'disabled'
             params['element'] = add_argument_yes_no(element_value, element_to_change)
 
         if DEVICE_GROUP:
