@@ -59,11 +59,11 @@ def translate_command(client: Client, text: str) -> CommandResults:
         raise DemistoException('Translation failed: the response from server did not include `translated`.',
                                res=response)
 
-    outputs = {'Original': text,
-               'Translation': translated}
+    outputs = {'TheForce': {'Original': text,
+                            'Translation': translated}}
 
     return CommandResults(outputs_prefix='YodaSpeak',
-                          outputs_key_field='Original',
+                          outputs_key_field='TheForce.Original',
                           outputs=outputs,
                           raw_response=response,
                           readable_output=tableToMarkdown(name='Yoda Says...', t=outputs))
