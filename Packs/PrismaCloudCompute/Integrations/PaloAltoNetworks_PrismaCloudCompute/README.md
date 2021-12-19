@@ -2396,3 +2396,76 @@ Get images scan report, the report includes vulnerabilities, compliance issues, 
 |---|---|---|---|
 | 1 | 16 | 0 | 0 |
 
+### prisma-cloud-compute-vulnerabilities-impacted-resources-list
+***
+prisma-cloud-compute-vulnerabilities-impacted-resources-list
+
+
+#### Base Command
+
+`prisma-cloud-compute-vulnerabilities-impacted-resources-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| cve | Comma separated list of CVEs IDs that can be used to as a pivot for the impacted resource search. For example cve=CVE-2018-14600,CVE-2021-31535. | Optional | 
+| limit | The maximum records of impacted hosts/images to return. Default is 50. | Optional | 
+| offset | The offset from which to begin listing impacted hosts/images records. Default is 0. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaCloudCompute.VulnerabilitiesImpactedResource._id | String | Id is the CVE ID \(index for the impacted resources\). | 
+| PrismaCloudCompute.VulnerabilitiesImpactedResource.functions | Unknown | Functions is a map between function id to its details. | 
+| PrismaCloudCompute.VulnerabilitiesImpactedResource.hosts | String | Hosts is the list of impacted hosts. | 
+| PrismaCloudCompute.VulnerabilitiesImpactedResource.riskTree | Unknown | RiskTree is the risk tree associated with the CVE ID. | 
+
+
+#### Command Example
+```!prisma-cloud-compute-vulnerabilities-impacted-resources-list cve=CVE-2018-14600```
+
+#### Context Example
+
+```json
+{
+   "PrismaCloudCompute": {
+      "VulnerabilitiesImpactedResource": {
+         "_id": "CVE-2018-14600",
+         "riskTree": {
+            "image_id_1": [
+               {
+                  "image": "image_name_1",
+                  "factors": {}
+               }
+            ],
+            "image_id_2": [
+               {
+                  "image": "image_name_2",
+                  "factors": {}
+               }
+            ]
+         },
+         "hosts": [
+            "host1",
+            "host2"
+         ]
+      }
+   }
+}
+```
+
+#### Human Readable Output
+### Impacted Images
+|Image|
+|---|
+| image_name_1 |
+| image_name_2 |
+### Impacted Hosts
+|Hostname|
+|---|
+| host1 |
+| host2 |
+
+

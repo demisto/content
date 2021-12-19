@@ -1526,7 +1526,7 @@ script:
     deprecated: false
     arguments:
     - name: cve
-      description: Comma seprated list of CVEs IDs that can be used to as a pivot for
+      description: Comma separated list of CVEs IDs that can be used to as a pivot for
         the impacted resource search. For example cve=CVE-2018-14600,CVE-2021-31535
       required: false
       isArray: true
