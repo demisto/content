@@ -261,7 +261,7 @@ def ip(client: Client, args, thresholds: Dict[str, Any], api_key):
     """
 
     # Check to make sure we have a query term
-    ip_list = argToList(args)
+    ip_list = argToList(args.get('ip'))
     results = []
     for ip_address in ip_list:
         result = client.post_investigate_by_ip(ip_type='true_ip', ip_address=ip_address, api_key=api_key)

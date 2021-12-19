@@ -1,31 +1,30 @@
 from BotDefender import Client, ip, perimeterx_get_investigate_details
 from CommonServerPython import Common
 
-
-def _get_mock_url(ip_address):
-    host = 'https://api.perimeterx.com/v1/bot-defender'
-    return f'{host}/investigate/mock?search=ip:{ip_address}&tops=user-agent,path,socket_ip_classification'
-
-
 HEADERS = {
     'Authorization': 'Bearer ebfb7ff0-b2f6-41c8-bef3-4fba17be410c',
     'Content-Type': 'application/json'
 }
-MOCK_BASE_URL = "https://api.perimeterx.com/v1/bot-defender/investigate/mock"
+MOCK_BASE_URL = "https://api.perimeterx.com/v1/bot-defender/"
+
+
+def _get_mock_url():
+    return f'{MOCK_BASE_URL}/investigate/mock?search=ip:test&tops=user-agent,path,socket_ip_classification'
 
 
 def _test_base_score(requests_mock, actual_score, expected_score):
-    ip_address = '5.79.76.181'
+    ip_addresses = ['5.79.76.181', '5.79.76.182']
     mock_response = {
         'max_risk_score': actual_score
     }
 
-    requests_mock.get(_get_mock_url(ip_address), json=mock_response)
+    mock_url = _get_mock_url()
+    requests_mock.get(mock_url, json=mock_response)
 
-    client = Client(base_url=MOCK_BASE_URL, verify=False, headers=HEADERS)
+    client = Client(base_url=mock_url, verify=False, headers=HEADERS)
 
     args = {
-        'ip': ip_address
+        'ip': ip_addresses
     }
 
     thresholds = {
@@ -35,12 +34,13 @@ def _test_base_score(requests_mock, actual_score, expected_score):
         'unknown_threshold': 0
     }
 
-    response = ip(client=client, args=args, thresholds=thresholds)
+    response = ip(client=client, args=args, thresholds=thresholds, api_key="test")
 
-    assert response.outputs_prefix == 'PerimeterX'
-    assert isinstance(response.indicator, Common.IP)
-    assert response.indicator.ip == ip_address
-    assert response.indicator.dbot_score.score == expected_score
+    for single_response in response:
+        assert single_response.outputs_prefix == 'PerimeterX'
+        assert isinstance(single_response.indicator, Common.IP)
+        assert single_response.indicator.ip in ip_addresses
+        assert single_response.indicator.dbot_score.score == expected_score
 
 
 def test_ip_high_score(requests_mock):
