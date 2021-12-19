@@ -11,32 +11,32 @@ Main additions to this version:
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Block Indicators - Generic v2
-* Detonate File - Generic
-* Detonate URL - Generic
-* Search And Delete Emails - Generic v2
 * Calculate Severity - Generic v2
 * Email Address Enrichment - Generic v2.1
+* Extract Indicators From File - Generic v2
+* Block Indicators - Generic v2
 * Detect & Manage Phishing Campaigns
+* Detonate File - Generic
 * Process Email - Generic v2
 * Process Microsoft's Anti-Spam Headers
-* Extract Indicators From File - Generic v2
 * Entity Enrichment - Phishing v2
+* Detonate URL - Generic
+* Search And Delete Emails - Generic v2
 
 ### Integrations
 This playbook does not use any integrations.
 
 ### Scripts
 * AssignAnalystToIncident
-* Set
-* CheckEmailAuthenticity
 * DBotPredictPhishingWords
+* CheckEmailAuthenticity
+* Set
 
 ### Commands
-* setIncident
 * send-mail
-* closeInvestigation
 * extractIndicators
+* setIncident
+* closeInvestigation
 
 ## Playbook Inputs
 ---
@@ -63,4 +63,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Phishing - Generic v3](Insert the link to your image here)
+![Phishing - Generic v3](../doc_files/Phishing_-_Generic_v3.png)
