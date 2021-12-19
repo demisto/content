@@ -70,7 +70,7 @@
             "id": "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777",
             "modified": "2021-12-19T16:11:15.53072+02:00",
             "name": "XSOAR TIM Attack Pattern",
-            "schema": "<Link to JSON schema or a description>",
+            "schema": "https://github.com/demisto/content/tree/master/Packs/TAXIIServer/doc_files/XSOAR_indicator_schema.json",
             "spec_version": "2.1",
             "type": "extension-definition",
             "version": "1.0"
@@ -143,7 +143,7 @@
             "id": "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777",
             "modified": "2021-12-19T16:11:15.530696+02:00",
             "name": "XSOAR TIM Attack Pattern",
-            "schema": "<Link to JSON schema or a description>",
+            "schema": "https://github.com/demisto/content/tree/master/Packs/TAXIIServer/doc_files/XSOAR_indicator_schema.json",
             "spec_version": "2.1",
             "type": "extension-definition",
             "version": "1.0"

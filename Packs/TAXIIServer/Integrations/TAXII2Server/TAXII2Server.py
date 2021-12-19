@@ -458,7 +458,7 @@ def find_indicators(query: str, added_after, limit: int, is_manifest: bool = Fal
         limit: response items limit
         is_manifest: whether this call is for manifest or indicators
 
-    Returns: Created indicators and its extensions. (# Todo: add link for the model)
+    Returns: Created indicators and its extensions.
     """
     iocs = []
     extensions = []
@@ -567,7 +567,8 @@ def create_stix_object(xsoar_indicator, xsoar_type):
         xsoar_type: type of indicator in xsoar system
 
     Returns:
-        Stix object entry for given indicator.
+        Stix object entry for given indicator, and extension. Format described here:
+        (https://docs.google.com/document/d/12alMmfpJn5sQO18h_qzbRa_Yxvj_0P1R9bOEhtk_u8A/edit)
     """
     if stix_type := XSOAR_TYPES_TO_STIX_SCO.get(xsoar_type):
         stix_id = create_sco_stix_uuid(xsoar_indicator, stix_type)
@@ -590,7 +591,8 @@ def create_stix_object(xsoar_indicator, xsoar_type):
         'created': xsoar_indicator.get('timestamp'),
         'modified': xsoar_indicator.get('modified'),
         'created_by_ref': f'identity--{str(PAWN_UUID)}',
-        'schema': '<Link to JSON schema or a description>',  # todo: change it
+        'schema':
+            'https://github.com/demisto/content/tree/master/Packs/TAXIIServer/doc_files/XSOAR_indicator_schema.json',
         'version': '1.0',
         'extension_types': ['property-extension']
     }
