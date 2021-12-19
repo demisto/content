@@ -189,7 +189,7 @@ class PrismaCloudComputeClient(BaseClient):
         """
         self._http_request(method="PUT", url_suffix="/feeds/custom/ips", resp_type="text", json_data={"feed": feeds})
 
-    def get_custom_md5_malware(self):
+    def get_custom_md5_malware(self) -> dict:
         """
         Sends a request to get the list of all custom uploaded md5 malware records
 
@@ -198,7 +198,7 @@ class PrismaCloudComputeClient(BaseClient):
         """
         return self._http_request(method="GET", url_suffix="/feeds/custom/malware")
 
-    def add_custom_md5_malware(self, feeds):
+    def add_custom_md5_malware(self, feeds: List[str]):
         """
         Sends a request to add md5 malware hashes.
 
@@ -209,7 +209,7 @@ class PrismaCloudComputeClient(BaseClient):
             method="PUT", url_suffix="/feeds/custom/malware", json_data={"feed": feeds}, resp_type="text"
         )
 
-    def get_cve_info(self, cve):
+    def get_cve_info(self, cve: str) -> List[dict]:
         """
         Sends a request to get information about a cve.
 
@@ -221,7 +221,7 @@ class PrismaCloudComputeClient(BaseClient):
         """
         return self._http_request(method="GET", url_suffix="/cves", params={"id": cve})
 
-    def get_defenders(self, params):
+    def get_defenders(self, params: Optional[dict] = None):
         """
         Sends a request to get defenders information.
 
@@ -230,7 +230,7 @@ class PrismaCloudComputeClient(BaseClient):
         """
         return self._http_request(method="GET", url_suffix="/defenders", params=params)
 
-    def get_collections(self):
+    def get_collections(self) -> List[dict]:
         """
         Sends a request to get the collections information.
 
@@ -239,7 +239,7 @@ class PrismaCloudComputeClient(BaseClient):
         """
         return self._http_request(method="GET", url_suffix="/collections")
 
-    def get_namespaces(self, params=None):
+    def get_namespaces(self, params: Optional[dict] = None) -> List[str]:
         """
         Sends a request to get the namespaces.
 
@@ -251,7 +251,7 @@ class PrismaCloudComputeClient(BaseClient):
         """
         return self._http_request(method="GET", url_suffix="/radar/container/namespaces", params=params)
 
-    def get_images_scan_info(self, params):
+    def get_images_scan_info(self, params: Optional[dict] = None) -> List[dict]:
         """
         Sends a request to get information about images scans.
 
@@ -263,7 +263,7 @@ class PrismaCloudComputeClient(BaseClient):
         """
         return self._http_request(method="GET", url_suffix="/images", params=params)
 
-    def get_hosts_scan_info(self, params):
+    def get_hosts_scan_info(self, params: Optional[dict] = None) -> List[dict]:
         """
         Sends a request to get information about hosts scans.
 
@@ -275,7 +275,7 @@ class PrismaCloudComputeClient(BaseClient):
         """
         return self._http_request(method="GET", url_suffix="/hosts", params=params)
 
-    def get_impacted_resources(self, cve):
+    def get_impacted_resources(self, cve: str) -> dict:
         """
         Get the impacted resources that are based on a specific CVE.
 
@@ -1317,7 +1317,7 @@ def get_images_scan_list(client: PrismaCloudComputeClient, args: dict) -> Comman
         else:
             table = image_description_table
     else:
-        images_scans, table = None, "No results found"
+        table = "No results found"
 
     return CommandResults(
         outputs_prefix="PrismaCloudCompute.ReportsImagesScan",
@@ -1445,7 +1445,7 @@ def get_hosts_scan_list(client: PrismaCloudComputeClient, args: dict) -> Command
         else:
             table = host_description_table
     else:
-        hosts_scans, table = None, "No results found"
+        table = "No results found"
 
     return CommandResults(
         outputs_prefix="PrismaCloudCompute.ReportHostScan",
@@ -1498,7 +1498,7 @@ def get_impacted_resources(client: PrismaCloudComputeClient, args: dict) -> Comm
                     api_response=cve_impacted_resources.get("hosts"), limit=limit, offset=offset
                 )
 
-                for host in cve_impacted_resources.get("hosts"):
+                for host in cve_impacted_resources.get("hosts", []):
                     host_table_details = {"Hostname": host}
                     if host_table_details not in impacted_hosts:
                         impacted_hosts.append(host_table_details)
