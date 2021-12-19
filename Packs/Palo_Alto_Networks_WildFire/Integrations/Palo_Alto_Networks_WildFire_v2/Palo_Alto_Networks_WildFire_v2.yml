@@ -316,6 +316,7 @@ script:
     - contextPath: WildFire.Report.verdict
       description: The verdict of the report.
       type: string
+    polling: true
   - arguments:
     - default: false
       description: URL of the remote file to upload.
@@ -484,6 +485,7 @@ script:
     - contextPath: WildFire.Report.verdict
       description: The verdict of the report.
       type: string
+    polling: true
   - arguments:
     - default: false
       description: MD5 hash to check.
@@ -902,6 +904,7 @@ script:
     - contextPath: WildFire.Report.verdict
       description: The verdict of the report.
       type: string
+    polling: true
   - arguments:
     - default: false
       description: MD5 hash of the sample.
