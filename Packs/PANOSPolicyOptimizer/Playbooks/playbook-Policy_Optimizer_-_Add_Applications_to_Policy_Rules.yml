@@ -2,8 +2,7 @@ id: Policy Optimizer - Add Applications to Policy Rules
 version: -1
 name: Policy Optimizer - Add Applications to Policy Rules
 description: |-
-  This playbook is used in the PAN-OS - Policy Optimizer playbooks to edit rules with unused applications or rules that are port based, and add an application to the rule.
-  The playbook uses communication task to get a rule name and the application to edit from the user.
+  This playbook edits rules with unused applications or rules that are port based, and adds an application to the rule. It is used in PAN-OS - Policy Optimizer playbooks and includes communication tasks to get a rule name and the application to edit from the user.
 starttaskid: "0"
 tasks:
   "0":
@@ -43,8 +42,7 @@ tasks:
       id: 89802fb0-3469-4200-80c4-a7878ff07d80
       version: -1
       name: Is PAN-OS integration available?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      description: Returns 'yes' if an integration brand is available. 
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -82,7 +80,7 @@ tasks:
       id: bdf48002-95ff-49f1-8ad3-f525b6366c5b
       version: -1
       name: Choose app to add to the rule
-      description: "Choose application to add to the policy rule."
+      description: "Choose an application to add to the policy rule."
       type: collection
       iscommand: false
       brand: ""
@@ -161,7 +159,7 @@ tasks:
           the current application in the rule configuration.
         readonly: false
       title: Add applications to policy rules
-      description: "Choose application to add to the rule."
+      description: "Choose an application to add to the rule."
       sender: ""
       expired: false
       totalanswers: 0
@@ -294,11 +292,8 @@ tasks:
       version: -1
       name: Delete rules information from context
       description: |-
-        Delete field from context.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        Delete fields from context.
+        This automation runs using the default Limited User role, unless you explicitly change the [permissions](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html).
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -337,10 +332,7 @@ tasks:
       name: Set no rules to context
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        This automation runs using the default Limited User role, unless you explicitly change the [permissions](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html).
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -380,10 +372,7 @@ tasks:
       name: Save handled rule
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        This automation runs using the default Limited User role, unless you explicitly change the [permissions](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html).
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -431,7 +420,7 @@ inputs:
 - key: rules_list
   value: {}
   required: false
-  description: PAN-OS rules to edit using the playbook.
+  description: List of PAN-OS rules to edit using the playbook.
   playbookInputQuery:
 outputs:
 - contextPath: RulesToEdit
