@@ -6983,7 +6983,7 @@ def initialize_instance(args: Dict[str, str], params: Dict[str, str]):
     URL = params.get('server', '').rstrip('/:') + ':' + params.get('port', '') + '/api/'
     API_KEY = str(params.get('key')) or str((params.get('credentials') or {}).get('password', ''))  # type: ignore
     if not API_KEY:
-        raise Exception('Api Key must be provided.')
+        raise Exception('API Key must be provided.')
     USE_SSL = not params.get('insecure')
     USE_URL_FILTERING = params.get('use_url_filtering')
 
