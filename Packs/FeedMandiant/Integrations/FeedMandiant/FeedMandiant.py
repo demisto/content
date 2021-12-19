@@ -1,3 +1,5 @@
+import pytz
+
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 
@@ -63,7 +65,7 @@ class MandiantClient(BaseClient):
         token = integration_context.get('token', '')
         valid_until = integration_context.get('valid_until')
 
-        now = datetime.now()
+        now = datetime.now(timezone.utc)
         now_timestamp = datetime.timestamp(now)
         # if there is a key and valid_until, and the current time is smaller than the valid until
         # return the current token
@@ -89,7 +91,8 @@ class MandiantClient(BaseClient):
 
         integration_context = get_integration_context()
         integration_context.update({'token': self._token})
-        integration_context.update({'valid_until': datetime.timestamp(datetime.now()) - 600})  # Add 10 minutes buffer
+        # Add 10 minutes buffer for the token
+        integration_context.update({'valid_until': datetime.timestamp(datetime.now(timezone.utc)) - 600})
         set_integration_context(integration_context)
 
         return self._token
@@ -170,6 +173,16 @@ def test_module(client: MandiantClient) -> str:
     return message
 
 
+def parse_date(date: Any, tzinfo=pytz.UTC) -> datetime:
+    if isinstance(date, str):
+        parsed_date = dateparser.parse(date)
+    if isinstance(date, int):
+        parsed_date = datetime.fromtimestamp(date)
+
+    aware_date = parsed_date.replace(tzinfo=tzinfo)
+    return aware_date
+
+
 def get_indicator_list(client: MandiantClient, limit: int, first_fetch: str, indicator_type: str) -> List[Dict]:
     """
     Get list of indicators from given type.
@@ -187,11 +200,10 @@ def get_indicator_list(client: MandiantClient, limit: int, first_fetch: str, ind
 
     if len(indicators_list) < limit:
         last_run = last_run_dict.get(indicator_type + 'Last', first_fetch)
-        start_date = dateparser.parse(last_run)
-
+        start_date = parse_date(last_run)
         params = {'start_epoch': int(start_date.timestamp())}
-        if dateparser.parse('90 days ago') > start_date and indicator_type == 'Indicators':
-            params['start_epoch'] = int(dateparser.parse('90 days ago').timestamp())
+        if parse_date('90 days ago') > start_date and indicator_type == 'Indicators':
+            params['start_epoch'] = int(parse_date('90 days ago').timestamp())
         try:
             res = client._http_request(method="GET", url_suffix=f'/v4/{MAP_TYPE_TO_URL[indicator_type]}',
                                        timeout=client._timeout, params=params, ok_codes=[200])
@@ -199,15 +211,14 @@ def get_indicator_list(client: MandiantClient, limit: int, first_fetch: str, ind
             res = []
         new_indicators_list = res.get(MAP_TYPE_TO_RESPONSE[indicator_type], [])
         if indicator_type == 'Indicators':
-            new_indicators_list.sort(key=lambda x: parse_date_string(x.get('first_seen')),
-                                     reverse=True)  # from new to old
+            new_indicators_list.sort(key=lambda x: parse_date(x.get('first_seen')), reverse=True)  # from new to old
             new_indicators_list = list(
-                filter(lambda x: parse_date_string(x['first_seen']) <= datetime.fromtimestamp(params['start_epoch']),
+                filter(lambda x: parse_date(x.get('first_seen')) <= parse_date(params['start_epoch']),
                        new_indicators_list))
 
         else:
-            new_indicators_list.sort(key=lambda x: parse_date_string(x.get('last_updated')), reverse=True)  # new to old
-            new_indicators_list = list(filter(lambda x: parse_date_string(x['last_updated']) > start_date,
+            new_indicators_list.sort(key=lambda x: parse_date(x.get('last_updated')), reverse=True)  # new to old
+            new_indicators_list = list(filter(lambda x: parse_date(x['last_updated']) > start_date,
                                               new_indicators_list))
 
         indicators_list += new_indicators_list
@@ -598,13 +609,12 @@ def main() -> None:
             first_fetch = params.get('first_fetch', '3 days ago')
 
             return_results(get_indicators_command(client, limit, first_fetch, metadata, enrichment, types))
+
         elif command == 'fetch-indicators':
             limit = int(params.get('max_fetch', 50))
             first_fetch = params.get('first_fetch', '3 days ago')
-
             metadata = argToBoolean(params.get('indicatorMetadata', False))
             enrichment = argToBoolean(params.get('indicatorRelationships', False))
-
             types = argToList(params.get('type'))
 
             indicators = fetch_indicators(client, limit, first_fetch, metadata, enrichment, types)

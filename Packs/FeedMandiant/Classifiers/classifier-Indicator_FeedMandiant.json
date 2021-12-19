@@ -1,0 +1,557 @@
+{
+    "description": "",
+    "feed": true,
+    "id": "Indicator_FeedMandiant",
+    "mapping": {
+        "domainRepUnified": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "First Seen By Source": {
+                    "complex": null,
+                    "simple": "observed.earliest"
+                },
+                "Last Seen By Source": {
+                    "complex": null,
+                    "simple": "observed.recent"
+                },
+                "Primary Motivation": {
+                    "complex": null,
+                    "simple": "motivations"
+                },
+                "STIX Indicator Description": {
+                    "complex": null,
+                    "simple": "description"
+                },
+                "STIX Indicator Name": {
+                    "complex": null,
+                    "simple": "name"
+                },
+                "Tags": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "industries",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "field": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "name"
+                                        }
+                                    }
+                                },
+                                "operator": "getField"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Updated Date": {
+                    "complex": null,
+                    "simple": "last_updated"
+                }
+            }
+        },
+        "hashRepSHA1": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "STIX Indicator Name": {
+                    "complex": null,
+                    "simple": "name"
+                }
+            }
+        },
+        "ipRep": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Description": {
+                    "complex": null,
+                    "simple": "description"
+                },
+                "First Seen By Source": {
+                    "complex": null,
+                    "simple": "observed.earliest"
+                },
+                "Last Seen By Source": {
+                    "complex": null,
+                    "simple": "observed.recent"
+                },
+                "Primary Motivation": {
+                    "complex": null,
+                    "simple": "motivations"
+                },
+                "STIX Indicator Name": {
+                    "complex": null,
+                    "simple": "name"
+                },
+                "Tags": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "industries",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "field": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "name"
+                                        }
+                                    }
+                                },
+                                "operator": "getField"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Updated Date": {
+                    "complex": null,
+                    "simple": "last_updated"
+                }
+            }
+        },
+        "unifiedFileRep": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Description": {
+                    "complex": null,
+                    "simple": "description"
+                },
+                "First Seen By Source": {
+                    "complex": null,
+                    "simple": "observed.earliest"
+                },
+                "Last Seen By Source": {
+                    "complex": null,
+                    "simple": "observed.recent"
+                },
+                "STIX Indicator Name": {
+                    "complex": null,
+                    "simple": "name"
+                },
+                "Tags": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "industries",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "field": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "name"
+                                        }
+                                    }
+                                },
+                                "operator": "getField"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Updated Date": {
+                    "complex": null,
+                    "simple": "last_updated"
+                }
+            }
+        },
+        "urlRep": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Description": {
+                    "complex": null,
+                    "simple": "description"
+                },
+                "First Seen By Source": {
+                    "complex": null,
+                    "simple": "observed.earliest"
+                },
+                "Last Seen By Source": {
+                    "complex": null,
+                    "simple": "observed.recent"
+                },
+                "Primary Motivation": {
+                    "complex": null,
+                    "simple": "motivations"
+                },
+                "STIX Indicator Name": {
+                    "complex": null,
+                    "simple": "name"
+                },
+                "Tags": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "industries",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "field": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "name"
+                                        }
+                                    }
+                                },
+                                "operator": "getField"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Updated Date": {
+                    "complex": null,
+                    "simple": "last_updated"
+                }
+            }
+        },
+        "Attack Pattern": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Aliases": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "attack_pattern_identifier",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Creation Date": {
+                    "complex": null,
+                    "simple": "created"
+                },
+                "Description": {
+                    "complex": null,
+                    "simple": "description"
+                },
+                "STIX ID": {
+                    "complex": null,
+                    "simple": "id"
+                },
+                "STIX Indicator Name": {
+                    "complex": null,
+                    "simple": "name"
+                },
+                "Updated Date": {
+                    "complex": null,
+                    "simple": "modified"
+                }
+            }
+        },
+        "Malware": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Aliases": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+                            [
+                                {
+                                    "ignoreCase": false,
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "aliases"
+                                        }
+                                    },
+                                    "operator": "isNotEqualString",
+                                    "right": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "redacted"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "aliases",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Assigned role": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+                            [
+                                {
+                                    "ignoreCase": false,
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "roles"
+                                        }
+                                    },
+                                    "operator": "isNotEqualString",
+                                    "right": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "redacted"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "roles",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "FeedMandiant Capabilities": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+                            [
+                                {
+                                    "ignoreCase": false,
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "capabilities"
+                                        }
+                                    },
+                                    "operator": "isNotEqualString",
+                                    "right": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "reducted"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "capabilities",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Description": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "description",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Last Seen By Source": {
+                    "complex": null,
+                    "simple": "last_activity_time"
+                },
+                "FeedMandiant Detections": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "detections",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Operating System Refs": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "operating_systems",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "STIX ID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "id",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "STIX Indicator Name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "name",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Tags": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "industries",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "field": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "name"
+                                        }
+                                    }
+                                },
+                                "operator": "getField"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Updated Date": {
+                    "complex": null,
+                    "simple": "last_updated"
+                }
+            }
+        },
+        "Report": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "FeedMandiant Report Id": {
+                    "complex": null,
+                    "simple": "report_id"
+                },
+                "FeedMandiant Version ": {
+                    "complex": null,
+                    "simple": "version"
+                },
+                "Publications": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "published_date",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "FeedMandiant Report Type": {
+                    "complex": null,
+                    "simple": "report_type"
+                },
+                "STIX ID": {
+                    "complex": null,
+                    "simple": "id"
+                },
+                "STIX TTP Title": {
+                    "complex": null,
+                    "simple": "title"
+                }
+            }
+        },
+        "Threat Actor": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Aliases": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "aliases",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "field": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "name"
+                                        }
+                                    }
+                                },
+                                "operator": "getField"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Description": {
+                    "complex": null,
+                    "simple": "description"
+                },
+                "First Seen By Source": {
+                    "complex": null,
+                    "simple": "observed.earliest"
+                },
+                "Last Seen By Source": {
+                    "complex": null,
+                    "simple": "observed.recent"
+                },
+                "STIX ID": {
+                    "complex": null,
+                    "simple": "id"
+                },
+                "STIX Indicator Name": {
+                    "complex": null,
+                    "simple": "name"
+                },
+                "STIX Primary Motivation.": {
+                    "complex": null,
+                    "simple": "motivations"
+                },
+                "Tags": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "industries",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "field": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "name"
+                                        }
+                                    }
+                                },
+                                "operator": "getField"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Targets": {
+                    "complex": {
+                        "accessor": "target",
+                        "filters": [],
+                        "root": "locations",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "field": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "name"
+                                        }
+                                    }
+                                },
+                                "operator": "getField"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Updated Date": {
+                    "complex": null,
+                    "simple": "last_updated"
+                }
+            }
+        }
+    },
+    "name": "Indicator_FeedMandiant",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

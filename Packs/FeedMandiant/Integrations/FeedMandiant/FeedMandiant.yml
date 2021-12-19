@@ -8,6 +8,13 @@ configuration:
   name: url
   required: true
   type: 0
+- additionalinfo: X-App-Name header is required for this API.
+  defaultvalue: content.xsoar.cortex.paloaltonetworks.v1.0
+  display: X-App-Name
+  hidden: false
+  name: xappname
+  required: true
+  type: 0
 - display: Public Key
   name: auth
   required: true
@@ -28,16 +35,6 @@ configuration:
   - Indicators
   required: false
   type: 16
-- defaultvalue: Low
-  display: Minimum severity of alerts to fetch
-  name: min_severity
-  options:
-  - Low
-  - Medium
-  - High
-  - Critical
-  required: true
-  type: 15
 - defaultvalue: 3 days
   display: First fetch time
   name: first_fetch
@@ -51,11 +48,26 @@ configuration:
   name: proxy
   required: false
   type: 8
-- defaultvalue: '1'
-  display: Incidents Fetch Interval
-  name: incidentFetchInterval
+- additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
   required: false
-  type: 19
+  type: 8
+- additionalinfo: Retrieve additional information for each indicator. Please note
+    that this requires additional API calls.
+  defaultvalue: 'false'
+  display: Retrieve Indicator Metadata
+  name: indicatorMetadata
+  required: false
+  type: 8
+- additionalinfo: Please note that this requires additional API calls.
+  defaultvalue: 'false'
+  display: Create Relationships.
+  name: indicatorRelationships
+  required: false
+  type: 8
 - defaultvalue: 'true'
   display: Fetch indicators
   name: feed
@@ -103,38 +115,21 @@ configuration:
   name: feedFetchInterval
   required: false
   type: 19
-- additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
-  display: Bypass exclusion list
-  name: feedBypassExclusionList
-  required: false
-  type: 8
-- additionalinfo: Retrieve additional information for each indicator. Please note
-    that this requires additional API calls.
-  defaultvalue: 'false'
-  display: Retrieve Indicator Metadata
-  name: indicatorMetadata
-  required: false
-  type: 8
-- additionalinfo: Please note that this requires additional API calls.
-  defaultvalue: 'false'
-  display: Create Relationships.
-  name: indicatorRelationships
-  required: false
-  type: 8
+- defaultvalue: Low
+  display: Minimum severity of alerts to fetch
+  name: min_severity
+  options:
+  - Low
+  - Medium
+  - High
+  - Critical
+  required: true
+  type: 15
 - additionalinfo: API calls timeout.
   defaultvalue: '60'
   display: Timeout
   name: timeout
   required: false
-  type: 0
-- additionalinfo: X-App-Name header is required for this API.
-  defaultvalue: content.xsoar.cortex.paloaltonetworks.v1.0
-  display: X-App-Name
-  hidden: false
-  name: xappname
-  required: true
   type: 0
 - additionalinfo: Supports CSV values.
   display: Tags
