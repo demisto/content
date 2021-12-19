@@ -2530,7 +2530,7 @@ def get_integration_name():
     :return: Calling integration's name
     :rtype: ``str``
     """
-    return demisto.callingContext.get('context', '').get('IntegrationBrand')
+    return demisto.callingContext.get('context', {}).get('IntegrationBrand', '')
 
 
 class Common(object):
@@ -7081,6 +7081,8 @@ if 'requests' in sys.modules:
         :rtype: ``None``
         """
 
+        REQUESTS_TIMEOUT = 60
+
         def __init__(self, base_url, verify=True, proxy=False, ok_codes=tuple(), headers=None, auth=None):
             self._base_url = base_url
             self._verify = verify
@@ -7095,6 +7097,9 @@ if 'requests' in sys.modules:
 
             if not verify:
                 skip_cert_verification()
+
+            # removing trailing = char from env var value added by the server
+            self.timeout = float(os.environ.get('REQUESTS_TIMEOUT.' + get_integration_name(), '')[:-1] or os.environ.get('REQUESTS_TIMEOUT', '')[:-1] or self.REQUESTS_TIMEOUT)  # noqa: E501
 
         def __del__(self):
             try:
@@ -7170,7 +7175,7 @@ if 'requests' in sys.modules:
                 pass
 
         def _http_request(self, method, url_suffix='', full_url=None, headers=None, auth=None, json_data=None,
-                          params=None, data=None, files=None, timeout=10, resp_type='json', ok_codes=None,
+                          params=None, data=None, files=None, timeout=REQUESTS_TIMEOUT, resp_type='json', ok_codes=None,
                           return_empty_response=False, retries=0, status_list_to_retry=None,
                           backoff_factor=5, raise_on_redirect=False, raise_on_status=False,
                           error_handler=None, empty_valid_codes=None, **kwargs):
@@ -7277,6 +7282,9 @@ if 'requests' in sys.modules:
                 auth = auth if auth else self._auth
                 if retries:
                     self._implement_retry(retries, status_list_to_retry, backoff_factor, raise_on_redirect, raise_on_status)
+                if timeout == self.REQUESTS_TIMEOUT and self.timeout:
+                    timeout = self.timeout
+
                 # Execute
                 res = self._session.request(
                     method,
@@ -7288,7 +7296,7 @@ if 'requests' in sys.modules:
                     files=files,
                     headers=headers,
                     auth=auth,
-                    timeout=timeout,
+                    timeout=(10, timeout),
                     **kwargs
                 )
                 # Handle error responses gracefully
