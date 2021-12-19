@@ -904,5 +904,5 @@ script:
   subtype: python3
   type: python
 tests:
-- Test Playbook McAfee ePO
+- McAfee ePO v2 Test
 fromversion: 5.5.0

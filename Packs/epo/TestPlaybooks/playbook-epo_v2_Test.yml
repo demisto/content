@@ -1,6 +1,6 @@
-id: mcafee_epo_v2
+id: McAfee ePO v2 Test
 version: -1
-name: mcafee_epo_v2
+name: McAfee ePO v2 Test 
 starttaskid: "0"
 tasks:
   "0":
