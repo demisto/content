@@ -10,12 +10,12 @@ Follow these steps for a self-deployed configuration.
    1. Navigate in the Azure Portal to **App registrations** > your registered application > **Certificates & secrets** and click **+ New client secret**.
    2. Copy and save the new secret value to use in the add credentials step.
 3. Assign a role to the registered app.
-   1. In Azure portal, go to the Subscriptions and select the subscription you are using -> Access control (IAM).
-   2. Click Add -> Add role assignment.
-   3. Select the Azure Sentinel Contributor role -> Select your registered app, and click Save.
+   1. In the Azure portal, go to the Subscriptions and select the subscription you are using -> Access control (IAM).
+   2. Click **Add** > **Add role assignment**.
+   3. Select the *Azure Sentinel Contributor* role > Select your registered app, and click **Save**.
 4. In Cortex XSOAR, go to  **Settings** > **Integrations** > **Credentials** and create a new credentials set. 
-5. In the ***Username*** parameter, enter your registered app Application (client) ID.
-6. In the ***Password*** parameter, enter the secret value you created.
+5. In the *Username* parameter, enter your registered app Application (client) ID.
+6. In the *Password* parameter, enter the secret value you created.
 7. Copy your tenant ID for the integration configuration usage.
 
 ## Configure the server URL
@@ -91,7 +91,7 @@ Gets a single incident from Azure Sentinel.
 | AzureSentinel.Incident.FirstActivityTimeGenerated | Date | The incident's generated first activity time. | 
 | AzureSentinel.Incident.LastActivityTimeGenerated | Date | The incident's generated last activity time. | 
 | AzureSentinel.Incident.Etag | String | The Etag of the incident. | 
-| AzureSentinel.Incident.IncidentUrl | String | The deep-link url to the incident in Azure portal. | 
+| AzureSentinel.Incident.IncidentUrl | String | The deep-link URL to the incident in the Azure portal. | 
 
 
 #### Command Example
@@ -160,8 +160,8 @@ Gets a list of incidents from Azure Sentinel.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of incidents to return. The default value is 50 and maximum value is 200. Default is 50. | Optional | 
-| filter | Filter results using OData syntax. For example: properties/createdTimeUtc gt 2020-02-02T14:00:00Z`). For more information see the Azure documentation: https://docs.microsoft.com/bs-latn-ba/azure/search/search-query-odata-filter. | Optional | 
+| limit | The maximum number of incidents to return. The maximum value is 200. Default is 50. | Optional | 
+| filter | Filter results using OData syntax. For example: properties/createdTimeUtc gt 2020-02-02T14:00:00Z`). For more information, see the Azure documentation: https://docs.microsoft.com/bs-latn-ba/azure/search/search-query-odata-filter. | Optional | 
 | next_link | A link that specifies a starting point to use for subsequent calls. This argument overrides all of the other command arguments. | Optional | 
 
 
@@ -411,8 +411,8 @@ Gets a list of watchlists from Azure Sentinel.
 | AzureSentinel.Watchlist.Alias | String | The alias of the watchlist. | 
 | AzureSentinel.Watchlist.Label | unknown | Label that will be used to tag and filter on. | 
 | AzureSentinel.Watchlist.ItemsSearchKey | String | The search key is used to optimize query performance when using watchlists for joins with other data. For example, enable a column with IP addresses to be the designated SearchKey field, then use this field as the key field when joining to other event data by IP address. | 
-| AzureSentinel.NextLink.Description | String | Description of nextLink. | 
-| AzureSentinel.NextLink.URL | String | Used if an operation returns partial results. If a response contains a nextLink element, its value specifies a starting point to use for subsequent calls. | 
+| AzureSentinel.NextLink.Description | String | Description of NextLink. | 
+| AzureSentinel.NextLink.URL | String | Used if an operation returns partial results. If a response contains a NextLink element, its value specifies a starting point to use for subsequent calls. | 
 
 
 #### Command Example
@@ -613,11 +613,11 @@ Updates a single incident in Azure Sentinel.
 | incident_id | The incident ID. | Required | 
 | title | The incident's title. | Optional | 
 | description | Description of the incident. | Optional | 
-| severity | The incident severity. Possible values: "High", "Medium", "Low", and  "Informational". Possible values are: High, Medium, Low, Informational. | Optional | 
-| status | The incident status. Possible values: "New", "Active", and "Closed". Possible values are: New, Active, Closed. | Optional | 
-| classification | The reason the incident was closed. Required when updating the status to Closed. Possible values: "BenignPositive", "FalsePositive", "TruePositive", and "Undetermined". Possible values are: BenignPositive, FalsePositive, TruePositive, Undetermined. | Optional | 
+| severity | The incident severity. Possible values are: High, Medium, Low, Informational. | Optional | 
+| status | The incident status. Possible values are: New, Active, Closed. | Optional | 
+| classification | The reason the incident was closed. Required when updating the status to Closed.  Possible values are: BenignPositive, FalsePositive, TruePositive, Undetermined. | Optional | 
 | classification_comment | Describes the reason the incident was closed. | Optional | 
-| classification_reason | The classification reason the incident was closed with. Required when updating the status to Closed and the classification is determined. Possible values: "InaccurateData", "IncorrectAlertLogic", "SuspiciousActivity", and "SuspiciousButExpected". Possible values are: InaccurateData, IncorrectAlertLogic, SuspiciousActivity, SuspiciousButExpected. | Optional | 
+| classification_reason | The classification reason the incident was closed with. Required when updating the status to Closed and the classification is determined. Possible values are: InaccurateData, IncorrectAlertLogic, SuspiciousActivity, SuspiciousButExpected. | Optional | 
 | assignee_email | The email address of the incident assignee. Note that the updated API field is `owner.email`. | Optional | 
 | labels | Incident labels. Note that all labels will be set as labelType='User'. | Optional | 
 
@@ -755,7 +755,7 @@ Gets the comments of an incident from Azure Sentinel.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | incident_id | The incident ID. | Required | 
-| limit | The maximum number of incident comments to return. The default and maximum value is 50. Default is 50. | Optional | 
+| limit | The maximum number of incident comments to return. The maximum value is 50. Default is 50. | Optional | 
 | next_link | A link that specifies a starting point to use for subsequent calls. Using this argument overrides all of the other command arguments. | Optional | 
 
 
@@ -765,12 +765,12 @@ Gets the comments of an incident from Azure Sentinel.
 | --- | --- | --- |
 | AzureSentinel.IncidentComment.ID | String | The ID of the incident comment. | 
 | AzureSentinel.IncidentComment.IncidentID | String | The incident ID. | 
-| AzureSentinel.IncidentComment.Message | String | The incident comment. | 
-| AzureSentinel.IncidentComment.AuthorName | String | The name of the author of the incident comment. | 
+| AzureSentinel.IncidentComment.Message | String | The incident's comment. | 
+| AzureSentinel.IncidentComment.AuthorName | String | The name of the author of the incident's comment. | 
 | AzureSentinel.IncidentComment.AuthorEmail | String | The email address of the author of the incident comment. | 
 | AzureSentinel.IncidentComment.CreatedTimeUTC | Date | The date and time that the incident comment was created. | 
-| AzureSentinel.NextLink.Description | String | Description of nextLink. | 
-| AzureSentinel.NextLink.URL | String | Used if an operation returns a partial result. If a response contains a nextLink element, its value specifies a starting point to use for subsequent calls. | 
+| AzureSentinel.NextLink.Description | String | Description of NextLink. | 
+| AzureSentinel.NextLink.URL | String | Used if an operation returns a partial result. If a response contains a NextLink element, its value specifies a starting point to use for subsequent calls. | 
 
 
 #### Command Example
@@ -851,8 +851,8 @@ Adds a comment to an incident in Azure Sentinel.
 | --- | --- | --- |
 | AzureSentinel.IncidentComment.ID | String | The ID of the incident comment. | 
 | AzureSentinel.IncidentComment.IncidentID | String | The incident ID. | 
-| AzureSentinel.IncidentComment.Message | String | The incident comment. | 
-| AzureSentinel.IncidentComment.AuthorName | String | The name of the author of the incident comment. | 
+| AzureSentinel.IncidentComment.Message | String | The incident's comment. | 
+| AzureSentinel.IncidentComment.AuthorName | String | The name of the author of the incident's comment. | 
 | AzureSentinel.IncidentComment.AuthorEmail | String | The email address of the author of the incident comment. | 
 | AzureSentinel.IncidentComment.CreatedTimeUTC | Date | The date and time that the incident comment was created. | 
 
@@ -937,8 +937,8 @@ Gets a list of an incident's related entities from Azure Sentinel.
 | --- | --- | --- |
 | AzureSentinel.IncidentRelatedResource.ID | String | The ID of the incident's related resource. | 
 | AzureSentinel.IncidentRelatedResource.Kind | String | The kind of the incident's related resource. | 
-| AzureSentinel.NextLink.Description | String | The description about nextLink. | 
-| AzureSentinel.NextLink.URL | String | Used if an operation returns a partial result. If a response contains a nextLink element, its value specifies a starting point to use for subsequent calls. | 
+| AzureSentinel.NextLink.Description | String | The description about NextLink. | 
+| AzureSentinel.NextLink.URL | String | Used if an operation returns a partial result. If a response contains a NextLink element, its value specifies a starting point to use for subsequent calls. | 
 | AzureSentinel.IncidentRelatedResource.IncidentID | String | The incident ID. | 
 
 
@@ -1071,7 +1071,7 @@ Gets a list of an incident's alerts from Azure Sentinel.
 | AzureSentinel.IncidentAlert.Description | String | The description of the alert. | 
 | AzureSentinel.IncidentAlert.ConfidenceLevel | String | The confidence level of this alert. | 
 | AzureSentinel.IncidentAlert.Severity | String | The severity of the alert. | 
-| AzureSentinel.IncidentAlert.VendorName | String | The name of the vendor that raise the alert. | 
+| AzureSentinel.IncidentAlert.VendorName | String | The name of the vendor that raised the alert. | 
 | AzureSentinel.IncidentAlert.ProductName | String | The name of the product that published this alert. | 
 | AzureSentinel.IncidentAlert.ProductComponentName | String | The name of a component inside the product which generated the alert. | 
 
@@ -1141,7 +1141,7 @@ Get a single watchlist item or list of watchlist items.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureSentinel.WatchlistItem.WatchlistAlias | String | The alias of the watchlist | 
+| AzureSentinel.WatchlistItem.WatchlistAlias | String | The alias of the watchlist. | 
 | AzureSentinel.WatchlistItem.ID | String | The ID \(GUID\) of the watchlist item. | 
 | AzureSentinel.WatchlistItem.Created | Date | The time the watchlist item was created. | 
 | AzureSentinel.WatchlistItem.Updated | Date | The last time the watchlist item was updated. | 
@@ -1246,7 +1246,7 @@ Create or update a watchlist item.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureSentinel.WatchlistItem.WatchlistAlias | String | The alias of the watchlist | 
+| AzureSentinel.WatchlistItem.WatchlistAlias | String | The alias of the watchlist. | 
 | AzureSentinel.WatchlistItem.ID | String | The ID \(GUID\) of the watchlist item. | 
 | AzureSentinel.WatchlistItem.Created | Date | The time the watchlist item was created. | 
 | AzureSentinel.WatchlistItem.Updated | Date | The last time the watchlist item was updated. | 
@@ -1313,28 +1313,28 @@ Returns a list of threat indicators.
 | AzureSentinel.ThreatIndicator.ETag | String | The ETag of the indicator. | 
 | AzureSentinel.ThreatIndicator.Type | String | The type of the indicator. | 
 | AzureSentinel.ThreatIndicator.Kind | String | The kind of the indicator. | 
-| AzureSentinel.ThreatIndicators.Confidence | Number | The confidence of the threat indicator. A number between 0-100. | 
-| AzureSentinel.ThreatIndicator.Created | Date | When was the threat indicator created. | 
+| AzureSentinel.ThreatIndicators.Confidence | Number | The confidence of the threat indicator. This is a number between 0-100. | 
+| AzureSentinel.ThreatIndicator.Created | Date | When the threat indicator was created. | 
 | AzureSentinel.ThreatIndicator.CreatedByRef | String | The creator of the indicator. | 
-| AzureSentinel.ThreatIndicator.ExternalID | String | The external id of the indicator. | 
-| AzureSentinel.ThreatIndicator.Revoked | Boolean | Was the threat indicator revoked or not. | 
+| AzureSentinel.ThreatIndicator.ExternalID | String | The external ID of the indicator. | 
+| AzureSentinel.ThreatIndicator.Revoked | Boolean | Whether the threat indicator was revoked. | 
 | AzureSentinel.ThreatIndicator.Source | String | The source of the indicator. | 
-| AzureSentinel.ThreatIndicator.ETags | String | The etags of the indicator. | 
+| AzureSentinel.ThreatIndicator.ETags | String | The Etags of the indicator. | 
 | AzureSentinel.ThreatIndicator.DisplayName | String | The display name of the indicator. | 
 | AzureSentinel.ThreatIndicator.Description | String | The description of the indicator. | 
 | AzureSentinel.ThreatIndicator.ThreatTypes | Unknown | The threat types of the indicator. | 
-| AzureSentinel.ThreatIndicator.KillChainPhases.KillChainName | Unknown | The kill chains name of the indicator. | 
+| AzureSentinel.ThreatIndicator.KillChainPhases.KillChainName | Unknown | The kill chain's name of the indicator. | 
 | AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeKey | Unknown | The pattern type key of the indicator. | 
 | AzureSentinel.ThreatIndicator.Pattern | String | The pattern of the indicator. | 
 | AzureSentinel.ThreatIndicator.PatternType | String | The pattern type of the indicator. | 
-| AzureSentinel.ThreatIndicator.ValidFrom | Date | The date which the indicator is valid from. | 
-| AzureSentinel.ThreatIndicator.ValidUntil | Date | The date which the indicator is valid until. | 
+| AzureSentinel.ThreatIndicator.ValidFrom | Date | The date from which the indicator is valid. | 
+| AzureSentinel.ThreatIndicator.ValidUntil | Date | The date until which the indicator is valid. | 
 | AzureSentinel.ThreatIndicator.KillChainPhases.PhaseName | String | The phase name of the indicator. | 
-| AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeValues.Value | String | The value of the inidcator. | 
+| AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeValues.Value | String | The value of the indicator. | 
 | AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeValues.ValueType | String | The value type of the indicator. | 
 | AzureSentinel.ThreatIndicator.LastUpdatedTimeUtc | Date | The last updated time of the indicator. | 
 | AzureSentinel.ThreatIndicator.Tags | Unknown | The tags of the indicator. | 
-| AzureSentinel.ThreatIndicator.Types | Unknown | The threat types of the inidcator. | 
+| AzureSentinel.ThreatIndicator.Types | Unknown | The threat types of the indicator. | 
 
 
 #### Command Example
@@ -1364,13 +1364,13 @@ Returns a list of threat indicators with specific entities.
 | next_link | A link that specifies a starting point to use for subsequent calls.<br/>This argument overrides all of the other command arguments. | Optional | 
 | min_confidence | The minimum confidence number for a threat indicator. | Optional | 
 | max_confidence | The maximum confidence number for a threat indicator. | Optional | 
-| min_valid_until | Minimum ValidUntil value of indicators to query. | Optional | 
-| max_valid_until | Maximum ValidUntil value of indicators to query. | Optional | 
-| include_disabled | If true, the query returns also disabled indicators. Possible values are: true, false. Default is false. | Optional | 
+| min_valid_until | Minimum valid until value of indicators to query. | Optional | 
+| max_valid_until | Maximum valid until value of indicators to query. | Optional | 
+| include_disabled | If true, the query also returns disabled indicators. Possible values are: true, false. Default is false. | Optional | 
 | sources | The sources of the threat indicator. | Optional | 
 | indicator_types | The indicator types of the threat indicator. Possible values are: ipv4, ipv6, file, url, domain. | Optional | 
-| threat_types | The threat types of the threat indicator, a comma seperated list from the list options. Possible values are: anomalous-activity, attribution, anonymization, benign, malicious-activity, compromised, unknown. | Optional | 
-| keywords | Keywords, seperated by commas. | Optional | 
+| threat_types | A comma-separated list of threat types of the threat indicator. Possible values are: anomalous-activity, attribution, anonymization, benign, malicious-activity, compromised, unknown. | Optional | 
+| keywords | A comma-separated list of keywordss. | Optional | 
 
 
 #### Context Output
@@ -1382,28 +1382,28 @@ Returns a list of threat indicators with specific entities.
 | AzureSentinel.ThreatIndicator.ETag | String | The ETag of the indicator. | 
 | AzureSentinel.ThreatIndicator.Type | String | The type of the indicator. | 
 | AzureSentinel.ThreatIndicator.Kind | String | The kind of the indicator. | 
-| AzureSentinel.ThreatIndicators.Confidence | Number | The confidence of the threat indicator. A number between 0-100. | 
-| AzureSentinel.ThreatIndicator.Created | Date | When was the threat indicator created. | 
+| AzureSentinel.ThreatIndicators.Confidence | Number | The confidence of the threat indicator. This is a number between 0-100. | 
+| AzureSentinel.ThreatIndicator.Created | Date | When the threat indicator was created. | 
 | AzureSentinel.ThreatIndicator.CreatedByRef | String | The creator of the indicator. | 
-| AzureSentinel.ThreatIndicator.ExternalID | String | The external id of the indicator. | 
-| AzureSentinel.ThreatIndicator.Revoked | Boolean | Was the threat indicator revoked or not. | 
+| AzureSentinel.ThreatIndicator.ExternalID | String | The external ID of the indicator. | 
+| AzureSentinel.ThreatIndicator.Revoked | Boolean | Whether the threat indicator was revoked. | 
 | AzureSentinel.ThreatIndicator.Source | String | The source of the indicator. | 
-| AzureSentinel.ThreatIndicator.ETags | String | The etags of the indicator. | 
+| AzureSentinel.ThreatIndicator.ETags | String | The Etags of the indicator. | 
 | AzureSentinel.ThreatIndicator.DisplayName | String | The display name of the indicator. | 
 | AzureSentinel.ThreatIndicator.Description | String | The description of the indicator. | 
 | AzureSentinel.ThreatIndicator.ThreatTypes | Unknown | The threat types of the indicator. | 
-| AzureSentinel.ThreatIndicator.KillChainPhases.KillChainName | Unknown | The kill chains name of the indicator. | 
+| AzureSentinel.ThreatIndicator.KillChainPhases.KillChainName | Unknown | The kill chain's name of the indicator. | 
 | AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeKey | Unknown | The pattern type key of the indicator. | 
 | AzureSentinel.ThreatIndicator.Pattern | String | The pattern of the indicator. | 
 | AzureSentinel.ThreatIndicator.PatternType | String | The pattern type of the indicator. | 
-| AzureSentinel.ThreatIndicator.ValidFrom | Date | The date which the indicator is valid from. | 
-| AzureSentinel.ThreatIndicator.ValidUntil | Date | The date which the indicator is valid until. | 
+| AzureSentinel.ThreatIndicator.ValidFrom | Date | The date from which the indicator is valid. | 
+| AzureSentinel.ThreatIndicator.ValidUntil | Date | The date until which the indicator is valid. | 
 | AzureSentinel.ThreatIndicator.KillChainPhases.PhaseName | String | The phase name of the indicator. | 
-| AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeValues.Value | String | The value of the inidcator. | 
+| AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeValues.Value | String | The value of the indicator. | 
 | AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeValues.ValueType | String | The value type of the indicator. | 
 | AzureSentinel.ThreatIndicator.LastUpdatedTimeUtc | Date | The last updated time of the indicator. | 
 | AzureSentinel.ThreatIndicator.Tags | Unknown | The tags of the indicator. | 
-| AzureSentinel.ThreatIndicator.Types | Unknown | The threat types of the inidcator. | 
+| AzureSentinel.ThreatIndicator.Types | Unknown | The threat types of the indicator. | 
 
 
 #### Command Example
@@ -1435,11 +1435,11 @@ Creates a new threat indicator.
 | indicator_type | The type of the new indicator. Possible values are: ipv4, ipv6, file, url, domain. | Required | 
 | hash_type | The hash type of the new indicator. This argument is mandatory if the indicator type is file. Possible values are: MD5, SHA-1, SHA-256, SHA-512. | Optional | 
 | confidence | The confidence of the new threat indicator. Should be a number between 0-100. | Optional | 
-| threat_types | The threat types of the threat indicator, a comma seperated list from the list options. Possible values are: anomalous-activity, attribution, anonymization, benign, malicious-activity, compromised, unknown. | Required | 
+| threat_types | A comma-separated list of threat types of the threat indicator. Possible values are: anomalous-activity, attribution, anonymization, benign, malicious-activity, compromised, unknown. | Required | 
 | kill_chains | The kill chains phases of the indicator. | Optional | 
-| tags | The tags of the new threat indicator, separated by commas. | Optional | 
-| valid_from | The date which the indicator is valid from. | Optional | 
-| valid_until | The date which the indicator is valid until. | Optional | 
+| tags | A comma-separated list of tags of the new threat indicator. | Optional | 
+| valid_from | The date from which the indicator is valid. | Optional | 
+| valid_until | The date until which the indicator is valid. | Optional | 
 | created_by | The creator of the new indicator. | Optional | 
 | revoked | If true, the indicator is revoked. Possible values are: true, false. Default is false. | Optional | 
 
@@ -1453,28 +1453,28 @@ Creates a new threat indicator.
 | AzureSentinel.ThreatIndicator.ETag | String | The ETag of the indicator. | 
 | AzureSentinel.ThreatIndicator.Type | String | The type of the indicator. | 
 | AzureSentinel.ThreatIndicator.Kind | String | The kind of the indicator. | 
-| AzureSentinel.ThreatIndicators.Confidence | Number | The confidence of the threat indicator. A number between 0-100. | 
-| AzureSentinel.ThreatIndicator.Created | Date | When was the threat indicator created. | 
+| AzureSentinel.ThreatIndicators.Confidence | Number | The confidence of the threat indicator. This is a number between 0-100. | 
+| AzureSentinel.ThreatIndicator.Created | Date | When the threat indicator was created. | 
 | AzureSentinel.ThreatIndicator.CreatedByRef | String | The creator of the indicator. | 
-| AzureSentinel.ThreatIndicator.ExternalID | String | The external id of the indicator. | 
-| AzureSentinel.ThreatIndicator.Revoked | Boolean | Was the threat indicator revoked or not. | 
+| AzureSentinel.ThreatIndicator.ExternalID | String | The external ID of the indicator. | 
+| AzureSentinel.ThreatIndicator.Revoked | Boolean | Whether the threat indicator was revoked. | 
 | AzureSentinel.ThreatIndicator.Source | String | The source of the indicator. | 
-| AzureSentinel.ThreatIndicator.ETags | String | The etags of the indicator. | 
+| AzureSentinel.ThreatIndicator.ETags | String | The Etags of the indicator. | 
 | AzureSentinel.ThreatIndicator.DisplayName | String | The display name of the indicator. | 
 | AzureSentinel.ThreatIndicator.Description | String | The description of the indicator. | 
 | AzureSentinel.ThreatIndicator.ThreatTypes | Unknown | The threat types of the indicator. | 
-| AzureSentinel.ThreatIndicator.KillChainPhases.KillChainName | Unknown | The kill chains name of the indicator. | 
+| AzureSentinel.ThreatIndicator.KillChainPhases.KillChainName | Unknown | The kill chain's name of the indicator. | 
 | AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeKey | Unknown | The pattern type key of the indicator. | 
 | AzureSentinel.ThreatIndicator.Pattern | String | The pattern of the indicator. | 
 | AzureSentinel.ThreatIndicator.PatternType | String | The pattern type of the indicator. | 
-| AzureSentinel.ThreatIndicator.ValidFrom | Date | The date which the indicator is valid from. | 
-| AzureSentinel.ThreatIndicator.ValidUntil | Date | The date which the indicator is valid until. | 
+| AzureSentinel.ThreatIndicator.ValidFrom | Date | The date from which the indicator is valid. | 
+| AzureSentinel.ThreatIndicator.ValidUntil | Date | The date until which the indicator is valid. | 
 | AzureSentinel.ThreatIndicator.KillChainPhases.PhaseName | String | The phase name of the indicator. | 
-| AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeValues.Value | String | The value of the inidcator. | 
+| AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeValues.Value | String | The value of the indicator. | 
 | AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeValues.ValueType | String | The value type of the indicator. | 
 | AzureSentinel.ThreatIndicator.LastUpdatedTimeUtc | Date | The last updated time of the indicator. | 
 | AzureSentinel.ThreatIndicator.Tags | Unknown | The tags of the indicator. | 
-| AzureSentinel.ThreatIndicator.Types | Unknown | The threat types of the inidcator. | 
+| AzureSentinel.ThreatIndicator.Types | Unknown | The threat types of the indicator. | 
 
 
 #### Command Example
@@ -1505,13 +1505,13 @@ Updates an existing threat indicator.
 | description | The description of the threat indicator. | Optional | 
 | indicator_type | The type of the indicator. Possible values are: ipv4, ipv6, file, url, domain-name. | Required | 
 | hash_type | If indicator_type is a file, this entry is mandatory. | Optional | 
-| revoked | Is the indicator revoked or not. | Optional | 
+| revoked | Whether the indicator was revoked. | Optional | 
 | confidence | The confidence of the threat indicator, a number between 0-100. | Optional | 
-| threat_types | The threat types of the  threat indicator, a multi-select variable from the list. Possible values are: anomalous-activity, attribution, anonymization, benign, malicious-activity, compromised, unknown<br/>. | Optional | 
-| kill_chains | The kill chains phases of the indicator, seperated by commas. | Optional | 
-| tags | Tha tags of the threat indicator, seperated by commas. | Optional | 
-| valid_from | The date which the indicator is valid from. | Optional | 
-| valid_until | The date which the indicator is valid until. | Optional | 
+| threat_types | A comma-separated list of the threat types of the threat indicator. Possible values are: anomalous-activity, attribution, anonymization, benign, malicious-activity, compromised, unknown<br/>. | Optional | 
+| kill_chains | A comma-separated list of the kill chains phases of the indicator. | Optional | 
+| tags | A comma-separated list of tags of the threat indicator. | Optional | 
+| valid_from | The date from which the indicator is valid. | Optional | 
+| valid_until | The date until which the indicator is valid. | Optional | 
 | created_by | The creator of the indicator. | Optional | 
 
 
@@ -1524,28 +1524,28 @@ Updates an existing threat indicator.
 | AzureSentinel.ThreatIndicator.ETag | String | The ETag of the indicator. | 
 | AzureSentinel.ThreatIndicator.Type | String | The type of the indicator. | 
 | AzureSentinel.ThreatIndicator.Kind | String | The kind of the indicator. | 
-| AzureSentinel.ThreatIndicators.Confidence | Number | The confidence of the threat indicator. A number between 0-100. | 
-| AzureSentinel.ThreatIndicator.Created | Date | When was the threat indicator created. | 
+| AzureSentinel.ThreatIndicators.Confidence | Number | The confidence of the threat indicator. This is a number between 0-100. | 
+| AzureSentinel.ThreatIndicator.Created | Date | When the threat indicator was created. | 
 | AzureSentinel.ThreatIndicator.CreatedByRef | String | The creator of the indicator. | 
-| AzureSentinel.ThreatIndicator.ExternalID | String | The external id of the indicator. | 
-| AzureSentinel.ThreatIndicator.Revoked | Boolean | Was the threat indicator revoked or not. | 
+| AzureSentinel.ThreatIndicator.ExternalID | String | The external ID of the indicator. | 
+| AzureSentinel.ThreatIndicator.Revoked | Boolean | Whether the threat indicator was revoked. | 
 | AzureSentinel.ThreatIndicator.Source | String | The source of the indicator. | 
-| AzureSentinel.ThreatIndicator.ETags | String | The etags of the indicator. | 
+| AzureSentinel.ThreatIndicator.ETags | String | The Etags of the indicator. | 
 | AzureSentinel.ThreatIndicator.DisplayName | String | The display name of the indicator. | 
 | AzureSentinel.ThreatIndicator.Description | String | The description of the indicator. | 
 | AzureSentinel.ThreatIndicator.ThreatTypes | Unknown | The threat types of the indicator. | 
-| AzureSentinel.ThreatIndicator.KillChainPhases.KillChainName | Unknown | The kill chains name of the indicator. | 
+| AzureSentinel.ThreatIndicator.KillChainPhases.KillChainName | Unknown | The kill chain's name of the indicator. | 
 | AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeKey | Unknown | The pattern type key of the indicator. | 
 | AzureSentinel.ThreatIndicator.Pattern | String | The pattern of the indicator. | 
 | AzureSentinel.ThreatIndicator.PatternType | String | The pattern type of the indicator. | 
-| AzureSentinel.ThreatIndicator.ValidFrom | Date | The date which the indicator is valid from. | 
-| AzureSentinel.ThreatIndicator.ValidUntil | Date | The date which the indicator is valid until. | 
+| AzureSentinel.ThreatIndicator.ValidFrom | Date | The date from which the indicator is valid. | 
+| AzureSentinel.ThreatIndicator.ValidUntil | Date | The date until which the indicator is valid. | 
 | AzureSentinel.ThreatIndicator.KillChainPhases.PhaseName | String | The phase name of the indicator. | 
-| AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeValues.Value | String | The value of the inidcator. | 
+| AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeValues.Value | String | The value of the indicator. | 
 | AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeValues.ValueType | String | The value type of the indicator. | 
 | AzureSentinel.ThreatIndicator.LastUpdatedTimeUtc | Date | The last updated time of the indicator. | 
 | AzureSentinel.ThreatIndicator.Tags | Unknown | The tags of the indicator. | 
-| AzureSentinel.ThreatIndicator.Types | Unknown | The threat types of the inidcator. | 
+| AzureSentinel.ThreatIndicator.Types | Unknown | The threat types of the indicator. | 
 
 
 #### Command Example
@@ -1611,28 +1611,28 @@ Appends new tags to an existing indicator.
 | AzureSentinel.ThreatIndicator.ETag | String | The ETag of the indicator. | 
 | AzureSentinel.ThreatIndicator.Type | String | The type of the indicator. | 
 | AzureSentinel.ThreatIndicator.Kind | String | The kind of the indicator. | 
-| AzureSentinel.ThreatIndicators.Confidence | Number | The confidence of the threat indicator. A number between 0-100. | 
-| AzureSentinel.ThreatIndicator.Created | Date | When was the threat indicator created. | 
+| AzureSentinel.ThreatIndicators.Confidence | Number | The confidence of the threat indicator. This is a number between 0-100. | 
+| AzureSentinel.ThreatIndicator.Created | Date | When the threat indicator was created. | 
 | AzureSentinel.ThreatIndicator.CreatedByRef | String | The creator of the indicator. | 
-| AzureSentinel.ThreatIndicator.ExternalID | String | The external id of the indicator. | 
-| AzureSentinel.ThreatIndicator.Revoked | Boolean | Was the threat indicator revoked or not. | 
+| AzureSentinel.ThreatIndicator.ExternalID | String | The external ID of the indicator. | 
+| AzureSentinel.ThreatIndicator.Revoked | Boolean | Whether the threat indicator was revoked. | 
 | AzureSentinel.ThreatIndicator.Source | String | The source of the indicator. | 
-| AzureSentinel.ThreatIndicator.ETags | String | The etags of the indicator. | 
+| AzureSentinel.ThreatIndicator.ETags | String | The Etags of the indicator. | 
 | AzureSentinel.ThreatIndicator.DisplayName | String | The display name of the indicator. | 
 | AzureSentinel.ThreatIndicator.Description | String | The description of the indicator. | 
 | AzureSentinel.ThreatIndicator.ThreatTypes | Unknown | The threat types of the indicator. | 
-| AzureSentinel.ThreatIndicator.KillChainPhases.KillChainName | Unknown | The kill chains name of the indicator. | 
+| AzureSentinel.ThreatIndicator.KillChainPhases.KillChainName | Unknown | The kill chain's name of the indicator. | 
 | AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeKey | Unknown | The pattern type key of the indicator. | 
 | AzureSentinel.ThreatIndicator.Pattern | String | The pattern of the indicator. | 
 | AzureSentinel.ThreatIndicator.PatternType | String | The pattern type of the indicator. | 
-| AzureSentinel.ThreatIndicator.ValidFrom | Date | The date which the indicator is valid from. | 
-| AzureSentinel.ThreatIndicator.ValidUntil | Date | The date which the indicator is valid until. | 
+| AzureSentinel.ThreatIndicator.ValidFrom | Date | The date from which the indicator is valid. | 
+| AzureSentinel.ThreatIndicator.ValidUntil | Date | The date until which the indicator is valid. | 
 | AzureSentinel.ThreatIndicator.KillChainPhases.PhaseName | String | The phase name of the indicator. | 
-| AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeValues.Value | String | The value of the inidcator. | 
+| AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeValues.Value | String | The value of the indicator. | 
 | AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeValues.ValueType | String | The value type of the indicator. | 
 | AzureSentinel.ThreatIndicator.LastUpdatedTimeUtc | Date | The last updated time of the indicator. | 
 | AzureSentinel.ThreatIndicator.Tags | Unknown | The tags of the indicator. | 
-| AzureSentinel.ThreatIndicator.Types | Unknown | The threat types of the inidcator. | 
+| AzureSentinel.ThreatIndicator.Types | Unknown | The threat types of the indicator. | 
 
 
 #### Command Example
@@ -1667,28 +1667,28 @@ Replaces the tags of a given indicator.
 | AzureSentinel.ThreatIndicator.ETag | String | The ETag of the indicator. | 
 | AzureSentinel.ThreatIndicator.Type | String | The type of the indicator. | 
 | AzureSentinel.ThreatIndicator.Kind | String | The kind of the indicator. | 
-| AzureSentinel.ThreatIndicators.Confidence | Number | The confidence of the threat indicator. A number between 0-100. | 
-| AzureSentinel.ThreatIndicator.Created | Date | When was the threat indicator created. | 
+| AzureSentinel.ThreatIndicators.Confidence | Number | The confidence of the threat indicator. This is a number between 0-100. | 
+| AzureSentinel.ThreatIndicator.Created | Date | When the threat indicator was created. | 
 | AzureSentinel.ThreatIndicator.CreatedByRef | String | The creator of the indicator. | 
-| AzureSentinel.ThreatIndicator.ExternalID | String | The external id of the indicator. | 
-| AzureSentinel.ThreatIndicator.Revoked | Boolean | Was the threat indicator revoked or not. | 
+| AzureSentinel.ThreatIndicator.ExternalID | String | The external ID of the indicator. | 
+| AzureSentinel.ThreatIndicator.Revoked | Boolean | Whether the threat indicator was revoked. | 
 | AzureSentinel.ThreatIndicator.Source | String | The source of the indicator. | 
-| AzureSentinel.ThreatIndicator.ETags | String | The etags of the indicator. | 
+| AzureSentinel.ThreatIndicator.ETags | String | The Etags of the indicator. | 
 | AzureSentinel.ThreatIndicator.DisplayName | String | The display name of the indicator. | 
 | AzureSentinel.ThreatIndicator.Description | String | The description of the indicator. | 
 | AzureSentinel.ThreatIndicator.ThreatTypes | Unknown | The threat types of the indicator. | 
-| AzureSentinel.ThreatIndicator.KillChainPhases.KillChainName | Unknown | The kill chains name of the indicator. | 
+| AzureSentinel.ThreatIndicator.KillChainPhases.KillChainName | Unknown | The kill chain's name of the indicator. | 
 | AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeKey | Unknown | The pattern type key of the indicator. | 
 | AzureSentinel.ThreatIndicator.Pattern | String | The pattern of the indicator. | 
 | AzureSentinel.ThreatIndicator.PatternType | String | The pattern type of the indicator. | 
-| AzureSentinel.ThreatIndicator.ValidFrom | Date | The date which the indicator is valid from. | 
-| AzureSentinel.ThreatIndicator.ValidUntil | Date | The date which the indicator is valid until. | 
+| AzureSentinel.ThreatIndicator.ValidFrom | Date | The date from which the indicator is valid. | 
+| AzureSentinel.ThreatIndicator.ValidUntil | Date | The date until which the indicator is valid. | 
 | AzureSentinel.ThreatIndicator.KillChainPhases.PhaseName | String | The phase name of the indicator. | 
-| AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeValues.Value | String | The value of the inidcator. | 
+| AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeValues.Value | String | The value of the indicator. | 
 | AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeValues.ValueType | String | The value type of the indicator. | 
 | AzureSentinel.ThreatIndicator.LastUpdatedTimeUtc | Date | The last updated time of the indicator. | 
 | AzureSentinel.ThreatIndicator.Tags | Unknown | The tags of the indicator. | 
-| AzureSentinel.ThreatIndicator.Types | Unknown | The threat types of the inidcator. | 
+| AzureSentinel.ThreatIndicator.Types | Unknown | The threat types of the indicator. | 
 
 
 #### Command Example
