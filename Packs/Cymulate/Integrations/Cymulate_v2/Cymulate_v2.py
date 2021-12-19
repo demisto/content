@@ -1644,7 +1644,7 @@ def main() -> None:
 
     api_key = params.get('api_key') or (params.get('credentials') or {}).get('password')
     if not api_key:
-        raise Exception('API Key must be provided.')
+        raise Exception('API Token must be provided.')
     base_url = params.get('base_url')
 
     verify_certificate = not params.get('insecure', False)
