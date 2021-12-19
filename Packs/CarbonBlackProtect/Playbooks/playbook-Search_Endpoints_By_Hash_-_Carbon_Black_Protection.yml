@@ -210,10 +210,10 @@ tasks:
       version: -1
       name: Get hostname and workgroup
       description: Get hostname and workgroup
-      script: CarbonBlackProtectionV2|||cbp-computer-get
+      script: carbonblackprotection|||cbp-computer-get
       type: regular
       iscommand: true
-      brand: CarbonBlackProtectionV2
+      brand: carbonblackprotection
     nexttasks:
       '#none#':
       - "14"
