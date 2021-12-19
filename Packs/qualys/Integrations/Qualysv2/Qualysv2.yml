@@ -2365,8 +2365,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The hosts you want to add to, remove from or replace in the restricted
-        IPs list. How to specify IP addresses. One or more IPs/ranges may be specified.
+      description: The hosts you want to retrieve list detection.
+      How to specify IP addresses. One or more IPs/ranges may be specified.
         Multiple IPs/ranges are comma separated. An IP range is specified with a hyphen
         (for example, 10.10.30.1-10.10.30.50).
       isArray: true
@@ -2462,6 +2462,7 @@ script:
       description: Show only certain host IDs/ranges. One or more host IDs/ranges
         may be specified. Multiple entries are comma separated. A host ID range is
         specified with a hyphen (for example, 190-400).Valid host IDs are required.
+      One of `ips` or `ids` parameters must be supplied.
       isArray: true
       name: ids
       required: false
@@ -2471,6 +2472,7 @@ script:
         IPs list. How to specify IP addresses. One or more IPs/ranges may be specified.
         Multiple IPs/ranges are comma separated. An IP range is specified with a hyphen
         (for example, 10.10.30.1-10.10.30.50).
+      One of `ips` or `ids` parameters must be supplied.
       isArray: true
       name: ips
       required: false
@@ -2698,13 +2700,12 @@ script:
       description: TODO
     description: Create a scan schedule in the user’s account.
     execution: true
-
   - name: qualys-schedule-scan-update
     arguments:
     - default: false
       description: The scan ID to update.
       isArray: false
-      name: scan_id
+      name: id
       required: true
       secret: false
     - default: false
@@ -2848,7 +2849,202 @@ script:
       description: TODO
     description: Updates a scan schedule in the user’s account.
     execution: true
-
+  - name: qualys-asset-group-add
+    arguments:
+    - default: false
+      description: The asset group title to add.
+      isArray: false
+      name: title
+      required: true
+      secret: false
+    - default: false
+      description: Restrict the request to a certain custom network ID.
+      isArray: false
+      name: network_id
+      required: false
+      secret: false
+    - name: ips
+      description: Add IPs to asset group. IP addresses/ranges. One or more IPs/ranges may
+        be specified. Multiple entries are comma separated. An IP range is specified
+        with a hyphen (for example, 10.10.10.1-10.10.10.100).
+      isArray: true
+    - name: domains
+      required: false
+      description: Add domains to asset group; do not enter "www." at the start of the domain name. Multiple entries are comma separated.
+      isArray: true
+    - name: dns_names
+      required: false
+      description: Add DNS names to asset group. Multiple entries are comma separated.
+      isArray: true
+    - name: netbios_names
+      required: false
+      description: Add NETBIOS names to asset group. Multiple entries are comma separated.
+      isArray: true
+    - name: cvss_enviro_td
+      auto: PREDEFINED
+      predefined:
+      - "high"
+      - "medium"
+      - "low"
+      - "none"
+      description: Add CVSS environment target distribution.
+      isArray: false
+    - name: cvss_enviro_cr
+      auto: PREDEFINED
+      predefined:
+      - "high"
+      - "medium"
+      - "low"
+      description: Add CVSS environment confidentiality requirement.
+      isArray: false
+    - name: cvss_enviro_ir
+      auto: PREDEFINED
+      predefined:
+      - "high"
+      - "medium"
+      - "low"
+      description: Add CVSS environment integrity requirement.
+      isArray: false
+    - name: cvss_enviro_ar
+      auto: PREDEFINED
+      predefined:
+      - "high"
+      - "medium"
+      - "low"
+      description: Add CVSS environment availability requirement.
+      isArray: false
+    - name: appliance_ids
+      required: false
+      description: Add appliance IDs to asset group. Multiple entries are comma separated.
+      isArray: true
+    outputs:
+    - contextPath: Qualys.ScheduleScan.Update.Status
+      description: TODO
+    - contextPath: Qualys.ScheduleScan.Update.Timestamp
+      description: TODO
+    description: Create a new asset group.
+    execution: true
+  - name: qualys-asset-group-edit
+    arguments:
+    - default: false
+      description: Set a new asset group title.
+      isArray: false
+      name: set_title
+      required: false
+      secret: false
+    - default: false
+      description: ID of the asset group to edit.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - name: add_ips
+      description: Add IPs to asset group. IP addresses/ranges. One or more IPs/ranges may
+        be specified. Multiple entries are comma separated. An IP range is specified
+        with a hyphen (for example, 10.10.10.1-10.10.10.100).
+      isArray: true
+    - name: set_ips
+      description: Set IPs of asset group. IP addresses/ranges. One or more IPs/ranges may
+        be specified. Multiple entries are comma separated. An IP range is specified
+        with a hyphen (for example, 10.10.10.1-10.10.10.100).
+      isArray: true
+    - name: remove_ips
+      description: Remove IPs from asset group. IP addresses/ranges. One or more IPs/ranges may
+        be specified. Multiple entries are comma separated. An IP range is specified
+        with a hyphen (for example, 10.10.10.1-10.10.10.100).
+      isArray: true
+    - name: add_domains
+      required: false
+      description: Add domains to asset group; do not enter "www." at the start of the domain name. Multiple entries are comma separated.
+      isArray: true
+    - name: set_domains
+      required: false
+      description: Set domains of asset group; do not enter "www." at the start of the domain name. Multiple entries are comma separated.
+      isArray: true
+    - name: remove_domains
+      required: false
+      description: Remove domains from asset group; do not enter "www." at the start of the domain name. Multiple entries are comma separated.
+      isArray: true
+    - name: add_dns_names
+      required: false
+      description: Add DNS names to asset group. Multiple entries are comma separated.
+      isArray: true
+    - name: set_dns_names
+      required: false
+      description: Set DNS names of asset group. Multiple entries are comma separated.
+      isArray: true
+    - name: remove_dns_names
+      required: false
+      description: Remove DNS names from asset group. Multiple entries are comma separated.
+      isArray: true
+    - name: netbios_names
+      required: false
+      description: Add NETBIOS names to asset group. Multiple entries are comma separated.
+      isArray: true
+    - name: add_netbios_names
+      required: false
+      description: Add NETBIOS names to asset group. Multiple entries are comma separated.
+      isArray: true
+    - name: set_netbios_names
+      required: false
+      description: Set NETBIOS names of asset group. Multiple entries are comma separated.
+      isArray: true
+    - name: remove_netbios_names
+      required: false
+      description: Remove NETBIOS names from asset group. Multiple entries are comma separated.
+      isArray: true
+    - name: set_cvss_enviro_td
+      auto: PREDEFINED
+      predefined:
+      - "high"
+      - "medium"
+      - "low"
+      - "none"
+      description: Set CVSS environment target distribution.
+      isArray: false
+    - name: set_cvss_enviro_cr
+      auto: PREDEFINED
+      predefined:
+      - "high"
+      - "medium"
+      - "low"
+      description: Set CVSS environment confidentiality requirement.
+      isArray: false
+    - name: set_cvss_enviro_ir
+      auto: PREDEFINED
+      predefined:
+      - "high"
+      - "medium"
+      - "low"
+      description: Set CVSS environment integrity requirement.
+      isArray: false
+    - name: set_cvss_enviro_ar
+      auto: PREDEFINED
+      predefined:
+      - "high"
+      - "medium"
+      - "low"
+      description: Set CVSS environment availability requirement.
+      isArray: false
+    - name: add_appliance_ids
+      required: false
+      description: Add appliance IDs to asset group. Multiple entries are comma separated.
+      isArray: true
+    - name: set_appliance_ids
+      required: false
+      description: Set appliance IDs of asset group. Multiple entries are comma separated.
+      isArray: true
+    - name: remove_appliance_ids
+      required: false
+      description: Remove appliance IDs from asset group. Multiple entries are comma separated.
+      isArray: true
+    outputs:
+    - contextPath: Qualys.ScheduleScan.Update.Status
+      description: TODO
+    - contextPath: Qualys.ScheduleScan.Update.Timestamp
+      description: TODO
+    description: Create a new asset group.
+    execution: true
   dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: false

@@ -1,10 +1,9 @@
-import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
+from typing import Dict, Tuple, Callable
 
 import requests
-import traceback
-from typing import Dict, Any, Tuple, Callable
+
+from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+from CommonServerUserPython import *  # noqa
 
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 ''' CONSTANTS '''
@@ -235,8 +234,18 @@ COMMANDS_PARSE_AND_OUTPUT_DATA: Dict[str, Dict[Any, Any]] = {
         'json_path': ['SIMPLE_RETURN', 'RESPONSE', 'ITEM_LIST', 'ITEM'],
         'table_headers': ['Deleted', 'ID']
     },
-    'qualys-asset-group-manage': {
-        'table_name': 'Asset Group Manage',
+    'qualys-asset-group-add': {
+        'table_name': 'Asset Group Add',
+        'json_path': ['SIMPLE_RETURN', 'RESPONSE'],
+        'collection_name': 'ITEM_LIST'
+    },
+    'qualys-asset-group-delete': {
+        'table_name': 'Asset Group Delete',
+        'json_path': ['SIMPLE_RETURN', 'RESPONSE'],
+        'collection_name': 'ITEM_LIST'
+    },
+    'qualys-asset-group-edit': {
+        'table_name': 'Asset Group Edit',
         'json_path': ['SIMPLE_RETURN', 'RESPONSE'],
         'collection_name': 'ITEM_LIST'
     },
@@ -410,7 +419,15 @@ COMMANDS_CONTEXT_DATA = {
         'context_prefix': 'Qualys.ScheduleScan',
         'context_key': 'ID',
     },
-    'qualys-asset-group-manage': {
+    'qualys-asset-group-add': {
+        'context_prefix': 'Qualys.AssetGroup',
+        'context_key': 'KEY'
+    },
+    'qualys-asset-group-edit': {
+        'context_prefix': 'Qualys.AssetGroup',
+        'context_key': 'KEY'
+    },
+    'qualys-asset-group-delete': {
         'context_prefix': 'Qualys.AssetGroup',
         'context_key': 'KEY'
     },
@@ -631,8 +648,18 @@ COMMANDS_API_DATA: Dict[str, Dict[str, str]] = {
         'call_method': 'POST',
         'resp_type': 'text',
     },
-    'qualys-asset-group-manage': {
-        'api_route': API_SUFFIX + 'asset/group/',
+    'qualys-asset-group-add': {
+        'api_route': API_SUFFIX + 'asset/group/?action=add',
+        'call_method': 'POST',
+        'resp_type': 'text'
+    },
+    'qualys-asset-group-edit': {
+        'api_route': API_SUFFIX + 'asset/group/?action=edit',
+        'call_method': 'POST',
+        'resp_type': 'text'
+    },
+    'qualys-asset-group-delete': {
+        'api_route': API_SUFFIX + 'asset/group/?action=delete',
         'call_method': 'POST',
         'resp_type': 'text'
     },
@@ -896,20 +923,30 @@ COMMANDS_ARGS_DATA: Dict[str, Any] = {
             'ids', 'ips', 'network_id', 'host_dns', 'host_netbios', 'tracking_method', 'new_tracking_method',
             'new_owner', 'new_comment', 'new_ud1', 'new_ud2', 'new_ud3'
         ],
+        'required_groups': [
+            ['ids', 'ips']
+        ],
     },
     'qualys-scan-delete': {
         'args': [
             'scan_id'
         ],
     },
-    'qualys-asset-group-manage': {
-        'args': ['action', 'title', 'id', 'network_id', 'add_ips', 'set_ip', 'remove_ips', 'add_domains', 'set_domains',
-                 'remove_domains', 'add_dns', 'set_dns', 'remove_dns', 'add_netbios_names', 'set_netbios_names',
-                 'remove_netbios_names', 'cvss_enviro_td', 'cvss_enviro_cr', 'cvss_enviro_ir', 'cvss_enviro_ar',
-                 'add_appliance_ids', 'set_appliance_ids', 'remove_appliance_ids']
+    'qualys-asset-group-add': {
+        'args': ['title', 'network_id', 'ips', 'domains', 'dns_names', 'netbios_names', 'cvss_enviro_td',
+                 'cvss_enviro_cr', 'cvss_enviro_ir', 'cvss_enviro_ar', 'appliance_ids']
+    },
+    'qualys-asset-group-edit': {
+        'args': ['set_title', 'id', 'add_ips', 'set_ips', 'remove_ips', 'add_domains', 'remove_domains', 'set_domains',
+                 'add_dns_names', 'set_dns_names', 'remove_dns_names', 'add_netbios_names', 'set_netbios_names',
+                 'remove_netbios_names', 'set_cvss_enviro_td', 'set_cvss_enviro_cr', 'set_cvss_enviro_ir',
+                 'set_cvss_enviro_ar', 'add_appliance_ids', 'set_appliance_ids', 'remove_appliance_ids']
+    },
+    'qualys-asset-group-delete': {
+        'args': ['id']
     },
     'qualys-schedule-scan-create': {
-        'args': ['scan_title', 'asset_group_ids', 'asset_groups', 'ip', 'option_title', 'frequency_days',
+        'args': ['scan_title', 'asset_group_ids', 'asset_groups', 'ip', 'option_title', 'frequency_days', 'weekdays'
                  'frequency_weeks', 'frequency_months', 'day_of_month', 'day_of_week', 'week_of_month', 'start_date',
                  'start_hour', 'start_minute', 'time_zone_code', 'exclude_ip_per_scan', 'default_scanner',
                  'scanners_in_ag'],
@@ -920,11 +957,10 @@ COMMANDS_ARGS_DATA: Dict[str, Any] = {
                                    'week_of_month': 'frequency_months', 'weekdays': 'frequency_weeks'},
         'default_added_depended_args': {'frequency_days': {'occurrence': 'daily'},
                                         'frequency_weeks': {'occurrence': 'weekly'},
-                                        'frequency_months': {'occurrence': 'monthly'},
-                                        'scan_title': {'active': '1'}},
+                                        'frequency_months': {'occurrence': 'monthly'}},
     },
     'qualys-schedule-scan-update': {
-        'args': ['scan_title', 'asset_group_ids', 'asset_groups', 'ip', 'scan_id', 'frequency_days',
+        'args': ['scan_id', 'scan_title', 'asset_group_ids', 'asset_groups', 'ip', 'frequency_days', 'weekdays',
                  'frequency_weeks', 'frequency_months', 'day_of_month', 'day_of_week', 'week_of_month', 'start_date',
                  'start_hour', 'start_minute', 'time_zone_code', 'exclude_ip_per_scan', 'default_scanner',
                  'scanners_in_ag', 'active'],
@@ -1184,7 +1220,8 @@ def calculate_ip_original_amount(result: Dict[str, Any]) -> int:
     Calculating the amount of ip addresses and ranges returned.
     Args:
         result: Parsed output, a dictionary that might contain a list of single ips and a list of ranges of ips.
-        IP addresses and ranges are represented by a list of items, unless there's only a single item, then it's a string.
+        IP addresses and ranges are represented by a list of items, unless there's only a single item,
+        then it's a string.
     Returns: An integer which is the amount of ip addresses and ranges
     """
     original_amount = 0
@@ -1868,7 +1905,15 @@ def main():
             'result_handler': handle_general_result,
             'output_builder': build_multiple_values_parsed_output
         },
-        'qualys-asset-group-manage': {
+        'qualys-asset-group-add': {
+            'result_handler': handle_general_result,
+            'output_builder': build_multiple_values_parsed_output
+        },
+        'qualys-asset-group-edit': {
+            'result_handler': handle_general_result,
+            'output_builder': build_multiple_values_parsed_output
+        },
+        'qualys-asset-group-delete': {
             'result_handler': handle_general_result,
             'output_builder': build_multiple_values_parsed_output
         },
@@ -1959,59 +2004,3 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-# <?xml version="1.0" encoding="UTF-8" ?>
-# <!DOCTYPE SIMPLE_RETURN SYSTEM
-# "https://qualysapi.qualys.com/api/2.0/simple_return.dtd">
-# <SIMPLE_RETURN>
-#  <RESPONSE>
-#  <DATETIME>2019-01-14T11:57:42Z</DATETIME>
-#  <TEXT>Edit scheduled Scan Completed successfully</TEXT>
-#  <ITEM_LIST>
-#  <ITEM>
-#  <KEY>ID</KEY>
-#  <VALUE>146754</VALUE>
-#  </ITEM>
-#  </ITEM_LIST>
-#  </RESPONSE>
-# </SIMPLE_RETURN>
-
-# option_title
-
-# scan_title
-# asset_group_ids
-# asset_group
-# ip
-# frequency_days
-# frequency_weeks
-# frequency_months
-# day_of_month
-# day_of_week
-# week_of_month
-# start_date
-# start_hour
-# start_minute
-# time_zone_code
-# exclude_ip_per_scan
-# default_scanner
-# scanners_in_ag
-# active
-
-# scan_id
-# scan_title
-# asset_group_ids
-# asset_group
-# ip
-# frequency_days
-# frequency_weeks
-# frequency_months
-# day_of_month
-# day_of_week
-# week_of_month
-# start_date
-# start_hour
-# start_minute
-# time_zone_code
-# exclude_ip_per_scan
-# default_scanner
-# scanners_in_ag
-# active
