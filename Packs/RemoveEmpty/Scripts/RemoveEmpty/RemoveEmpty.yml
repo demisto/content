@@ -1,3 +1,18 @@
+commonfields:
+  id: RemoveEmpty
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+name: RemoveEmpty
+script: ''
+type: javascript
+tags:
+- transformer
+- entirelist
+- general
+comment: Remove empty items, entries or nodes from the array.
+enabled: true
 args:
 - name: value
   required: true
@@ -12,24 +27,9 @@ args:
   defaultValue: "false"
 - name: empty_values
   description: The list of particular tokens to be considerd as empty
-comment: Remove empty items, entries or nodes from the array.
-commonfields:
-  id: RemoveEmpty
-  version: -1
-contentitemexportablefields:
-  contentitemfields:
-    fromServerVersion: ""
-enabled: true
-name: RemoveEmpty
-runas: DBotWeakRole
-runonce: false
-script: ''
 scripttarget: 0
-tags:
-- transformer
-- entirelist
-- general
-type: javascript
+runonce: false
+runas: DBotWeakRole
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
