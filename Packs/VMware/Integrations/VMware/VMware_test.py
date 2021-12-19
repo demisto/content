@@ -80,6 +80,12 @@ PARAMS_GET_EVENTS = [
      1)
 ]
 
+PARAMS_GET_PRIORITY = [
+    ("highPriority", vim.VirtualMachine.MovePriority().highPriority),
+    ("lowPriority", vim.VirtualMachine.MovePriority().lowPriority),
+    ("defualt", vim.VirtualMachine.MovePriority().defaultPriority)
+]
+
 
 def create_children():
     return [Child(Summary(args.get('ip'), args.get('hostname'), args.get('name'), args.get('uuid'))) for args in
@@ -89,6 +95,11 @@ def create_children():
 def create_events(events_list):
     return [Event(args.get('key'), args.get('message'), args.get('user_name'), args.get('created_time')) for args in
             events_list]
+
+
+@pytest.mark.parametrize('input_val, output', PARAMS_GET_PRIORITY)
+def test_get_priority(input_val, output):
+    assert VMware.get_priority(input_val) == output
 
 
 @pytest.mark.parametrize('args, params, res', PARAMS_GET_VM_FILTERS)

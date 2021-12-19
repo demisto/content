@@ -206,7 +206,8 @@ def create_entry(data, ec):
                                                                             'IP', 'State', 'HostName', 'MACAddress',
                                                                             'SnapshotCreateDate',
                                                                             'SnapshotUUID',
-                                                                            'Deleted'], removeNull=True) if data else 'No result were found',
+                                                                            'Deleted'], removeNull=True) if data
+        else 'No result were found',
         'EntryContext': ec
     }
 
