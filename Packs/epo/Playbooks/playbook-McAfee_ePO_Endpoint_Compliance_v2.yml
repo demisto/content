@@ -436,5 +436,5 @@ view: |-
 inputs: []
 outputs: []
 tests:
-- mcafee_epo_v2
+- No tests (auto formatted)
 fromversion: 5.0.0

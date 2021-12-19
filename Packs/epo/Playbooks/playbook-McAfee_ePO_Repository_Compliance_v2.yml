@@ -439,4 +439,4 @@ inputs: []
 outputs: []
 fromversion: 5.0.0
 tests:
-- mcafee_epo_v2
+- No tests (auto formatted)
