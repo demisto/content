@@ -210,7 +210,7 @@ script:
     description: Returns the list of the vectors all disabled and enabled ones have
       optional parameters for pagination
     name: picus-vector-list
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   runonce: false
   script: ''
   subtype: python3
