@@ -1011,6 +1011,7 @@ script:
       - xml
       - html
       - text
+      - nexpose-simple-xml
       description: The report format, default is pdf.
       defaultValue: pdf
     outputs:
