@@ -1307,6 +1307,9 @@ script:
       description: Usage holds wildfire usage stats, period for the usage varies with
         context
       type: Unknown
+    - contextPath: PrismaCloudCompute.ReportsImagesScan.complianceIssuesCount
+      description: Number of compliance issues.
+      type: Number
   - name: prisma-cloud-compute-hosts-scan-list
     description: Get images scan report, the report includes vulnerabilities,
       compliance issues, binaries, etc.
@@ -1514,6 +1517,9 @@ script:
     - contextPath: PrismaCloudCompute.ReportHostScan.wildFireUsage
       description: Usage holds wildfire usage stats, period for the usage varies with
         context
+      type: Unknown
+    - contextPath: PrismaCloudCompute.ReportHostScan.complianceIssuesCount
+      description: Number of compliance issues
       type: Unknown
   - name: prisma-cloud-compute-vulnerabilities-impacted-resources-list
     description: prisma-cloud-compute-vulnerabilities-impacted-resources-list
