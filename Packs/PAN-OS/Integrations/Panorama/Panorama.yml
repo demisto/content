@@ -1592,7 +1592,7 @@ script:
     - auto: PREDEFINED
       description: Parameter in the security rule to change. Can be 'source', 'destination',
         'application', 'action', 'category', 'description', 'disabled', 'target',
-        'log-forwarding', 'tag' or 'group_profile'.
+        'log-forwarding', 'tag', 'source-user', 'service' or 'profile-setting'.
       name: element_to_change
       predefined:
       - source
@@ -1606,6 +1606,8 @@ script:
       - log-forwarding
       - tag
       - profile-setting
+      - source-user
+      - service
       required: true
     - description: The new value for the parameter.
       name: element_value
