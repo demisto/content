@@ -70,12 +70,6 @@ Retrieve alert data by its ID
 | MSISAC.Event.Stream.event_type | unknown | The type of event submitted from MS-ISAC | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### msisac-retrieve-events
 ***
@@ -111,11 +105,4 @@ Retrieves a list of MS-ISAC events for a given number of days (one or greater)
 | MSISAC.RetrievedEvents.analysis | string | The analysis provided by MS-ISAC | 
 | MSISAC.RetrievedEvents.description | string | The description of the event | 
 | MSISAC.RetrievedEvents.severity | string | The severity assigned to the MS-ISAC alert | 
-
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
