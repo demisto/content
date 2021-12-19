@@ -32,9 +32,6 @@
 </li>
 <li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>
 </ol>
-<h2>Configuration params</h2>
-<p>NOTE: In order to authenticate with an API token, insert '__token' in the "Username" textbox, and the token itself in the "Password" textbox.</p>
-<h2>Commands</h2>
 <p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_4691429048921543479084695">Create a task from a file: cuckoo-create-task-from-file</a></li>
