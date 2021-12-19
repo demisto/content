@@ -74,7 +74,7 @@
                     "sourceInstance": "Some Feed_instance_1",
                     "timestamp": "0001-01-01T00:00:00Z",
                     "type": "IP",
-                    "value": "65.33.236.173"
+                    "value": "8.8.8.8"
                 }
             },
             "score": 3,
@@ -181,7 +181,7 @@
                 "Some Feed_instance_1"
             ],
             "timestamp": "2021-12-08T09:32:24.102219+02:00",
-            "value": "72.26.218.70",
+            "value": "1.1.1.1",
             "version": 15
         },
         {
@@ -273,7 +273,7 @@
                 "Some Feed_instance_1"
             ],
             "timestamp": "2021-12-08T09:32:24.09701+02:00",
-            "value": "193.161.193.99",
+            "value": "1.2.3.4",
             "version": 15
         },
         {
@@ -365,7 +365,7 @@
                 "Some Feed_instance_1"
             ],
             "timestamp": "2021-12-08T09:32:24.095029+02:00",
-            "value": "98.181.17.39",
+            "value": "2.2.2.2",
             "version": 15
         },
         {
@@ -470,7 +470,7 @@
                 "Some Feed_instance_1"
             ],
             "timestamp": "2021-12-08T09:32:21.397301+02:00",
-            "value": "173.231.184.124",
+            "value": "3.3.3.3",
             "version": 15
         }
     ],

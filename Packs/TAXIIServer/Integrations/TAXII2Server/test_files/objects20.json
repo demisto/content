@@ -78,7 +78,7 @@
                             "sourceInstance": "Some Feed_instance_1",
                             "timestamp": "0001-01-01T00:00:00Z",
                             "type": "IP",
-                            "value": "65.33.236.173"
+                            "value": "8.8.8.8"
                         }
                     },
                     "score": 3,
@@ -209,14 +209,14 @@
                         "Some Feed_instance_1"
                     ],
                     "timestamp": "2021-12-08T09:32:24.102219+02:00",
-                    "value": "72.26.218.70",
+                    "value": "1.1.1.1",
                     "version": 15
                 }
             },
             "id": "ipv4-addr--4d46cbbe-3f4a-5acb-af50-0e52f43e2c3f",
             "spec_version": "2.0",
             "type": "ipv4-addr",
-            "value": "72.26.218.70"
+            "value": "1.1.1.1"
         },
         {
             "created": "2021-12-08T09:32:24.102219+02:00",
