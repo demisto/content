@@ -25,11 +25,13 @@
  "hidden": false,
  "associatedTypes": [
   "Phishing",
+  "Phishing Alerts",
   "Trend Micro CAS Event",
   "Email Communication"
  ],
  "systemAssociatedTypes": [
   "Phishing",
+  "Phishing Alerts",
   "Email Communication"
  ],
  "associatedToAll": false,

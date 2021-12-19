@@ -60,6 +60,8 @@ class SetPhishingCampaignDetails:
 
     def update_similarity_to_last_incident(self, campaign_incidents: list) -> None:
         most_current_incident_id = self._get_most_updated_incident_id(campaign_incidents)
+        demisto.debug(f"Newest incident in campaign: {most_current_incident_id}.")
+
         similarities_according_to_last_updated = self.get_similarities_from_incident(most_current_incident_id)
         for incident in campaign_incidents:
             # Assuming most recent sees all incidents that was created before it.
@@ -75,32 +77,37 @@ class SetPhishingCampaignDetails:
             Also, update other campaign incident's similarity to match the new one.
         """
         if not campaign_data:
+            demisto.debug("Creating new Campaign with the current incident data.")
             return current_incident_data
 
         if self.is_incident_new_in_campaign(demisto.incident()["id"], campaign_data):
+            demisto.debug("Adding current incident as new incident to Campaign.")
+
             self.add_current_incident_to_campaign(current_incident_data, campaign_data)
             self.update_similarity_to_last_incident(current_incident_data.get('incidents', []))
             return campaign_data
 
         else:
+            demisto.debug("Current incident already exists in Campaign.")
+
             return campaign_data
 
-    def copy_campaign_data_to_incident(self, incident_id: str, merged_campaign: dict, append: bool) -> dict:
+    def copy_campaign_data_to_incident(self, incident_id: str, merged_campaign: dict, append: bool):
 
-        args = {'key': EMAIL_CAMPAIGN_KEY, 'value': merged_campaign, 'append': append, "id": incident_id}
+        args = {'key': EMAIL_CAMPAIGN_KEY, 'value': merged_campaign, 'append': append}
 
-        res = self.execute_command('SetByIncidentId', args)
+        demisto.debug(f'Executing set command on incident {incident_id} with {args=}')
+        demisto.executeCommand("executeCommandAt",
+                               {'command': 'Set', 'incidents': incident_id, 'arguments': args})
 
-        return res
-
-    def run(self, campaign_incident_id: str, append: bool) -> dict:
+    def run(self, campaign_incident_id: str, append: bool):
         if not campaign_incident_id:
             raise ValueError("Please provide Campaign incident id.")
 
         current_incident_campaign_data = self.get_current_incident_campaign_data()
         campaign_data = self.get_campaign_context_from_incident(campaign_incident_id)
         merged_campaign = self.merge_contexts(current_incident_campaign_data, campaign_data)
-        return self.copy_campaign_data_to_incident(campaign_incident_id, merged_campaign, append)
+        self.copy_campaign_data_to_incident(campaign_incident_id, merged_campaign, append)
 
 
 def main():
@@ -111,9 +118,8 @@ def main():
         append = argToBoolean(args['append'])
 
         set_phishing_campaign_details = SetPhishingCampaignDetails()
-        res = set_phishing_campaign_details.run(incident_id, append)
-        if res:
-            CommandResults(readable_output='Added incident successfully to Campaign.')
+        set_phishing_campaign_details.run(incident_id, append)
+        CommandResults(readable_output='Added incident successfully to Campaign.')
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
