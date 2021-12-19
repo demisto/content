@@ -537,12 +537,8 @@ def main() -> None:
     client_credentials = params.get('client_credentials', False)
     enc_key = params.get('enc_key') or (demisto.getParam('credentials') or {}).get('password')
 
-    if not enc_key:
-        raise Exception('Client Secret must be provided.')
     if not app_id:
         raise Exception('Aplication ID must be provided.')
-    if not tenant_id:
-        raise Exception('Tenant ID must be provided.')
 
     first_fetch_time = params.get('first_fetch', '3 days').strip()
     fetch_limit = arg_to_number(params.get('max_fetch', 10))
