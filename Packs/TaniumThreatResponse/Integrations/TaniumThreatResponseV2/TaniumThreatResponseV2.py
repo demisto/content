@@ -444,10 +444,9 @@ def fetch_incidents(client, alerts_states_to_retrieve, last_run, fetch_time, max
             new_id = incident.get('alertid')
             demisto.debug(f'Fetched new alert, id: {new_id}, created_at: {temp_date}.\n')
 
-            if temp_date >= last_fetch:
-                if new_id > last_id:
-                    demisto.debug(f'Adding new incident with id: {new_id}')
-                    incidents.append(incident)
+            if temp_date >= last_fetch and new_id > last_id:
+                demisto.debug(f'Adding new incident with id: {new_id}')
+                incidents.append(incident)
             else:
                 demisto.debug(f'Stop fetch loop, temp date < last fetch: {temp_date} < {last_fetch}.')
                 break
