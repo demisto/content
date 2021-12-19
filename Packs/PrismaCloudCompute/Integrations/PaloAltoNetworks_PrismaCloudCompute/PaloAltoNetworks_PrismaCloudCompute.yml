@@ -840,8 +840,8 @@ script:
     deprecated: false
     arguments:
     - name: cve
-      description: Comma-seperated list of cves, for example, !cve
-        cve=cve-2016-223,cve-2020-3546
+      description: Comma-seperated list of cves, for example,
+        cve=cve-2016-223,cve-2020-3546, the command will find also CVEs that the following strings are part of their names.
       required: false
       isArray: true
       defaultValue: ""
@@ -857,6 +857,18 @@ script:
       type: Date
     - contextPath: CVE.Description
       description: A description of the CVE.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator value.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The indicator score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor reporting the score of the indicator.
       type: String
   - name: prisma-cloud-compute-defenders-list
     description: Retrieve a list of defenders and their information

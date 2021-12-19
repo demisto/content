@@ -1274,4 +1274,8 @@ def test_context_data_output_is_valid(requests_mock, args, func, url_suffix, jso
     requests_mock.get(url=full_url, json=json)
     command_results = func(client=client, args=args) if args else func(client=client)
 
-    assert command_results.outputs == expected_context_output
+    if isinstance(command_results, list):
+        for result, expected_output in zip(command_results, expected_context_output):
+            assert result.outputs == expected_output
+    else:
+        assert command_results.outputs == expected_context_output

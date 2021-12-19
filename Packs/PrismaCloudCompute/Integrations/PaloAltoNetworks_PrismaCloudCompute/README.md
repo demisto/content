@@ -989,40 +989,58 @@ Get infomration about the cves in the system, will return maximum of 50 records,
 | CVE.CVSS | String | The CVSS of the CVE, for example: 10.0 | 
 | CVE.Modified | Date | The timestamp of when the CVE was last modified. | 
 | CVE.Description | String | A description of the CVE. | 
+| DBotScore.Indicator | String | The indicator value. | 
+| DBotScore.Score | Number | The indicator score. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor reporting the score of the indicator. | 
 
 
 #### Command Example
-```!cve cve=CVE-2021-444```
+```!cve cve=CVE-2021-4333```
 
 #### Context Example
 ```json
 {
+    "DBotScore": [
+        {
+            "Vendor": "PaloAltoNetworks_PrismaCloudCompute", 
+            "Indicator": "CVE-2021-43332", 
+            "Score": 0, 
+            "Type": "cve"
+        },
+        {
+            "Vendor": "PaloAltoNetworks_PrismaCloudCompute", 
+            "Indicator": "CVE-2021-43337", 
+            "Score": 0, 
+            "Type": "cve"
+        }
+    ], 
     "CVE": [
         {
-            "ID": "CVE-2021-4048", 
-            "CVSS": 0, 
-            "Modified": "December 11, 2021 20:03:11 PM", 
-            "Description": "An out-of-bounds read flaw was found in the CLARRV, DLARRV, SLARRV, and ZLARRV functions in lapack through version 3.10.0, as also used in OpenBLAS before version 0.3.18. Specially crafted inputs passed to these functions could cause an application using lapack to crash or possibly disclose portions of its memory."
+            "ID": "CVE-2021-43331", 
+            "CVSS": 6.1, 
+            "Modified": "November 17, 2021 16:40:14 PM", 
+            "Description": "In GNU Mailman before 2.1.36, a crafted URL to the Cgi/options.py user options page can execute arbitrary JavaScript for XSS."
         }, 
         {
-            "ID": "CVE-2021-44420", 
-            "CVSS": 0, 
-            "Modified": "December 08, 2021 04:42:07 AM", 
-            "Description": "In Django 2.2 before 2.2.25, 3.1 before 3.1.14, and 3.2 before 3.2.10, HTTP requests for URLs with trailing newlines could bypass upstream access control based on URL paths."
+            "ID": "CVE-2021-43337", 
+            "CVSS": 6.5, 
+            "Modified": "November 18, 2021 08:40:01 AM", 
+            "Description": "SchedMD Slurm 21.08.* before 21.08.4 has Incorrect Access Control. On sites using the new AccountingStoreFlags=job_script and/or job_env options, the access control rules in SlurmDBD may permit users to request job scripts and environment files to which they should not have access."
         }
     ]
 }
 ```
 
 #### Human Readable Output
-### Cves Information
-|Cve|Package|Distro|Cvss|Severity|
-|---|---|---|---|---|
-| CVE-2021-44420 | python-django | debian | 0 | unimportant |
-| CVE-2021-44420 | python-django | ubuntu | 0 | low |
-
-
-
+### CVE-2021-43332
+|CVSS|Description|ID|Modified|
+|---|---|---|---|
+| 6.1 | In GNU Mailman before 2.1.36, the CSRF token for the Cgi/admindb.py admindb page contains an encrypted version of the list admin password. This could potentially be cracked by a moderator via an offline brute-force attack. | CVE-2021-43332 | November 19, 2021 08:40:01 AM |
+### CVE-2021-43337
+|CVSS|Description|ID|Modified|
+|---|---|---|---|
+| 6.5 | SchedMD Slurm 21.08.* before 21.08.4 has Incorrect Access Control. On sites using the new AccountingStoreFlags=job_script and/or job_env options, the access control rules in SlurmDBD may permit users to request job scripts and environment files to which they should not have access. | CVE-2021-43337 | November 18, 2021 08:40:01 AM |
 
 ### prisma-cloud-compute-defenders-list
 ***

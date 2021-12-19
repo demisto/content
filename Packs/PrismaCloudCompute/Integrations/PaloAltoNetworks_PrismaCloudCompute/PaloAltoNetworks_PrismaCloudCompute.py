@@ -1030,7 +1030,7 @@ def add_custom_malware_feeds(client: PrismaCloudComputeClient, args: dict) -> Co
     return CommandResults(readable_output="Successfully updated the custom md5 malware feeds")
 
 
-def get_cves(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
+def get_cves(client: PrismaCloudComputeClient, args: dict) -> List[CommandResults]:
     """
     Get cves information, implement the command 'cve'.
 
@@ -1042,39 +1042,41 @@ def get_cves(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
         CommandResults: command-results object.
     """
     requested_cves = argToList(arg=args.get("cve", []))
-    all_cves_information = []
+    all_cves_information, results, unique_cve_ids = [], [], set()
 
     for cve in requested_cves:
         if cves_info := client.get_cve_info(cve=cve):
             all_cves_information.extend(cves_info)
 
     if filtered_cves_information := filter_api_response(api_response=all_cves_information, limit=MAX_API_LIMIT):
-        context_output = [
-            {
-                "ID": cve_info.get("cve"),
-                "CVSS": cve_info.get("cvss"),
-                "Modified": epochs_to_timestamp(epochs=cve_info.get("modified")),
-                "Description": cve_info.get("description")
-            } for cve_info in filtered_cves_information
-        ]
 
-        table = tableToMarkdown(
-            name="Cves Information",
-            t=filtered_cves_information,
-            headers=["cve", "package", "distro", "release", "cvss", "severity"],
-            headerTransform=lambda word: word[0].upper() + word[1:],
-            removeNull=True
-        )
-    else:
-        context_output, table = [], "No results found"
+        for cve_info in filtered_cves_information:
+            cve_id, cvss = cve_info.get("cve"), cve_info.get("cvss")
+            modified, description = epochs_to_timestamp(epochs=cve_info.get("modified")), cve_info.get("description")
 
-    return CommandResults(
-        outputs_prefix="CVE",
-        outputs=context_output if context_output else None,
-        readable_output=table,
-        outputs_key_field=["ID", "Description"],
-        raw_response=all_cves_information
-    )
+            if cve_id not in unique_cve_ids:
+                unique_cve_ids.add(cve_id)
+
+                cve_data = {
+                    "ID": cve_id, "CVSS": cvss, "Modified": modified, "Description": description
+                }
+
+                results.append(
+                    CommandResults(
+                        outputs_prefix='CVE',
+                        outputs_key_field=["ID"],
+                        outputs=cve_data,
+                        indicator=Common.CVE(
+                            id=cve_id, cvss=cvss, published="", modified=modified, description=description
+                        ),
+                        raw_response=filtered_cves_information,
+                        readable_output=tableToMarkdown(name=cve_id, t=cve_data)
+                    )
+                )
+
+        return results
+
+    return [CommandResults(readable_output="No results found")]
 
 
 def get_defenders(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
