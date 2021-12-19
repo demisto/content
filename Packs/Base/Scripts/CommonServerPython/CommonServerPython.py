@@ -27,7 +27,15 @@ from threading import Lock
 import demistomock as demisto
 import warnings
 
-import signal
+OS_LINUX = False
+OS_MAC = False
+OS_WINDOWS = False
+if sys.platform.startswith('linux'):
+    OS_LINUX = True
+elif sys.platform.startswith('darwin'):
+    OS_MAC = True
+elif sys.platform.startswith('win32'):
+    OS_WINDOWS = True
 
 
 class WarningsHandler(object):
@@ -8360,20 +8368,6 @@ def get_message_threads_dump(_sig, _frame):
     return ret_value
 
 
-# DEPRECATED - use register_signal_handler_profiling_dump instead
-def register_signal_handler_threads_dump(signal_type=signal.SIGUSR1):
-    """
-    Function that registers the threads dump signal listener
-
-    :type signal_type: ``int``
-    :param signal_type: The type of the signal to register
-
-    :return: No data returned
-    :rtype: ``None``
-    """
-    signal.signal(signal_type, signal_handler_profiling_dump)
-
-
 def get_message_memory_dump(_sig, _frame):
     """
     Listener function to dump the memory to log info
@@ -8515,12 +8509,9 @@ def signal_handler_profiling_dump(_sig, _frame):
     LOG.print_log()
 
 
-def register_signal_handler_profiling_dump(signal_type=signal.SIGUSR1, profiling_dump_rows_limit=PROFILING_DUMP_ROWS_LIMIT):
+def register_signal_handler_profiling_dump(signal_type=None, profiling_dump_rows_limit=PROFILING_DUMP_ROWS_LIMIT):
     """
     Function that registers the threads and memory dump signal listener
-
-    :type signal_type: ``int``
-    :param signal_type: The type of the signal to register
 
     :type profiling_dump_rows_limit: ``int``
     :param profiling_dump_rows_limit: The max number of profiling related rows to print to the log
@@ -8528,7 +8519,14 @@ def register_signal_handler_profiling_dump(signal_type=signal.SIGUSR1, profiling
     :return: No data returned
     :rtype: ``None``
     """
-    globals_ = globals()
-    globals_['PROFILING_DUMP_ROWS_LIMIT'] = profiling_dump_rows_limit
+    if OS_LINUX or OS_MAC:
 
-    signal.signal(signal_type, signal_handler_profiling_dump)
+        import signal
+
+        globals_ = globals()
+        globals_['PROFILING_DUMP_ROWS_LIMIT'] = profiling_dump_rows_limit
+
+        requested_signal = signal_type if signal_type else signal.SIGUSR1
+        signal.signal(requested_signal, signal_handler_profiling_dump)
+    else:
+        demisto.info('Not a Linux or Mac OS, profiling using a signal is not supported.')
