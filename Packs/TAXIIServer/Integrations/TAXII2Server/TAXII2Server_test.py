@@ -334,7 +334,12 @@ def test_taxii20_objects(mocker, taxii2_server_v20):
         assert response.json == objects
 
 
-def test_taxii21_objects(mocker, taxii2_server_v21):
+@pytest.mark.parametrize('demisto_iocs_file,res_file,query_type', [
+    ('malware_iocs', 'objects21_malware', 'malware'),
+    ('file_iocs', 'objects21_file', 'file'),
+    ('domain_iocs', 'objects21_domain', 'domain-name,attack-pattern')
+])
+def test_taxii21_objects(mocker, taxii2_server_v21, demisto_iocs_file, res_file, query_type):
     """
         Given
             TAXII Server v2.1, collection_id, limit, next, type parameter
@@ -343,14 +348,14 @@ def test_taxii21_objects(mocker, taxii2_server_v21):
         Then
             Validate that right manifest returned.
     """
-    iocs = util_load_json('test_files/malware_iocs.json')
-    objects = util_load_json('test_files/objects21.json')
+    iocs = util_load_json(f'test_files/{demisto_iocs_file}.json')
+    objects = util_load_json(f'test_files/{res_file}.json')
     mocker.patch('TAXII2Server.SERVER', taxii2_server_v21)
     mocker.patch.object(uuid, 'uuid4', return_value='1ffe4bee-95e7-4e36-9a17-f56dbab3c777')
     mocker.patch.object(demisto, 'searchIndicators', return_value=iocs)
     with APP.test_client() as test_client:
-        response = test_client.get('/threatintel/collections/4c649e16-2bb7-50f5-8826-2a2d0a0b9631/'
-                                   'objects/?match[type]=malware&limit=2&next=1', headers=HEADERS)
+        response = test_client.get('/threatintel/collections/e46189b5-c5c8-5c7f-b947-183e0302b4d3/'
+                                   f'objects/?match[type]={query_type}&limit=2&next=1', headers=HEADERS)
         assert response.status_code == 200
         assert response.content_type == 'application/taxii+json;version=2.1'
         assert response.json == objects
