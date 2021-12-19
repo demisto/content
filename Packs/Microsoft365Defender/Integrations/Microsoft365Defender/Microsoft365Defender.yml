@@ -75,6 +75,7 @@ configuration:
   name: app_id
   required: false
   type: 4
+  hidden: true
 - display: Tenant ID (for Client Credentials mode) (Deprecated)
   name: tenant_id
   required: false
@@ -84,6 +85,7 @@ configuration:
   name: enc_key
   required: false
   type: 4
+  hidden: true
 description: Microsoft 365 Defender is a unified pre- and post-breach enterprise defense
   suite that natively coordinates detection, prevention, investigation, and response
   across endpoints, identities, email, and applications to provide integrated protection
