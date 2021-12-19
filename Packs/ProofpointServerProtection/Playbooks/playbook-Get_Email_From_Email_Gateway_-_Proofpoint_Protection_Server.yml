@@ -1,0 +1,180 @@
+description: This playbook retrieves a specified EML/MSG file directly from the Proofpoint Protection Server.
+id: Get Email From Email Gateway - Proofpoint Protection Server
+inputs:
+- description: The Proofpoint message GUID.
+  key: MessageID
+  playbookInputQuery:
+  required: false
+  value: {}
+name: Get Email From Email Gateway - Proofpoint Protection Server
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 93ae0680-17ec-478b-8abc-cc5a8c850a9d
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 93ae0680-17ec-478b-8abc-cc5a8c850a9d
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 60
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      guid:
+        complex:
+          root: inputs.MessageID
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Downloads a quarantined email message's raw data.
+      id: 501388a7-2349-43aa-8cd4-0cbabd8f2436
+      iscommand: true
+      name: Retrieve Email File
+      script: '|||proofpoint-pps-quarantine-message-download'
+      type: regular
+      version: -1
+    taskid: 501388a7-2349-43aa-8cd4-0cbabd8f2436
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 460
+        }
+      }
+  "2":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Proofpoint Protection Server v2
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks if the Proofpoint Protection Server is enabled.
+      id: 61398950-e1d0-402d-8f81-e73c093a3833
+      iscommand: false
+      name: Is Proofpoint Protection Server Enabled?
+      type: condition
+      version: -1
+    taskid: 61398950-e1d0-402d-8f81-e73c093a3833
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 240
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4ee082f1-9ac6-4a2e-8205-58f4fd83b625
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 4ee082f1-9ac6-4a2e-8205-58f4fd83b625
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 700
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_1_yes": 0.59
+    },
+    "paper": {
+      "dimensions": {
+        "height": 705,
+        "width": 380,
+        "x": 440,
+        "y": 60
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
