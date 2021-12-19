@@ -315,7 +315,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: xml
+              simple: nexpose-simple-xml
       - - operator: isEqualString
           left:
             value:
