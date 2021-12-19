@@ -153,8 +153,9 @@ script:
         password = qParams['authentication'] ? qParams['authentication']['password'] : '';
         headers = {};
         if (username == '__token'){
-            username = '';
             headers = {'Authorization': ['Bearer ' + password]};
+            username = '';
+            password = '';
         }
         res = http(
               url,
