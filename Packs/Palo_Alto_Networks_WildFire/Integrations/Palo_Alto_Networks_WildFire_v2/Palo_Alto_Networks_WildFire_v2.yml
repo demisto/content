@@ -8,7 +8,7 @@ configuration:
   name: server
   required: true
   type: 0
-- displaypassword: API Key (Recommended)
+- displaypassword: API Key
   name: credentials
   required: false
   type: 9
