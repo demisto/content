@@ -612,7 +612,7 @@ def test_invalid_offset_and_limit(args, func, client):
     Then:
         - Verify that ValueError is raised.
     """
-    with pytest.raises(ValueError):
+    with pytest.raises((AssertionError, ValueError)):
         func(client=client, args=args)
 
 

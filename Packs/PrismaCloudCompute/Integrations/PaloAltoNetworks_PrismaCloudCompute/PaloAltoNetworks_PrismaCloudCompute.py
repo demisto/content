@@ -100,7 +100,7 @@ class PrismaCloudComputeClient(BaseClient):
                 )
             raise e
 
-    def get_host_profiles(self, params=None):
+    def get_host_profiles(self, params: Optional[dict] = None) -> List[dict]:
         """
         Sends a request to get all the host profiles.
 
@@ -112,7 +112,7 @@ class PrismaCloudComputeClient(BaseClient):
         """
         return self._http_request(method="GET", url_suffix="/profiles/host", params=params)
 
-    def get_container_profiles(self, params=None):
+    def get_container_profiles(self, params: Optional[dict] = None) -> List[dict]:
         """
         Sends a request to get all the container profiles.
 
@@ -124,7 +124,7 @@ class PrismaCloudComputeClient(BaseClient):
         """
         return self._http_request(method="GET", url_suffix="/profiles/container", params=params)
 
-    def get_containers_hosts(self, container_id):
+    def get_containers_hosts(self, container_id: str) -> List[str]:
         """
         Sends a request to get the hosts that host a specific container.
 
@@ -136,7 +136,7 @@ class PrismaCloudComputeClient(BaseClient):
         """
         return self._http_request(method="GET", url_suffix=f"profiles/container/{container_id}/hosts")
 
-    def get_container_forensics(self, container_id, params=None):
+    def get_container_forensics(self, container_id: str, params: Optional[dict] = None) -> List[dict]:
         """
         Sends a request to get a specific container forensics.
 
@@ -149,7 +149,7 @@ class PrismaCloudComputeClient(BaseClient):
         """
         return self._http_request(method="GET", url_suffix=f"profiles/container/{container_id}/forensic", params=params)
 
-    def get_host_forensics(self, host_id, params=None):
+    def get_host_forensics(self, host_id, params: Optional[dict] = None) -> List[dict]:
         """
         Sends a request to get a specific host forensics.
 
@@ -162,7 +162,7 @@ class PrismaCloudComputeClient(BaseClient):
         """
         return self._http_request(method="GET", url_suffix=f"/profiles/host/{host_id}/forensic", params=params)
 
-    def get_console_version(self):
+    def get_console_version(self) -> str:
         """
         Sends a request to get the prisma cloud compute console version.
 
@@ -171,7 +171,7 @@ class PrismaCloudComputeClient(BaseClient):
         """
         return self._http_request(method="GET", url_suffix="/version")
 
-    def get_custom_ip_feeds(self):
+    def get_custom_ip_feeds(self) -> dict:
         """
         Sends a request to get the custom IP feeds.
 
@@ -180,7 +180,7 @@ class PrismaCloudComputeClient(BaseClient):
         """
         return self._http_request(method="GET", url_suffix="/feeds/custom/ips")
 
-    def add_custom_ip_feeds(self, feeds):
+    def add_custom_ip_feeds(self, feeds: List[str]):
         """
         Sends a request to add custom IP feeds.
 
@@ -445,7 +445,7 @@ def fetch_incidents(client):
     return incidents
 
 
-def parse_limit_and_offset_values(limit: str, offset: Optional[str] = "0") -> Tuple[int, int]:
+def parse_limit_and_offset_values(limit: str, offset: str = "0") -> Tuple[int, int]:
     """
     Parse the offset and limit parameters to integers and verify that the offset/limit are valid.
 
@@ -453,19 +453,13 @@ def parse_limit_and_offset_values(limit: str, offset: Optional[str] = "0") -> Tu
         limit (str): limit argument.
         offset (str): offset argument.
 
-    Raises:
-        ValueError: in case the offset/limit values are invalid
-
     Returns:
         Tuple[int, int]: parsed offset and parsed limit
     """
     limit, offset = arg_to_number(arg=limit, arg_name="limit"), arg_to_number(arg=offset, arg_name="offset")
 
-    try:
-        assert offset is not None and offset >= 0
-        assert limit is not None and 0 < limit <= MAX_API_LIMIT
-    except AssertionError:
-        raise ValueError("limit/offset values are invalid, limit scope = 1-50, offset scope >= 0")
+    assert offset is not None and offset >= 0, f"offset {offset} is invalid, scope >= 0"
+    assert limit is not None and 0 < limit <= MAX_API_LIMIT, f"limit {limit} is invalid, scope = 1-50"
 
     return limit, offset
 
@@ -499,26 +493,24 @@ def epochs_to_timestamp(epochs: int, date_format: str = "%B %d, %Y %H:%M:%S %p")
         str: timestamp in the new format, empty string in case of a failure
     """
     try:
-        if epochs == 0:  # when the api returns epochs as 0, it means that the api returns 'None' on the timestamp
-            return ""
         return datetime.utcfromtimestamp(epochs).strftime(date_format)
     except TypeError:
         return ""
 
 
-def filter_api_response(api_response: list, limit: int, offset: int = 0) -> Optional[list]:
+def filter_api_response(api_response: Optional[list], limit: int, offset: int = 0) -> Optional[list]:
     """
-    Filter the api response according to the offset/limit, used in case the api doesn't support limit/offset
+    Filter the api response according to the offset/limit.
 
     Args:
         api_response (list): api response from an endpoint.
-        limit (int): the maximum limit of records in the response to fetch.
         offset (int): the offset from which to begin listing the response.
+        limit (int): the maximum limit of records in the response to fetch.
 
     Returns:
         list: api filtered response, None in case the api response is empty
     """
-    if api_response is None:
+    if not api_response:
         return api_response
 
     start = min(offset, len(api_response))
@@ -640,7 +632,7 @@ def get_profile_host_list(client: PrismaCloudComputeClient, args: dict) -> Comma
 
 def get_container_description_info(container_info: dict) -> dict:
     """
-    Build a table for a single host.
+    Get the container description information.
 
     Args:
         container_info (dict): container information from the api.
@@ -931,7 +923,6 @@ def get_custom_feeds_ip_list(client: PrismaCloudComputeClient) -> CommandResults
             removeNull=True,
             headerTransform=lambda word: word[0].upper() + word[1:]
         )
-
     else:
         table = "No results found"
 
@@ -997,7 +988,8 @@ def get_custom_malware_feeds(client: PrismaCloudComputeClient, args: dict) -> Co
             name="Malware Md5 Feeds",
             t=malware_feeds,
             headers=["name", "md5", "allowed"],
-            headerTransform=lambda word: word[0].upper() + word[1:]
+            headerTransform=lambda word: word[0].upper() + word[1:],
+            removeNull=True
         )
         feeds_info["feed"] = malware_feeds
     else:
@@ -1195,8 +1187,8 @@ def get_namespaces(client: PrismaCloudComputeClient, args: dict) -> CommandResul
         else:
             table = tableToMarkdown(
                 name="Namespaces",
-                t=[{"Name": namespace} for namespace in namespaces],
-                headers=["Name"]
+                t=[{"Namespace": namespace} for namespace in namespaces],
+                headers=["Namespace"]
             )
     else:
         namespaces, table = [], "No results found"
@@ -1585,6 +1577,22 @@ def main():
             # this method is called periodically when 'fetch incidents' is checked
             incidents = fetch_incidents(client)
             demisto.incidents(incidents)
+        elif requested_command == 'prisma-cloud-compute-profile-host-list':
+            return_results(results=get_profile_host_list(client=client, args=demisto.args()))
+        elif requested_command == 'prisma-cloud-compute-profile-container-list':
+            return_results(results=get_container_profile_list(client=client, args=demisto.args()))
+        elif requested_command == 'prisma-cloud-compute-profile-container-hosts-list':
+            return_results(results=get_container_hosts_list(client=client, args=demisto.args()))
+        elif requested_command == 'prisma-cloud-compute-profile-container-forensic-list':
+            return_results(results=get_profile_container_forensic_list(client=client, args=demisto.args()))
+        elif requested_command == 'prisma-cloud-compute-host-forensic-list':
+            return_results(results=get_profile_host_forensic_list(client=client, args=demisto.args()))
+        elif requested_command == 'prisma-cloud-compute-custom-feeds-ip-add':
+            return_results(results=add_custom_ip_feeds(client=client, args=demisto.args()))
+        elif requested_command == 'prisma-cloud-compute-console-version-info':
+            return_results(results=get_console_version(client=client))
+        elif requested_command == 'prisma-cloud-compute-custom-feeds-ip-list':
+            return_results(results=get_custom_feeds_ip_list(client=client))
         elif requested_command == 'prisma-cloud-compute-profile-host-list':
             return_results(results=get_profile_host_list(client=client, args=demisto.args()))
         elif requested_command == 'prisma-cloud-compute-profile-container-list':
