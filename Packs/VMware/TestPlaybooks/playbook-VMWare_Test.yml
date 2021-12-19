@@ -443,6 +443,332 @@ tasks:
     view: |-
       {
         "position": {
+          "x": 540,
+          "y": 3560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: f95b8685-c5d1-4dcf-8387-05bdf27cec32
+    type: regular
+    task:
+      id: f95b8685-c5d1-4dcf-8387-05bdf27cec32
+      version: -1
+      name: Create VM
+      description: Creates a new virtual machine in the current folder and attaches
+        it to the specified resource pool. This operation creates a virtual machine,
+        instead of cloning a virtual machine from an existing one.
+      script: VMware|||vmware-create-vm
+      type: regular
+      iscommand: true
+      brand: VMware
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      cpu-allocation:
+        simple: "1"
+      cpu-num:
+        simple: "1"
+      folder:
+        simple: vm
+      guest-os-familiy:
+        simple: Windows
+      guest-os-version:
+        simple: Microsoft Windows Server 2019 (64-bit)
+      host:
+        simple: 192.168.1.140
+      memory:
+        simple: "32"
+      name:
+        simple: test_playbook_vm
+      virtual-memory:
+        simple: "32"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: bac4e40d-b768-4297-8297-a382d2b08cf3
+    type: regular
+    task:
+      id: bac4e40d-b768-4297-8297-a382d2b08cf3
+      version: -1
+      name: Clone VM
+      description: Creates a clone of this virtual machine. If the virtual machine
+        is used as a template, this method corresponds to the deploy command.
+      script: VMware|||vmware-clone-vm
+      type: regular
+      iscommand: true
+      brand: VMware
+    nexttasks:
+      '#none#':
+      - "18"
+      - "20"
+    scriptarguments:
+      folder:
+        simple: vm
+      name:
+        simple: clone_vm_test_playbook
+      powerOn:
+        simple: "false"
+      uuid:
+        simple: ${VMWare.UUID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 05748849-8afb-4b7c-8d3c-330796abe888
+    type: regular
+    task:
+      id: 05748849-8afb-4b7c-8d3c-330796abe888
+      version: -1
+      name: Relocate VM
+      description: Relocates a virtual machine to the location specified.
+      script: VMware|||vmware-relocate-vm
+      type: regular
+      iscommand: true
+      brand: VMware
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      UUID:
+        simple: ${VMWare.[1].UUID}
+      folder:
+        simple: enhancement_check
+      priority:
+        simple: highPriority
+      uuid:
+        complex:
+          root: VMWare.[1]
+          accessor: UUID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: d1131243-cac7-441d-8ec2-e93db24d3c25
+    type: regular
+    task:
+      id: d1131243-cac7-441d-8ec2-e93db24d3c25
+      version: -1
+      name: Delete VM
+      description: Destroys this object, deleting its contents and removing it from
+        its parent folder (if any).
+      script: VMware|||vmware-delete-vm
+      type: regular
+      iscommand: true
+      brand: VMware
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      uuid:
+        complex:
+          root: VMWare.[1]
+          accessor: UUID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: bab4b7a4-d184-4291-8320-60c39c46f1f1
+    type: regular
+    task:
+      id: bab4b7a4-d184-4291-8320-60c39c46f1f1
+      version: -1
+      name: Unregister VM
+      description: emoves this virtual machine from the inventory without removing
+        any of the virtual machine's files on disk.
+      script: VMware|||vmware-unregister-vm
+      type: regular
+      iscommand: true
+      brand: VMware
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      uuid:
+        simple: ${VMWare.[0].UUID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 2840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 53051ed5-bfbe-4847-8771-3d0c5d60ede9
+    type: regular
+    task:
+      id: 53051ed5-bfbe-4847-8771-3d0c5d60ede9
+      version: -1
+      name: Register VM
+      description: Adds an existing virtual machine to the folder.
+      script: VMware|||vmware-register-vm
+      type: regular
+      iscommand: true
+      brand: VMware
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      folder:
+        simple: vm
+      host:
+        simple: 192.168.1.140
+      name:
+        simple: relocated_vm
+      path:
+        complex:
+          root: VMWare.[0]
+          accessor: Path
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 3000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: d568b08f-572d-4442-806d-8d5d6884dbef
+    type: regular
+    task:
+      id: d568b08f-572d-4442-806d-8d5d6884dbef
+      version: -1
+      name: Delete VM
+      description: Destroys this object, deleting its contents and removing it from
+        its parent folder (if any).
+      script: VMware|||vmware-delete-vm
+      type: regular
+      iscommand: true
+      brand: VMware
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      uuid:
+        complex:
+          root: VMWare.[0]
+          accessor: UUID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 3190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 7261492e-8809-41c8-8d81-0f211fb5fda3
+    type: regular
+    task:
+      id: 7261492e-8809-41c8-8d81-0f211fb5fda3
+      version: -1
+      name: Delete Context (all)
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
           "x": 480,
           "y": 2470
         }

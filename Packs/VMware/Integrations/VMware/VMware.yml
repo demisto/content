@@ -20,7 +20,7 @@ configuration:
   - name: insecure
     display: Trust any certificate (not secure)
     required: false
-    defaultvalue: ""
+    defaultvalue: "true"
     type: 8
     additionalinfo: null
   - name: proxy
@@ -435,6 +435,20 @@ script:
           defaultValue: ""
           predefined:
             - ""
+        - name: folder
+          description: The target folder in which the virtual machine will be located.
+          required: true
+          isArray: false
+          defaultValue: ""
+          predefined:
+            - ""
+        - name: pool
+          description: The resource pool to which the virtual machine will be attached.
+          required: false
+          isArray: false
+          defaultValue: ""
+          predefined:
+            - ""
       outputs:
         - contextPath: VMWare.vName
           description: VM name.
@@ -632,6 +646,13 @@ script:
             - defaultPriority
             - highPriority
             - lowPriority
+        - name: uuid
+          description: The UUID of the VM to relocate
+          required: true
+          isArray: false
+          defaultValue: ""
+          predefined:
+            - ""
       outputs: []
     - name: vmware-delete-vm
       description: Destroys this object, deleting its contents and removing it from
@@ -670,13 +691,6 @@ script:
           defaultValue: ""
           predefined:
             - ""
-        - name: pool
-          description: The resource pool to which the virtual machine should be attached.
-          required: true
-          isArray: false
-          defaultValue: ""
-          predefined:
-            - ""
         - name: host
           description: The target host on which the virtual machine will run.
           required: true
@@ -684,14 +698,16 @@ script:
           defaultValue: ""
           predefined:
             - ""
-        - name: asTemplate
+        - auto: PREDEFINED
+          defaultValue: "False"
+          name: asTemplate
           description: Flag to specify whether or not the virtual machine should be marked
             as a template.
           required: false
           isArray: false
-          defaultValue: ""
           predefined:
-            - ""
+            - "true"
+            - "false"
         - name: folder
           description: Folder to register the VM to.
           required: true

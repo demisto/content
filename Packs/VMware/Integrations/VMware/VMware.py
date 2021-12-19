@@ -44,7 +44,7 @@ def login(params):  # pragma: no cover
     return si, vsphere_client
 
 
-def logout(si):
+def logout(si):  # pragma: no cover
     Disconnect(si)
 
 
@@ -188,7 +188,7 @@ def get_vms(si, args):
                 'MACAddress': mac_address,
                 'SnapshotCreateDate': snapshot_create_date,
                 'SnapshotUUID': snapshot_uuid,
-                'Deleted': 'False'
+                'Deleted': False
             })
     ec = {
         'VMWare(val.UUID && val.UUID === obj.UUID)': data
@@ -206,7 +206,7 @@ def create_entry(data, ec):
                                                                             'IP', 'State', 'HostName', 'MACAddress',
                                                                             'SnapshotCreateDate',
                                                                             'SnapshotUUID',
-                                                                            'Deleted']) if data else 'No result were found',
+                                                                            'Deleted'], removeNull=True) if data else 'No result were found',
         'EntryContext': ec
     }
 
@@ -441,7 +441,7 @@ def get_events(si, args):
         'Contents': hr,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('VM ' + vm.summary.config.name + ' Events',
-                                         hr) if hr else 'No result were found',
+                                         hr, removeNull=True) if hr else 'No result were found',
         'EntryContext': ec
     }
 
@@ -529,7 +529,7 @@ def list_vms_by_tag(vsphere_client, args):
         'Type': entryTypes['note'],
         'Contents': data,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Virtual Machines with Tag {}'.format(args.get('tag')), data),
+        'HumanReadable': tableToMarkdown('Virtual Machines with Tag {}'.format(args.get('tag')), data, removeNull=True),
         'EntryContext': ec
     }
 
@@ -538,7 +538,8 @@ def create_vm(si, args):
     content = si.RetrieveContent()
     folder = search_for_obj(content, [vim.Folder], args.get('folder'))
     host = search_for_obj(content, [vim.HostSystem], args.get('host'))
-    pool = search_for_obj(content, [vim.ResourcePool], args.get('pool'))
+    # pool = search_for_obj(content, [vim.ResourcePool], args.get('pool'))
+    pool = host.parent.resourcePool
     spec = create_vm_config_creator(host, args)
     if not host:
         raise Exception('The host provided is not valid.')
@@ -570,7 +571,7 @@ def create_vm(si, args):
             'Snapshot': task.info.result.snapshot.currentSnapshot if task.info.result.snapshot else ' ',
             'SnapshotCreateDate': '',
             'SnapshotUUID': '',
-            'Deleted': 'False'
+            'Deleted': False
         }
         ec = {
             'VMWare(val.UUID && val.UUID === obj.UUID)': data
@@ -583,7 +584,7 @@ def create_vm(si, args):
             'HumanReadable': tableToMarkdown('Virtual Machine', data,
                                              headers=['Name', 'Template', 'Path', 'Guest', 'UUID',
                                                       'IP', 'State', 'HostName', 'MACAddress', 'SnapshotCreateDate',
-                                                      'SnapshotUUID', 'Deleted']),
+                                                      'SnapshotUUID', 'Deleted'], removeNull=True),
             'EntryContext': ec
         }
     elif task.info.state == 'error':
@@ -629,7 +630,7 @@ def clone_vm(si, args):
             'MACAddress': mac_address,
             'SnapshotCreateDate': '',
             'SnapshotUUID': '',
-            'Deleted': 'False'
+            'Deleted': False
         }
         ec = {
             'VMWare(val.UUID && val.UUID === obj.UUID)': data
@@ -642,7 +643,7 @@ def clone_vm(si, args):
             'HumanReadable': tableToMarkdown('Virtual Machine', data,
                                              headers=['Name', 'Template', 'Path', 'Guest', 'UUID',
                                                       'IP', 'State', 'HostName', 'MACAddress', 'SnapshotCreateDate',
-                                                      'SnapshotUUID', 'Deleted']),
+                                                      'SnapshotUUID', 'Deleted'], removeNull=True),
             'EntryContext': ec
         }
     elif task.info.state == 'error':
@@ -681,14 +682,14 @@ def relocate_vm(si, args):
 
 def delete_vm(si, args):
     vm = get_vm(si, args.get('uuid'))
-    if vm.runtime.powerState == 'poweredOff':
+    if vm.runtime.powerState == 'poweredOn':
         raise Exception("Virtual Machine should be powered off before deleting.")
     task = vm.Destroy_Task()
     wait_for_tasks(si, [task])
     if task.info.state == 'success':
         data = {
             'UUID': args.get('uuid'),
-            'Deleted': 'True'
+            'Deleted': True
         }
         ec = {
             'VMWare(val.UUID && val.UUID === obj.UUID)': data
@@ -709,10 +710,10 @@ def register_vm(si, args):
     content = si.RetrieveContent()
     folder = search_for_obj(content, [vim.Folder], args.get('folder'))
     host = search_for_obj(content, [vim.HostSystem], args.get('host'))
-    pool = search_for_obj(content, [vim.ResourcePool], args.get('pool'))
+    pool = host.parent.resourcePool
 
     task = folder.RegisterVM_Task(path=args.get('path'), name=args.get('name'),
-                                  asTemplate=args.get('asTemplate', False), pool=pool, host=host)
+                                  asTemplate=argToBoolean(args.get('asTemplate')), pool=pool, host=host)
     wait_for_tasks(si, [task])
     if task.info.state == 'success':
         return {
@@ -791,8 +792,13 @@ def main():  # pragma: no cover
             result = unregister_vm(si, demisto.args())
         res.append(result)
     except Exception as ex:
-        res.append(
-            {"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": str(ex)})  # type: ignore
+        if hasattr(ex, 'msg') and ex.msg:
+            res.append(
+                {"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                 "Contents": str(ex.msg)})  # type: ignore
+        else:
+            res.append(
+                {"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": str(ex)})  # type: ignore
 
     try:
         logout(si)
