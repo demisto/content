@@ -3,7 +3,7 @@ commonfields:
   id: cymulate_v2
   version: -1
 configuration:
-- displaypassword: API token (Recommended)
+- displaypassword: API token
   name: credentials
   required: false
   type: 9
@@ -60,7 +60,7 @@ configuration:
   name: api_key
   required: false
   type: 4
-  additionalinfo: Use the "API Token (Recommended)" parameter instead.
+  hidden: true
 description: Multi-Vector Cyber Attack, Breach and Attack Simulation.
 display: Cymulate v2
 name: cymulate_v2
