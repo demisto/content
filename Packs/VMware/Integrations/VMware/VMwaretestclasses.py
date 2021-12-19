@@ -1,3 +1,9 @@
+from collections import namedtuple
+from pyVmomi import vim
+
+device_info = namedtuple('device_info', ['label', 'key', 'macAddress', 'backing', 'wakeOnLanEnabled'])
+
+
 class Runtime:
     powerState = None
 
@@ -5,11 +11,64 @@ class Runtime:
         self.powerState = powerState
 
 
+class DeviceInfo:
+    deviceInfo = device_info('Network adapter 123', 'test key', 'test mac', 'backing', True)
+
+
+class Hardware:
+    device_obj = vim.vm.device.VirtualEthernetCard()
+    device_obj.deviceInfo = vim.Description()
+    device_obj.deviceInfo.label = 'Network adapter 123'
+    device_obj.macAddress = 'mac test'
+    device_obj.backing = vim.vm.device.VirtualDevice.BackingInfo()
+    device_obj.wakeOnLanEnabled = True
+    device = [device_obj]
+
+
+class Config:
+    template = None
+    vmPathName = None
+    guestFullName = None
+    instanceUuid = None
+    powerState = None
+    name = None
+    uuid = None
+    hardware = Hardware()
+
+    def __init__(self, name, instanceUuid):
+        self.name = name
+        self.instanceUuid = instanceUuid
+
+
+class Guest:
+    ipAddress = None
+    hostName = None
+
+    def __init__(self, ipAddress, hostName):
+        self.ipAddress = ipAddress
+        self.hostName = hostName
+
+
+class Summary:
+    guest = None
+    runtime = None
+    config = None
+
+    def __init__(self, ipAddress=None, hostName=None, name='test_name', instanceUuid='12345'):
+        self.config = Config(name, instanceUuid)
+        self.guest = Guest(ipAddress, hostName)
+        self.runtime = Runtime('poweredOff')
+
+
 class VM:
     runtime = None
+    summary = None
+    config = None
 
     def __init__(self, powerState='poweredOn'):
         self.runtime = Runtime(powerState)
+        self.summary = Summary(name='test_vm_name')
+        self.config = Config('test', '12345')
 
     def RelocateVM_Task(self):
         pass
@@ -45,6 +104,9 @@ class VM:
         pass
 
     def CreateSnapshot(self):
+        pass
+
+    def ReconfigVM_Task(self):
         pass
 
 
@@ -118,42 +180,6 @@ class CloneSpec:
     location = None
     template = False
     powerOn = False
-
-
-# cloning
-
-class Config:
-    template = None
-    vmPathName = None
-    guestFullName = None
-    instanceUuid = None
-    powerState = None
-    name = None
-    uuid = None
-
-    def __init__(self, name, instanceUuid):
-        self.name = name
-        self.instanceUuid = instanceUuid
-
-
-class Guest:
-    ipAddress = None
-    hostName = None
-
-    def __init__(self, ipAddress, hostName):
-        self.ipAddress = ipAddress
-        self.hostName = hostName
-
-
-class Summary:
-    guest = None
-    runtime = None
-    config = None
-
-    def __init__(self, ipAddress=None, hostName=None, name='test_name', instanceUuid='12345'):
-        self.config = Config(name, instanceUuid)
-        self.guest = Guest(ipAddress, hostName)
-        self.runtime = Runtime('poweredOff')
 
 
 class Result:
@@ -232,11 +258,23 @@ class ConfigSpec:
     files = None
     guestId = None
 
+
 class FileInfo:
     vmPathName = None
 
+
 class ResourceAllocationInfo:
     limit = None
+
+
+class ByTime:
+    beginTime = None
+    endTime = None
+
+
+class ByUserName:
+    userList = None
+
 
 class FilterSpec:
     eventTypeId = None
@@ -244,3 +282,26 @@ class FilterSpec:
     time = None
     userName = None
     maxCount = None
+    ByTime = ByTime()
+    ByUserName = ByUserName()
+
+    def ByEntity(self):
+        pass
+
+
+class Event:
+    key = None
+    fullFormattedMessage = None
+    createdTime = None
+    userName = None
+    EventFilterSpec = FilterSpec()
+
+    def __init__(self, key=None, message=None, user_name=None, created_time=None):
+        self.key = key
+        self.fullFormattedMessage = message
+        self.userName = user_name
+        self.createdTime = created_time
+
+
+class Vim:
+    event = Event()

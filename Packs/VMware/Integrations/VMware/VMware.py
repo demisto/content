@@ -4,6 +4,7 @@ import ssl
 import urllib3
 import demistomock as demisto  # noqa: F401
 import pyVim.task
+import dateparser
 from CommonServerPython import *  # noqa: F401
 from cStringIO import StringIO
 
@@ -13,7 +14,7 @@ from vmware.vapi.vsphere.client import create_vsphere_client
 from com.vmware.vapi.std_client import DynamicID
 
 
-def login(params):
+def login(params): #pragma: no cover
     full_url = params['url']
     url_arr = full_url.split(':')
     url = url_arr[0]
@@ -413,8 +414,8 @@ def get_events(si, args):
     eventManager = content.eventManager
 
     time = vim.event.EventFilterSpec.ByTime()
-    time.beginTime = arg_to_datetime(args.get('start-date'))
-    time.endTime = arg_to_datetime(args.get('end-date'))
+    time.beginTime = dateparser.parse(args.get('start-date', ''))
+    time.endTime = dateparser.parse(args.get('end-date', ''))
     by_user_name = vim.event.EventFilterSpec.ByUsername()
     by_user_name.userList = args.get('user', '').split(',') if args.get('user') else None
     filter = vim.event.EventFilterSpec.ByEntity(entity=vm, recursion="self")  # type: ignore
@@ -431,8 +432,8 @@ def get_events(si, args):
         hr.append({
             'id': e.key,
             'Event': e.fullFormattedMessage,
-            'Created Time': e.createdTime.strftime("%Y-%m-%d %H:%M:%S"),
-            'User Name': e.userName,
+            'CreatedTime': e.createdTime.strftime("%Y-%m-%d %H:%M:%S"),
+            'UserName': e.userName,
         })
     ec = {'VMWareEvenet(val.UUID && val.UUID === obj.UUID)': hr}
     return {
@@ -522,7 +523,7 @@ def list_vms_by_tag(vsphere_client, args):
             'VM': vm.name
         })
     ec = {
-        'VMWare.Tag(val.Tag && val.Category && val.TagName === obj.TagName && va.Category == obj.Category)': data
+        'VMWareTag(val.TagName && val.Category && val.TagName == obj.TagName && va.Category == obj.Category)': data
     }
     return {
         'ContentsFormat': formats['json'],

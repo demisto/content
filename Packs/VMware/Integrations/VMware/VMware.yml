@@ -294,7 +294,19 @@ script:
             - ""
       description: Gets events of VM.
       name: vmware-get-events
-      outputs: []
+      outputs:
+        - contextPath: VMWareEvents.id
+          description: The id of the event.
+          type: String
+        - contextPath: VMWareEvents.Event
+          description: Description of the event.
+          type: String
+        - contextPath: VMWareEvents.CreatedTime
+          description: Creation time of the event.
+          type: String
+        - contextPath: VMWareEvents.UserName
+          description: The user name of the user who triggered the event.
+          type: Date
     - arguments:
         - description: VM UUID of virtual machine to change NIC state.
           name: vm-uuid
@@ -326,57 +338,6 @@ script:
         - contextPath: VMWare.NICState
           description: VM NIC state (i.e., connected, disconnected, delete).
           type: String
-    - name: vmware-list-vm-tags
-      description: Lists all tags attached to virtual storage object.
-      deprecated: false
-      arguments:
-        - name: uuid
-          description: The UUID of the virtual storage object.
-          required: true
-          isArray: false
-          defaultValue: ""
-          predefined:
-            - ""
-        - name: parent-category-name
-          description: Filter results from response based on category name.
-          required: false
-          isArray: false
-          defaultValue: ""
-          predefined:
-            - ""
-      outputs:
-        - contextPath: VMWare.Tag.{uuid}.parentCategoryName
-          description: The parent category name.
-          type: String
-        - contextPath: VMWare.Tag.{uuid}.tagName
-          description: The name of the tag
-          type: String
-    - name: vmware-add-tag
-      description: Attach a tag to a virtual storage object.
-      deprecated: false
-      arguments:
-        - name: uuid
-          description: The UUID of the virtual storage object.
-          required: true
-          isArray: false
-          defaultValue: ""
-          predefined:
-            - ""
-        - name: category
-          description: The category to wich the tag belongs.
-          required: true
-          isArray: false
-          defaultValue: ""
-          predefined:
-            - ""
-        - name: tag
-          description: The tag which has to be associated with the virtual storage object.
-          required: true
-          isArray: false
-          defaultValue: ""
-          predefined:
-            - ""
-      outputs: []
     - name: vmware-list-vms-by-tag
       description: Lists all virtual storage objects attached to the tag.
       deprecated: false
@@ -396,13 +357,13 @@ script:
           predefined:
             - ""
       outputs:
-        - contextPath: VMware.Tag.TagName
+        - contextPath: VMWareTag.TagName
           description: The tag that was queried.
           type: String
-        - contextPath: VMware.Tag.Category
+        - contextPath: VMwareTag.Category
           description: The category to which the tag belongs.
           type: String
-        - contextPath: VMware.Tag.VM
+        - contextPath: VMwareTag.VM
           description: VM name which the tag attached to.
           type: String
     - name: vmware-create-vm
@@ -617,13 +578,6 @@ script:
       description: Relocates a virtual machine to the location specified.
       deprecated: false
       arguments:
-        - name: uuid
-          description: The UUID of the VM to relocate.
-          required: true
-          isArray: false
-          defaultValue: ""
-          predefined:
-            - ""
         - name: datastore
           description: The datastore where the virtual machine should be located. If not
             specified, the current datastore is used.

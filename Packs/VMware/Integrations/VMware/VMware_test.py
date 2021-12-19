@@ -1,15 +1,12 @@
 import pyVim.task
 import pytest
-from mock.mock import patch
-
 import VMware
+from datetime import datetime
 from collections import namedtuple
 from pyVmomi import vim
 from VMwaretestclasses import Si, VsphereClient, VM, VirtualMachineRelocateSpec, Task, Folder, CloneSpec, Summary, \
-    Content, Child, ViewManager, Snapshot, Host, ConfigSpec, FileInfo, ResourceAllocationInfo, EventManager, FilterSpec
-
-# sys.modules['vmware.vapi.vsphere.client'] = MagicMock()
-# sys.modules['com.vmware.vapi.std_client'] = MagicMock()
+    Content, Child, ViewManager, Snapshot, Host, ConfigSpec, FileInfo, ResourceAllocationInfo, EventManager, FilterSpec, \
+    Event
 
 category = namedtuple('category', ['name', 'id'])
 tag = namedtuple('tag', ['name', 'id'])
@@ -63,13 +60,35 @@ PARAMS_GET_SNAPSHOTS = [
      [Snapshot('test1', [Snapshot('test3', [])])]),
     ([Snapshot('test1', [Snapshot('test3', [])]), Snapshot('test2', [])], 'test4', [])]
 
+EVENTS = [
+    {'key': '1', 'message': 'reboot VM', 'user_name': 'test_user',
+     'created_time': datetime(2021, 12, 16, 10, 10, 10)},
+    {'key': '2', 'message': 'shutdown VM', 'user_name': 'test_user2',
+     'created_time': datetime(2021, 12, 15, 10, 10, 10)},
+    {'key': '3', 'message': 'hard reboot VM', 'user_name': 'test_user',
+     'created_time': datetime(2021, 12, 13, 10, 10, 10)}
+]
+
+PARAMS_GET_EVENTS = [
+    ({'vm-uuid': '123', 'user': 'test_user,test_user2', 'start-date': '2019-10-23T00:00:00',
+      'end-date': '2021-12-16T12:00:00', 'event-type': '', 'limit': '50'},
+     EVENTS,
+     3),
+    ({'vm-uuid': '123', 'user': 'test_user2', 'start-date': '2019-10-23T00:00:00',
+      'end-date': '2021-12-16T12:00:00', 'event-type': 'reboot VM', 'limit': '50'},
+     [EVENTS[1]],
+     1)
+]
+
 
 def create_children():
     return [Child(Summary(args.get('ip'), args.get('hostname'), args.get('name'), args.get('uuid'))) for args in
             PARAMS_GET_VMS]
 
-def create_events():
 
+def create_events(events_list):
+    return [Event(args.get('key'), args.get('message'), args.get('user_name'), args.get('created_time')) for args in
+            events_list]
 
 
 @pytest.mark.parametrize('args, params, res', PARAMS_GET_VM_FILTERS)
@@ -111,15 +130,6 @@ def test_create_vm_config_creator(monkeypatch):
     assert res.memoryMB == int(args.get('virtual-memory'))
     assert res.files.vmPathName == '[test1]test1'
     assert res.guestId == args.get('guestId')
-
-
-# def test_add_tag(monkeypatch):
-#     client = VsphereClient()
-#     monkeypatch.setattr(VMware, 'get_tag', value=lambda tag_id: '1')
-#     monkeypatch.setattr(client.tagging.TagAssociation, 'attach', lambda tag_id, uuid: None)
-#
-#     res = VMware.add_tag(client, {'uuid': '1', 'tag': 'test', 'category': 'test'})
-#     assert 'test' in res.get('HumanReadable')
 
 
 def test_list_vms_by_tag(monkeypatch):
@@ -317,17 +327,33 @@ def test_get_snapshots(monkeypatch, snapshots, snapname, res):
         assert len(res) == 0
 
 
-def test_get_events(monkeypatch, events):
+@pytest.mark.parametrize('args, event_list, res_len', PARAMS_GET_EVENTS)
+def test_get_events(monkeypatch, args, event_list, res_len):
     si = Si()
     monkeypatch.setattr(si, 'RetrieveServiceContent', lambda: Content())
-    monkeypatch.setattr(VMware, 'get_vm', lambda v_client, uuid: VM('powerOn'))
-    monkeypatch.setattr(vim.event.EventFilterSpec, 'ByEntity', lambda entity, recursion: 'test_entity')
-    monkeypatch.setattr(vim.event, 'EventFilterSpec', lambda entity, recursion: FilterSpec())
-    monkeypatch.setattr(EventManager, 'QueryEvents', lambda filter_spec: events)
+    monkeypatch.setattr(VMware, 'get_vm', lambda v_client, uuid: VM())
+    monkeypatch.setattr(vim.event.EventFilterSpec.ByEntity, '__init__', lambda this, entity, recursion: None)
+    monkeypatch.setattr(EventManager, 'QueryEvents', lambda this, filter_spec: create_events(event_list))
+
+    res = VMware.get_events(si, args)
+
+    assert len(res.get('Contents')) == res_len
+    assert 'VM test_vm_name Events' in res.get('HumanReadable')
 
 
-    monkeypatch.setattr(ViewManager, 'CreateContainerView',
-                        lambda this, container, view_type, recursive: ViewManager(create_children()))
-    monkeypatch.setattr(VMware, 'apply_get_vms_filters', lambda args, summary: True)
+def test_change_nic_state(monkeypatch):
+    si = Si()
+    monkeypatch.setattr(VMware, 'get_vm', lambda v_client, uuid: VM())
+    # monkeypatch.setattr(builtins, 'isinstance', lambda dev, dev_type: True)
+    monkeypatch.setattr(VMware, 'wait_for_tasks', lambda si_obj, tasks: None)
+    monkeypatch.setattr(VM, 'ReconfigVM_Task', lambda this, spec: Task())
 
-    res = VMware.get_vms(si, {})
+    res = VMware.change_nic_state(si, {'vm-uuid': '1234', 'nic-state':'connect', 'nic-number':'123'})
+
+    assert res.get('Contents').values()[0].get('UUID') == '1234'
+    assert res.get('Contents').values()[0].get('NICState') == 'connected'
+    assert 'Virtual Machine\'s NIC was connected successfully' in res.get('HumanReadable')
+
+
+
+
