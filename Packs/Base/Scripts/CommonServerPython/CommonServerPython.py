@@ -8529,4 +8529,4 @@ def register_signal_handler_profiling_dump(signal_type=None, profiling_dump_rows
         requested_signal = signal_type if signal_type else signal.SIGUSR1
         signal.signal(requested_signal, signal_handler_profiling_dump)
     else:
-        demisto.info('Not a Linux or Mac OS, profiling using a sigmnal is not supported.')
+        demisto.info('Not a Linux or Mac OS, profiling using a signal is not supported.')
