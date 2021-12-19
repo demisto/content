@@ -6981,7 +6981,9 @@ def initialize_instance(args: Dict[str, str], params: Dict[str, str]):
         raise DemistoException('Set a port for the instance')
 
     URL = params.get('server', '').rstrip('/:') + ':' + params.get('port', '') + '/api/'
-    API_KEY = str(params.get('key'))
+    API_KEY = str(params.get('key')) or str((params.get('credentials') or {}).get('password', ''))  # type: ignore
+    if not API_KEY:
+        raise Exception('API Key must be provided.')
     USE_SSL = not params.get('insecure')
     USE_URL_FILTERING = params.get('use_url_filtering')
 
