@@ -39,7 +39,9 @@ function removeEmptyProperties(obj) {
     });
 }
 
+var vals = Array.isArray(args.value) ? args.value : [args.value];
+
 if (toBoolean(args.remove_keys)) {
-    args.value.forEach(v => isObject(v) && removeEmptyProperties(v));
+    vals.forEach(v => isObject(v) && removeEmptyProperties(v));
 }
-return args.value.filter(x => !isEmpty(x));
+return vals.filter(x => !isEmpty(x));
