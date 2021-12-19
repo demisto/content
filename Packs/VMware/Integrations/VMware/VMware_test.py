@@ -5,7 +5,7 @@ from datetime import datetime
 from collections import namedtuple
 from pyVmomi import vim
 from VMwaretestclasses import Si, VsphereClient, VM, VirtualMachineRelocateSpec, Task, Folder, CloneSpec, Summary, \
-    Content, Child, ViewManager, Snapshot, Host, ConfigSpec, FileInfo, ResourceAllocationInfo, EventManager, FilterSpec, \
+    Content, Child, ViewManager, Snapshot, Host, ConfigSpec, FileInfo, ResourceAllocationInfo, EventManager, \
     Event
 
 category = namedtuple('category', ['name', 'id'])
@@ -348,12 +348,8 @@ def test_change_nic_state(monkeypatch):
     monkeypatch.setattr(VMware, 'wait_for_tasks', lambda si_obj, tasks: None)
     monkeypatch.setattr(VM, 'ReconfigVM_Task', lambda this, spec: Task())
 
-    res = VMware.change_nic_state(si, {'vm-uuid': '1234', 'nic-state':'connect', 'nic-number':'123'})
+    res = VMware.change_nic_state(si, {'vm-uuid': '1234', 'nic-state': 'connect', 'nic-number': '123'})
 
     assert res.get('Contents').values()[0].get('UUID') == '1234'
     assert res.get('Contents').values()[0].get('NICState') == 'connected'
     assert 'Virtual Machine\'s NIC was connected successfully' in res.get('HumanReadable')
-
-
-
-

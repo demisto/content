@@ -4,17 +4,15 @@ import ssl
 import urllib3
 import demistomock as demisto  # noqa: F401
 import pyVim.task
-import dateparser
 from CommonServerPython import *  # noqa: F401
 from cStringIO import StringIO
 
 from pyVim.connect import Disconnect, SmartConnect
 from pyVmomi import vim, vmodl
 from vmware.vapi.vsphere.client import create_vsphere_client
-from com.vmware.vapi.std_client import DynamicID
 
 
-def login(params): #pragma: no cover
+def login(params):  # pragma: no cover
     full_url = params['url']
     url_arr = full_url.split(':')
     url = url_arr[0]
@@ -447,7 +445,7 @@ def get_events(si, args):
     }
 
 
-def change_nic_state(si, args): # pragma: no cover
+def change_nic_state(si, args):  # pragma: no cover
     uuid = args['vm-uuid']
     new_nic_state = args['nic-state']
     nic_number = args['nic-number']
@@ -741,17 +739,21 @@ def unregister_vm(si, args):
     }
 
 
+def test_module(si):
+    get_vms(si, {})
+    return_results('ok')
+
+
 def main():  # pragma: no cover
     sout = sys.stdout
     sys.stdout = StringIO()
     res = []
     si = None
-    vsphere_client = None
     try:
         si, vsphere_client = login(demisto.params())
 
         if demisto.command() == 'test-module':
-            result = 'ok'
+            test_module(si)
         if demisto.command() == 'vmware-get-vms':
             result = get_vms(si, demisto.args())
         if demisto.command() == 'vmware-poweron':
