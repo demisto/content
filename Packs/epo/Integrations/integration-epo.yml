@@ -78,11 +78,9 @@ script:
             parsedRes = JSON.parse(trimmedRes);
             return parsedRes;
         } else if (result.StatusCode == 200){
-            throw 'Error accessing ePO interface. Command: ' + url + ". Body: " +
-    result.Body;
+            throw 'Error accessing ePO interface. Command: ' + url + ". Body: " +  result.Body;
         } else {
-            throw 'Error accessing ePO interface. Command: ' + url + ". Response:
-    " + JSON.stringify(result);
+            throw 'Error accessing ePO interface. Command: ' + url + ". Response: " + JSON.stringify(result);
         }
     }
 
@@ -102,8 +100,7 @@ script:
             params.proxy
         );
         if (result.StatusCode < 200 && result.StatusCode > 299) {
-            throw 'Failed to perform request ' + url + encodeToURLQuery(parameters)
-    + ', request status code: ' + result.StatusCode;
+            throw 'Failed to perform request ' + url + encodeToURLQuery(parameters) + ', request status code: ' + result.StatusCode;
         }
         return result;
     }
@@ -608,8 +605,7 @@ script:
         result = callEpo('system.move', pArgs);
 
         if (result === true) {
-            result = 'System ' + args.names + ' moved successfully to GroupId ' +
-    args.parentGroupId;
+            result = 'System ' + args.names + ' moved successfully to GroupId ' +  args.parentGroupId;
             return {
                 Type: entryTypes.note,
                 Contents: result,
@@ -1021,7 +1017,7 @@ script:
       description: Number of processors.
       type: number
     - contextPath: McAfee.ePO.Endpoint.Memory
-      description: 'Endpoint memory.'
+      description: Endpoint memory.
       type: number
     description: Finds systems in the system tree.
   - name: epo-get-version
