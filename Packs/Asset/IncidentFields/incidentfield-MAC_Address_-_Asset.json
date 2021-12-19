@@ -17,7 +17,7 @@
     "fromServerVersion": "",
     "group": 0,
     "hidden": false,
-    "id": "incident_macaddressasset_dan",
+    "id": "incident_macaddressasset",
     "isExtractingSpecificIndicatorTypes": false,
     "isReadOnly": false,
     "itemVersion": "",
