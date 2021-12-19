@@ -34,6 +34,9 @@ SERVER21 = TAXII2Server(url_scheme='http',
                         version='2.1',
                         service_address=None)
 
+# todo: patch demisto.getLicenseID()
+# todo: pytest fixture server
+
 
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
@@ -295,7 +298,7 @@ def test_taxii21_manifest(mocker):
         assert response.json == manifest
 
 
-# todo: test llimit, test query params, test objects
+# todo: test limit, test query params, test objects
 def create_json_output_file(result, file_name):
     json_object = json.dumps(result, indent=4)
     # Writing to sample.json

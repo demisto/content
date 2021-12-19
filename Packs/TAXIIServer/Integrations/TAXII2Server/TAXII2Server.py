@@ -541,7 +541,7 @@ def create_manifest_entry(xsoar_indicator, xsoar_type):
         xsoar_type: type of indicator in xsoar system
 
     Returns:
-
+        manifest entry for given indicator.
     """
     if stix_type := XSOAR_TYPES_TO_STIX_SCO.get(xsoar_type):
         stix_id = create_sco_stix_uuid(xsoar_indicator, stix_type)
@@ -567,7 +567,7 @@ def create_stix_object(xsoar_indicator, xsoar_type):
         xsoar_type: type of indicator in xsoar system
 
     Returns:
-
+        Stix object entry for given indicator.
     """
     if stix_type := XSOAR_TYPES_TO_STIX_SCO.get(xsoar_type):
         stix_id = create_sco_stix_uuid(xsoar_indicator, stix_type)
@@ -613,7 +613,7 @@ def parse_content_range(content_range):
         content_range: the content-range or range header to parse.
 
     Returns:
-
+        Offset and limit arguments for the command.
     """
     range_type, range_count = content_range.split(' ', 1)
 
