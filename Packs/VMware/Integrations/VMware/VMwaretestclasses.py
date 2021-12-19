@@ -248,7 +248,7 @@ class Datastore:
 
 
 class Host:
-    datastore = []
+    datastore = []  # type: ignore
 
     def __init__(self, names):
         for name in names:
