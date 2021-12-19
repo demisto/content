@@ -4305,14 +4305,14 @@
         {
             "playbookID": "Phishing Investigation - Generic v2 - Campaign Test",
             "fromversion": "6.0.0",
-            "timeout": 4600,
+            "timeout": 7000,
             "integrations": [
                 "EWS Mail Sender",
                 "Demisto REST API",
                 "Rasterize",
                 "Demisto Lock"
             ],
-            "instance_names": "sync"
+            "instance_names": "no_sync"
         },
         {
             "playbookID": "PCAP Search test",
