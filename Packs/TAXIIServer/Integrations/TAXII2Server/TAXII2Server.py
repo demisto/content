@@ -936,11 +936,6 @@ def main():
         if command == 'long-running-execution':
             run_long_running(params)
 
-            # todo: remove this
-            # wsgi_server = WSGIServer(('0.0.0.0', port), APP)
-            # demisto.updateModuleHealth('')
-            # wsgi_server.serve_forever()
-
         elif command == 'test-module':
             return_results(test_module(params))
 
