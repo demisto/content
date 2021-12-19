@@ -11,6 +11,8 @@ requests.packages.urllib3.disable_warnings()
 PARAMS = demisto.params()
 URL = PARAMS.get('server')
 TOKEN = PARAMS.get('token') or (PARAMS.get('credentials') or {}).get('password')
+if not TOKEN:
+    raise Exception('API Key must be provided.')
 USE_SSL = not PARAMS.get('insecure', False)
 FILE_TYPE_SUPPRESS_ERROR = PARAMS.get('suppress_file_type_error')
 RELIABILITY = PARAMS.get('integrationReliability', DBotScoreReliability.B) or DBotScoreReliability.B
