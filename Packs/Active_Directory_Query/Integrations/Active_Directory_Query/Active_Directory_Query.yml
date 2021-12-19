@@ -704,6 +704,7 @@ script:
       within the application. Used for outgoing-mapping through the Get Schema option.
     execution: false
     name: get-mapping-fields
+  dockerimage: demisto/ldap:1.0.0.25149
   - arguments:
     - description: The group name of the group to update (sAMAccountName).
       name: groupname
