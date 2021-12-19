@@ -17,10 +17,11 @@ configuration:
   name: tenant_id
   required: true
   type: 4
-- display: Key (received from the admin consent - see Detailed Instructions (?) section)
-  name: enc_key
-  required: true
-  type: 4
+- displaypassword: Key (received from the admin consent - see Detailed Instructions (?) section)
+  name: credentials
+  required: false
+  type: 9
+  hiddenusername: true
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -69,6 +70,11 @@ configuration:
   name: first_fetch_timestamp
   required: false
   type: 0
+- display: Key (Deprecated)
+  name: enc_key
+  required: false
+  type: 4
+  hidden: true
 description: Microsoft Defender for Endpoint (previously Microsoft Defender Advanced
   Threat Protection (ATP)) is a unified platform for preventative protection, post-breach
   detection, automated investigation, and response.

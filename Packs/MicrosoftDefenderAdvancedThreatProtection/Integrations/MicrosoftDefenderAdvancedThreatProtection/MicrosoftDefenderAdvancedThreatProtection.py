@@ -2567,7 +2567,9 @@ def main():
     base_url: str = params.get('url', '').rstrip('/') + '/api'
     tenant_id = params.get('tenant_id')
     auth_id = params.get('auth_id')
-    enc_key = params.get('enc_key')
+    enc_key = params.get('enc_key') or (params.get('credentials') or {}).get('password')
+    if not enc_key:
+        raise Exception('Key must be provided.')
     use_ssl: bool = not params.get('insecure', False)
     proxy: bool = params.get('proxy', False)
     self_deployed: bool = params.get('self_deployed', False)
