@@ -280,13 +280,13 @@ tasks:
               complex:
                 root: inputs.UserID
             iscontext: true
-        - operator: isExists
+      - - operator: isExists
           left:
             value:
               complex:
                 root: inputs.MessageID
             iscontext: true
-        - operator: isExists
+      - - operator: isExists
           left:
             value:
               complex:
