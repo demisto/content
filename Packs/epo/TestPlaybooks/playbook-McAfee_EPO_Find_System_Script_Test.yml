@@ -1,15 +1,15 @@
 id: McAfee_EPO_Find_System_Script
 name: McAfee_EPO_Find_System_Script
 version: -1
-fromversion: 4.5.0
+fromversion: 5.5.0
 starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: '0'
+    taskid: '12b30b5d-0699-436a-a21f-00c036619e9c'
     type: start
     task:
-      id: '0'
+      id: '12b30b5d-0699-436a-a21f-00c036619e9c'
       version: -1
       name: ''
       iscommand: false
@@ -25,10 +25,10 @@ tasks:
     ignoreworker: false
   '1':
     id: 1
-    taskid: '1'
+    taskid: '10d20ddc-1567-41c6-b4a8-84115207a556'
     type: regular
     task:
-      id: '1'
+      id: '10d20ddc-1567-41c6-b4a8-84115207a556'
       version: -1
       name: DeleteContext
       description: ''
@@ -50,10 +50,10 @@ tasks:
     skipunavailable: false
   '2':
     id: 2
-    taskid: '2'
+    taskid: 'b85b9288-98f9-4113-a6c1-bfa503a94973'
     type: regular
     task:
-      id: '2'
+      id: 'b85b9288-98f9-4113-a6c1-bfa503a94973'
       version: -1
       name: EPOFindSystem
       description: ''
@@ -73,10 +73,10 @@ tasks:
     skipunavailable: false
   '3':
     id: '3'
-    taskid: '3'
+    taskid: '587fc759-0dfd-4569-9304-3fadf55f0cc5'
     type: condition
     task:
-      id: '3'
+      id: '587fc759-0dfd-4569-9304-3fadf55f0cc5'
       version: -1
       name: Verify Outputs
       type: condition
@@ -102,10 +102,10 @@ tasks:
     skipunavailable: false
   '4':
     id: '4'
-    taskid: '4'
+    taskid: '60b902e3-3b09-4391-80c1-92b8e542bef6'
     type: title
     task:
-      id: '4'
+      id: '60b902e3-3b09-4391-80c1-92b8e542bef6'
       version: -1
       name: Test Done
       type: title
@@ -122,3 +122,4 @@ view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width
   380, "x": 50, "y": 50}}}'
 inputs: []
 outputs: []
+description: Enter machine hostname or list of IPs
