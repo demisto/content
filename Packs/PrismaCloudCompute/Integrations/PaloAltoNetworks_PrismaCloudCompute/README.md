@@ -1410,7 +1410,8 @@ Get images scan report, the report includes vulnerabilities, compliance issues, 
 | PrismaCloudCompute.ReportsImagesScan.vulnerabilitiesCount | Number | Total number of vulnerabilities. | 
 | PrismaCloudCompute.ReportsImagesScan.vulnerabilityDistribution | Unknown | Distribution counts the number of vulnerabilities per type | 
 | PrismaCloudCompute.ReportsImagesScan.vulnerabilityRiskScore | Number | Image's CVE risk score. | 
-| PrismaCloudCompute.ReportsImagesScan.wildFireUsage | Unknown | Usage holds wildfire usage stats, period for the usage varies with context | 
+| PrismaCloudCompute.ReportsImagesScan.wildFireUsage | Unknown | Usage holds wildfire usage stats, period for the usage varies with context |
+| PrismaCloudCompute.ReportsImagesScan.complianceIssuesCount | Number | Number of compliance issues |
 
 
 #### Command Example
@@ -1973,7 +1974,7 @@ Get images scan report, the report includes vulnerabilities, compliance issues, 
 | PrismaCloudCompute.ReportHostScan.vulnerabilityDistribution | Unknown | Distribution counts the number of vulnerabilities per type | 
 | PrismaCloudCompute.ReportHostScan.vulnerabilityRiskScore | Number | Image's CVE risk score. | 
 | PrismaCloudCompute.ReportHostScan.wildFireUsage | Unknown | Usage holds wildfire usage stats, period for the usage varies with context | 
-
+| PrismaCloudCompute.ReportHostScan.complianceIssuesCount | Number | Number of compliance issues |
 
 #### Command Example
 ```!prisma-cloud-compute-hosts-scan-list hostname=host123 compact=false limit_stats=2```

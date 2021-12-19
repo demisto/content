@@ -1308,7 +1308,7 @@ script:
         context
       type: Unknown
     - contextPath: PrismaCloudCompute.ReportsImagesScan.complianceIssuesCount
-      description: Number of compliance issues.
+      description: Number of compliance issues
       type: Number
   - name: prisma-cloud-compute-hosts-scan-list
     description: Get images scan report, the report includes vulnerabilities,
