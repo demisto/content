@@ -352,6 +352,11 @@ tasks:
           accessor: To
           transformers:
           - operator: uniq
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
       emailtocount:
         complex:
           root: Email
@@ -362,6 +367,43 @@ tasks:
       emailurlclicked:
         complex:
           root: EmailUrlClicked
+      reportedemailattachedretrieved:
+        simple: "True"
+        reportedemailcc:
+          complex:
+            root: Email
+            accessor: CC
+            transformers:
+            - operator: uniq
+            - operator: Stringify
+        reportedemailfrom:
+          complex:
+            root: Email
+            accessor: From
+            transformers:
+            - operator: uniq
+            - operator: Stringify
+        reportedemailorigin:
+          complex:
+            root: ReportedEmailOrigin
+        reportedemailsubject:
+          complex:
+            root: Email
+            accessor: Subject
+            transformers:
+            - operator: uniq
+            - operator: Stringify
+        reportedemailto:
+          complex:
+            root: Email
+            accessor: To
+            transformers:
+            - operator: uniq
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: ','
     reputationcalc: 1
     separatecontext: false
     view: |-
