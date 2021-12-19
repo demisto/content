@@ -6,7 +6,7 @@ configuration:
 - display: Client ID
   name: client_id
   required: true
-  type: 4
+  type: 9
 - display: Use system proxy settings
   name: proxy
   required: false
@@ -391,7 +391,7 @@ script:
       description: 'Indicates the type of token issuer for the detected sign-in risk.
         Possible values are: AzureAD, ADFederationServices, UnknownFutureValue.'
       type: String
-  dockerimage: demisto/crypto:1.0.0.24037
+  dockerimage: demisto/crypto:1.0.0.24380
   feed: false
   isfetch: false
   longRunning: false
