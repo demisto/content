@@ -818,3 +818,5 @@ view: |-
     }
   }
 fromversion: 6.2.0
+tests:
+- No tests
