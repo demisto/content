@@ -563,6 +563,7 @@ def util_load_json(path: str):
     with io.open(path, mode='r', encoding='utf-8') as file:
         return json.loads(file.read())
 
+
 @pytest.mark.parametrize(
     # Write and define the expected
     "args ,expected_context, expected_readable",
