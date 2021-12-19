@@ -1,8 +1,8 @@
 {
     "name": "PerimeterX",
-    "description": "PerimeterX integration with Cortex SOAR",
+    "description": "PerimeterX integration with Cortex XSOAR",
     "support": "partner",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.3",
     "author": "PerimeterX",
     "url": "http://www.perimeterx.com",
     "email": "",
@@ -13,5 +13,5 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
-    "githubUser": ["your github user"]
+    "githubUser": []
 }

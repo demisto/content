@@ -80,12 +80,10 @@ class Client(BaseClient):
     Should only do requests and return data.
     """
 
-    def test_api_connection(self) -> Dict[str, Any]:
+    def test_api_connection(self, api_key: str) -> Dict[str, Any]:
         """
         Makes a call to the status API path to confirm the proper URL and Authorization token were provided
         """
-
-        api_key = demisto.params().get('apikey')
 
         headers = {
             'Authorization': f'Bearer {api_key}',
@@ -98,7 +96,7 @@ class Client(BaseClient):
             headers=headers
         )
 
-    def post_investigate_by_ip(self, ip_type: str, ip_address: str) -> Dict[str, Any]:
+    def post_investigate_by_ip(self, ip_type: str, ip_address: str, api_key: str) -> Dict[str, Any]:
         """
         Query the PerimeterX API to get the relevant details regarding the provided IP within a particular customer's own data
 
@@ -111,9 +109,6 @@ class Client(BaseClient):
         :return: The JSON response body from the PerimeterX API
         :rtype: ``Dict[str, Any]``
         """
-
-        api_key = demisto.params().get('apikey')
-
         headers = {
             'Authorization': f'Bearer {api_key}',
             'Content-Type': 'application/json'
@@ -163,7 +158,7 @@ class Client(BaseClient):
         )
 
 
-def test_module(client: Client):
+def test_module(client: Client, api_key):
     """
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
 
@@ -174,7 +169,7 @@ def test_module(client: Client):
         'ok' if test passed, anything else will fail the test.
     """
     try:
-        result = client.test_api_connection()
+        result = client.test_api_connection(api_key)
         if result['success']:
             return 'ok'
         else:
@@ -184,7 +179,7 @@ def test_module(client: Client):
 
 
 def perimeterx_get_investigate_details(client: Client, args: Dict[str, Any],
-                                       thresholds: Dict[str, Any]) -> CommandResults:
+                                       thresholds: Dict[str, Any], api_key: str) -> CommandResults:
     """
     Collect the required details to query the PerimeterX API to get the relevant details regarding the provided
     search term within a particular customer's own data
@@ -219,7 +214,7 @@ def perimeterx_get_investigate_details(client: Client, args: Dict[str, Any],
         """
         Run an IP based search if the search type is one supported by the IP types
         """
-        result = client.post_investigate_by_ip(ip_type=search_type, ip_address=search_term)
+        result = client.post_investigate_by_ip(ip_type=search_type, ip_address=search_term, api_key=api_key)
 
         indicator = pXScoring.get_ip_score(ip_address=search_term, risk_score=result['max_risk_score'],
                                            thresholds=thresholds)
@@ -251,12 +246,12 @@ def perimeterx_get_investigate_details(client: Client, args: Dict[str, Any],
     )
 
 
-def ip(client: Client, args: Dict[str, Any], thresholds: Dict[str, Any]):
+def ip(client: Client, args, thresholds: Dict[str, Any], api_key):
     """
     Collect the details to run an IP Reputation query against the PerimeterX API
 
     :type ip: ``str``
-    :param ip: Results will be provided for this particular IP
+    :param ip: Results will be provided for list of IPs
 
     :return:
         A ``CommandResults`` object that is then passed to ``return_results``,
@@ -266,24 +261,24 @@ def ip(client: Client, args: Dict[str, Any], thresholds: Dict[str, Any]):
     """
 
     # Check to make sure we have a query term
-    ip_address = args.get('ip', None)
-    if not ip_address:
-        raise ValueError('No IP Address specified')
+    ip_list = argToList(args)
+    results = []
+    for ip_address in ip_list:
+        result = client.post_investigate_by_ip(ip_type='true_ip', ip_address=ip_address, api_key=api_key)
 
-    result = client.post_investigate_by_ip(ip_type='true_ip', ip_address=ip_address)
+        indicator = pXScoring.get_ip_score(ip_address=ip_address, risk_score=result['max_risk_score'],
+                                           thresholds=thresholds)
+        readable_output = f'{indicator}'
+        cr = CommandResults(
+            readable_output=readable_output,
+            outputs_prefix='PerimeterX',
+            outputs_key_field='',
+            outputs=result,
+            indicator=indicator
+        )
+        results.append(cr)
 
-    indicator = pXScoring.get_ip_score(ip_address=ip_address, risk_score=result['max_risk_score'],
-                                       thresholds=thresholds)
-
-    readable_output = f'{indicator}'
-
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='PerimeterX',
-        outputs_key_field='',
-        outputs=result,
-        indicator=indicator
-    )
+    return results
 
 
 def main():
@@ -300,13 +295,14 @@ def main():
 
     # get the DBot Thresholds
     thresholds = {
-        "good_threshold": int(demisto.params().get('dbotGoodThreshold')),
-        "suspicious_threshold": int(demisto.params().get('dbotSuspiciousThreshold')),
-        "bad_threshold": int(demisto.params().get('dbotBadThreshold')),
+        "good_threshold": int(params.get('dbotGoodThreshold')),
+        "suspicious_threshold": int(params.get('dbotSuspiciousThreshold')),
+        "bad_threshold": int(params.get('dbotBadThreshold')),
         "unknown_threshold": 0
     }
 
-    LOG(f'Command being called is {demisto.command()}')
+    command = demisto.command()
+    LOG(f'Command being called is {command}')
     try:
         headers = {
             'Authorization': f'Bearer {api_key}',
@@ -318,13 +314,17 @@ def main():
             headers=headers,
             proxy=proxy)
 
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client)
+            result = test_module(client, api_key)
             demisto.results(result)
 
-        elif demisto.command() == 'ip':
-            return_results(ip(client=client, args=demisto.args(), thresholds=thresholds))
+        elif command == 'ip':
+            return_results(ip(client, demisto.args(), thresholds=thresholds, api_key=api_key))
+
+        elif command == 'perimeterx_get_investigate_details':
+            return_results(perimeterx_get_investigate_details(client=client, args=demisto.args(), thresholds=thresholds,
+                                                              api_key=api_key))
 
     # Log exceptions
     except Exception as e:
