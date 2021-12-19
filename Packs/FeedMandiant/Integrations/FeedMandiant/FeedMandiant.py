@@ -200,7 +200,7 @@ def get_indicator_list(client: MandiantClient, limit: int, first_fetch: str, ind
         new_indicators_list = res.get(MAP_TYPE_TO_RESPONSE[indicator_type], [])
         if indicator_type == 'Indicators':
             new_indicators_list.sort(key=lambda x: parse_date_string(x.get('first_seen')),
-                                  reverse=True)  # from new to old
+                                     reverse=True)  # from new to old
             new_indicators_list = list(
                 filter(lambda x: parse_date_string(x['first_seen']) <= datetime.fromtimestamp(params['start_epoch']),
                        new_indicators_list))
@@ -208,7 +208,7 @@ def get_indicator_list(client: MandiantClient, limit: int, first_fetch: str, ind
         else:
             new_indicators_list.sort(key=lambda x: parse_date_string(x.get('last_updated')), reverse=True)  # new to old
             new_indicators_list = list(filter(lambda x: parse_date_string(x['last_updated']) > start_date,
-                                           new_indicators_list))
+                                              new_indicators_list))
 
         indicators_list += new_indicators_list
 
@@ -222,10 +222,9 @@ def get_indicator_list(client: MandiantClient, limit: int, first_fetch: str, ind
             last_run_dict[indicator_type + 'Last'] = new_indicators_list[-1]['last_updated'] \
                 if new_indicators_list else last_run_dict.get(indicator_type + 'Last')
 
-        demisto.setLastRun(last_run)
+        demisto.setLastRun(last_run_dict)
 
     return new_indicators_list
-
 
 
 def get_verdict(mscore: Optional[str]) -> int:
@@ -609,8 +608,8 @@ def main() -> None:
             types = argToList(params.get('type'))
 
             indicators = fetch_indicators(client, limit, first_fetch, metadata, enrichment, types)
-            # for b in batch(indicators, batch_size=2000):
-            #     demisto.createIndicators(b)
+            for b in batch(indicators, batch_size=2000):
+                demisto.createIndicators(b)
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
 

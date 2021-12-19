@@ -188,20 +188,20 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: '[''Malware'', ''Indicators'', ''Actors'']'
+      defaultValue: Malware,Indicators,Actors
       description: What indicators types to fetch
       isArray: true
       name: type
       predefined:
-      - '[''Malware'''
-      - ' ''Indicators'''
-      - ' ''Actors'']'
+      - Malware
+      - Indicators
+      - Actors
       required: true
       secret: false
     deprecated: false
+    description: get mandiant indicators
     execution: false
     name: feed-mandiant-get-indicators
-    description: get mandiant indicators
   dockerimage: demisto/python3:3.9.8.24399
   feed: true
   isfetch: false
