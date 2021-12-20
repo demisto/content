@@ -31,15 +31,14 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use Azure Data Explorer integration to collect and analyze data inside
-  clusters of Azure Data Explorer and manage search queries.
+description: Use the Azure Data Explorer integration to collect and analyze data inside Azure Data Explorer clusters, and to manage search queries.
 display: Azure Data Explorer
 name: AzureDataExplorer
 script:
   commands:
   - arguments:
     - default: false
-      description: KQL search query to execute on given database.
+      description: Kusto Query Language (KQL) search query to execute on given database.
       isArray: false
       name: query
       required: true
@@ -52,14 +51,14 @@ script:
       secret: false
     - default: false
       defaultValue: '5'
-      description: The timeout for the execution of search query on server side. The
+      description: The timeout for the execution of the search query on the server side. The
         timeout is a float number in minutes that ranges from 0 to 60.
       isArray: false
       name: timeout
       required: false
       secret: false
     deprecated: false
-    description: Execute a KQL query against the given database inside a cluster.
+    description: Execute a Kusto Query Language (KQL) query against the given database inside a cluster.
       The Kusto query is a read-only request to process data and return results. To
       learn more about KQL go to https://docs.microsoft.com/en-us/azure/kusto/query/.
     execution: false
@@ -75,17 +74,17 @@ script:
       description: The results of the query execution.
       type: Unknown
     - contextPath: AzureDataExplorer.SearchQueryResults.Database
-      description: Database against query will be executed.
+      description: The database against which the query will be executed.
       type: String
   - arguments:
     - default: false
-      description: 'The name of the database to list the completed search queries. '
+      description: 'The name of the database from which to list the completed search queries. '
       isArray: false
       name: database_name
       required: true
       secret: false
     - default: false
-      description: The client activity ID property of search query. Use this to get
+      description: The client activity ID property of the search query. Use this value to get
         a specific search query.
       isArray: false
       name: client_activity_id
@@ -107,7 +106,7 @@ script:
       secret: false
     - default: false
       description: The maximum number of completed queries to return per page. If
-        this argument is not provided, an automatic pagination will be made accroding
+        this argument is not provided, an automatic pagination will be made according
         to the limit argument.
       isArray: false
       name: page_size
@@ -116,34 +115,33 @@ script:
     deprecated: false
     description: List search queries that have reached a final state in the given
       database.  A database admin or database monitor can see any command that was
-      invoked on their database. Other users can only see queries that were invoked
-      by them.
+      invoked on their database. Other users can only see queries that they themselves invoked.
     execution: false
     name: azure-data-explorer-search-query-list
     outputs:
     - contextPath: AzureDataExplorer.SearchQuery.ClientActivityId
-      description: 'The client activity ID. A unique identifier of the query execution.  '
+      description: 'The client activity ID. A unique identifier of the query execution.'
       type: String
     - contextPath: AzureDataExplorer.SearchQuery.Text
-      description: 'The search query text. '
+      description: 'The search query text.'
       type: String
     - contextPath: AzureDataExplorer.SearchQuery.Database
-      description: 'The name of the database that the search query run on. '
+      description: 'The name of the database that the search query is run on.'
       type: String
     - contextPath: AzureDataExplorer.SearchQuery.StartedOn
-      description: 'query execution start time in UTC. '
-      type: String
+      description: 'The query execution start time in UTC. '
+      type: Date
     - contextPath: AzureDataExplorer.SearchQuery.LastUpdatedOn
       description: The last update time of the query.
-      type: String
+      type: Date
     - contextPath: AzureDataExplorer.SearchQuery.Duration
       description: The search query runtime.
       type: Date
     - contextPath: AzureDataExplorer.SearchQuery.State
-      description: 'The search query state. '
+      description: 'The search query state.'
       type: String
     - contextPath: AzureDataExplorer.SearchQuery.RootActivityId
-      description: Root Activity ID.
+      description: The root activity ID.
       type: String
     - contextPath: AzureDataExplorer.SearchQuery.User
       description: The user who performed the query.
@@ -168,122 +166,122 @@ script:
       description: The number of disk misses.
       type: Number
     - contextPath: AzureDataExplorer.SearchQuery.CacheStatistics.Shards.Hot.HitBytes
-      description: Shads hot hit bytes.
+      description: The amount of data (in bytes) which was found in the hot data cache of the table's extents, during the search query execution. 
       type: Number
     - contextPath: AzureDataExplorer.SearchQuery.CacheStatistics.Shards.Hot.MissBytes
-      description: Shards hot cache misses.
+      description: The amount of data (in bytes) which was not found in the hot data cache of the table's extents, during the search query execution.
       type: Number
     - contextPath: AzureDataExplorer.SearchQuery.CacheStatistics.Shards.Hot.RetrieveBytes
-      description: Shards hot cache retrieved bytes
+      description: The amount of data (in bytes) that was retrieved from hot data cache of the table's extents, during the search query execution.
       type: Number
     - contextPath: AzureDataExplorer.SearchQuery.CacheStatistics.Shards.Cold.HitBytes
-      description: Shards cold cache hits.
+      description: The amount of data (in bytes) which was found in the cold data cache of the table's extents, during the search query execution. 
       type: Number
     - contextPath: AzureDataExplorer.SearchQuery.CacheStatistics.Shards.Cold.MissBytes
-      description: Shards cold cache misses.
+      description: The amount of data (in bytes) which was not found in the cold data cache of the table's extents, during the search query execution.
       type: Number
     - contextPath: AzureDataExplorer.SearchQuery.CacheStatistics.Shards.Cold.RetrieveBytes
-      description: Shards cold cache retrieved bytes.
+      description: The amount of data (in bytes) that was retrieved from cold data cache during the search query execution.
       type: Number
     - contextPath: AzureDataExplorer.SearchQuery.CacheStatistics.Shards.BypassBytes
-      description: Shards cache bypass bytes.
+      description: The amount of data (in bytes) that was bypassed (reloaded) in the cache of the table's extents during the search query execution. 
       type: Number
     - contextPath: AzureDataExplorer.SearchQuery.Application
-      description: Application name that invoked the command.
+      description: The application name that invoked the command.
       type: String
     - contextPath: AzureDataExplorer.SearchQuery.MemoryPeak
-      description: Memory peak.
+      description: The peak memory usage of the query execution. 
       type: Number
     - contextPath: AzureDataExplorer.SearchQuery.ScannedExtentsStatistics.MinDataScannedTime
-      description: Minimum data scan time.
+      description: The minimum data scan time.
       type: Date
     - contextPath: AzureDataExplorer.SearchQuery.ScannedExtentsStatistics.MaxDataScannedTime
-      description: Maximum data scan time.
+      description: The maximum data scan time.
       type: Date
     - contextPath: AzureDataExplorer.SearchQuery.ScannedExtentsStatistics.TotalExtentsCount
-      description: Total extent count.
+      description: The total number of extents which were used during the query execution. 
       type: Number
     - contextPath: AzureDataExplorer.SearchQuery.ScannedExtentsStatistics.ScannedExtentsCount
-      description: Scanned extent count.
+      description: The number of extents which were scanned during the query execution. 
       type: Number
     - contextPath: AzureDataExplorer.SearchQuery.ScannedExtentsStatistics.TotalRowsCount
-      description: Total rows count.
+      description: The total row count of extents which were used during the query execution. 
       type: Number
     - contextPath: AzureDataExplorer.SearchQuery.ScannedExtentsStatistics.ScannedRowsCount
-      description: Scanned rows count.
+      description: The number of scanned rows of an extent during query execution. 
       type: Number
     - contextPath: AzureDataExplorer.SearchQuery.Principal
       description: The principal that invoked the query.
       type: String
     - contextPath: AzureDataExplorer.SearchQuery.ClientRequestProperties.SecurityTokenPresent
-      description: If true, the security token is present in the request.
+      description: Whether the security token is present in the request or not.
       type: Boolean
     - contextPath: AzureDataExplorer.SearchQuery.ClientRequestProperties.AuthorizationScheme
-      description: Authorization scheme.
+      description: The authorization scheme.
       type: String
     - contextPath: AzureDataExplorer.SearchQuery.ClientRequestProperties.RequestHostName
-      description: Request hostname.
+      description: The hostname of the request.
       type: String
     - contextPath: AzureDataExplorer.SearchQuery.ClientRequestProperties.LocalClusterName
       description: The cluster name.
       type: String
     - contextPath: AzureDataExplorer.SearchQuery.ClientRequestProperties.OriginClusterName
-      description: Origin cluster name.
+      description: The origin cluster name.
       type: String
     - contextPath: AzureDataExplorer.SearchQuery.ClientRequestProperties.Options.api_version
-      description: API version.
+      description: The API version.
       type: String
     - contextPath: AzureDataExplorer.SearchQuery.ClientRequestProperties.Options.request_readonly
-      description: If true, the request is read-only.
+      description: Whether the request is read-only or not.
       type: Boolean
     - contextPath: AzureDataExplorer.SearchQuery.ClientRequestProperties.Options.servertimeout
-      description: Server timeout value.
+      description: The server timeout value.
       type: Number
     - contextPath: AzureDataExplorer.SearchQuery.ClientRequestProperties.Options.servertimeoutorigin
-      description: Server timeout origin.
+      description: The server timeout origin.
       type: String
     - contextPath: AzureDataExplorer.SearchQuery.ClientRequestProperties.Options.query_datascope
-      description: Query datascope.
+      description: The query datascope.
       type: Number
     - contextPath: AzureDataExplorer.SearchQuery.ClientRequestProperties.Options.query_fanout_nodes_percent
-      description: Query fanout nodes percent.
+      description: The percentage of the query nodes in the cluster to use per subquery distribution operation.
       type: Number
     - contextPath: AzureDataExplorer.SearchQuery.ClientRequestProperties.Options.query_fanout_threads_percent
-      description: Query fanout threads percent.
+      description: The percentage of CPUs the cluster will assign on each node.
       type: Number
     - contextPath: AzureDataExplorer.SearchQuery.ClientRequestProperties.Options.maxmemoryconsumptionperiterator
-      description: Max memory consumption per iterator.
+      description: The maximum amount of memory that a single query plan result set iterator can hold.
       type: Number
     - contextPath: AzureDataExplorer.SearchQuery.ClientRequestProperties.Options.max_memory_consumption_per_query_per_node
-      description: Max memory consumption per query per node.
+      description: The maximum amount of memory that can be used on a single node for a specific query.
       type: Number
     - contextPath: AzureDataExplorer.SearchQuery.ClientRequestProperties.Options.truncationmaxsize
-      description: Truncation max size.
+      description: The maximum overall data size returned by the query, in bytes.
       type: Number
     - contextPath: AzureDataExplorer.SearchQuery.ClientRequestProperties.Options.truncationmaxrecords
-      description: Truncation max records.
+      description: The maximum number of records returned by the query.
       type: Number
     - contextPath: AzureDataExplorer.SearchQuery.ResultSetStatistics.TableCount
-      description: Tables count.
+      description: The number of tables that were retrieved following search query execution. 
       type: Number
     - contextPath: AzureDataExplorer.SearchQuery.ResultSetStatistics.TablesStatistics.RowCount
-      description: Search query results' rows count.
+      description: The row count of the table retrieved following search query execution.
       type: Number
     - contextPath: AzureDataExplorer.SearchQuery.ResultSetStatistics.TablesStatistics.TableSize
-      description: Table size.
+      description: The total size in bytes of the table retrieved following search query execution. 
       type: Number
     - contextPath: AzureDataExplorer.SearchQuery.WorkloadGroup
-      description: Workload group.
+      description: The workload group which the query was assigned to. The query is executed using the policies assigned to the workload group. There are two pre-defined workload groups (internal and default) and up to 10 custom workload groups which may be defined at the cluster level. 
       type: String
   - arguments:
     - default: false
-      description: Database name.
+      description: The database name.
       isArray: false
       name: database_name
       required: true
       secret: false
     - default: false
-      description: The client activity ID property of search query. Use this to get
+      description: The client activity ID property of the search query. Use this to get
         a specific running search query.
       isArray: false
       name: client_activity_id
@@ -305,7 +303,7 @@ script:
       secret: false
     - default: false
       description: The maximum number of running queries to return per page. If this
-        argument is not provided, an automatic pagination will be made accroding to
+        argument is not provided, an automatic pagination will be made according to
         the limit argument.
       isArray: false
       name: page_size
@@ -314,7 +312,7 @@ script:
     deprecated: false
     description: |-
       List currently executing search queries in the given database. A database admin or database monitor can see any search query that was invoked on their database.
-      Other users can only see search queries that were invoked by them.
+      Other users can only see search queries that they themselves invoked.
     execution: false
     name: azure-data-explorer-running-search-query-list
     outputs:
@@ -325,22 +323,22 @@ script:
       description: 'The search query text. '
       type: String
     - contextPath: AzureDataExplorer.RunningSearchQuery.Database
-      description: 'The name of the database that the search query run on. '
+      description: 'The name of the database that the search query is run on. '
       type: String
     - contextPath: AzureDataExplorer.RunningSearchQuery.StartedOn
-      description: 'query execution start time in UTC. '
+      description: 'The query execution start time in UTC. '
       type: Date
     - contextPath: AzureDataExplorer.RunningSearchQuery.LastUpdatedOn
       description: The last update time of the query.
       type: String
     - contextPath: AzureDataExplorer.RunningSearchQuery.Duration
-      description: The search query runtime.
-      type: String
+      description: The search query runtime duration.
+      type: Date
     - contextPath: AzureDataExplorer.RunningSearchQuery.State
       description: 'The search query state. '
       type: String
     - contextPath: AzureDataExplorer.RunningSearchQuery.RootActivityId
-      description: Root Activity ID.
+      description: The root activity ID.
       type: String
     - contextPath: AzureDataExplorer.RunningSearchQuery.User
       description: The user who performed the query.
@@ -356,70 +354,70 @@ script:
       description: The cache statistics.
       type: Unknown
     - contextPath: AzureDataExplorer.RunningSearchQuery.Application
-      description: Application name that invoked the command.
-      type: Unknown
+      description: The application name that invoked the command.
+      type: String
     - contextPath: AzureDataExplorer.RunningSearchQuery.MemoryPeak
-      description: Memory peak.
+      description: The peak memory usage of the running query execution. 
       type: Number
     - contextPath: AzureDataExplorer.RunningSearchQuery.ScannedExtentsStatistics
-      description: Scanned extent count.
+      description: The scanned extent count.
       type: Unknown
     - contextPath: AzureDataExplorer.RunningSearchQuery.Principal
       description: The principal that invoked the query.
       type: String
     - contextPath: AzureDataExplorer.RunningSearchQuery.ClientRequestProperties.SecurityTokenPresent
-      description: If true, the security token is present in the request.
+      description: Whether the security token is present in the request or not.
       type: Boolean
     - contextPath: AzureDataExplorer.RunningSearchQuery.ClientRequestProperties.AuthorizationScheme
-      description: Authorization scheme.
+      description: The authorization scheme.
       type: String
     - contextPath: AzureDataExplorer.RunningSearchQuery.ClientRequestProperties.RequestHostName
-      description: Request hostname.
+      description: The hostname of the request.
       type: String
     - contextPath: AzureDataExplorer.RunningSearchQuery.ClientRequestProperties.LocalClusterName
       description: The cluster name.
       type: String
     - contextPath: AzureDataExplorer.RunningSearchQuery.ClientRequestProperties.OriginClusterName
-      description: Origin cluster name.
+      description: The origin cluster name.
       type: String
     - contextPath: AzureDataExplorer.RunningSearchQuery.ClientRequestProperties.Options.api_version
-      description: API version.
+      description: The API version.
       type: String
     - contextPath: AzureDataExplorer.RunningSearchQuery.ClientRequestProperties.Options.request_readonly
-      description: If true, the request is read-only.
+      description: Whether the request is read-only or not.
       type: Boolean
     - contextPath: AzureDataExplorer.RunningSearchQuery.ClientRequestProperties.Options.servertimeout
-      description: Server timeout value.
+      description: The server timeout value.
       type: Number
     - contextPath: AzureDataExplorer.RunningSearchQuery.ClientRequestProperties.Options.servertimeoutorigin
-      description: Server timeout origin.
+      description: The server timeout origin.
       type: String
     - contextPath: AzureDataExplorer.RunningSearchQuery.ClientRequestProperties.Options.query_datascope
-      description: Query datascope.
+      description: The query datascope.
       type: Number
     - contextPath: AzureDataExplorer.RunningSearchQuery.ClientRequestProperties.Options.query_fanout_nodes_percent
-      description: Query fanout nodes percent.
+      description: The percentage of the query nodes in the cluster to use per subquery distribution operation.
       type: Number
     - contextPath: AzureDataExplorer.RunningSearchQuery.ClientRequestProperties.Options.query_fanout_threads_percent
-      description: Query fanout threads percent.
+      description: The percentage of CPUs the cluster will assign on each node.
       type: Number
     - contextPath: AzureDataExplorer.RunningSearchQuery.ClientRequestProperties.Options.maxmemoryconsumptionperiterator
-      description: Max memory consumption per iterator.
+      description: The maximum amount of memory that a single query plan result set iterator can hold.
       type: Number
     - contextPath: AzureDataExplorer.RunningSearchQuery.ClientRequestProperties.Options.max_memory_consumption_per_query_per_node
-      description: Max memory consumption per query per node.
+      description: The maximum amount of memory that can be used on a single node for a specific query.
       type: Number
     - contextPath: AzureDataExplorer.RunningSearchQuery.ClientRequestProperties.Options.truncationmaxsize
-      description: Truncation max size.
+      description: The maximum overall data size returned by the query, in bytes.
       type: Number
     - contextPath: AzureDataExplorer.RunningSearchQuery.ClientRequestProperties.Options.truncationmaxrecords
-      description: Truncation max records.
+      description: The maximum number of records returned by the query.
       type: Number
     - contextPath: AzureDataExplorer.RunningSearchQuery.ResultSetStatistics
-      description: Result set statistics.
+      description: The result set statistics.
       type: Unknown
     - contextPath: AzureDataExplorer.RunningSearchQuery.WorkloadGroup
-      description: Workload group.
+      description: The workload group.
       type: String
   - arguments:
     - default: false
@@ -429,13 +427,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: Database name.
+      description: The database name.
       isArray: false
       name: database_name
       required: true
       secret: false
     - default: false
-      description: 'Describe the reason for canceling the running query. '
+      description: 'The reason for canceling the running query. '
       isArray: false
       name: reason
       required: false
@@ -447,13 +445,13 @@ script:
     name: azure-data-explorer-running-search-query-cancel
     outputs:
     - contextPath: AzureDataExplorer.CanceledSearchQuery.RunningQueryCanceled
-      description: If true, the query was successfully canceled.
+      description: Whether the query was successfully canceled or not.
       type: Boolean
     - contextPath: AzureDataExplorer.CanceledSearchQuery.ClientRequestId
-      description: Client Activity ID of the cancelled query.
+      description: The client activity ID of the cancelled query.
       type: String
     - contextPath: AzureDataExplorer.CanceledSearchQuery.ReasonPhrase
-      description: Cancelation reason.
+      description: The reason for canceling the running query.
       type: String
   - deprecated: false
     description: Run this command to start the authorization process and follow the
@@ -461,7 +459,7 @@ script:
     execution: false
     name: azure-data-explorer-auth-start
   - deprecated: false
-    description: Run this command to complete the authorization process. Should be
+    description: Run this command to complete the authorization process. This should be
       used after running the azure-data-explorer-auth-start command.
     execution: false
     name: azure-data-explorer-auth-complete
