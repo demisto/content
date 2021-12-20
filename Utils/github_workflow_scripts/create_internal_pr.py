@@ -100,25 +100,14 @@ def debugging_branches_with_slashes():
     pr_number = payload.get('pull_request', {}).get('number')
     merged_pr = content_repo.get_pull(pr_number)
     merged_pr_url = merged_pr.html_url
-    body = f'## Original External PR\r\n[external pull request]({merged_pr_url})\r\n\r\n'
-    title = merged_pr.title
-    if '## Contributor' not in merged_pr.body:
-        merged_pr_author = merged_pr.user.login
-        body += f'## Contributor\r\n@{merged_pr_author}\r\n\r\n'
-    body += merged_pr.body
-    base_branch = 'master'
+
     head_branch = merged_pr.base.ref
 
     print(f'{t.pink}\n DDDDetails are:\n content_repo:{content_repo}\n pr_number:{pr_number}\n '
           f'merged_pr:{merged_pr}\n merged_pr_url:{merged_pr_url}\n head_branch:{head_branch}\n '
           f'merged_pr.base:{merged_pr.base}\n{t.normal}')
-    # remove branch protections
-    print(f'{t.cyan}Removing protection from branch "{head_branch}"{t.normal}')
     contrib_branch = content_repo.get_branch(head_branch)
     print(f'\nBranch protection:\n{contrib_branch.get_protection()}\n')
-    contrib_branch.remove_protection()
-    #contrib_branch.remove_required_status_checks()
-    #contrib_branch.remove_required_pull_request_reviews()
 
 
 if __name__ == "__main__":
