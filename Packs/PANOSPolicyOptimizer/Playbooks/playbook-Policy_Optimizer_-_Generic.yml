@@ -2,7 +2,7 @@ id: Policy Optimizer - Generic
 version: -1
 name: Policy Optimizer - Generic
 description: |-
-  This playbook is triggered by the PAN-OS Policy Optimizer incident type, and can go through any of the following sub-playbooks:
+  This playbook is triggered by the Policy Optimizer incident type, and can execute any of the following sub-playbooks:
   - Policy Optimizer - Manage Unused Rules
   - Policy Optimizer - Manage Rules with Unused Applications
   - Policy Optimizer - Manage Port Based Rules
@@ -352,13 +352,13 @@ tasks:
     scriptarguments:
       policyoptimizerdescription:
         simple: |-
-          This incident shows information about PAN-OS policy misconfigurations that are found by the PAN-OS Policy Optimizer, that helps you automate your AppID Adoption. See the different use-cases displayed in the layout tabs.
+          This incident shows information about PAN-OS policy misconfigurations found by the PAN-OS Policy Optimizer that help automate your AppID adoption. See the different use-cases displayed in the layout tabs.
 
-          Manage unused rules - View policy rules that are unused and have the option to remove them from your policy.
+          Manage unused rules - Identify and remove unused rules that do not pass traffic in your environment.
 
           Manage port based rules - Migrate port-based rules to application-based allow rules to reduce the attack surface and safely enable applications on your network.
 
-          Manage rules with unused applications - If you have application-based Security policy rules that allow a large number of applications, you can remove unused applications (applications never seen on the rules) from those rules to tighten them so that they only allow applications actually seen in the rule’s traffic. Identifying and removing unused applications from Security policy rules is a best practice that strengthens your security posture by reducing the attack surface.
+          Manage rules with unused applications - If you have application-based Security policy rules that allow a large number of applications, you can remove unused applications (applications never seen on the rules) from those rules to only allow applications actually seen in the rule’s traffic. This strengthens your security posture by reducing the attack surface.
     separatecontext: false
     view: |-
       {
@@ -395,12 +395,12 @@ inputs:
 - key: email_address
   value: {}
   required: false
-  description: Email address user to notify about unused rules.
+  description: User email address to notify about unused rules.
   playbookInputQuery:
 - key: auto_commit
   value: {}
   required: false
-  description: Specify whether you want to auto-commit the configuration for the PAN-OS
+  description: Specifies whether you want to auto-commit the configuration for the PAN-OS
     policy changes automatically (Yes/No).
   playbookInputQuery:
 outputs: []
