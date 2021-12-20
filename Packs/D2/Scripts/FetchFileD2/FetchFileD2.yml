@@ -16,3 +16,5 @@ args:
   description: Local filepath on the endpoint
 scripttarget: 0
 fromversion: 5.0.0
+tests:
+- no test

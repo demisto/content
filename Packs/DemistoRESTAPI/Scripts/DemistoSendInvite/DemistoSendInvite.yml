@@ -22,3 +22,5 @@ dependson:
   - demisto-api-post
   - demisto-api-get
 fromversion: 5.0.0
+tests:
+- no test

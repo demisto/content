@@ -18,3 +18,5 @@ args:
   description: The d2 command to run
 scripttarget: 0
 fromversion: 5.0.0
+tests:
+- no test

@@ -28,3 +28,5 @@ dependson:
   must:
   - demisto-api-post
 fromversion: 5.0.0
+tests:
+- no test

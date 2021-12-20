@@ -12,3 +12,5 @@ scripttarget: 1
 dependson: {}
 timeout: 0s
 fromversion: 5.0.0
+tests:
+- no test

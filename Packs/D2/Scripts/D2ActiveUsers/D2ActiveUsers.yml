@@ -11,3 +11,5 @@ comment: Show local accounts
 system: true
 scripttarget: 1
 fromversion: 5.0.0
+tests:
+- no test
