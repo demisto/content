@@ -17,14 +17,13 @@ This integration was integrated and tested with version 1.0 of MISP Feed.
     | Incremental Feed | Incremental feeds pull only new or modified indicators that have been sent from the integration. The determination if the indicator is new or modified happens on the 3rd-party vendor's side, and only indicators that are new or modified are sent to Cortex XSOAR. Therefore, all indicators coming from these feeds are labeled new or modified. | False |
     | Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
     | Source Reliability | Reliability of the source providing the intelligence data. | True |
-    |  |  | False |
-    |  |  | False |
     | Feed Fetch Interval |  | False |
     | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
-    | Attribute Tags | Attributes having one of the tags or being an attribute of an event having one of the tags will be returned. You can enter a comma-separated list of tags, for example &amp;lt;tag1,tag2,tag3&amp;gt;. | False |
-    | Attribute Types | Attributes of one of these types will be returned. You can enter a comma-separated list of types, for example &amp;lt;type1,type2,type3&amp;gt;. | False |
+    | MISP Attribute Tags | Attributes having one of the tags or being an attribute of an event having one of the tags will be returned. You can enter a comma-separated list of tags, for example &amp;lt;tag1,tag2,tag3&amp;gt;. The list of MISP tags can be found in your MISP instance under 'Event Actions'>'List Tags' | False |
+    | MISP Attribute Types | Attributes of one of these types will be returned. You can enter a comma-separated list of types, for example &amp;lt;type1,type2,type3&amp;gt;. The list of MISP types can be found in your MISP instance then 'Event Actions'>'Search Attributes'>'Type dropdown list' | False |
     | Query | JSON query to filter MISP attributes. When a query parameter is used, Attribute Types and Attribute Tags parameters are not used. You can check for the correct syntax at https://&amp;lt;Your MISP url&amp;gt;/servers/openapi\#operation/restSearchAttributes | False |
-    | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed, | False |
+    | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed. | False |
+    | Tags | Supports CSV values. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
