@@ -24,6 +24,6 @@ jobs:
       - name: Review Release Notes
         run: |
           for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
-            echo "checking file: $file"
+            echo "\n\n\tChecking File: $file"
             demisto-sdk doc-review --release-notes -i "$file"
           done
