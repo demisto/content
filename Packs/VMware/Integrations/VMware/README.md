@@ -1,5 +1,5 @@
 VMware vCenter server is a centralized management application that lets you manage virtual machines and ESXi hosts centrally.
-This integration was integrated and tested with version xx of VMware
+This integration was integrated and tested with version 7.03 of VMware
 
 ## Configure VMware on Cortex XSOAR
 
@@ -554,7 +554,7 @@ Creates a new virtual machine in the current folder and attaches it to the speci
 
 
 #### Command Example
-```!vmware-create-vm cpu-allocation=1 cpu-num=1 guest-os-familiy=Windows guest-os-version="Microsoft Windows Server 2019 (64-bit)" host=111.111.1.111 memory=32 name="test_vm_ui" virtual-memory=32 folder="vm"```
+```!vmware-create-vm cpu-allocation=1 cpu-num=1 guest-os-familiy=Windows guest-os-version="Microsoft Windows Server 2019 (64-bit)" host=11.11.1.111 memory=32 name="test_vm_ui" virtual-memory=32 folder="vm"```
 
 #### Context Example
 ```json
