@@ -1042,6 +1042,8 @@ tasks:
     scriptarguments:
       cve:
         simple: CVE-2021-43332
+      cve_id:
+        simple: CVE-2021-43332
     separatecontext: false
     skipunavailable: false
     task:
@@ -1049,13 +1051,13 @@ tasks:
       description: Get infomration about the cves in the system, will return maximum
         of 50 records, it is possible to query for partial cve description such as
         cve-2020 or cve-2014 or by severity/distro/package
-      id: def9616f-cfa7-431f-88d2-2526105c2793
+      id: 1e1fc307-84c5-4605-884c-2831823323cc
       iscommand: true
       name: cve
       script: PaloAltoNetworks_PrismaCloudCompute|||cve
       type: regular
       version: -1
-    taskid: def9616f-cfa7-431f-88d2-2526105c2793
+    taskid: 1e1fc307-84c5-4605-884c-2831823323cc
     timertriggers: []
     type: regular
     view: |-
