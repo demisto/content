@@ -48,7 +48,7 @@ DEFAULT_CHROME_OPTIONS = [
 ]
 
 USER_CHROME_OPTIONS = demisto.params().get('chrome_options', "")
-
+PAGES_LIMITATION = 25
 
 def return_err_or_warn(msg):
     return_error(msg) if WITH_ERRORS else return_warning(msg, exit=True)
@@ -254,25 +254,31 @@ def convert_pdf_to_jpeg(path: str, max_pages: int, password: str, horizontal: bo
     """
     demisto.debug(f'Loading file at Path: {path}')
     input_pdf = PdfFileReader(open(path, "rb"), strict=False)
-    pages = min(max_pages, input_pdf.numPages)
-
     with tempfile.TemporaryDirectory() as output_folder:
-        demisto.debug('Converting PDF')
-        convert_from_path(
-            pdf_path=path,
-            fmt='jpeg',
-            first_page=1,
-            last_page=pages,
-            output_folder=output_folder,
-            userpw=password,
-            output_file='converted_pdf_'
-        )
-        demisto.debug('Converting PDF - COMPLETED')
+        first_page = 1
+        while True:
+            demisto.info("The variables: ", {1: max_pages, 2: input_pdf.numPages, 3: PAGES_LIMITATION})
+            last_page = min(max_pages, input_pdf.numPages, PAGES_LIMITATION + first_page - 1)
+            if first_page > min(max_pages, input_pdf.numPages):
+                break
+            demisto.info(f'Converting PDF, from file {first_page} to file {last_page}')
+            convert_from_path(
+                pdf_path=path,
+                fmt='jpeg',
+                first_page=first_page,
+                last_page=last_page,
+                output_folder=output_folder,
+                userpw=password,
+                output_file=f'converted_pdf_{first_page}-{last_page}'
+            )
+            first_page = last_page + 1
+        demisto.info('Converting PDF - COMPLETED')
+        demisto.info(json.dumps(os.listdir(output_folder)))
 
-        demisto.debug('Combining all pages')
+        demisto.info('Combining all pages')
         images = []
         for page in sorted(os.listdir(output_folder)):
-            if os.path.isfile(os.path.join(output_folder, page)) and 'converted_pdf_' in page:
+            if os.path.isfile(os.path.join(output_folder, page)):
                 images.append(Image.open(os.path.join(output_folder, page)))
         min_shape = min([(np.sum(page_.size), page_.size) for page_ in images])[1]  # get the minimal width
 
@@ -284,7 +290,7 @@ def convert_pdf_to_jpeg(path: str, max_pages: int, password: str, horizontal: bo
         imgs_comb = Image.fromarray(imgs_comb)
         output = BytesIO()
         imgs_comb.save(output, 'JPEG')  # type: ignore
-        demisto.debug('Combining all pages - COMPLETED')
+        demisto.info('Combining all pages - COMPLETED')
 
         return output.getvalue()
 
