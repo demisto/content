@@ -366,6 +366,8 @@ def hash_command(client: Client, args: dict, reliability: DBotScoreReliability, 
 
     except Exception as e:
         return_error(f"No results were found for hash : {hash} \n Error: {str(e)}")
+        return CommandResults(indicator=None, raw_response={},
+                                  readable_output=f"No results were found for hash : {hash} \n Error: {str(e)}")
 
 
 def _hash_extract(Res: dict, reliability: DBotScoreReliability, key_type: str, hash: str, doc_search_client: Client):
@@ -487,7 +489,7 @@ def _get_ia_for_indicator(indicator: str, doc_search_client: Client):
 
     except Exception as e:
         if 'Error in API call [403]' in e.args[0]:
-            return_results(f"Sorry! Intelligence Alert & Intelligence Report enrichment is not possible! As you don't have access to Document API.\n Error: {str(e)}")
+            return_results(f"Sorry! Intelligence Alert & Intelligence Report enrichment is not possible! As you don't have access to Document API.\n Error: {str(e)}")                                               # noqa: E501
             demisto.debug(e.args[0])
         else:
             raise e
