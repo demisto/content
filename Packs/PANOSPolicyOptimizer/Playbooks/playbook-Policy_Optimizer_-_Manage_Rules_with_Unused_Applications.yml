@@ -756,7 +756,7 @@ tasks:
       id: 1fc42e5b-c872-4a14-8c96-aac5fd7fea5d
       version: -1
       name: Automatically commit PAN-OS configuration?
-      description: "Should the playbook automatically commit the configuration input enabled?"
+      description: "Should the playbook automatically commit the enabled configuration input?"
       type: condition
       iscommand: false
       brand: ""
