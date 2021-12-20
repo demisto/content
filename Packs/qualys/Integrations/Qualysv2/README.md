@@ -21493,8 +21493,10 @@ Updates a scan schedule in the user’s account.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.ScheduleScan.Da | unknown | TODO | 
-| Qualys.ScheduleScan.Update.Timestamp | unknown | TODO | 
+| Qualys.ScheduleScan.ID | String | ID of the scheduled scan to be updated. | 
+| Qualys.ScheduleScan.DATETIME | Date | Date of when command was executed. | 
+| Qualys.ScheduleScan.TEXT | String | Qualys response for schedule scan update. | 
+
 
 
 #### Command Example

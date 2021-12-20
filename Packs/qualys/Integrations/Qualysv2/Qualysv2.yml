@@ -3084,7 +3084,7 @@ script:
       description: Whether schedule scan is activated.
     outputs:
     - contextPath: Qualys.ScheduleScan.ID
-      description: Updated scheduled scan ID.
+      description: Scheduled scan ID to be updated.
       type: String
     - contextPath: Qualys.ScheduleScan.DATETIME
       description: Date of when command was executed.
