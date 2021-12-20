@@ -1,5 +1,4 @@
 from CommonServerPython import *
-import demistomock as demisto
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
