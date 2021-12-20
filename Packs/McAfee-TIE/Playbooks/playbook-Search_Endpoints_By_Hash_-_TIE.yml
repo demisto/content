@@ -436,7 +436,7 @@ tasks:
       id: 0719d6b3-9f7c-42ee-887a-afef3d4bd02f
       version: -1
       name: Is McAfee ePO v2 enabled?
-      description: Is ePO enabled?
+      description: Is McAfee ePO v2 enabled?
       type: condition
       iscommand: false
       brand: ""
