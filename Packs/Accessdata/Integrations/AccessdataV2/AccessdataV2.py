@@ -4,7 +4,7 @@
 
 # python 3.9 imports
 from functools import wraps
-from json import dumps, loads
+from json import dumps, loads, JSONDecodeError
 from traceback import format_exc
 
 # accessdata imports
