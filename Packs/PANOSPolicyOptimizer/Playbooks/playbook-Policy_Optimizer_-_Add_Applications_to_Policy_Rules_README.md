@@ -1,5 +1,4 @@
-This playbook is used in the PAN-OS - Policy Optimizer playbooks to edit rules with unused applications or rules that are port based, and add an application to the rule.
-The playbook uses communication task to get a rule name and the application to edit from the user.
+This playbook edits rules with unused applications or rules that are port based, and adds an application to the rule. It is used in PAN-OS - Policy Optimizer playbooks and includes communication tasks to get a rule name and the application to edit from the user.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -16,7 +15,7 @@ This playbook does not use any integrations.
 * IsIntegrationAvailable
 
 ### Commands
-* panorama-edit-rule
+panorama-edit-rule
 
 ## Playbook Inputs
 ---
@@ -30,7 +29,7 @@ This playbook does not use any integrations.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| RulesToEdit | Policy rules to edit using the playbook. | string |
+| RulesToEdit | Policy rules to edit using the playbook. | String |
 
 ## Playbook Image
 ---
