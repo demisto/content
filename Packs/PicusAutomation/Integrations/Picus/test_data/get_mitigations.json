@@ -1,0 +1,34 @@
+{
+    "data": {
+        "mitigations": [
+            {
+                "product": "test1",
+                "signature": {
+                    "category": "",
+                    "id": "1357",
+                    "name": "test1_signature"
+                },
+                "threat": {
+                    "id": 615933,
+                    "name": "WCry (WannaCry) Ransomware .EXE File Download Variant-12"
+                }
+            },
+            {
+                "product": "test2",
+                "signature": {
+                    "category": "",
+                    "id": "2468",
+                    "name": "test2_signature"
+                },
+                "threat": {
+                    "id": 615933,
+                    "name": "WCry (WannaCry) Ransomware .EXE File Download Variant-12"
+                }
+            }
+        ],
+        "page_number": 1,
+        "size": 50,
+        "total_count": 2
+    },
+    "success": true
+}
