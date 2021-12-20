@@ -7184,7 +7184,7 @@ if 'requests' in sys.modules:
                 pass
 
         def _http_request(self, method, url_suffix='', full_url=None, headers=None, auth=None, json_data=None,
-                          params=None, data=None, files=None, timeout=REQUESTS_TIMEOUT, resp_type='json', ok_codes=None,
+                          params=None, data=None, files=None, timeout=None, resp_type='json', ok_codes=None,
                           return_empty_response=False, retries=0, status_list_to_retry=None,
                           backoff_factor=5, raise_on_redirect=False, raise_on_status=False,
                           error_handler=None, empty_valid_codes=None, **kwargs):
@@ -7291,7 +7291,7 @@ if 'requests' in sys.modules:
                 auth = auth if auth else self._auth
                 if retries:
                     self._implement_retry(retries, status_list_to_retry, backoff_factor, raise_on_redirect, raise_on_status)
-                if timeout == self.REQUESTS_TIMEOUT and self.timeout:
+                if not timeout:
                     timeout = self.timeout
 
                 # Execute
