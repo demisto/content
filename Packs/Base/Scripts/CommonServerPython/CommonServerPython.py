@@ -7083,7 +7083,16 @@ if 'requests' in sys.modules:
 
         REQUESTS_TIMEOUT = 60
 
-        def __init__(self, base_url, verify=True, proxy=False, ok_codes=tuple(), headers=None, auth=None):
+        def __init__(
+            self,
+            base_url,
+            verify=True,
+            proxy=False,
+            ok_codes=tuple(),
+            headers=None,
+            auth=None,
+            timeout=REQUESTS_TIMEOUT,
+        ):
             self._base_url = base_url
             self._verify = verify
             self._ok_codes = ok_codes
@@ -7099,7 +7108,7 @@ if 'requests' in sys.modules:
                 skip_cert_verification()
 
             # removing trailing = char from env var value added by the server
-            self.timeout = float(os.environ.get('REQUESTS_TIMEOUT.' + get_integration_name(), '')[:-1] or os.environ.get('REQUESTS_TIMEOUT', '')[:-1] or self.REQUESTS_TIMEOUT)  # noqa: E501
+            self.timeout = float(os.environ.get('REQUESTS_TIMEOUT.' + get_integration_name(), '')[:-1] or os.environ.get('REQUESTS_TIMEOUT', '')[:-1] or timeout)  # noqa: E501
 
         def __del__(self):
             try:

@@ -2709,10 +2709,18 @@ class TestBaseClient:
         self.client._http_request('get', 'event')
         assert requests_mock.last_request.timeout == self.client.REQUESTS_TIMEOUT
     
-    def test_http_request_timeout_given(self, requests_mock):
+    def test_http_request_timeout_given_func(self, requests_mock):
         requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
         timeout = 120
         self.client._http_request('get', 'event', timeout=timeout)
+        assert requests_mock.last_request.timeout == timeout
+
+    def test_http_request_timeout_given_class(self, requests_mock):
+        from CommonServerPython import BaseClient
+        requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
+        timeout = 44
+        new_client = BaseClient('http://example.com/api/v2/', timeout=timeout)
+        new_client._http_request('get', 'event')
         assert requests_mock.last_request.timeout == timeout
 
     def test_http_request_timeout_environ_system(self, requests_mock, mocker):
