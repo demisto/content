@@ -180,9 +180,9 @@ class EWSClient:
         BaseProtocol.TIMEOUT = int(request_timeout)
         self.ews_server = "https://outlook.office365.com/EWS/Exchange.asmx/"
         self.ms_client = MicrosoftClient(
-            tenant_id=tenant_id or kwargs.get("_tenant_id"),
-            auth_id=client_id or kwargs.get("_client_id"),
-            enc_key=client_secret or (kwargs.get("credentials") or {}).get("password"),
+            tenant_id=tenant_id,
+            auth_id=client_id,
+            enc_key=client_secret,
             app_name=APP_NAME,
             base_url=self.ews_server,
             verify=not insecure,
@@ -195,8 +195,8 @@ class EWSClient:
         self.access_type = (kwargs.get('access_type', IMPERSONATION) or IMPERSONATION).lower()
         self.max_fetch = min(MAX_INCIDENTS_PER_FETCH, int(max_fetch))
         self.last_run_ids_queue_size = 500
-        self.client_id = client_id or kwargs.get("_client_id")
-        self.client_secret = client_secret or (kwargs.get("credentials") or {}).get("password")
+        self.client_id = client_id
+        self.client_secret = client_secret
         self.account_email = default_target_mailbox
         self.config = self.__prepare(insecure)
         self.protocol = BaseProtocol(self.config)
@@ -2297,7 +2297,19 @@ def sub_main():
     # client's default_target_mailbox is the authorization source for the instance
     params['default_target_mailbox'] = args.get('target_mailbox',
                                                 args.get('source_mailbox', params['default_target_mailbox']))
-    client = EWSClient(**params)
+
+    tenant_id = params.get('tenant_id') or params.get("_tenant_id")
+    client_id = params.get("client_id") or params.get("_client_id")
+    client_secret = params.get("client_secret") or (params.get("credentials") or {}).get("password")
+
+    if not client_secret:
+        raise Exception('Key / Application Secret must be provided.')
+    elif not client_id:
+        raise Exception('ID / Application ID ID must be provided.')
+    elif not tenant_id:
+        raise Exception('Token / Tenant ID must be provided.')
+
+    client = EWSClient(tenant_id=tenant_id, client_id=client_id, client_secret=client_secret, **params)
     start_logging()
     try:
         command = demisto.command()
