@@ -249,9 +249,12 @@ def main() -> None:
         api_key = demisto.params().get('apikey')
         api_host = demisto.params().get('api_host')
         fetch_informational = demisto.params().get('fetch_informational')
-        max_fetch = int(demisto.params().get('max_fetch'))
+        max_fetch = int(demisto.params().get('max_fetch', '200'))
         pull_existing_alerts = demisto.params().get('pull_existing_alerts')
         fetch_type = demisto.params().get('fetch_type')
+
+        if max_fetch > 500:
+            max_fetch = 500
 
         api_url = f"https://{api_host}/api"
 
