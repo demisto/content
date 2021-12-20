@@ -1,10 +1,10 @@
 id: AccessData-Process-Evidence
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: 'AccessData: Process Evidence and Export'
 description: Creates a new case and processes targetted evidence.
 starttaskid: "0"
 fromversion: 6.0.0
+vcShouldKeepItemLegacyProdMachine: false
 tasks:
   "0":
     id: "0"
