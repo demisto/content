@@ -597,19 +597,19 @@ script:
       description: Client Task Object ID
       type: number
     - contextPath: McAfee.ePO.ClientTask.objectName
-      description: Client Task Object ID
+      description: Client Task Object Name
       type: string
     - contextPath: McAfee.ePO.ClientTask.productId
-      description: Client Task Object ID
+      description: Client Task Product ID
       type: string
     - contextPath: McAfee.ePO.ClientTask.productName
-      description: Client Task Object ID
+      description: Client Task Product Name 
       type: string
     - contextPath: McAfee.ePO.ClientTask.typeId
-      description: Client Task Object ID
+      description: Client Task Type ID
       type: number
     - contextPath: McAfee.ePO.ClientTask.typeName
-      description: Client Task Object ID
+      description: Client Task Type Name
       type: string
     description: Finds client tasks .
   - name: epo-find-policy
@@ -814,13 +814,13 @@ script:
       required: false
       description: issue properties
     outputs:
-    - contextPath: McAfee.ePO.Issue.Created.id
+    - contextPath: McAfee.ePO.Issue.id
       description: Issue Id
       type: number
-    - contextPath: McAfee.ePO.Issue.Created.name
+    - contextPath: McAfee.ePO.Issue.name
       description: Issue Name
       type: string
-    - contextPath: McAfee.ePO.Issue.Created.description
+    - contextPath: McAfee.ePO.Issue.description
       description: Issue Description
       type: string
     description: Create an issue.

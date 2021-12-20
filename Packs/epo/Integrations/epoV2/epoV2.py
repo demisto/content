@@ -1797,7 +1797,7 @@ def epo_create_issue_command(client: Client, args: Dict[str, Any]) -> CommandRes
         raw_response=raw_response,
         readable_output=md,
         outputs=outputs,
-        outputs_prefix="McAfee.ePO.Issue.Created",
+        outputs_prefix="McAfee.ePO.Issue",
         outputs_key_field='id'
     )
 

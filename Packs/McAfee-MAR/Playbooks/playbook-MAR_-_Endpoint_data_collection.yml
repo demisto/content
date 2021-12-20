@@ -1185,7 +1185,7 @@ view: |-
 inputs:
 - key: Hostname
   value:
-    simple: TIE
+    simple: ${Endpoint.Hostname}
   required: false
   description: Hostname to run on.
   playbookInputQuery:
