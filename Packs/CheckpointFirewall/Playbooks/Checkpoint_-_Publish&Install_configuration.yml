@@ -1,6 +1,6 @@
 id: Checkpoint - Publish&Install configuration
 version: -1
-fromversion: 5.0.0
+fromversion: 5.5.0
 name: Checkpoint - Publish&Install configuration
 description: Publish the Checkpoint Firewall configuration and install policy over
   all the gateways that are available.
@@ -297,17 +297,17 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 8918c209-f272-4640-8047-78d99802662d
+    taskid: 06a002d2-c789-4425-8af0-f292e226df7c
     type: regular
     task:
-      id: 8918c209-f272-4640-8047-78d99802662d
+      id: 06a002d2-c789-4425-8af0-f292e226df7c
       version: -1
       name: Checkpoint logout
-      description: Logout from a given session.
-      script: CheckPoint_FW|||checkpoint-logout
+      description: Log out from a given session.
+      script: CheckPointFirewall_v2|||checkpoint-logout
       type: regular
       iscommand: true
-      brand: CheckPoint_FW
+      brand: CheckPointFirewall_v2
     nexttasks:
       '#none#':
       - "3"
@@ -325,6 +325,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
     taskid: 5b935b74-d33d-4fd2-8484-845f2fa8a61f
