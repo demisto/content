@@ -148,7 +148,6 @@ var createIncident = function(firstName, lastName, description, status, source, 
             body.values[key] = value;
         }
     }
-
     var res = sendRequest(url, token, "POST", JSON.stringify(body));
     // get created incident
     var incidentUrl = res && res.Headers && res.Headers.Location && res.Headers.Location[0];
@@ -162,7 +161,6 @@ var createIncident = function(firstName, lastName, description, status, source, 
     };
 
     return createTableEntry("Incident created:",incident, context);
-
 };
 
 var getIncident = function(id, title) {
