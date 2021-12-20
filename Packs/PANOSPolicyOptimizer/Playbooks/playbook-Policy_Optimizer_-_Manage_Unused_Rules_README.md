@@ -1,16 +1,16 @@
-Use this playbook to to understand if you have unused rules that do not pass traffic in your environment, see the rules' information and have the option to remove them from your policy.
+This playbook helps identify and remove unused rules that do not pass traffic in your environment.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* PAN-OS Commit Configuration
+PAN-OS Commit Configuration
 
 ### Integrations
-* PAN-OS Policy Optimizer
+PAN-OS Policy Optimizer
 
 ### Scripts
-* IsIntegrationAvailable
+IsIntegrationAvailable
 
 ### Commands
 * pan-os-po-get-rules
@@ -25,8 +25,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | slack_user | Slack user to notify about unused rules. | mgoldberg@paloaltonetworks.com | Optional |
-| email_address | Email address user to notify about unused rules. |  | Optional |
-| auto_commit | Specify whether you want to auto-commit the configuration for the PAN-OS policy changes automatically \(Yes/No\). |  | Optional |
+| email_address | User email address user to notify about unused rules. |  | Optional |
+| auto_commit | Specifies whether you want to auto-commit the configuration for the PAN-OS policy changes automatically \(Yes/No\). |  | Optional |
 
 ## Playbook Outputs
 ---
