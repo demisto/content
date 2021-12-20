@@ -133,8 +133,8 @@ def build_incident_fields_query(incident_data):
         for str_value in str_value_list:
             query_template = '{}:="{}"' if isinstance(value, int) else '{}="{}"'
             similar_key = query_template.format(key, str_value)
-            similar_keys_list.append(similar_key) if isinstance(value, int) else similar_keys_list.append(str(similar_key).decode('utf-8'))
-
+            similar_keys_list.append(similar_key) if isinstance(value, int) else\
+                similar_keys_list.append(str(similar_key).decode('utf-8'))   # type: ignore
 
     return similar_keys_list
 
@@ -333,10 +333,7 @@ def main():
             original_context_map[key] = response
             if not response and RAISE_ERROR_MISSING_VALUES:
                 raise ValueError("Error: Missing context key for incident: %s" % key)
-    # exact_match_incident_fields = {u'filemd5': [u'filemd5', u'filemd6']}
-    # exact_match_incident_fields = {u'devicename': u'SE-00004463', u'sourceseverity': u'Medium', u'commandline': u'"C:\\Users\\eznilam\\AppData\\Local\\Temp\\Ampler\\Updates\\Ampler-21.11.1189.exe" /s /a /v"/qn /norestart reinstallmode=vamus allusers=1 targetdir=\\"C:\\Program Files (x86)\\Smart\\SmartTools\\21.11.1189\\" /l*v \\"C:\\Users\\eznilam\\AppData\\Local\\Temp\\Ampler\\Updates\\Ampler-21.11.1189.exe.update.log\\""', u'technique': u'Exploitation for Client Execution', u'filemd5': u'c09ecee7402c950565e42a9e5f0e26a8', u'filename': u'Ampler-21.11.1189.exe', u'deviceusername': u'eznilam', u'tactic': u'Execution', u'objective': u'Follow Through'}
-    # exact_match_incident_fields = {u'filemd5': [], u'commandline': u'"C:\\Users\\eznilam\\AppData\\Local\\Temp\\Ampler\\Updates\\Ampler-21.11.1189.exe" /s /a /v"/qn /norestart reinstallmode=vamus allusers=1 targetdir=\\"C:\\Program Files (x86)\\Smart\\SmartTools\\21.11.1189\\" /l*v \\"C:\\Users\\eznilam\\AppData\\Local\\Temp\\Ampler\\Updates\\Ampler-21.11.1189.exe.update.log\\""'}
-    # exact_match_incident_fields = {u'commandline': u'"C:\\Users\\eznilam\\AppData\\Local\\Temp\\Ampler\\Updates\\Ampler-21.11.1189.exe" /s /a /v"/qn /norestart reinstallmode=vamus allusers=1 targetdir=\\"C:\\Program Files (x86)\\Smart\\SmartTools\\21.11.1189\\" /l*v \\"C:\\Users\\eznilam\\AppData\\Local\\Temp\\Ampler\\Updates\\Ampler-21.11.1189.exe.update.log\\""'}
+
     log_message = 'Incident fields with exact match: %s' % exact_match_incident_fields
     if len(exact_match_incident_fields) > 1:
         log_message += ', applied with %s condition' % INCIDENT_FIELDS_APPLIED_CONDITION
