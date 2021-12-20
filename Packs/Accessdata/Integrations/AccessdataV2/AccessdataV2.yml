@@ -25,7 +25,6 @@ configuration:
   required: true
 - display: "The API authentication key. http://support.accessdata.com/hc/en-us/articles/360053994573-Generating-API-Keys"
   name: APIKEY
-  defaultvalue: 00000000-abcd-1234-5678-000000000000
   type: 0
   required: true
 - display: "The path to the public certificate required to authenticate."
