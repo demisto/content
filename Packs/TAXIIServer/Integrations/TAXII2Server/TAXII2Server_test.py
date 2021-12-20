@@ -36,7 +36,8 @@ def taxii2_server_v21(mocker):
     server = TAXII2Server(url_scheme='http',
                           host='demisto',
                           port=7000,
-                          collections={'Collection1': 'type:IP', 'Collection2': 'sourceBrands:"Some Feed"'},
+                          collections={'Collection1': 'type:IP', 'Collection2': {'query': 'sourceBrands:"Some Feed"',
+                                                                                 'description': 'Test desc'}},
                           certificate='',
                           private_key='',
                           http_server=True,
@@ -303,7 +304,7 @@ def test_taxii21_manifest(mocker, taxii2_server_v21):
     mocker.patch('TAXII2Server.SERVER', taxii2_server_v21)
     mocker.patch.object(demisto, 'searchIndicators', return_value=iocs)
     with APP.test_client() as test_client:
-        response = test_client.get('/threatintel/collections/4c649e16-2bb7-50f5-8826-2a2d0a0b9631/manifest/?limit=5',
+        response = test_client.get('/threatintel/collections/4c649e16-2bb7-50f5-8826-2a2d0a0b9631/manifest/?limit=4',
                                    headers=HEADERS)
         assert response.status_code == 200
         assert response.content_type == 'application/taxii+json;version=2.1'

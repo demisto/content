@@ -9,20 +9,21 @@ Each TAXII collection in the integration is represented by a Cortex XSOAR indica
 The collections are defined by a JSON object in the following format:
 ```json
 {
-  "collection_name": "<Cortex XSOAR indicator query>"
+  "collection1_name":{
+    "query": "<Cortex XSOAR indicator query>",
+    "description": "<Custom collection description>"
+  },
+  "collection2_name": "<Cortex XSOAR indicator query>"
 }
 ```
+You can add collection description as it done in `collection1_name`, or enter only collection query, as in `collection2_name`.
+
 
 ## How to Access the TAXII Service
 
-To view the available TAXII services, visit the discovery service in one of the following options:
-For TAXII v2.0:
-- **https://*demisto_address*/instance/execute/*instance_name/taxii/*** 
-- **http://*demisto_address*:*listen_port/taxii/***
-
-For TAXII v2.1:
-- **https://*demisto_address*/instance/execute/*instance_name/taxii2/*** 
-- **http://*demisto_address*:*listen_port/taxii2/***
+Use one of the following options:
+- **https://*demisto_address*/instance/execute/*instance_name/{taxii2_api_endpoint}/*** 
+- **http://*demisto_address*:*listen_port/{taxii2_api_endpoint}/***
 
 ## Access the TAXII Service by Instance Name
 To access the TAXII service by instance name, make sure ***Instance execute external*** is enabled. 

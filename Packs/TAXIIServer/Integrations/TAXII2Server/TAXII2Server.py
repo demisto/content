@@ -187,15 +187,22 @@ class TAXII2Server:
         """
         collections_resource = []
         collections_by_id = dict()
-        for name, query in collections.items():
+        for name, query_dict in collections.items():
+            description = ''
+            if isinstance(query_dict, dict):
+                query = query_dict.get('query')
+                description = query_dict.get('description', '')
+            else:
+                query = query_dict
             collection_uuid = str(uuid.uuid5(self.namespace_uuid, 'Collection_' + name))
             collection = {
                 'id': collection_uuid,
                 'title': name,
-                'description': query,
+                'description': description,
                 'can_read': True,
                 'can_write': False,
-                'media_types': [self.taxii_collections_media_type]
+                'media_types': [self.taxii_collections_media_type],
+                'query': query
             }
             collections_resource.append(collection)
             collections_by_id[collection_uuid] = collection
@@ -276,7 +283,7 @@ class TAXII2Server:
             The objects from given collection ID.
         """
         found_collection = self.collections_by_id.get(collection_id, {})
-        query = found_collection.get('description')
+        query = found_collection.get('query')
         new_limit = offset + limit + 1  # helps to verify that there is more indicators
         new_query = create_query(query, types)
         iocs, _ = find_indicators(query=new_query, added_after=added_after, limit=new_limit, is_manifest=True)
@@ -309,7 +316,7 @@ class TAXII2Server:
         """
 
         found_collection = self.collections_by_id.get(collection_id, {})
-        query = found_collection.get('description')
+        query = found_collection.get('query')
         new_limit = offset + limit + 1  # helps to verify that there is more indicators
         new_query = create_query(query, types)
         iocs, extensions = find_indicators(query=new_query, added_after=added_after, limit=new_limit)
