@@ -178,7 +178,7 @@ def get_incidents_from_alerts(alerts: List[Dict[str, Any]]) -> List[Dict[str, An
         incident = get_incident_from_alert(alert=alert)
         incidents.append(incident)
 
-    demisto.info("get_incidents_from_alerts done")
+    demisto.info(f"get_incidents_from_alerts: Got {len(incidents)} incidents")
     return incidents
 
 
@@ -192,10 +192,6 @@ def fetch_incidents(
         fetch_type: str = "XSOAR-Pull"
 ) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
     demisto.info(f"fetch-incidents called {max_fetch=}")
-
-    if not pull_existing_alerts:
-        demisto.info("pull_existing_alerts flag is not set, not pulling alerts")
-        return {'lastRun': datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)}, []
 
     last_run_time = last_run.get("lastRun")
     next_page_token = last_run.get("next_page_token")
@@ -213,6 +209,10 @@ def fetch_incidents(
         next_run = {'lastRun': datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)}
         return next_run, incidents
     else:
+        if not pull_existing_alerts:
+            demisto.info("pull_existing_alerts flag is not set, not pulling alerts")
+            return {'lastRun': datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)}, []
+
         # Initial export flow
         # Fetch and import alerts per page.
         # Loading all alerts consumes a lot of RAM.
