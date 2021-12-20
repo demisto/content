@@ -612,7 +612,9 @@ def get_user_iam(default_base_dn, args, mapper_in, mapper_out):
         user_profile_delta = args.get('user-profile-delta')
         default_attribute = "sAMAccountName"
 
-        iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta)
+        iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta,
+                                          mapper=mapper_out,
+                                          incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
 
         # we use the outgoing mapper to get all the AD attributes which will be later passed to search_with_paging()
         ad_user = iam_user_profile.map_object(mapper_name=mapper_out,
@@ -872,7 +874,8 @@ def create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn):
 
         user_profile = args.get("user-profile")
         user_profile_delta = args.get('user-profile-delta')
-        iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta)
+        iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta,
+                                          mapper=mapper_out, incident_type=IAMUserProfile.CREATE_INCIDENT_TYPE)
         ad_user = iam_user_profile.map_object(mapper_name=mapper_out, incident_type=IAMUserProfile.CREATE_INCIDENT_TYPE)
 
         sam_account_name = ad_user.get("sAMAccountName")
@@ -927,13 +930,15 @@ def create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn):
 
 
 def get_iam_user_profile(user_profile, mapper_out):
-    iam_user_profile = IAMUserProfile(user_profile=user_profile)
+    iam_user_profile = IAMUserProfile(user_profile=user_profile, mapper=mapper_out,
+                                      incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
     ad_user = iam_user_profile.map_object(mapper_name=mapper_out, incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
     sam_account_name = ad_user.get("sAMAccountName")
 
     old_user_data = iam_user_profile.get_attribute('olduserdata')
     if old_user_data:
-        iam_old_user_profile = IAMUserProfile(user_profile=old_user_data)
+        iam_old_user_profile = IAMUserProfile(user_profile=old_user_data, mapper=mapper_out,
+                                              incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
         ad_old_user = iam_old_user_profile.map_object(mapper_name=mapper_out,
                                                       incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
         sam_account_name = ad_old_user.get("sAMAccountName") or sam_account_name
@@ -1147,6 +1152,26 @@ def update_user(default_base_dn):
     demisto.results(demisto_entry)
 
 
+def update_group(default_base_dn):
+    args = demisto.args()
+
+    sam_account_name = args.get('groupname')
+    attribute_name = args.get('attributename')
+    attribute_value = args.get('attributevalue')
+    search_base = args.get('basedn') or default_base_dn
+    dn = group_dn(sam_account_name, search_base)
+
+    modification = {attribute_name: [('MODIFY_REPLACE', attribute_value)]}
+    modify_object(dn, modification)
+
+    demisto_entry = {
+        'ContentsFormat': formats['text'],
+        'Type': entryTypes['note'],
+        'Contents': f"Updated group's {attribute_name} to {attribute_value} "
+    }
+    demisto.results(demisto_entry)
+
+
 def update_contact():
     args = demisto.args()
 
@@ -1306,7 +1331,8 @@ def disable_user_iam(default_base_dn, disabled_users_group_cn, args, mapper_out)
     try:
         user_profile = args.get("user-profile")
         user_profile_delta = args.get('user-profile-delta')
-        iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta)
+        iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta,
+                                          mapper=mapper_out, incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
         ad_user = iam_user_profile.map_object(mapper_name=mapper_out, incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
 
         sam_account_name = ad_user.get("sAMAccountName")
@@ -1636,6 +1662,9 @@ def main():
 
         if command == 'ad-update-user':
             update_user(DEFAULT_BASE_DN)
+
+        if command == 'ad-update-group':
+            update_group(DEFAULT_BASE_DN)
 
         if command == 'ad-modify-computer-ou':
             modify_computer_ou(DEFAULT_BASE_DN)

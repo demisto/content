@@ -32,6 +32,14 @@ configuration:
   name: folder
   required: true
   type: 0
+- defaultvalue: Impersonation
+  display: Access Type
+  name: access_type
+  options:
+  - Impersonation
+  - Delegate
+  required: false
+  type: 15
 - defaultvalue: 'false'
   display: Public Folder
   name: is_public_folder

@@ -1,7 +1,8 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "SafeNet Trusted Access Alert"
+        "SafeNet Trusted Access Push Reject Alert",
+        "SafeNet Trusted Access Account Lockout Alert"
     ],
     "caseInsensitive": true,
     "cliName": "safenettrustedaccessinstancename",

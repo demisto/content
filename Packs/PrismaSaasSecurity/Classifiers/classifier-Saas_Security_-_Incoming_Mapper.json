@@ -6,6 +6,22 @@
     "Saas Security Incident": {
       "dontMapEventToLabels": true,
       "internalMapping": {
+        "Saas Security Asset Name": {
+          "complex": null,
+          "simple": "asset_name"
+        },
+        "Saas Security Asset URL": {
+            "complex": null,
+            "simple": "asset_page_uri"
+        },
+        "Saas Security Incident Id": {
+          "complex": null,
+          "simple": "incident_id"
+        },
+        "Saas Security Incident Severity Level": {
+          "complex": null,
+          "simple": "severity_level"
+        },
         "Policy URI": {
           "complex": null,
           "simple": "policy_page_uri"
@@ -92,7 +108,7 @@
         },
         "severity": {
           "complex": null,
-          "simple": "severity"
+          "simple": "severity_level"
         },
         "dbotMirrorDirection": {
             "complex": null,
@@ -127,6 +143,15 @@
         "IncomingMirrorError": {
             "complex": null,
             "simple": "in_mirror_error"
+        }
+      }
+    },
+    "dbot_classification_incident_type_all": {
+      "dontMapEventToLabels": false,
+      "internalMapping": {
+        "Saas Security Incident Severity Level": {
+          "complex": null,
+          "simple": "severity_level"
         }
       }
     }

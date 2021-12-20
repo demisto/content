@@ -22,7 +22,7 @@ script: >-
 
   WARNING
 
-  Your Site {0} is not compliant to the Incapsula whitelist policy
+  Your Site {0} is not compliant to the Incapsula allow list policy
 
   please update your settings
 
@@ -35,7 +35,7 @@ script: >-
 
   WARNING
 
-  Your Site {0} is not compliant to the Incapsula whitelist policy
+  Your Site {0} is not compliant to the Incapsula allow list policy
 
   please update your settings as soon as possible!
 
@@ -127,13 +127,13 @@ type: python
 subtype: python2
 tags:
 - Incapsula
-comment: "Get all sites from Incapsula.\nFor each site, the script, through a ssh server (one that should NOT be in the whitelist), make sure the site is compliant ( whitelist is being enforced ).\n If not, a warning mail will be sent to the domain owner. "
+comment: "Get all sites from Incapsula.\nFor each site, the script, through a ssh server (one that should NOT be in the allow list), make sure the site is compliant ( allow list is being enforced ).\n If not, a warning mail will be sent to the domain owner. "
 system: true
 args:
 - name: SSHValidationServer
   required: true
   default: true
-  description: Name of the non-whitelist SSH server instance
+  description: Name of the non-allow list SSH server instance
 scripttarget: 0
 dependson:
   must:
@@ -145,4 +145,4 @@ timeout: 0s
 tests:
 - No test - old script
 fromversion: 5.0.0
-dockerimage: demisto/python:2.7.18.24066
+dockerimage: demisto/python:2.7.18.24398

@@ -7,15 +7,16 @@ configuration:
   name: server
   required: true
   type: 0
+- displaypassword: API Key
+  name: credentials
+  required: false
+  type: 9
+  hiddenusername: true
 - defaultvalue: '443'
   display: Port (e.g 443)
   name: port
   required: false
   type: 0
-- display: API Key
-  name: key
-  required: true
-  type: 4
 - additionalinfo: Located in the Panorama UI. Go to Panorama, Device Groups and select
     the desired Device Group
   display: Device group - Panorama instances only (write shared for Shared location)
@@ -56,6 +57,12 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: API Key (Deprecated)
+  name: key
+  required: false
+  type: 4
+  hidden: true
+  additionalinfo: Use the "API Key (Recommended)" parameter instead.
 description: Manage Palo Alto Networks Firewall and Panorama. For more information
   see Panorama documentation.
 display: Palo Alto Networks PAN-OS
@@ -1592,7 +1599,7 @@ script:
     - auto: PREDEFINED
       description: Parameter in the security rule to change. Can be 'source', 'destination',
         'application', 'action', 'category', 'description', 'disabled', 'target',
-        'log-forwarding', 'tag' or 'group_profile'.
+        'log-forwarding', 'tag', 'source-user', 'service' or 'profile-setting'.
       name: element_to_change
       predefined:
       - source
@@ -1606,6 +1613,8 @@ script:
       - log-forwarding
       - tag
       - profile-setting
+      - source-user
+      - service
       required: true
     - description: The new value for the parameter.
       name: element_value
@@ -3416,7 +3425,7 @@ script:
     - contextPath: Panorama.Content.Install.Status
       description: Installation status.
       type: string
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   runonce: false
   script: ''
   subtype: python3
