@@ -7,20 +7,21 @@ configuration:
     Instructions.
   display: ID / Application ID
   name: _client_id
-  required: true
+  required: false
   type: 0
 - additionalinfo: Token can be received from the admin consent procedure - see Detailed
     Instructions.
   display: Token / Tenant ID
   name: _tenant_id
-  required: true
+  required: false
   type: 0
 - additionalinfo: Key can be received from the admin consent procedure - see Detailed
     Instructions.
-  display: Key / Application Secret
-  name: _client_secret
-  required: true
-  type: 0
+  displaypassword: Key
+  name: credentials
+  required: false
+  type: 9
+  hiddenusername: true
 - additionalinfo: Mailbox to run commands on and to fetch incidents from.
   display: Email Address
   name: default_target_mailbox
@@ -87,21 +88,18 @@ configuration:
   name: self_deployed
   required: false
   type: 8
-- additionalinfo: ID can be received from the admin consent procedure - see Detailed
-    Instructions.
-  display: ID / Application ID
+- additionalinfo: Use the "ID" parameter instead.
+  display: ID / Application ID (Deprecated)
   name: client_id
   required: true
   type: 4
-- additionalinfo: Token can be received from the admin consent procedure - see Detailed
-    Instructions.
-  display: Token / Tenant ID
+- additionalinfo: Use the "Token" parameter instead.
+  display: Token / Tenant ID (Deprecated)
   name: tenant_id
   required: true
   type: 4
-- additionalinfo: Key can be received from the admin consent procedure - see Detailed
-    Instructions.
-  display: Key / Application Secret
+- additionalinfo: Use the "Key" parameter instead.
+  display: Key / Application Secret (Deprecated)
   name: client_secret
   required: true
   type: 4

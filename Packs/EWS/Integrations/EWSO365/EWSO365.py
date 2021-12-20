@@ -180,9 +180,9 @@ class EWSClient:
         BaseProtocol.TIMEOUT = int(request_timeout)
         self.ews_server = "https://outlook.office365.com/EWS/Exchange.asmx/"
         self.ms_client = MicrosoftClient(
-            tenant_id=tenant_id,
-            auth_id=client_id,
-            enc_key=client_secret,
+            tenant_id=tenant_id or kwargs.get("_tenant_id"),
+            auth_id=client_id or kwargs.get("_client_id"),
+            enc_key=client_secret or (kwargs.get("credentials") or {}).get("password"),
             app_name=APP_NAME,
             base_url=self.ews_server,
             verify=not insecure,
@@ -195,8 +195,8 @@ class EWSClient:
         self.access_type = (kwargs.get('access_type', IMPERSONATION) or IMPERSONATION).lower()
         self.max_fetch = min(MAX_INCIDENTS_PER_FETCH, int(max_fetch))
         self.last_run_ids_queue_size = 500
-        self.client_id = client_id
-        self.client_secret = client_secret
+        self.client_id = client_id or kwargs.get("_client_id")
+        self.client_secret = client_secret or (kwargs.get("credentials") or {}).get("password")
         self.account_email = default_target_mailbox
         self.config = self.__prepare(insecure)
         self.protocol = BaseProtocol(self.config)
