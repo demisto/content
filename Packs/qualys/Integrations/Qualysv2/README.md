@@ -1916,7 +1916,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         }
                     },
                     "SOLUTION": "The vendor has released fixes.<BR>\nThe following software releases have been updated to resolve these specific issues:<BR>\n\nJunos OS 15.1X49-D240, 15.1R7-S9, 17.3R3-S11, 17.4R2-S13, 17.4R3-S4, 18.1R3-S12, 18.2R2-S8, 18.2R3-S7, 18.3R3-S4, 18.4R1-S8, 18.4R2-S7, 18.4R3-S7, 19.1R2-S2, 19.1R3-S4, 19.2R1-S6, 19.2R3-S2, 19.3R3-S1, 19.4R2-S4, 19.4R3-S1, 20.1R2-S1, 20.1R3, 20.2R2, 20.2R2-S1, 20.2R3, 20.3R1-S1, 20.4R1, and all subsequent releases.<BR>\n\n\nFor more information please visit <A HREF=\"https://kb.juniper.net/InfoCenter/index?page=content&id=JSA11114\" TARGET=\"_blank\">JSA11147</A>.<P>\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://kb.juniper.net/InfoCenter/index?page=content&id=JSA11147&actp=METADATA\" TARGET=\"_blank\">JSA11147</A>",
-                    "TITLE": "Juniper Network Operating System (Junos OS) Remote Code Execution (RCE) Vulnerability (JSA11147)",
+                    "TITLE": "Juniper Junos Remote Code Execution Vulnerability (JSA11147)",
                     "VENDOR_REFERENCE_LIST": {
                         "VENDOR_REFERENCE": {
                             "ID": "JSA11147",
@@ -2018,11 +2018,11 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                             "VENDOR": "sap"
                         }
                     },
-                    "SOLUTION": "Customers are advised to follow the <A HREF=\"https://blogs.sap.com/2016/03/08/sap-security-patch-day-march-2016/\" TARGET=\"_blank\">SAP Security Patch Day - March 2016</A> for remediation instructions.\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://erpscan.io/press-center/blog/sap-security-notes-march-2016-review/\" TARGET=\"_blank\">SAP Security Notes March 2016 - Review</A>",
+                    "SOLUTION": "some solution",
                     "TITLE": "SAP NetWeaver AS JAVA Directory Traversal Vulnerability",
                     "VENDOR_REFERENCE_LIST": {
                         "VENDOR_REFERENCE": {
-                            "ID": "SAP Security Patch Day - March 2016",
+                            "ID": "someid",
                             "URL": "https://blogs.sap.com/2016/03/08/sap-security-patch-day-march-2016/"
                         }
                     },
@@ -2054,11 +2054,11 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                             "VENDOR": "sap"
                         }
                     },
-                    "SOLUTION": "Customers are advised to follow the <A HREF=\"https://service.sap.com/sap/support/notes/2296909\" TARGET=\"_blank\">SAP Security Note 2296909</A> for remediation instructions.\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://service.sap.com/sap/support/notes/2296909\" TARGET=\"_blank\">SAP Security Note 2296909</A>",
+                    "SOLUTION": "somesolution2",
                     "TITLE": "SAP NetWeaver AS JAVA 7.5 XML External Entity Vulnerability",
                     "VENDOR_REFERENCE_LIST": {
                         "VENDOR_REFERENCE": {
-                            "ID": "SAP Security Note 2296909",
+                            "ID": "someid2",
                             "URL": "https://service.sap.com/sap/support/notes/2296909"
                         }
                     },
@@ -2880,7 +2880,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         },
                         "REMOTE": "0"
                     },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-08-30T12:31:58Z",
+                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-04-15T12:32:01Z",
                     "PATCHABLE": "1",
                     "PCI_FLAG": "1",
                     "PUBLISHED_DATETIME": "2021-04-14T05:14:45Z",
@@ -3020,51 +3020,11 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                     "SOFTWARE_LIST": {
                         "SOFTWARE": [
                             {
-                                "PRODUCT": "weblogic_server",
+                                "PRODUCT": "peoplesoft_enterprise_human_capital_management_resources",
                                 "VENDOR": "oracle"
                             },
                             {
-                                "PRODUCT": "application_express",
-                                "VENDOR": "oracle"
-                            },
-                            {
-                                "PRODUCT": "None",
-                                "VENDOR": "oracle"
-                            },
-                            {
-                                "PRODUCT": "webcenter_sites",
-                                "VENDOR": "oracle"
-                            },
-                            {
-                                "PRODUCT": "jd_edwards_enterpriseone_tools",
-                                "VENDOR": "oracle"
-                            },
-                            {
-                                "PRODUCT": "application_testing_suite",
-                                "VENDOR": "oracle"
-                            },
-                            {
-                                "PRODUCT": "banking_platform",
-                                "VENDOR": "oracle"
-                            },
-                            {
-                                "PRODUCT": "primavera_gateway",
-                                "VENDOR": "oracle"
-                            },
-                            {
-                                "PRODUCT": "communications_operations_monitor",
-                                "VENDOR": "oracle"
-                            },
-                            {
-                                "PRODUCT": "communications_interactive_session_recorder",
-                                "VENDOR": "oracle"
-                            },
-                            {
-                                "PRODUCT": "healthcare_translational_research",
-                                "VENDOR": "oracle"
-                            },
-                            {
-                                "PRODUCT": "communications_element_manager",
+                                "PRODUCT": "communications_session_route_manager",
                                 "VENDOR": "oracle"
                             },
                             {
@@ -3072,7 +3032,27 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                                 "VENDOR": "oracle"
                             },
                             {
-                                "PRODUCT": "communications_session_route_manager",
+                                "PRODUCT": "communications_element_manager",
+                                "VENDOR": "oracle"
+                            },
+                            {
+                                "PRODUCT": "weblogic_server",
+                                "VENDOR": "oracle"
+                            },
+                            {
+                                "PRODUCT": "application_testing_suite",
+                                "VENDOR": "oracle"
+                            },
+                            {
+                                "PRODUCT": "hyperion_financial_reporting",
+                                "VENDOR": "oracle"
+                            },
+                            {
+                                "PRODUCT": "application_express",
+                                "VENDOR": "oracle"
+                            },
+                            {
+                                "PRODUCT": "siebel_mobile",
                                 "VENDOR": "oracle"
                             },
                             {
@@ -3084,11 +3064,31 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                                 "VENDOR": "oracle"
                             },
                             {
+                                "PRODUCT": "webcenter_sites",
+                                "VENDOR": "oracle"
+                            },
+                            {
                                 "PRODUCT": "communications_analytics",
                                 "VENDOR": "oracle"
                             },
                             {
+                                "PRODUCT": "communications_interactive_session_recorder",
+                                "VENDOR": "oracle"
+                            },
+                            {
+                                "PRODUCT": "healthcare_translational_research",
+                                "VENDOR": "oracle"
+                            },
+                            {
                                 "PRODUCT": "banking_enterprise_collections",
+                                "VENDOR": "oracle"
+                            },
+                            {
+                                "PRODUCT": "banking_platform",
+                                "VENDOR": "oracle"
+                            },
+                            {
+                                "PRODUCT": "communications_operations_monitor",
                                 "VENDOR": "oracle"
                             },
                             {
@@ -3100,15 +3100,15 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                                 "VENDOR": "oracle"
                             },
                             {
-                                "PRODUCT": "peoplesoft_enterprise_human_capital_management_resources",
+                                "PRODUCT": "primavera_gateway",
                                 "VENDOR": "oracle"
                             },
                             {
-                                "PRODUCT": "hyperion_financial_reporting",
+                                "PRODUCT": "jd_edwards_enterpriseone_tools",
                                 "VENDOR": "oracle"
                             },
                             {
-                                "PRODUCT": "siebel_mobile",
+                                "PRODUCT": "None",
                                 "VENDOR": "oracle"
                             }
                         ]
@@ -3699,11 +3699,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                     "SOFTWARE_LIST": {
                         "SOFTWARE": [
                             {
-                                "PRODUCT": "mysql",
-                                "VENDOR": "oracle"
-                            },
-                            {
-                                "PRODUCT": "None",
+                                "PRODUCT": "graalvm",
                                 "VENDOR": "oracle"
                             },
                             {
@@ -3711,7 +3707,11 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                                 "VENDOR": "oracle"
                             },
                             {
-                                "PRODUCT": "graalvm",
+                                "PRODUCT": "mysql",
+                                "VENDOR": "oracle"
+                            },
+                            {
+                                "PRODUCT": "None",
                                 "VENDOR": "oracle"
                             }
                         ]
@@ -3881,7 +3881,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         },
                         "REMOTE": "0"
                     },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-06-09T12:33:28Z",
+                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-05-18T20:05:21Z",
                     "PATCHABLE": "1",
                     "PCI_FLAG": "0",
                     "PUBLISHED_DATETIME": "2021-04-05T13:40:50Z",
@@ -3890,11 +3890,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                     "SOFTWARE_LIST": {
                         "SOFTWARE": [
                             {
-                                "PRODUCT": "mysql",
-                                "VENDOR": "oracle"
-                            },
-                            {
-                                "PRODUCT": "None",
+                                "PRODUCT": "graalvm",
                                 "VENDOR": "oracle"
                             },
                             {
@@ -3902,7 +3898,11 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                                 "VENDOR": "oracle"
                             },
                             {
-                                "PRODUCT": "graalvm",
+                                "PRODUCT": "mysql",
+                                "VENDOR": "oracle"
+                            },
+                            {
+                                "PRODUCT": "None",
                                 "VENDOR": "oracle"
                             }
                         ]
@@ -3940,7 +3940,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         },
                         "REMOTE": "0"
                     },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-06-09T12:33:28Z",
+                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-05-18T20:04:57Z",
                     "PATCHABLE": "1",
                     "PCI_FLAG": "1",
                     "PUBLISHED_DATETIME": "2021-04-05T13:40:50Z",
@@ -4577,7 +4577,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                             }
                         ]
                     },
-                    "DIAGNOSIS": "The SUSE Linux Enterprise 15 SP2 kernel was updated to receive various<BR>   security and bugfixes.<BR><BR>   The following security bugs were fixed:<BR><BR>   - CVE-2021-26930: Fixed an improper error handling in blkback's grant<BR>     mapping (XSA-365 bsc#1181843).<BR>   - CVE-2021-26931: Fixed an issue where Linux  kernel was treating grant<BR>     mapping errors as bugs (XSA-362 bsc#1181753).<BR>   - CVE-2021-26932: Fixed improper error handling issues in Linux grant<BR>     mapping (XSA-361 bsc#1181747). by remote attackers to read or write<BR>     files via directory traversal in an XCOPY request (bsc#178372).<BR>   - CVE-2020-12362: Fixed an integer overflow in the firmware which may have<BR>     allowed a privileged user to potentially enable an escalation of<BR>     privilege via local access (bsc#1181720).<BR>   - CVE-2020-12363: Fixed an improper input validation which may have<BR>     allowed a privileged user to potentially enable a denial of service via<BR>     local access (bsc#1181735).<BR>   - CVE-2020-12364: Fixed a null pointer reference which may have allowed a<BR>     privileged user to potentially enable a denial of service via local<BR>     access (bsc#1181736 ).<BR>   - CVE-2020-12373: Fixed an expired pointer dereference which may have<BR>     allowed a privileged user to potentially enable a denial of service via<BR>     local access (bsc#1181738).<BR>   - CVE-2020-29368,CVE-2020-29374: Fixed an issue in copy-on-write<BR>     implementation which could have granted unintended write access because<BR>     of a race condition in a THP mapcount check (bsc#1179660, bsc#1179428).<P>\n\nNote: This QID will be Deprecated from 06/11/2021",
+                    "DIAGNOSIS": "The SUSE Linux Enterprise 15 SP2 kernel was updated to receive various<BR>   security and bugfixes.<BR><BR>   The following security bugs were fixed:<BR><BR>   - CVE-2021-26930: Fixed an improper error handling in blkback's grant<BR>     mapping (XSA-365 bsc#1181843).<BR>   - CVE-2021-26931: Fixed an issue where Linux  kernel was treating grant<BR>     mapping errors as bugs (XSA-362 bsc#1181753).<BR>   - CVE-2021-26932: Fixed improper error handling issues in Linux grant<BR>     mapping (XSA-361 bsc#1181747). by remote attackers to read or write<BR>     files via directory traversal in an XCOPY request (bsc#178372).<BR>   - CVE-2020-12362: Fixed an integer overflow in the firmware which may have<BR>     allowed a privileged user to potentially enable an escalation of<BR>     privilege via local access (bsc#1181720).<BR>   - CVE-2020-12363: Fixed an improper input validation which may have<BR>     allowed a privileged user to potentially enable a denial of service via<BR>     local access (bsc#1181735).<BR>   - CVE-2020-12364: Fixed a null pointer reference which may have allowed a<BR>     privileged user to potentially enable a denial of service via local<BR>     access (bsc#1181736 ).<BR>   - CVE-2020-12373: Fixed an expired pointer dereference which may have<BR>     allowed a privileged user to potentially enable a denial of service via<BR>     local access (bsc#1181738).<BR>   - CVE-2020-29368,CVE-2020-29374: Fixed an issue in copy-on-write<BR>     implementation which could have granted unintended write access because<BR>     of a race condition in a THP mapcount check (bsc#1179660, bsc#1179428).<BR><BR>",
                     "DISCOVERY": {
                         "ADDITIONAL_INFO": "Patch Available",
                         "AUTH_TYPE_LIST": {
@@ -4585,7 +4585,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         },
                         "REMOTE": "0"
                     },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-06-15T12:29:19Z",
+                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-04-19T14:36:38Z",
                     "PATCHABLE": "1",
                     "PCI_FLAG": "1",
                     "PUBLISHED_DATETIME": "2021-04-19T14:36:38Z",
@@ -4598,7 +4598,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         }
                     },
                     "SOLUTION": "Upgrade to the latest package which contains the patch. To install this SUSE Security\n                                Update use YaST online_update. Alternatively you can run the command listed for your product.\n                                \n To install packages using the command line interface, use command &quot;yum update&quot;.\n                                \n Refer to Suse security advisory: https://lists.suse.com/pipermail/sle-security-updates/2021-March/008452.html to address this issue and obtain further details.\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://lists.suse.com/pipermail/sle-security-updates/2021-March/008452.html\" TARGET=\"_blank\">SUSE-SU-2021:0741-1: SUSE Enterprise Linux</A>",
-                    "TITLE": "SUSE Enterprise Linux Security update for the Linux Kernel (SUSE-SU-2021:0741-1) (DEPRECATED)",
+                    "TITLE": "SUSE Enterprise Linux Security update for the Linux Kernel (SUSE-SU-2021:0741-1)",
                     "VENDOR_REFERENCE_LIST": {
                         "VENDOR_REFERENCE": {
                             "ID": "SUSE-SU-2021:0741-1",
@@ -4945,7 +4945,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         },
                         "REMOTE": "0"
                     },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-06-03T20:49:38Z",
+                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-05-18T20:16:03Z",
                     "PATCHABLE": "1",
                     "PCI_FLAG": "0",
                     "PUBLISHED_DATETIME": "2021-04-19T14:36:38Z",
@@ -4958,7 +4958,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         }
                     },
                     "SOLUTION": "Upgrade to the latest package which contains the patch. To install this SUSE Security\n                                Update use YaST online_update. Alternatively you can run the command listed for your product.\n                                \n To install packages using the command line interface, use command &quot;yum update&quot;.\n                                \n Refer to Suse security advisory: https://lists.suse.com/pipermail/sle-security-updates/2021-March/008453.html to address this issue and obtain further details.\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://lists.suse.com/pipermail/sle-security-updates/2021-March/008453.html\" TARGET=\"_blank\">SUSE-SU-2021:0754-1: SUSE Enterprise Linux</A>",
-                    "TITLE": "Software and Systems Development (SUSE) Enterprise Linux Security Update for Open Secure Sockets Layer (OpenSSL-1_1) (SUSE-SU-2021:0754-1)",
+                    "TITLE": "SUSE Enterprise Linux Security update for Open Secure Sockets Layer (OpenSSL-1_1) (SUSE-SU-2021:0754-1)",
                     "VENDOR_REFERENCE_LIST": {
                         "VENDOR_REFERENCE": {
                             "ID": "SUSE-SU-2021:0754-1",
@@ -4990,7 +4990,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         },
                         "REMOTE": "0"
                     },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-06-03T20:46:48Z",
+                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-05-18T20:35:20Z",
                     "PATCHABLE": "1",
                     "PCI_FLAG": "0",
                     "PUBLISHED_DATETIME": "2021-04-19T14:36:38Z",
@@ -5003,7 +5003,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         }
                     },
                     "SOLUTION": "Upgrade to the latest package which contains the patch. To install this SUSE Security\n                                Update use YaST online_update. Alternatively you can run the command listed for your product.\n                                \n To install packages using the command line interface, use command &quot;yum update&quot;.\n                                \n Refer to Suse security advisory: https://lists.suse.com/pipermail/sle-security-updates/2021-March/008473.html to address this issue and obtain further details.\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://lists.suse.com/pipermail/sle-security-updates/2021-March/008473.html\" TARGET=\"_blank\">SUSE-SU-2021:0769-1: SUSE Enterprise Linux</A>",
-                    "TITLE": "Software and Systems Development (SUSE) Enterprise Linux Security Update for Open Secure Sockets Layer (OpenSSL-1_0_0) (SUSE-SU-2021:0769-1)",
+                    "TITLE": "SUSE Enterprise Linux Security update for Open Secure Sockets Layer (OpenSSL-1_0_0) (SUSE-SU-2021:0769-1)",
                     "VENDOR_REFERENCE_LIST": {
                         "VENDOR_REFERENCE": {
                             "ID": "SUSE-SU-2021:0769-1",
@@ -5066,7 +5066,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                             }
                         ]
                     },
-                    "DIAGNOSIS": "This update for glib2 fixes the following issues:<BR><BR>   - CVE-2021-27218: g_byte_array_new_take takes a gsize as length but stores<BR>     in a guint, this patch will refuse if the length is larger than guint.<BR>     (bsc#1182328)<BR>   - CVE-2021-27219: g_memdup takes a guint as parameter and sometimes leads<BR>     into an integer overflow, so add a g_memdup2 function which uses gsize<BR>     to replace it. (bsc#1182362)<P>\nNote: This QID will be Deprecated from 06/11/2021.",
+                    "DIAGNOSIS": "This update for glib2 fixes the following issues:<BR><BR>   - CVE-2021-27218: g_byte_array_new_take takes a gsize as length but stores<BR>     in a guint, this patch will refuse if the length is larger than guint.<BR>     (bsc#1182328)<BR>   - CVE-2021-27219: g_memdup takes a guint as parameter and sometimes leads<BR>     into an integer overflow, so add a g_memdup2 function which uses gsize<BR>     to replace it. (bsc#1182362)",
                     "DISCOVERY": {
                         "ADDITIONAL_INFO": "Patch Available",
                         "AUTH_TYPE_LIST": {
@@ -5074,7 +5074,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         },
                         "REMOTE": "0"
                     },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-06-16T15:23:28Z",
+                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-04-19T14:36:38Z",
                     "PATCHABLE": "1",
                     "PCI_FLAG": "0",
                     "PUBLISHED_DATETIME": "2021-04-19T14:36:38Z",
@@ -5087,7 +5087,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         }
                     },
                     "SOLUTION": "Upgrade to the latest package which contains the patch. To install this SUSE Security\n                                Update use YaST online_update. Alternatively you can run the command listed for your product.\n                                \n To install packages using the command line interface, use command &quot;yum update&quot;.\n                                \n Refer to Suse security advisory: https://lists.suse.com/pipermail/sle-security-updates/2021-March/008486.html to address this issue and obtain further details.\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://lists.suse.com/pipermail/sle-security-updates/2021-March/008486.html\" TARGET=\"_blank\">SUSE-SU-2021:0778-1: SUSE Enterprise Linux</A>",
-                    "TITLE": "SUSE Enterprise Linux Security update for glib2 (SUSE-SU-2021:0778-1) (DEPRECATED)",
+                    "TITLE": "SUSE Enterprise Linux Security update for glib2 (SUSE-SU-2021:0778-1)",
                     "VENDOR_REFERENCE_LIST": {
                         "VENDOR_REFERENCE": {
                             "ID": "SUSE-SU-2021:0778-1",
@@ -5119,7 +5119,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         },
                         "REMOTE": "0"
                     },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-06-03T20:47:00Z",
+                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-05-18T21:10:37Z",
                     "PATCHABLE": "1",
                     "PCI_FLAG": "0",
                     "PUBLISHED_DATETIME": "2021-04-19T14:36:38Z",
@@ -5132,7 +5132,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         }
                     },
                     "SOLUTION": "Upgrade to the latest package which contains the patch. To install this SUSE Security\n                                Update use YaST online_update. Alternatively you can run the command listed for your product.\n                                \n To install packages using the command line interface, use command &quot;yum update&quot;.\n                                \n Refer to Suse security advisory: https://lists.suse.com/pipermail/sle-security-updates/2021-March/008492.html to address this issue and obtain further details.\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://lists.suse.com/pipermail/sle-security-updates/2021-March/008492.html\" TARGET=\"_blank\">SUSE-SU-2021:0793-1: SUSE Enterprise Linux</A>",
-                    "TITLE": "Software and Systems Development (SUSE) Enterprise Linux Security Update for Compat-Open Secure Sockets Layer (compat-OpenSSL098) (SUSE-SU-2021:0793-1)",
+                    "TITLE": "SUSE Enterprise Linux Security update for Compat-Open Secure Sockets Layer (compat-OpenSSL098) (SUSE-SU-2021:0793-1)",
                     "VENDOR_REFERENCE_LIST": {
                         "VENDOR_REFERENCE": {
                             "ID": "SUSE-SU-2021:0793-1",
@@ -5192,7 +5192,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                             }
                         ]
                     },
-                    "DIAGNOSIS": "SUSE Enterprise Linux has released an update for  slurm and pdsh.<P>\nAffected OS:<BR>SUSE Linux Enterprise Module for HPC 12<P>\nQID Detection Logic:(Authenticated)<BR>It checks for vulnerable packages and its versions.",
+                    "DIAGNOSIS": "This update for pdsh fixes the following issues:<BR><BR>   - Preparing pdsh for Slurm 20.11 (jsc#ECO-2412)<BR>   - Simplify convoluted condition.<BR><BR>       This update for slurm fixes the following issues:<BR><BR>   - Fix potential buffer overflows from use of unpackmem(). CVE-2020-27745<BR>     (bsc#1178890)<BR>   - Fix potential leak of the magic cookie when sent as an argument to the<BR>     xauth command. CVE-2020-27746 (bsc#1178891)<BR>   - Add support for openPMIx also for Leap/SLE 15.0/1 (bsc#1173805).<BR>   - Updated to 20.02.3 which fixes CVE-2020-12693 (bsc#1172004).<BR>   - slurm-plugins will now also require pmix not only libpmix (bsc#1164326)<BR>   - Removed autopatch as it doesn't work for the SLE-11-SP4 build.<BR>   - Disable %arm builds as this is no longer supported.<BR>   - pmix searches now also for libpmix.so.2 so that there is no dependency<BR>     for devel package (bsc#1164386)<BR>   - Update to version 20.02.0 (jsc#SLE-8491)<BR>     * Fix minor memory leak in slurmd on reconfig.<BR>     * Fix invalid ptr reference when rolling up data in the database.<BR>     * Change shtml2html.py to require python3 for RHEL8 support, and match<BR>       man2html.py.<BR>     * slurm.spec - override &quot;hardening&quot; linker flags to ensure RHEL8 builds<BR>       in a usable manner.<BR>     * Fix type mismatches in the perl API.<BR>     * Prevent use of uninitialized slurmctld_diag_stats.<BR>     * Fixed various Coverity issues.<BR>     * Only show warning about root-less topology in daemons.<BR>     * Fix accounting of jobs in IGNORE_JOBS reservations.<BR>     * Fix issue with batch steps state not loading correctly when upgrading<BR>       from 19.05.<BR>     * Deprecate max_depend_depth in SchedulerParameters and move it to<BR>       DependencyParameters.<BR>     * Silence erroneous error on slurmctld upgrade when loading federation<BR>       state.<BR>     * Break infinite loop in cons_tres dealing with incorrect tasks per tres<BR>       request resulting in slurmctld hang.<BR>     * Improve handling of --gpus-per-task to make sure appropriate number of<BR>       GPUs is assigned to job.<BR>     * Fix seg fault on cons_res when requesting --spread-job.<BR><BR>   - Move to python3 for everything but SLE-11-SP4<BR>     * For SLE-11-SP4 add a workaround to handle a python3 script (python2.7<BR>       compliant).<BR><BR>     * sbatch - fix segfault when no newline at the end of a burst buffer<BR>       file.<BR>     * Change scancel to only check job's base state when matching -t options.<BR>     * Save job dependency list in state files.<BR>     * cons_tres - allow jobs to be run on systems with root-less topologies.<BR>     * Restore pre-20.02pre1 PrologSlurmctld synchonization behavior to avoid<BR>       various race conditions, and ensure proper batch job launch.<BR>     * Add new slurmrestd command/daemon which implements the Slurm REST API.<BR><BR>   - standard slurm.conf uses now also SlurmctldHost on all build targets<BR>     (bsc#1162377)<BR><BR>   - start slurmdbd after mariadb (bsc#1161716)<BR><BR>   - Update to version 19.05.5 (jsc#SLE-8491)<BR>     * Includes security fixes CVE-2019-19727, CVE-2019-19728, CVE-2019-12838.<BR>     * Disable i586 builds as this is no longer supported.<BR>     * Create libnss_slurm package to support user and group resolution thru<BR>       slurmstepd.<BR><BR>   - Update to v18.08.9 for fixing CVE-2019-19728 (bsc#1159692).<BR>     * Make Slurm compile on linux after sys/sysctl.h was deprecated.<BR>     * Install slurmdbd.conf.example with 0600 permissions to encourage<BR>       secure use. CVE-2019-19727.<BR>     * srun - do not continue with job launch if --uid fails. CVE-2019-19728.<BR><BR>   - added pmix support jsc#SLE-10800<BR><BR>   - Use --with-shared-libslurm to build slurm binaries using libslurm.<BR>   - Make libslurm depend on slurm-config.<BR><BR>   - Fix ownership of /var/spool/slurm on new installations and upgrade<BR>     (bsc#1158696).<BR><BR>   - Fi[...]",
                     "DISCOVERY": {
                         "ADDITIONAL_INFO": "Patch Available",
                         "AUTH_TYPE_LIST": {
@@ -5200,7 +5200,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         },
                         "REMOTE": "0"
                     },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-06-11T12:14:39Z",
+                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-04-19T14:36:38Z",
                     "PATCHABLE": "1",
                     "PCI_FLAG": "1",
                     "PUBLISHED_DATETIME": "2021-04-19T14:36:38Z",
@@ -7332,11 +7332,11 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                     "SOFTWARE_LIST": {
                         "SOFTWARE": [
                             {
-                                "PRODUCT": "debian_linux",
+                                "PRODUCT": "shadow",
                                 "VENDOR": "debian"
                             },
                             {
-                                "PRODUCT": "shadow",
+                                "PRODUCT": "debian_linux",
                                 "VENDOR": "debian"
                             },
                             {
@@ -7600,7 +7600,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                             "EXPLT_SRC": {
                                 "EXPLT_LIST": {
                                     "EXPLT": {
-                                        "DESC": "MariaDB 10.2 - 'wsrep_provider' OS Command Execution - The Exploit-DB Ref : 49765",
+                                        "DESC": "MariaDB 10.2 /MySQL - 'wsrep_provider' OS Command Execution - The Exploit-DB Ref : 49765",
                                         "LINK": "http://www.exploit-db.com/exploits/49765",
                                         "REF": "CVE-2021-27928"
                                     }
@@ -8228,9 +8228,9 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         },
                         "REMOTE": "0"
                     },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-06-15T05:04:08Z",
+                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-04-06T12:45:16Z",
                     "PATCHABLE": "1",
-                    "PCI_FLAG": "0",
+                    "PCI_FLAG": "1",
                     "PUBLISHED_DATETIME": "2021-04-06T12:45:16Z",
                     "QID": "178508",
                     "SEVERITY_LEVEL": "3",
@@ -8648,11 +8648,11 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                     "SOFTWARE_LIST": {
                         "SOFTWARE": [
                             {
-                                "PRODUCT": "debian_linux",
+                                "PRODUCT": "None",
                                 "VENDOR": "debian"
                             },
                             {
-                                "PRODUCT": "None",
+                                "PRODUCT": "debian_linux",
                                 "VENDOR": "debian"
                             }
                         ]
@@ -9956,12 +9956,12 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         },
                         "REMOTE": "0"
                     },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-09-09T06:04:54Z",
+                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-04-01T13:01:29Z",
                     "PATCHABLE": "1",
                     "PCI_FLAG": "0",
                     "PUBLISHED_DATETIME": "2021-04-01T13:01:29Z",
                     "QID": "198309",
-                    "SEVERITY_LEVEL": "2",
+                    "SEVERITY_LEVEL": "3",
                     "SOFTWARE_LIST": {
                         "SOFTWARE": {
                             "PRODUCT": "None",
@@ -10306,13 +10306,13 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                     "SOFTWARE_LIST": {
                         "SOFTWARE": [
                             {
-                                "PRODUCT": "spamassassin",
+                                "PRODUCT": "None",
                                 "VENDOR": "ubuntu"
                             },
                             {
-                                "PRODUCT": "None",
+                                "PRODUCT": "spamassassin",
                                 "VENDOR": "ubuntu"
-                            }
+}
                         ]
                     },
                     "SOLUTION": "Refer to Ubuntu advisory <A HREF=\"https://lists.ubuntu.com/archives/ubuntu-security-announce/2021-April/005956.html\" TARGET=\"_blank\">USN-4899-1</A> for affected packages and patching details, or update with your package manager.\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://launchpad.net/ubuntu/+source/spamassassin/3.4.2-0ubuntu0.16.04.5\" TARGET=\"_blank\">USN-4899-1: 16.04 (Xenial) on src (spamassassin)</A><P> <A HREF=\"https://launchpad.net/ubuntu/+source/spamassassin/3.4.4-1ubuntu1.1\" TARGET=\"_blank\">USN-4899-1: 20.04 (focal) on src (spamassassin)</A><P> <A HREF=\"https://launchpad.net/ubuntu/+source/spamassassin/3.4.2-0ubuntu0.18.04.5\" TARGET=\"_blank\">USN-4899-1: 18.04 (bionic) on src (spamassassin)</A>",
