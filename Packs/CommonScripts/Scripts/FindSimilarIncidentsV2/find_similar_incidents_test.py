@@ -198,8 +198,8 @@ def test_build_similar_keys_list():
     str_res = build_incident_fields_query({u'employeeid': u'1111'})
     assert str_res == [u'employeeid="1111"']
 
-    list_res = build_incident_fields_query({u'test': [1234, 12345]})
-    assert list_res == ['test:="1234"', 'test:="12345"']
+    list_res = build_incident_fields_query({u'test': [u'name1', u'name2']})
+    assert list_res == [u'test="name1"', u'test="name2"']
 
 
 def test_similar_incidents_fields(mocker):
