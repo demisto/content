@@ -2,7 +2,7 @@ id: MAR - Endpoint data collection
 version: -1
 name: MAR - Endpoint data collection
 description: |-
-  Use McAfee Active Response to collect data from an endpoint for IR purposes (requires ePO as well)
+  Use McAfee Active Response to collect data from an endpoint for IR purposes (requires ePO as well).
 
   Input:
   * Hostname (Default: ${Endpoint.Hostname})
@@ -45,12 +45,12 @@ tasks:
     task:
       id: 528a058d-8c60-46dc-80b0-8139b45eeafd
       version: -1
-      name: is ePO enabled?
+      name: Is ePO enabled?
       scriptName: Exists
       type: condition
       iscommand: false
       brand: ""
-      description: Is McAfee ePO Integration installed and configured?
+      description: Is the McAfee ePO integration installed and configured?
     nexttasks:
       '#default#':
       - "3"
@@ -86,7 +86,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-      description: Finds computers within the McAfee ePO system tree
+      description: Finds computers within the McAfee ePO system tree.
     nexttasks:
       '#none#':
       - "3"
@@ -142,12 +142,12 @@ tasks:
     task:
       id: 71f42a72-b2e7-479a-86e7-bc6ff218671e
       version: -1
-      name: is MAR enabled?
+      name: Is McAfee MAR enabled?
       scriptName: Exists
       type: condition
       iscommand: false
       brand: ""
-      description: Is the McAfee MAR Integration installed and configured?
+      description: Is the McAfee MAR integration installed and configured?
     nexttasks:
       '#default#':
       - "3"
@@ -183,7 +183,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
-      description: Search endpoint data crossed by multiple collectors
+      description: Search endpoint data crossed by multiple collectors.
     nexttasks:
       '#none#':
       - "10"
@@ -227,7 +227,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
-      description: Search endpoint data crossed by multiple collectors
+      description: Search endpoint data crossed by multiple collectors.
     nexttasks:
       '#none#':
       - "6"
@@ -271,7 +271,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
-      description: Search endpoint data crossed by multiple collectors
+      description: Search endpoint data crossed by multiple collectors.
     nexttasks:
       '#none#':
       - "11"
@@ -315,7 +315,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
-      description: Search endpoint data crossed by multiple collectors
+      description: Search endpoint data crossed by multiple collectors.
     nexttasks:
       '#none#':
       - "23"
@@ -359,7 +359,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
-      description: Search endpoint data crossed by multiple collectors
+      description: Search endpoint data crossed by multiple collectors.
     nexttasks:
       '#none#':
       - "13"
@@ -403,7 +403,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
-      description: Search endpoint data crossed by multiple collectors
+      description: Search endpoint data crossed by multiple collectors.
     nexttasks:
       '#none#':
       - "18"
@@ -447,7 +447,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
-      description: Search endpoint data crossed by multiple collectors
+      description: Search endpoint data crossed by multiple collectors.
     nexttasks:
       '#none#':
       - "21"
@@ -491,7 +491,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
-      description: Search endpoint data crossed by multiple collectors
+      description: Search endpoint data crossed by multiple collectors.
     nexttasks:
       '#none#':
       - "17"
@@ -535,7 +535,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
-      description: Search endpoint data crossed by multiple collectors
+      description: Search endpoint data crossed by multiple collectors.
     nexttasks:
       '#none#':
       - "22"
@@ -579,7 +579,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
-      description: Search endpoint data crossed by multiple collectors
+      description: Search endpoint data crossed by multiple collectors.
     nexttasks:
       '#none#':
       - "19"
@@ -623,7 +623,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
-      description: Search endpoint data crossed by multiple collectors
+      description: Search endpoint data crossed by multiple collectors.
     nexttasks:
       '#none#':
       - "20"
@@ -667,7 +667,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
-      description: Search endpoint data crossed by multiple collectors
+      description: Search endpoint data crossed by multiple collectors.
     nexttasks:
       '#none#':
       - "24"
@@ -711,7 +711,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
-      description: Search endpoint data crossed by multiple collectors
+      description: Search endpoint data crossed by multiple collectors.
     nexttasks:
       '#none#':
       - "3"
@@ -755,7 +755,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
-      description: Search endpoint data crossed by multiple collectors
+      description: Search endpoint data crossed by multiple collectors.
     nexttasks:
       '#none#':
       - "3"
@@ -799,7 +799,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
-      description: Search endpoint data crossed by multiple collectors
+      description: Search endpoint data crossed by multiple collectors.
     nexttasks:
       '#none#':
       - "25"
@@ -843,7 +843,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
-      description: Search endpoint data crossed by multiple collectors
+      description: Search endpoint data crossed by multiple collectors.
     nexttasks:
       '#none#':
       - "3"
@@ -887,7 +887,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Active Response
-      description: Search endpoint data crossed by multiple collectors
+      description: Search endpoint data crossed by multiple collectors.
     nexttasks:
       '#none#':
       - "3"
@@ -1080,7 +1080,7 @@ tasks:
       id: e5454d6d-61e8-46ea-8815-7db0da08666a
       version: -1
       name: Is McAfee ePO v2 enabled?
-      description: Check weather McAfee ePO v2 Integration is configured and active
+      description: Is the McAfee ePO v2 integration configured and active?
       type: condition
       iscommand: false
       brand: ""
@@ -1187,7 +1187,7 @@ inputs:
   value:
     simple: TIE
   required: false
-  description: Hostname to run on
+  description: Hostname to run on.
   playbookInputQuery:
 outputs: []
 tests:
