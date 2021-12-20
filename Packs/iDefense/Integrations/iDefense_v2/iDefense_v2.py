@@ -287,10 +287,10 @@ def uuid_command(client: Client, args: dict, reliability: DBotScoreReliability, 
         res = client.threat_indicator_search(url_suffix=f'/v0/{uuid}')
     except Exception as e:
         if 'Failed to parse json object from response' in e.args[0]:
-            return CommandResults(indicator=None, raw_response={},
-                                  readable_output=f"No results were found for uuid {uuid}")
+            return_error(f"No results were found for uuid {uuid}\nError:  {str(e)}")
         else:
-            raise e
+            return_error(f"Error Occured!\n Error details: {str(e)}")
+
     indicator: Optional[Union[Common.IP, Common.Domain, Common.URL]] = None
     analysis_info = {}
     if len(res):
@@ -364,8 +364,8 @@ def hash_command(client: Client, args: dict, reliability: DBotScoreReliability, 
                                   outputs=context,
                                   readable_output=tableToMarkdown(f'ACTI results for {printKey} hash: {hash}', analysis_info))
 
-    except Exception:
-        return CommandResults(indicator=None, raw_response={}, readable_output=f"No results were found for hash {hash}")
+    except Exception as e:
+        return_error(f"No results were found for hash : {hash} \n Error: {str(e)}")
 
 
 def _hash_extract(Res: dict, reliability: DBotScoreReliability, key_type: str, hash: str, doc_search_client: Client):
@@ -485,12 +485,12 @@ def _get_ia_for_indicator(indicator: str, doc_search_client: Client):
         intelligence_reports = {title: IDEFENSE_URL_TEMPLATE.format(
             'intelligence_report', uuid) for title, uuid in reports.items()}
 
-    except DemistoException as e:
-        demisto.debug(e.message)
-
     except Exception as e:
-        demisto.debug(f"Unexpected error occured while calling document api for indicator {indicator}")
-        demisto.debug(e)
+        if 'Error in API call [403]' in e.args[0]:
+            return_results(f"Sorry! Intelligence Alert & Intelligence Report enrichment is not possible! As you don't have access to Document API.\n Error: {str(e)}")
+            demisto.debug(e.args[0])
+        else:
+            raise e
 
     return intelligence_alerts, intelligence_reports
 
