@@ -1,0 +1,37 @@
+{
+  "analystNotes": [
+    {
+      "actor": "dummyuser",
+      "text": "Note A",
+      "timestamp": "2021-12-08T17:17:56.790+00:00"
+    }
+  ],
+  "assetsIds": [
+    "765432:PERSON:AXsNy0R8CfYgZQumlNdv"
+  ],
+  "child": false,
+  "childFindingIds": [],
+  "classification": null,
+  "createdOn": "2021-09-17T16:26:11.731+00:00",
+  "customerId": 765432,
+  "customerName": "Sample Customer",
+  "destination": null,
+  "detail": "MCAS - Impossible travel activity",
+  "eventsIds": [
+    "34c0e1b2-96e6-4a25-be3d-80d0671a5d8f"
+  ],
+  "id": "765432:THREAT:@AXv0k6GhG2zTcaogE1vG",
+  "parentId": null,
+  "priority": 4,
+  "severity": 4,
+  "soarAction": null,
+  "source": null,
+  "sourceSystem": "LOG",
+  "status": {
+    "code": "R:1",
+    "description": "Security Incident"
+  },
+  "summary": "MS Graph Alert Detection Rule",
+  "type": "THREAT",
+  "updatedOn": "2021-12-08T17:17:56.504+00:00"
+}

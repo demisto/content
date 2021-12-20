@@ -27,8 +27,69 @@ SEVERITY_MAP = {
     "CRITICAL": 4,
 }
 
-''' CLIENT CLASS '''
 
+TICKET_FIELDS = [
+    "assetIds",
+    "category",
+    "createdBy",
+    "createdOn",
+    "customerName",
+    "description",
+    "findings",
+    "impact",
+    "notes",
+    "number",
+    "priority",
+    "status",
+    "subCategory",
+    "subject",
+    "type",
+    "updatedOn",
+    "urgency",
+    "formatted_notes",
+]
+
+FINDING_FIELDS = [
+    "analystNotes",
+    "assetsIds",
+    "childFindingIds",
+    "classification",
+    "createdOn",
+    "customerName",
+    "destination",
+    "detail",
+    "eventsIds",
+    "id",
+    "parentId",
+    "priority",
+    "severity",
+    "source",
+    "status",
+    "summary",
+    "type",
+    "updatedOn",
+]
+
+ASSET_FIELDS = [
+    "cidr",
+    "createdOn",
+    "customerName",
+    "id",
+    "ips",
+    "lastActivity",
+    "name",
+    "networkInterfaces",
+    "notes",
+    "os",
+    "services",
+    "status",
+    "tags",
+    "type",
+    "updatedOn",
+    "uri",
+]
+
+''' CLIENT CLASS '''
 
 class Client(BaseClient):
     """
@@ -49,6 +110,7 @@ class Client(BaseClient):
                 tkt["formatted_notes"] = format_notes(tkt["notes"])
             else:
                 tkt["formatted_notes"] = ""
+            simplify_ticket(tkt)
 
         return tickets
 
@@ -58,7 +120,15 @@ class Client(BaseClient):
     def get_ticket(self, id):
         quoted_id = urllib.parse.quote(id, safe='')
         url_suffix = f"/v2/tickets/{quoted_id}"
-        ticket = self._http_request(method="GET", url_suffix=url_suffix)
+        try:
+            ticket = self._http_request(method="GET", url_suffix=url_suffix)
+        except DemistoException as e:
+            if e.res is not None and e.res.status_code == 404:
+                return None
+            else:
+                raise
+
+        simplify_ticket(ticket)
         if ticket["notes"]:
             ticket["formatted_notes"] = format_notes(ticket["notes"])
         else:
@@ -87,18 +157,33 @@ class Client(BaseClient):
             "comment": comment,
         }
         return self._http_request(
-            method="POST", url_suffix=url_suffix, json_data=payload
+            method="POST",
+            url_suffix=url_suffix,
+            json_data=payload,
+            empty_valid_codes=(202,),
+            return_empty_response=True,
         )
 
     def get_finding(self, id):
         quoted_id = urllib.parse.quote(id, safe='')
         url_suffix = f"/v2/findings/{quoted_id}"
-        return self._http_request(method="GET", url_suffix=url_suffix)
+        try:
+            finding = self._http_request(method="GET", url_suffix=url_suffix)
+        except DemistoException as e:
+            if e.res is not None and e.res.status_code == 404:
+                return None
+            else:
+                raise
+        simplify_finding(finding)
+        return finding
 
     def get_asset(self, id):
         quoted_id = urllib.parse.quote(id, safe='')
         url_suffix = f"/v2/assets/{quoted_id}"
-        return self._http_request(method="GET", url_suffix=url_suffix)
+
+        asset = self._http_request(method="GET", url_suffix=url_suffix)
+        simplify_asset(asset)
+        return asset
 
     def search_assets(self, **kwargs):
         params = {k: v for k, v in kwargs.items() if v is not None}
@@ -107,10 +192,13 @@ class Client(BaseClient):
         results = self._http_request(method="GET", url_suffix=url_suffix,
                                      params=params)
 
-        if "items" in results:
-            return results["items"]
-        else:
+        if "items" not in results:
             return None
+        assets = results["items"]
+        for asset in assets:
+            simplify_asset(asset)
+
+        return assets
 
     def search_findings(self, **kwargs):
         params = {k: v for k, v in kwargs.items() if v is not None}
@@ -119,10 +207,12 @@ class Client(BaseClient):
         results = self._http_request(method="GET", url_suffix=url_suffix,
                                      params=params)
 
-        if "items" in results:
-            return results["items"]
-        else:
+        if "items" not in results:
             return None
+        findings = results["items"]
+        for finding in findings:
+            simplify_finding(finding)
+        return findings
 
 
 ''' HELPER FUNCTIONS '''
@@ -230,10 +320,8 @@ def test_module(client: Client) -> str:
     except DemistoException as e:
         if e.res is not None and e.res.status_code == 401:
             message = "Authorization Error: make sure API Key is correctly set"
-        elif "Forbidden" in str(e) or "Authorization" in str(e):
-            message = "Authorization Error: make sure API Key is correctly set"
         else:
-            raise e
+            raise
     return message
 
 
@@ -255,43 +343,67 @@ def fetch_incidents(client, max_results, first_fetch):
 
     ticket_types = demisto.params().get("ticket_types")
     incidents = []
-    try:
-        params = {
-            "pageSize": max_results,
-            "createdSince": created_since,
-            "sortField": "createdOn",
-            "sortDescending": "false",
-        }
-        if ticket_types:
-            params["type"] = ",".join(ticket_types)
-        demisto.debug(f"params: {params}")
-        tickets = client.search_tickets(**params)
-        latest_timestamp = search_since
-        if tickets:
-            demisto.debug(f"Found {len(tickets)} tickets from Fusion")
-            for tkt in tickets:
-                incident = {
-                    "name": tkt["subject"],
-                    "occurred": tkt["createdOn"],
-                    "description": tkt.get("description", ""),
-                    "severity": SEVERITY_MAP.get(tkt.get("priority"), 0),
-                    "rawJSON": json.dumps(tkt),
-                }
-                dt = dateparser.parse(tkt["createdOn"], settings={"TIMEZONE": "UTC"})
-                latest_timestamp = max(dt.timestamp(), latest_timestamp)
-                incidents.append(incident)
-    except DemistoException as e:
-        demisto.error(f"ERROR: {e}")
-        demisto.error(e.res)
+    params = {
+        "pageSize": max_results,
+        "createdSince": created_since,
+        "sortField": "createdOn",
+        "sortDescending": "false",
+    }
+    if ticket_types:
+        params["type"] = ",".join(ticket_types)
+    demisto.debug(f"params: {params}")
+    tickets = client.search_tickets(**params)
+    latest_timestamp = search_since
+    if tickets:
+        demisto.debug(f"Found {len(tickets)} tickets from Fusion")
+        for tkt in tickets:
+            simplify_ticket(tkt)
+            incident = {
+                "name": tkt["subject"],
+                "occurred": tkt["createdOn"],
+                "description": tkt.get("description", ""),
+                "severity": SEVERITY_MAP.get(tkt.get("priority"), 0),
+                "rawJSON": json.dumps(tkt),
+            }
+            dt = dateparser.parse(tkt["createdOn"], settings={"TIMEZONE": "UTC"})
+            latest_timestamp = max(dt.timestamp(), latest_timestamp)
+            incidents.append(incident)
 
     # One second in the future to prevent duplicates
     last_run = {"last_fetch": latest_timestamp + 1}
     demisto.setLastRun(last_run)
     demisto.incidents(incidents)
 
+def simplify_ticket(ticket):
+    if not ticket:
+        return
+    for f in list(ticket.keys()):
+        if f not in TICKET_FIELDS:
+            del ticket[f]
+
+def simplify_finding(finding):
+    if not finding:
+        return
+
+    for f in list(finding.keys()):
+        if f not in FINDING_FIELDS:
+            del finding[f]
+    if "status" in finding:
+        finding["status"].pop("code",None)
+
+def simplify_asset(asset):
+    if not asset:
+        return
+    for f in list(asset.keys()):
+        if f not in ASSET_FIELDS:
+            del asset[f]
 
 def get_ticket_command(client, args):
-    ticket = client.get_ticket(args.get("id"))
+    id = args.get("id")
+    ticket = client.get_ticket(id)
+
+    if ticket is None:
+        return CommandResults(readable_output=f"Ticket {id} not found")
 
     readable = [
         "| field | value |",
@@ -300,7 +412,7 @@ def get_ticket_command(client, args):
     for k, v in ticket.items():
         str_value = stringEscapeMD(formatCell(v), True, True)
         if len(str_value) > 200:
-            str_value = str_value[:200] + "....[Trucated]"
+            str_value = str_value[:200] + "....[Truncated]"
         readable.append(f"| {k} | {str_value} |")
 
     command_results = CommandResults(
@@ -323,28 +435,36 @@ def add_ticket_comment_command(client, args):
 def close_ticket_command(client, args):
     id = args.get("id")
     comment = args.get("comment")
-    client.add_ticket_comment(id, comment)
+    client.close_ticket(id, comment)
 
     return "Success"
 
 
 def get_finding_command(client, args):
-    finding = client.get_finding(args.get("id"))
+    id = args.get("id")
+    finding = client.get_finding(id)
 
-    # TODO: Add readable_output (markdown) for warroom view
-    command_results = CommandResults(
-        outputs_prefix="Trustwave.Finding", outputs_key_field="id", outputs=finding
-    )
+    if finding:
+        # TODO: Add readable_output (markdown) for warroom view
+        command_results = CommandResults(
+            outputs_prefix="Trustwave.Finding", outputs_key_field="id", outputs=finding
+        )
+    else:
+        command_results = CommandResults(readable_output=f"Finding {id} not found")
     return command_results
 
 
 def get_asset_command(client, args):
-    asset = client.get_asset(args.get("id"))
+    id = args.get("id")
+    asset = client.get_asset(id)
 
-    # TODO: Add readable_output (markdown) for warroom view
-    command_results = CommandResults(
-        outputs_prefix="Trustwave.Asset", outputs_key_field="id", outputs=asset
-    )
+    if asset:
+        # TODO: Add readable_output (markdown) for warroom view
+        command_results = CommandResults(
+            outputs_prefix="Trustwave.Asset", outputs_key_field="id", outputs=asset
+        )
+    else:
+        command_results = CommandResults(readable_output=f"Asset {id} not found")
     return command_results
 
 
@@ -362,9 +482,13 @@ def get_updated_tickets_command(client, args):
         type=ticket_types,
         pageSize=max_tickets
     )
-    command_results = CommandResults(
-        outputs_prefix="Trustwave.Ticket", outputs_key_field="number", outputs=tickets
-    )
+
+    if tickets:
+        command_results = CommandResults(
+            outputs_prefix="Trustwave.Ticket", outputs_key_field="number", outputs=tickets
+        )
+    else:
+        command_results = CommandResults(readable_output="No updated tickets found")
     return command_results
 
 

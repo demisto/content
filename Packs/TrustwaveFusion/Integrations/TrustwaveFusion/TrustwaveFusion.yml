@@ -35,7 +35,7 @@ configuration:
   name: max_fetch
   required: false
   type: 0
-- additionalinfo: 'The format: <number> <time unit>. e.g., 12 hours, 7 days, 2 seconds
+- additionalinfo: 'Format: [number] [time unit]. e.g., 12 hours, 7 days, 2 seconds
     etc.'
   defaultvalue: 5 days
   display: First fetch time
@@ -53,7 +53,7 @@ configuration:
   - CHANGE
   required: false
   type: 16
-description: Trustwave Fusion Integration
+description: Trustwave Fusion Integration.
 display: TrustwaveFusion
 name: TrustwaveFusion
 script:
@@ -61,74 +61,74 @@ script:
   - arguments:
     - default: true
       defaultValue:
-      description: Incident ID
+      description: Ticket ID
       name: id
       required: true
     description: Get a single incident
     name: trustwave-get-ticket
     outputs:
     - contextPath: Trustwave.Ticket.number
-      description: ''
+      description: 'The Ticket ID'
       type: String
     - contextPath: Trustwave.Ticket.subject
-      description: ''
+      description: 'The ticket title.'
       type: String
     - contextPath: Trustwave.Ticket.status
-      description: ''
+      description: 'The status of the ticket'
       type: String
     - contextPath: Trustwave.Ticket.description
-      description: ''
+      description: 'The detailed ticket description.'
+      type: String
+    - contextPath: Trustwave.Ticket.category
+      description: 'Ticket category'
       type: String
     - contextPath: Trustwave.Ticket.createdBy
-      description: ''
+      description: 'User that created the ticket.'
       type: String
     - contextPath: Trustwave.Ticket.createdOn
-      description: ''
+      description: 'The ticket creation time.'
       type: Date
-    - contextPath: Trustwave.Ticket.customerId
-      description: ''
-      type: Number
     - contextPath: Trustwave.Ticket.customerName
-      description: ''
+      description: 'The name of the customer.'
+      type: String
+    - contextPath: Trustwave.Ticket.findings.classification
+      description: 'Category for finding related to the ticket.'
+      type: String
+    - contextPath: Trustwave.Ticket.findings.classificationCode
+      description: 'Category code for finding related to the ticket.'
+      type: String
+    - contextPath: Trustwave.Ticket.findings.findingId
+      description: 'Id finding related to the ticket.'
+      type: String
+    - contextPath: Trustwave.Ticket.formatted_notes
+      description: 'Human readable Notes for the ticket.'
       type: String
     - contextPath: Trustwave.Ticket.impact
-      description: ''
+      description: 'Ticket impact (HIGH, MEDIUM, LOW)'
       type: String
     - contextPath: Trustwave.Ticket.notes.actor
-      description: ''
+      description: 'User that added the note (comment)'
       type: String
     - contextPath: Trustwave.Ticket.notes.text
-      description: ''
+      description: 'The note (comment) text.'
       type: String
     - contextPath: Trustwave.Ticket.notes.timestamp
-      description: ''
+      description: 'Time when the note (comment) was created.'
       type: Date
-    - contextPath: Trustwave.Ticket.performedBy
-      description: ''
-      type: String
     - contextPath: Trustwave.Ticket.priority
-      description: ''
+      description: 'Ticket priority (CRITICAL, HIGH, MEDIUM, LOW)'
       type: String
-    - contextPath: Trustwave.Ticket.soarActions
-      description: ''
-      type: Unknown
-    - contextPath: Trustwave.Ticket.soarActionsTaken
-      description: ''
-      type: Unknown
-    - contextPath: Trustwave.Ticket.survey
-      description: ''
-      type: Boolean
+    - contextPath: Trustwave.Ticket.subCategory
+      description: 'Ticket sub-category.'
+      type: String
     - contextPath: Trustwave.Ticket.type
-      description: ''
-      type: String
-    - contextPath: Trustwave.Ticket.updatedBy
-      description: ''
+      description: 'The ticket type (CASE, INCIDENT, CHANGE)'
       type: String
     - contextPath: Trustwave.Ticket.updatedOn
-      description: ''
+      description: 'When the ticket was last updated.'
       type: Date
     - contextPath: Trustwave.Ticket.urgency
-      description: ''
+      description: 'The ticket urgency (HIGH, MEDIUM, LOW)'
       type: String
   - arguments:
     - default: false
@@ -197,67 +197,58 @@ script:
     name: trustwave-search-tickets
     outputs:
     - contextPath: Trustwave.Ticket.number
-      description: ''
+      description: 'The Ticket ID'
       type: String
     - contextPath: Trustwave.Ticket.subject
-      description: ''
+      description: 'The ticket title.'
       type: String
     - contextPath: Trustwave.Ticket.status
-      description: ''
+      description: 'The status of the ticket'
       type: String
     - contextPath: Trustwave.Ticket.description
-      description: ''
+      description: 'The detailed ticket description.'
+      type: String
+    - contextPath: Trustwave.Ticket.category
+      description: 'Ticket category.'
       type: String
     - contextPath: Trustwave.Ticket.createdBy
-      description: ''
+      description: 'User that created the ticket.'
       type: String
     - contextPath: Trustwave.Ticket.createdOn
-      description: ''
+      description: 'The time when the ticket was created.'
       type: Date
-    - contextPath: Trustwave.Ticket.customerId
-      description: ''
-      type: Number
     - contextPath: Trustwave.Ticket.customerName
-      description: ''
+      description: 'The name of the customer.'
+      type: String
+    - contextPath: Trustwave.Ticket.formatted_notes
+      description: 'Human readable notes.'
       type: String
     - contextPath: Trustwave.Ticket.impact
-      description: ''
+      description: 'Ticket impact (HIGH, MEDIUM, LOW)'
       type: String
     - contextPath: Trustwave.Ticket.notes.actor
-      description: ''
+      description: 'User that added the note (comment)'
       type: String
     - contextPath: Trustwave.Ticket.notes.text
-      description: ''
+      description: 'The note (comment) text.'
       type: String
     - contextPath: Trustwave.Ticket.notes.timestamp
-      description: ''
+      description: 'Time when the note (comment) was created.'
       type: Date
-    - contextPath: Trustwave.Ticket.performedBy
-      description: ''
-      type: String
     - contextPath: Trustwave.Ticket.priority
-      description: ''
+      description: 'Ticket priority (CRITICAL, HIGH, MEDIUM, LOW)'
       type: String
-    - contextPath: Trustwave.Ticket.soarActions
-      description: ''
-      type: Unknown
-    - contextPath: Trustwave.Ticket.soarActionsTaken
-      description: ''
-      type: Unknown
-    - contextPath: Trustwave.Ticket.survey
-      description: ''
-      type: Boolean
+    - contextPath: Trustwave.Ticket.subCategory
+      description: 'Ticket sub-category.'
+      type: String
     - contextPath: Trustwave.Ticket.type
-      description: ''
-      type: String
-    - contextPath: Trustwave.Ticket.updatedBy
-      description: ''
+      description: 'The ticket type (CASE, INCIDENT, CHANGE)'
       type: String
     - contextPath: Trustwave.Ticket.updatedOn
-      description: ''
+      description: 'When the ticket was last updated.'
       type: Date
     - contextPath: Trustwave.Ticket.urgency
-      description: ''
+      description: 'The ticket urgency (HIGH, MEDIUM, LOW)'
       type: String
   - arguments:
     - default: false
@@ -309,67 +300,58 @@ script:
     name: trustwave-get-updated-tickets
     outputs:
     - contextPath: Trustwave.Ticket.number
-      description: ''
+      description: 'The Ticket ID'
       type: String
     - contextPath: Trustwave.Ticket.subject
-      description: ''
+      description: 'The ticket title.'
       type: String
     - contextPath: Trustwave.Ticket.status
-      description: ''
+      description: 'The status of the ticket'
       type: String
     - contextPath: Trustwave.Ticket.description
-      description: ''
+      description: 'The detailed ticket description.'
+      type: String
+    - contextPath: Trustwave.Ticket.category
+      description: 'Ticket category.'
       type: String
     - contextPath: Trustwave.Ticket.createdBy
-      description: ''
+      description: 'User that created the ticket.'
       type: String
     - contextPath: Trustwave.Ticket.createdOn
-      description: ''
+      description: 'The time when the ticket was created.'
       type: Date
-    - contextPath: Trustwave.Ticket.customerId
-      description: ''
-      type: Number
     - contextPath: Trustwave.Ticket.customerName
-      description: ''
+      description: 'The name of the customer.'
+      type: String
+    - contextPath: Trustwave.Ticket.formatted_notes
+      description: 'Human readable notes.'
       type: String
     - contextPath: Trustwave.Ticket.impact
-      description: ''
+      description: 'Ticket impact (HIGH, MEDIUM, LOW)'
       type: String
     - contextPath: Trustwave.Ticket.notes.actor
-      description: ''
+      description: 'User that added the note (comment)'
       type: String
     - contextPath: Trustwave.Ticket.notes.text
-      description: ''
+      description: 'The note (comment) text.'
       type: String
     - contextPath: Trustwave.Ticket.notes.timestamp
-      description: ''
+      description: 'Time when the note (comment) was created.'
       type: Date
-    - contextPath: Trustwave.Ticket.performedBy
-      description: ''
-      type: String
     - contextPath: Trustwave.Ticket.priority
-      description: ''
+      description: 'Ticket priority (CRITICAL, HIGH, MEDIUM, LOW)'
       type: String
-    - contextPath: Trustwave.Ticket.soarActions
-      description: ''
-      type: Unknown
-    - contextPath: Trustwave.Ticket.soarActionsTaken
-      description: ''
-      type: Unknown
-    - contextPath: Trustwave.Ticket.survey
-      description: ''
-      type: Boolean
+    - contextPath: Trustwave.Ticket.subCategory
+      description: 'Ticket sub-category.'
+      type: String
     - contextPath: Trustwave.Ticket.type
-      description: ''
-      type: String
-    - contextPath: Trustwave.Ticket.updatedBy
-      description: ''
+      description: 'The ticket type (CASE, INCIDENT, CHANGE)'
       type: String
     - contextPath: Trustwave.Ticket.updatedOn
-      description: ''
+      description: 'When the ticket was last updated.'
       type: Date
     - contextPath: Trustwave.Ticket.urgency
-      description: ''
+      description: 'The ticket urgency (HIGH, MEDIUM, LOW)'
       type: String
   - arguments:
     - default: false
@@ -439,77 +421,44 @@ script:
     description: Search for Findings
     name: trustwave-search-findings
     outputs:
-    - contextPath: Trustwave.Finding.analystNotes.actor
-      description: ''
-      type: String
-    - contextPath: Trustwave.Finding.analystNotes.text
-      description: ''
-      type: String
-    - contextPath: Trustwave.Finding.analystNotes.timestamp
-      description: ''
-      type: Date
-    - contextPath: Trustwave.Finding.assetsIds
-      description: ''
-      type: String
-    - contextPath: Trustwave.Finding.child
-      description: ''
-      type: Boolean
     - contextPath: Trustwave.Finding.classification
-      description: ''
+      description: 'Category for the finding'
       type: String
     - contextPath: Trustwave.Finding.createdOn
-      description: ''
+      description: 'Time when the finding was created.'
       type: Date
-    - contextPath: Trustwave.Finding.customerId
-      description: ''
-      type: Number
     - contextPath: Trustwave.Finding.customerName
-      description: ''
+      description: 'Customer name for the finding.'
       type: String
     - contextPath: Trustwave.Finding.destination
-      description: ''
-      type: Unknown
-    - contextPath: Trustwave.Finding.detail
-      description: ''
+      description: 'Destination for finding.'
       type: String
-    - contextPath: Trustwave.Finding.eventsIds
-      description: ''
+    - contextPath: Trustwave.Finding.detail
+      description: 'Detailed description of the finding.'
       type: String
     - contextPath: Trustwave.Finding.id
-      description: ''
+      description: 'The finding ID'
       type: String
-    - contextPath: Trustwave.Finding.parentId
-      description: ''
-      type: Unknown
     - contextPath: Trustwave.Finding.priority
-      description: ''
+      description: 'The priority of the finding.'
       type: Number
     - contextPath: Trustwave.Finding.severity
-      description: ''
+      description: 'The severity of the finding.'
       type: Number
-    - contextPath: Trustwave.Finding.soarAction
-      description: ''
-      type: Unknown
     - contextPath: Trustwave.Finding.source
-      description: ''
-      type: Unknown
-    - contextPath: Trustwave.Finding.sourceSystem
-      description: ''
-      type: String
-    - contextPath: Trustwave.Finding.status.code
-      description: ''
+      description: 'SOAR actions taken for finding.'
       type: String
     - contextPath: Trustwave.Finding.status.description
-      description: ''
+      description: 'Current status of the Finding.'
       type: String
     - contextPath: Trustwave.Finding.summary
-      description: ''
+      description: 'The name of the finding.'
       type: String
     - contextPath: Trustwave.Finding.type
-      description: ''
+      description: 'The type of finding (e.g. THREAT, VULNERABILITY)'
       type: String
     - contextPath: Trustwave.Finding.updatedOn
-      description: ''
+      description: 'Time when the finding was last updated.'
       type: Date
   - arguments:
     - default: true
@@ -521,76 +470,61 @@ script:
     name: trustwave-get-finding
     outputs:
     - contextPath: Trustwave.Finding.analystNotes.actor
-      description: ''
+      description: 'User that created the analyst note.'
       type: String
     - contextPath: Trustwave.Finding.analystNotes.text
-      description: ''
+      description: 'Analyst note text.'
       type: String
     - contextPath: Trustwave.Finding.analystNotes.timestamp
-      description: ''
+      description: 'Time when the note was created'
       type: Date
     - contextPath: Trustwave.Finding.assetsIds
-      description: ''
+      description: 'Assets impacted by the finding'
       type: String
-    - contextPath: Trustwave.Finding.child
-      description: ''
-      type: Boolean
     - contextPath: Trustwave.Finding.classification
-      description: ''
+      description: 'Category for the finding'
       type: String
     - contextPath: Trustwave.Finding.createdOn
-      description: ''
+      description: 'Time when the finding was created.'
       type: Date
-    - contextPath: Trustwave.Finding.customerId
-      description: ''
-      type: Number
     - contextPath: Trustwave.Finding.customerName
-      description: ''
+      description: 'Customer name for the finding.'
       type: String
     - contextPath: Trustwave.Finding.destination
-      description: ''
-      type: Unknown
+      description: 'Destination for finding.'
+      type: String
     - contextPath: Trustwave.Finding.detail
-      description: ''
+      description: 'Detailed description of the finding.'
       type: String
     - contextPath: Trustwave.Finding.eventsIds
-      description: ''
+      description: 'List of event ID associated with the finding.'
       type: String
     - contextPath: Trustwave.Finding.id
-      description: ''
+      description: 'The finding ID'
       type: String
     - contextPath: Trustwave.Finding.parentId
-      description: ''
-      type: Unknown
+      description: 'The ID of the parent of the finding.'
+      type: String
     - contextPath: Trustwave.Finding.priority
-      description: ''
+      description: 'The priority of the finding.'
       type: Number
     - contextPath: Trustwave.Finding.severity
-      description: ''
+      description: 'The severity of the finding.'
       type: Number
-    - contextPath: Trustwave.Finding.soarAction
-      description: ''
-      type: Unknown
     - contextPath: Trustwave.Finding.source
-      description: ''
-      type: Unknown
-    - contextPath: Trustwave.Finding.sourceSystem
-      description: ''
-      type: String
-    - contextPath: Trustwave.Finding.status.code
-      description: ''
+      description: 'Source for finding'
       type: String
     - contextPath: Trustwave.Finding.status.description
-      description: ''
+      description: 'Current status of the Finding.'
       type: String
     - contextPath: Trustwave.Finding.summary
-      description: ''
+      description: 'The name of the finding.'
       type: String
     - contextPath: Trustwave.Finding.type
-      description: ''
+      description: 'The type of finding (e.g. THREAT, VULNERABILITY)'
       type: String
     - contextPath: Trustwave.Finding.updatedOn
-      description: ''
+      description: 'Time when the finding was last updated.'
       type: Date
   - arguments:
     - default: true
@@ -602,64 +536,70 @@ script:
     name: trustwave-get-asset
     outputs:
     - contextPath: Trustwave.Asset.cidr
-      description: ''
-      type: Unknown
+      description: 'Network address in CIDR notation.'
+      type: String
     - contextPath: Trustwave.Asset.createdOn
-      description: ''
+      description: 'Time when the asset was created.'
       type: Date
-    - contextPath: Trustwave.Asset.customerId
-      description: ''
-      type: Number
     - contextPath: Trustwave.Asset.customerName
-      description: ''
+      description: 'The customer name for the asset.'
       type: String
     - contextPath: Trustwave.Asset.id
-      description: ''
+      description: 'The asset ID.'
       type: String
     - contextPath: Trustwave.Asset.ips
-      description: ''
+      description: 'List of IP addresses for the asset.'
       type: String
     - contextPath: Trustwave.Asset.lastActivity
-      description: ''
+      description: 'Time of the last activity associated with the asset.'
       type: Date
     - contextPath: Trustwave.Asset.name
-      description: ''
+      description: 'The name of the asset.'
       type: String
     - contextPath: Trustwave.Asset.networkInterfaces.gateway
-      description: ''
-      type: Unknown
+      description: 'Gateway address for the asset network interface.'
+      type: String
     - contextPath: Trustwave.Asset.networkInterfaces.hostnames
-      description: ''
-      type: Unknown
+      description: 'List of hostname for the asset network interface'
+      type: String
     - contextPath: Trustwave.Asset.networkInterfaces.ip
-      description: ''
+      description: 'IP address for the asset network interface'
       type: String
     - contextPath: Trustwave.Asset.networkInterfaces.macAddress
-      description: ''
-      type: Unknown
+      description: 'MAC address for the asset network interface'
+      type: String
     - contextPath: Trustwave.Asset.networkInterfaces.macVendor
-      description: ''
-      type: Unknown
+      description: 'Vendor associated with the MAC address for the asset network interface'
+      type: String
     - contextPath: Trustwave.Asset.networkInterfaces.subnet
-      description: ''
-      type: Unknown
+      description: 'Network subnet the asset network interface'
+      type: String
     - contextPath: Trustwave.Asset.os
-      description: ''
-      type: Unknown
-    - contextPath: Trustwave.Asset.sourceSystem
-      description: ''
+      description: 'Asset operating system.'
+      type: String
+    - contextPath: Trustwave.Asset.services.applicationName
+      description: 'Service name.'
+      type: String
+    - contextPath: Trustwave.Asset.services.applicationProtocol
+      description: 'Service protocol.'
+      type: String
+    - contextPath: Trustwave.Asset.services.port
+      description: 'Service port'
+      type: Number
+    - contextPath: Trustwave.Asset.services.transportProtocol
+      description: 'Service transport.'
       type: String
     - contextPath: Trustwave.Asset.status
-      description: ''
-      type: Unknown
+      description: 'Asset status.'
+      type: String
     - contextPath: Trustwave.Asset.type
-      description: ''
+      description: 'The type of asset.'
       type: String
     - contextPath: Trustwave.Asset.updatedOn
-      description: ''
+      description: 'Time when the asset was last updated.'
       type: Date
     - contextPath: Trustwave.Asset.uri
-      description: ''
+      description: 'URI of the asset.'
       type: String
   - arguments:
     - default: true
@@ -730,66 +670,60 @@ script:
     name: trustwave-search-assets
     outputs:
     - contextPath: Trustwave.Asset.cidr
-      description: ''
-      type: Unknown
+      description: 'Network address in CIDR notation.'
+      type: String
     - contextPath: Trustwave.Asset.createdOn
-      description: ''
+      description: 'Time when the asset was created.'
       type: Date
-    - contextPath: Trustwave.Asset.customerId
-      description: ''
-      type: Number
     - contextPath: Trustwave.Asset.customerName
-      description: ''
+      description: 'The customer name for the asset.'
       type: String
     - contextPath: Trustwave.Asset.id
-      description: ''
+      description: 'The asset ID.'
       type: String
     - contextPath: Trustwave.Asset.ips
-      description: ''
+      description: 'List of IP addresses for the asset.'
       type: String
     - contextPath: Trustwave.Asset.lastActivity
-      description: ''
+      description: 'Time of the last activity associated with the asset.'
       type: Date
     - contextPath: Trustwave.Asset.name
-      description: ''
+      description: 'The name of the asset.'
       type: String
     - contextPath: Trustwave.Asset.networkInterfaces.gateway
-      description: ''
-      type: Unknown
+      description: 'Gateway address for the asset network interface.'
+      type: String
     - contextPath: Trustwave.Asset.networkInterfaces.hostnames
-      description: ''
-      type: Unknown
+      description: 'List of hostname for the asset network interface'
+      type: String
     - contextPath: Trustwave.Asset.networkInterfaces.ip
-      description: ''
+      description: 'IP address for the asset network interface'
       type: String
     - contextPath: Trustwave.Asset.networkInterfaces.macAddress
-      description: ''
-      type: Unknown
+      description: 'MAC address for the asset network interface'
+      type: String
     - contextPath: Trustwave.Asset.networkInterfaces.macVendor
-      description: ''
-      type: Unknown
+      description: 'Vendor associated with the MAC address for the asset network interface'
+      type: String
     - contextPath: Trustwave.Asset.networkInterfaces.subnet
-      description: ''
-      type: Unknown
+      description: 'Network subnet the asset network interface'
+      type: String
     - contextPath: Trustwave.Asset.os
-      description: ''
-      type: Unknown
-    - contextPath: Trustwave.Asset.sourceSystem
-      description: ''
+      description: 'Asset operating system.'
       type: String
     - contextPath: Trustwave.Asset.status
-      description: ''
-      type: Unknown
+      description: 'Asset status.'
+      type: String
     - contextPath: Trustwave.Asset.type
-      description: ''
+      description: 'The type of asset.'
       type: String
     - contextPath: Trustwave.Asset.updatedOn
-      description: ''
+      description: 'Time when the asset was last updated.'
       type: Date
     - contextPath: Trustwave.Asset.uri
-      description: ''
+      description: 'URI of the asset.'
       type: String
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.1.25933
   isfetch: true
   runonce: false
   script: ''
