@@ -1567,5 +1567,5 @@ script:
       description: RiskTree is the risk tree associated with the CVE ID.
       type: Unknown
 tests:
-- No test
+- PaloAltoNetworks_PrismaCloudCompute-Test
 fromversion: 5.0.0
