@@ -199,7 +199,7 @@ script:
     - contextPath: Nozomi.IpByMac.mac
       description: Mac found the ips.
       type: String
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   feed: false
   isfetch: true
   longRunning: false
