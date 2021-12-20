@@ -2,7 +2,7 @@ from BotDefender import Client, ip, perimeterx_get_investigate_details
 from CommonServerPython import Common
 
 HEADERS = {
-    'Authorization': 'Bearer ebfb7ff0-b2f6-41c8-bef3-4fba17be410c',
+    'Authorization': 'Bearer token',
     'Content-Type': 'application/json'
 }
 MOCK_BASE_URL = "https://api.perimeterx.com/v1/bot-defender/"
