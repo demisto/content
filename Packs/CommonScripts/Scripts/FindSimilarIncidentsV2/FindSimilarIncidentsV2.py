@@ -118,8 +118,9 @@ def prepare_value_to_query_with(value):
     for value in value_list:
         demisto.log("value in list: %s" % value)
         str_value = str(value) if isinstance(value, int) else value
-        str_value = str_value.replace('"', r'\"').replace("\n", "\\n").replace("\r", "\\r")
+        str_value = str_value.replace('"', r'\"').replace("\n", "\\n").replace("\r", "\\r").replace(r'\\"', r'\\\"')
         str_value = str_value.encode('utf-8') if not isinstance(value, int) else str_value
+        demisto.log("value after replace: %s" % str_value)
         str_value_list.append(str_value)
 
     return str_value_list
@@ -130,10 +131,10 @@ def build_incident_fields_query(incident_data):
     for key, value in incident_data.items():
         str_value_list = prepare_value_to_query_with(value)
         for str_value in str_value_list:
-            query_template = '{}="{}"' if isinstance(value, unicode) else '{}:="{}"'
+            query_template = '{}:="{}"' if isinstance(value, int) else '{}="{}"'
             similar_key = query_template.format(key, str_value)
-            similar_keys_list.append(str(similar_key).decode('utf-8')) if isinstance(value, unicode) else \
-                similar_keys_list.append(similar_key)
+            similar_keys_list.append(similar_key) if isinstance(value, int) else similar_keys_list.append(str(similar_key).decode('utf-8'))
+
 
     return similar_keys_list
 
@@ -333,8 +334,9 @@ def main():
             if not response and RAISE_ERROR_MISSING_VALUES:
                 raise ValueError("Error: Missing context key for incident: %s" % key)
     # exact_match_incident_fields = {u'filemd5': [1234, 12345]}
-    # exact_match_incident_fields = {u'filemd5': []}
-    exact_match_incident_fields = {u'commandline': u'\\share.usll.efn.ericsson.se\AutomatedFALogs\dist\log_parser.exe "\\share.usll.efn.ericsson.se\AutomatedFALogs\log_parser.py"'}
+    # exact_match_incident_fields = {u'devicename': u'SE-00004463', u'sourceseverity': u'Medium', u'commandline': u'"C:\\Users\\eznilam\\AppData\\Local\\Temp\\Ampler\\Updates\\Ampler-21.11.1189.exe" /s /a /v"/qn /norestart reinstallmode=vamus allusers=1 targetdir=\\"C:\\Program Files (x86)\\Smart\\SmartTools\\21.11.1189\\" /l*v \\"C:\\Users\\eznilam\\AppData\\Local\\Temp\\Ampler\\Updates\\Ampler-21.11.1189.exe.update.log\\""', u'technique': u'Exploitation for Client Execution', u'filemd5': u'c09ecee7402c950565e42a9e5f0e26a8', u'filename': u'Ampler-21.11.1189.exe', u'deviceusername': u'eznilam', u'tactic': u'Execution', u'objective': u'Follow Through'}
+    # exact_match_incident_fields = {u'filemd5': [], u'commandline': u'"C:\\Users\\eznilam\\AppData\\Local\\Temp\\Ampler\\Updates\\Ampler-21.11.1189.exe" /s /a /v"/qn /norestart reinstallmode=vamus allusers=1 targetdir=\\"C:\\Program Files (x86)\\Smart\\SmartTools\\21.11.1189\\" /l*v \\"C:\\Users\\eznilam\\AppData\\Local\\Temp\\Ampler\\Updates\\Ampler-21.11.1189.exe.update.log\\""'}
+    # exact_match_incident_fields = {u'commandline': u'"C:\\Users\\eznilam\\AppData\\Local\\Temp\\Ampler\\Updates\\Ampler-21.11.1189.exe" /s /a /v"/qn /norestart reinstallmode=vamus allusers=1 targetdir=\\"C:\\Program Files (x86)\\Smart\\SmartTools\\21.11.1189\\" /l*v \\"C:\\Users\\eznilam\\AppData\\Local\\Temp\\Ampler\\Updates\\Ampler-21.11.1189.exe.update.log\\""'}
     log_message = 'Incident fields with exact match: %s' % exact_match_incident_fields
     if len(exact_match_incident_fields) > 1:
         log_message += ', applied with %s condition' % INCIDENT_FIELDS_APPLIED_CONDITION
