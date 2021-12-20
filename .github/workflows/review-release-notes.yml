@@ -8,6 +8,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
@@ -17,6 +19,7 @@ jobs:
       - name: Install Demisto SDK
         run: pip install demisto-sdk
       - name: Get modified files
+        id: files
         uses: jitterbit/get-changed-files@v1
         run: |
           for changed_file in ${{ steps.files.outputs.all }}; do
