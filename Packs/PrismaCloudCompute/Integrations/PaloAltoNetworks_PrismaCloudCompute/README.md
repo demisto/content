@@ -978,7 +978,7 @@ Get infomration about the cves in the system, will return maximum of 50 records,
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cve | Comma-seperated list of cves, for example, !cve cve=cve-2016-223,cve-2020-3546. | Optional | 
+| cve | Comma-seperated list of cves, for example, cve_id=cve-2016-223,cve-2020-3546. | Required | 
 
 
 #### Context Output
@@ -996,7 +996,7 @@ Get infomration about the cves in the system, will return maximum of 50 records,
 
 
 #### Command Example
-```!cve cve=CVE-2021-4333```
+```!cve cve_id=CVE-2021-4333```
 
 #### Context Example
 ```json
