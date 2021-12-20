@@ -520,7 +520,7 @@ tasks:
     task:
       brand: ""
       description: |-
-        Review the EWS search results and decide whether to delete all of the emails.
+        Review the Gmail search results and decide whether to delete all of the emails.
         Note: You cannot delete a subset of the emails.
       id: e1299330-3365-4a15-8fc4-11a5e8be4136
       iscommand: false
