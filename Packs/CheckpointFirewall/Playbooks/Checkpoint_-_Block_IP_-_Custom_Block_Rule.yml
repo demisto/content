@@ -169,7 +169,7 @@ tasks:
       ip_address:
         simple: ${inputs.IP}
       name:
-        simple: Demisto - ${incident.id}
+        simple: XSOAR - ${incident.id}
       session_id:
         complex:
           root: CheckPoint
@@ -953,7 +953,7 @@ inputs:
     By default we using "top" position, but can be changed.
 - key: rule_name
   value:
-    simple: Demisto - ${incident.id}
+    simple: XSOAR - ${incident.id}
   required: true
   description: This input determines whether Checkpoint firewall rule name are used.
 outputs: []

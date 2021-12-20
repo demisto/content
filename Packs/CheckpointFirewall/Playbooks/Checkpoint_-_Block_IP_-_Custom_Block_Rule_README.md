@@ -33,7 +33,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | checkpoint_error_handling | In case one of the actions for publish/install policy fails due to issues on the Checkpoint side, This input will determine whether the playbook will continue or stop for manual review. Also, in case of Continue the session id will logout and all changes will discard.<br/>Values can be "Continue" or "Stop".<br/>The default value will be "Stop". | Stop | Required |
 | rule_layer | This input determines whether Checkpoint firewall rule layer  are used.<br/>By default we using "Network" layer, but can be changed. | Network | Required |
 | rule_position | This input determines whether Checkpoint firewall rule position  are used.<br/>By default we using "top" position, but can be changed. | top | Required |
-| rule_name | This input determines whether Checkpoint firewall rule name are used. | Demisto - ${incident.id} | Required |
+| rule_name | This input determines whether Checkpoint firewall rule name are used. | XSOAR - ${incident.id} | Required |
 
 ## Playbook Outputs
 ---
