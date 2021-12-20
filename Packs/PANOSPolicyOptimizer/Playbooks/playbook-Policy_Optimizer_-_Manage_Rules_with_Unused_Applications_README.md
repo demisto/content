@@ -1,4 +1,4 @@
-If you have application-based Security policy rules that allow a large number of applications, you can remove unused applications (applications never seen on the rules) from those rules to tighten them so that they only allow applications actually seen in the rule’s traffic. Identifying and removing unused applications from Security policy rules is a best practice that strengthens your security posture by reducing the attack surface.
+This playbook helps identify and remove unused applications from security policy rules. If you have application-based security policy rules that allow a large number of applications, you can remove unused applications (applications never seen on the rules) from those rules to allow only applications actually seen in the rule’s traffic. This strengthens your security posture by reducing the attack surface.
 
 
 ## Dependencies
@@ -9,10 +9,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * PAN-OS Commit Configuration
 
 ### Integrations
-* PANOSPolicyOptimizer
+PANOSPolicyOptimizer
 
 ### Scripts
-* IsIntegrationAvailable
+IsIntegrationAvailable
 
 ### Commands
 * closeInvestigation
@@ -27,8 +27,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | slack_user | Slack user to notify about port based rules. |  | Optional |
-| email_address | Email address user to notify about port based rules. |  | Optional |
-| auto_commit | Specify whether you want to auto-commit the configuration for the PAN-OS policy changes automatically \(Yes/No\). |  | Optional |
+| email_address | User email address to notify about port based rules. |  | Optional |
+| auto_commit | Specifies whether you want to auto-commit the configuration for the PAN-OS policy changes automatically \(Yes/No\). |  | Optional |
 
 ## Playbook Outputs
 ---
