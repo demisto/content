@@ -539,7 +539,6 @@ def create_vm(si, args):
     content = si.RetrieveContent()
     folder = search_for_obj(content, [vim.Folder], args.get('folder'))
     host = search_for_obj(content, [vim.HostSystem], args.get('host'))
-    # pool = search_for_obj(content, [vim.ResourcePool], args.get('pool'))
     pool = host.parent.resourcePool
     spec = create_vm_config_creator(host, args)
     if not host:

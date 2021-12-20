@@ -440,13 +440,6 @@ script:
           defaultValue: ""
           predefined:
             - ""
-        - name: pool
-          description: The resource pool to which the virtual machine will be attached.
-          required: false
-          isArray: false
-          defaultValue: ""
-          predefined:
-            - ""
       outputs:
         - contextPath: VMWare.vName
           description: VM name.
