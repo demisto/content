@@ -15,3 +15,5 @@ dependson:
   - cb-list-sensors
 timeout: 0s
 fromversion: 5.0.0
+tests:
+- No tests

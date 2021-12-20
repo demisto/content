@@ -21,3 +21,5 @@ dependson:
   - cb-command-info
 timeout: 0s
 fromversion: 5.0.0
+tests:
+- No tests
