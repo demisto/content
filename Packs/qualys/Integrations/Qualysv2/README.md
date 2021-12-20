@@ -21415,7 +21415,7 @@ Create a scan schedule in the user’s account.
 | start_hour | The start hour of the scheduled scan. Value between 0-23. | Required | 
 | start_minute | The start minute of the scheduled scan. Value between 0-59. | Required | 
 | time_zone_code | Time zone code of the given schedule scan. For example, US-CA for time zone California in US. | Required | 
-| observe_dst | Specify yes to observe Daylight Saving Time (DST). This parameter is valid when the time zone code specified in time_zone_code supports DST. To get the list of time zones and their DST support, use the `qualys-time-zone-code` command. | Optional | 
+| observe_dst | Specify yes to observe Daylight Saving Time (DST). This parameter is valid when the time zone code specified in time_zone_code supports DST. To get the list of time zones and their DST support, use the `qualys-time-zone-code` command. Possible values are: "yes", "no". | Optional | 
 | exclude_ip_per_scan | The IP addresses to be excluded from the scan when the scan target is specified as IP addresses (not asset tags). You may enter individual IP addresses and/or ranges. Multiple entries are comma separated. One of these parameters must be set: 'scanners_in_ag', 'default_scanner'. | Optional | 
 | default_scanner | Specify 1 to use the default scanner in each target asset group. For an Express Lite user, Internal Scanning must be enabled in the user’s account. One of these parameters must be set: 'scanners_in_ag', 'default_scanner'. Possible values are: 0, 1. | Optional | 
 | scanners_in_ag | Specify 1 to distribute the scan to the target asset groups’ scanner appliances. Appliances in each asset group are tasked with scanning the IPs in the group. By default up to 5 appliances per group will be used and this can be configured for your account (please contact your Account Manager or Support). For an Express Lite user, Internal Scanning must be enabled in the user’s account. One of these parameters must be set: 'scanners_in_ag', 'default_scanner'. Possible values are: 0, 1. | Optional | 
@@ -21482,7 +21482,7 @@ Updates a scan schedule in the user’s account.
 | start_hour | Required when 'start_date' is given. The start hour of the scheduled scan. Value between 0-23. | Optional | 
 | start_minute | Required when 'start_date' is given. The start minute of the scheduled scan. Value between 0-59. | Optional | 
 | time_zone_code | Required when 'start_date' is given. Time zone code of the given schedule scan. For example, US-CA for time zone California in US. | Optional | 
-| observe_dst | Required when start_date is given. Specify yes to observe Daylight Saving Time (DST). This parameter is valid when the time zone code specified in time_zone_code supports DST. To get the list of time zones and their DST support, use the `qualys-time-zone-code` command. | Optional | 
+| observe_dst | Required when start_date is given. Specify yes to observe Daylight Saving Time (DST). This parameter is valid when the time zone code specified in time_zone_code supports DST. To get the list of time zones and their DST support, use the `qualys-time-zone-code` command. Possible values are: "yes", "no". | Optional | 
 | exclude_ip_per_scan | The IP addresses to be excluded from the scan when the scan target is specified as IP addresses (not asset tags). You may enter individual IP addresses and/or ranges. Multiple entries are comma separated. One of these parameters must be set: 'scanners_in_ag', 'default_scanner'. | Optional | 
 | default_scanner | Specify 1 to use the default scanner in each target asset group. For an Express Lite user, Internal Scanning must be enabled in the user’s account. At most one of these parameters can be supplied: 'scanners_in_ag', 'default_scanner'. Possible values are: 0, 1. | Optional | 
 | scanners_in_ag | Specify 1 to distribute the scan to the target asset groups’ scanner appliances. Appliances in each asset group are tasked with scanning the IPs in the group. By default up to 5 appliances per group will be used and this can be configured for your account (please contact your Account Manager or Support). For an Express Lite user, Internal Scanning must be enabled in the user’s account. At most one of these parameters can be supplied: 'scanners_in_ag', 'default_scanner'. Possible values are: 0, 1. | Optional | 
@@ -21762,5 +21762,110 @@ Gets a list of the supported time zone codes.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.Timezone.Code.TIME_ZONE_CODE | unknown | Time zone code. | 
-| Qualys.Timezone.Code.TIME_ZONE_DETAILS | unknown | Timezone code details. | 
+| Qualys.TimeZone.TIME_ZONE_CODE | unknown | Time zone code. | 
+| Qualys.TimeZone.TIME_ZONE_DETAILS | unknown | Timezone code details. | 
+
+
+#### Command Example
+```!qualys-time-zone-code```
+
+#### Context Example
+```json
+{
+    "Qualys": {
+        "TimeZone": [
+            {
+                "DST_SUPPORTED": "0",
+                "TIME_ZONE_CODE": "AS",
+                "TIME_ZONE_DETAILS": "(GMT -11:00) American Samoa"
+            },
+            {
+                "DST_SUPPORTED": "0",
+                "TIME_ZONE_CODE": "UM2",
+                "TIME_ZONE_DETAILS": "(GMT -11:00) Midway Islands (U.S.)"
+            },
+            {
+                "DST_SUPPORTED": "0",
+                "TIME_ZONE_CODE": "NU",
+                "TIME_ZONE_DETAILS": "(GMT -11:00) Niue"
+            },
+            {
+                "DST_SUPPORTED": "0",
+                "TIME_ZONE_CODE": "CK",
+                "TIME_ZONE_DETAILS": "(GMT -10:00) Cook Islands"
+            },
+            {
+                "DST_SUPPORTED": "0",
+                "TIME_ZONE_CODE": "PF2A",
+                "TIME_ZONE_DETAILS": "(GMT -10:00) French Polynesia, Austral Islands"
+            },
+            {
+                "DST_SUPPORTED": "0",
+                "TIME_ZONE_CODE": "PF",
+                "TIME_ZONE_DETAILS": "(GMT -10:00) French Polynesia, Society Islands (including Tahiti)"
+            },
+            {
+                "DST_SUPPORTED": "0",
+                "TIME_ZONE_CODE": "PF2B",
+                "TIME_ZONE_DETAILS": "(GMT -10:00) French Polynesia, Tuamotu Archipelago"
+            },
+            {
+                "DST_SUPPORTED": "0",
+                "TIME_ZONE_CODE": "UM1",
+                "TIME_ZONE_DETAILS": "(GMT -10:00) Johnston Atoll (U.S.)"
+            },
+            {
+                "DST_SUPPORTED": "1",
+                "TIME_ZONE_CODE": "US-AK1",
+                "TIME_ZONE_DETAILS": "(GMT -10:00) United States, Alaska (Aleutian Islands)"
+            },
+            {
+                "DST_SUPPORTED": "0",
+                "TIME_ZONE_CODE": "US-HI",
+                "TIME_ZONE_DETAILS": "(GMT -10:00) United States, Hawaii"
+            },
+            {
+                "DST_SUPPORTED": "0",
+                "TIME_ZONE_CODE": "PF1",
+                "TIME_ZONE_DETAILS": "(GMT -09:30) French Polynesia, Marquesas Islands"
+            },
+            {
+                "DST_SUPPORTED": "0",
+                "TIME_ZONE_CODE": "PF3",
+                "TIME_ZONE_DETAILS": "(GMT -09:00) French Polynesia, Gambier Islands"
+            },
+            {
+                "DST_SUPPORTED": "1",
+                "TIME_ZONE_CODE": "US-AK",
+                "TIME_ZONE_DETAILS": "(GMT -09:00) United States, Alaska"
+            },
+            {
+                "DST_SUPPORTED": "1",
+                "TIME_ZONE_CODE": "CA-BC",
+                "TIME_ZONE_DETAILS": "(GMT -08:00) Canada, British Columbia (Pacific Standard Time)"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Time Zone Codes
+>
+>|DST_SUPPORTED|TIME_ZONE_CODE|TIME_ZONE_DETAILS|
+>|---|---|---|
+>| 0 | AS | (GMT -11:00) American Samoa |
+>| 0 | UM2 | (GMT -11:00) Midway Islands (U.S.) |
+>| 0 | NU | (GMT -11:00) Niue |
+>| 0 | CK | (GMT -10:00) Cook Islands |
+>| 0 | PF2A | (GMT -10:00) French Polynesia, Austral Islands |
+>| 0 | PF | (GMT -10:00) French Polynesia, Society Islands (including Tahiti) |
+>| 0 | PF2B | (GMT -10:00) French Polynesia, Tuamotu Archipelago |
+>| 0 | UM1 | (GMT -10:00) Johnston Atoll (U.S.) |
+>| 1 | US-AK1 | (GMT -10:00) United States, Alaska (Aleutian Islands) |
+>| 0 | US-HI | (GMT -10:00) United States, Hawaii |
+>| 0 | PF1 | (GMT -09:30) French Polynesia, Marquesas Islands |
+>| 0 | PF3 | (GMT -09:00) French Polynesia, Gambier Islands |
+>| 1 | US-AK | (GMT -09:00) United States, Alaska |
+>| 1 | CA-BC | (GMT -08:00) Canada, British Columbia (Pacific Standard Time) |

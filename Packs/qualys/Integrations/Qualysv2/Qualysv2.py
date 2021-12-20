@@ -472,7 +472,7 @@ COMMANDS_CONTEXT_DATA = {
         'context_key': 'ID'
     },
     'qualys-time-zone-code': {
-        'context_prefix': 'Qualys.TimeZone.Code',
+        'context_prefix': 'Qualys.TimeZone',
         'context_key': 'TIME_ZONE_CODE'
     }
 }

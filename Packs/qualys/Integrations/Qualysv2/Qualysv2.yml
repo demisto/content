@@ -2848,6 +2848,10 @@ script:
       required: true
       secret: false
     - default: false
+      auto: PREDEFINED
+      predefined:
+        - 'yes'
+        - 'no'
       description: Specify yes to observe Daylight Saving Time (DST).
         This parameter is valid when the time zone code specified in
         time_zone_code supports DST. To get the list of time zones and their DST support, use the `qualys-time-zone-code` command.
@@ -3035,7 +3039,10 @@ script:
       required: false
       secret: false
     - default: false
-      defaultvalue: no
+      auto: PREDEFINED
+      predefined:
+        - 'yes'
+        - 'no'
       description: Required when start_date is given. Specify yes to observe Daylight Saving Time (DST).
         This parameter is valid when the time zone code specified in
         time_zone_code supports DST. To get the list of time zones and their DST support, use the `qualys-time-zone-code` command.
@@ -3340,9 +3347,9 @@ script:
   - name: qualys-time-zone-code
     arguments: []
     outputs:
-    - contextPath: Qualys.Timezone.Code.TIME_ZONE_CODE
+    - contextPath: Qualys.TimeZone.Code.TIME_ZONE_CODE
       description: Time zone code.
-    - contextPath: Qualys.Timezone.Code.TIME_ZONE_DETAILS
+    - contextPath: Qualys.TimeZone.Code.TIME_ZONE_DETAILS
       description: Timezone code details.
     description: Gets a list of the supported time zone codes.
     execution: true
