@@ -309,6 +309,18 @@ tasks:
           accessor: HeadersMap.Message-ID
           transformers:
           - operator: uniq
+      emailrecipientscount:
+        complex:
+          root: Email
+          accessor: To
+          transformers:
+          - operator: uniq
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: count
       emailreplyto:
         complex:
           root: Email
@@ -363,6 +375,11 @@ tasks:
           accessor: To
           transformers:
           - operator: uniq
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
           - operator: count
       emailurlclicked:
         complex:
