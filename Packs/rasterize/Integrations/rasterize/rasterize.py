@@ -50,6 +50,7 @@ DEFAULT_CHROME_OPTIONS = [
 USER_CHROME_OPTIONS = demisto.params().get('chrome_options', "")
 PAGES_LIMITATION = 20
 
+
 def return_err_or_warn(msg):
     return_error(msg) if WITH_ERRORS else return_warning(msg, exit=True)
 
