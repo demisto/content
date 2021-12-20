@@ -2426,8 +2426,9 @@ inputs:
   required: false
   description: |-
     Determines which product and playbook will be used to search and delete the phishing email from users' inboxes.
-    Set this to "O365" to use the O365 - Security And Compliance - Search And Delete playbook.
-    Set this to "EWS" to use the Search And Delete Emails - EWS playbook.
+    Set this to "O365" to use the "O365 - Security And Compliance - Search And Delete" playbook.
+    Set this to "EWS" to use the "Search And Delete Emails - EWS" playbook.
+    Set this to "Gmail" to use the "Search And Delete - Gmail" playbook.
   playbookInputQuery:
 - key: O365DeleteType
   value:
