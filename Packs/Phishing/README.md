@@ -21,4 +21,4 @@ _For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan
 
 _If you're new to our Phishing Content Pack, check out our [Setting Up a Phishing Incident in Cortex XSOAR](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-tutorials/tutorials/phishing-use-case.html) tutorial._
 
-![Phishing_Investigation_Generic_v2](https://raw.githubusercontent.com/demisto/content/952153821f8de373a5d527df653bfa845d32f77e/Packs/Phishing/doc_files/Phishing_Investigation_-_Generic_v2_-_6_0.png)
+![Phishing_Investigation_Generic_v2](doc_files/Phishing_-_Generic_v3.png)
