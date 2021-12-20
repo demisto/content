@@ -80,7 +80,7 @@
             }
         ]
     },
-    "query": "type:\"Cortex XDR Incident\" and status:Active and owner:",
+    "query": "type:\"Cortex XDR Incident\" and status:Active and owner:\"\"",
     "size": 0,
     "version": -1,
     "widgetType": "number",
