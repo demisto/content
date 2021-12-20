@@ -204,7 +204,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Searches the Gmail records for all Google users from the last 7 days.
+      description: Searches the Gmail records for all Google users from the last 7
+        days.
       id: 6f955c81-9371-410c-8bcc-a721f65608e1
       iscommand: true
       name: Search Gmail for similar emails last 7 days
@@ -266,15 +267,40 @@ tasks:
       }
   "6":
     conditions:
-    - condition:
-      - - left:
-            iscontext: true
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
             value:
               complex:
-                accessor: ID
-                root: Gmail
-          operator: isNotEmpty
-      label: "yes"
+                root: Gmail.Subject
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Gmail.Subject
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.Subject
+                      iscontext: true
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Gmail.From
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Gmail.From
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.From
+                      iscontext: true
+            iscontext: true
     id: "6"
     ignoreworker: false
     isautoswitchedtoquietmode: false
@@ -486,7 +512,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Searches the Gmail records for all Google users to find similar emails.
+      description: Searches the Gmail records for all Google users to find similar
+        emails.
       id: 5a461fd8-77a4-486b-834c-10c4a9a81571
       iscommand: true
       name: Search Gmail for similar emails
