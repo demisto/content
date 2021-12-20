@@ -53,7 +53,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: Is the McAfee TIE Integration installed and configured?
+      description: Is the McAfee TIE integration installed and configured?
     nexttasks:
       '#default#':
       - "4"
@@ -89,7 +89,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: Is the McAfee ePO Integration installed and configured?
+      description: Is the McAfee ePO integration installed and configured?
     nexttasks:
       '#default#':
       - "4"
@@ -120,12 +120,12 @@ tasks:
     task:
       id: c906e63c-45c5-4540-8f42-b74db1943725
       version: -1
-      name: List all agents that the Hash has been executed on
+      name: List all agents that the hash has been executed on
       script: McAfee Threat Intelligence Exchange|||tie-file-references
       type: regular
       iscommand: true
       brand: McAfee Threat Intelligence Exchange
-      description: Retrieves the set of systems which have referenced (typically executed)
+      description: Retrieves the set of systems which have been referenced (typically executed).
     nexttasks:
       '#none#':
       - "5"
@@ -317,7 +317,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: Is McAfee ePO v2 Integration installed and configured?
+      description: Is the McAfee ePO v2 integration installed and configured?
     nexttasks:
       '#default#':
       - "2"
@@ -377,7 +377,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-      description: Finds computers within a specified group in the McAfee ePO system
+      description: Finds computers within a specified group in the McAfee ePO system.
     nexttasks:
       '#none#':
       - "4"
