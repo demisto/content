@@ -1,18 +1,17 @@
-import copy
-
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
-import traceback
-import os
 import ast
+import copy
 import json
-import urllib3
+import os
+import traceback
 import urllib.parse
+from typing import Any, List, Tuple
+
+import urllib3
 from dateutil.parser import parse
-from typing import Any, Tuple, List
 from lxml import etree
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -110,7 +109,7 @@ class Client(BaseClient):
                 'password': self.password
             }
 
-            res = self._http_request('POST', '/api/v2/session/login', json_data=body, ok_codes=(200,))
+            res = self._http_request('GET', '/api/v2/session/login', json_data=body, ok_codes=(200,))
 
             self.session = res.get('data').get('session')
         else:  # no API token and no credentials were provided, raise an error:
@@ -338,6 +337,17 @@ def update_content_from_xml(file_path: str, intrinsic_id: str) -> str:
     return ''
 
 
+def get_quick_scan_item(quick_scan):
+    return {
+        'IntelDocId': quick_scan.get('intelDocId'),
+        'ComputerGroupId': quick_scan.get('computerGroupId'),
+        'ID': quick_scan.get('id'),
+        'AlertCount': quick_scan.get('alertCount'),
+        'CreatedAt': quick_scan.get('createdAt'),
+        'UserId': quick_scan.get('userId'),
+        'QuestionId': quick_scan.get('questionId')}
+
+
 ''' ALERTS DOCS HELPER FUNCTIONS '''
 
 
@@ -376,7 +386,6 @@ def alarm_to_incident(client, alarm):
         'name': f'{host} found {intel_doc}',
         'occurred': alarm.get('alertedAt'),
         'starttime': alarm.get('createdAt'),
-        'alertid': alarm.get('id'),
         'rawJSON': json.dumps(alarm)}
 
 
@@ -414,7 +423,6 @@ def fetch_incidents(client, alerts_states_to_retrieve, last_run, fetch_time, max
     last_fetch = last_run.get('time')
     last_id = int(last_run.get('id', '0'))
     alerts_states = argToList(alerts_states_to_retrieve)
-    offset = 0
 
     # Handle first time fetch, fetch incidents retroactively
     if not last_fetch:
@@ -423,48 +431,29 @@ def fetch_incidents(client, alerts_states_to_retrieve, last_run, fetch_time, max
     demisto.debug(f'Get last run: last_id {last_id}, last_time: {last_fetch}.\n')
 
     last_fetch = parse(last_fetch)
+    current_fetch = last_fetch
 
-    alerts_states_suffix = state_params_suffix(alerts_states)
+    url_suffix = '/plugin/products/detect3/api/v1/alerts?' + state_params_suffix(alerts_states) + '&limit=500'
+
+    raw_response = client.do_request('GET', url_suffix)
+
+    # convert the data/events to demisto incidents
     incidents = []
+    for alarm in raw_response:
+        incident = alarm_to_incident(client, alarm)
+        temp_date = parse(incident.get('starttime'))
 
-    while True:
-        demisto.debug(f'Sending new alerts api request with offset: {offset}.')
-        url_suffix = '/plugin/products/detect3/api/v1/alerts?' + alerts_states_suffix + \
-                     f'&sort=-createdAt&limit=500&offset={offset}'
+        # update last run
+        if temp_date > last_fetch:
+            last_fetch = temp_date
 
-        raw_response = client.do_request('GET', url_suffix)
-        if not raw_response:
-            demisto.debug('Stop fetch loop, no incidents in raw response.')
+        # avoid duplication due to weak time query
+        if temp_date >= current_fetch and (new_id := alarm.get('id', last_id)) > last_id:
+            incidents.append(incident)
+            last_id = new_id
+
+        if len(incidents) >= max_fetch:
             break
-
-        # convert the data/events to demisto incidents
-        for alarm in raw_response:
-            incident = alarm_to_incident(client, alarm)
-            temp_date = parse(incident.get('starttime'))
-            new_id = incident.get('alertid')
-            demisto.debug(f'Fetched new alert, id: {new_id}, created_at: {temp_date}.\n')
-
-            if temp_date >= last_fetch and new_id > last_id:
-                demisto.debug(f'Adding new incident with id: {new_id}')
-                incidents.append(incident)
-            else:
-                demisto.debug(f'Stop fetch loop, temp date < last fetch: {temp_date} < {last_fetch}.')
-                break
-
-        if temp_date >= last_fetch:
-            offset += 500
-        else:
-            demisto.debug(f'Stop fetch loop, temp date < last fetch: {temp_date} < {last_fetch}.')
-            break
-
-    if len(incidents) > max_fetch:
-        demisto.debug('Re-sizing incidents list.')
-        incidents = incidents[len(incidents) - max_fetch:]
-
-    if incidents:
-        last_incident = incidents[0]
-        last_fetch = parse(last_incident.get('starttime'))
-        last_id = last_incident.get('alertid')
 
     next_run = {'time': datetime.strftime(last_fetch, DATE_FORMAT), 'id': str(last_id)}
 
@@ -786,6 +775,40 @@ def update_intel_doc(client: Client, data_args: dict) -> Tuple[str, dict, Union[
                'LabelIds']
     human_readable = tableToMarkdown('Intel Doc information', intel_doc, headers=headers,
                                      headerTransform=pascalToSpace, removeNull=True)
+    return human_readable, outputs, raw_response
+
+
+def delete_intel_doc(client, data_args):
+    params = {
+        'id': data_args.get('intel_doc_id')
+    }
+    raw_response = client.do_request('DELETE', '/plugin/products/detect3/api/v1/intels/', params=params)
+
+    return 'Intel Doc deleted', {}, raw_response
+
+
+def start_quick_scan(client, data_args):
+    # get computer group ID from computer group name
+    computer_group_name = data_args.get('computer_group_name')
+    raw_response = client.do_request('GET', f"/api/v2/groups/by-name/{computer_group_name}")
+    raw_response_data = raw_response.get('data')
+    if not raw_response_data:
+        msg = f'No group exists with name {computer_group_name} or' \
+              f' your account does not have sufficient permissions to access the groups'
+        raise DemistoException(msg)
+
+    data = {
+        'intelDocId': int(data_args.get('intel_doc_id')),
+        'computerGroupId': int(raw_response_data.get('id'))
+    }
+    raw_response = client.do_request('POST', '/plugin/products/detect3/api/v1/quick-scans/', data=data)
+    quick_scan = get_quick_scan_item(raw_response)
+
+    context = createContext(quick_scan, removeNull=True)
+    outputs = {'Tanium.QuickScan(val.ID && val.ID === obj.ID)': context}
+
+    human_readable = tableToMarkdown('Quick Scan started', quick_scan, headerTransform=pascalToSpace, removeNull=True)
+
     return human_readable, outputs, raw_response
 
 
@@ -1981,8 +2004,10 @@ def main():
         'tanium-tr-intel-docs-remove-label': remove_intel_docs_label,
         'tanium-tr-intel-doc-create': create_intel_doc,
         'tanium-tr-intel-doc-update': update_intel_doc,
+        'tanium-tr-intel-doc-delete': delete_intel_doc,
         'tanium-tr-intel-deploy': deploy_intel,
         'tanium-tr-intel-deploy-status': get_deploy_status,
+        'tanium-tr-start-quick-scan': start_quick_scan,
 
         'tanium-tr-list-alerts': get_alerts,
         'tanium-tr-get-alert-by-id': get_alert,
