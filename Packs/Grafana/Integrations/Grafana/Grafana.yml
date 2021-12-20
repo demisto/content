@@ -382,13 +382,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: Start time.
+      description: 'Start time. Time is interpreted as UTC. Values can be in either
+        ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00
+        GMT+3" (ISO date format), "3 days ago" (relative time), 1579039377301 (epoch
+        time).'
       isArray: false
       name: time
       required: false
       secret: false
     - default: false
-      description: End time.
+      description: 'End time. Time is interpreted as UTC. Values can be in either
+        ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00
+        GMT+3" (ISO date format), "3 days ago" (relative time), 1579039377301 (epoch
+        time).'
       isArray: false
       name: time_end
       required: false
@@ -654,7 +660,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Index of the page of results to retrieve, when "limit" acts as page size. Numbering starts at 1.
+      description: Index of the page of results to retrieve, when "limit" acts as
+        page size. Numbering starts at 1.
       isArray: false
       name: page_number
       required: false
