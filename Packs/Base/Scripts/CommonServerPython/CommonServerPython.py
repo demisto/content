@@ -7296,7 +7296,7 @@ if 'requests' in sys.modules:
                     files=files,
                     headers=headers,
                     auth=auth,
-                    timeout=(10, timeout),
+                    timeout=timeout,
                     **kwargs
                 )
                 # Handle error responses gracefully

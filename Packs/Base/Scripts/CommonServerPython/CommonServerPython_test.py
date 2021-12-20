@@ -2707,13 +2707,13 @@ class TestBaseClient:
     def test_http_request_timeout_default(self, requests_mock):
         requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
         self.client._http_request('get', 'event')
-        assert requests_mock.last_request.timeout[1] == self.client.REQUESTS_TIMEOUT
+        assert requests_mock.last_request.timeout == self.client.REQUESTS_TIMEOUT
     
     def test_http_request_timeout_given(self, requests_mock):
         requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
         timeout = 120
         self.client._http_request('get', 'event', timeout=timeout)
-        assert requests_mock.last_request.timeout[1] == timeout
+        assert requests_mock.last_request.timeout == timeout
 
     def test_http_request_timeout_environ_system(self, requests_mock, mocker):
         from CommonServerPython import BaseClient
@@ -2722,7 +2722,7 @@ class TestBaseClient:
         mocker.patch.dict(os.environ, {'REQUESTS_TIMEOUT': str(timeout) + '='})
         new_client = BaseClient('http://example.com/api/v2/')
         new_client._http_request('get', 'event')
-        assert requests_mock.last_request.timeout[1] == timeout
+        assert requests_mock.last_request.timeout == timeout
 
     @pytest.mark.nohandle_calling_context
     def test_http_request_timeout_environ_integration(self, requests_mock, mocker):
@@ -2733,7 +2733,7 @@ class TestBaseClient:
         from CommonServerPython import BaseClient
         new_client = BaseClient('http://example.com/api/v2/')
         new_client._http_request('get', 'event')
-        assert requests_mock.last_request.timeout[1] == timeout
+        assert requests_mock.last_request.timeout == timeout
 
     def test_is_valid_ok_codes_empty(self):
         from requests import Response
