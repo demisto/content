@@ -82,7 +82,7 @@ tasks:
       id: d67af4f9-fefd-41a7-83c0-781c444da435
       version: -1
       name: Close investigation
-      description: commands.local.cmd.close.inv
+      description: Close the investigation.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -980,7 +980,7 @@ tasks:
       id: 9f269333-78ec-44f0-8c92-96e50053f137
       version: -1
       name: Add all updates to check list
-      description: Set a value in context under the key you entered.
+      description: Add all of the existing updates to a check list.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1568,7 +1568,7 @@ tasks:
       id: 506e5937-d6ea-456f-8ce3-c2870faf1309
       version: -1
       name: Send E-mail notification and question
-      description: Sends an email message to a user, group, or channel.
+      description: Sends an email message to a user.
       type: collection
       iscommand: false
       brand: ""
@@ -1752,7 +1752,7 @@ tasks:
       id: e606e9b9-1c78-4d35-870d-728ee35c2005
       version: -1
       name: Add available updates to layout
-      description: commands.local.cmd.set.incident
+      description: Add the list of available updates to the layout.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
