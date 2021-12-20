@@ -2365,21 +2365,25 @@ script:
       required: false
       secret: false
     - default: false
-      description: The hosts you want to retrieve list detection. How to specify IP addresses. One or more IPs/ranges may be specified.
-        Multiple IPs/ranges are comma separated. An IP range is specified with a hyphen
-        (for example, 10.10.30.1-10.10.30.50).
+      description: The hosts you want to retrieve list detection. How to specify IP
+        addresses. One or more IPs/ranges may be specified. Multiple IPs/ranges are
+        comma separated. An IP range is specified with a hyphen (for example, 10.10.30.1-10.10.30.50).
       isArray: true
       name: ips
       required: false
       secret: false
     - default: false
-      description: "Show only detection records with certain QIDs. One or more QIDs may be specified. A range is specified with a dash (for example: 68518-68522). Multiple entries are comma separated. Valid QIDs are required."
+      description: "Show only detection records with certain QIDs. One or more QIDs\
+        \ may be specified. A range is specified with a dash (for example: 68518-68522).\
+        \ Multiple entries are comma separated. Valid QIDs are required."
       isArray: true
       name: qids
       required: false
       secret: false
     - default: false
-      description: "Show only detection records which have certain severities. One or more levels may be specified. A range is specified with a dash (for example: 1-3). Multiple entries are comma separated."
+      description: "Show only detection records which have certain severities. One\
+        \ or more levels may be specified. A range is specified with a dash (for example:\
+        \ 1-3). Multiple entries are comma separated."
       isArray: true
       name: severities
       required: false
@@ -2427,19 +2431,24 @@ script:
         tag name or IDs. Multiple entries are comma separated.
       isArray: true
     - name: detection_processed_before
-      description: Show detections with vulnerability scan results
-        processed before a certain date and time. Specify the date
-        in YYYY-MMDD[THH:MM:SSZ] format (UTC/GMT), like
-        “2016-09-12” or “2016-09-12T23:15:00Z”.
+      description: Show detections with vulnerability scan results processed before
+        a certain date and time. Specify the date in YYYY-MMDD[THH:MM:SSZ] format
+        (UTC/GMT), like “2016-09-12” or “2016-09-12T23:15:00Z”.
     - name: detection_processed_after
-      description: Show detections with vulnerability scan results
-        processed after a certain date and time. Specify the date in
-        YYYY-MMDD[ THH:MM:SSZ] format (UTC/GMT), like
-        “2016-09-12” or “2016-09-12T23:15:00Z”.
+      description: Show detections with vulnerability scan results processed after
+        a certain date and time. Specify the date in YYYY-MMDD[ THH:MM:SSZ] format
+        (UTC/GMT), like “2016-09-12” or “2016-09-12T23:15:00Z”.
     - name: vm_scan_since
-      description: "Show hosts that were last scanned for vulnerabilities since a certain date and time (optional). Hosts that were the target of a vulnerability scan since the date/time will be shown. Date/time is specified in this format: YYYY-MM-DD[THH:MM:SSZ] (UTC/GMT). Permissions: An Auditor cannot specify this parameter."
+      description: "Show hosts that were last scanned for vulnerabilities since a\
+        \ certain date and time (optional). Hosts that were the target of a vulnerability\
+        \ scan since the date/time will be shown. Date/time is specified in this format:\
+        \ YYYY-MM-DD[THH:MM:SSZ] (UTC/GMT). Permissions: An Auditor cannot specify\
+        \ this parameter."
     - name: no_vm_scan_since
-      description: Show hosts not scanned since a certain date and time (optional). The date/time is specified in YYYY-MMDD[THH:MM:SSZ] format (UTC/GMT), like “2007-07-01” or “2007-01-25T23:12:00Z”. Permissions - An Auditor cannot specify this parameter.
+      description: Show hosts not scanned since a certain date and time (optional).
+        The date/time is specified in YYYY-MMDD[THH:MM:SSZ] format (UTC/GMT), like
+        “2007-07-01” or “2007-01-25T23:12:00Z”. Permissions - An Auditor cannot specify
+        this parameter.
     - name: truncation_limit
       description: Specify the maximum number of host records processed per request.
         When not specified, the truncation limit is set to 1000 host records. You
@@ -2452,15 +2461,18 @@ script:
       description: Date & time of the action.
     - contextPath: Qualys.Restricted.Manage.ITEM_LIST.ITEM.VALUE
       description: Status of the restricted ips feature.
-    description: Get a list of hosts with the hosts latest vulnerability data, based on the host based
-      scan data available in the user’s account.
+    description: Get a list of hosts with the hosts latest vulnerability data, based
+      on the host based scan data available in the user’s account.
     execution: true
   - name: qualys-host-update
     arguments:
     - default: false
       description: Show only certain host IDs/ranges. One or more host IDs/ranges
         may be specified. Multiple entries are comma separated. A host ID range is
-        specified with a hyphen (for example, 190-400).Valid host IDs are required. One of `ips` or `ids` parameters must be supplied.
+        specified with a hyphen (for example, 190-400).Valid host IDs are required.
+        One of `ips` or `ids` parameters must be supplied. IDs or IPs can be retrieved
+        via running the `qualys-host-list-detection` command, using the ID field or
+        IPs field.
       isArray: true
       name: ids
       required: false
@@ -2469,30 +2481,30 @@ script:
       description: The hosts you want to add to, remove from or replace in the restricted
         IPs list. How to specify IP addresses. One or more IPs/ranges may be specified.
         Multiple IPs/ranges are comma separated. An IP range is specified with a hyphen
-        (for example, 10.10.30.1-10.10.30.50). One of `ips` or `ids` parameters must be supplied.
+        (for example, 10.10.30.1-10.10.30.50). One of `ips` or `ids` parameters must
+        be supplied.
       isArray: true
       name: ips
       required: false
       secret: false
     - default: false
-      description: (Valid only when the Network Support feature is enabled
-        for the user’s account) Restrict the request to a certain
-        custom network by specifying the network ID. When
-        unspecified, we default to Global Default Network.
+      description: (Valid only when the Network Support feature is enabled for the
+        user’s account) Restrict the request to a certain custom network by specifying
+        the network ID. When unspecified, we default to Global Default Network.
       name: network_id
       required: false
       secret: false
     - default: false
-      description: The DNS hostname for the IP you want to update. A single
-        IP must be specified in the same request and the IP will
-        only be updated if it matches the hostname specified.
+      description: The DNS hostname for the IP you want to update. A single IP must
+        be specified in the same request and the IP will only be updated if it matches
+        the hostname specified.
       name: host_dns
       required: false
       secret: false
     - default: false
-      description: The NetBIOS hostname for the IP you want to update. A
-        single IP must be specified in the same request and the IP
-        will only be updated if it matches the hostname specified.
+      description: The NetBIOS hostname for the IP you want to update. A single IP
+        must be specified in the same request and the IP will only be updated if it
+        matches the hostname specified.
       name: host_netbios
       required: false
       secret: false
@@ -2502,52 +2514,46 @@ script:
       - "IP"
       - "DNS"
       - "NETBIOS"
-      description: Show only IP addresses/ranges which have a certain
-        tracking method.
+      description: Show only IP addresses/ranges which have a certain tracking method.
     - name: new_tracking_method
       auto: PREDEFINED
       predefined:
       - "IP"
       - "DNS"
       - "NETBIOS"
-      description: Change the tracking method. Specify IP for IP
-        address, DNS or NETBIOS. Note - You cannot change the
-        tracking method to EC2 or AGENT. If an IP is already
-        tracked by EC2 or AGENT, you cannot change the tracking
-        method to something else.
+      description: Change the tracking method. Specify IP for IP address, DNS or NETBIOS.
+        Note - You cannot change the tracking method to EC2 or AGENT. If an IP is
+        already tracked by EC2 or AGENT, you cannot change the tracking method to
+        something else.
     - default: false
-      description: Change the owner of the host asset(s). The
-        owner must be a Manager. Another user (Unit Manager,
-        Scanner, Reader) can be the owner if the IP address is in the
-        user’s account.
+      description: Change the owner of the host asset(s). The owner must be a Manager.
+        Another user (Unit Manager, Scanner, Reader) can be the owner if the IP address
+        is in the user’s account.
       isArray: true
       name: new_owner
       required: false
       secret: false
     - default: false
-      description: Change the user-defined comments. Specify new
-        comments for the host asset(s).
+      description: Change the user-defined comments. Specify new comments for the
+        host asset(s).
       name: new_comment
       required: false
       secret: false
     - default: false
-      description: Change value for user-defined field 1.
-        You can specify a maximum of 128 characters (ascii) for
-        each field value.
+      description: Change value for user-defined field 1. You can specify a maximum
+        of 128 characters (ascii) for each field value.
       name: new_ud1
       required: false
       secret: false
     - default: false
-      description: Change value for user-defined field 2.
-        You can specify a maximum of 128 characters (ascii) for
-        each field value.
+      description: Change value for user-defined field 2. You can specify a maximum
+        of 128 characters (ascii) for each field value.
       name: new_ud2
       required: false
       secret: false
     - default: false
-      description: Change value for user-defined field 3.
-        You can specify a maximum of 128 characters (ascii) for
-        each field value.
+      description: Change value for user-defined field 3. You can specify a maximum
+        of 128 characters (ascii) for each field value.
       name: new_ud3
       required: false
       secret: false
@@ -2556,7 +2562,8 @@ script:
       description: Action result message.
     - contextPath: Qualys.Endpoint.Update.Timestamp
       description: Date & time of the action.
-    description: Update host attributes using new update parameters (new_tracking_method, new_owner, new_ud1, new_ud2, new_ud3, and new_comment).
+    description: Update host attributes using new update parameters (new_tracking_method,
+      new_owner, new_ud1, new_ud2, new_ud3, and new_comment).
     execution: true
   - name: qualys-schedule-scan-create
     arguments:
@@ -2585,17 +2592,31 @@ script:
       description: The title of the compliance option profile to be used.
       required: true
     - default: false
-      description: "Frequency scan occurs, value between 1-365. For example: if specified '1', the schedule will occur every day. If specified '2', the schedule will occur every 2 days. One of these parameters is required: 'frequency_days', 'frequency_weeks', 'frequency_months'."
+      description: "Frequency scan occurs, value between 1-365. For example: if specified\
+        \ '1', the schedule will occur every day. If specified '2', the schedule will\
+        \ occur every 2 days. One of these parameters is required: 'frequency_days',\
+        \ 'frequency_weeks', 'frequency_months'."
       name: frequency_days
       required: false
       secret: false
     - default: false
-      description: "Frequency scan occurs, value between 1-52. For example: if specified '1', the schedule will occur every week. If specified '2', the schedule will occur every 2 weeks. The argument 'weekdays' is required when frequency_weeks is given. Scan will occur only on specified days given in the 'weekdays' argument. One of these parameters is required: 'frequency_days', 'frequency_weeks', 'frequency_months'."
+      description: "Frequency scan occurs, value between 1-52. For example: if specified\
+        \ '1', the schedule will occur every week. If specified '2', the schedule\
+        \ will occur every 2 weeks. The argument 'weekdays' is required when frequency_weeks\
+        \ is given. Scan will occur only on specified days given in the 'weekdays'\
+        \ argument. One of these parameters is required: 'frequency_days', 'frequency_weeks',\
+        \ 'frequency_months'."
       name: frequency_weeks
       required: false
       secret: false
     - default: false
-      description: "Frequency scan occurs, value between 1-12. For example: if specified '1', the schedule will occur every month. If specified '2', the schedule will occur every 2 months. Either the argument 'day_of_month' or the arguments 'day_of_week' and 'week_of_month' are required when frequency_months is given. Scan will occur only on specified days given in the those arguments argument. One of these parameters is required: 'frequency_days', 'frequency_weeks', 'frequency_months'."
+      description: "Frequency scan occurs, value between 1-12. For example: if specified\
+        \ '1', the schedule will occur every month. If specified '2', the schedule\
+        \ will occur every 2 months. Either the argument 'day_of_month' or the arguments\
+        \ 'day_of_week' and 'week_of_month' are required when frequency_months is\
+        \ given. Scan will occur only on specified days given in the those arguments\
+        \ argument. One of these parameters is required: 'frequency_days', 'frequency_weeks',\
+        \ 'frequency_months'."
       name: frequency_months
       required: false
       secret: false
@@ -2609,29 +2630,44 @@ script:
       - "thursday"
       - "friday"
       - "saturday"
-      description: Required when 'frequency_weeks' is given. Days of when the scan will occur every week. E.g, weekdays='sunday,tuesday' along with 'frequency_weeks=2' means the scan will happen on sunday and tuesday every two weeks.
+      description: Required when 'frequency_weeks' is given. Days of when the scan
+        will occur every week. E.g, weekdays='sunday,tuesday' along with 'frequency_weeks=2'
+        means the scan will happen on sunday and tuesday every two weeks.
       isArray: true
     - default: false
-      description: Only relevant when 'frequency_months' value was given. Day of month that the monthly schedule will run on. Between 1-31 depending on the month. For example, day_of_month=15 along with frequency_months=2 will result in the scan running every 2 months in the 15th of the month.
+      description: Only relevant when 'frequency_months' value was given. Day of month
+        that the monthly schedule will run on. Between 1-31 depending on the month.
+        For example, day_of_month=15 along with frequency_months=2 will result in
+        the scan running every 2 months in the 15th of the month.
       name: day_of_month
       required: false
       secret: false
     - default: false
-      description: Only relevant when 'frequency_months' value was given. Must be given with 'week_of_month' as well. Day of week that the schedule will run on. Between 0-6, where 0 is Sunday, and 6 is Saturday depending on the month. For example, day_of_week=2, week_of_month=second along with frequency_months=2 will result in the scan running every 2 months on Tuesday in the second week of the month.
+      description: Only relevant when 'frequency_months' value was given. Must be
+        given with 'week_of_month' as well. Day of week that the schedule will run
+        on. Between 0-6, where 0 is Sunday, and 6 is Saturday depending on the month.
+        For example, day_of_week=2, week_of_month=second along with frequency_months=2
+        will result in the scan running every 2 months on Tuesday in the second week
+        of the month.
       name: day_of_week
       required: false
       secret: false
       auto: PREDEFINED
       predefined:
-        - "0"
-        - "1"
-        - "2"
-        - "3"
-        - "4"
-        - "5"
-        - "6"
+      - "0"
+      - "1"
+      - "2"
+      - "3"
+      - "4"
+      - "5"
+      - "6"
     - default: false
-      description: Comma separated list. Only relevant when 'frequency_months' value was given. Must be given with 'week_of_month' as well. Day of week that the schedule will run on. Between 0-6, where 0 is Sunday, and 6 is Saturday depending on the month. For example, day_of_week=2, week_of_month=second along with frequency_months=2 will result in the scan running every 2 months on Tuesday in the second week of the month.
+      description: Comma separated list. Only relevant when 'frequency_months' value
+        was given. Must be given with 'week_of_month' as well. Day of week that the
+        schedule will run on. Between 0-6, where 0 is Sunday, and 6 is Saturday depending
+        on the month. For example, day_of_week=2, week_of_month=second along with
+        frequency_months=2 will result in the scan running every 2 months on Tuesday
+        in the second week of the month.
       name: week_of_month
       required: false
       isArray: true
@@ -2644,7 +2680,8 @@ script:
       - "fourth"
       - "last"
     - default: false
-      description: The start date of the schedule. Format of mm/dd/yyyy. For example, 12/15/2020.
+      description: The start date of the schedule. Format of mm/dd/yyyy. For example,
+        12/15/2020.
       name: start_date
       required: true
       secret: false
@@ -2659,35 +2696,37 @@ script:
       required: true
       secret: false
     - default: false
-      description: Time zone code of the given schedule scan. For example, US-CA for time zone California in US.
+      description: Time zone code of the given schedule scan. For example, US-CA for
+        time zone California in US.
       name: time_zone_code
       required: true
       secret: false
     - name: exclude_ip_per_scan
-      description: "The IP addresses to be excluded from the scan when the scan target
-        is specified as IP addresses (not asset tags). You may enter individual IP
-        addresses and/or ranges. Multiple entries are comma separated.
-       One of these parameters must be set: 'scanners_in_ag', 'default_scanner'."
+      description: "The IP addresses to be excluded from the scan when the scan target\
+        \ is specified as IP addresses (not asset tags). You may enter individual\
+        \ IP addresses and/or ranges. Multiple entries are comma separated. One of\
+        \ these parameters must be set: 'scanners_in_ag', 'default_scanner'."
       isArray: true
     - name: default_scanner
       auto: PREDEFINED
       predefined:
       - "0"
       - "1"
-      description: "Specify 1 to use the default scanner in each target asset group.
-        For an Express Lite user, Internal Scanning must be enabled in the user’s
-        account. One of these parameters must be set: 'scanners_in_ag', 'default_scanner'."
+      description: "Specify 1 to use the default scanner in each target asset group.\
+        \ For an Express Lite user, Internal Scanning must be enabled in the user’s\
+        \ account. One of these parameters must be set: 'scanners_in_ag', 'default_scanner'."
     - name: scanners_in_ag
       auto: PREDEFINED
       predefined:
       - "0"
       - "1"
-      description: "Specify 1 to distribute the scan to the target asset groups’ scanner
-        appliances. Appliances in each asset group are tasked with scanning the IPs
-        in the group. By default up to 5 appliances per group will be used and this
-        can be configured for your account (please contact your Account Manager or
-        Support). For an Express Lite user, Internal Scanning must be enabled in the
-        user’s account. One of these parameters must be set: 'scanners_in_ag', 'default_scanner'."
+      description: "Specify 1 to distribute the scan to the target asset groups’ scanner\
+        \ appliances. Appliances in each asset group are tasked with scanning the\
+        \ IPs in the group. By default up to 5 appliances per group will be used and\
+        \ this can be configured for your account (please contact your Account Manager\
+        \ or Support). For an Express Lite user, Internal Scanning must be enabled\
+        \ in the user’s account. One of these parameters must be set: 'scanners_in_ag',\
+        \ 'default_scanner'."
     outputs:
     - contextPath: Qualys.ScheduleScan.Update.Status
       description: TODO
@@ -2698,7 +2737,8 @@ script:
   - name: qualys-schedule-scan-update
     arguments:
     - default: false
-      description: The scan ID to update.
+      description: The scan ID to update. the ID can be retrieved via running the
+        `qualys-schedule-scan-list` command, and using the ID field.
       isArray: false
       name: id
       required: true
@@ -2712,30 +2752,44 @@ script:
     - name: ip
       isArray: true
       description: 'The IP addresses to be scanned. You may enter individual IP addresses
-        and/or ranges. Multiple entries are comma separated. At most one of these parameters
-        can be supplied: ip, asset_groups or asset_group_ids.'
+        and/or ranges. Multiple entries are comma separated. At most one of these
+        parameters can be supplied: ip, asset_groups or asset_group_ids.'
     - name: asset_group_ids
       isArray: true
       description: 'The IDs of asset groups containing the hosts to be scanned. Multiple
-        IDs are comma separated. At most one of these parameters can be supplied: ip, asset_groups
-        or asset_group_ids.'
+        IDs are comma separated. At most one of these parameters can be supplied:
+        ip, asset_groups or asset_group_ids.'
     - name: asset_groups
       isArray: true
       description: 'The titles of asset groups containing the hosts to be scanned.
-        Multiple titles are comma separated. At most one of these parameters can be supplied:
-        ip, asset_groups or asset_group_ids.'
+        Multiple titles are comma separated. At most one of these parameters can be
+        supplied: ip, asset_groups or asset_group_ids.'
     - default: false
-      description: "Frequency scan occurs, value between 1-365. For example: if specified '1', the schedule will occur every day. If specified '2', the schedule will occur every 2 days. At most one of these parameters can be supplied: 'frequency_days', 'frequency_weeks', 'frequency_months'."
+      description: "Frequency scan occurs, value between 1-365. For example: if specified\
+        \ '1', the schedule will occur every day. If specified '2', the schedule will\
+        \ occur every 2 days. At most one of these parameters can be supplied: 'frequency_days',\
+        \ 'frequency_weeks', 'frequency_months'."
       name: frequency_days
       required: false
       secret: false
     - default: false
-      description: "Frequency scan occurs, value between 1-52. For example: if specified '1', the schedule will occur every week. If specified '2', the schedule will occur every 2 weeks. The argument 'weekdays' is required when frequency_weeks is given. Scan will occur only on specified days given in the 'weekdays' argument. At most one of these parameters can be supplied: 'frequency_days', 'frequency_weeks', 'frequency_months'."
+      description: "Frequency scan occurs, value between 1-52. For example: if specified\
+        \ '1', the schedule will occur every week. If specified '2', the schedule\
+        \ will occur every 2 weeks. The argument 'weekdays' is required when frequency_weeks\
+        \ is given. Scan will occur only on specified days given in the 'weekdays'\
+        \ argument. At most one of these parameters can be supplied: 'frequency_days',\
+        \ 'frequency_weeks', 'frequency_months'."
       name: frequency_weeks
       required: false
       secret: false
     - default: false
-      description: "Frequency scan occurs, value between 1-12. For example: if specified '1', the schedule will occur every month. If specified '2', the schedule will occur every 2 months. Either the argument 'day_of_month' or the arguments 'day_of_week' and 'week_of_month' are required when frequency_months is given. Scan will occur only on specified days given in the those arguments argument. At most one of these parameters can be supplied: 'frequency_days', 'frequency_weeks', 'frequency_months'."
+      description: "Frequency scan occurs, value between 1-12. For example: if specified\
+        \ '1', the schedule will occur every month. If specified '2', the schedule\
+        \ will occur every 2 months. Either the argument 'day_of_month' or the arguments\
+        \ 'day_of_week' and 'week_of_month' are required when frequency_months is\
+        \ given. Scan will occur only on specified days given in the those arguments\
+        \ argument. At most one of these parameters can be supplied: 'frequency_days',\
+        \ 'frequency_weeks', 'frequency_months'."
       name: frequency_months
       required: false
       secret: false
@@ -2749,29 +2803,44 @@ script:
       - "thursday"
       - "friday"
       - "saturday"
-      description: Required when 'frequency_weeks' is given. Days of when the scan will occur every week. E.g, weekdays='sunday,tuesday' along with 'frequency_weeks=2' means the scan will happen on sunday and tuesday every two weeks.
+      description: Required when 'frequency_weeks' is given. Days of when the scan
+        will occur every week. E.g, weekdays='sunday,tuesday' along with 'frequency_weeks=2'
+        means the scan will happen on sunday and tuesday every two weeks.
       isArray: true
     - default: false
-      description: Only relevant when 'frequency_months' value was given. Day of month that the monthly schedule will run on. Between 1-31 depending on the month. For example, day_of_month=15 along with frequency_months=2 will result in the scan running every 2 months in the 15th of the month.
+      description: Only relevant when 'frequency_months' value was given. Day of month
+        that the monthly schedule will run on. Between 1-31 depending on the month.
+        For example, day_of_month=15 along with frequency_months=2 will result in
+        the scan running every 2 months in the 15th of the month.
       name: day_of_month
       required: false
       secret: false
     - default: false
-      description: Only relevant when 'frequency_months' value was given. Must be given with 'week_of_month' as well. Day of week that the schedule will run on. Between 0-6, where 0 is Sunday, and 6 is Saturday depending on the month. For example, day_of_week=2, week_of_month=second along with frequency_months=2 will result in the scan running every 2 months on Tuesday in the second week of the month.
+      description: Only relevant when 'frequency_months' value was given. Must be
+        given with 'week_of_month' as well. Day of week that the schedule will run
+        on. Between 0-6, where 0 is Sunday, and 6 is Saturday depending on the month.
+        For example, day_of_week=2, week_of_month=second along with frequency_months=2
+        will result in the scan running every 2 months on Tuesday in the second week
+        of the month.
       name: day_of_week
       required: false
       secret: false
       auto: PREDEFINED
       predefined:
-        - "0"
-        - "1"
-        - "2"
-        - "3"
-        - "4"
-        - "5"
-        - "6"
+      - "0"
+      - "1"
+      - "2"
+      - "3"
+      - "4"
+      - "5"
+      - "6"
     - default: false
-      description: Comma separated list. Only relevant when 'frequency_months' value was given. Must be given with 'week_of_month' as well. Day of week that the schedule will run on. Between 0-6, where 0 is Sunday, and 6 is Saturday depending on the month. For example, day_of_week=2, week_of_month=second along with frequency_months=2 will result in the scan running every 2 months on Tuesday in the second week of the month.
+      description: Comma separated list. Only relevant when 'frequency_months' value
+        was given. Must be given with 'week_of_month' as well. Day of week that the
+        schedule will run on. Between 0-6, where 0 is Sunday, and 6 is Saturday depending
+        on the month. For example, day_of_week=2, week_of_month=second along with
+        frequency_months=2 will result in the scan running every 2 months on Tuesday
+        in the second week of the month.
       name: week_of_month
       required: false
       isArray: true
@@ -2784,50 +2853,56 @@ script:
       - "fourth"
       - "last"
     - default: false
-      description: The start date of the schedule. Format of mm/dd/yyyy. For example, 12/15/2020.
+      description: The start date of the schedule. Format of mm/dd/yyyy. For example,
+        12/15/2020.
       name: start_date
       required: false
       secret: false
     - default: false
-      description: Required when 'start_date' is given. The start hour of the scheduled scan. Value between 0-23.
+      description: Required when 'start_date' is given. The start hour of the scheduled
+        scan. Value between 0-23.
       name: start_hour
       required: false
       secret: false
     - default: false
-      description: Required when 'start_date' is given. The start minute of the scheduled scan. Value between 0-59.
+      description: Required when 'start_date' is given. The start minute of the scheduled
+        scan. Value between 0-59.
       name: start_minute
       required: false
       secret: false
     - default: false
-      description: Required when 'start_date' is given. Time zone code of the given schedule scan. For example, US-CA for time zone California in US.
+      description: Required when 'start_date' is given. Time zone code of the given
+        schedule scan. For example, US-CA for time zone California in US.
       name: time_zone_code
       required: false
       secret: false
     - name: exclude_ip_per_scan
-      description: "The IP addresses to be excluded from the scan when the scan target
-        is specified as IP addresses (not asset tags). You may enter individual IP
-        addresses and/or ranges. Multiple entries are comma separated.
-       One of these parameters must be set: 'scanners_in_ag', 'default_scanner'."
+      description: "The IP addresses to be excluded from the scan when the scan target\
+        \ is specified as IP addresses (not asset tags). You may enter individual\
+        \ IP addresses and/or ranges. Multiple entries are comma separated. One of\
+        \ these parameters must be set: 'scanners_in_ag', 'default_scanner'."
       isArray: true
     - name: default_scanner
       auto: PREDEFINED
       predefined:
       - "0"
       - "1"
-      description: "Specify 1 to use the default scanner in each target asset group.
-        For an Express Lite user, Internal Scanning must be enabled in the user’s
-        account. At most one of these parameters can be supplied: 'scanners_in_ag', 'default_scanner'."
+      description: "Specify 1 to use the default scanner in each target asset group.\
+        \ For an Express Lite user, Internal Scanning must be enabled in the user’s\
+        \ account. At most one of these parameters can be supplied: 'scanners_in_ag',\
+        \ 'default_scanner'."
     - name: scanners_in_ag
       auto: PREDEFINED
       predefined:
       - "0"
       - "1"
-      description: "Specify 1 to distribute the scan to the target asset groups’ scanner
-        appliances. Appliances in each asset group are tasked with scanning the IPs
-        in the group. By default up to 5 appliances per group will be used and this
-        can be configured for your account (please contact your Account Manager or
-        Support). For an Express Lite user, Internal Scanning must be enabled in the
-        user’s account. At most one of these parameters can be supplied: 'scanners_in_ag', 'default_scanner'."
+      description: "Specify 1 to distribute the scan to the target asset groups’ scanner\
+        \ appliances. Appliances in each asset group are tasked with scanning the\
+        \ IPs in the group. By default up to 5 appliances per group will be used and\
+        \ this can be configured for your account (please contact your Account Manager\
+        \ or Support). For an Express Lite user, Internal Scanning must be enabled\
+        \ in the user’s account. At most one of these parameters can be supplied:\
+        \ 'scanners_in_ag', 'default_scanner'."
     - name: active
       auto: PREDEFINED
       predefined:
@@ -2856,13 +2931,14 @@ script:
       required: false
       secret: false
     - name: ips
-      description: Add IPs to asset group. IP addresses/ranges. One or more IPs/ranges may
-        be specified. Multiple entries are comma separated. An IP range is specified
+      description: Add IPs to asset group. IP addresses/ranges. One or more IPs/ranges
+        may be specified. Multiple entries are comma separated. An IP range is specified
         with a hyphen (for example, 10.10.10.1-10.10.10.100).
       isArray: true
     - name: domains
       required: false
-      description: Add domains to asset group; do not enter "www." at the start of the domain name. Multiple entries are comma separated.
+      description: Add domains to asset group; do not enter "www." at the start of
+        the domain name. Multiple entries are comma separated.
       isArray: true
     - name: dns_names
       required: false
@@ -2925,37 +3001,41 @@ script:
       required: false
       secret: false
     - default: false
-      description: ID of the asset group to edit.
+      description: ID of the asset group to edit. ID of asset groups can be retrieved
+        via running the `qualys-group-list` command and using its ID field.
       isArray: false
       name: id
       required: true
       secret: false
     - name: add_ips
-      description: Add IPs to asset group. IP addresses/ranges. One or more IPs/ranges may
-        be specified. Multiple entries are comma separated. An IP range is specified
+      description: Add IPs to asset group. IP addresses/ranges. One or more IPs/ranges
+        may be specified. Multiple entries are comma separated. An IP range is specified
         with a hyphen (for example, 10.10.10.1-10.10.10.100).
       isArray: true
     - name: set_ips
-      description: Set IPs of asset group. IP addresses/ranges. One or more IPs/ranges may
-        be specified. Multiple entries are comma separated. An IP range is specified
+      description: Set IPs of asset group. IP addresses/ranges. One or more IPs/ranges
+        may be specified. Multiple entries are comma separated. An IP range is specified
         with a hyphen (for example, 10.10.10.1-10.10.10.100).
       isArray: true
     - name: remove_ips
-      description: Remove IPs from asset group. IP addresses/ranges. One or more IPs/ranges may
-        be specified. Multiple entries are comma separated. An IP range is specified
+      description: Remove IPs from asset group. IP addresses/ranges. One or more IPs/ranges
+        may be specified. Multiple entries are comma separated. An IP range is specified
         with a hyphen (for example, 10.10.10.1-10.10.10.100).
       isArray: true
     - name: add_domains
       required: false
-      description: Add domains to asset group; do not enter "www." at the start of the domain name. Multiple entries are comma separated.
+      description: Add domains to asset group; do not enter "www." at the start of
+        the domain name. Multiple entries are comma separated.
       isArray: true
     - name: set_domains
       required: false
-      description: Set domains of asset group; do not enter "www." at the start of the domain name. Multiple entries are comma separated.
+      description: Set domains of asset group; do not enter "www." at the start of
+        the domain name. Multiple entries are comma separated.
       isArray: true
     - name: remove_domains
       required: false
-      description: Remove domains from asset group; do not enter "www." at the start of the domain name. Multiple entries are comma separated.
+      description: Remove domains from asset group; do not enter "www." at the start
+        of the domain name. Multiple entries are comma separated.
       isArray: true
     - name: add_dns_names
       required: false
@@ -2983,7 +3063,8 @@ script:
       isArray: true
     - name: remove_netbios_names
       required: false
-      description: Remove NETBIOS names from asset group. Multiple entries are comma separated.
+      description: Remove NETBIOS names from asset group. Multiple entries are comma
+        separated.
       isArray: true
     - name: set_cvss_enviro_td
       auto: PREDEFINED
@@ -3028,7 +3109,8 @@ script:
       isArray: true
     - name: remove_appliance_ids
       required: false
-      description: Remove appliance IDs from asset group. Multiple entries are comma separated.
+      description: Remove appliance IDs from asset group. Multiple entries are comma
+        separated.
       isArray: true
     outputs:
     - contextPath: Qualys.ScheduleScan.Update.Status
@@ -3042,7 +3124,8 @@ script:
   - name: qualys-asset-group-delete
     arguments:
     - default: false
-      description: Asset group ID to delete.
+      description: Asset group ID to delete. ID of asset groups can be retrieved via
+        running the `qualys-group-list` command and using its ID field.
       isArray: false
       name: id
       required: true
@@ -3057,7 +3140,8 @@ script:
   - name: qualys-schedule-scan-delete
     arguments:
     - default: false
-      description: Scheduled Scan ID to delete.
+      description: Scheduled Scan ID to delete. the ID can be retrieved via running
+        the `qualys-schedule-scan-list` command, and using the ID field.
       isArray: false
       name: id
       required: true
@@ -3070,7 +3154,7 @@ script:
     description: Delete a scheduled scan.
     execution: true
 
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   feed: false
   isfetch: false
   longRunning: false
