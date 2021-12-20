@@ -44,13 +44,13 @@ def test_main(mocker):
                 'ctx_lists': t.get('ctx_lists'),
                 'ctx_incident': t.get('ctx_incident')
             })
-        mocker.patch.object(demisto, 'results')
-        main()
-        assert demisto.results.call_count == 1
-        results = demisto.results.call_args[0][0]
-        '''
-        if json.dumps(results) != json.dumps(eval['result']):
-            print(json.dumps(t, indent=2))
-            print(json.dumps(results, indent=2))
-        '''
-        assert json.dumps(results) == json.dumps(eval['result'])
+            mocker.patch.object(demisto, 'results')
+            main()
+            assert demisto.results.call_count == 1
+            results = demisto.results.call_args[0][0]
+            '''
+            if json.dumps(results) != json.dumps(eval['result']):
+                print(json.dumps(t, indent=2))
+                print(json.dumps(results, indent=2))
+            '''
+            assert json.dumps(results) == json.dumps(eval['result'])

@@ -5856,3 +5856,25 @@ def test_arg_to_number():
     from CommonServerPython import arg_to_number
     result = arg_to_number(u'1')
     assert result == 1
+
+
+def test_get_message_threads_dump():
+    from CommonServerPython import get_message_threads_dump
+    result = str(get_message_threads_dump(None, None))
+    assert ' Start Threads Dump ' in result
+    assert ' End Threads Dump ' in result
+    assert 'CommonServerPython.py' in result
+    assert 'get_message_threads_dump' in result
+
+
+def test_get_message_memory_dump():
+    from CommonServerPython import get_message_memory_dump
+    result = str(get_message_memory_dump(None, None))
+    assert ' Start Variables Dump ' in result
+    assert ' Start Local Vars ' in result
+    assert ' End Local Vars ' in result
+    assert ' Start Top ' in result
+    assert ' Globals by Size ' in result
+    assert ' End Top ' in result
+    assert ' End Variables Dump ' in result
+    assert '<class \'' in result
