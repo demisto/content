@@ -531,7 +531,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "emailtocount",
+                                "fieldId": "emailrecipientscount",
                                 "height": 22,
                                 "id": "8d6c3e50-97ef-11e9-b8bd-0b00be54d2d3",
                                 "index": 9,
@@ -1100,7 +1100,7 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_emailtocount",
+                        "fieldId": "incident_emailrecipientscount",
                         "isVisible": true
                     }
                 ],
