@@ -1,4 +1,4 @@
-Migrate port-based rules to application-based allow rules to reduce the attack surface and safely enable applications on your network.
+This playbook migrates port-based rules to application-based allow rules to reduce the attack surface and safely enable applications on your network.
 
 
 ## Dependencies
@@ -9,10 +9,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * PAN-OS Commit Configuration
 
 ### Integrations
-* PANOSPolicyOptimizer
+PANOSPolicyOptimizer
 
 ### Scripts
-* IsIntegrationAvailable
+IsIntegrationAvailable
 
 ### Commands
 * send-notification
@@ -27,8 +27,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | slack_user | Slack user to notify about port based rules. |  | Optional |
-| email_address | Email address user to notify about port based rules. |  | Optional |
-| auto_commit | Specify whether you want to auto-commit the configuration for the PAN-OS policy changes automatically \(Yes/No\). |  | Optional |
+| email_address | User email address to notify about port based rules. |  | Optional |
+| auto_commit | Specifies whether you want to auto-commit the configuration for the PAN-OS policy changes automatically \(Yes/No\). |  | Optional |
 
 ## Playbook Outputs
 ---
