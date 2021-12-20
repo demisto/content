@@ -1038,5 +1038,5 @@ script:
     description: Moves a system to a different group.
   runonce: false
 tests:
-- Test Playbook McAfee ePO
+- No Test
 fromversion: 5.0.0
