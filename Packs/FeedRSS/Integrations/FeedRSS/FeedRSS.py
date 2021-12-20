@@ -20,7 +20,7 @@ class Client(BaseClient):
     """
 
     def __init__(self, server_url, use_ssl, proxy, reliability, feed_tags, tlp_color, content_max_size=45,
-                 read_timeout=10):
+                 read_timeout=20):
         super().__init__(base_url=server_url, proxy=proxy, verify=use_ssl)
         self.feed_tags = feed_tags
         self.tlp_color = tlp_color
