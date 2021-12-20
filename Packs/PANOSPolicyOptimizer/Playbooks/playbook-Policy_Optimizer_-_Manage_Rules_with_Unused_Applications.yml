@@ -2,7 +2,7 @@ id: Policy Optimizer - Manage Rules with Unused Applications
 version: -1
 name: Policy Optimizer - Manage Rules with Unused Applications
 description: |
-  If you have application-based Security policy rules that allow a large number of applications, you can remove unused applications (applications never seen on the rules) from those rules to tighten them so that they only allow applications actually seen in the rule’s traffic. Identifying and removing unused applications from Security policy rules is a best practice that strengthens your security posture by reducing the attack surface.
+  This playbook helps identify and remove unused applications from security policy rules. If you have application-based security policy rules that allow a large number of applications, you can remove unused applications (applications never seen on the rules) from those rules to allow only applications actually seen in the rule’s traffic. This strengthens your security posture by reducing the attack surface.
 starttaskid: "0"
 tasks:
   "0":
@@ -42,8 +42,7 @@ tasks:
       id: abfb17cc-7229-4476-820d-1ea1c91ada64
       version: -1
       name: Is PAN-OS Policy Optimizer integration available?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      description: Returns 'yes' if integration brand is available.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -415,7 +414,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: Please choose the action for the playbook to continue
+          simple: Please choose the action for the playbook to continue.
         required: true
         gridcolumns: []
         defaultrows: []
@@ -431,9 +430,9 @@ tasks:
         readonly: false
       title: Rules with Unused Applications
       description: PAN-OS Policy Optimizer has discovered rules with unused applications
-        in your environment. If you have application-based Security policy rules that
+        in your environment. If you have application-based security policy rules that
         allow a large number of applications, you can remove unused applications (applications
-        never seen on the rules) from those rules to tighten them so that they only
+        never seen on the rules) from those rules to only
         allow applications actually seen in the rule’s traffic.
       sender: ""
       expired: false
@@ -579,8 +578,7 @@ tasks:
       id: 9b1c4aec-8a27-4229-8516-4215627511a8
       version: -1
       name: Is PAN-OS integration available?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      description: Returns 'yes' if integration brand is available.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -758,7 +756,7 @@ tasks:
       id: 1fc42e5b-c872-4a14-8c96-aac5fd7fea5d
       version: -1
       name: Automatically commit PAN-OS configuration?
-      description: "Should the playbook automatically commit configuration input enabled?"
+      description: "Should the playbook automatically commit the configuration input enabled?"
       type: condition
       iscommand: false
       brand: ""
@@ -790,7 +788,7 @@ tasks:
       id: 98d7ab48-5de1-4787-8fcd-e52c79b42257
       version: -1
       name: Manually commit PAN-OS configuration
-      description: "Manually commit PAN-OS configuration."
+      description: "Manually commit the PAN-OS configuration."
       type: regular
       iscommand: false
       brand: ""
@@ -821,8 +819,7 @@ tasks:
       version: -1
       name: Policy Optimizer - Add Applications to Policy Rules
       description: |-
-        This playbook is used in the PAN-OS - Policy Optimizer playbooks to edit rules with unused applications or rules that are port based, and add an application to the rule.
-        The playbook uses communication task to get a rule name and the application to edit from the user.
+        This playbook edits rules with unused applications or rules that are port based, and adds an application to the rule. It includes communication tasks to get a rule name and the application to edit from the user.
       playbookName: Policy Optimizer - Add Applications to Policy Rules
       type: playbook
       iscommand: false
@@ -875,7 +872,7 @@ tasks:
       id: 75c25270-74cc-490c-8199-1d33bf87e10b
       version: -1
       name: Choose rules to delete
-      description: "Choose rules to be deleted by the playbook."
+      description: "Choose policy rules to be deleted by the playbook."
       type: collection
       iscommand: false
       brand: ""
@@ -1009,7 +1006,7 @@ tasks:
       description: PAN-OS Policy Optimizer has discovered rules with unused applications
         in your environment. If you have application-based Security policy rules that
         allow a large number of applications, you can remove unused applications (applications
-        never seen on the rules) from those rules to tighten them so that they only
+        never seen on the rules) from those rules to only
         allow applications actually seen in the rule’s traffic.
       sender: ""
       expired: false
@@ -1138,7 +1135,7 @@ tasks:
       description: PAN-OS Policy Optimizer has discovered rules with unused applications
         in your environment. If you have application-based Security policy rules that
         allow a large number of applications, you can remove unused applications (applications
-        never seen on the rules) from those rules to tighten them so that they only
+        never seen on the rules) from those rules to only
         allow applications actually seen in the rule’s traffic.
       sender: ""
       expired: false
@@ -1178,12 +1175,12 @@ inputs:
 - key: email_address
   value: {}
   required: false
-  description: Email address user to notify about port based rules.
+  description: User email address to notify about port based rules.
   playbookInputQuery:
 - key: auto_commit
   value: {}
   required: false
-  description: Specify whether you want to auto-commit the configuration for the PAN-OS
+  description: Specifies whether you want to auto-commit the configuration for the PAN-OS
     policy changes automatically (Yes/No).
   playbookInputQuery:
 outputs: []
