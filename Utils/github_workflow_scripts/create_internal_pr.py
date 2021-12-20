@@ -101,13 +101,13 @@ def debugging_branches_with_slashes():
     merged_pr = content_repo.get_pull(pr_number)
     merged_pr_url = merged_pr.html_url
 
-    head_branch = merged_pr.base.ref
+    head_branch = 'create_internal_pr/from/slash' #merged_pr.base.ref
 
     print(f'{t.pink}\n DDDDetails are:\n content_repo:{content_repo}\n pr_number:{pr_number}\n '
           f'merged_pr:{merged_pr}\n merged_pr_url:{merged_pr_url}\n head_branch:{head_branch}\n '
           f'merged_pr.base:{merged_pr.base}\n{t.normal}')
     contrib_branch = content_repo.get_branch(head_branch)
-    print(f'\nBranch protection:\n{contrib_branch.get_protection()}\n')
+    print(f'\nBranch protection:\n{contrib_branch.protected}\n')
 
 
 if __name__ == "__main__":
