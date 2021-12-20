@@ -234,7 +234,7 @@ def decapitalize(s: str):
 
 def paging_heading(page_number: str = None, page_size: str = None):
     if page_number or page_size:
-        return f'Showing' + (f' {page_size}' if page_size else '') + ' results' +\
+        return 'Showing' + (f' {page_size}' if page_size else '') + ' results' +\
                (f' from page {page_number}' if page_number else '') + ':\n'
     return ''
 
@@ -407,9 +407,9 @@ def users_search_command(client: Client, args: Dict[str, Any]) -> CommandResults
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=paging_heading(page_number, page_size) +
-                        tableToMarkdown('Existing Users:', response, headers=headers, removeNull=True,
-                                        headerTransform=pascalToSpace, url_keys=['avatarUrl'])
+        readable_output=paging_heading(page_number, page_size)
+        + tableToMarkdown('Existing Users:', response, headers=headers, removeNull=True,
+                          headerTransform=pascalToSpace, url_keys=['avatarUrl'])
     )
 
     return command_results
@@ -528,9 +528,9 @@ def teams_search_command(client: Client, args: Dict[str, Any]) -> CommandResults
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=paging_heading(page_number, page_size) +
-                        tableToMarkdown('Teams Search Results:', response, headers=headers, removeNull=True,
-                                        headerTransform=pascalToSpace, url_keys=['avatarUrl'])
+        readable_output=paging_heading(page_number, page_size)
+        + tableToMarkdown('Teams Search Results:', response, headers=headers, removeNull=True,
+                          headerTransform=pascalToSpace, url_keys=['avatarUrl'])
     )
 
     return command_results
@@ -657,8 +657,8 @@ def org_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=paging_heading(page_number, page_size) +
-                        tableToMarkdown('Existing Organizations:', response, removeNull=True, headerTransform=pascalToSpace)
+        readable_output=paging_heading(page_number, page_size)
+        + tableToMarkdown('Existing Organizations:', response, removeNull=True, headerTransform=pascalToSpace)
     )
 
     return command_results
@@ -715,9 +715,9 @@ def dashboards_search_command(client: Client, args: Dict[str, Any]) -> CommandRe
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=paging_heading(page_number, limit) +
-                        tableToMarkdown('Existing Dashboards:', response, headers=headers, removeNull=True,
-                                        headerTransform=pascalToSpace, url_keys=['url'])
+        readable_output=paging_heading(page_number, limit)
+        + tableToMarkdown('Existing Dashboards:', response, headers=headers, removeNull=True,
+                          headerTransform=pascalToSpace, url_keys=['url'])
     )
 
     return command_results
