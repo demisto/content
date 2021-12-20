@@ -195,7 +195,7 @@ def fetch_incidents(
 
     if not pull_existing_alerts:
         demisto.info("pull_existing_alerts flag is not set, not pulling alerts")
-        return {}, []
+        return {'lastRun': datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)}, []
 
     last_run_time = last_run.get("lastRun")
     next_page_token = last_run.get("next_page_token")
