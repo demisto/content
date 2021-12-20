@@ -10,7 +10,7 @@ This integration was integrated and tested with version 1.0 of MISP Feed.
     | --- | --- | --- |
     | Your server URL |  | True |
     | API Key | The API Key to use for the connection. | True |
-    | Timeout | The timeout of the HTTP requests sent to MISP API (in seconds).  If no value is provided the timeout will be set to 60 seconds.| False |
+    | Timeout | The timeout of the HTTP requests sent to the MISP API (in seconds).  If no value is provided, the timeout will be set to 60 seconds.| False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Fetch indicators |  | False |
@@ -19,9 +19,9 @@ This integration was integrated and tested with version 1.0 of MISP Feed.
     | Source Reliability | Reliability of the source providing the intelligence data. | True |
     | Feed Fetch Interval |  | False |
     | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
-    | MISP Attribute Tags | Attributes having one of the tags or being an attribute of an event having one of the tags will be returned. You can enter a comma-separated list of tags, for example &amp;lt;tag1,tag2,tag3&amp;gt;. The list of MISP tags can be found in your MISP instance under 'Event Actions'>'List Tags' | False |
+    | MISP Attribute Tags | Attributes having one of the tags, or being an attribute of an event having one of the tags, will be returned. You can enter a comma-separated list of tags, for example &amp;lt;tag1,tag2,tag3&amp;gt;. The list of MISP tags can be found in your MISP instance under 'Event Actions'>'List Tags' | False |
     | MISP Attribute Types | Attributes of one of these types will be returned. You can enter a comma-separated list of types, for example &amp;lt;type1,type2,type3&amp;gt;. The list of MISP types can be found in your MISP instance then 'Event Actions'>'Search Attributes'>'Type dropdown list' | False |
-    | Query | JSON query to filter MISP attributes. When a query parameter is used, Attribute Types and Attribute Tags parameters are not used. You can check for the correct syntax at https://&amp;lt;Your MISP url&amp;gt;/servers/openapi\#operation/restSearchAttributes | False |
+    | Query | JSON query to filter MISP attributes. When the query parameter is used, Attribute Types and Attribute Tags parameters are not used. You can check for the correct syntax at https://&amp;lt;Your MISP url&amp;gt;/servers/openapi\#operation/restSearchAttributes | False |
     | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed. | False |
     | Tags | Supports CSV values. | False |
 
