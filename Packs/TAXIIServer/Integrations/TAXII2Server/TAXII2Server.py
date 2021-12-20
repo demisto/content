@@ -80,6 +80,34 @@ STIX2_TYPES_TO_XSOAR = {
     'windows-registry-key': FeedIndicatorType.Registry,
 }
 
+NGINX_TAXII2SERVER_CONF = '''
+server {
+
+    listen $port default_server $ssl;
+
+    $sslcerts
+
+    proxy_cache_key $scheme$proxy_host$request_uri$extra_cache_key$http_range$http_content_range;
+    proxy_set_header Range $http_range;
+    
+    # Static test file
+    location = /nginx-test {
+        alias /var/lib/nginx/html/index.html;
+        default_type text/html;
+    }
+
+    # Proxy everything to python
+    location / {
+        proxy_pass http://localhost:$serverport/;
+        add_header X-Proxy-Cache $upstream_cache_status;
+        # allow bypassing the cache with an arg of nocache=1 ie http://server:7000/?nocache=1
+        proxy_cache_bypass $arg_nocache;
+    }
+}
+
+'''
+
+
 ''' TAXII2 Server '''
 
 
@@ -626,7 +654,7 @@ def parse_content_range(content_range):
     range_begin, range_end = range_count[0].split('-', 1)
 
     offset = int(range_begin)
-    limit = int(range_end)
+    limit = int(range_end) - offset
 
     return offset, limit
 
@@ -927,6 +955,9 @@ def main():
 
     scheme = 'https' if not http_server else 'http'
 
+    if version == TAXII_VER_2_0:
+        params['nginx_server_conf'] = NGINX_TAXII2SERVER_CONF
+
     demisto.debug(f'Command being called is {command}')
 
     try:
@@ -945,6 +976,7 @@ def main():
 
 
 from NGINXApiModule import *  # noqa: E402
+
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()
