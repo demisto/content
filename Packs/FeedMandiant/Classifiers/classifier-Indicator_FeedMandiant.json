@@ -309,7 +309,7 @@
                     },
                     "simple": ""
                 },
-                "FeedMandiant Capabilities": {
+                "Feed Mandiant Capabilities": {
                     "complex": {
                         "accessor": "",
                         "filters": [
@@ -352,7 +352,7 @@
                     "complex": null,
                     "simple": "last_activity_time"
                 },
-                "FeedMandiant Detections": {
+                "Feed Mandiant Detections": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -419,11 +419,11 @@
         "Report": {
             "dontMapEventToLabels": true,
             "internalMapping": {
-                "FeedMandiant Report Id": {
+                "Feed Mandiant Report Id": {
                     "complex": null,
                     "simple": "report_id"
                 },
-                "FeedMandiant Version ": {
+                "Feed Mandiant Version ": {
                     "complex": null,
                     "simple": "version"
                 },
@@ -436,7 +436,7 @@
                     },
                     "simple": ""
                 },
-                "FeedMandiant Report Type": {
+                "Feed Mandiant Report Type": {
                     "complex": null,
                     "simple": "report_type"
                 },
