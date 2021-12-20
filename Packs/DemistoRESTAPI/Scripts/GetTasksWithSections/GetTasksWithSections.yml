@@ -1,0 +1,67 @@
+args:
+- default: false
+  description: 'Incident ID to create the task table.'
+  isArray: false
+  name: investigation_id
+  required: false
+  secret: false
+commonfields:
+  id: GetTasksWithSections
+  version: -1
+name: GetTasksWithSections
+script: '-'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.9.7.24076
+tags:
+- Utility
+comment: Groups all tasks for a specific incident according to the task headers (titles).
+enabled: true
+outputs:
+- contextPath: Tasks
+  description: The entire task object
+- contextPath: Tasks.id
+  description: Task ID
+  type: string
+- contextPath: Tasks.name
+  description: Task name
+  type: string
+- contextPath: Tasks.section
+  description: Task section path
+  type: string
+- contextPath: Tasks.type
+  description: Task type (regular, condition, title, playbook, start)
+  type: string
+- contextPath: Tasks.owner
+  description: Task owner
+  type: string
+- contextPath: Tasks.state
+  description: Task state (inprogress, Completed, WillNotBeExecuted, Error, Waiting, Blocked, and empty string for not started)
+  type: string
+- contextPath: Tasks.scriptId
+  description: Task related script (empty if manual)
+  type: string
+- contextPath: Tasks.startDate
+  description: Task start date
+  type: unknown
+- contextPath: Tasks.completedDate
+  description: Task completed date
+  type: unknown
+- contextPath: Tasks.dueDate
+  description: Task due date (SLA)
+  type: unknown
+- contextPath: Tasks.parentPlaybookID
+  description: Task parent playbook ID (if the task is part of a sub-playbook)
+  type: unknown
+- contextPath: Tasks.completedBy
+  description: Name of the user who completed the task
+  type: string
+scripttarget: 0
+runonce: false
+sensitive: true
+dependson:
+  must:
+    - demisto-api-get
+tests:
+- GetTasksWithSections SetIRProcedures end to end test
+fromversion: 6.0.0

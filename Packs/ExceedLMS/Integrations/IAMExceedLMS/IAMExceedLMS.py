@@ -27,7 +27,7 @@ class Client(BaseClient):
         uri = '/api/v2/users.json/'
         params = {'api_key': self.api_key,
                   'user[login]': 123}
-        self._http_request(method='GET', url_suffix=uri, params=params)
+        self._http_request(method='GET', url_suffix=uri, params=params, timeout=30)
 
     def get_manager_id(self, manager_email: Optional[str]) -> str:
         """ Gets the user's manager ID from manager email.
@@ -41,28 +41,33 @@ class Client(BaseClient):
         # Get manager ID.
         manager_id = ''
         if manager_email:
-            res = self.get_user(manager_email)
+            res = self.get_user('email', manager_email)
             if res is not None:
                 manager_id = res.id
         return manager_id
 
-    def get_user(self, email: str) -> Optional[IAMUserAppData]:
-        """ Queries the user in the application using REST API by its email, and returns an IAMUserAppData object
+    def get_user(self, filter_name: str, filter_value: str) -> Optional[IAMUserAppData]:
+        """ Queries the user in the application using REST API by its iam get attributes,
+        and returns an IAMUserAppData object
         that holds the user_id, username, is_active and app_data attributes given in the query response.
 
-        :type email: ``str``
-        :param email: Email address of the user
+        :type filter_name: ``str``
+        :param filter_name: Name of the filter to retrieve the user by.
+
+        :type filter_value: ``str``
+        :param filter_value: Value corresponding to given filter to retrieve user by.
 
         :return: An IAMUserAppData object if user exists, None otherwise.
         :rtype: ``Optional[IAMUserAppData]``
         """
         uri = '/api/v2/users.json/'
         params = {'api_key': self.api_key,
-                  'user[email]': email}
+                  f'user[{filter_name}]': filter_value}
         res = self._http_request(
             method='GET',
             url_suffix=uri,
-            params=params
+            params=params,
+            timeout=30
         )
         if isinstance(res, dict):
             res = [res]
@@ -71,8 +76,9 @@ class Client(BaseClient):
             user_id = user_app_data.get('id')
             is_active = user_app_data.get('is_active')
             username = user_app_data.get('login')
+            email = user_app_data.get('email')
 
-            return IAMUserAppData(user_id, username, is_active, user_app_data)
+            return IAMUserAppData(user_id, username, is_active, user_app_data, email)
         return None
 
     def create_user(self, user_data: Dict[str, Any]) -> IAMUserAppData:
@@ -92,12 +98,15 @@ class Client(BaseClient):
             method='POST',
             url_suffix=uri,
             json_data=user_data,
-            params=params
+            params=params,
+            timeout=30
         )
         user_id = user_app_data.get('id')
         is_active = user_app_data.get('is_active')
         username = user_app_data.get('login')
-        return IAMUserAppData(user_id, username, is_active, user_app_data)
+        email = user_app_data.get('email')
+
+        return IAMUserAppData(user_id, username, is_active, user_app_data, email)
 
     def update_user(self, user_id: str, user_data: Dict[str, Any]) -> IAMUserAppData:
         """ Updates a user in the application using REST API.
@@ -120,7 +129,8 @@ class Client(BaseClient):
             url_suffix=uri,
             json_data=user_data,
             params=params,
-            resp_type='response'
+            resp_type='response',
+            timeout=30
         )
 
         username = user_data.get('login')
@@ -166,7 +176,8 @@ class Client(BaseClient):
         res = self._http_request(
             method='GET',
             url_suffix=uri,
-            params=params
+            params=params,
+            timeout=30
         )
         if isinstance(res, dict):
             res = [res]
@@ -281,7 +292,7 @@ def main():
     create_if_not_exists = params.get("create_if_not_exists")
 
     iam_command = IAMCommand(is_create_enabled, is_enable_enabled, is_disable_enabled, is_update_enabled,
-                             create_if_not_exists, mapper_in, mapper_out)
+                             create_if_not_exists, mapper_in, mapper_out, get_user_iam_attrs=['id', 'login', 'email'])
 
     headers = {
         'Content-Type': 'application/json',

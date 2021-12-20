@@ -1,0 +1,30 @@
+{
+    "fromVersion": "5.5.0",
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GRACase"
+    ],
+    "caseInsensitive": true,
+    "cliName": "gracaseriskscore",
+    "closeForm": false,
+    "content": true,
+    "description": "GRA Case Risk Score",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_gracaseriskscore",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GRA Case Risk Score",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1
+}

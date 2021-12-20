@@ -1125,16 +1125,16 @@ script:
       description: The safelist sender addresses.
       type: Number
     - contextPath: CiscoEmailSecurity.ListEntries.Blocklist.senderList
-      description: The blocklist sender list.
+      description: The block list sender list.
       type: String
     - contextPath: CiscoEmailSecurity.ListEntries.Blocklist.recipientAddresses
-      description: The blocklist recipient addresses.
+      description: The block list recipient addresses.
       type: String
     - contextPath: CiscoEmailSecurity.ListEntries.Blocklist.recipientList
-      description: The blocklist recipient list.
+      description: The block list recipient list.
       type: String
     - contextPath: CiscoEmailSecurity.ListEntries.Blocklist.senderAddresses
-      description: The blocklist sender addresses.
+      description: The block list sender addresses.
       type: Number
   - arguments:
     - auto: PREDEFINED
@@ -1238,7 +1238,7 @@ script:
     description: Deletes a list entry.
     execution: false
     name: cisco-email-security-list-entry-delete
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   feed: false
   isfetch: false
   longRunning: false

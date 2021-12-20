@@ -2,4 +2,7 @@
 ignore=RM104,RM106
 
 [file:Slack_IAM.yml]
-ignore=BA108,BA109
+ignore=BA108,BA109,IN145
+
+[file:Slack.yml]
+ignore=IN145

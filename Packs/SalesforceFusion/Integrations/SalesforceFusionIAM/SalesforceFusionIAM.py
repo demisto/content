@@ -19,31 +19,14 @@ class Client(BaseClient):
     """ A client class that implements logic to authenticate with the application. """
 
     def __init__(self, base_url, verify=True, proxy=False, ok_codes=(), headers=None, auth=None, client_id=None,
-                 username=None, password=None, client_secret=None, manager_email=None):
+                 username=None, password=None, client_secret=None):
         super().__init__(base_url, verify, proxy, ok_codes, headers, auth)
-        self.manager_id = self.get_manager_id(manager_email)
         self.client_id = client_id
         self.client_secret = client_secret
         self.username = username
         self.password = password
         self.headers = headers if headers else {}
         self.headers['Authorization'] = f'Bearer {self.create_login()}'
-
-    def get_manager_id(self, manager_email: Optional[str]) -> str:
-        """ Gets the user's manager ID from manager email.
-        :type manager_email: ``str``
-        :param manager_email: user's manager email
-        :return: The user's manager ID
-        :rtype: ``str``
-        """
-
-        # Get manager ID.
-        manager_id = ''
-        if manager_email:
-            res = self.get_user(manager_email)
-            if res is not None:
-                manager_id = res.id
-        return manager_id
 
     def create_login(self):
         uri = '/services/oauth2/token'
@@ -59,6 +42,7 @@ class Client(BaseClient):
             method='POST',
             url_suffix=uri,
             params=params,
+            headers=self.headers
         )
 
         return res.get('access_token')
@@ -67,7 +51,7 @@ class Client(BaseClient):
         """ Tests connectivity with the application. """
 
         uri = URI_PREFIX + 'sobjects/User/testid'
-        self._http_request(method='GET', url_suffix=uri, ok_codes=(200, 404))
+        self._http_request(method='GET', url_suffix=uri, ok_codes=(200, 404), headers=self.headers)
 
     def get_user_by_id(self, user_id: str) -> Optional['IAMUserAppData']:
         """ Queries the user in the application using REST API by its ID, and returns an IAMUserAppData object
@@ -84,37 +68,33 @@ class Client(BaseClient):
         res = self._http_request(
             method='GET',
             url_suffix=uri,
+            headers=self.headers
         )
-
         if res:
-            username = res.get('Work_Email__c')
+            email = res.get('Work_Email__c')
+            username = res.get('Name')
             is_active = True
 
-            return IAMUserAppData(user_id, username, is_active, res)
+            return IAMUserAppData(user_id, username, is_active, res, email=email)
         return None
 
-    def get_user(self, email: str) -> Optional['IAMUserAppData']:
-        """ Queries the user in the application using REST API by its email, and returns an IAMUserAppData object
-        that holds the user_id, username, is_active and app_data attributes given in the query response.
-
-        :type email: ``str``
-        :param email: Email address of the user
-
-        :return: An IAMUserAppData object if user exists, None otherwise.
-        :rtype: ``Optional[IAMUserAppData]``
-        """
-        uri = f'{URI_PREFIX}parameterizedSearch'
-        params = {
-            "q": email,
-            "sobject": "FF__Key_Contact__c",
-            "FF__Key_Contact__c.where": f"Work_Email__c='{email}'",
-            "FF__Key_Contact__c.fields": "Id, FF__First_Name__c, FF__Last_Name__c, Work_Email__c, Name",
-        }
+    def get_user(self, filter_name: str, filter_value: str) -> Optional['IAMUserAppData']:
+        if filter_name == 'id':
+            return self.get_user_by_id(filter_value)
+        else:
+            uri = f'{URI_PREFIX}parameterizedSearch'
+            params = {
+                "q": filter_value,
+                "sobject": "FF__Key_Contact__c",
+                "FF__Key_Contact__c.where": f"{filter_name}='{filter_value}'",
+                "FF__Key_Contact__c.fields": "Id, FF__First_Name__c, FF__Last_Name__c, Work_Email__c, Name",
+            }
 
         res = self._http_request(
             method='GET',
             url_suffix=uri,
             params=params,
+            headers=self.headers
         )
 
         user_app_data = res.get('searchRecords', [])
@@ -134,20 +114,18 @@ class Client(BaseClient):
         :rtype: ``IAMUserAppData``
         """
         uri = f'{URI_PREFIX}sobjects/FF__Key_Contact__c'
-        if self.manager_id:
-            user_data['manager_id'] = self.manager_id
-
         res = self._http_request(
             method='POST',
             url_suffix=uri,
             json_data=user_data,
+            headers=self.headers
         )
-
         user_id = res.get('id')
-        username = res.get('userName')
+        email = res.get('Work_Email__c')
+        username = res.get('Name')
         is_active = True
 
-        return IAMUserAppData(user_id, username, is_active, res)
+        return IAMUserAppData(user_id, username, is_active, res, email=email)
 
     def update_user(self, user_id: str, user_data: Dict[str, Any]):
         """ Updates a user in the application using REST API.
@@ -162,15 +140,15 @@ class Client(BaseClient):
         :rtype: ``IAMUserAppData``
         """
         uri = f'{URI_PREFIX}sobjects/FF__Key_Contact__c/{user_id}'
-        if self.manager_id:
-            user_data['manager_id'] = self.manager_id
         params = {"_HttpMethod": "PATCH"}
-
         self._http_request(
             method='POST',
             url_suffix=uri,
             params=params,
             json_data=user_data,
+            headers=self.headers,
+            resp_type='response',
+            ok_codes=(200, 204,)
         )
 
         return self.get_user_by_id(user_id)
@@ -200,12 +178,16 @@ class Client(BaseClient):
 
         uri = f'{URI_PREFIX}sobjects/FF__Key_Contact__c/{user_id}'
 
-        self._http_request(
+        res = self._http_request(
             method='DELETE',
             url_suffix=uri,
+            headers=self.headers,
+            ok_codes=(200, 204,),
+            resp_type='response'
         )
-
-        return IAMUserAppData(user_id, "", False, {})
+        if res.status_code == 204:
+            return IAMUserAppData(user_id, "", False, {})
+        raise DemistoException(f'Could not delete user. Response was: {res}')
 
     def get_app_fields(self) -> Dict[str, Any]:
         """ Gets a dictionary of the user schema fields in the application and their description.
@@ -218,9 +200,10 @@ class Client(BaseClient):
         res = self._http_request(
             method='GET',
             url_suffix=uri,
+            headers=self.headers
         )
 
-        fields = res.get('result', [])
+        fields = res.get('fields', [])
         return {field.get('name'): field.get('label') for field in fields}
 
     @staticmethod
@@ -285,8 +268,12 @@ def get_error_details(res: Dict[str, Any]) -> str:
     :return: The parsed error details.
     :rtype: ``str``
     """
-    message = res.get('message')
-    details = res.get('detail')
+    message, details = "Couldn't find details for the error", ''
+    if isinstance(res, list):
+        res = res[0]
+    if isinstance(res, dict):
+        message = res.get('message', 'No error message was supplied')
+        details = res.get('detail', 'No details regarding the error were supplied')
     return f'{message}: {details}'
 
 
@@ -330,7 +317,6 @@ def main():
     proxy = params.get('proxy', False)
     command = demisto.command()
     args = demisto.args()
-    manager_email = args.get('user-profile', {}).get('manageremailaddress')
 
     is_create_enabled = params.get("create_user_enabled")
     is_enable_enabled = params.get("enable_user_enabled")
@@ -339,7 +325,8 @@ def main():
     create_if_not_exists = params.get("create_if_not_exists")
 
     iam_command = IAMCommand(is_create_enabled, is_enable_enabled, is_disable_enabled, is_update_enabled,
-                             create_if_not_exists, mapper_in, mapper_out)
+                             create_if_not_exists, mapper_in, mapper_out,
+                             get_user_iam_attrs=['id', 'Name', 'Work_Email__c'])
 
     headers = {
         'Content-Type': 'application/json',
@@ -355,8 +342,7 @@ def main():
         client_id=client_id,
         client_secret=client_secret,
         username=username,
-        password=password + secret_token if password and secret_token else None,
-        manager_email=manager_email,
+        password=password + secret_token if password and secret_token else None
     )
 
     demisto.debug(f'Command being called is {command}')

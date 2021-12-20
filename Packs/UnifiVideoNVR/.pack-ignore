@@ -3,3 +3,8 @@ ignore=RM104
 
 [file:classifier-mapper-incoming-UnifiVideo.json]
 ignore=BA101
+
+[file:UnifiVideo.yml]
+ignore=IN145
+[file:pack_metadata.json]
+ignore=PA129

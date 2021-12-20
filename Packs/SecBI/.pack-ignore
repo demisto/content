@@ -1,2 +1,5 @@
 [file:README.md]
 ignore=RM104
+
+[file:SecBI.yml]
+ignore=IN145

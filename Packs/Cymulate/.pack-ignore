@@ -1,5 +1,5 @@
 [file:Cymulate.yml]
-ignore=IN126
+ignore=IN126,IN145
 
 [file:layoutscontainer-Cymulate_Immediate_Threats.json]
 ignore=BA101
@@ -8,7 +8,7 @@ ignore=BA101
 ignore=BA101
 
 [file:Cymulate_v2.yml]
-ignore=BA108,BA109
+ignore=BA108,BA109,IN145,IN124
 
 [file:classifier-mapper-incoming-Cymulate.json]
 ignore=BA101

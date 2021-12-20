@@ -1,2 +1,5 @@
 [file:README.md]
 ignore=RM104
+
+[file:Silverfort.yml]
+ignore=IN145

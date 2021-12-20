@@ -1,0 +1,17 @@
+{
+  "asn": 65000,
+  "asn_name": "Some service provider",
+  "tags": [
+    "criminal",
+    "proxy",
+    "vpn"
+  ],
+  "last_seen": "2021-07-29T11:00:00.000000Z",
+  "descriptions": [
+    "ip ranges which should not be delivering unauthenticated smtp email.",
+    "cbl + customised njabl. 3rd party exploits (proxies, trojans, etc.)",
+    "this ip address has been associated with a vpn network that offers paid access to users. it is advertised in online underground spaces.",
+    "this ip address has been associated with a proxy network that offers paid access to users and is advertised within the online underground. it is commonly utilized by criminal actors to conduct compromised credential checking and the proxy network is hosted on a botnet infrastructure. ip address is likely an infected machine."
+  ],
+  "score": null
+}
