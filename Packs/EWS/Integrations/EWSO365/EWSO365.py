@@ -32,6 +32,7 @@ from exchangelib.errors import (
     ErrorMailboxMoveInProgress,
     ErrorNameResolutionNoResults,
     MalformedResponseError,
+    ErrorCannotOpenFileAttachment,
 )
 from exchangelib.items import Item, Message, Contact
 from exchangelib.services.common import EWSService, EWSAccountService
@@ -2010,20 +2011,84 @@ def parse_incident_from_item(item):
     if item.attachments:
         incident["attachment"] = []
         for attachment in item.attachments:
-            file_result = None
-            label_attachment_type = None
-            label_attachment_id_type = None
-            if isinstance(attachment, FileAttachment):
-                try:
-                    if attachment.content:
-                        # file attachment
-                        label_attachment_type = "attachments"
-                        label_attachment_id_type = "attachmentId"
+            try:
+                file_result = None
+                label_attachment_type = None
+                label_attachment_id_type = None
+                if isinstance(attachment, FileAttachment):
+                    try:
+                        if attachment.content:
+                            # file attachment
+                            label_attachment_type = "attachments"
+                            label_attachment_id_type = "attachmentId"
 
-                        # save the attachment
-                        file_name = get_attachment_name(attachment.name)
-                        file_result = fileResult(file_name, attachment.content)
+                            # save the attachment
+                            file_name = get_attachment_name(attachment.name)
+                            file_result = fileResult(file_name, attachment.content)
 
+                            # check for error
+                            if file_result["Type"] == entryTypes["error"]:
+                                demisto.error(file_result["Contents"])
+                                raise Exception(file_result["Contents"])
+
+                            # save attachment to incident
+                            incident["attachment"].append(
+                                {
+                                    "path": file_result["FileID"],
+                                    "name": get_attachment_name(attachment.name),
+                                }
+                            )
+                    except TypeError as e:
+                        if str(e) != "must be string or buffer, not None":
+                            raise
+                        continue
+                else:
+                    # other item attachment
+                    label_attachment_type = "attachmentItems"
+                    label_attachment_id_type = "attachmentItemsId"
+
+                    # save the attachment
+                    if attachment.item.mime_content:
+                        mime_content = attachment.item.mime_content
+                        attached_email = email.message_from_bytes(mime_content) if isinstance(mime_content, bytes) \
+                            else email.message_from_string(mime_content)
+                        if attachment.item.headers:
+                            attached_email_headers = []
+                            for h, v in attached_email.items():
+                                if not isinstance(v, str):
+                                    try:
+                                        v = str(v)
+                                    except:  # noqa: E722
+                                        demisto.debug('cannot parse the header "{}"'.format(h))
+                                        continue
+
+                                v = ' '.join(map(str.strip, v.split('\r\n')))
+                                attached_email_headers.append((h, v))
+                            for header in attachment.item.headers:
+                                if (
+                                        (header.name, header.value)
+                                        not in attached_email_headers
+                                        and header.name != "Content-Type"
+                                ):
+                                    attached_email.add_header(header.name, header.value)
+                        attached_email_bytes = attached_email.as_bytes()
+                        chardet_detection = chardet.detect(attached_email_bytes)
+                        encoding = chardet_detection.get('encoding', 'utf-8') or 'utf-8'
+                        try:
+                            # Trying to decode using the detected encoding
+                            data = attached_email_bytes.decode(encoding)
+                        except UnicodeDecodeError:
+                            # In case the detected encoding fails apply the default encoding
+                            demisto.info(f'Could not decode attached email using detected encoding:{encoding}, retrying '
+                                         f'using utf-8.\nAttached email:\n{attached_email}')
+                            data = attached_email_bytes.decode('utf-8')
+
+                        file_result = fileResult(
+                            get_attachment_name(attachment.name) + ".eml",
+                            data,
+                        )
+
+                    if file_result:
                         # check for error
                         if file_result["Type"] == entryTypes["error"]:
                             demisto.error(file_result["Contents"])
@@ -2033,82 +2098,20 @@ def parse_incident_from_item(item):
                         incident["attachment"].append(
                             {
                                 "path": file_result["FileID"],
-                                "name": get_attachment_name(attachment.name),
+                                "name": get_attachment_name(attachment.name) + ".eml",
                             }
                         )
-                except TypeError as e:
-                    if str(e) != "must be string or buffer, not None":
-                        raise
-                    continue
-            else:
-                # other item attachment
-                label_attachment_type = "attachmentItems"
-                label_attachment_id_type = "attachmentItemsId"
-
-                # save the attachment
-                if attachment.item.mime_content:
-                    mime_content = attachment.item.mime_content
-                    attached_email = email.message_from_bytes(mime_content) if isinstance(mime_content, bytes) \
-                        else email.message_from_string(mime_content)
-                    if attachment.item.headers:
-                        attached_email_headers = []
-                        for h, v in attached_email.items():
-                            if not isinstance(v, str):
-                                try:
-                                    v = str(v)
-                                except:  # noqa: E722
-                                    demisto.debug('cannot parse the header "{}"'.format(h))
-                                    continue
-
-                            v = ' '.join(map(str.strip, v.split('\r\n')))
-                            attached_email_headers.append((h, v))
-                        for header in attachment.item.headers:
-                            if (
-                                    (header.name, header.value)
-                                    not in attached_email_headers
-                                    and header.name != "Content-Type"
-                            ):
-                                attached_email.add_header(header.name, header.value)
-                    attached_email_bytes = attached_email.as_bytes()
-                    chardet_detection = chardet.detect(attached_email_bytes)
-                    encoding = chardet_detection.get('encoding', 'utf-8') or 'utf-8'
-                    try:
-                        # Trying to decode using the detected encoding
-                        data = attached_email_bytes.decode(encoding)
-                    except UnicodeDecodeError:
-                        # In case the detected encoding fails apply the default encoding
-                        demisto.info(f'Could not decode attached email using detected encoding:{encoding}, retrying '
-                                     f'using utf-8.\nAttached email:\n{attached_email}')
-                        data = attached_email_bytes.decode('utf-8')
-
-                    file_result = fileResult(
-                        get_attachment_name(attachment.name) + ".eml",
-                        data,
-                    )
-
-                if file_result:
-                    # check for error
-                    if file_result["Type"] == entryTypes["error"]:
-                        demisto.error(file_result["Contents"])
-                        raise Exception(file_result["Contents"])
-
-                    # save attachment to incident
-                    incident["attachment"].append(
-                        {
-                            "path": file_result["FileID"],
-                            "name": get_attachment_name(attachment.name) + ".eml",
-                        }
-                    )
-
-            labels.append(
-                {
-                    "type": label_attachment_type,
-                    "value": get_attachment_name(attachment.name),
-                }
-            )
-            labels.append(
-                {"type": label_attachment_id_type, "value": attachment.attachment_id.id}
-            )
+                labels.append(
+                    {
+                        "type": label_attachment_type,
+                        "value": get_attachment_name(attachment.name),
+                    }
+                )
+                labels.append(
+                    {"type": label_attachment_id_type, "value": attachment.attachment_id.id}
+                )
+            except ErrorCannotOpenFileAttachment:
+                demisto.error("Could not open file attachment file for message_id: {}".format(item.message_id))
 
     # handle headers
     if item.headers:
