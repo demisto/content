@@ -3,6 +3,123 @@
     "feed": false,
     "id": "Proofpoint TAP Mapper",
     "mapping": {
+        "Phishing Alerts": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Email Internal Message ID": {
+                    "complex": null,
+                    "simple": "GUID"
+                },
+                "Alert Action": {
+                    "complex": null,
+                    "simple": "type"
+                },
+                "Email CC": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "ccAddresses",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Email From": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "fromAddress",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Email In Reply To": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "replyToAddress",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Email Message ID": {
+                    "complex": null,
+                    "simple": "messageID"
+                },
+                "Email Sender IP": {
+                    "complex": null,
+                    "simple": "senderIP"
+                },
+                "Email Subject": {
+                    "complex": null,
+                    "simple": "subject"
+                },
+                "Email To": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "recipient",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "occurred": {
+                    "complex": null,
+                    "simple": "messageTime"
+                }
+            }
+        },
         "Proofpoint TAP - Click Blocked": {
             "dontMapEventToLabels": false,
             "internalMapping": {

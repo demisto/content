@@ -394,7 +394,7 @@ def get_rql_response(args):
     """"
     Retrieve any RQL
     """
-    rql = args.get('rql').encode("utf-8")
+    rql = args.get('rql')
 
     limit = str(args.get('limit', '1'))
     rql += " limit search records to {}".format(limit)
@@ -712,7 +712,7 @@ def fetch_incidents():
     now = int((datetime.utcnow() - datetime.utcfromtimestamp(0)).total_seconds() * 1000)
     last_run = demisto.getLastRun().get('time')
     if not last_run:  # first time fetch
-        last_run = now - parse_date_range(demisto.params().get('fetch_time', '3 days').strip(), to_timestamp=True)[0]
+        last_run = parse_date_range(demisto.params().get('fetch_time', '3 days').strip(), to_timestamp=True)[0]
 
     payload = {'timeRange': {
         'type': 'absolute',
