@@ -89,7 +89,7 @@ server {
 
     proxy_cache_key $scheme$proxy_host$request_uri$extra_cache_key$http_range$http_content_range;
     proxy_set_header Range $http_range;
-    
+
     # Static test file
     location = /nginx-test {
         alias /var/lib/nginx/html/index.html;
@@ -134,8 +134,8 @@ class TAXII2Server:
         self._http_server = http_server
         self._service_address = service_address
         self._auth = None
-        if credentials:
-            self._auth = (credentials.get('identifier', ''), credentials.get('password', ''))
+        if credentials and (identifier := credentials.get('identifier')) and (password := credentials.get('password')):
+            self._auth = (identifier, password)
         self.version = version
         if not (version == TAXII_VER_2_0 or version == TAXII_VER_2_1):
             raise Exception(f'Wrong TAXII 2 Server version: {version}. '
@@ -936,7 +936,7 @@ def main():
 
     collections = get_collections(params)
     version = params.get('version')
-    credentials = params.get('credentials', None)
+    credentials = params.get('credentials', {})
 
     server_links = demisto.demistoUrls()
     server_link_parts: ParseResult = urlparse(server_links.get('server'))
