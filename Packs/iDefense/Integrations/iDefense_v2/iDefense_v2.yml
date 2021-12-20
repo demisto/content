@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: iDefense_v2_FINALE
+  id: iDefense_v2
   version: -1
 configuration:
 - display: URL
@@ -39,7 +39,7 @@ configuration:
   required: false
 description: ACTI provides intelligence regarding security threats and vulnerabilities.
 display: Accenture CTI
-name: iDefense_v2_FINALE
+name: iDefense_v2
 script:
   commands:
   - name: ip
