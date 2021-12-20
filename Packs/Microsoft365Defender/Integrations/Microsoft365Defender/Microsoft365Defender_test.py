@@ -124,24 +124,19 @@ def test_query_set_limit(query: str, limit: int, result: str):
     assert _query_set_limit(query, limit) == result
 
 
-@pytest.mark.parametrize('params, expected_result', [
-    ({'_tenant_id': '_tenant_id', '_app_id': '_app_id'}, 'Client Secret must be provided.'),
-    ({'_tenant_id': '_tenant_id', 'credentials': {'password': '1234'}}, 'Aplication ID must be provided.'),
-    ({'credentials': {'password': '1234'}, '_app_id': '_app_id'}, 'Tenant ID must be provided.')
-])
-def test_params(mocker, params, expected_result):
+def test_params(mocker):
     """
     Given:
       - Configuration parameters
     When:
-      - One of the required parameters are missed.
+      - The required parameter app_id is missed.
     Then:
       - Ensure the exception message as expected.
     """
 
-    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'params', return_value={'_tenant_id': '_tenant_id', 'credentials': {'password': '1234'}})
 
     with pytest.raises(Exception) as e:
         main()
 
-    assert expected_result in str(e.value)
+    assert 'Aplication ID must be provided.' in str(e.value)
