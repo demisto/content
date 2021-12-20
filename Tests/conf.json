@@ -2961,7 +2961,8 @@
         },
         {
             "integrations": "PaloAltoNetworks_PrismaCloudCompute",
-            "playbookID": "PaloAltoNetworks_PrismaCloudCompute-Test"
+            "playbookID": "PaloAltoNetworks_PrismaCloudCompute-Test",
+            "instance_names": "prisma_cloud_compute_21_04"
         },
         {
             "integrations": "SaasSecurity",
@@ -4312,7 +4313,7 @@
                 "Rasterize",
                 "Demisto Lock"
             ],
-            "instance_names": "no_sync"
+            "instance_names": "no_sync_long_timeout"
         },
         {
             "playbookID": "PCAP Search test",
@@ -4920,14 +4921,14 @@
         "Cisco Firepower - Test": "Issue 32412",
         "cisco-ise-test-playbook": "Issue 44351",
         "GuardiCoreV2-Test": "Issue 43822",
-        "LogRhythm REST test": "Issue 40654",
         "ExtractAttackPattern-Test": "Issue 44095",
         "test_MsGraphFiles prod": "Issue 44214",
         "EWS_O365_test": "Issue 25605",
         "Cherwell - test": "Issue 26780",
         "Cherwell Example Scripts - test": "Issue 27107",
         "Cofense Intelligence v2 test": "Issue 44499",
-        "LogRhythm-Test-Playbook": "Issue 27164"
+        "Endpoint Malware Investigation - Generic - Test": "Issue 44779",
+        "Mimecast test": "Issue 26906"
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
@@ -5008,7 +5009,6 @@
         "Phish.AI": "Issue 17291",
         "MaxMind GeoIP2": "Issue 18932.",
         "Exabeam": "Issue 19371",
-        "PaloAltoNetworks_PrismaCloudCompute": "Issue 27112",
         "Ivanti Heat": "Issue 26259",
         "AWS - Athena - Beta": "Issue 19834",
         "SNDBOX": "Issue 28826",
@@ -5048,6 +5048,7 @@
     ],
     "unmockable_integrations": {
         "NetscoutArborSightline": "Uses timestamp",
+        "Cylance Protect v2": "uses time-based JWT token",
         "EwsExtension": "Powershell does not support proxy",
         "EWS Extension Online Powershell v2": "Powershell does not support proxy/ssl",
         "Office 365 Feed": "Client sends a unique uuid as first request of every run",
