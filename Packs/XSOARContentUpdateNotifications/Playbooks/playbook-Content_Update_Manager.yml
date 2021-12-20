@@ -28,7 +28,7 @@ tasks:
       {
         "position": {
           "x": 827.5,
-          "y": -20
+          "y": -190
         }
       }
     note: false
@@ -64,7 +64,7 @@ tasks:
       {
         "position": {
           "x": 827.5,
-          "y": 480
+          "y": 310
         }
       }
     note: false
@@ -99,8 +99,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 607.5,
-          "y": 4390
+          "x": 460,
+          "y": 4530
         }
       }
     note: false
@@ -156,8 +156,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 607.5,
-          "y": 4575
+          "x": 460,
+          "y": 4715
         }
       }
     note: false
@@ -387,7 +387,7 @@ tasks:
       {
         "position": {
           "x": 2010,
-          "y": 4050
+          "y": 4210
         }
       }
     note: false
@@ -416,8 +416,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 607.5,
-          "y": 4225
+          "x": 460,
+          "y": 4385
         }
       }
     note: false
@@ -613,12 +613,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: eb205155-15e2-42e6-8858-a34252bd2a44
+    taskid: 437698b0-798e-42d9-89fb-85e74034d9ad
     type: regular
     task:
-      id: eb205155-15e2-42e6-8858-a34252bd2a44
+      id: 437698b0-798e-42d9-89fb-85e74034d9ad
       version: -1
-      name: Set closing information - successful update
+      name: Set closing information - finished update
       description: Set closing reason and notes for the investigation.
       script: Builtin|||setIncident
       type: regular
@@ -629,15 +629,15 @@ tasks:
       - "17"
     scriptarguments:
       closeNotes:
-        simple: All packs were updated successfully.
+        simple: The "Content Update Manager" has finished it's run.
       closeReason:
         simple: Resolved
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1330,
-          "y": 4050
+          "x": 460,
+          "y": 4210
         }
       }
     note: false
@@ -668,7 +668,7 @@ tasks:
       {
         "position": {
           "x": 827.5,
-          "y": 305
+          "y": 135
         }
       }
     note: false
@@ -798,8 +798,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -830,
-          "y": 4050
+          "x": -390,
+          "y": 4210
         }
       }
     note: false
@@ -826,9 +826,9 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "54"
-      "yes":
       - "50"
+      "yes":
+      - "72"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -842,7 +842,7 @@ tasks:
       {
         "position": {
           "x": 420,
-          "y": 3215
+          "y": 3200
         }
       }
     note: false
@@ -854,10 +854,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 500fa4ce-3f9a-43bb-8915-c4547fc61fc0
+    taskid: f1d6c8e7-05a3-4a68-8929-b4a100a7a2cd
     type: regular
     task:
-      id: 500fa4ce-3f9a-43bb-8915-c4547fc61fc0
+      id: f1d6c8e7-05a3-4a68-8929-b4a100a7a2cd
       version: -1
       name: Send Slack notification
       description: Sends a Slack message to a user, group, or channel.
@@ -867,7 +867,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+      - "30"
     scriptarguments:
       channel:
         complex:
@@ -875,17 +875,27 @@ tasks:
       ignoreAddURL:
         simple: "true"
       message:
-        simple: The content packs were updated successfully by the "Content Update
-          Manager"!
-      threadID:
-        simple: ${Slack.Thread.ID}
+        complex:
+          root: ContentDataPreCheck
+          transformers:
+          - operator: Stringify
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: |+
+                    The "Content Update Manager" playbook  has finished updating the packs!
+
+                    The following packs were not updated successfully:
+
+              suffix: {}
     continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 810,
-          "y": 3700
+          "x": -60,
+          "y": 3860
         }
       }
     note: false
@@ -909,13 +919,13 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "67"
+      - "19"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -120,
-          "y": 3870
+          "x": 460,
+          "y": 4040
         }
       }
     note: false
@@ -927,10 +937,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: d3753217-6199-45ba-8d1b-be8d92abfc0a
+    taskid: 2cee83a9-3329-451a-8618-ff535552f69d
     type: condition
     task:
-      id: d3753217-6199-45ba-8d1b-be8d92abfc0a
+      id: 2cee83a9-3329-451a-8618-ff535552f69d
       version: -1
       name: Is there a user filter?
       description: Checks whether the user provided a specific content
@@ -940,14 +950,14 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "33"
-      "Yes":
       - "35"
+      "No":
+      - "33"
     separatecontext: false
     conditions:
-    - label: "Yes"
+    - label: "No"
       condition:
-      - - operator: isNotEqualString
+      - - operator: isEqualString
           left:
             value:
               complex:
@@ -958,11 +968,17 @@ tasks:
           right:
             value:
               simple: all
+        - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: inputs.packs
+            iscontext: true
     view: |-
       {
         "position": {
           "x": 120,
-          "y": 830
+          "y": 660
         }
       }
     note: false
@@ -987,7 +1003,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "48"
+      - "71"
     scriptarguments:
       append:
         simple: "false"
@@ -1001,8 +1017,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 390,
-          "y": 1005
+          "x": 400,
+          "y": 830
         }
       }
     note: false
@@ -1048,7 +1064,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "48"
+      - "71"
     scriptarguments:
       append:
         simple: "false"
@@ -1072,8 +1088,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -147.5,
-          "y": 1005
+          "x": -137.5,
+          "y": 830
         }
       }
     note: false
@@ -1134,7 +1150,7 @@ tasks:
       {
         "position": {
           "x": 827.5,
-          "y": 655
+          "y": 485
         }
       }
     note: false
@@ -1164,7 +1180,7 @@ tasks:
       {
         "position": {
           "x": 2010,
-          "y": 830
+          "y": 660
         }
       }
     note: false
@@ -1193,7 +1209,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -830,
+          "x": -390,
           "y": 1525
         }
       }
@@ -1218,7 +1234,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "19"
+      - "30"
       Send Slack channel update:
       - "29"
     separatecontext: false
@@ -1257,8 +1273,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 850,
-          "y": 3530
+          "x": -20,
+          "y": 3690
         }
       }
     note: false
@@ -1746,10 +1762,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: e606e9b9-1c78-4d35-870d-728ee35c2005
+    taskid: 45c78f27-2fb9-4a64-8e8c-a9f1491d92ac
     type: regular
     task:
-      id: e606e9b9-1c78-4d35-870d-728ee35c2005
+      id: 45c78f27-2fb9-4a64-8e8c-a9f1491d92ac
       version: -1
       name: Add available updates to layout
       description: Add the list of available updates to the layout.
@@ -1812,8 +1828,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1290,
-          "y": 3390
+          "x": 420,
+          "y": 3540
         }
       }
     note: false
@@ -1837,7 +1853,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "19"
+      - "30"
       Send Slack User:
       - "53"
     separatecontext: false
@@ -1876,8 +1892,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1290,
-          "y": 3530
+          "x": 420,
+          "y": 3690
         }
       }
     note: false
@@ -1889,10 +1905,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: caa74c3b-114a-40b0-8af8-ad8896b52ae5
+    taskid: cfe9002e-376c-4245-8675-863e7f75cea1
     type: regular
     task:
-      id: caa74c3b-114a-40b0-8af8-ad8896b52ae5
+      id: cfe9002e-376c-4245-8675-863e7f75cea1
       version: -1
       name: Send Slack notification
       description: Sends a Slack message to a user, group, or channel.
@@ -1902,269 +1918,35 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+      - "30"
     scriptarguments:
       ignoreAddURL:
         simple: "true"
       message:
-        simple: The content packs were updated successfully by the "Content Update
-          Manager"!
-      threadID:
-        simple: ${Slack.Thread.ID}
-      to:
         complex:
-          root: inputs.slackuser
-    continueonerror: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1330,
-          "y": 3700
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "54":
-    id: "54"
-    taskid: 326f8e14-5f06-4206-8c27-babb53bc8e1a
-    type: title
-    task:
-      id: 326f8e14-5f06-4206-8c27-babb53bc8e1a
-      version: -1
-      name: Send Slack Notification - Failure
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "55"
-      - "56"
-      - "66"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -120,
-          "y": 3390
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "55":
-    id: "55"
-    taskid: 42bbe4da-be68-4936-8f06-2858559a4178
-    type: condition
-    task:
-      id: 42bbe4da-be68-4936-8f06-2858559a4178
-      version: -1
-      name: Are there Slack channels?
-      description: Checks if a Slack channel is provided in the inputs and whether any Slack integrations are configured.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "30"
-      Send Slack channel update:
-      - "57"
-    separatecontext: false
-    conditions:
-    - label: Send Slack channel update
-      condition:
-      - - operator: isNotEmpty
-          left:
+          root: ContentDataPreCheck
+          transformers:
+          - operator: Stringify
+          - operator: concat
+            args:
+              prefix:
             value:
-              complex:
-                root: modules
-                filters:
-                - - operator: containsString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Slack
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.slackchannel
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": -550,
-          "y": 3530
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "56":
-    id: "56"
-    taskid: 03688308-8a8f-4ac2-8843-d3012d2c7d22
-    type: condition
-    task:
-      id: 03688308-8a8f-4ac2-8843-d3012d2c7d22
-      version: -1
-      name: Are there Slack users?
-      description: Checks if a Slack username is provided in the inputs and whether any Slack integrations are configured.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "30"
-      Send Slack User:
-      - "58"
-    separatecontext: false
-    conditions:
-    - label: Send Slack User
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: containsString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Slack
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
+                  simple: |+
+                    The "Content Update Manager" playbook  has finished updating the packs!
+
+                    The following packs were not updated successfully:
+
+              suffix: {}
+      to:
               complex:
                 root: inputs.slackuser
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": -120,
-          "y": 3530
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "57":
-    id: "57"
-    taskid: c220273d-e298-4b97-8eac-e94d0eb8a24b
-    type: regular
-    task:
-      id: c220273d-e298-4b97-8eac-e94d0eb8a24b
-      version: -1
-      name: Send Slack notification
-      description: Sends a Slack message to a user, group, or channel.
-      script: '|||send-notification'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "30"
-    scriptarguments:
-      channel:
-        complex:
-          root: inputs.slackchannel
-      ignoreAddURL:
-        simple: "true"
-      message:
-        simple: |-
-          The content packs were not updated by the "Content Update Manager".
-          For more information about the issue please visit: ${ServerURL.URL}/#/WorkPlan/${incident.id}
     continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -590,
-          "y": 3700
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "58":
-    id: "58"
-    taskid: 13f2282a-a0b4-4cb3-881c-a5b7f97904b3
-    type: regular
-    task:
-      id: 13f2282a-a0b4-4cb3-881c-a5b7f97904b3
-      version: -1
-      name: Send Slack notification
-      description: Sends a Slack message to a user, group, or channel.
-      script: '|||send-notification'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "30"
-    scriptarguments:
-      ignoreAddURL:
-        simple: "true"
-      message:
-        simple: |-
-          The content packs were not updated by the "Content Update Manager".
-          For more information about the issue please visit ${ServerURL.URL}/#/WorkPlan/${incident.id}
-      to:
-        complex:
-          root: inputs.slackuser
-    continueonerror: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -40,
-          "y": 3700
+          "x": 460,
+          "y": 3860
         }
       }
     note: false
@@ -2294,7 +2076,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "26"
+      - "23"
     separatecontext: false
     view: |-
       {
@@ -2324,7 +2106,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "19"
+      - "30"
       Send Emails:
       - "64"
     separatecontext: false
@@ -2363,8 +2145,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1730,
-          "y": 3530
+          "x": 860,
+          "y": 3690
         }
       }
     note: false
@@ -2376,10 +2158,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "64":
     id: "64"
-    taskid: 9e74e8cc-8c38-4123-8043-b2fcb21c686b
+    taskid: 33560759-b03e-44a7-8ba8-ac3d47678487
     type: regular
     task:
-      id: 9e74e8cc-8c38-4123-8043-b2fcb21c686b
+      id: 33560759-b03e-44a7-8ba8-ac3d47678487
       version: -1
       name: Send Email notification
       description: Sends an email notification using Gmail.
@@ -2389,11 +2171,23 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+      - "30"
     scriptarguments:
       body:
-        simple: The content packs were updated successfully by the "Content Update
-          Manager"!
+        complex:
+          root: ContentDataPreCheck
+          transformers:
+          - operator: Stringify
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: |+
+                    The "Content Update Manager" playbook  has finished updating the packs!
+
+                    The following packs were not updated successfully:
+
+              suffix: {}
       subject:
         simple: Content packs updated
       to:
@@ -2403,149 +2197,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1780,
-          "y": 3700
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "65":
-    id: "65"
-    taskid: 7522aa82-7488-4efb-8712-a4be2b756648
-    type: regular
-    task:
-      id: 7522aa82-7488-4efb-8712-a4be2b756648
-      version: -1
-      name: Send Email notification
-      description: Sends an email notification using Gmail.
-      script: '|||send-mail'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "30"
-    scriptarguments:
-      body:
-        simple: |-
-          The content packs were not updated by the "Content Update Manager".
-          For more information about the issue please visit: ${ServerURL.URL}/#/WorkPlan/${incident.id}
-      subject:
-        simple: Content packs were not updated
-      to:
-        complex:
-          root: inputs.notificationemail
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 380,
-          "y": 3700
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "66":
-    id: "66"
-    taskid: 9c976df5-c243-42ad-84cd-e4073925e52a
-    type: condition
-    task:
-      id: 9c976df5-c243-42ad-84cd-e4073925e52a
-      version: -1
-      name: Are there e-mail addresses?
-      description: Checks if e-mail addresses are provided in the inputs and whether any "send-mail" compatible integrations are enabled.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "30"
-      Send Emails:
-      - "65"
-    separatecontext: false
-    conditions:
-    - label: Send Emails
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.commands.name
-                      iscontext: true
-                    right:
-                      value:
-                        simple: send-mail
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.notificationemail
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 300,
-          "y": 3530
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "67":
-    id: "67"
-    taskid: f1512bfa-ecbc-4e20-83f7-3887f8976d50
-    type: regular
-    task:
-      id: f1512bfa-ecbc-4e20-83f7-3887f8976d50
-      version: -1
-      name: Set closing information - unsuccessful update
-      description: Sets closing reason and notes for the investigation.
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "17"
-    scriptarguments:
-      closeNotes:
-        simple: Timeout reached for updating packs. The packs were not updated - auto-closing.
-      closeReason:
-        simple: Resolved
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -120,
-          "y": 4050
+          "x": 910,
+          "y": 3860
         }
       }
     note: false
@@ -2563,7 +2216,7 @@ tasks:
       id: 8ea57849-9250-4e06-8c8b-3f675deb3762
       version: -1
       name: Set description to layout
-      description: commands.local.cmd.set.incident
+      description: Set description to layout
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -2574,15 +2227,14 @@ tasks:
     scriptarguments:
       contentupdatemanagerdescription:
         simple: |-
-          This playbook checks for any available content updates for selected installed content packs and notifies users via e-mail or Slack. 
-          It also contains an auto-update flow that lets users decide via playbook inputs or communication tasks if they want to trigger an auto-update process to install all updates that were found.
-          This playbook can be used as a Cortex XSOAR job to help users track marketplace pack updates and install them regularly.
+          This playbook will check to see if there are any content updates available for chosen installed content packs, and notify users via e-mail or Slack.
+          The playbook will also let users decide via playbook inputs or communication tasks on whether they want to trigger an auto-update process to install all updates that were found. The playbook can be used as an XSOAR job to help users track marketplace pack updates and install them regularly.
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 827.5,
-          "y": 130
+          "y": -40
         }
       }
     note: false
@@ -2594,12 +2246,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "70":
     id: "70"
-    taskid: 3522725a-7dd1-4a0b-88d7-1441e66f36a7
+    taskid: 1d35b7cd-e866-4190-8d96-08ccd9522985
     type: regular
     task:
-      id: 3522725a-7dd1-4a0b-88d7-1441e66f36a7
+      id: 1d35b7cd-e866-4190-8d96-08ccd9522985
       version: -1
-      name: ContentPackInstaller
+      name: Install updates for chosen packs
       description: Content packs installer from marketplace.
       scriptName: ContentPackInstaller
       type: regular
@@ -2630,6 +2282,78 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: a730d456-6b3c-4944-8245-feff6fe19527
+    type: regular
+    task:
+      id: a730d456-6b3c-4944-8245-feff6fe19527
+      version: -1
+      name: Save latest release notes
+      scriptName: GetLatestReleaseNotes
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      content_data:
+        complex:
+          root: ${ContentData}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 120,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: c2e384a7-c871-4b4b-8472-8ed7e5421a3d
+    type: regular
+    task:
+      id: c2e384a7-c871-4b4b-8472-8ed7e5421a3d
+      version: -1
+      name: Set successful update
+      description: Set successful update.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: ContentDataPreCheck
+      value:
+        simple: None.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 3370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -2637,22 +2361,15 @@ view: |-
       "12_43_#default#": 0.36,
       "13_43_#default#": 0.41,
       "36_37_#default#": 0.58,
-      "39_19_#default#": 0.26,
       "43_40_yes": 0.17,
-      "44_40_yes": 0.29,
-      "52_19_#default#": 0.26,
-      "55_30_#default#": 0.42,
-      "56_30_#default#": 0.25,
-      "56_58_Send Slack User": 0.71,
-      "63_19_#default#": 0.32,
-      "66_30_#default#": 0.19
+      "44_40_yes": 0.29
     },
     "paper": {
       "dimensions": {
-        "height": 4660,
-        "width": 3220,
-        "x": -830,
-        "y": -20
+        "height": 4970,
+        "width": 2780,
+        "x": -390,
+        "y": -190
       }
     }
   }
