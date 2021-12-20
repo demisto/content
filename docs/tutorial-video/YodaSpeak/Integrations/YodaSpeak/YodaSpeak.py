@@ -40,7 +40,7 @@ def test_module(client: Client) -> str:
 
         return 'ok'
 
-    except DemistoException as e:
+    except Exception as e:
         exception_text = str(e).lower()
         if 'forbidden' in exception_text or 'authorization' in exception_text:
             return 'Authorization Error: make sure API Key is correctly set'
@@ -84,12 +84,15 @@ def main() -> None:
         client = Client(api_key=api_key, base_url=base_url, verify=verify, proxy=proxy)
 
         if command == 'test-module':
-            # This is the call made when pressing the integration Test button.
+            # This is the call made when clicking the integration Test button.
             return_results(test_module(client))
+
         elif command == 'yoda-speak-translate':
             return_results(translate_command(client, **args))
+
         else:
             raise NotImplementedError(f"command {command} is not implemented.")
+
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
@@ -97,8 +100,6 @@ def main() -> None:
                                 "Error:",
                                 str(e))))
 
-
-''' ENTRY POINT '''
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
