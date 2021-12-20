@@ -11,7 +11,7 @@ from freezegun import freeze_time
 from EWSO365 import (ExpandGroup, GetSearchableMailboxes, fetch_emails_as_incidents,
                      add_additional_headers, fetch_last_emails, find_folders,
                      get_expanded_group, get_searchable_mailboxes, handle_html,
-                     handle_transient_files, parse_incident_from_item)
+                     handle_transient_files, parse_incident_from_item, main, sub_main)
 
 with open("test_data/commands_outputs.json", "r") as f:
     COMMAND_OUTPUTS = json.load(f)
@@ -505,3 +505,28 @@ def test_parse_incident_from_item_with_attachments():
     )
     incident = parse_incident_from_item(message)
     assert incident['attachment']
+
+
+@pytest.mark.parametrize('params, expected_result', [
+    ({'_tenant_id': '_tenant_id', '_client_id': '_client_id', 'default_target_mailbox': 'default_target_mailbox'}, 'Key / Application Secret must be provided.'),
+    ({'_tenant_id': '_tenant_id', 'credentials': {'password': '1234'},
+      'default_target_mailbox': 'default_target_mailbox'}, 'ID / Application ID ID must be provided.'),
+    ({'credentials': {'password': '1234'}, '_client_id': '_auth_id',
+      'default_target_mailbox': 'default_target_mailbox'}, 'Token / Tenant ID must be provided.')
+])
+def test_params(mocker, params, expected_result):
+    """
+    Given:
+      - Configuration parameters
+    When:
+      - One of the required parameters are missed.
+    Then:
+      - Ensure the exception message as expected.
+    """
+
+    mocker.patch.object(demisto, 'params', return_value=params)
+
+    with pytest.raises(Exception) as e:
+        sub_main()
+
+    assert expected_result in str(e.value)
