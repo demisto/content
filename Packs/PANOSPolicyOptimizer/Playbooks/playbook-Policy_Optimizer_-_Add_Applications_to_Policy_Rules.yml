@@ -140,8 +140,8 @@ tasks:
         fieldassociated: ""
         placeholder: ""
         tooltip: You can choose more than one rule to update at any time, but only
-          one application to apply to these rules. If you wish to change different
-          application, choose the different rule in the next playbook run (loop).
+          one application to apply to these rules. To change the application,
+          choose a different rule in the next playbook run (loop).
         readonly: false
       - id: "1"
         label: ""
@@ -155,8 +155,8 @@ tasks:
         optionsarg: []
         fieldassociated: ""
         placeholder: ""
-        tooltip: Choose application to add to the rule. The new application will replace
-          the current application in the rule configuration.
+        tooltip: Choose an application to add to the rule.
+        The new application replaces the current application in the rule configuration.
         readonly: false
       title: Add applications to policy rules
       description: "Choose an application to add to the rule."
@@ -291,9 +291,7 @@ tasks:
       id: c3c5e787-0891-4ecd-8417-5774f648adc3
       version: -1
       name: Delete rules information from context
-      description: |-
-        Delete fields from context.
-        This automation runs using the default Limited User role, unless you explicitly change the [permissions](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html).
+      description: Delete the rules information from context.
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -330,9 +328,7 @@ tasks:
       id: 80c25bf6-2cee-440b-8bb5-239f4ec2fd51
       version: -1
       name: Set no rules to context
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-        This automation runs using the default Limited User role, unless you explicitly change the [permissions](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html).
+      description: Set "No rules to update" to the context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -370,9 +366,7 @@ tasks:
       id: dbf138df-2cb5-49c1-8e19-8b751831bedc
       version: -1
       name: Save handled rule
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-        This automation runs using the default Limited User role, unless you explicitly change the [permissions](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html).
+      description: Save the details of the handled rule to the context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false

@@ -722,7 +722,7 @@ tasks:
       id: 014fb411-be57-4dcf-86ba-9280a46a7699
       version: -1
       name: Close investigation
-      description: commands.local.cmd.close.inv
+      description: Close the investigation.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -1059,7 +1059,7 @@ tasks:
       id: f1826f22-a400-408e-8b6f-982b6b1bf6d2
       version: -1
       name: Ask by task only
-      description: Sends a message to a user, group, or channel.
+      description: Ask the user what action they want to take by a collection task.
       type: collection
       iscommand: false
       brand: ""

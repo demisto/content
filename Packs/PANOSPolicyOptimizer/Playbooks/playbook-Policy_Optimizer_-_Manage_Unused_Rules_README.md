@@ -24,7 +24,7 @@ IsIntegrationAvailable
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| slack_user | Slack user to notify about unused rules. | mgoldberg@paloaltonetworks.com | Optional |
+| slack_user | Slack user to notify about unused rules. |  | Optional |
 | email_address | User email address user to notify about unused rules. |  | Optional |
 | auto_commit | Specifies whether you want to auto-commit the configuration for the PAN-OS policy changes automatically \(Yes/No\). |  | Optional |
 

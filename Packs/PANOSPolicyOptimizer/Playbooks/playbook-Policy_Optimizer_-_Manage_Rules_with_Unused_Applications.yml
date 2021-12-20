@@ -648,7 +648,7 @@ tasks:
       id: 014fb411-be57-4dcf-86ba-9280a46a7699
       version: -1
       name: Close investigation
-      description: commands.local.cmd.close.inv
+      description: Close the investigation.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -939,7 +939,7 @@ tasks:
       id: f1706759-07e9-4a87-8437-e7035349cdb4
       version: -1
       name: Send Slack message
-      description: Sends an email using Gmail.
+      description: Sends a Slack message to a user.
       type: collection
       iscommand: false
       brand: ""
@@ -952,7 +952,7 @@ tasks:
           in your environment."
       to:
         complex:
-          root: inputs.email_address
+          root: inputs.slack_user
     separatecontext: false
     view: |-
       {
@@ -1069,7 +1069,7 @@ tasks:
       id: e1b4f120-f9e0-4cbb-85d1-4d3795746b1f
       version: -1
       name: Ask by task only
-      description: Sends an email using Gmail.
+      description: Ask the user what action they want to take by a collection task.
       type: collection
       iscommand: false
       brand: ""

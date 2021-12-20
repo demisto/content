@@ -927,7 +927,7 @@ tasks:
       id: 4e24957c-6ba5-4d53-8bfa-7289ed5d0747
       version: -1
       name: Send Slack message
-      description: Sends an email using Gmail.
+      description: Sends a Slack message to a user.
       type: collection
       iscommand: false
       brand: ""
@@ -1053,7 +1053,7 @@ tasks:
       id: f8a1f7c1-899d-4f5b-8cd6-5ad66a9ef65c
       version: -1
       name: Ask by task only
-      description: Sends an email using Gmail.
+      description: Ask the user what action they want to take by a collection task.
       type: collection
       iscommand: false
       brand: ""

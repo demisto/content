@@ -339,7 +339,7 @@ tasks:
       id: d9379699-dda4-41b0-87ee-5ae6c7cd75dd
       version: -1
       name: Set description in layout
-      description: commands.local.cmd.set.incident
+      description: Set the use-case details to the layout.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
