@@ -118,7 +118,7 @@ class ContextData:
         """
         if key is not None:
             dx = self.__demisto
-            if key != '.' and key.startswith('.'):
+            if key != '.' and not key.startswith('.=') and key.startswith('.'):
                 dx = delistize(node)
                 key = key[1:]
             else:
@@ -129,8 +129,7 @@ class ContextData:
                         break
             if not key or key == '.':
                 return dx
-            elif isinstance(dx, (list, dict)):
-                return demisto.dt(dx, key)
+            return demisto.dt(dx, key)
         return None
 
 
