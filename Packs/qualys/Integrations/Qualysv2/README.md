@@ -19860,12 +19860,22 @@ Cancel running report
 {
     "Qualys": {
         "Report": {
+            "DATETIME": "2021-12-20T12:00:02Z",
+            "TEXT": "Report cancelled successfully",
             "ID": "9229164"
         }
     }
 }
 ```
-``` ```
+.``` ```
+
+#### Human Readable Output
+>### Canceled report
+>|DATETIME|ID|TEXT|
+>|---|---|---|
+>| 2021-12-20T12:00:02Z | 9229164 | Report cancelled successfully |
+
+
 ### qualys-report-delete
 ***
 Delete a saved report in the user’s Report Share
@@ -19889,6 +19899,31 @@ Delete a saved report in the user’s Report Share
 | Qualys.ScheduleScan.DATETIME | Date | Date of when command was executed. | 
 | Qualys.ScheduleScan.TEXT | String | Qualys response for report deletion. | 
 
+
+#### Command Example
+```!qualys-report-delete id=9470634```
+
+#### Context Example
+```json
+{
+    "Qualys": {
+        "Report": {
+            "DATETIME": "2021-12-20T12:00:02Z",
+            "TEXT": "Report deleted successfully",
+            "ID": "9470634"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+
+>### Deleted report
+>|DATETIME|ID|TEXT|
+>|---|---|---|
+>| 2021-12-20T12:00:02Z | 9470634 | Report deleted successfully |
+>
 ### qualys-scorecard-launch
 ***
 Launch a vulnerability scorecard report
@@ -20019,11 +20054,11 @@ Launch a vulnerability scorecard report
                 "Launched": [
                     {
                         "KEY": "ID",
-                        "VALUE": "23847367"
+                        "VALUE": "21840817"
                     },
                     {
                         "KEY": "REFERENCE",
-                        "VALUE": "scan/1640001515.47367"
+                        "VALUE": "scan/1622364459.40817"
                     }
                 ]
             }
@@ -20035,11 +20070,10 @@ Launch a vulnerability scorecard report
 #### Human Readable Output
 
 >### New Vulnerability Scan launched
->
 >|KEY|VALUE|
 >|---|---|
->| ID | 23847367 |
->| REFERENCE | scan/1640001515.47367 |
+>| ID | 21840817 |
+>| REFERENCE | scan/1622364459.40817 |
 
 
 ### qualys-vm-scan-action
@@ -20061,6 +20095,14 @@ allows users to take actions on vulnerability scans in their account, like cance
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+```!qualys-vm-scan-action action=delete scan_ref=scan/1621954927.94968```
+
+#### Human Readable Output
+
+>Deleting scan
+
 ### qualys-pc-scan-manage
 ***
 Allows users to take actions on compliance scans in their account, like cancel, pause, resume, delete and fetch completed scan results.
@@ -20083,6 +20125,37 @@ Allows users to take actions on compliance scans in their account, like cancel, 
 | --- | --- | --- |
 | Qualys.Scan.KEY | unknown | Key name, either ID or REFERENCE. | 
 | Qualys.Scan.VALUE | unknown | Value of either ID or REFERENCE. | 
+
+
+#### Command Example
+```!qualys-pc-scan-manage action=delete scan_ref=compliance/1622106967.13620```
+
+#### Context Example
+```json
+{
+    "Qualys": {
+        "Scan": [
+            {
+                "KEY": "ID",
+                "VALUE": "21813620"
+            },
+            {
+                "KEY": "REFERENCE",
+                "VALUE": "compliance/1622106967.13620"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PC Scan
+>|KEY|VALUE|
+>|---|---|
+>| ID | 21813620 |
+>| REFERENCE | compliance/1622106967.13620 |
+
 
 ### qualys-pc-scan-launch
 ***
@@ -20135,11 +20208,11 @@ launch compliance scans.
         "Scan": [
             {
                 "KEY": "ID",
-                "VALUE": "23847401"
+                "VALUE": "21840826"
             },
             {
                 "KEY": "REFERENCE",
-                "VALUE": "compliance/1640001673.47401"
+                "VALUE": "compliance/1622364751.40826"
             }
         ]
     }
@@ -20151,8 +20224,8 @@ launch compliance scans.
 >### New PC Scan launched
 >|KEY|VALUE|
 >|---|---|
->| ID | 23847401 |
->| REFERENCE | compliance/1640001673.47401 |
+>| ID | 21840826 |
+>| REFERENCE | compliance/1622364751.40826 |
 
 
 ### qualys-ip-add
@@ -20197,7 +20270,7 @@ Add IP addresses to the subscription.
     "Qualys": {
         "IP": {
             "Add": {
-                "DATETIME": "2021-12-20T11:58:45Z",
+                "DATETIME": "2021-05-30T08:47:50Z",
                 "TEXT": "IPs successfully added to Vulnerability Management"
             }
         }
@@ -20238,7 +20311,7 @@ gives you the ability to update IP addresses within the subscription.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Qualys.IP.Update.TEXT | unknown | Action result message. | 
-| Qualys.IP.Update.DATETIME | unknown | Date &amp; time of the action. | 
+| Qualys.IP.Update.DATETIME | unknown | Date &amp; time of the action | 
 
 
 #### Command Example
@@ -20250,7 +20323,7 @@ gives you the ability to update IP addresses within the subscription.
     "Qualys": {
         "IP": {
             "Update": {
-                "DATETIME": "2021-12-20T11:58:50Z",
+                "DATETIME": "2021-05-30T08:47:56Z",
                 "TEXT": "IPs successfully updated"
             }
         }
@@ -20298,7 +20371,7 @@ Manage your excluded IPs list using the Excluded IP. The IPs in your excluded IP
 {
     "Qualys": {
         "Endpoint": {
-            "KEY": "Added IPs",
+            "KEY": "IPs already in Excluded IPs list.",
             "VALUE": "1.1.1.1,1.1.2.1"
         }
     }
@@ -20307,7 +20380,7 @@ Manage your excluded IPs list using the Excluded IP. The IPs in your excluded IP
 
 #### Human Readable Output
 
->### Added IPs
+>### IPs already in Excluded IPs list.
 >|ip|
 >|---|
 >| 1.1.1.1 |
@@ -20395,6 +20468,30 @@ Launches a map report
 | Qualys.ScheduleScan.DATETIME | Date | Date of when command was executed. | 
 | Qualys.ScheduleScan.TEXT | String | Qualys response for report launch map. | 
 
+#### Command Example
+```!qualys-report-launch-map domain=qualys-test.com output_format=xml report_refs=map/1618151844.78754 template_id=1528888```
+
+#### Context Example
+```json
+{
+    "Qualys": {
+        "Report": {
+            "ID": "9470650",
+            "DATETIME": "2021-12-20T12:01:38Z",
+            "TEXT": "Report launched successfully."
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>###  New report launched
+>|DATETIME|ID|TEXT|
+>|---|---|---|
+>| 2021-12-20T12:01:38Z | 9470650 | Report launched successfully. |
+
+
 ### qualys-report-launch-host-based-findings
 ***
 Run host based findings report
@@ -20480,6 +20577,31 @@ launches a scan report including scan based findings
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Qualys.Report.ID | unknown | Report ID. | 
+
+
+#### Command Example
+```!qualys-report-launch-scan-based-findings output_format=pdf report_refs=scan/1621951157.94402 template_id=2339987```
+
+#### Context Example
+```json
+{
+    "Qualys": {
+        "Report": {
+            "DATETIME": "2021-12-20T12:00:52Z",
+            "TEXT": "Launch scan based findings successfully"
+            "ID": "9470646"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Scan Based Findings Report Launch
+>|DATETIME|ID|TEXT|
+>|---|---|---|
+>| 2021-12-20T12:00:52Z | 9470646 | Launch scan based findings successfully |
+
 
 ### qualys-report-launch-patch
 ***
@@ -20741,8 +20863,7 @@ Get the list of restricted IPs within the user's subscription.
 {
     "Qualys": {
         "Restricted": {
-            "DATETIME": "2021-12-20T11:59:51Z",
-            "STATUS": "disabled"
+            "Address": "1.9.3.6"
         }
     }
 }
@@ -20751,6 +20872,10 @@ Get the list of restricted IPs within the user's subscription.
 #### Human Readable Output
 
 >### Current Status: disabled
+>|ip|
+>|---|
+>| 1.9.3.6 |
+>
 
 
 ### qualys-ip-restricted-manage
@@ -20788,7 +20913,7 @@ Get the list of restricted IPs within the user's subscription.
     "Qualys": {
         "Restricted": {
             "Manage": {
-                "DATETIME": "2021-12-20T12:01:47Z",
+                "DATETIME": "2021-05-30T08:53:19Z",
                 "ITEM_LIST": {
                     "ITEM": {
                         "KEY": "STATUS",
