@@ -7117,8 +7117,8 @@ if 'requests' in sys.modules:
                 skip_cert_verification()
 
             # removing trailing = char from env var value added by the server
-            entity_timeout = os.getenv('REQUESTS_TIMEOUT.' + (get_script_name() or get_integration_name()), '')[:-1]
-            system_timeout = os.getenv('REQUESTS_TIMEOUT', '')[:-1]
+            entity_timeout = os.getenv('REQUESTS_TIMEOUT.' + (get_integration_name() or get_script_name()), '')
+            system_timeout = os.getenv('REQUESTS_TIMEOUT', '')
             self.timeout = float(entity_timeout or system_timeout or timeout)
 
         def __del__(self):
