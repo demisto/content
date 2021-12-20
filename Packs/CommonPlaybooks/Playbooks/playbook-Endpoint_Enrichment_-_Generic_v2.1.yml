@@ -939,7 +939,7 @@ tasks:
       id: cb25c554-4bce-4f19-8bf1-974a6a51c57d
       version: -1
       name: is Mcafee ePolicy Orchestrator v2 enabled
-      description: "Gets a value and return it. This is to be used in playbook conditional\
+      description: "Gets a value and returns it. This is to be used in playbook conditional\
         \ tasks - get a value from incident field, label or context, and act accordingly.\
         \ \nIf an array is returned. the first value will be the decision making value."
       type: condition
