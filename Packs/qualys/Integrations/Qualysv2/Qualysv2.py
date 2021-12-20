@@ -257,12 +257,6 @@ COMMANDS_PARSE_AND_OUTPUT_DATA: Dict[str, Dict[Any, Any]] = {
         'table_name': 'Host updated',
         'json_path': ['HOST_UPDATE_OUTPUT', 'RESPONSE'],
     },
-    'qualys-scan-delete': {
-        'table_name': 'Deleted Scan',
-        'json_path': ['SIMPLE_RETURN', 'RESPONSE'],
-        'table_headers': ['Deleted', 'ID'],
-        'collection_name': 'ITEM_LIST'
-    },
     'qualys-asset-group-add': {
         'table_name': 'Asset Group Add',
         'json_path': ['SIMPLE_RETURN', 'RESPONSE'],
@@ -292,6 +286,10 @@ COMMANDS_PARSE_AND_OUTPUT_DATA: Dict[str, Dict[Any, Any]] = {
         'table_name': 'Schedule Scan Delete',
         'json_path': ['SIMPLE_RETURN', 'RESPONSE'],
         'collection_name': 'ITEM_LIST'
+    },
+    'qualys-time-zone-code': {
+        'table_name': 'Time Zone Codes',
+        'json_path': ['TIME_ZONES']
     }
 }
 
@@ -449,10 +447,6 @@ COMMANDS_CONTEXT_DATA = {
         'context_prefix': 'Qualys.Endpoint.Update',
         'context_key': 'ID',
     },
-    'qualys-scan-delete': {
-        'context_prefix': 'Qualys.ScheduleScan',
-        'context_key': 'ID',
-    },
     'qualys-asset-group-add': {
         'context_prefix': 'Qualys.AssetGroup',
         'context_key': 'ID'
@@ -476,6 +470,10 @@ COMMANDS_CONTEXT_DATA = {
     'qualys-schedule-scan-delete': {
         'context_prefix': 'Qualys.ScheduleScan',
         'context_key': 'ID'
+    },
+    'qualys-time-zone-code': {
+        'context_prefix': 'Qualys.TimeZone.Code',
+        'context_key': 'TIME_ZONE_CODE'
     }
 }
 
@@ -681,11 +679,6 @@ COMMANDS_API_DATA: Dict[str, Dict[str, str]] = {
         'call_method': 'POST',
         'resp_type': 'text',
     },
-    'qualys-scan-delete': {
-        'api_route': API_SUFFIX + 'schedule/scan/?action=update',
-        'call_method': 'POST',
-        'resp_type': 'text',
-    },
     'qualys-asset-group-add': {
         'api_route': API_SUFFIX + 'asset/group/?action=add',
         'call_method': 'POST',
@@ -714,6 +707,11 @@ COMMANDS_API_DATA: Dict[str, Dict[str, str]] = {
     'qualys-schedule-scan-delete': {
         'api_route': API_SUFFIX + 'schedule/scan/?action=delete',
         'call_method': 'POST',
+        'resp_type': 'text'
+    },
+    'qualys-time-zone-code': {
+        'api_route': '/msp/time_zone_code_list.php',
+        'call_method': 'GET',
         'resp_type': 'text'
     }
 }
@@ -970,11 +968,6 @@ COMMANDS_ARGS_DATA: Dict[str, Any] = {
             ['ids', 'ips']
         ],
     },
-    'qualys-scan-delete': {
-        'args': [
-            'scan_id'
-        ],
-    },
     'qualys-asset-group-add': {
         'args': ['title', 'network_id', 'ips', 'domains', 'dns_names', 'netbios_names', 'cvss_enviro_td',
                  'cvss_enviro_cr', 'cvss_enviro_ir', 'cvss_enviro_ar', 'appliance_ids']
@@ -989,11 +982,10 @@ COMMANDS_ARGS_DATA: Dict[str, Any] = {
         'args': ['id']
     },
     'qualys-schedule-scan-create': {
-        'args': ['scan_title', 'asset_group_ids', 'asset_groups', 'ip', 'option_title', 'frequency_days', 'weekdays'
-                                                                                                          'frequency_weeks',
-                 'frequency_months', 'day_of_month', 'day_of_week', 'week_of_month', 'start_date',
+        'args': ['scan_title', 'asset_group_ids', 'asset_groups', 'ip', 'option_title', 'frequency_days', 'weekdays',
+                 'frequency_weeks', 'frequency_months', 'day_of_month', 'day_of_week', 'week_of_month', 'start_date',
                  'start_hour', 'start_minute', 'time_zone_code', 'exclude_ip_per_scan', 'default_scanner',
-                 'scanners_in_ag'],
+                 'scanners_in_ag', 'observe_dst'],
         'required_groups': [['asset_group_ids', 'asset_groups', 'ip'],
                             ['frequency_days', 'frequency_weeks', 'frequency_months'],
                             ['scanners_in_ag', 'default_scanner']],
@@ -1007,21 +999,31 @@ COMMANDS_ARGS_DATA: Dict[str, Any] = {
         'args': ['id', 'scan_title', 'asset_group_ids', 'asset_groups', 'ip', 'frequency_days', 'weekdays',
                  'frequency_weeks', 'frequency_months', 'day_of_month', 'day_of_week', 'week_of_month', 'start_date',
                  'start_hour', 'start_minute', 'time_zone_code', 'exclude_ip_per_scan', 'default_scanner',
-                 'scanners_in_ag', 'active'],
+                 'scanners_in_ag', 'active', 'observe_dst'],
         'default_added_depended_args': {'frequency_days': {'occurrence': 'daily'},
                                         'frequency_weeks': {'occurrence': 'weekly'},
-                                        'frequency_months': {'occurrence': 'monthly'}},
+                                        'frequency_months': {'occurrence': 'monthly'},
+                                        'start_hour': {'set_start_time': 1},
+                                        'start_minute': {'set_start_time': 1},
+                                        'start_date': {'set_start_time': 1},
+                                        'observe_dst': {'set_start_time': 1},
+                                        'time_zone_code': {'set_start_time': 1}
+                                        },
         'required_depended_args': {'day_of_month': 'frequency_months', 'day_of_week': 'frequency_months',
                                    'week_of_month': 'frequency_months', 'weekdays': 'frequency_weeks',
                                    'start_hour': 'start_date', 'start_minute': 'start_date',
-                                   'time_zone_code': 'start_date'},
+                                   'time_zone_code': 'start_date', 'observe_dst': 'start_date'},
         'at_most_one_groups': [['asset_group_ids', 'asset_groups', 'ip'],
                                ['frequency_days', 'frequency_weeks', 'frequency_months'],
                                ['scanners_in_ag', 'default_scanner']],
     },
     'qualys-schedule-scan-delete': {
         'args': ['id']
+    },
+    'qualys-time-zone-code': {
+        'args': []
     }
+
 }
 
 # Dictionary for arguments used by Qualys API
@@ -1667,7 +1669,10 @@ def build_multiple_values_parsed_output(**kwargs) -> Tuple[List[Any], str]:
     """
     command_parse_and_output_data = kwargs['command_parse_and_output_data']
     handled_result = kwargs['handled_result']
-    asset_collection = handled_result[command_parse_and_output_data['collection_name']]
+    if collection_name := command_parse_and_output_data.get('collection_name'):
+        asset_collection = handled_result[collection_name]
+    else:
+        asset_collection = handled_result
     original_amount = None
     limit_msg = ''
     parsed_output = generate_list_dicts(asset_collection)
@@ -1929,10 +1934,6 @@ def main():
             'result_handler': handle_general_result,
             'output_builder': build_one_value_parsed_output,
         },
-        'qualys-scan-delete': {
-            'result_handler': handle_general_result,
-            'output_builder': build_one_value_parsed_output,
-        },
         'qualys-asset-group-add': {
             'result_handler': handle_general_result,
             'output_builder': build_one_value_parsed_output
@@ -2003,6 +2004,10 @@ def main():
             'output_builder': build_multiple_values_parsed_output,
         },
         'qualys-host-list-detection': {
+            'result_handler': handle_general_result,
+            'output_builder': build_multiple_values_parsed_output
+        },
+        'qualys-time-zone-code': {
             'result_handler': handle_general_result,
             'output_builder': build_multiple_values_parsed_output
         },
