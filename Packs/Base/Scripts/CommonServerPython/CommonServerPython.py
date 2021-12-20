@@ -2533,6 +2533,15 @@ def get_integration_name():
     return demisto.callingContext.get('context', {}).get('IntegrationBrand', '')
 
 
+def get_script_name():
+    """
+    Getting calling script name
+    :return: Calling script name
+    :rtype: ``str``
+    """
+    return demisto.callingContext.get('context', {}).get('ScriptName', '')
+
+
 class Common(object):
     class Indicator(object):
         """
@@ -7108,7 +7117,9 @@ if 'requests' in sys.modules:
                 skip_cert_verification()
 
             # removing trailing = char from env var value added by the server
-            self.timeout = float(os.getenv('REQUESTS_TIMEOUT.' + get_integration_name(), '')[:-1] or os.getenv('REQUESTS_TIMEOUT', '')[:-1] or timeout)  # noqa: E501
+            entity_timeout = os.getenv('REQUESTS_TIMEOUT.' + (get_script_name() or get_integration_name()), '')[:-1]
+            system_timeout = os.getenv('REQUESTS_TIMEOUT', '')[:-1]
+            self.timeout = float(entity_timeout or system_timeout or timeout)
 
         def __del__(self):
             try:

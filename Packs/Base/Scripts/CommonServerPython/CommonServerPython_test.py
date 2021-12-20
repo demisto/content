@@ -2732,12 +2732,22 @@ class TestBaseClient:
         new_client._http_request('get', 'event')
         assert requests_mock.last_request.timeout == timeout
 
-    @pytest.mark.nohandle_calling_context
     def test_http_request_timeout_environ_integration(self, requests_mock, mocker):
         requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
         timeout = 180.1
         # integration name is set to Test in the fixture handle_calling_context
         mocker.patch.dict(os.environ, {'REQUESTS_TIMEOUT.Test': str(timeout) + '='})
+        from CommonServerPython import BaseClient
+        new_client = BaseClient('http://example.com/api/v2/')
+        new_client._http_request('get', 'event')
+        assert requests_mock.last_request.timeout == timeout
+
+    def test_http_request_timeout_environ_script(self, requests_mock, mocker):
+        requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
+        timeout = 23.4
+        script_name = 'TestScript'
+        mocker.patch.dict(os.environ, {'REQUESTS_TIMEOUT.' + script_name: str(timeout) + '='})
+        mocker.patch.dict(demisto.callingContext, {'context': {'ScriptName': script_name}})
         from CommonServerPython import BaseClient
         new_client = BaseClient('http://example.com/api/v2/')
         new_client._http_request('get', 'event')
