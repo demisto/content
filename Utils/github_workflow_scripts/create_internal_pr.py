@@ -117,8 +117,8 @@ def debugging_branches_with_slashes():
     contrib_branch = content_repo.get_branch(head_branch)
     print(f'\nBranch protection:\n{contrib_branch.get_protection()}\n')
     contrib_branch.remove_protection()
-    contrib_branch.remove_required_status_checks()
-    contrib_branch.remove_required_pull_request_reviews()
+    #contrib_branch.remove_required_status_checks()
+    #contrib_branch.remove_required_pull_request_reviews()
 
 
 if __name__ == "__main__":
