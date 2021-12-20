@@ -10312,7 +10312,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                             {
                                 "PRODUCT": "spamassassin",
                                 "VENDOR": "ubuntu"
-}
+                            }
                         ]
                     },
                     "SOLUTION": "Refer to Ubuntu advisory <A HREF=\"https://lists.ubuntu.com/archives/ubuntu-security-announce/2021-April/005956.html\" TARGET=\"_blank\">USN-4899-1</A> for affected packages and patching details, or update with your package manager.\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://launchpad.net/ubuntu/+source/spamassassin/3.4.2-0ubuntu0.16.04.5\" TARGET=\"_blank\">USN-4899-1: 16.04 (Xenial) on src (spamassassin)</A><P> <A HREF=\"https://launchpad.net/ubuntu/+source/spamassassin/3.4.4-1ubuntu1.1\" TARGET=\"_blank\">USN-4899-1: 20.04 (focal) on src (spamassassin)</A><P> <A HREF=\"https://launchpad.net/ubuntu/+source/spamassassin/3.4.2-0ubuntu0.18.04.5\" TARGET=\"_blank\">USN-4899-1: 18.04 (bionic) on src (spamassassin)</A>",
@@ -10750,7 +10750,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                             "EXPLT_SRC": {
                                 "EXPLT_LIST": {
                                     "EXPLT": {
-                                        "DESC": "MariaDB 10.2 - 'wsrep_provider' OS Command Execution - The Exploit-DB Ref : 49765",
+                                        "DESC": "MariaDB 10.2 /MySQL - 'wsrep_provider' OS Command Execution - The Exploit-DB Ref : 49765",
                                         "LINK": "http://www.exploit-db.com/exploits/49765",
                                         "REF": "CVE-2021-27928"
                                     }
@@ -11623,11 +11623,11 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                     "SOFTWARE_LIST": {
                         "SOFTWARE": [
                             {
-                                "PRODUCT": "enterprise_linux",
+                                "PRODUCT": "certificate_system",
                                 "VENDOR": "redhat"
                             },
                             {
-                                "PRODUCT": "certificate_system",
+                                "PRODUCT": "enterprise_linux",
                                 "VENDOR": "redhat"
                             },
                             {
@@ -11672,11 +11672,11 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                     "SOFTWARE_LIST": {
                         "SOFTWARE": [
                             {
-                                "PRODUCT": "enterprise_linux",
+                                "PRODUCT": "certificate_system",
                                 "VENDOR": "redhat"
                             },
                             {
-                                "PRODUCT": "certificate_system",
+                                "PRODUCT": "enterprise_linux",
                                 "VENDOR": "redhat"
                             },
                             {
@@ -11712,7 +11712,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         },
                         "REMOTE": "0"
                     },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-11-15T13:32:23Z",
+                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-04-01T13:01:30Z",
                     "PATCHABLE": "1",
                     "PCI_FLAG": "1",
                     "PUBLISHED_DATETIME": "2021-04-01T13:01:30Z",
@@ -12001,15 +12001,15 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                                 "VENDOR": "redhat"
                             },
                             {
+                                "PRODUCT": "389_directory_server",
+                                "VENDOR": "redhat"
+                            },
+                            {
                                 "PRODUCT": "enterprise_linux",
                                 "VENDOR": "redhat"
                             },
                             {
                                 "PRODUCT": "None",
-                                "VENDOR": "redhat"
-                            },
-                            {
-                                "PRODUCT": "389_directory_server",
                                 "VENDOR": "redhat"
                             }
                         ]
@@ -12188,9 +12188,9 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         },
                         "REMOTE": "0"
                     },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-06-15T05:04:05Z",
+                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-04-08T12:44:31Z",
                     "PATCHABLE": "1",
-                    "PCI_FLAG": "0",
+                    "PCI_FLAG": "1",
                     "PUBLISHED_DATETIME": "2021-04-08T12:44:31Z",
                     "QID": "239207",
                     "SEVERITY_LEVEL": "4",
@@ -12399,7 +12399,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         },
                         "REMOTE": "0"
                     },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-11-15T13:32:23Z",
+                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-04-08T12:44:31Z",
                     "PATCHABLE": "1",
                     "PCI_FLAG": "1",
                     "PUBLISHED_DATETIME": "2021-04-08T12:44:31Z",
@@ -12665,9 +12665,9 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         },
                         "REMOTE": "0"
                     },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-06-15T05:04:01Z",
+                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-04-19T14:36:40Z",
                     "PATCHABLE": "1",
-                    "PCI_FLAG": "0",
+                    "PCI_FLAG": "1",
                     "PUBLISHED_DATETIME": "2021-04-19T14:36:40Z",
                     "QID": "239218",
                     "SEVERITY_LEVEL": "4",
@@ -12704,9 +12704,9 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         },
                         "REMOTE": "0"
                     },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-06-15T05:04:04Z",
+                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-04-19T14:36:40Z",
                     "PATCHABLE": "1",
-                    "PCI_FLAG": "0",
+                    "PCI_FLAG": "1",
                     "PUBLISHED_DATETIME": "2021-04-19T14:36:40Z",
                     "QID": "239219",
                     "SEVERITY_LEVEL": "4",
@@ -12798,7 +12798,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         },
                         "REMOTE": "0"
                     },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-12-06T13:31:52Z",
+                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-04-19T14:36:40Z",
                     "PATCHABLE": "1",
                     "PCI_FLAG": "1",
                     "PUBLISHED_DATETIME": "2021-04-19T14:36:40Z",
@@ -12837,9 +12837,9 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         },
                         "REMOTE": "0"
                     },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-06-15T05:04:05Z",
+                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-04-19T14:36:40Z",
                     "PATCHABLE": "1",
-                    "PCI_FLAG": "0",
+                    "PCI_FLAG": "1",
                     "PUBLISHED_DATETIME": "2021-04-19T14:36:40Z",
                     "QID": "239222",
                     "SEVERITY_LEVEL": "4",
@@ -13040,16 +13040,10 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                     "QID": "257073",
                     "SEVERITY_LEVEL": "4",
                     "SOFTWARE_LIST": {
-                        "SOFTWARE": [
-                            {
-                                "PRODUCT": "linux_kernel",
-                                "VENDOR": "linux"
-                            },
-                            {
-                                "PRODUCT": "solidfire_baseboard_management_controller_firmware",
-                                "VENDOR": "netapp"
-                            }
-                        ]
+                        "SOFTWARE": {
+                            "PRODUCT": "linux_kernel",
+                            "VENDOR": "linux"
+                        }
                     },
                     "SOLUTION": "To resolve this issue, upgrade to the latest packages which contain a patch. Refer to CentOS advisory <A HREF=\"https://lists.centos.org/pipermail/centos-announce/2021-April/048298.html\" TARGET=\"_blank\">centos 7</A> for updates and patch information.\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://lists.centos.org/pipermail/centos-announce/2021-April/048298.html\" TARGET=\"_blank\">CESA-2021:1071: centos 7</A>",
                     "TITLE": "CentOS Security Update for kernel (CESA-2021:1071)",
@@ -13078,9 +13072,9 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         },
                         "REMOTE": "0"
                     },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-06-15T05:04:02Z",
+                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-04-15T14:56:24Z",
                     "PATCHABLE": "1",
-                    "PCI_FLAG": "0",
+                    "PCI_FLAG": "1",
                     "PUBLISHED_DATETIME": "2021-04-15T14:56:24Z",
                     "QID": "257074",
                     "SEVERITY_LEVEL": "4",
@@ -13112,9 +13106,12 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                     "DIAGNOSIS": "<P>A vulnerability in the IPv6 packet processing engine of Cisco Small Business Smart and Managed Switches <BR>could allow an unauthenticated, remote attacker to cause a denial of service (DoS) condition on an affected device.\n\n<P>Affected Products<BR>\nThe following Cisco products are affected if they have version prior to 2.5.5.47:\n250 Series Smart Switches\n350 Series Managed Switches\n350X Series Stackable Managed Switches\n550X Series Stackable Managed Switches\n\nNote: This is a potential check as the device model cannot be confirmed. Also this vulnerability is specific to IPv6 traffic. IPv4 traffic is not affected.\n\n<P>QID Detection Logic (Unauthenticated):<BR>The unauthenticated check tries to fetch the Cisco Smart Switch vulnerable version in response to GET request to an API, but not the model number.",
                     "DISCOVERY": {
                         "ADDITIONAL_INFO": "Patch Available",
+                        "AUTH_TYPE_LIST": {
+                            "AUTH_TYPE": "Unix"
+                        },
                         "REMOTE": "1"
                     },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-10-07T06:09:42Z",
+                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-04-01T13:01:30Z",
                     "PATCHABLE": "1",
                     "PCI_FLAG": "0",
                     "PUBLISHED_DATETIME": "2021-04-01T13:01:30Z",
@@ -13138,7 +13135,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                 },
                 {
                     "CATEGORY": "Cisco",
-                    "CONSEQUENCE": "A successful exploit could allow the attacker  to modify VPN profile files or to stop the AnyConnect process, causing a DoS condition on the device or execute arbitrary code on an affected device with SYSTEM privileges. To exploit this vulnerability, the attacker must have valid credentials on the affected system.",
+                    "CONSEQUENCE": "A successful exploit could allow the attacker to stop the AnyConnect process, causing a DoS condition on the device.",
                     "CVE_LIST": {
                         "CVE": [
                             {
@@ -13159,7 +13156,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                             }
                         ]
                     },
-                    "DIAGNOSIS": "<P>A vulnerability in the interprocess communication (IPC) channel of Cisco AnyConnect Secure Mobility Client<BR> could allow an authenticated, local attacker to cause a<BR> denial of service (DoS) condition on an affected device. <BR>To exploit this vulnerability, the attacker would need to have <BR>valid credentials on the device. Multiple vulnerabilities in the install, uninstall, and upgrade processes of Cisco AnyConnect Secure Mobility Client could allow an authenticated, local attacker to hijack DLL or executable files that are used by the application. \n\n<P>Affected Products<BR>\nThis vulnerability has affected all releases earlier than 4.10.00093 of the following products:<BR>\nCisco AnyConnect Secure Mobility Client for Windows<BR> (CVE-2021-1519,CVE-2021-1450,CVE-2021-1428,CVE-2021-1429)\nCisco AnyConnect Secure Mobility Client for MacOS<BR> (CVE-2021-1519,CVE-2021-1450)\nCisco AnyConnect Secure Mobility Client for Linux<BR> (CVE-2021-1519,CVE-2021-1450)\n\n\n<P>QID Detection Logic (Authenticated):<BR>\nThis checks for vulnerable version of AnyConnect Mobility Client.",
+                    "DIAGNOSIS": "<P>A vulnerability in the interprocess communication (IPC) channel of Cisco AnyConnect Secure Mobility Client<BR> could allow an authenticated, local attacker to cause a<BR> denial of service (DoS) condition on an affected device. <BR>To exploit this vulnerability, the attacker would need to have <BR>valid credentials on the device.\n\n<P>Affected Products<BR>\nThis vulnerability has affected all versions of the following products:<BR>\nCisco AnyConnect Secure Mobility Client for Windows<BR>\nCisco AnyConnect Secure Mobility Client for MacOS<BR>\nCisco AnyConnect Secure Mobility Client for Linux<BR>\n\n<P>QID Detection Logic (Authenticated):<BR>\nThis checks for vulnerable version of AnyConnect Mobility Client.",
                     "DISCOVERY": {
                         "ADDITIONAL_INFO": "Patch Available",
                         "AUTH_TYPE_LIST": {
@@ -13170,7 +13167,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         },
                         "REMOTE": "0"
                     },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-07-15T08:16:33Z",
+                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-05-17T09:34:45Z",
                     "PATCHABLE": "1",
                     "PCI_FLAG": "1",
                     "PUBLISHED_DATETIME": "2021-04-19T14:36:40Z",
@@ -13182,17 +13179,13 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                             "VENDOR": "cisco"
                         }
                     },
-                    "SOLUTION": "<P>Customers are advised to refer to <A HREF=\"https://www.cisco.com/c/en/us/support/docs/csa/cisco-sa-anyconnect-code-exec-jR3tWTA6.html,https://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-anyconnect-dos-55AYyxYr,https://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-anyconnect-profile-AggMUCDg\" TARGET=\"_blank\">cisco-sa-anyconnect-code-exec-jR3tWTA6,cisco-sa-anyconnect-dos-55AYyxYr,cisco-sa-anyconnect-profile-AggMUCDg</A> for more information.\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-anyconnect-dos-55AYyxYr\" TARGET=\"_blank\">cisco-sa-anyconnect-dos-55AYyxYr</A>",
-                    "TITLE": "Cisco AnyConnect Secure Mobility Client Multiple Vulnerabilities(cisco-sa-anyconnect-dos-55AYyxYr,cisco-sa-anyconnect-code-exec-jR3tWTA6,cisco-sa-anyconnect-profile-AggMUCDg)",
+                    "SOLUTION": "<P>Customers are advised to refer to <A HREF=\"https://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-anyconnect-dos-55AYyxYr\" TARGET=\"_blank\">cisco-sa-anyconnect-dos-55AYyxYr</A> for more information.\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-anyconnect-dos-55AYyxYr\" TARGET=\"_blank\">cisco-sa-anyconnect-dos-55AYyxYr</A>",
+                    "TITLE": "Cisco AnyConnect Secure Mobility Client Denial of Service Vulnerability(cisco-sa-anyconnect-dos-55AYyxYr)",
                     "VENDOR_REFERENCE_LIST": {
                         "VENDOR_REFERENCE": [
                             {
                                 "ID": "cisco-sa-anyconnect-dos-55AYyxYr",
                                 "URL": "https://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-anyconnect-dos-55AYyxYr"
-                            },
-                            {
-                                "ID": "cisco-sa-anyconnect-code-exec-jR3tWTA6",
-                                "URL": "https://www.cisco.com/c/en/us/support/docs/csa/cisco-sa-anyconnect-code-exec-jR3tWTA6.html"
                             },
                             {
                                 "ID": "cisco-sa-anyconnect-profile-AggMUCDg",
@@ -13222,7 +13215,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         },
                         "REMOTE": "1"
                     },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-06-01T12:29:31Z",
+                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-04-05T13:40:50Z",
                     "PATCHABLE": "1",
                     "PCI_FLAG": "0",
                     "PUBLISHED_DATETIME": "2021-04-05T13:40:50Z",
@@ -13265,17 +13258,18 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         "AUTH_TYPE_LIST": {
                             "AUTH_TYPE": [
                                 "Unix",
-                                "SNMP"
+                                "SNMP",
+                                "MS Exchange"
                             ]
                         },
                         "REMOTE": "1"
                     },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-06-04T11:10:45Z",
+                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-04-05T13:40:50Z",
                     "PATCHABLE": "1",
                     "PCI_FLAG": "1",
                     "PUBLISHED_DATETIME": "2021-04-05T13:40:50Z",
                     "QID": "316913",
-                    "SEVERITY_LEVEL": "2",
+                    "SEVERITY_LEVEL": "4",
                     "SOFTWARE_LIST": {
                         "SOFTWARE": {
                             "PRODUCT": "ios_xe",
@@ -13354,7 +13348,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         },
                         "REMOTE": "1"
                     },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-06-01T12:29:31Z",
+                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-04-15T12:32:00Z",
                     "PATCHABLE": "1",
                     "PCI_FLAG": "1",
                     "PUBLISHED_DATETIME": "2021-04-08T12:44:31Z",
@@ -13363,7 +13357,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                     "SOFTWARE_LIST": {
                         "SOFTWARE": [
                             {
-                                "PRODUCT": "ios",
+                                "PRODUCT": "None",
                                 "VENDOR": "cisco"
                             },
                             {
@@ -13371,7 +13365,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                                 "VENDOR": "cisco"
                             },
                             {
-                                "PRODUCT": "None",
+                                "PRODUCT": "ios",
                                 "VENDOR": "cisco"
                             }
                         ]
@@ -13415,11 +13409,11 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                     "SOFTWARE_LIST": {
                         "SOFTWARE": [
                             {
-                                "PRODUCT": "ios_xe",
+                                "PRODUCT": "None",
                                 "VENDOR": "cisco"
                             },
                             {
-                                "PRODUCT": "None",
+                                "PRODUCT": "ios_xe",
                                 "VENDOR": "cisco"
                             }
                         ]
@@ -13530,7 +13524,8 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         "AUTH_TYPE_LIST": {
                             "AUTH_TYPE": [
                                 "Unix",
-                                "SNMP"
+                                "SNMP",
+                                "MS Exchange"
                             ]
                         },
                         "REMOTE": "1"
@@ -13623,7 +13618,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         },
                         "REMOTE": "0"
                     },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-10-04T12:29:25Z",
+                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-04-15T14:56:24Z",
                     "PATCHABLE": "1",
                     "PCI_FLAG": "1",
                     "PUBLISHED_DATETIME": "2021-04-15T14:56:24Z",
@@ -13716,11 +13711,11 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                     "SOFTWARE_LIST": {
                         "SOFTWARE": [
                             {
-                                "PRODUCT": "None",
+                                "PRODUCT": "application_policy_infrastructure_controller",
                                 "VENDOR": "cisco"
                             },
                             {
-                                "PRODUCT": "application_policy_infrastructure_controller",
+                                "PRODUCT": "None",
                                 "VENDOR": "cisco"
                             }
                         ]
@@ -13744,7 +13739,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                             "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-1485"
                         }
                     },
-                    "DIAGNOSIS": "<P>A vulnerability in the CLI of Cisco IOS XR Software could allow an authenticated,<BR> local attacker to inject arbitrary commands that are executed <BR>with root privileges on the underlying Linux operating system (OS) of an affected device.\n\n<P>Affected Products<BR>\nCisco IOS XR Software releases earlier than Release 7.3.1.\n\n<P>QID Detection Logic (Authenticated):<BR>The check matches Cisco IOS XR version retrieved via Unix Auth using &quot;show version&quot; command. <BR>",
+                    "DIAGNOSIS": "<P>A vulnerability in the CLI of Cisco IOS XR Software could allow an authenticated,<BR> local attacker to inject arbitrary commands that are executed <BR>with root privileges on the underlying Linux operating system (OS) of an affected device.\n\n<P>Affected Products<BR>\nCisco IOS XR Software releases earlier than Release 7.3.1.\n\n<P>QID Detection Logic (Authenticated):<BR>The check matches Cisco IOS XE version retrieved via Unix Auth using &quot;show version&quot; command. <BR>QID Detection Logic (Unauthenticated):<BR>The check matches Cisco IOS XE version retrieved via SNMP or TCP/IP Fingerprint or NTP or Telnet. <BR>",
                     "DISCOVERY": {
                         "ADDITIONAL_INFO": "Patch Available",
                         "AUTH_TYPE_LIST": {
@@ -13752,7 +13747,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         },
                         "REMOTE": "0"
                     },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-09-27T07:14:03Z",
+                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-04-15T14:56:24Z",
                     "PATCHABLE": "1",
                     "PCI_FLAG": "1",
                     "PUBLISHED_DATETIME": "2021-04-15T14:56:24Z",
@@ -13931,11 +13926,11 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                     "SOFTWARE_LIST": {
                         "SOFTWARE": [
                             {
-                                "PRODUCT": "None",
+                                "PRODUCT": "application_policy_infrastructure_controller",
                                 "VENDOR": "cisco"
                             },
                             {
-                                "PRODUCT": "application_policy_infrastructure_controller",
+                                "PRODUCT": "None",
                                 "VENDOR": "cisco"
                             }
                         ]
@@ -14054,11 +14049,11 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                     "SOFTWARE_LIST": {
                         "SOFTWARE": [
                             {
-                                "PRODUCT": "None",
+                                "PRODUCT": "application_policy_infrastructure_controller",
                                 "VENDOR": "cisco"
                             },
                             {
-                                "PRODUCT": "application_policy_infrastructure_controller",
+                                "PRODUCT": "None",
                                 "VENDOR": "cisco"
                             }
                         ]
@@ -14090,7 +14085,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         },
                         "REMOTE": "0"
                     },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-07-08T12:29:00Z",
+                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-04-19T14:36:40Z",
                     "PATCHABLE": "1",
                     "PCI_FLAG": "0",
                     "PUBLISHED_DATETIME": "2021-04-19T14:36:40Z",
@@ -14177,11 +14172,11 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                     "SOFTWARE_LIST": {
                         "SOFTWARE": [
                             {
-                                "PRODUCT": "None",
+                                "PRODUCT": "application_policy_infrastructure_controller",
                                 "VENDOR": "cisco"
                             },
                             {
-                                "PRODUCT": "application_policy_infrastructure_controller",
+                                "PRODUCT": "None",
                                 "VENDOR": "cisco"
                             }
                         ]
@@ -14228,11 +14223,11 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                     "SOFTWARE_LIST": {
                         "SOFTWARE": [
                             {
-                                "PRODUCT": "None",
+                                "PRODUCT": "application_policy_infrastructure_controller",
                                 "VENDOR": "cisco"
                             },
                             {
-                                "PRODUCT": "application_policy_infrastructure_controller",
+                                "PRODUCT": "None",
                                 "VENDOR": "cisco"
                             }
                         ]
@@ -14279,11 +14274,11 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                     "SOFTWARE_LIST": {
                         "SOFTWARE": [
                             {
-                                "PRODUCT": "None",
+                                "PRODUCT": "application_policy_infrastructure_controller",
                                 "VENDOR": "cisco"
                             },
                             {
-                                "PRODUCT": "application_policy_infrastructure_controller",
+                                "PRODUCT": "None",
                                 "VENDOR": "cisco"
                             }
                         ]
@@ -14369,11 +14364,11 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                     "SOFTWARE_LIST": {
                         "SOFTWARE": [
                             {
-                                "PRODUCT": "None",
+                                "PRODUCT": "application_policy_infrastructure_controller",
                                 "VENDOR": "cisco"
                             },
                             {
-                                "PRODUCT": "application_policy_infrastructure_controller",
+                                "PRODUCT": "None",
                                 "VENDOR": "cisco"
                             }
                         ]
@@ -14414,11 +14409,11 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                     "SOFTWARE_LIST": {
                         "SOFTWARE": [
                             {
-                                "PRODUCT": "None",
+                                "PRODUCT": "application_policy_infrastructure_controller",
                                 "VENDOR": "cisco"
                             },
                             {
-                                "PRODUCT": "application_policy_infrastructure_controller",
+                                "PRODUCT": "None",
                                 "VENDOR": "cisco"
                             }
                         ]
@@ -14495,7 +14490,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         },
                         "REMOTE": "0"
                     },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-06-04T09:44:57Z",
+                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-05-18T20:03:13Z",
                     "PATCHABLE": "1",
                     "PCI_FLAG": "1",
                     "PUBLISHED_DATETIME": "2021-04-14T11:33:21Z",
@@ -14508,7 +14503,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         }
                     },
                     "SOLUTION": "The vendor has released fixes to <A HREF=\"https://aix.software.ibm.com/aix/efixes/security/openssl_advisory32.asc\" TARGET=\"_blank\">resolve</A> this vulnerability. \n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://aix.software.ibm.com/aix/efixes/security/openssl_advisory32.asc\" TARGET=\"_blank\">openssl_advisory32</A>",
-                    "TITLE": "IBM Advanced Interactive eXecutive (AIX) Multiple Vulnerabilities in Open Secure Sockets Layer (OpenSSL) (openssl_advisory32)",
+                    "TITLE": "IBM AIX Multiple Vulnerabilities in Open Secure Sockets Layer (OpenSSL) (openssl_advisory32)",
                     "VENDOR_REFERENCE_LIST": {
                         "VENDOR_REFERENCE": {
                             "ID": "openssl_advisory32",
@@ -15427,11 +15422,11 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                     "SOFTWARE_LIST": {
                         "SOFTWARE": [
                             {
-                                "PRODUCT": "foxit_reader",
+                                "PRODUCT": "foxit_phantom",
                                 "VENDOR": "foxit"
                             },
                             {
-                                "PRODUCT": "foxit_phantom",
+                                "PRODUCT": "foxit_reader",
                                 "VENDOR": "foxit"
                             }
                         ]
@@ -15563,7 +15558,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         },
                         "REMOTE": "0"
                     },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-06-10T12:29:28Z",
+                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-04-01T13:01:30Z",
                     "PATCHABLE": "1",
                     "PCI_FLAG": "1",
                     "PUBLISHED_DATETIME": "2021-04-01T13:01:30Z",
@@ -15666,7 +15661,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         },
                         "REMOTE": "0"
                     },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-07-27T12:28:39Z",
+                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-04-06T05:40:07Z",
                     "PATCHABLE": "1",
                     "PCI_FLAG": "1",
                     "PUBLISHED_DATETIME": "2021-04-05T13:40:50Z",
@@ -15786,7 +15781,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         },
                         "REMOTE": "0"
                     },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-07-27T12:28:39Z",
+                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-04-07T12:31:55Z",
                     "PATCHABLE": "1",
                     "PCI_FLAG": "1",
                     "PUBLISHED_DATETIME": "2021-04-07T12:31:55Z",
@@ -15974,14 +15969,10 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                             {
                                 "ID": "CVE-2021-21782",
                                 "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-21782"
-                            },
-                            {
-                                "ID": "CVE-2021-21793",
-                                "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-21793"
                             }
                         ]
                     },
-                    "DIAGNOSIS": "The ImageGear library is a document imaging developer toolkit providing all kinds of functionality related to image conversion, creation, editing, annotation, etc. It supports more than 100 formats, including many image formats, DICOM, PDF, Microsoft Office and others.<P>\n\nCVE-2021-21773: Accusoft ImageGear TIFF Header count processing out-of-bounds write vulnerability.<BR>\nCVE-2021-21776: Accusoft ImageGear SGI Format Buffer Size Processing out-of-bounds write vulnerability.<BR>\nCVE-2021-21782: Accusoft ImageGear SGI format buffer size processing out-of-bounds write vulnerability.<BR>\nCVE-2021-21793: Accusoft ImageGear JPG sof_nb_comp header processing out-of-bounds write vulnerability.<P>\n\nAffected Versions <BR>\nImageGear version 19.8<P>\n\nQID Detection Logic (Authenticated)<BR>\nThis checks for vulnerable version of igcore19d.dll file",
+                    "DIAGNOSIS": "The ImageGear library is a document imaging developer toolkit providing all kinds of functionality related to image conversion, creation, editing, annotation, etc. It supports more than 100 formats, including many image formats, DICOM, PDF, Microsoft Office and others.<P>\n\nCVE-2021-21773: Accusoft ImageGear TIFF Header count processing out-of-bounds write vulnerability.<BR>\nCVE-2021-21776: Accusoft ImageGear SGI Format Buffer Size Processing out-of-bounds write vulnerability.<BR>\nCVE-2021-21782: Accusoft ImageGear SGI format buffer size processing out-of-bounds write vulnerability<BR>\n\nAffected Versions <BR>\nImageGear version 19.8<P>\n\nQID Detection Logic (Authenticated)<BR>\nThis checks for vulnerable version of igcore19d.dll file",
                     "DISCOVERY": {
                         "ADDITIONAL_INFO": "Patch Available",
                         "AUTH_TYPE_LIST": {
@@ -15989,7 +15980,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         },
                         "REMOTE": "0"
                     },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-06-09T07:07:15Z",
+                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-04-08T12:44:31Z",
                     "PATCHABLE": "1",
                     "PCI_FLAG": "1",
                     "PUBLISHED_DATETIME": "2021-04-08T12:44:31Z",
@@ -16002,7 +15993,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         }
                     },
                     "SOLUTION": "Users are advised to update to latest version of ImageGear  <A HREF=\"https://www.accusoft.com/products/imagegear-collection/\" TARGET=\"_blank\">here</A>\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://www.accusoft.com/products/imagegear-collection/\" TARGET=\"_blank\">ImageGear</A>",
-                    "TITLE": "ImageGear Multiple Vulnerabilities(TALOS-2021-1244,TALOS-2021-1227,TALOS-2021-1232,TALOS-2021-1257)",
+                    "TITLE": "ImageGear Multiple Vulnerabilities(TALOS-2021-1244,TALOS-2021-1227,TALOS-2021-1232)",
                     "VENDOR_REFERENCE_LIST": {
                         "VENDOR_REFERENCE": [
                             {
@@ -16016,10 +16007,6 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                             {
                                 "ID": "TALOS-2021-1232",
                                 "URL": "https://talosintelligence.com/vulnerability_reports/TALOS-2021-1232"
-                            },
-                            {
-                                "ID": "TALOS-2021-1257",
-                                "URL": "https://talosintelligence.com/vulnerability_reports/TALOS-2021-1257"
                             }
                         ]
                     },
@@ -16087,7 +16074,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         },
                         "REMOTE": "0"
                     },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-06-01T12:29:31Z",
+                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-04-12T13:50:00Z",
                     "PATCHABLE": "1",
                     "PCI_FLAG": "1",
                     "PUBLISHED_DATETIME": "2021-04-12T13:50:00Z",
@@ -16107,7 +16094,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                             "URL": "https://softwaresupport.softwaregrp.com/doc/KM03792443"
                         }
                     },
-                    "VULN_TYPE": "Potential Vulnerability"
+                    "VULN_TYPE": "Vulnerability"
                 },
                 {
                     "CATEGORY": "Local",
@@ -17081,7 +17068,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                             }
                         ]
                     },
-                    "DIAGNOSIS": "Thunderbird is a free and open-source cross-platform email client developed for Windows, OS X, and Linux, with a mobile version for Android.<P>\n\nAffected Products: <BR>\nPrior to Mozilla Thunderbird 78.9.1<P>\n\nQID Detection Logic (Authenticated):<BR>\nThis checks for vulnerable version of Thunderbird.<P>",
+                    "DIAGNOSIS": "Thunderbird is a free and open-source web browser developed for Windows, OS X, and Linux, with a mobile version for Android.<P>\n\nAffected Products: <BR>\nPrior to Mozilla Thunderbird 78.9.1<P>\n\nQID Detection Logic (Authenticated):<BR>\nThis checks for vulnerable version of Thunderbird browser.<P>",
                     "DISCOVERY": {
                         "ADDITIONAL_INFO": "Patch Available",
                         "AUTH_TYPE_LIST": {
@@ -17115,1525 +17102,6 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                     "VULN_TYPE": "Vulnerability"
                 },
                 {
-                    "CATEGORY": "ICS",
-                    "CONSEQUENCE": "If the attacker has local access to the system, an attacker could exploit this vulnerability. This could allow an attacker to transfer unauthorized files from the host system, which could result in unauthorized information disclosure.",
-                    "CVE_LIST": {
-                        "CVE": {
-                            "ID": "CVE-2018-8714",
-                            "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-8714"
-                        }
-                    },
-                    "DIAGNOSIS": "<P>AFFECTED PRODUCTS<BR>According to MatrikonOPC, the following product is affected:<BR>MatrikonOPC Explorer, Versions 5.0 and prior.<P>QID Detection Logic (Authenticated)<BR>QID checks for the Vulnerable version using windows registry keys",
-                    "DISCOVERY": {
-                        "ADDITIONAL_INFO": "Patch Available",
-                        "AUTH_TYPE_LIST": {
-                            "AUTH_TYPE": "Windows"
-                        },
-                        "REMOTE": "0"
-                    },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-05-07T14:22:12Z",
-                    "PATCHABLE": "1",
-                    "PCI_FLAG": "0",
-                    "PUBLISHED_DATETIME": "2021-04-01T13:01:30Z",
-                    "QID": "590282",
-                    "SEVERITY_LEVEL": "3",
-                    "SOFTWARE_LIST": {
-                        "SOFTWARE": {
-                            "PRODUCT": "matrikonopc_explorer",
-                            "VENDOR": "honeywell"
-                        }
-                    },
-                    "SOLUTION": "<P>Customers are advised to refer to CERT MITIGATIONS section <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-18-130-01\" TARGET=\"_blank\">ICSA-18-130-01</A> for affected packages and patching details.\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-18-130-01\" TARGET=\"_blank\">ICSA-18-130-01</A>",
-                    "TITLE": "MatrikonOPC Explorer Improper Authorization Vulnerability(ICSA-18-130-01)",
-                    "VENDOR_REFERENCE_LIST": {
-                        "VENDOR_REFERENCE": {
-                            "ID": "ICSA-18-130-01",
-                            "URL": "https://www.us-cert.gov/ics/advisories/ICSA-18-130-01"
-                        }
-                    },
-                    "VULN_TYPE": "Vulnerability"
-                },
-                {
-                    "CATEGORY": "ICS",
-                    "CONSEQUENCE": "An attacker could potentially use this vulnerability to craft an exploit to cause a denial-of-service (DoS) loop in the MatrikonOPC Server for DNP3 Windows service. Consequences of a successful exploit would result in a disruption of OPC data until the OPC Server is manually restarted.",
-                    "CVE_LIST": {
-                        "CVE": {
-                            "ID": "CVE-2014-5426",
-                            "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2014-5426"
-                        }
-                    },
-                    "DIAGNOSIS": "<P>AFFECTED PRODUCTS<BR>The following MatrikonOPC Server version is affected:<BR>MatrikonOPC Server for DNP3 Version 1.2.3.0<P>QID Detection Logic (Authenticated)<BR>QID checks for the Vulnerable version using windows registry keys",
-                    "DISCOVERY": {
-                        "ADDITIONAL_INFO": "Patch Available",
-                        "AUTH_TYPE_LIST": {
-                            "AUTH_TYPE": "Windows"
-                        },
-                        "REMOTE": "0"
-                    },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-05-07T13:51:53Z",
-                    "PATCHABLE": "1",
-                    "PCI_FLAG": "0",
-                    "PUBLISHED_DATETIME": "2021-04-01T13:01:30Z",
-                    "QID": "590283",
-                    "SEVERITY_LEVEL": "3",
-                    "SOFTWARE_LIST": {
-                        "SOFTWARE": {
-                            "PRODUCT": "dnp3_opc_server",
-                            "VENDOR": "matrikonopc"
-                        }
-                    },
-                    "SOLUTION": "<P>Customers are advised to refer to CERT MITIGATIONS section <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-14-329-01\" TARGET=\"_blank\">ICSA-14-329-01</A> for affected packages and patching details.\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-14-329-01\" TARGET=\"_blank\">ICSA-14-329-01</A>",
-                    "TITLE": "MatrikonOPC for DNP Unhandled C++ Exception Vulnerability(ICSA-14-329-01)",
-                    "VENDOR_REFERENCE_LIST": {
-                        "VENDOR_REFERENCE": {
-                            "ID": "ICSA-14-329-01",
-                            "URL": "https://www.us-cert.gov/ics/advisories/ICSA-14-329-01"
-                        }
-                    },
-                    "VULN_TYPE": "Vulnerability"
-                },
-                {
-                    "CATEGORY": "ICS",
-                    "CONSEQUENCE": "to individual organizations depends on many factors that are unique to each organization. NCCIC/ICS-CERT recommends that organizations evaluate the impact of these vulnerabilities based on their operational environment, architecture, and product implementation.BACKGROUNDInductive Automation is a Folsom, California-based supplier of web-based industrial automation software.",
-                    "CVE_LIST": {
-                        "CVE": [
-                            {
-                                "ID": "CVE-2015-0992",
-                                "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-0992"
-                            },
-                            {
-                                "ID": "CVE-2015-0995",
-                                "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-0995"
-                            },
-                            {
-                                "ID": "CVE-2015-0994",
-                                "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-0994"
-                            },
-                            {
-                                "ID": "CVE-2015-0991",
-                                "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-0991"
-                            },
-                            {
-                                "ID": "CVE-2015-0976",
-                                "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-0976"
-                            },
-                            {
-                                "ID": "CVE-2015-0993",
-                                "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-0993"
-                            }
-                        ]
-                    },
-                    "DIAGNOSIS": "<P>AFFECTED PRODUCTS<BR>The following Inductive Automation product is affected:<BR>Inductive Automation Ignition 7.7.2<P>QID Detection Logic (Authenticated):<BR><P>QID Detection Logic (Authenticated)<BR>QID checks for the Vulnerable version using windows registry keys",
-                    "DISCOVERY": {
-                        "ADDITIONAL_INFO": "Patch Available",
-                        "AUTH_TYPE_LIST": {
-                            "AUTH_TYPE": "Windows"
-                        },
-                        "REMOTE": "0"
-                    },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-05-07T13:26:32Z",
-                    "PATCHABLE": "1",
-                    "PCI_FLAG": "1",
-                    "PUBLISHED_DATETIME": "2021-04-01T13:01:30Z",
-                    "QID": "590284",
-                    "SEVERITY_LEVEL": "3",
-                    "SOFTWARE_LIST": {
-                        "SOFTWARE": {
-                            "PRODUCT": "ignition",
-                            "VENDOR": "inductiveautomation"
-                        }
-                    },
-                    "SOLUTION": "<P>Customers are advised to refer to CERT MITIGATIONS section <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-15-090-01\" TARGET=\"_blank\">ICSA-15-090-01</A> for affected packages and patching details.\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-15-090-01\" TARGET=\"_blank\">ICSA-15-090-01</A>",
-                    "TITLE": "Inductive Automation Ignition Multiple Vulnerabilities(ICSA-15-090-01)",
-                    "VENDOR_REFERENCE_LIST": {
-                        "VENDOR_REFERENCE": {
-                            "ID": "ICSA-15-090-01",
-                            "URL": "https://www.us-cert.gov/ics/advisories/ICSA-15-090-01"
-                        }
-                    },
-                    "VULN_TYPE": "Vulnerability"
-                },
-                {
-                    "CATEGORY": "ICS",
-                    "CONSEQUENCE": "An exploit of this vulnerability could result in a buffer overflow that could possibly allow an attacker to execute code under administrator credentials. IGSS is employed in many sectors including renewable energy, process control, monitoring and control, motor controls, lighting controls, electrical distribution, and security systems.",
-                    "CORRELATION": {
-                        "EXPLOITS": {
-                            "EXPLT_SRC": [
-                                {
-                                    "EXPLT_LIST": {
-                                        "EXPLT": {
-                                            "DESC": "Schneider Electric Interactive Graphical SCADA System Buffer Overflow Exploit - Core Security Category : Exploits/Remote",
-                                            "REF": "CVE-2013-0657"
-                                        }
-                                    },
-                                    "SRC_NAME": "Core Security"
-                                },
-                                {
-                                    "EXPLT_LIST": {
-                                        "EXPLT": [
-                                            {
-                                                "DESC": "7-Technologies IGSS 9 - Data Server/Collector Packet Handling (Metasploit) - The Exploit-DB Ref : 17352",
-                                                "LINK": "http://www.exploit-db.com/exploits/17352",
-                                                "REF": "CVE-2013-0657"
-                                            },
-                                            {
-                                                "DESC": "SEIG SCADA System 9 - Remote Code Execution - The Exploit-DB Ref : 45218",
-                                                "LINK": "http://www.exploit-db.com/exploits/45218",
-                                                "REF": "CVE-2013-0657"
-                                            }
-                                        ]
-                                    },
-                                    "SRC_NAME": "The Exploit-DB"
-                                }
-                            ]
-                        }
-                    },
-                    "CVE_LIST": {
-                        "CVE": {
-                            "ID": "CVE-2013-0657",
-                            "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2013-0657"
-                        }
-                    },
-                    "DIAGNOSIS": "<P>Affected Products<BR>The Schneider Electric products affected:<BR>IGSS application, all versions.<P>QID Detection Logic (Authenticated)<BR>QID checks for the Vulnerable version using windows registry keys",
-                    "DISCOVERY": {
-                        "ADDITIONAL_INFO": "Patch Available, Exploit Available",
-                        "AUTH_TYPE_LIST": {
-                            "AUTH_TYPE": "Windows"
-                        },
-                        "REMOTE": "0"
-                    },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-11-24T13:37:32Z",
-                    "PATCHABLE": "1",
-                    "PCI_FLAG": "1",
-                    "PUBLISHED_DATETIME": "2021-04-01T13:01:30Z",
-                    "QID": "590285",
-                    "SEVERITY_LEVEL": "5",
-                    "SOFTWARE_LIST": {
-                        "SOFTWARE": {
-                            "PRODUCT": "interactive_graphical_scada_system",
-                            "VENDOR": "schneider-electric"
-                        }
-                    },
-                    "SOLUTION": "<P>Customers are advised to refer to CERT MITIGATIONS section <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-13-018-01\" TARGET=\"_blank\">ICSA-13-018-01</A> for affected packages and patching details.\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-13-018-01\" TARGET=\"_blank\">ICSA-13-018-01</A>",
-                    "TITLE": "Schneider Electric IGSS Buffer Overflow Vulnerability(ICSA-13-018-01)",
-                    "VENDOR_REFERENCE_LIST": {
-                        "VENDOR_REFERENCE": {
-                            "ID": "ICSA-13-018-01",
-                            "URL": "https://www.us-cert.gov/ics/advisories/ICSA-13-018-01"
-                        }
-                    },
-                    "VULN_TYPE": "Vulnerability"
-                },
-                {
-                    "CATEGORY": "ICS",
-                    "CONSEQUENCE": "Exploitation of this vulnerability could result in the execution of arbitrary code on a system running an affected version of the Unitronics UniOPC product.",
-                    "DIAGNOSIS": "<P>Affected Products<BR>This vulnerability affects versions of Unitronics UniOPC prior to Version 2.0.0.<BR>Impact<P>QID Detection Logic (Authenticated)<BR>QID checks for the Vulnerable version using windows registry keys",
-                    "DISCOVERY": {
-                        "ADDITIONAL_INFO": "Patch Available",
-                        "AUTH_TYPE_LIST": {
-                            "AUTH_TYPE": "Windows"
-                        },
-                        "REMOTE": "0"
-                    },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-05-07T14:19:12Z",
-                    "PATCHABLE": "1",
-                    "PCI_FLAG": "1",
-                    "PUBLISHED_DATETIME": "2021-04-01T13:01:30Z",
-                    "QID": "590286",
-                    "SEVERITY_LEVEL": "3",
-                    "SOFTWARE_LIST": {
-                        "SOFTWARE": {
-                            "PRODUCT": "uniopc_server",
-                            "VENDOR": "unitronics"
-                        }
-                    },
-                    "SOLUTION": "<P>Customers are advised to refer to CERT MITIGATIONS section <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-11-279-03A\" TARGET=\"_blank\">ICSA-11-279-03A</A> for affected packages and patching details.\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-11-279-03A\" TARGET=\"_blank\">ICSA-11-279-03A</A>",
-                    "TITLE": "Unitronics UNIOPC Server Input Handling Vulnerability (Update A) Vulnerability(ICSA-11-279-03A)",
-                    "VENDOR_REFERENCE_LIST": {
-                        "VENDOR_REFERENCE": {
-                            "ID": "ICSA-11-279-03A",
-                            "URL": "https://www.us-cert.gov/ics/advisories/ICSA-11-279-03A"
-                        }
-                    },
-                    "VULN_TYPE": "Vulnerability"
-                },
-                {
-                    "CATEGORY": "ICS",
-                    "CONSEQUENCE": "Successful exploitation of this vulnerability could allow an attacker to execute remote code as an administrator.",
-                    "CVE_LIST": {
-                        "CVE": {
-                            "ID": "CVE-2020-25161",
-                            "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-25161"
-                        }
-                    },
-                    "DIAGNOSIS": "<P>AFFECTED PRODUCTS<BR>The following versions of WebAccess/SCADA, a browser-based SCADA software package, are affected:<BR>WebAccess/SCADA Versions 9.0 and prior<P>QID Detection Logic (Authenticated)<BR>QID checks for the Vulnerable version using windows registry keys",
-                    "DISCOVERY": {
-                        "ADDITIONAL_INFO": "Patch Available",
-                        "AUTH_TYPE_LIST": {
-                            "AUTH_TYPE": "Windows"
-                        },
-                        "REMOTE": "0"
-                    },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-05-07T13:26:24Z",
-                    "PATCHABLE": "1",
-                    "PCI_FLAG": "1",
-                    "PUBLISHED_DATETIME": "2021-04-06T12:45:16Z",
-                    "QID": "590287",
-                    "SEVERITY_LEVEL": "3",
-                    "SOFTWARE_LIST": {
-                        "SOFTWARE": {
-                            "PRODUCT": "webaccess%2fscada",
-                            "VENDOR": "advantech"
-                        }
-                    },
-                    "SOLUTION": "<P>Customers are advised to refer to CERT MITIGATIONS section <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-20-289-01\" TARGET=\"_blank\">ICSA-20-289-01</A> for affected packages and patching details.\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-20-289-01\" TARGET=\"_blank\">ICSA-20-289-01</A>",
-                    "TITLE": "Advantech WebAccess/SCADA WADashboard component Vulnerability(ICSA-20-289-01)",
-                    "VENDOR_REFERENCE_LIST": {
-                        "VENDOR_REFERENCE": {
-                            "ID": "ICSA-20-289-01",
-                            "URL": "https://www.us-cert.gov/ics/advisories/ICSA-20-289-01"
-                        }
-                    },
-                    "VULN_TYPE": "Vulnerability"
-                },
-                {
-                    "CATEGORY": "ICS",
-                    "CONSEQUENCE": "Successful exploitation of these vulnerabilities could allow an attacker to obtain sensitive information and perform remote code execution with SYSTEM privileges.",
-                    "CVE_LIST": {
-                        "CVE": [
-                            {
-                                "ID": "CVE-2020-10644",
-                                "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-10644"
-                            },
-                            {
-                                "ID": "CVE-2020-12000",
-                                "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-12000"
-                            },
-                            {
-                                "ID": "CVE-2020-14479",
-                                "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-14479"
-                            },
-                            {
-                                "ID": "CVE-2020-12004",
-                                "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-12004"
-                            }
-                        ]
-                    },
-                    "DIAGNOSIS": "<P>AFFECTED PRODUCTS<BR>The following versions of Inductive Automation Ignition are affected:<BR>Inductive Automation Ignition 7 Gateway versions prior to 7.9.14<BR>Inductive Automation Ignition 8 Gateway versions prior to 8.0.10<P>QID Detection Logic (Authenticated)<BR>QID checks for the Vulnerable version using windows registry keys",
-                    "DISCOVERY": {
-                        "ADDITIONAL_INFO": "Patch Available",
-                        "AUTH_TYPE_LIST": {
-                            "AUTH_TYPE": "Windows"
-                        },
-                        "REMOTE": "0"
-                    },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-05-07T13:51:27Z",
-                    "PATCHABLE": "1",
-                    "PCI_FLAG": "1",
-                    "PUBLISHED_DATETIME": "2021-04-07T12:31:55Z",
-                    "QID": "590288",
-                    "SEVERITY_LEVEL": "3",
-                    "SOFTWARE_LIST": {
-                        "SOFTWARE": {
-                            "PRODUCT": "ignition_gateway",
-                            "VENDOR": "inductiveautomation"
-                        }
-                    },
-                    "SOLUTION": "<P>Customers are advised to refer to CERT MITIGATIONS section <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-20-147-01\" TARGET=\"_blank\">ICSA-20-147-01</A> for affected packages and patching details.\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-20-147-01\" TARGET=\"_blank\">ICSA-20-147-01</A>",
-                    "TITLE": "Inductive Automation Ignition (Update B) Multiple Vulnerabilities(ICSA-20-147-01)",
-                    "VENDOR_REFERENCE_LIST": {
-                        "VENDOR_REFERENCE": {
-                            "ID": "ICSA-20-147-01",
-                            "URL": "https://www.us-cert.gov/ics/advisories/ICSA-20-147-01"
-                        }
-                    },
-                    "VULN_TYPE": "Vulnerability"
-                },
-                {
-                    "CATEGORY": "ICS",
-                    "CONSEQUENCE": "Successful exploitation of this vulnerability could cause a buffer overflow condition that may allow remote code execution.",
-                    "CVE_LIST": {
-                        "CVE": {
-                            "ID": "CVE-2015-6460",
-                            "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-6460"
-                        }
-                    },
-                    "DIAGNOSIS": "<P>AFFECTED PRODUCTS<BR>The following Gateway Server versions are affected:<BR>CODESYS Gateway Server, Version 2.3.9.46 and prior versions.<P>QID Detection Logic (Authenticated)<BR>QID checks for the Vulnerable version using windows registry keys",
-                    "DISCOVERY": {
-                        "ADDITIONAL_INFO": "Patch Available",
-                        "AUTH_TYPE_LIST": {
-                            "AUTH_TYPE": "Windows"
-                        },
-                        "REMOTE": "0"
-                    },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-05-07T13:51:15Z",
-                    "PATCHABLE": "1",
-                    "PCI_FLAG": "1",
-                    "PUBLISHED_DATETIME": "2021-04-08T12:44:31Z",
-                    "QID": "590289",
-                    "SEVERITY_LEVEL": "3",
-                    "SOFTWARE_LIST": {
-                        "SOFTWARE": {
-                            "PRODUCT": "codesys_gateway_server",
-                            "VENDOR": "3s-smart"
-                        }
-                    },
-                    "SOLUTION": "<P>Customers are advised to refer to CERT MITIGATIONS section <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-15-258-02\" TARGET=\"_blank\">ICSA-15-258-02</A> for affected packages and patching details.\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-15-258-02\" TARGET=\"_blank\">ICSA-15-258-02</A>",
-                    "TITLE": "3S CODESYS Gateway Server Buffer Overflow Vulnerability(ICSA-15-258-02)",
-                    "VENDOR_REFERENCE_LIST": {
-                        "VENDOR_REFERENCE": {
-                            "ID": "ICSA-15-258-02",
-                            "URL": "https://www.us-cert.gov/ics/advisories/ICSA-15-258-02"
-                        }
-                    },
-                    "VULN_TYPE": "Vulnerability"
-                },
-                {
-                    "CATEGORY": "ICS",
-                    "CONSEQUENCE": "If exploited, an attacker could use this vulnerability to remotely cause a system crash within the Runtime Toolkit application.",
-                    "CVE_LIST": {
-                        "CVE": {
-                            "ID": "CVE-2014-0757",
-                            "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2014-0757"
-                        }
-                    },
-                    "DIAGNOSIS": "<P>AFFECTED PRODUCTS<BR>The following CoDeSys versions are affected:<BR>CoDeSys Runtime Toolkit versions older than Version V2.4.7.44.<P>QID Detection Logic (Authenticated)<BR>QID checks for the Vulnerable version using windows registry keys",
-                    "DISCOVERY": {
-                        "ADDITIONAL_INFO": "Patch Available",
-                        "AUTH_TYPE_LIST": {
-                            "AUTH_TYPE": "Windows"
-                        },
-                        "REMOTE": "0"
-                    },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-05-07T13:51:06Z",
-                    "PATCHABLE": "1",
-                    "PCI_FLAG": "0",
-                    "PUBLISHED_DATETIME": "2021-04-07T12:31:55Z",
-                    "QID": "590290",
-                    "SEVERITY_LEVEL": "3",
-                    "SOFTWARE_LIST": {
-                        "SOFTWARE": {
-                            "PRODUCT": "codesys_runtime_toolkit",
-                            "VENDOR": "3s-software"
-                        }
-                    },
-                    "SOLUTION": "<P>Customers are advised to refer to CERT MITIGATIONS section <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-14-030-01\" TARGET=\"_blank\">ICSA-14-030-01</A> for affected packages and patching details.\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-14-030-01\" TARGET=\"_blank\">ICSA-14-030-01</A>",
-                    "TITLE": "3S CoDeSys Runtime Toolkit NULL Pointer Dereference Vulnerability(ICSA-14-030-01)",
-                    "VENDOR_REFERENCE_LIST": {
-                        "VENDOR_REFERENCE": {
-                            "ID": "ICSA-14-030-01",
-                            "URL": "https://www.us-cert.gov/ics/advisories/ICSA-14-030-01"
-                        }
-                    },
-                    "VULN_TYPE": "Vulnerability"
-                },
-                {
-                    "CATEGORY": "ICS",
-                    "CONSEQUENCE": "If exploited, an attacker could use this vulnerability to remotely cause a DoS with a system crash within the Gateway server application. Remote execution of arbitrary code may also be possible.",
-                    "CVE_LIST": {
-                        "CVE": {
-                            "ID": "CVE-2013-2781",
-                            "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2013-2781"
-                        }
-                    },
-                    "DIAGNOSIS": "<P>AFFECTED PRODUCTS<BR>The following 3S products are affected:<BR>CODESYS Gateway, Version 2.3.9.27<BR>This product is also used in many products sold by other vendors. Control systems vendors should review their products, identify those that incorporate the affected software, and take appropriate steps to update their products and notify customers.<P>QID Detection Logic (Authenticated)<BR>QID checks for the Vulnerable version using windows registry keys",
-                    "DISCOVERY": {
-                        "ADDITIONAL_INFO": "Patch Available",
-                        "AUTH_TYPE_LIST": {
-                            "AUTH_TYPE": "Windows"
-                        },
-                        "REMOTE": "0"
-                    },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-05-07T13:50:56Z",
-                    "PATCHABLE": "1",
-                    "PCI_FLAG": "1",
-                    "PUBLISHED_DATETIME": "2021-04-07T12:31:55Z",
-                    "QID": "590291",
-                    "SEVERITY_LEVEL": "5",
-                    "SOFTWARE_LIST": {
-                        "SOFTWARE": {
-                            "PRODUCT": "codesys_gateway-server",
-                            "VENDOR": "3s-software"
-                        }
-                    },
-                    "SOLUTION": "<P>Customers are advised to refer to CERT MITIGATIONS section <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-13-142-01\" TARGET=\"_blank\">ICSA-13-142-01</A> for affected packages and patching details.\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-13-142-01\" TARGET=\"_blank\">ICSA-13-142-01</A>",
-                    "TITLE": "3S CODESYS Gateway Use After Free Vulnerability(ICSA-13-142-01)",
-                    "VENDOR_REFERENCE_LIST": {
-                        "VENDOR_REFERENCE": {
-                            "ID": "ICSA-13-142-01",
-                            "URL": "https://www.us-cert.gov/ics/advisories/ICSA-13-142-01"
-                        }
-                    },
-                    "VULN_TYPE": "Vulnerability"
-                },
-                {
-                    "CATEGORY": "ICS",
-                    "CONSEQUENCE": "Exploitation of this vulnerability requires user interaction. An attacker who successfully exploits this vulnerability may be able to crash the browser and possibly execute arbitrary code.",
-                    "CVE_LIST": {
-                        "CVE": {
-                            "ID": "CVE-2016-0869",
-                            "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-0869"
-                        }
-                    },
-                    "DIAGNOSIS": "<P>AFFECTED PRODUCTS<BR>MICROSYS reports that the vulnerability affects the following versions of PROMOTIC:<BR>PROMOTIC versions prior to version 8.3.11<P>QID Detection Logic (Authenticated)<BR>QID checks for the Vulnerable version using windows registry keys",
-                    "DISCOVERY": {
-                        "ADDITIONAL_INFO": "Patch Available",
-                        "AUTH_TYPE_LIST": {
-                            "AUTH_TYPE": "Windows"
-                        },
-                        "REMOTE": "0"
-                    },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-05-07T14:19:02Z",
-                    "PATCHABLE": "1",
-                    "PCI_FLAG": "0",
-                    "PUBLISHED_DATETIME": "2021-04-08T12:44:31Z",
-                    "QID": "590292",
-                    "SEVERITY_LEVEL": "3",
-                    "SOFTWARE_LIST": {
-                        "SOFTWARE": {
-                            "PRODUCT": "promotic",
-                            "VENDOR": "microsys"
-                        }
-                    },
-                    "SOLUTION": "<P>Customers are advised to refer to CERT MITIGATIONS section <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-16-026-01\" TARGET=\"_blank\">ICSA-16-026-01</A> for affected packages and patching details.\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-16-026-01\" TARGET=\"_blank\">ICSA-16-026-01</A>",
-                    "TITLE": "MICROSYS PROMOTIC Memory Corruption Vulnerability (ICSA-16-026-01)",
-                    "VENDOR_REFERENCE_LIST": {
-                        "VENDOR_REFERENCE": {
-                            "ID": "ICSA-16-026-01",
-                            "URL": "https://www.us-cert.gov/ics/advisories/ICSA-16-026-01"
-                        }
-                    },
-                    "VULN_TYPE": "Vulnerability"
-                },
-                {
-                    "CATEGORY": "ICS",
-                    "CONSEQUENCE": "Successful exploitation of these vulnerabilities may result in denial of service or data leakage.",
-                    "CORRELATION": {
-                        "EXPLOITS": {
-                            "EXPLT_SRC": {
-                                "EXPLT_LIST": {
-                                    "EXPLT": [
-                                        {
-                                            "DESC": "Microsys PROMOTIC 8.1.4 - ActiveX GetPromoticSite Unitialized Pointer - The Exploit-DB Ref : 18049",
-                                            "LINK": "http://www.exploit-db.com/exploits/18049",
-                                            "REF": "CVE-2011-4520"
-                                        },
-                                        {
-                                            "DESC": "Microsys PROMOTIC 8.1.4 - ActiveX GetPromoticSite Unitialized Pointer - The Exploit-DB Ref : 18049",
-                                            "LINK": "http://www.exploit-db.com/exploits/18049",
-                                            "REF": "CVE-2011-4519"
-                                        },
-                                        {
-                                            "DESC": "Microsys PROMOTIC 8.1.4 - ActiveX GetPromoticSite Unitialized Pointer - The Exploit-DB Ref : 18049",
-                                            "LINK": "http://www.exploit-db.com/exploits/18049",
-                                            "REF": "CVE-2011-4518"
-                                        }
-                                    ]
-                                },
-                                "SRC_NAME": "The Exploit-DB"
-                            }
-                        }
-                    },
-                    "CVE_LIST": {
-                        "CVE": [
-                            {
-                                "ID": "CVE-2011-4520",
-                                "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2011-4520"
-                            },
-                            {
-                                "ID": "CVE-2011-4518",
-                                "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2011-4518"
-                            },
-                            {
-                                "ID": "CVE-2011-4519",
-                                "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2011-4519"
-                            }
-                        ]
-                    },
-                    "DIAGNOSIS": "<P>Affected Products<BR>The following products are affected:<BR>PROMOTIC versions prior to Version 8.1.5.<BR>Impact<P>QID Detection Logic (Authenticated):<BR><P>QID Detection Logic (Authenticated)<BR>QID checks for the Vulnerable version using windows registry keys",
-                    "DISCOVERY": {
-                        "ADDITIONAL_INFO": "Patch Available, Exploit Available",
-                        "AUTH_TYPE_LIST": {
-                            "AUTH_TYPE": "Windows"
-                        },
-                        "REMOTE": "0"
-                    },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-05-07T13:26:17Z",
-                    "PATCHABLE": "1",
-                    "PCI_FLAG": "1",
-                    "PUBLISHED_DATETIME": "2021-04-08T12:44:31Z",
-                    "QID": "590293",
-                    "SEVERITY_LEVEL": "3",
-                    "SOFTWARE_LIST": {
-                        "SOFTWARE": {
-                            "PRODUCT": "promotic",
-                            "VENDOR": "microsys"
-                        }
-                    },
-                    "SOLUTION": "<P>Customers are advised to refer to CERT MITIGATIONS section <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-12-024-02\" TARGET=\"_blank\">ICSA-12-024-02</A> for affected packages and patching details.\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-12-024-02\" TARGET=\"_blank\">ICSA-12-024-02</A>",
-                    "TITLE": "MICROSYS PROMOTIC Multiple Vulnerabilities(ICSA-12-024-02)",
-                    "VENDOR_REFERENCE_LIST": {
-                        "VENDOR_REFERENCE": {
-                            "ID": "ICSA-12-024-02",
-                            "URL": "https://www.us-cert.gov/ics/advisories/ICSA-12-024-02"
-                        }
-                    },
-                    "VULN_TYPE": "Vulnerability"
-                },
-                {
-                    "CATEGORY": "ICS",
-                    "CONSEQUENCE": "Successful exploitation of this vulnerability may result in denial of service or data leakage.",
-                    "CVE_LIST": {
-                        "CVE": {
-                            "ID": "CVE-2014-9205",
-                            "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2014-9205"
-                        }
-                    },
-                    "DIAGNOSIS": "<P>AFFECTED PRODUCTS<BR>The following PROMOTIC versions are affected:<BR>PROMOTIC versions prior to stable 8.2.19<P>QID Detection Logic (Authenticated)<BR>QID checks for the Vulnerable version using windows registry keys",
-                    "DISCOVERY": {
-                        "ADDITIONAL_INFO": "Patch Available",
-                        "AUTH_TYPE_LIST": {
-                            "AUTH_TYPE": "Windows"
-                        },
-                        "REMOTE": "0"
-                    },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-05-07T13:50:48Z",
-                    "PATCHABLE": "1",
-                    "PCI_FLAG": "1",
-                    "PUBLISHED_DATETIME": "2021-04-08T12:44:32Z",
-                    "QID": "590294",
-                    "SEVERITY_LEVEL": "3",
-                    "SOFTWARE_LIST": {
-                        "SOFTWARE": {
-                            "PRODUCT": "promotic",
-                            "VENDOR": "microsys"
-                        }
-                    },
-                    "SOLUTION": "<P>Customers are advised to refer to CERT MITIGATIONS section <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-15-062-01\" TARGET=\"_blank\">ICSA-15-062-01</A> for affected packages and patching details.\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-15-062-01\" TARGET=\"_blank\">ICSA-15-062-01</A>",
-                    "TITLE": "MICROSYS PROMOTIC Stack Buffer Overflow Vulnerability(ICSA-15-062-01)",
-                    "VENDOR_REFERENCE_LIST": {
-                        "VENDOR_REFERENCE": {
-                            "ID": "ICSA-15-062-01",
-                            "URL": "https://www.us-cert.gov/ics/advisories/ICSA-15-062-01"
-                        }
-                    },
-                    "VULN_TYPE": "Vulnerability"
-                },
-                {
-                    "CATEGORY": "ICS",
-                    "CONSEQUENCE": "Successful exploitation of this vulnerability may result in adverse conditions ranging from the corruption of valid data to the execution of arbitrary code. to individual organizations depends on many factors that are unique to each organization",
-                    "CVE_LIST": {
-                        "CVE": {
-                            "ID": "CVE-2011-4874",
-                            "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2011-4874"
-                        }
-                    },
-                    "DIAGNOSIS": "<P>Affected Products<BR>The following products are affected:<BR>PROMOTIC versions prior to Version 8.1.7.<P>QID Detection Logic (Authenticated)<BR>QID checks for the Vulnerable version using windows registry keys",
-                    "DISCOVERY": {
-                        "ADDITIONAL_INFO": "Patch Available",
-                        "AUTH_TYPE_LIST": {
-                            "AUTH_TYPE": "Windows"
-                        },
-                        "REMOTE": "0"
-                    },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-05-07T14:22:03Z",
-                    "PATCHABLE": "1",
-                    "PCI_FLAG": "1",
-                    "PUBLISHED_DATETIME": "2021-04-08T12:44:32Z",
-                    "QID": "590295",
-                    "SEVERITY_LEVEL": "3",
-                    "SOFTWARE_LIST": {
-                        "SOFTWARE": {
-                            "PRODUCT": "promotic",
-                            "VENDOR": "microsys"
-                        }
-                    },
-                    "SOLUTION": "<P>Customers are advised to refer to CERT MITIGATIONS section <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-12-102-03\" TARGET=\"_blank\">ICSA-12-102-03</A> for affected packages and patching details.\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-12-102-03\" TARGET=\"_blank\">ICSA-12-102-03</A>",
-                    "TITLE": "MICROSYS PROMOTIC Use After Free Vulnerability (ICSA-12-102-03)",
-                    "VENDOR_REFERENCE_LIST": {
-                        "VENDOR_REFERENCE": {
-                            "ID": "ICSA-12-102-03",
-                            "URL": "https://www.us-cert.gov/ics/advisories/ICSA-12-102-03"
-                        }
-                    },
-                    "VULN_TYPE": "Vulnerability"
-                },
-                {
-                    "CATEGORY": "ICS",
-                    "CONSEQUENCE": "Successful exploitation of this vulnerability could allow an attacker to execute code under the privileges of the application.",
-                    "CVE_LIST": {
-                        "CVE": {
-                            "ID": "CVE-2020-27280",
-                            "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-27280"
-                        }
-                    },
-                    "DIAGNOSIS": "<P>AFFECTED PRODUCTS<BR>The following versions of ISPSoft, a PLC program development tool, are affected:<BR>ISPSoft: v3.12 and prior<P>QID Detection Logic (Authenticated)<BR>QID checks for the Vulnerable version using windows registry keys",
-                    "DISCOVERY": {
-                        "ADDITIONAL_INFO": "Patch Available",
-                        "AUTH_TYPE_LIST": {
-                            "AUTH_TYPE": "Windows"
-                        },
-                        "REMOTE": "0"
-                    },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-05-07T14:18:50Z",
-                    "PATCHABLE": "1",
-                    "PCI_FLAG": "1",
-                    "PUBLISHED_DATETIME": "2021-04-12T13:50:00Z",
-                    "QID": "590296",
-                    "SEVERITY_LEVEL": "3",
-                    "SOFTWARE_LIST": {
-                        "SOFTWARE": {
-                            "PRODUCT": "ispsoft",
-                            "VENDOR": "deltaww"
-                        }
-                    },
-                    "SOLUTION": "<P>Customers are advised to refer to CERT MITIGATIONS section <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-21-021-01\" TARGET=\"_blank\">ICSA-21-021-01</A> for affected packages and patching details.\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-21-021-01\" TARGET=\"_blank\">ICSA-21-021-01</A>",
-                    "TITLE": "Delta Electronics ISPSoft Arbitrary Code Execution Vulnerability(ICSA-21-021-01)",
-                    "VENDOR_REFERENCE_LIST": {
-                        "VENDOR_REFERENCE": {
-                            "ID": "ICSA-21-021-01",
-                            "URL": "https://www.us-cert.gov/ics/advisories/ICSA-21-021-01"
-                        }
-                    },
-                    "VULN_TYPE": "Vulnerability"
-                },
-                {
-                    "CATEGORY": "ICS",
-                    "CONSEQUENCE": "to individual organizations depends on many factors that are unique to each organization. ICS-CERT recommends that organizations evaluate the impact of this vulnerability based on their operational environment, architecture, and product implementation.BackgroundIgnition is an updated version of FactoryPMI, offered by Inductive Automation. Ignition is a full featured human-machine interface/SCADA product used in a variety of industrial applications that is produced by Inductive Automation. According to Inductive Automation, Ignition has known deployments in North and South America, Europe, Australia, and across Asia.Vulnerability CharacterizationVulnerability OverviewAccording to the researchers report, the vulnerability is exploitable by connecting a specific Uniform Resource Locator (URL) address. The successful connection to this URL results in a prompt to download files containing important details about system and project information, including authorized usernames and password hashes.Vulnerability DetailsExploitabilityThis vulnerability is remotely exploitable.Existence of ExploitNo known exploits specifically target this vulnerability.DifficultyExploiting this vulnerability requires a low skill set.",
-                    "DIAGNOSIS": "<P>Affected Products<BR>Inductive Automation Ignition versions prior to Version 7.2.8.178 are affected.<P>QID Detection Logic (Authenticated)<BR>QID checks for the Vulnerable version using windows registry keys",
-                    "DISCOVERY": {
-                        "ADDITIONAL_INFO": "Patch Available",
-                        "AUTH_TYPE_LIST": {
-                            "AUTH_TYPE": "Windows"
-                        },
-                        "REMOTE": "0"
-                    },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-05-07T14:18:42Z",
-                    "PATCHABLE": "1",
-                    "PCI_FLAG": "1",
-                    "PUBLISHED_DATETIME": "2021-04-08T12:44:32Z",
-                    "QID": "590297",
-                    "SEVERITY_LEVEL": "3",
-                    "SOFTWARE_LIST": {
-                        "SOFTWARE": {
-                            "PRODUCT": "ignition",
-                            "VENDOR": "inductiveautomation"
-                        }
-                    },
-                    "SOLUTION": "<P>Customers are advised to refer to CERT MITIGATIONS section <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-11-231-01\" TARGET=\"_blank\">ICSA-11-231-01</A> for affected packages and patching details.\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-11-231-01\" TARGET=\"_blank\">ICSA-11-231-01</A>",
-                    "TITLE": "Inductive Automation Ignition Information Disclosure Vulnerability (ICSA-11-231-01)",
-                    "VENDOR_REFERENCE_LIST": {
-                        "VENDOR_REFERENCE": {
-                            "ID": "ICSA-11-231-01",
-                            "URL": "https://www.us-cert.gov/ics/advisories/ICSA-11-231-01"
-                        }
-                    },
-                    "VULN_TYPE": "Vulnerability"
-                },
-                {
-                    "CATEGORY": "ICS",
-                    "CONSEQUENCE": "An attacker who exploits this response processing vulnerability may be able to crash the OPC Server application software running on the target.",
-                    "CVE_LIST": {
-                        "CVE": {
-                            "ID": "CVE-2014-5425",
-                            "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2014-5425"
-                        }
-                    },
-                    "DIAGNOSIS": "<P>AFFECTED PRODUCTS<BR>The following Software Toolbox Top Server versions are affected:<BR>Software Toolbox Top Server Versions 5.16 and earlier.<P>QID Detection Logic (Authenticated)<BR>QID checks for the Vulnerable version using windows registry keys",
-                    "DISCOVERY": {
-                        "ADDITIONAL_INFO": "Patch Available",
-                        "AUTH_TYPE_LIST": {
-                            "AUTH_TYPE": "Windows"
-                        },
-                        "REMOTE": "0"
-                    },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-05-07T14:18:33Z",
-                    "PATCHABLE": "1",
-                    "PCI_FLAG": "0",
-                    "PUBLISHED_DATETIME": "2021-04-12T13:50:00Z",
-                    "QID": "590298",
-                    "SEVERITY_LEVEL": "3",
-                    "SOFTWARE_LIST": {
-                        "SOFTWARE": {
-                            "PRODUCT": "ioserver",
-                            "VENDOR": "ioserver"
-                        }
-                    },
-                    "SOLUTION": "<P>Customers are advised to refer to CERT MITIGATIONS section <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-15-055-01\" TARGET=\"_blank\">ICSA-15-055-01</A> for affected packages and patching details.\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-15-055-01\" TARGET=\"_blank\">ICSA-15-055-01</A>",
-                    "TITLE": "Software Toolbox Top Server Resource Exhaustion Vulnerability(ICSA-15-055-01)",
-                    "VENDOR_REFERENCE_LIST": {
-                        "VENDOR_REFERENCE": {
-                            "ID": "ICSA-15-055-01",
-                            "URL": "https://www.us-cert.gov/ics/advisories/ICSA-15-055-01"
-                        }
-                    },
-                    "VULN_TYPE": "Vulnerability"
-                },
-                {
-                    "CATEGORY": "ICS",
-                    "CONSEQUENCE": "The master station can be sent into an infinite loop by sending a specially crafted Transmission Control Protocol (TCP) packet or through serial communications. A successful attack exploiting this vulnerability could allow an attacker to put the master station into an infinite loop, causing a denial-of-service condition. The master station must be manually restarted to recover from the loop condition.",
-                    "CVE_LIST": {
-                        "CVE": {
-                            "ID": "CVE-2013-2804",
-                            "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2013-2804"
-                        }
-                    },
-                    "DIAGNOSIS": "<P>AFFECTED PRODUCTS<BR>The following Software Toolbox products are affected:<BR>DNP Master Driver for the TOP Server OPC Server (Version 5.11.250.0) and earlier.<P>QID Detection Logic (Authenticated)<BR>QID checks for the Vulnerable version using windows registry keys",
-                    "DISCOVERY": {
-                        "ADDITIONAL_INFO": "Patch Available",
-                        "AUTH_TYPE_LIST": {
-                            "AUTH_TYPE": "Windows"
-                        },
-                        "REMOTE": "0"
-                    },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-05-07T13:26:07Z",
-                    "PATCHABLE": "1",
-                    "PCI_FLAG": "0",
-                    "PUBLISHED_DATETIME": "2021-04-12T13:50:00Z",
-                    "QID": "590299",
-                    "SEVERITY_LEVEL": "3",
-                    "SOFTWARE_LIST": {
-                        "SOFTWARE": {
-                            "PRODUCT": "top_server",
-                            "VENDOR": "softwaretoolbox"
-                        }
-                    },
-                    "SOLUTION": "<P>Customers are advised to refer to CERT MITIGATIONS section <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-13-234-02\" TARGET=\"_blank\">ICSA-13-234-02</A> for affected packages and patching details.\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-13-234-02\" TARGET=\"_blank\">ICSA-13-234-02</A>",
-                    "TITLE": "Top Server OPC Improper Input Validation Vulnerability (ICSA-13-234-02)",
-                    "VENDOR_REFERENCE_LIST": {
-                        "VENDOR_REFERENCE": {
-                            "ID": "ICSA-13-234-02",
-                            "URL": "https://www.us-cert.gov/ics/advisories/ICSA-13-234-02"
-                        }
-                    },
-                    "VULN_TYPE": "Vulnerability"
-                },
-                {
-                    "CATEGORY": "ICS",
-                    "CONSEQUENCE": "A successful attack on this vulnerability could allow exporting of the config file without admin login, overwriting the config file without admin login, and adding and deleting (nonadmin) users.",
-                    "CVE_LIST": {
-                        "CVE": {
-                            "ID": "CVE-2015-7919",
-                            "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-7919"
-                        }
-                    },
-                    "DIAGNOSIS": "<P>AFFECTED PRODUCTS<BR>The following SearchBlox version is affected:<BR>SearchBlox Version 8.3<P>QID Detection Logic (Authenticated)<BR>QID checks for the Vulnerable version using windows registry keys",
-                    "DISCOVERY": {
-                        "ADDITIONAL_INFO": "Patch Available",
-                        "AUTH_TYPE_LIST": {
-                            "AUTH_TYPE": "Windows"
-                        },
-                        "REMOTE": "0"
-                    },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-05-07T14:18:25Z",
-                    "PATCHABLE": "1",
-                    "PCI_FLAG": "1",
-                    "PUBLISHED_DATETIME": "2021-04-12T13:50:00Z",
-                    "QID": "590300",
-                    "SEVERITY_LEVEL": "3",
-                    "SOFTWARE_LIST": {
-                        "SOFTWARE": {
-                            "PRODUCT": "searchblox",
-                            "VENDOR": "searchblox"
-                        }
-                    },
-                    "SOLUTION": "<P>Customers are advised to refer to CERT MITIGATIONS section <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-15-337-01\" TARGET=\"_blank\">ICSA-15-337-01</A> for affected packages and patching details.\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-15-337-01\" TARGET=\"_blank\">ICSA-15-337-01</A>",
-                    "TITLE": "SearchBlox File Exfiltration Vulnerability(ICSA-15-337-01)",
-                    "VENDOR_REFERENCE_LIST": {
-                        "VENDOR_REFERENCE": {
-                            "ID": "ICSA-15-337-01",
-                            "URL": "https://www.us-cert.gov/ics/advisories/ICSA-15-337-01"
-                        }
-                    },
-                    "VULN_TYPE": "Vulnerability"
-                },
-                {
-                    "CATEGORY": "ICS",
-                    "CONSEQUENCE": "Successful exploitation of this vulnerability could allow sensitive data to be read from the system.",
-                    "CVE_LIST": {
-                        "CVE": {
-                            "ID": "CVE-2018-19009",
-                            "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-19009"
-                        }
-                    },
-                    "DIAGNOSIS": "<P>AFFECTED PRODUCTS<BR>The following versions of PNOZmulti Configurator, a safety circuit configuration tool, are affected:<BR>PNOZmulti Configurator all versions prior to 10.9<BR>The vulnerability within the PNOZmulti Configurator directly impacts the PMI m107 diag HMI device.<P>QID Detection Logic (Authenticated)<BR>QID checks for the Vulnerable version using windows registry keys",
-                    "DISCOVERY": {
-                        "ADDITIONAL_INFO": "Patch Available",
-                        "AUTH_TYPE_LIST": {
-                            "AUTH_TYPE": "Windows"
-                        },
-                        "REMOTE": "0"
-                    },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-05-07T14:21:52Z",
-                    "PATCHABLE": "1",
-                    "PCI_FLAG": "0",
-                    "PUBLISHED_DATETIME": "2021-04-12T13:50:00Z",
-                    "QID": "590301",
-                    "SEVERITY_LEVEL": "1",
-                    "SOFTWARE_LIST": {
-                        "SOFTWARE": {
-                            "PRODUCT": "pnozmulti_configurator",
-                            "VENDOR": "pilz"
-                        }
-                    },
-                    "SOLUTION": "<P>Customers are advised to refer to CERT MITIGATIONS section <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-19-010-03\" TARGET=\"_blank\">ICSA-19-010-03</A> for affected packages and patching details.\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-19-010-03\" TARGET=\"_blank\">ICSA-19-010-03</A>",
-                    "TITLE": "Pilz PNOZmulti Configurator Vulnerability(ICSA-19-010-03)",
-                    "VENDOR_REFERENCE_LIST": {
-                        "VENDOR_REFERENCE": {
-                            "ID": "ICSA-19-010-03",
-                            "URL": "https://www.us-cert.gov/ics/advisories/ICSA-19-010-03"
-                        }
-                    },
-                    "VULN_TYPE": "Vulnerability"
-                },
-                {
-                    "CATEGORY": "ICS",
-                    "CONSEQUENCE": "Successful exploitation of this vulnerability could allow an attacker to write endless log statements into the database, which could result in a denial-of-service condition.",
-                    "CVE_LIST": {
-                        "CVE": {
-                            "ID": "CVE-2020-10641",
-                            "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-10641"
-                        }
-                    },
-                    "DIAGNOSIS": "<P>AFFECTED PRODUCTS<BR>The following versions of Ignition 8 Gateway are affected if running the Perspective Module:<BR>Ignition 8 Gateway versions prior to 8.0.10<P>QID Detection Logic (Authenticated)<BR>QID checks for the Vulnerable version using windows registry keys",
-                    "DISCOVERY": {
-                        "ADDITIONAL_INFO": "Patch Available",
-                        "AUTH_TYPE_LIST": {
-                            "AUTH_TYPE": "Windows"
-                        },
-                        "REMOTE": "0"
-                    },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-05-07T14:21:39Z",
-                    "PATCHABLE": "1",
-                    "PCI_FLAG": "0",
-                    "PUBLISHED_DATETIME": "2021-04-12T13:50:00Z",
-                    "QID": "590302",
-                    "SEVERITY_LEVEL": "3",
-                    "SOFTWARE_LIST": {
-                        "SOFTWARE": {
-                            "PRODUCT": "ignition_gateway",
-                            "VENDOR": "inductiveautomation"
-                        }
-                    },
-                    "SOLUTION": "<P>Customers are advised to refer to CERT MITIGATIONS section <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-20-112-01\" TARGET=\"_blank\">ICSA-20-112-01</A> for affected packages and patching details.\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-20-112-01\" TARGET=\"_blank\">ICSA-20-112-01</A>",
-                    "TITLE": "Inductive Automation Ignition DoS Vulnerability(ICSA-20-112-01)",
-                    "VENDOR_REFERENCE_LIST": {
-                        "VENDOR_REFERENCE": {
-                            "ID": "ICSA-20-112-01",
-                            "URL": "https://www.us-cert.gov/ics/advisories/ICSA-20-112-01"
-                        }
-                    },
-                    "VULN_TYPE": "Vulnerability"
-                },
-                {
-                    "CATEGORY": "ICS",
-                    "CONSEQUENCE": "Successful exploitation of this vulnerability may allow a remote attacker to crash the Runtime Toolkit, resulting in a denial of service condition.",
-                    "CVE_LIST": {
-                        "CVE": {
-                            "ID": "CVE-2015-6482",
-                            "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-6482"
-                        }
-                    },
-                    "DIAGNOSIS": "<P>AFFECTED PRODUCTS<BR>The following CODESYS software versions are affected:<BR>CODESYS Runtime Toolkit, versions prior to Version 2.4.7.48.<P>QID Detection Logic (Authenticated)<BR>QID checks for the Vulnerable version using windows registry keys",
-                    "DISCOVERY": {
-                        "ADDITIONAL_INFO": "Patch Available",
-                        "AUTH_TYPE_LIST": {
-                            "AUTH_TYPE": "Windows"
-                        },
-                        "REMOTE": "0"
-                    },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-05-07T14:21:30Z",
-                    "PATCHABLE": "1",
-                    "PCI_FLAG": "0",
-                    "PUBLISHED_DATETIME": "2021-04-19T14:36:40Z",
-                    "QID": "590303",
-                    "SEVERITY_LEVEL": "3",
-                    "SOFTWARE_LIST": {
-                        "SOFTWARE": {
-                            "PRODUCT": "codesys_runtime_system",
-                            "VENDOR": "3s-software"
-                        }
-                    },
-                    "SOLUTION": "<P>Customers are advised to refer to CERT MITIGATIONS section <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-15-288-01\" TARGET=\"_blank\">ICSA-15-288-01</A> for affected packages and patching details.\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-15-288-01\" TARGET=\"_blank\">ICSA-15-288-01</A>",
-                    "TITLE": "3S CODESYS Runtime Toolkit Null Pointer Dereference Vulnerability(ICSA-15-288-01)",
-                    "VENDOR_REFERENCE_LIST": {
-                        "VENDOR_REFERENCE": {
-                            "ID": "ICSA-15-288-01",
-                            "URL": "https://www.us-cert.gov/ics/advisories/ICSA-15-288-01"
-                        }
-                    },
-                    "VULN_TYPE": "Vulnerability"
-                },
-                {
-                    "CATEGORY": "ICS",
-                    "CONSEQUENCE": "The 3S security patch covers directory traversal and memory operation restriction vulnerabilities reported to ICS-CERT by Exodus Intelligence.",
-                    "CORRELATION": {
-                        "EXPLOITS": {
-                            "EXPLT_SRC": [
-                                {
-                                    "EXPLT_LIST": {
-                                        "EXPLT": {
-                                            "DESC": "CADA 3S CoDeSys Gateway Server - Directory Traversal (Metasploit) - The Exploit-DB Ref : 41712",
-                                            "LINK": "http://www.exploit-db.com/exploits/41712",
-                                            "REF": "CVE-2012-4705"
-                                        }
-                                    },
-                                    "SRC_NAME": "The Exploit-DB"
-                                },
-                                {
-                                    "EXPLT_LIST": {
-                                        "EXPLT": {
-                                            "DESC": "3S CoDeSys Gateway Server Arbitrary File Upload Exploit - Core Security Category : Exploits/Remote",
-                                            "REF": "CVE-2012-4705"
-                                        }
-                                    },
-                                    "SRC_NAME": "Core Security"
-                                }
-                            ]
-                        }
-                    },
-                    "CVE_LIST": {
-                        "CVE": [
-                            {
-                                "ID": "CVE-2012-4706",
-                                "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2012-4706"
-                            },
-                            {
-                                "ID": "CVE-2012-4708",
-                                "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2012-4708"
-                            },
-                            {
-                                "ID": "CVE-2012-4707",
-                                "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2012-4707"
-                            },
-                            {
-                                "ID": "CVE-2012-4705",
-                                "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2012-4705"
-                            },
-                            {
-                                "ID": "CVE-2012-4704",
-                                "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2012-4704"
-                            }
-                        ]
-                    },
-                    "DIAGNOSIS": "<P>Affected Products<BR>The following 3S CODESYS products are affected:<BR>Gateway-Server, prior to ver. 2.3.9.27<P>QID Detection Logic (Authenticated)<BR>QID checks for the Vulnerable version using windows registry keys",
-                    "DISCOVERY": {
-                        "ADDITIONAL_INFO": "Patch Available, Exploit Available",
-                        "AUTH_TYPE_LIST": {
-                            "AUTH_TYPE": "Windows"
-                        },
-                        "REMOTE": "0"
-                    },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-05-07T13:25:46Z",
-                    "PATCHABLE": "1",
-                    "PCI_FLAG": "1",
-                    "PUBLISHED_DATETIME": "2021-04-19T14:36:40Z",
-                    "QID": "590304",
-                    "SEVERITY_LEVEL": "5",
-                    "SOFTWARE_LIST": {
-                        "SOFTWARE": {
-                            "PRODUCT": "codesys_gateway-server",
-                            "VENDOR": "3s-software"
-                        }
-                    },
-                    "SOLUTION": "<P>Customers are advised to refer to CERT MITIGATIONS section <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-13-050-01A\" TARGET=\"_blank\">ICSA-13-050-01A</A> for affected packages and patching details.\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-13-050-01A\" TARGET=\"_blank\">ICSA-13-050-01A</A>",
-                    "TITLE": "3S CODESYS Gateway-Server (Update A) Multiple Vulnerabilities(ICSA-13-050-01A)",
-                    "VENDOR_REFERENCE_LIST": {
-                        "VENDOR_REFERENCE": {
-                            "ID": "ICSA-13-050-01A",
-                            "URL": "https://www.us-cert.gov/ics/advisories/ICSA-13-050-01A"
-                        }
-                    },
-                    "VULN_TYPE": "Vulnerability"
-                },
-                {
-                    "CATEGORY": "ICS",
-                    "CONSEQUENCE": "Null pointer exceptions cause the server to crash creating a denial of service.",
-                    "CVE_LIST": {
-                        "CVE": {
-                            "ID": "CVE-2015-6484",
-                            "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-6484"
-                        }
-                    },
-                    "DIAGNOSIS": "<P>AFFECTED PRODUCTS<BR>The following Gateway Server versions are affected:<BR>CODESYS Gateway Server, Version 2.3.9.47 and prior versions.<P>QID Detection Logic (Authenticated)<BR>QID checks for the Vulnerable version using windows registry keys",
-                    "DISCOVERY": {
-                        "ADDITIONAL_INFO": "Patch Available",
-                        "AUTH_TYPE_LIST": {
-                            "AUTH_TYPE": "Windows"
-                        },
-                        "REMOTE": "0"
-                    },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-05-07T14:18:18Z",
-                    "PATCHABLE": "1",
-                    "PCI_FLAG": "0",
-                    "PUBLISHED_DATETIME": "2021-04-19T14:36:40Z",
-                    "QID": "590305",
-                    "SEVERITY_LEVEL": "3",
-                    "SOFTWARE_LIST": {
-                        "SOFTWARE": {
-                            "PRODUCT": "codesys_gateway_server",
-                            "VENDOR": "3s-smart_software_solutions"
-                        }
-                    },
-                    "SOLUTION": "<P>Customers are advised to refer to CERT MITIGATIONS section <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-15-293-03\" TARGET=\"_blank\">ICSA-15-293-03</A> for affected packages and patching details.\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-15-293-03\" TARGET=\"_blank\">ICSA-15-293-03</A>",
-                    "TITLE": "3S CODESYS Gateway Null Pointer Exception Vulnerability(ICSA-15-293-03)",
-                    "VENDOR_REFERENCE_LIST": {
-                        "VENDOR_REFERENCE": {
-                            "ID": "ICSA-15-293-03",
-                            "URL": "https://www.us-cert.gov/ics/advisories/ICSA-15-293-03"
-                        }
-                    },
-                    "VULN_TYPE": "Vulnerability"
-                },
-                {
-                    "CATEGORY": "ICS",
-                    "CONSEQUENCE": "Successful exploitation of these vulnerabilities may allow an attacker to cause a denial of service (DoS) or to execute arbitrary code.",
-                    "CORRELATION": {
-                        "EXPLOITS": {
-                            "EXPLT_SRC": {
-                                "EXPLT_LIST": {
-                                    "EXPLT": [
-                                        {
-                                            "DESC": "CoDeSys 3.4 - POST Null Pointer Content-Length Parsing Remote Denial of Service - The Exploit-DB Ref : 36377",
-                                            "LINK": "http://www.exploit-db.com/exploits/36377",
-                                            "REF": "CVE-2011-5009"
-                                        },
-                                        {
-                                            "DESC": "CoDeSys 3.4 - Null Pointer Invalid HTTP Request Parsing Remote Denial of Service - The Exploit-DB Ref : 36378",
-                                            "LINK": "http://www.exploit-db.com/exploits/36378",
-                                            "REF": "CVE-2011-5009"
-                                        },
-                                        {
-                                            "DESC": "CoDeSys SCADA 2.3 - Remote Buffer Overflow - The Exploit-DB Ref : 18187",
-                                            "LINK": "http://www.exploit-db.com/exploits/18187",
-                                            "REF": "CVE-2011-5007"
-                                        },
-                                        {
-                                            "DESC": "CoDeSys SCADA 2.3 - WebServer Stack Buffer Overflow (Metasploit) - The Exploit-DB Ref : 18240",
-                                            "LINK": "http://www.exploit-db.com/exploits/18240",
-                                            "REF": "CVE-2011-5007"
-                                        }
-                                    ]
-                                },
-                                "SRC_NAME": "The Exploit-DB"
-                            }
-                        }
-                    },
-                    "CVE_LIST": {
-                        "CVE": [
-                            {
-                                "ID": "CVE-2011-5008",
-                                "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2011-5008"
-                            },
-                            {
-                                "ID": "CVE-2011-5007",
-                                "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2011-5007"
-                            },
-                            {
-                                "ID": "CVE-2011-5009",
-                                "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2011-5009"
-                            }
-                        ]
-                    },
-                    "DIAGNOSIS": "<P>Affected Products<BR>The following 3S Smart Software Solutions CoDeSys versions are affected:<BR>Version 2.3<BR>Version 3.4<P>QID Detection Logic (Authenticated)<BR>QID checks for the Vulnerable version using windows registry keys",
-                    "DISCOVERY": {
-                        "ADDITIONAL_INFO": "Patch Available, Exploit Available",
-                        "AUTH_TYPE_LIST": {
-                            "AUTH_TYPE": "Windows"
-                        },
-                        "REMOTE": "0"
-                    },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-05-07T14:21:23Z",
-                    "PATCHABLE": "1",
-                    "PCI_FLAG": "1",
-                    "PUBLISHED_DATETIME": "2021-04-19T14:36:40Z",
-                    "QID": "590306",
-                    "SEVERITY_LEVEL": "3",
-                    "SOFTWARE_LIST": {
-                        "SOFTWARE": {
-                            "PRODUCT": "codesys",
-                            "VENDOR": "3ssoftware"
-                        }
-                    },
-                    "SOLUTION": "<P>Customers are advised to refer to CERT MITIGATIONS section <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-12-006-01\" TARGET=\"_blank\">ICSA-12-006-01</A> for affected packages and patching details.\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-12-006-01\" TARGET=\"_blank\">ICSA-12-006-01</A>",
-                    "TITLE": "3S CoDeSys Multiple Vulnerabilities(ICSA-12-006-01)",
-                    "VENDOR_REFERENCE_LIST": {
-                        "VENDOR_REFERENCE": {
-                            "ID": "ICSA-12-006-01",
-                            "URL": "https://www.us-cert.gov/ics/advisories/ICSA-12-006-01"
-                        }
-                    },
-                    "VULN_TYPE": "Vulnerability"
-                },
-                {
-                    "CATEGORY": "ICS",
-                    "CONSEQUENCE": "Successful exploitation of these vulnerabilities could allow arbitrary files to be uploaded to the CODESYS Web Server without authorization. Additionally, an attacker may be able to crash the application or execute arbitrary code.",
-                    "CORRELATION": {
-                        "EXPLOITS": {
-                            "EXPLT_SRC": {
-                                "EXPLT_LIST": {
-                                    "EXPLT": {
-                                        "DESC": "3S-Smart Software Solutions GmbH CODESYS Web Server Upload Restricted File and Buffer Overflow Exploit - Core Security Category : Exploits/Remote",
-                                        "REF": "CVE-2017-6027"
-                                    }
-                                },
-                                "SRC_NAME": "Core Security"
-                            }
-                        }
-                    },
-                    "CVE_LIST": {
-                        "CVE": [
-                            {
-                                "ID": "CVE-2017-6027",
-                                "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-6027"
-                            },
-                            {
-                                "ID": "CVE-2017-6025",
-                                "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-6025"
-                            }
-                        ]
-                    },
-                    "DIAGNOSIS": "<P>AFFECTED PRODUCTS<BR>The following versions of CODESYS Web Server, part of the CODESYS WebVisu web browser visualization software, are affected:<BR>CODESYS Web Server Versions 2.3 and prior.<P>QID Detection Logic (Authenticated)<BR>QID checks for the Vulnerable version using windows registry keys",
-                    "DISCOVERY": {
-                        "ADDITIONAL_INFO": "Patch Available, Exploit Available",
-                        "AUTH_TYPE_LIST": {
-                            "AUTH_TYPE": "Windows"
-                        },
-                        "REMOTE": "0"
-                    },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-05-07T13:50:37Z",
-                    "PATCHABLE": "1",
-                    "PCI_FLAG": "1",
-                    "PUBLISHED_DATETIME": "2021-04-19T14:36:40Z",
-                    "QID": "590307",
-                    "SEVERITY_LEVEL": "3",
-                    "SOFTWARE_LIST": {
-                        "SOFTWARE": {
-                            "PRODUCT": "web_server",
-                            "VENDOR": "codesys"
-                        }
-                    },
-                    "SOLUTION": "<P>Customers are advised to refer to CERT MITIGATIONS section <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-17-087-02\" TARGET=\"_blank\">ICSA-17-087-02</A> for affected packages and patching details.\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-17-087-02\" TARGET=\"_blank\">ICSA-17-087-02</A>",
-                    "TITLE": "3S-Smart Software Solutions GmbH CODESYS Web Server Multiple Vulnerabilities(ICSA-17-087-02)",
-                    "VENDOR_REFERENCE_LIST": {
-                        "VENDOR_REFERENCE": {
-                            "ID": "ICSA-17-087-02",
-                            "URL": "https://www.us-cert.gov/ics/advisories/ICSA-17-087-02"
-                        }
-                    },
-                    "VULN_TYPE": "Vulnerability"
-                },
-                {
-                    "CATEGORY": "ICS",
-                    "CONSEQUENCE": "An attacker may be able to exploit these vulnerabilities to execute arbitrary code on the target system.",
-                    "CORRELATION": {
-                        "EXPLOITS": {
-                            "EXPLT_SRC": {
-                                "EXPLT_LIST": {
-                                    "EXPLT": {
-                                        "DESC": "Eaton ELCSoft ELCSimulator Buffer Overflow Exploit - Core Security Category : Exploits/Remote",
-                                        "REF": "CVE-2016-4512"
-                                    }
-                                },
-                                "SRC_NAME": "Core Security"
-                            }
-                        }
-                    },
-                    "CVE_LIST": {
-                        "CVE": [
-                            {
-                                "ID": "CVE-2016-4509",
-                                "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-4509"
-                            },
-                            {
-                                "ID": "CVE-2016-4512",
-                                "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-4512"
-                            }
-                        ]
-                    },
-                    "DIAGNOSIS": "<P>AFFECTED PRODUCTS<BR>The following ELCSoft programming software versions are affected:<BR>ELCSoft Version 2.4.01 and earlier.<P>QID Detection Logic (Authenticated)<BR>QID checks for the Vulnerable version using windows registry keys",
-                    "DISCOVERY": {
-                        "ADDITIONAL_INFO": "Patch Available, Exploit Available",
-                        "AUTH_TYPE_LIST": {
-                            "AUTH_TYPE": "Windows"
-                        },
-                        "REMOTE": "0"
-                    },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-05-07T14:21:15Z",
-                    "PATCHABLE": "1",
-                    "PCI_FLAG": "1",
-                    "PUBLISHED_DATETIME": "2021-04-19T14:36:40Z",
-                    "QID": "590308",
-                    "SEVERITY_LEVEL": "3",
-                    "SOFTWARE_LIST": {
-                        "SOFTWARE": {
-                            "PRODUCT": "elcsoft",
-                            "VENDOR": "eaton"
-                        }
-                    },
-                    "SOLUTION": "<P>Customers are advised to refer to CERT MITIGATIONS section <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-16-182-01\" TARGET=\"_blank\">ICSA-16-182-01</A> for affected packages and patching details.\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-16-182-01\" TARGET=\"_blank\">ICSA-16-182-01</A>",
-                    "TITLE": "Eaton ELCSoft Programming Software Memory Multiple Vulnerabilities(ICSA-16-182-01)",
-                    "VENDOR_REFERENCE_LIST": {
-                        "VENDOR_REFERENCE": {
-                            "ID": "ICSA-16-182-01",
-                            "URL": "https://www.us-cert.gov/ics/advisories/ICSA-16-182-01"
-                        }
-                    },
-                    "VULN_TYPE": "Vulnerability"
-                },
-                {
-                    "CATEGORY": "ICS",
-                    "CONSEQUENCE": "Exploitation of these vulnerabilities may cause the xArrow service to crash causing a denial-of-service condition or allow an attacker to execute arbitrary code.  to individual organizations depends on many factors that are unique to each organization. ICS-CERT recommends that organizations evaluate the impact of these vulnerabilities based on their operational environment, architecture, and product implementation.BackgroundxArrow is a human-machine interface (HMI) system. According to xArrow, this product is a general configuration software tool used to monitor and collect data primarily in industrial control, infrastructure, or facility-based processes.",
-                    "CVE_LIST": {
-                        "CVE": [
-                            {
-                                "ID": "CVE-2012-2428",
-                                "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2012-2428"
-                            },
-                            {
-                                "ID": "CVE-2012-2426",
-                                "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2012-2426"
-                            },
-                            {
-                                "ID": "CVE-2012-2429",
-                                "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2012-2429"
-                            },
-                            {
-                                "ID": "CVE-2012-2427",
-                                "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2012-2427"
-                            }
-                        ]
-                    },
-                    "DIAGNOSIS": "<P>Affected Products<BR>xArrow software versions older than Version 3.4.1<P>QID Detection Logic (Authenticated)<BR>QID checks for the Vulnerable version using windows registry keys",
-                    "DISCOVERY": {
-                        "ADDITIONAL_INFO": "Patch Available",
-                        "AUTH_TYPE_LIST": {
-                            "AUTH_TYPE": "Windows"
-                        },
-                        "REMOTE": "0"
-                    },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-05-07T14:18:11Z",
-                    "PATCHABLE": "1",
-                    "PCI_FLAG": "1",
-                    "PUBLISHED_DATETIME": "2021-04-19T14:36:41Z",
-                    "QID": "590309",
-                    "SEVERITY_LEVEL": "3",
-                    "SOFTWARE_LIST": {
-                        "SOFTWARE": {
-                            "PRODUCT": "xarrow",
-                            "VENDOR": "xarrow"
-                        }
-                    },
-                    "SOLUTION": "<P>Customers are advised to refer to CERT MITIGATIONS section <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-12-145-02\" TARGET=\"_blank\">ICSA-12-145-02</A> for affected packages and patching details.\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-12-145-02\" TARGET=\"_blank\">ICSA-12-145-02</A>",
-                    "TITLE": "xArrow Multiple Vulnerabilities(ICSA-12-145-02)",
-                    "VENDOR_REFERENCE_LIST": {
-                        "VENDOR_REFERENCE": {
-                            "ID": "ICSA-12-145-02",
-                            "URL": "https://www.us-cert.gov/ics/advisories/ICSA-12-145-02"
-                        }
-                    },
-                    "VULN_TYPE": "Vulnerability"
-                },
-                {
-                    "CATEGORY": "ICS",
-                    "CONSEQUENCE": "Successful exploitation of this vulnerability could allow an attacker to escalate their privileges.",
-                    "CVE_LIST": {
-                        "CVE": {
-                            "ID": "CVE-2020-16202",
-                            "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-16202"
-                        }
-                    },
-                    "DIAGNOSIS": "<P>AFFECTED PRODUCTS<BR>The following versions of WebAccess Node, an HMI platform, are affected:<BR>WebAccess Node: All versions prior to 9.0.1<P>QID Detection Logic (Authenticated)<BR>QID checks for the Vulnerable version using windows registry keys",
-                    "DISCOVERY": {
-                        "ADDITIONAL_INFO": "Patch Available",
-                        "AUTH_TYPE_LIST": {
-                            "AUTH_TYPE": "Windows"
-                        },
-                        "REMOTE": "0"
-                    },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-05-07T13:50:20Z",
-                    "PATCHABLE": "1",
-                    "PCI_FLAG": "1",
-                    "PUBLISHED_DATETIME": "2021-04-19T14:36:41Z",
-                    "QID": "590311",
-                    "SEVERITY_LEVEL": "3",
-                    "SOFTWARE_LIST": {
-                        "SOFTWARE": {
-                            "PRODUCT": "webaccess",
-                            "VENDOR": "advantech"
-                        }
-                    },
-                    "SOLUTION": "<P>Customers are advised to refer to CERT MITIGATIONS section <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-20-261-01\" TARGET=\"_blank\">ICSA-20-261-01</A> for affected packages and patching details.\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-20-261-01\" TARGET=\"_blank\">ICSA-20-261-01</A>",
-                    "TITLE": "Advantech WebAccess Node privilege escalation Vulnerability(ICSA-20-261-01)",
-                    "VENDOR_REFERENCE_LIST": {
-                        "VENDOR_REFERENCE": {
-                            "ID": "ICSA-20-261-01",
-                            "URL": "https://www.us-cert.gov/ics/advisories/ICSA-20-261-01"
-                        }
-                    },
-                    "VULN_TYPE": "Vulnerability"
-                },
-                {
-                    "CATEGORY": "ICS",
-                    "CONSEQUENCE": "Successful exploitation of this vulnerability could allow an attacker to gain access to sensitive information.",
-                    "CVE_LIST": {
-                        "CVE": {
-                            "ID": "CVE-2020-14520",
-                            "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-14520"
-                        }
-                    },
-                    "DIAGNOSIS": "<P>AFFECTED PRODUCTS<BR>The following versions of Inductive Automation Ignition are affected:<BR>Inductive Automation Ignition 8: All versions prior to 8.0.13<P>QID Detection Logic (Authenticated)<BR>QID checks for the Vulnerable version using windows registry keys",
-                    "DISCOVERY": {
-                        "ADDITIONAL_INFO": "Patch Available",
-                        "AUTH_TYPE_LIST": {
-                            "AUTH_TYPE": "Windows"
-                        },
-                        "REMOTE": "0"
-                    },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-05-07T14:18:01Z",
-                    "PATCHABLE": "1",
-                    "PCI_FLAG": "1",
-                    "PUBLISHED_DATETIME": "2021-04-19T14:36:41Z",
-                    "QID": "590312",
-                    "SEVERITY_LEVEL": "3",
-                    "SOFTWARE_LIST": {
-                        "SOFTWARE": {
-                            "PRODUCT": "ignition_gateway",
-                            "VENDOR": "inductiveautomation"
-                        }
-                    },
-                    "SOLUTION": "<P>Customers are advised to refer to CERT MITIGATIONS section <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-20-212-01\" TARGET=\"_blank\">ICSA-20-212-01</A> for affected packages and patching details.\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-20-212-01\" TARGET=\"_blank\">ICSA-20-212-01</A>",
-                    "TITLE": "Inductive Automation Ignition 8 sensitive Information Disclosure Vulnerability(ICSA-20-212-01)",
-                    "VENDOR_REFERENCE_LIST": {
-                        "VENDOR_REFERENCE": {
-                            "ID": "ICSA-20-212-01",
-                            "URL": "https://www.us-cert.gov/ics/advisories/ICSA-20-212-01"
-                        }
-                    },
-                    "VULN_TYPE": "Vulnerability"
-                },
-                {
-                    "CATEGORY": "ICS",
-                    "CONSEQUENCE": "Successful exploitation of this vulnerability could allow a remote, unauthenticated attacker to create new users in the FactoryTalk Services Platform administration console. These new users could allow an attacker to modify or delete configuration and application data in other FactoryTalk software connected to the FactoryTalk Services Platform.",
-                    "CVE_LIST": {
-                        "CVE": {
-                            "ID": "CVE-2020-14516",
-                            "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-14516"
-                        }
-                    },
-                    "DIAGNOSIS": "<P>AFFECTED PRODUCTS<BR>FactoryTalk Services Platform Versions 6.10.00 and 6.11.00<P>QID Detection Logic (Authenticated):<BR>QID checks for  the Vulnerable version of Rockwell using registry &quot;HKLM\\SOFTWARE\\Rockwell Software&quot;",
-                    "DISCOVERY": {
-                        "ADDITIONAL_INFO": "Patch Available",
-                        "AUTH_TYPE_LIST": {
-                            "AUTH_TYPE": "Windows"
-                        },
-                        "REMOTE": "0"
-                    },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-04-19T14:36:41Z",
-                    "PATCHABLE": "1",
-                    "PCI_FLAG": "1",
-                    "PUBLISHED_DATETIME": "2021-04-19T14:36:41Z",
-                    "QID": "590313",
-                    "SEVERITY_LEVEL": "3",
-                    "SOFTWARE_LIST": {
-                        "SOFTWARE": {
-                            "PRODUCT": "factorytalk_services_platform",
-                            "VENDOR": "rockwellautomation"
-                        }
-                    },
-                    "SOLUTION": "<P>Customers are advised to refer to CERT MITIGATIONS section <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-21-054-01\" TARGET=\"_blank\">ICSA-21-054-01</A> for affected packages and patching details.\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-21-054-01\" TARGET=\"_blank\">ICSA-21-054-01</A>",
-                    "TITLE": "Rockwell Automation FactoryTalk Services Platform Use of Password Hash with Insufficient Computational Effort Vulnerability(ICSA-21-054-01)",
-                    "VENDOR_REFERENCE_LIST": {
-                        "VENDOR_REFERENCE": {
-                            "ID": "ICSA-21-054-01",
-                            "URL": "https://www.us-cert.gov/ics/advisories/ICSA-21-054-01"
-                        }
-                    },
-                    "VULN_TYPE": "Vulnerability"
-                },
-                {
-                    "CATEGORY": "ICS",
-                    "CONSEQUENCE": "These vulnerabilities, if exploited, could allow denial of service, information disclosure, remote code execution, or session credential high jacking.  to individual organizations depends on many factors that are unique to each organization. ICS-CERT recommends that organizations evaluate the impact of these vulnerabilities based on their operational environment, architecture, and product implementation.BackgroundThe Invensys Wonderware Information Server is used in many industries worldwide, including manufacturing, energy, food and beverage, chemical, and water and wastewater.",
-                    "CVE_LIST": {
-                        "CVE": [
-                            {
-                                "ID": "CVE-2012-0226",
-                                "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2012-0226"
-                            },
-                            {
-                                "ID": "CVE-2012-0228",
-                                "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2012-0228"
-                            },
-                            {
-                                "ID": "CVE-2012-0225",
-                                "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2012-0225"
-                            }
-                        ]
-                    },
-                    "DIAGNOSIS": "<P>Affected Products<BR>The following Invensys Wonderware Information Server versions are affected:<BR>4.0 SP1 and 4.5--Portal<BR>4.0 SP1 and 4.5--Client.<BR>The following Invensys Wonderware Historian Client version is affected:<BR>Only Wonderware Historian Client versions installed on the same node as the Wonderware Information Server Portal or Client are subject to the vulnerabilities reported in this Advisory.<P>QID Detection Logic (Authenticated)<BR>QID checks for the Vulnerable version using windows registry keys",
-                    "DISCOVERY": {
-                        "ADDITIONAL_INFO": "Patch Available",
-                        "AUTH_TYPE_LIST": {
-                            "AUTH_TYPE": "Windows"
-                        },
-                        "REMOTE": "0"
-                    },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-05-07T14:17:53Z",
-                    "PATCHABLE": "1",
-                    "PCI_FLAG": "1",
-                    "PUBLISHED_DATETIME": "2021-04-19T14:36:41Z",
-                    "QID": "590314",
-                    "SEVERITY_LEVEL": "3",
-                    "SOFTWARE_LIST": {
-                        "SOFTWARE": {
-                            "PRODUCT": "wonderware_information_server",
-                            "VENDOR": "invensys"
-                        }
-                    },
-                    "SOLUTION": "<P>Customers are advised to refer to CERT MITIGATIONS section <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-12-062-01\" TARGET=\"_blank\">ICSA-12-062-01</A> for affected packages and patching details.\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-12-062-01\" TARGET=\"_blank\">ICSA-12-062-01</A>",
-                    "TITLE": "Wonderware Information Server Multiple Vulnerabilities(ICSA-12-062-01)",
-                    "VENDOR_REFERENCE_LIST": {
-                        "VENDOR_REFERENCE": {
-                            "ID": "ICSA-12-062-01",
-                            "URL": "https://www.us-cert.gov/ics/advisories/ICSA-12-062-01"
-                        }
-                    },
-                    "VULN_TYPE": "Vulnerability"
-                },
-                {
-                    "CATEGORY": "ICS",
-                    "CONSEQUENCE": "Successful exploitation of this vulnerability may allow an attacker the ability to execute arbitrary code and gain the privileges of the currently logged in user. to individual organizations depends on many factors that are unique to each organization.",
-                    "DIAGNOSIS": "<P>Affected Products<BR>The following Beijer products are affected:<BR>ADP V6.5.0-180_R1967<BR>ADP V6.5.1-186_R2942<P>QID Detection Logic (Authenticated)<BR>QID checks for the Vulnerable version using windows registry keys",
-                    "DISCOVERY": {
-                        "ADDITIONAL_INFO": "Patch Available",
-                        "AUTH_TYPE_LIST": {
-                            "AUTH_TYPE": "Windows"
-                        },
-                        "REMOTE": "0"
-                    },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-05-07T14:21:08Z",
-                    "PATCHABLE": "1",
-                    "PCI_FLAG": "1",
-                    "PUBLISHED_DATETIME": "2021-04-19T14:36:41Z",
-                    "QID": "590317",
-                    "SEVERITY_LEVEL": "3",
-                    "SOFTWARE_LIST": {
-                        "SOFTWARE": {
-                            "PRODUCT": "adp_configuration_tool",
-                            "VENDOR": "beijer electronics"
-                        }
-                    },
-                    "SOLUTION": "<P>Customers are advised to refer to CERT MITIGATIONS section <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-13-024-01\" TARGET=\"_blank\">ICSA-13-024-01</A> for affected packages and patching details.\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://www.us-cert.gov/ics/advisories/ICSA-13-024-01\" TARGET=\"_blank\">ICSA-13-024-01</A>",
-                    "TITLE": "Beijer Electronics ADP Buffer Overflow Vulnerability(ICSA-13-024-01)",
-                    "VENDOR_REFERENCE_LIST": {
-                        "VENDOR_REFERENCE": {
-                            "ID": "ICSA-13-024-01",
-                            "URL": "https://www.us-cert.gov/ics/advisories/ICSA-13-024-01"
-                        }
-                    },
-                    "VULN_TYPE": "Potential Vulnerability"
-                },
-                {
                     "CATEGORY": "Mobile Device",
                     "CONSEQUENCE": "On successful exploitation, it could allow an attacker to execute code.",
                     "CVE_LIST": {
@@ -18659,15 +17127,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                     "SOFTWARE_LIST": {
                         "SOFTWARE": [
                             {
-                                "PRODUCT": "iphone_os",
-                                "VENDOR": "apple"
-                            },
-                            {
                                 "PRODUCT": "None",
-                                "VENDOR": "apple"
-                            },
-                            {
-                                "PRODUCT": "watchos",
                                 "VENDOR": "apple"
                             },
                             {
@@ -18716,17 +17176,9 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                                 "VENDOR": "apple"
                             },
                             {
-                                "PRODUCT": "None",
-                                "VENDOR": "apple"
-                            },
-                            {
                                 "PRODUCT": "watchos",
                                 "VENDOR": "apple"
-                            },
-                            {
-                                "PRODUCT": "ipad_os",
-                                "VENDOR": "apple"
-                            }
+}
                         ]
                     },
                     "SOLUTION": "Refer to Apple advisory <A HREF=\"https://support.apple.com/en-in/HT212257\" TARGET=\"_blank\">HT212257</A>  for patching details.\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://support.apple.com/en-in/HT212257\" TARGET=\"_blank\">HT212257: iOS</A>",
@@ -19170,10 +17622,6 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                     "SEVERITY_LEVEL": "4",
                     "SOFTWARE_LIST": {
                         "SOFTWARE": [
-                            {
-                                "PRODUCT": "android",
-                                "VENDOR": "google"
-                            },
                             {
                                 "PRODUCT": "None",
                                 "VENDOR": "google"
@@ -19838,14 +18286,6 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                             {
                                 "ID": "CVE-2021-23988",
                                 "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-23988"
-                            },
-                            {
-                                "ID": "CVE-2021-29951",
-                                "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-29951"
-                            },
-                            {
-                                "ID": "CVE-2021-29955",
-                                "URL": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-29955"
                             }
                         ]
                     },
@@ -19966,10 +18406,6 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                             },
                             {
                                 "PRODUCT": "thunderbird",
-                                "VENDOR": "mozilla"
-                            },
-                            {
-                                "PRODUCT": "firefox_esr",
                                 "VENDOR": "mozilla"
                             },
                             {
@@ -20819,12 +19255,7 @@ Get account asset groups
                     "1.1.2.3",
                     "1.5.2.1",
                     "1.5.6.1",
-                    "5.5.5.6",
-                    "5.8.4.2",
                     "8.8.8.8",
-                    "13.67.133.53",
-                    "13.81.60.29",
-                    "13.89.224.99",
                     "18.130.16.32",
                     "23.96.25.100",
                     "34.99.231.241",
@@ -20834,14 +19265,12 @@ Get account asset groups
                     "96.252.18.158",
                     "172.31.10.110",
                     "172.31.11.47",
-                    "172.31.11.229",
-                    "192.168.55.128"
+                    "172.31.11.229"
                 ],
                 "IP_RANGE": [
                     "1.1.1.3-1.1.1.9",
                     "1.1.2.8-1.1.2.9",
                     "1.2.2.2-1.2.2.3",
-                    "8.2.1.1-8.2.1.5",
                     "192.168.0.87-192.168.0.92"
                 ]
             },
@@ -20854,7 +19283,6 @@ Get account asset groups
 #### Human Readable Output
 
 >### Group List
->
 >|APPLIANCE_IDS|DEFAULT_APPLIANCE_ID|ID|IP_SET|TITLE|
 >|---|---|---|---|---|
 >|  |  | 492950 | IP: 1.1.1.1,<br/>1.1.2.1,<br/>1.1.2.3,<br/>1.5.2.1,<br/>1.5.6.1,<br/>5.5.5.6,<br/>5.8.4.2,<br/>8.8.8.8,<br/>13.67.133.53,<br/>13.81.60.29,<br/>13.89.224.99,<br/>18.130.16.32,<br/>23.96.25.100,<br/>34.99.231.241,<br/>35.185.27.57,<br/>52.58.204.23,<br/>54.155.52.85,<br/>96.252.18.158,<br/>172.31.10.110,<br/>172.31.11.47,<br/>172.31.11.229,<br/>192.168.55.128<br/>IP_RANGE: 1.1.1.3-1.1.1.9,<br/>1.1.2.8-1.1.2.9,<br/>1.2.2.2-1.2.2.3,<br/>8.2.1.1-8.2.1.5,<br/>192.168.0.87-192.168.0.92 | All |
@@ -21256,7 +19684,6 @@ launch compliance scans.
 #### Human Readable Output
 
 >### New PC Scan launched
->
 >|KEY|VALUE|
 >|---|---|
 >| ID | 23847401 |
@@ -22747,40 +21174,3 @@ Gets a list of the supported time zone codes.
 | --- | --- | --- |
 | Qualys.Timezone.Code.TIME_ZONE_CODE | unknown | Time zone code. | 
 | Qualys.Timezone.Code.TIME_ZONE_DETAILS | unknown | Timezone code details. | 
-
-## Breaking changes from the previous version of this integration - Qualys v2
-%%FILL HERE%%
-The following sections list the changes in this version.
-
-### Commands
-#### The following commands were removed in this version:
-* *commandName* - this command was replaced by XXX.
-* *commandName* - this command was replaced by XXX.
-
-### Arguments
-#### The following arguments were removed in this version:
-
-In the *commandName* command:
-* *argumentName* - this argument was replaced by XXX.
-* *argumentName* - this argument was replaced by XXX.
-
-#### The behavior of the following arguments was changed:
-
-In the *commandName* command:
-* *argumentName* - is now required.
-* *argumentName* - supports now comma separated values.
-
-### Outputs
-#### The following outputs were removed in this version:
-
-In the *commandName* command:
-* *outputPath* - this output was replaced by XXX.
-* *outputPath* - this output was replaced by XXX.
-
-In the *commandName* command:
-* *outputPath* - this output was replaced by XXX.
-* *outputPath* - this output was replaced by XXX.
-
-## Additional Considerations for this version
-%%FILL HERE%%
-* Insert any API changes, any behavioral changes, limitations, or restrictions that would be new to this version.
