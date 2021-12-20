@@ -4,7 +4,7 @@ on: pull_request
 jobs:
   release_notes_review:
     runs-on: ubuntu-latest
-    if: github.repository == 'demisto/content' && github.event.pull_request.head.repo.fork == false
+    #if: github.repository == 'demisto/content' && github.event.pull_request.head.repo.fork == false
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -21,10 +21,10 @@ jobs:
       - name: Get modified files
         id: files
         uses: jitterbit/get-changed-files@v1
+      - name: Review Release Notes
         run: |
           for changed_file in ${{ steps.files.outputs.all }}; do
             echo "Do something with this ${changed_file}."
             demisto-sdk doc-review --release-notes -i changed_file
           done
-      - name: Review Release Notes
-        run: demisto-sdk doc-review -g --release-notes
+        # run: demisto-sdk doc-review -g --release-notes
