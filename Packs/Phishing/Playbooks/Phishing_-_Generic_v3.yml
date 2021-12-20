@@ -2480,7 +2480,7 @@ inputs:
   playbookInputQuery:
 - key: DetonateURL
   value:
-    simple: "True"
+    simple: "False"
   required: false
   description: Whether to use URL Detonation playbook or not. When detonating a URL
     it's possible that it will take a few minutes. False is default.
