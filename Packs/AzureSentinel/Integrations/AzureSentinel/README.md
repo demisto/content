@@ -1342,11 +1342,11 @@ Returns a list of threat indicators.
 
 #### Human Readable Output
 
-### Threat Indicators (2 results)
-|Display Name|Values|Types|Source|Tags|
-|---|---|---|---|---|
-| Name | test.value | malicious-activity | Azure Sentinel | Tag |
-| DisplayName | domain.dot | benign | Azure Sentinel | No Tags |
+### Azure Sentinel - Threat Indicators (2 results)
+|Name|Display Name|Values|Types|Source|Tags|
+|---|---|---|---|---|---|
+| a31f2257-1af5-5eb9-bc82-acb8cc10becd | Name | test.value | malicious-activity | Azure Sentinel | Tag |
+| 1286115b-3b65-5537-e831-969045792910 | DisplayName | domain.dot | benign | Azure Sentinel | No Tags |
 
 ### azure-sentinel-threat-indicator-query
 ***
@@ -1361,7 +1361,7 @@ Returns a list of threat indicators with specific entities.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | limit | The maximum number of indicators to return. Default is 50. | Optional | 
-| next_link | A link that specifies a starting point to use for subsequent calls.<br/>This argument overrides all of the other command arguments. | Optional | 
+| next_link | A link that specifies a starting point to use for subsequent calls.<br/>This argument overrides all of the other command arguments.<br/>There may be no support for pagination. | Optional | 
 | min_confidence | The minimum confidence number for a threat indicator. | Optional | 
 | max_confidence | The maximum confidence number for a threat indicator. | Optional | 
 | min_valid_until | Minimum valid until value of indicators to query. | Optional | 
@@ -1370,7 +1370,7 @@ Returns a list of threat indicators with specific entities.
 | sources | The sources of the threat indicator. | Optional | 
 | indicator_types | The indicator types of the threat indicator. Possible values are: ipv4, ipv6, file, url, domain. | Optional | 
 | threat_types | A comma-separated list of threat types of the threat indicator. Possible values are: anomalous-activity, attribution, anonymization, benign, malicious-activity, compromised, unknown. | Optional | 
-| keywords | A comma-separated list of keywordss. | Optional | 
+| keywords | A comma-separated list of keywords. | Optional | 
 
 
 #### Context Output
@@ -1392,7 +1392,7 @@ Returns a list of threat indicators with specific entities.
 | AzureSentinel.ThreatIndicator.DisplayName | String | The display name of the indicator. | 
 | AzureSentinel.ThreatIndicator.Description | String | The description of the indicator. | 
 | AzureSentinel.ThreatIndicator.ThreatTypes | Unknown | The threat types of the indicator. | 
-| AzureSentinel.ThreatIndicator.KillChainPhases.KillChainName | Unknown | The kill chain's name of the indicator. | 
+| AzureSentinel.ThreatIndicator.KillChainPhases.KillChainName | String | The kill chain's name of the indicator. | 
 | AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeKey | Unknown | The pattern type key of the indicator. | 
 | AzureSentinel.ThreatIndicator.Pattern | String | The pattern of the indicator. | 
 | AzureSentinel.ThreatIndicator.PatternType | String | The pattern type of the indicator. | 
@@ -1411,11 +1411,11 @@ Returns a list of threat indicators with specific entities.
 
 #### Human Readable Output
 
-### Threat Indicators (2 results)
-|Display Name|Values|Types|Source|Confidence|Tags|
-|---|---|---|---|---|---|
-| DisplayName | domain.dot | compromised | Azure Sentinel | 50 | newTag |
-| Name | test.dot | compromised | Azure Sentinel | 68 | No Tags |
+### Azure Sentinel - Threat Indicators (2 results)
+|Name|Display Name|Values|Types|Source|Confidence|Tags|
+|---|---|---|---|---|---|---|
+| a31f2257-1af5-5eb9-bc82-acb8cc10becd | DisplayName | domain.dot | compromised | Azure Sentinel | 50 | newTag |
+| 1286115b-3b65-5537-e831-969045792910 | Name | test.dot | compromised | Azure Sentinel | 68 | No Tags |
 
 ### azure-sentinel-threat-indicator-create
 ***
@@ -1463,7 +1463,7 @@ Creates a new threat indicator.
 | AzureSentinel.ThreatIndicator.DisplayName | String | The display name of the indicator. | 
 | AzureSentinel.ThreatIndicator.Description | String | The description of the indicator. | 
 | AzureSentinel.ThreatIndicator.ThreatTypes | Unknown | The threat types of the indicator. | 
-| AzureSentinel.ThreatIndicator.KillChainPhases.KillChainName | Unknown | The kill chain's name of the indicator. | 
+| AzureSentinel.ThreatIndicator.KillChainPhases.KillChainName | String | The kill chain's name of the indicator. | 
 | AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeKey | Unknown | The pattern type key of the indicator. | 
 | AzureSentinel.ThreatIndicator.Pattern | String | The pattern of the indicator. | 
 | AzureSentinel.ThreatIndicator.PatternType | String | The pattern type of the indicator. | 
@@ -1482,10 +1482,10 @@ Creates a new threat indicator.
 
 #### Human Readable Output
 
-### New threat Indicator was created
-|Display Name|Values|Types|Source|Confidence|Tags|
-|---|---|---|---|---|---|
-| name | good.test | benign | Azure Sentinel | 77 | No Tags |
+### Azure Sentinel - New threat Indicator was created
+|Name|Display Name|Values|Types|Source|Confidence|Tags|
+|---|---|---|---|---|---|---|
+|a31f2257-1af5-5eb9-bc82-acb8cc10becd| name | good.test | benign | Azure Sentinel | 77 | No Tags |
 
 ### azure-sentinel-threat-indicator-update
 ***
@@ -1503,12 +1503,12 @@ Updates an existing threat indicator.
 | value | The value of the indicator. | Required | 
 | display_name | The display name of the indicator. | Required | 
 | description | The description of the threat indicator. | Optional | 
-| indicator_type | The type of the indicator. Possible values are: ipv4, ipv6, file, url, domain-name. | Required | 
+| indicator_type | The type of the indicator. Possible values are: ipv4, ipv6, file, url, domain. | Required | 
 | hash_type | If indicator_type is a file, this entry is mandatory. | Optional | 
-| revoked | Whether the indicator was revoked. | Optional | 
-| confidence | The confidence of the threat indicator, a number between 0-100. | Optional | 
-| threat_types | A comma-separated list of the threat types of the threat indicator. Possible values are: anomalous-activity, attribution, anonymization, benign, malicious-activity, compromised, unknown<br/>. | Optional | 
-| kill_chains | A comma-separated list of the kill chains phases of the indicator. | Optional | 
+| revoked | Whether the indicator is revoked. | Optional | 
+| confidence | The confidence of the threat indicator. This is a number between 0-100. | Optional | 
+| threat_types | A comma-separated list of threat types of the threat indicator. Possible values are: anomalous-activity, attribution, anonymization, benign, malicious-activity, compromised, unknown. | Optional | 
+| kill_chains | A comma-separated list of  kill chains phases of the indicator. | Optional | 
 | tags | A comma-separated list of tags of the threat indicator. | Optional | 
 | valid_from | The date from which the indicator is valid. | Optional | 
 | valid_until | The date until which the indicator is valid. | Optional | 
@@ -1528,13 +1528,13 @@ Updates an existing threat indicator.
 | AzureSentinel.ThreatIndicator.Created | Date | When the threat indicator was created. | 
 | AzureSentinel.ThreatIndicator.CreatedByRef | String | The creator of the indicator. | 
 | AzureSentinel.ThreatIndicator.ExternalID | String | The external ID of the indicator. | 
-| AzureSentinel.ThreatIndicator.Revoked | Boolean | Whether the threat indicator was revoked. | 
+| AzureSentinel.ThreatIndicator.Revoked | Boolean | Was the threat indicator revoked or not. | 
 | AzureSentinel.ThreatIndicator.Source | String | The source of the indicator. | 
 | AzureSentinel.ThreatIndicator.ETags | String | The Etags of the indicator. | 
 | AzureSentinel.ThreatIndicator.DisplayName | String | The display name of the indicator. | 
 | AzureSentinel.ThreatIndicator.Description | String | The description of the indicator. | 
 | AzureSentinel.ThreatIndicator.ThreatTypes | Unknown | The threat types of the indicator. | 
-| AzureSentinel.ThreatIndicator.KillChainPhases.KillChainName | Unknown | The kill chain's name of the indicator. | 
+| AzureSentinel.ThreatIndicator.KillChainPhases.KillChainName | String | The kill chain's name of the indicator. | 
 | AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeKey | Unknown | The pattern type key of the indicator. | 
 | AzureSentinel.ThreatIndicator.Pattern | String | The pattern of the indicator. | 
 | AzureSentinel.ThreatIndicator.PatternType | String | The pattern type of the indicator. | 
@@ -1553,10 +1553,10 @@ Updates an existing threat indicator.
 
 #### Human Readable Output
 
-### Threat Indicator a31f2257-1af5-5eb9-bc82-acb8cc10becd was updated
-|Display Name|Values|Types|Source|Tags|
-|---|---|---|---|---|
-| WeChangedTheDisplayName | verynew.value | malicious-activity | Azure Sentinel | ReplaceTheTag |
+### Azure Sentinel - Threat Indicator a31f2257-1af5-5eb9-bc82-acb8cc10becd was updated
+|Name|Display Name|Values|Types|Source|Tags|
+|---|---|---|---|---|---|
+| a31f2257-1af5-5eb9-bc82-acb8cc10becd | WeChangedTheDisplayName | verynew.value | malicious-activity | Azure Sentinel | ReplaceTheTag |
 
 
 ### azure-sentinel-threat-indicator-delete
@@ -1583,7 +1583,7 @@ There is no context output for this command.
 
 #### Human Readable Output
 
-Threat Intelligence Indicators 1286115b-3b65-5537-e831-969045792910 were deleted successfully.
+Azure Sentinel - Threat Intelligence Indicators 1286115b-3b65-5537-e831-969045792910 were deleted successfully.
 
 
 ### azure-sentinel-threat-indicator-tags-append
@@ -1611,17 +1611,17 @@ Appends new tags to an existing indicator.
 | AzureSentinel.ThreatIndicator.ETag | String | The ETag of the indicator. | 
 | AzureSentinel.ThreatIndicator.Type | String | The type of the indicator. | 
 | AzureSentinel.ThreatIndicator.Kind | String | The kind of the indicator. | 
-| AzureSentinel.ThreatIndicators.Confidence | Number | The confidence of the threat indicator. This is a number between 0-100. | 
+| AzureSentinel.ThreatIndicators.Confidence | Number | The confidence of the threat indicator. THis is a number between 0-100. | 
 | AzureSentinel.ThreatIndicator.Created | Date | When the threat indicator was created. | 
 | AzureSentinel.ThreatIndicator.CreatedByRef | String | The creator of the indicator. | 
 | AzureSentinel.ThreatIndicator.ExternalID | String | The external ID of the indicator. | 
-| AzureSentinel.ThreatIndicator.Revoked | Boolean | Whether the threat indicator was revoked. | 
+| AzureSentinel.ThreatIndicator.Revoked | Boolean | Was the threat indicator revoked or not. | 
 | AzureSentinel.ThreatIndicator.Source | String | The source of the indicator. | 
 | AzureSentinel.ThreatIndicator.ETags | String | The Etags of the indicator. | 
 | AzureSentinel.ThreatIndicator.DisplayName | String | The display name of the indicator. | 
 | AzureSentinel.ThreatIndicator.Description | String | The description of the indicator. | 
 | AzureSentinel.ThreatIndicator.ThreatTypes | Unknown | The threat types of the indicator. | 
-| AzureSentinel.ThreatIndicator.KillChainPhases.KillChainName | Unknown | The kill chain's name of the indicator. | 
+| AzureSentinel.ThreatIndicator.KillChainPhases.KillChainName | String | The kill chain's name of the indicator. | 
 | AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeKey | Unknown | The pattern type key of the indicator. | 
 | AzureSentinel.ThreatIndicator.Pattern | String | The pattern of the indicator. | 
 | AzureSentinel.ThreatIndicator.PatternType | String | The pattern type of the indicator. | 
@@ -1640,7 +1640,7 @@ Appends new tags to an existing indicator.
 
 #### Human Readable Output
 
-Tags were appended to 1286115b-3b65-5537-e831-969045792910 Threat Indicator.
+Azure Sentinel - Tags were appended to 1286115b-3b65-5537-e831-969045792910 Threat Indicator.
 
 ### azure-sentinel-threat-indicator-tags-replace
 ***
@@ -1677,7 +1677,7 @@ Replaces the tags of a given indicator.
 | AzureSentinel.ThreatIndicator.DisplayName | String | The display name of the indicator. | 
 | AzureSentinel.ThreatIndicator.Description | String | The description of the indicator. | 
 | AzureSentinel.ThreatIndicator.ThreatTypes | Unknown | The threat types of the indicator. | 
-| AzureSentinel.ThreatIndicator.KillChainPhases.KillChainName | Unknown | The kill chain's name of the indicator. | 
+| AzureSentinel.ThreatIndicator.KillChainPhases.KillChainName | String | The kill chain's name of the indicator. | 
 | AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeKey | Unknown | The pattern type key of the indicator. | 
 | AzureSentinel.ThreatIndicator.Pattern | String | The pattern of the indicator. | 
 | AzureSentinel.ThreatIndicator.PatternType | String | The pattern type of the indicator. | 
@@ -1696,5 +1696,5 @@ Replaces the tags of a given indicator.
 
 #### Human Readable Output
 
-Tags were replaced to 1286115b-3b65-5537-e831-969045792910 Threat Indicator.
+Azure Sentinel - Tags were replaced to 1286115b-3b65-5537-e831-969045792910 Threat Indicator.
 
