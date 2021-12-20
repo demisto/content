@@ -497,13 +497,43 @@ def panorama_command(args: dict):
 @logger
 def panorama_commit(args):
     command: str = ''
+    partial_command: str = ''
+    is_partial = False
     if device_group := args.get('device-group'):
         command += f'<device-group><entry name="{device_group}"/></device-group>'
+
+    admin_name = args.get('admin_name')
+    if admin_name:
+        is_partial = True
+        partial_command += f'<admin><member>{admin_name}</member></admin>'
+
+    force_commit = argToBoolean(args.get('force_commit')) if args.get('force_commit') else None
+    if force_commit:
+        command += '<force></force>'
+
+    exclude_device_network = args.get('exclude_device_network_configuration')
+    exclude_device_network_configuration = argToBoolean(exclude_device_network) if exclude_device_network else None
+    if exclude_device_network_configuration:
+        is_partial = True
+        partial_command += '<device-and-network>excluded</device-and-network>'
+
+    exclude_shared_objects_str = args.get('exclude_shared_objects')
+    exclude_shared_objects = argToBoolean(exclude_shared_objects_str) if exclude_shared_objects_str else None
+    if exclude_shared_objects:
+        is_partial = True
+        partial_command += '<shared-object>excluded</shared-object>'
+
+    if is_partial:
+        command = f'{command}<partial>{partial_command}</partial>'
+
     params = {
         'type': 'commit',
         'cmd': f'<commit>{command}</commit>',
         'key': API_KEY
     }
+    if is_partial:
+        params['action'] = 'partial'
+
     result = http_request(
         URL,
         'POST',
@@ -603,6 +633,11 @@ def panorama_commit_status_command(args: dict):
 def panorama_push_to_device_group(args: dict):
     command: str = ''
     command += f'<device-group><entry name="{DEVICE_GROUP}"/></device-group>'
+
+    serial_number = args.get('serial_number')
+    if serial_number:
+        command = f'<device-group><entry name="{DEVICE_GROUP}"><devices><entry name="{serial_number}"/>' \
+                  f'</devices></entry></device-group>'
 
     if argToBoolean(args.get('validate-only', 'false')):
         command += '<validate-only>yes</validate-only>'
@@ -6981,7 +7016,9 @@ def initialize_instance(args: Dict[str, str], params: Dict[str, str]):
         raise DemistoException('Set a port for the instance')
 
     URL = params.get('server', '').rstrip('/:') + ':' + params.get('port', '') + '/api/'
-    API_KEY = str(params.get('key'))
+    API_KEY = str(params.get('key')) or str((params.get('credentials') or {}).get('password', ''))  # type: ignore
+    if not API_KEY:
+        raise Exception('API Key must be provided.')
     USE_SSL = not params.get('insecure')
     USE_URL_FILTERING = params.get('use_url_filtering')
 
