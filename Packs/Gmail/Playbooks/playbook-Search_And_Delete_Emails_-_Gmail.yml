@@ -285,22 +285,6 @@ tasks:
                         simple: inputs.Subject
                       iscontext: true
             iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Gmail.From
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: Gmail.From
-                      iscontext: true
-                    right:
-                      value:
-                        simple: inputs.From
-                      iscontext: true
-            iscontext: true
     id: "6"
     ignoreworker: false
     isautoswitchedtoquietmode: false
