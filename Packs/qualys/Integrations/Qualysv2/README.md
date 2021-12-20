@@ -21493,7 +21493,7 @@ Updates a scan schedule in the user’s account.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.ScheduleScan.Update.Status | unknown | TODO | 
+| Qualys.ScheduleScan.Da | unknown | TODO | 
 | Qualys.ScheduleScan.Update.Timestamp | unknown | TODO | 
 
 
@@ -21625,7 +21625,7 @@ Update an asset group.
 
 
 #### Command Example
-```!qualys-asset-group-edit id=2886258 add_ips="192.168.55.128"```
+```!qualys-asset-group-edit id=2886258 add_ips="1.1.1.1"```
 
 #### Context Example
 ```json

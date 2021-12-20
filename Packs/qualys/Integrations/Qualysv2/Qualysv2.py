@@ -1234,7 +1234,7 @@ def build_args_dict(args: Optional[Dict[str, str]], command_args_data: Dict[str,
                 if arg in DATE_ARGUMENTS:
                     datetime_arg = arg_to_datetime(args.get(arg))
                     if datetime_arg:
-                        args[arg] = datetime_arg.strftime(DATE_ARGUMENTS.get(arg))
+                        args[arg] = datetime_arg.strftime(DATE_ARGUMENTS.get(arg, '%Y-%m-%d'))
                 args_dict[arg] = args.get(arg)
 
     # If some args are given, we want to add more args with default value.

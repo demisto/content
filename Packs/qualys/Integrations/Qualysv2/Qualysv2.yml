@@ -3083,10 +3083,15 @@ script:
       - '1'
       description: Whether schedule scan is activated.
     outputs:
-    - contextPath: Qualys.ScheduleScan.Update.Status
-      description: TODO
-    - contextPath: Qualys.ScheduleScan.Update.Timestamp
-      description: TODO
+    - contextPath: Qualys.ScheduleScan.ID
+      description: Updated scheduled scan ID.
+      type: String
+    - contextPath: Qualys.ScheduleScan.DATETIME
+      description: Date of when command was executed.
+      type: Date
+    - contextPath: Qualys.ScheduleScan.TEXT
+      description: Qualys response for schedule scan update.
+      type: String
     description: Updates a scan schedule in the user’s account.
     execution: true
   - name: qualys-asset-group-add
@@ -3347,9 +3352,9 @@ script:
   - name: qualys-time-zone-code
     arguments: []
     outputs:
-    - contextPath: Qualys.TimeZone.Code.TIME_ZONE_CODE
+    - contextPath: Qualys.TimeZone.TIME_ZONE_CODE
       description: Time zone code.
-    - contextPath: Qualys.TimeZone.Code.TIME_ZONE_DETAILS
+    - contextPath: Qualys.TimeZone.TIME_ZONE_DETAILS
       description: Timezone code details.
     description: Gets a list of the supported time zone codes.
     execution: true
