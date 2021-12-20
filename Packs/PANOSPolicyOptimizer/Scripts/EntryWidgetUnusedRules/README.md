@@ -1,4 +1,4 @@
-Entry widget that returns the number of unused rules found by PAN-OS policy. optimizer.
+Entry widget that returns the number of unused rules found by PAN-OS policy optimizer.
 
 ## Script Data
 ---
