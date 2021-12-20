@@ -367,7 +367,7 @@ def hash_command(client: Client, args: dict, reliability: DBotScoreReliability, 
     except Exception as e:
         return_error(f"No results were found for hash : {hash} \n Error: {str(e)}")
         return CommandResults(indicator=None, raw_response={},
-                                  readable_output=f"No results were found for hash : {hash} \n Error: {str(e)}")
+                              readable_output=f"No results were found for hash : {hash} \n Error: {str(e)}")
 
 
 def _hash_extract(Res: dict, reliability: DBotScoreReliability, key_type: str, hash: str, doc_search_client: Client):
