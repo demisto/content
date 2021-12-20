@@ -4324,7 +4324,7 @@
                 "EWS v2",
                 "Demisto REST API",
                 "Rasterize",
-                "Demisto Lock"
+                "VirusTotal (API v3)"
             ],
             "instance_names": "ews_mail_sender_srtest02"
         },
