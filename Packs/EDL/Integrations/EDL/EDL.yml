@@ -43,7 +43,7 @@ configuration:
   name: collapse_ips
   options:
   - Don't Collapse
-  - To CIDRs
+  - To CIDRS
   - To Ranges
   required: false
   type: 15
@@ -292,9 +292,9 @@ script:
       isArray: false
       name: collapse_ips
       predefined:
-        - Don't Collapse
-        - To CIDRS
-        - To Ranges
+      - Don't Collapse
+      - To CIDRS
+      - To Ranges
       required: false
       secret: false
     - default: false
@@ -347,8 +347,8 @@ script:
       isArray: false
       name: add_comment_if_empty
       predefined:
-        - 'False'
-        - 'True'
+      - 'False'
+      - 'True'
       required: false
       secret: false
     deprecated: false

@@ -69,6 +69,9 @@ FORMAT_ARG_XSOAR_JSON: str = 'xsoar-json'
 FORMAT_XSOAR_JSON_SEQ: str = 'XSOAR json-seq'
 FORAMT_ARG_XSOAR_JSON_SEQ: str = 'xsoar-seq'
 
+SORT_ASCENDING = 'asc'
+SORT_DESCENDING = 'desc'
+
 MWG_TYPE_OPTIONS = ["string", "applcontrol", "dimension", "category", "ip", "mediatype", "number", "regex"]
 
 '''Request Arguments Class'''
@@ -244,27 +247,25 @@ def create_new_edl(request_args: RequestArguments) -> str:
         size=PAGE_SIZE,
         limit=limit
     )
+    formatted_indicators = ''
     if request_args.out_format == 'text':
-        current_limit = int(limit*1)
-        while True:
-            indicator_searcher.limit = current_limit
-            new_iocs = find_indicators_to_limit(indicator_searcher, request_args)
-            new_iocs = text_format(new_iocs, request_args)
-            edl_size = 0
-            new_iocs.seek(0)
-            for count, line in enumerate(new_iocs):
-                edl_size = count
+        if request_args.drop_invalids or request_args.collapse_ips != "Don't Collapse":
+            indicator_searcher.limit = int(limit*1.1)
+        new_iocs = find_indicators_to_limit(indicator_searcher, request_args)
+        new_iocs = text_format(new_iocs, request_args)
+        new_iocs.seek(0)
+        for count, line in enumerate(new_iocs):
             # continue searching iocs if 1) iocs was truncated or 2) got all available iocs
-            if edl_size + 1 >= current_limit or indicator_searcher.total <= current_limit:
+            if count + 1 > limit:
                 break
             else:
-                current_limit = int(current_limit*1.1)
-        new_iocs.seek(0)
-        return new_iocs.read() + '\n' + str(edl_size)
+                formatted_indicators += line
     else:
         new_iocs = find_indicators_to_limit(indicator_searcher, request_args)
         new_iocs.seek(0)
-        return new_iocs.read()
+        formatted_indicators = new_iocs.read()
+    new_iocs.close()
+    return formatted_indicators
 
 
 def replace_field_name_to_output_format(fields: str):
@@ -309,7 +310,8 @@ def find_indicators_to_limit(indicator_searcher: IndicatorsSearcher, request_arg
 
                 if request_args.out_format in [FORMAT_JSON, FORMAT_XSOAR_JSON, FORMAT_JSON_SEQ, FORMAT_XSOAR_JSON_SEQ]:
                     xsoar = True if request_args.out_format in [FORMAT_XSOAR_JSON, FORMAT_XSOAR_JSON_SEQ] else False
-                    f.write(json_format(list_fields, ioc, xsoar))
+                    f.write(json_format(list_fields, ioc, xsoar, headers_was_writen))
+                    headers_was_writen = True
 
                 if request_args.out_format == FORMAT_TEXT:
                     # save only the value and type of each indicator
@@ -323,17 +325,13 @@ def find_indicators_to_limit(indicator_searcher: IndicatorsSearcher, request_arg
         demisto.debug(e)
 
     if request_args.out_format in [FORMAT_JSON, FORMAT_XSOAR_JSON, FORMAT_JSON_SEQ, FORMAT_XSOAR_JSON_SEQ]:
-        ff = tempfile.TemporaryFile(mode='w+t')
-        f.seek(2)
-        ff.write('[' + f.read() + ']')
-        f.close()
-        return ff
+        f.write(']')
     if request_args.out_format == FORMAT_PROXYSG:
         f = create_proxysg_all_category(f, files_by_category)
     return f
 
 
-def json_format(list_fields, indicator, xsoar=False):
+def json_format(list_fields, indicator, xsoar=False, not_first_call=True):
     filtered_json = {}
     if list_fields:
         for field in list_fields:
@@ -348,9 +346,12 @@ def json_format(list_fields, indicator, xsoar=False):
         }
         indicator.pop("value", None)
         json_format_indicator["value"] = indicator
-        return ', ' + json.dumps(json_format_indicator)
-
-    return ', ' + json.dumps(indicator)
+        if not_first_call:
+            return ', ' + json.dumps(json_format_indicator)
+        return '[' + json.dumps(json_format_indicator)
+    if not_first_call:
+        return ', ' + json.dumps(indicator)
+    return '[' + json.dumps(indicator)
 
 
 def create_mwg_out_format(indicator: dict, mwg_type: str, headers_was_writen) -> str:
@@ -507,10 +508,6 @@ def list_to_str(inp_list: list, delimiter: str = ',', map_func: Callable = str) 
         else:
             raise AttributeError('Invalid inp_list provided to list_to_str')
     return str_res
-
-
-# def get_mimetype(request_args):
-#     return
 
 
 def text_format(iocs, request_args: RequestArguments) -> Union[
