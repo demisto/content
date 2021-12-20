@@ -313,7 +313,7 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "otsubstationname",
+								"fieldId": "otsecuritysubstationname",
 								"height": 22,
 								"id": "f4bff540-50e0-11ec-81f4-a737c7b0a98a",
 								"index": 2,
@@ -366,7 +366,7 @@
 						"items": [
 							{
 								"endCol": 2,
-								"fieldId": "otsubstationname",
+								"fieldId": "otsecuritysubstationname",
 								"height": 22,
 								"id": "1b9ed320-50e1-11ec-81f4-a737c7b0a98a",
 								"index": 0,
@@ -375,7 +375,7 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "otsubstationlocation",
+								"fieldId": "otsecuritysubstationlocation",
 								"height": 22,
 								"id": "f5a12d80-50e0-11ec-81f4-a737c7b0a98a",
 								"index": 1,
@@ -384,7 +384,7 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "otsubstationcontact",
+								"fieldId": "otsecuritysubstationcontact",
 								"height": 22,
 								"id": "a3e06aa0-50e1-11ec-81f4-a737c7b0a98a",
 								"index": 2,
@@ -410,7 +410,7 @@
 						"items": [
 							{
 								"endCol": 2,
-								"fieldId": "otprotocols",
+								"fieldId": "otsecurityprotocols",
 								"height": 106,
 								"id": "b398fe30-5104-11ec-81f4-a737c7b0a98a",
 								"index": 0,

@@ -471,7 +471,7 @@ tasks:
       to:
         simple: admin@domain.local
       subject:
-        simple: A New Device Discover in Substation ${incident.otsubstationname}
+        simple: A New Device Discover in Substation ${incident.otsecuritysubstationname}
       body: {}
       methods:
       - email
@@ -488,7 +488,7 @@ tasks:
         label: ""
         labelarg:
           simple: "Are you aware about a device with Following Information connected
-            to Substation ${incident.otsubstationname}:\n\n- MAC Address: ${incident.macaddress}\n-
+            to Substation ${incident.otsecuritysubstationname}:\n\n- MAC Address: ${incident.macaddress}\n-
             IP Address: ${Nozomi.Query.Result.[0].ip.[0]}\n "
         required: false
         gridcolumns: []

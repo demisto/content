@@ -17,11 +17,11 @@
      "complex": null,
      "simple": "incident_details.offense_source"
     },
-    "OT Substation Location": {
+    "OTSecurity Substation Location": {
      "complex": null,
      "simple": "incident_details.location"
     },
-    "OT Substation Name": {
+    "OTSecurity Substation Name": {
      "complex": null,
      "simple": "incident_details.substation_id"
     },
