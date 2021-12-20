@@ -2220,7 +2220,7 @@ Edits a policy rule.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | rulename | Name of the rule to edit. | Required | 
-| element_to_change | Parameter in the security rule to change. Can be 'source', 'destination', 'application', 'action', 'category', 'description', 'disabled', 'target', 'log-forwarding', 'tag' or 'profile-setting'. | Required | 
+| element_to_change | Parameter in the security rule to change. Can be 'source', 'destination', 'application', 'action', 'category', 'description', 'disabled', 'target', 'log-forwarding', 'tag', 'source-user', 'service' or 'profile-setting'. | Required | 
 | element_value | The new value for the parameter. | Required | 
 | pre_post | Pre-rule or post-rule (Panorama instances). | Optional | 
 | behaviour | Whether to replace, add, or remove the element_value from the current rule object value. | Optional | 
