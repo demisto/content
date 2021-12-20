@@ -48,7 +48,7 @@ DEFAULT_CHROME_OPTIONS = [
 ]
 
 USER_CHROME_OPTIONS = demisto.params().get('chrome_options', "")
-PAGES_LIMITATION = 25
+PAGES_LIMITATION = 20
 
 def return_err_or_warn(msg):
     return_error(msg) if WITH_ERRORS else return_warning(msg, exit=True)
@@ -250,49 +250,47 @@ def convert_pdf_to_jpeg(path: str, max_pages: int, password: str, horizontal: bo
     :param max_pages: max pages to render
     :param password: PDF password
     :param horizontal: if True, will combine the pages horizontally
-    :return: stream of combined image
+    :return: A list of stream of combined images
     """
     demisto.debug(f'Loading file at Path: {path}')
     input_pdf = PdfFileReader(open(path, "rb"), strict=False)
-    with tempfile.TemporaryDirectory() as output_folder:
-        first_page = 1
-        while True:
-            demisto.info("The variables: ", {1: max_pages, 2: input_pdf.numPages, 3: PAGES_LIMITATION})
-            last_page = min(max_pages, input_pdf.numPages, PAGES_LIMITATION + first_page - 1)
-            if first_page > min(max_pages, input_pdf.numPages):
-                break
-            demisto.info(f'Converting PDF, from file {first_page} to file {last_page}')
-            convert_from_path(
-                pdf_path=path,
-                fmt='jpeg',
-                first_page=first_page,
-                last_page=last_page,
-                output_folder=output_folder,
-                userpw=password,
-                output_file=f'converted_pdf_{first_page}-{last_page}'
-            )
-            first_page = last_page + 1
-        demisto.info('Converting PDF - COMPLETED')
-        demisto.info(json.dumps(os.listdir(output_folder)))
+    pages = min(max_pages, input_pdf.numPages)
 
-        demisto.info('Combining all pages')
+    with tempfile.TemporaryDirectory() as output_folder:
+        demisto.debug('Converting PDF')
+        convert_from_path(
+            pdf_path=path,
+            fmt='jpeg',
+            first_page=1,
+            last_page=pages,
+            output_folder=output_folder,
+            userpw=password,
+            output_file='converted_pdf_'
+        )
+        demisto.debug('Converting PDF - COMPLETED')
+
+        demisto.debug('Combining all pages')
         images = []
         for page in sorted(os.listdir(output_folder)):
-            if os.path.isfile(os.path.join(output_folder, page)):
+            if os.path.isfile(os.path.join(output_folder, page)) and 'converted_pdf_' in page:
                 images.append(Image.open(os.path.join(output_folder, page)))
         min_shape = min([(np.sum(page_.size), page_.size) for page_ in images])[1]  # get the minimal width
+        images_matrix = [images[i:i + PAGES_LIMITATION] for i in range(0, len(images), PAGES_LIMITATION)]
 
-        if horizontal:
-            imgs_comb = np.hstack([np.asarray(i.resize(min_shape)) for i in images])
-        else:
-            imgs_comb = np.vstack([np.asarray(i.resize(min_shape)) for i in images])
+        outputs = []
+        for images_list in images_matrix:
+            if horizontal:
+                imgs_comb = np.hstack([np.asarray(image.resize(min_shape)) for image in images_list])
+            else:
+                imgs_comb = np.vstack([np.asarray(image.resize(min_shape)) for image in images_list])
 
-        imgs_comb = Image.fromarray(imgs_comb)
-        output = BytesIO()
-        imgs_comb.save(output, 'JPEG')  # type: ignore
-        demisto.info('Combining all pages - COMPLETED')
+            imgs_comb = Image.fromarray(imgs_comb)
+            output = BytesIO()
+            imgs_comb.save(output, 'JPEG')  # type: ignore
+            demisto.debug('Combining all pages - COMPLETED')
+            outputs.append(output.getvalue())
 
-        return output.getvalue()
+        return outputs
 
 
 def rasterize_command():
@@ -371,10 +369,13 @@ def rasterize_pdf_command():
     with open(file_path, 'rb') as f:
         output = convert_pdf_to_jpeg(path=os.path.realpath(f.name), max_pages=max_pages, password=password,
                                      horizontal=horizontal)
-        res = fileResult(filename=file_name, data=output)
-        res['Type'] = entryTypes['image']
+        results = []
+        for i in output:
+            res = fileResult(filename=file_name, data=i)
+            res['Type'] = entryTypes['image']
+            results.append(res)
 
-        demisto.results(res)
+        demisto.results(results)
 
 
 def module_test():
