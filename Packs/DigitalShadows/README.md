@@ -1,3 +1,5 @@
+Note: Support for this pack will be moving to the partner around March, 20, 2022.
+
 Digital Shadows minimizes digital risk by identifying unwanted exposure and protecting against external threats. The award-winning SearchLight solution provides ongoing monitoring of a customer's unique assets and exposure across the open, deep, and dark web. This enables clients to detect data loss, brand impersonation, infrastructure risks, cyber threats, and much more.
 
 ## Overview
