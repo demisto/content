@@ -17079,7 +17079,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         },
                         "REMOTE": "0"
                     },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-06-18T07:37:32Z",
+                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-04-19T14:36:40Z",
                     "PATCHABLE": "1",
                     "PCI_FLAG": "1",
                     "PUBLISHED_DATETIME": "2021-04-19T14:36:40Z",
@@ -17133,6 +17133,14 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                             {
                                 "PRODUCT": "ipad_os",
                                 "VENDOR": "apple"
+                            },
+                            {
+                                "PRODUCT": "iphone_os",
+                                "VENDOR": "apple"
+                            },
+                            {
+                                "PRODUCT": "watchos",
+                                "VENDOR": "apple"
                             }
                         ]
                     },
@@ -17172,13 +17180,21 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                     "SOFTWARE_LIST": {
                         "SOFTWARE": [
                             {
+                                "PRODUCT": "None",
+                                "VENDOR": "apple"
+                            },
+                            {
+                                "PRODUCT": "ipad_os",
+                                "VENDOR": "apple"
+                            },
+                            {
                                 "PRODUCT": "iphone_os",
                                 "VENDOR": "apple"
                             },
                             {
                                 "PRODUCT": "watchos",
                                 "VENDOR": "apple"
-}
+                            }
                         ]
                     },
                     "SOLUTION": "Refer to Apple advisory <A HREF=\"https://support.apple.com/en-in/HT212257\" TARGET=\"_blank\">HT212257</A>  for patching details.\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://support.apple.com/en-in/HT212257\" TARGET=\"_blank\">HT212257: iOS</A>",
@@ -17624,6 +17640,10 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         "SOFTWARE": [
                             {
                                 "PRODUCT": "None",
+                                "VENDOR": "google"
+                            },
+                            {
+                                "PRODUCT": "android",
                                 "VENDOR": "google"
                             }
                         ]
@@ -18297,7 +18317,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         },
                         "REMOTE": "0"
                     },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-08-06T06:17:35Z",
+                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-04-07T13:09:23Z",
                     "PATCHABLE": "1",
                     "PCI_FLAG": "1",
                     "PUBLISHED_DATETIME": "2021-04-07T12:41:05Z",
@@ -18306,11 +18326,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                     "SOFTWARE_LIST": {
                         "SOFTWARE": [
                             {
-                                "PRODUCT": "firefox",
-                                "VENDOR": "mozilla"
-                            },
-                            {
-                                "PRODUCT": "thunderbird",
+                                "PRODUCT": "None",
                                 "VENDOR": "mozilla"
                             },
                             {
@@ -18318,13 +18334,17 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                                 "VENDOR": "mozilla"
                             },
                             {
-                                "PRODUCT": "None",
+                                "PRODUCT": "firefox",
+                                "VENDOR": "mozilla"
+                            },
+                            {
+                                "PRODUCT": "thunderbird",
                                 "VENDOR": "mozilla"
                             }
                         ]
                     },
-                    "SOLUTION": "Vendor has released fix to address these vulnerabilities. Refer to <A HREF=\"https://www.mozilla.org/en-US/security/advisories/mfsa2021-10/\" TARGET=\"_blank\">MFSA 2021-10</A>\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://www.mozilla.org/en-US/security/advisories/mfsa2021-10/\" TARGET=\"_blank\">mfsa2021-10: Android</A>",
-                    "TITLE": "Mozilla Firefox for Android Multiple Vulnerabilities (MFSA2021-10)",
+                    "SOLUTION": "Vendor has released fix to address these vulnerabilities. Refer to <A HREF=\"https://www.mozilla.org/en-US/security/advisories/mfsa2021-10/\" TARGET=\"_blank\">MFSA 2021-10</A>\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://www.mozilla.org/en-US/security/advisories/mfsa2021-10/\" TARGET=\"_blank\">mfsa2021-10: Android</A><P> <A HREF=\"https://www.mozilla.org/en-US/security/advisories/mfsa2021-10/\" TARGET=\"_blank\">mfsa2021-10: iOS</A>",
+                    "TITLE": "Mozilla Firefox for Android and iOS Multiple Vulnerabilities (MFSA2021-10)",
                     "VENDOR_REFERENCE_LIST": {
                         "VENDOR_REFERENCE": {
                             "ID": "mfsa2021-10",
@@ -18392,7 +18412,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         },
                         "REMOTE": "0"
                     },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-06-16T13:31:07Z",
+                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-04-07T12:41:05Z",
                     "PATCHABLE": "1",
                     "PCI_FLAG": "1",
                     "PUBLISHED_DATETIME": "2021-04-07T12:41:05Z",
@@ -18400,6 +18420,10 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                     "SEVERITY_LEVEL": "4",
                     "SOFTWARE_LIST": {
                         "SOFTWARE": [
+                            {
+                                "PRODUCT": "firefox_esr",
+                                "VENDOR": "mozilla"
+                            },
                             {
                                 "PRODUCT": "firefox",
                                 "VENDOR": "mozilla"
@@ -18414,8 +18438,8 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                             }
                         ]
                     },
-                    "SOLUTION": "Vendor has released fix to address these vulnerabilities. Refer to <A HREF=\"https://www.mozilla.org/en-US/security/advisories/mfsa2021-07/\" TARGET=\"_blank\">MFSA 2021-07</A>\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://www.mozilla.org/en-US/security/advisories/mfsa2021-07/\" TARGET=\"_blank\">mfsa2021-07: Android</A>",
-                    "TITLE": "Mozilla Firefox for Android Multiple Vulnerabilities (MFSA2021-07)",
+                    "SOLUTION": "Vendor has released fix to address these vulnerabilities. Refer to <A HREF=\"https://www.mozilla.org/en-US/security/advisories/mfsa2021-07/\" TARGET=\"_blank\">MFSA 2021-07</A>\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://www.mozilla.org/en-US/security/advisories/mfsa2021-07/\" TARGET=\"_blank\">mfsa2021-07: Android</A><P> <A HREF=\"https://www.mozilla.org/en-US/security/advisories/mfsa2021-07/\" TARGET=\"_blank\">mfsa2021-07: iOS</A>",
+                    "TITLE": "Mozilla Firefox for Android and iOS Multiple Vulnerabilities (MFSA2021-07)",
                     "VENDOR_REFERENCE_LIST": {
                         "VENDOR_REFERENCE": {
                             "ID": "MFSA2021-07",
@@ -18477,7 +18501,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         "ADDITIONAL_INFO": "Patch Available",
                         "REMOTE": "1"
                     },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-06-30T12:29:23Z",
+                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-04-13T15:56:45Z",
                     "PATCHABLE": "1",
                     "PCI_FLAG": "1",
                     "PUBLISHED_DATETIME": "2021-04-05T13:40:51Z",
@@ -18497,7 +18521,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                             "URL": "https://lists.apache.org/thread.html/r4a390027eb27e4550142fac6c8317cc684b157ae314d31514747f307%40%3Cannounce.tomcat.apache.org%3E"
                         }
                     },
-                    "VULN_TYPE": "Potential Vulnerability"
+                    "VULN_TYPE": "Vulnerability"
                 },
                 {
                     "CATEGORY": "CGI",
@@ -18619,7 +18643,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         "ADDITIONAL_INFO": "Patch Available",
                         "REMOTE": "1"
                     },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-09-16T08:01:07Z",
+                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-04-06T12:45:16Z",
                     "PATCHABLE": "1",
                     "PCI_FLAG": "1",
                     "PUBLISHED_DATETIME": "2021-04-06T12:45:16Z",
@@ -18632,7 +18656,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         }
                     },
                     "SOLUTION": "<P>Customers are advised to refer to <A HREF=\"https://jira.atlassian.com/browse/JRASERVER-72015\" TARGET=\"_blank\">JRASERVER-72015</A> for updates pertaining to this vulnerability.<BR>\n\nCustomers are advised to refer to <A HREF=\"https://jira.atlassian.com/browse/JRASERVER-72064\" TARGET=\"_blank\">JRASERVER-72064</A> for updates pertaining to this vulnerability.<P>\n\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://jira.atlassian.com/browse/JRASERVER-72015\" TARGET=\"_blank\">JRASERVER-72015</A><P> <A HREF=\"https://jira.atlassian.com/browse/JRASERVER-72064\" TARGET=\"_blank\">JRASERVER-72064</A><P> <A HREF=\"https://jira.atlassian.com/browse/JRASERVER-72014\" TARGET=\"_blank\">JRASERVER-72014</A>",
-                    "TITLE": "Atlassian Jira Server and Data Center Multiple Vulnerabilities (JRASERVER-72014,JRASERVER-72015,JRASERVER-72064)",
+                    "TITLE": "Atlassian Jira Server And Data Center Multiple Vulnerabilities(JRASERVER-72014,JRASERVER-72015,JRASERVER-72064)",
                     "VENDOR_REFERENCE_LIST": {
                         "VENDOR_REFERENCE": [
                             {
@@ -18665,7 +18689,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         "ADDITIONAL_INFO": "Patch Available",
                         "REMOTE": "1"
                     },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-09-16T08:02:10Z",
+                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-04-06T12:45:16Z",
                     "PATCHABLE": "1",
                     "PCI_FLAG": "1",
                     "PUBLISHED_DATETIME": "2021-04-06T12:45:16Z",
@@ -18678,7 +18702,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         }
                     },
                     "SOLUTION": "Customers are advised to refer to <A HREF=\"https://jira.atlassian.com/browse/JRASERVER-71950\" TARGET=\"_blank\">JRASERVER-71950</A> for updates pertaining to this vulnerability.<BR>\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://jira.atlassian.com/browse/JRASERVER-71950\" TARGET=\"_blank\">JRASERVER-71950</A>",
-                    "TITLE": "Atlassian Jira Server and Data Center Information Disclosure Vulnerability (JRASERVER-71950)",
+                    "TITLE": "Atlassian Jira Server And Data Center Information Disclosure Vulnerability(JRASERVER-71950)",
                     "VENDOR_REFERENCE_LIST": {
                         "VENDOR_REFERENCE": {
                             "ID": "JRASERVER-71950",
@@ -18747,7 +18771,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         "ADDITIONAL_INFO": "Patch Available",
                         "REMOTE": "1"
                     },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-09-16T08:02:53Z",
+                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-04-06T12:45:16Z",
                     "PATCHABLE": "1",
                     "PCI_FLAG": "1",
                     "PUBLISHED_DATETIME": "2021-04-06T12:45:16Z",
@@ -18760,7 +18784,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         }
                     },
                     "SOLUTION": "Customers are advised to refer to <A HREF=\"https://jira.atlassian.com/browse/JRASERVER-72029\" TARGET=\"_blank\">JJRASERVER-72029</A> for updates pertaining to this vulnerability.<BR>\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://jira.atlassian.com/browse/JRASERVER-72029\" TARGET=\"_blank\">JRASERVER-72029</A>",
-                    "TITLE": "Atlassian Jira Server and Data Center Improper Authentication Vulnerability (JRASERVER-72029)",
+                    "TITLE": "Atlassian Jira Server And Data Center Improper Authentication Vulnerability(JRASERVER-72029)",
                     "VENDOR_REFERENCE_LIST": {
                         "VENDOR_REFERENCE": {
                             "ID": "JRASERVER-72029",
@@ -18819,7 +18843,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                     "SOFTWARE_LIST": {
                         "SOFTWARE": [
                             {
-                                "PRODUCT": "None",
+                                "PRODUCT": "vrealize_suite_lifecycle_manager",
                                 "VENDOR": "vmware"
                             },
                             {
@@ -18827,7 +18851,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                                 "VENDOR": "vmware"
                             },
                             {
-                                "PRODUCT": "vrealize_suite_lifecycle_manager",
+                                "PRODUCT": "None",
                                 "VENDOR": "vmware"
                             }
                         ]
@@ -19012,7 +19036,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         "ADDITIONAL_INFO": "Patch Available",
                         "REMOTE": "1"
                     },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-06-30T12:29:23Z",
+                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-04-15T14:56:25Z",
                     "PATCHABLE": "1",
                     "PCI_FLAG": "1",
                     "PUBLISHED_DATETIME": "2021-04-15T14:56:25Z",
@@ -19032,7 +19056,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                             "URL": "https://tomcat.apache.org/security-8.html#Fixed_in_Apache_Tomcat_8.5.63"
                         }
                     },
-                    "VULN_TYPE": "Potential Vulnerability"
+                    "VULN_TYPE": "Vulnerability"
                 },
                 {
                     "CATEGORY": "CGI",
@@ -19090,7 +19114,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         "ADDITIONAL_INFO": "Patch Available",
                         "REMOTE": "1"
                     },
-                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-09-16T08:03:32Z",
+                    "LAST_SERVICE_MODIFICATION_DATETIME": "2021-04-19T14:36:41Z",
                     "PATCHABLE": "1",
                     "PCI_FLAG": "1",
                     "PUBLISHED_DATETIME": "2021-04-19T14:36:41Z",
@@ -19103,7 +19127,7 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                         }
                     },
                     "SOLUTION": "Customers are advised to refer to <A HREF=\"https://jira.atlassian.com/browse/JRASERVER-72258\" TARGET=\"_blank\">JRASERVER-72258</A> for updates pertaining to this vulnerability.<BR>\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://jira.atlassian.com/browse/JRASERVER-72258\" TARGET=\"_blank\">JRASERVER-72258</A>",
-                    "TITLE": "Atlassian Jira Server and Data Center Privilege Escalation Vulnerability (JRASERVER-72258)",
+                    "TITLE": "Atlassian Jira Server And Data Center Privilege Escalation Vulnerability(JRASERVER-72258)",
                     "VENDOR_REFERENCE_LIST": {
                         "VENDOR_REFERENCE": {
                             "ID": "JRASERVER-72258",
@@ -19285,7 +19309,7 @@ Get account asset groups
 >### Group List
 >|APPLIANCE_IDS|DEFAULT_APPLIANCE_ID|ID|IP_SET|TITLE|
 >|---|---|---|---|---|
->|  |  | 492950 | IP: 1.1.1.1,<br/>1.1.2.1,<br/>1.1.2.3,<br/>1.5.2.1,<br/>1.5.6.1,<br/>5.5.5.6,<br/>5.8.4.2,<br/>8.8.8.8,<br/>13.67.133.53,<br/>13.81.60.29,<br/>13.89.224.99,<br/>18.130.16.32,<br/>23.96.25.100,<br/>34.99.231.241,<br/>35.185.27.57,<br/>52.58.204.23,<br/>54.155.52.85,<br/>96.252.18.158,<br/>172.31.10.110,<br/>172.31.11.47,<br/>172.31.11.229,<br/>192.168.55.128<br/>IP_RANGE: 1.1.1.3-1.1.1.9,<br/>1.1.2.8-1.1.2.9,<br/>1.2.2.2-1.2.2.3,<br/>8.2.1.1-8.2.1.5,<br/>192.168.0.87-192.168.0.92 | All |
+>|  |  | 492950 | IP: 1.1.1.1,<br/>1.1.2.1,<br/>1.1.2.3,<br/>1.5.2.1,<br/>1.5.6.1,<br/>8.8.8.8,<br/>18.130.16.32,<br/>23.96.25.100,<br/>34.99.231.241,<br/>35.185.27.57,<br/>52.58.204.23,<br/>54.155.52.85,<br/>96.252.18.158,<br/>172.31.10.110,<br/>172.31.11.47,<br/>172.31.11.229<br/>IP_RANGE: 1.1.1.3-1.1.1.9,<br/>1.1.2.8-1.1.2.9,<br/>1.2.2.2-1.2.2.3,<br/>192.168.0.87-192.168.0.92 | All |
 
 
 ### qualys-report-fetch
@@ -19314,6 +19338,28 @@ Download report
 | InfoFile.Type | unknown | The file type, as determined by libmagic \(same as displayed in file entries\). | 
 | InfoFile.Extension | unknown | The file extension. | 
 | InfoFile.Info | unknown | Basic information about the file. | 
+
+
+#### Command Example
+```!qualys-report-fetch id=9470594 file_format=pdf```
+
+#### Context Example
+```json
+{
+    "InfoFile": {
+        "EntryID": "1489@ad70a33b-26a4-4a3c-8013-24494880c3ee",
+        "Extension": "pdf",
+        "Info": "application/pdf",
+        "Name": "report_9470594.pdf",
+        "Size": 15580,
+        "Type": "PDF document, version 1.7"
+    }
+}
+```
+
+#### Human Readable Output
+
+
 
 ### qualys-vm-scan-fetch
 ***
@@ -19344,6 +19390,375 @@ Download scan results when scan has status Finished, Canceled, Paused or Error
 | Qualys.VM.Netbios | unknown | Scanned device Netbios. | 
 | Qualys.VM.QID | unknown | Qualys ID for vulnerabilities. | 
 | Qualys.VM.Result | unknown | Scan result. | 
+
+
+#### Command Example
+```!qualys-vm-scan-fetch scan_ref=scan/1615886852.37638 ips=1.1.1.1 mode=brief```
+
+#### Context Example
+```json
+{
+    "Qualys": {
+        "VM": [
+            {
+                "Dns": "one.one.one.one",
+                "IP": "1.1.1.1",
+                "Instance": null,
+                "Netbios": null,
+                "QID": 82040,
+                "Result": "ICMP Reply Type\tTriggered By\tAdditional Information\nEcho (type=0 code=0)\tEcho Request\tEcho Reply"
+            },
+            {
+                "Dns": "one.one.one.one",
+                "IP": "1.1.1.1",
+                "Instance": null,
+                "Netbios": null,
+                "QID": 6,
+                "Result": "IP address\tHost name\n1.1.1.1\tone.one.one.one"
+            },
+            {
+                "Dns": "one.one.one.one",
+                "IP": "1.1.1.1",
+                "Instance": null,
+                "Netbios": null,
+                "QID": 34011,
+                "Result": "Some of the ports"
+            },
+            {
+                "Dns": "one.one.one.one",
+                "IP": "1.1.1.1",
+                "Instance": null,
+                "Netbios": null,
+                "QID": 45035,
+                "Result": "Level 1: DNS server: L.ROOT-SERVERS.NET"
+            },
+            {
+                "Dns": "one.one.one.one",
+                "IP": "1.1.1.1",
+                "Instance": null,
+                "Netbios": null,
+                "QID": 45006,
+                "Result": "Hops\tIP\tRound Trip Time\tProbe\tPort\n1"
+            },
+            {
+                "Dns": "one.one.one.one",
+                "IP": "1.1.1.1",
+                "Instance": null,
+                "Netbios": null,
+                "QID": 45004,
+                "Result": "The network handle is: APNIC-1\nNetwork description:\nAsia Pacific Network Information Centre"
+            },
+            {
+                "Dns": "one.one.one.one",
+                "IP": "1.1.1.1",
+                "Instance": null,
+                "Netbios": null,
+                "QID": 45005,
+                "Result": "The ISP network handle is: PNAP-05-2000\nISP Network description:\nInternap Holding LLC"
+            },
+            {
+                "Dns": "one.one.one.one",
+                "IP": "1.1.1.1",
+                "Instance": null,
+                "Netbios": null,
+                "QID": 42416,
+                "Result": "HTTP/1.1 200 OK\nDate: Tue, 16 Mar 2021 09:35:44 GMT\nContent-Type: text/html\nTransfer-Encoding: chunked\nConnection: keep-alive\nLast-Modified: Fri, 05 Mar 2021 18:02:22"
+            },
+            {
+                "Dns": "one.one.one.one",
+                "IP": "1.1.1.1",
+                "Instance": null,
+                "Netbios": null,
+                "QID": 82046,
+                "Result": "IP ID changes observed (network order) for port 53: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 \nDuration: 21 milli seconds"
+            },
+            {
+                "Dns": "one.one.one.one",
+                "IP": "1.1.1.1",
+                "Instance": null,
+                "Netbios": null,
+                "QID": 45039,
+                "Result": "Host Name\tSource\none.one.one.one\tFQDN"
+            },
+            {
+                "Dns": "one.one.one.one",
+                "IP": "1.1.1.1",
+                "Instance": null,
+                "Netbios": null,
+                "QID": 82045,
+                "Result": "Average change between subsequent TCP initial sequence numbers is 1122907317 with a standard deviation of 638947889. These TCP initial sequence numbers were triggered by TCP SYN probes sent to the host at an average rate of 1/(5999 microseconds). The degree of difficulty to exploit the TCP initial sequence number generation scheme is: hard."
+            },
+            {
+                "Dns": "one.one.one.one",
+                "IP": "1.1.1.1",
+                "Instance": null,
+                "Netbios": null,
+                "QID": 82023,
+                "Result": "Port\tIANA Assigned Ports/Services\tDescription\tService Detected\tOS On Redirected Port\n53\tdomain\tDomain Name Server\tDNS Server \t \n80\twww-http\tWorld Wide Web HTTP\thttp \t \n443\thttps\thttp protocol over TLS/SSL\thttp over ssl"
+            },
+            {
+                "Dns": "one.one.one.one",
+                "IP": "1.1.1.1",
+                "Instance": null,
+                "Netbios": null,
+                "QID": 82004,
+                "Result": "Port\tIANA Assigned Ports/Services\tDescription\tService Detected\n53\tdomain\tDomain Name Server\tnamed udp"
+            },
+            {
+                "Dns": "one.one.one.one",
+                "IP": "1.1.1.1",
+                "Instance": null,
+                "Netbios": null,
+                "QID": 45038,
+                "Result": "Scan duration: 1264 seconds\n\nStart time: Tue, Mar 16 2021, 09:28:47 GMT\n\nEnd time: Tue, Mar 16 2021, 09:49:51 GMT"
+            },
+            {
+                "Dns": "one.one.one.one",
+                "IP": "1.1.1.1",
+                "Instance": null,
+                "Netbios": null,
+                "QID": 45426,
+                "Result": "Protocol\tPort\tTime\nTCP\t53\t 0:00:51\nTCP\t80\t 0:52:14\nTCP\t443\t 0:55:13\nUDP\t53\t 0:01:45"
+            },
+            {
+                "Dns": "one.one.one.one",
+                "IP": "1.1.1.1",
+                "Instance": null,
+                "Netbios": null,
+                "QID": 15034,
+                "Result": "Server supports recursive name resolution to IPv4 addresses.\nServer supports recursive name resolution to IPv6 addresses."
+            },
+            {
+                "Dns": "one.one.one.one",
+                "IP": "1.1.1.1",
+                "Instance": null,
+                "Netbios": null,
+                "QID": 15033,
+                "Result": "--- IPv4 ---\n;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, rcode: NOERROR, id: 17496\n;; flags: qr rd ra ; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 0 \n;; QUESTION SECTION:\n;; one.one.one. IN SOA\n\n;; ANSWER SECTION:\none.one.one. 2632 IN SOA fred.ns.cloudflare.com. dns.cloudflare.com. 2036516775 10000 2400 604800 3600\n\n;; AUTHORITY SECTION:\n\n;; ADDITIONAL SECTION:\n\n;; Query time: 1 msec\n;; SERVER: 1.1.1.1\n;; WHEN: Tue Mar 16 02:28:49 2021\n;; MSG SIZE  rcvd: 91\n\n--- IPv6 ---\n;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, rcode: NOERROR, id: 24573\n;; flags: qr rd ra ; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 0 \n;; QUESTION SECTION:\n;; one.one.one. IN SOA\n\n;; ANSWER SECTION:\none.one.one. 3600 IN SOA fred.ns.cloudflare.com. dns.cloudflare.com. 2036516775 10000 2400 604800 3600\n\n;; AUTHORITY SECTION:\n\n;; ADDITIONAL SECTION:\n\n;; Query time: 3 msec\n;; SERVER: 1.1.1.1\n;; WHEN: Tue Mar 16 02:28:49 2021\n;; MSG SIZE  rcvd: 91"
+            },
+            {
+                "Dns": "one.one.one.one",
+                "IP": "1.1.1.1",
+                "Instance": null,
+                "Netbios": null,
+                "QID": 15068,
+                "Result": ";; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, rcode: NOERROR, id: 4374\n;; flags: qr rd ra ; QUERY: 1, ANSWER: 13, AUTHORITY: 0, ADDITIONAL: 0 \n;; QUESTION SECTION:\n;; . IN NS\n\n;; ANSWER SECTION:\n. 513673 IN NS a.root-servers.net.\n. 513673 IN NS b.root-servers.net.\n. 513673 IN NS c.root-servers.net.\n. 513673 IN NS d.root-servers.net.\n. 513673 IN NS e.root-servers.net.\n. 513673 IN NS f.root-servers.net.\n. 513673 IN NS g.root-servers.net.\n. 513673 IN NS h.root-servers.net.\n. 513673 IN NS i.root-servers.net.\n. 513673 IN NS j.root-servers.net.\n. 513673 IN NS k.root-servers.net.\n. 513673 IN NS l.root-servers.net.\n. 513673 IN NS m.root-servers.net.\n\n;; AUTHORITY SECTION:\n\n;; ADDITIONAL SECTION:\n\n;; Query time: 1 msec\n;; SERVER: 1.1.1.1\n;; WHEN: Tue Mar 16 02:28:55 2021\n;; MSG SIZE  rcvd: 228"
+            },
+            {
+                "Dns": "one.one.one.one",
+                "IP": "1.1.1.1",
+                "Instance": null,
+                "Netbios": null,
+                "QID": 15086,
+                "Result": ":_F8_81_80_00_01_00_00_00_00_00_00_00_02_00_01_00_00_02_00_01_00_07_D4_FE_00_14_01a_0Croot-servers_03net_00_00_00_02_00_01_00_07_D4_FE_00_04_01b_C0_1E_00_00_02_00_01_00_07_D4_FE_00_04_01c_C0_1E_00_00_02_00_01_00_07_D4_FE_00_04_01d_C0_1E_00_00_02_00_01_00_07_D4_FE_00_04_01e_C0_1E_00_00_02_00_01_00_07_D4_FE_00_04_01f_C0_1E_00_00_02_00_01_00_07_D4_FE_00_04_01g_C0_1E_00_00_02_00_01_00_07_D4_FE_00_04_01h_C0_1E_00_00_02_00_01_00_07_D4_FE_00_04_01i_C0_1E_00_00_02_00_01_00_07_D4_FE_00_04_01j_C0_1E_00_00_02_00_01_00_07_D4_FE_00_04_01k_C0_1E_00_00_02_00_01_00_07_D4_FE_00_04_01l_C0_1E_00_00_02_00_01_00_07_D4_FE_00_04_01m_C0_1E"
+            },
+            {
+                "Dns": "one.one.one.one",
+                "IP": "1.1.1.1",
+                "Instance": null,
+                "Netbios": null,
+                "QID": 15001,
+                "Result": "2021.3.3"
+            },
+            {
+                "Dns": "one.one.one.one",
+                "IP": "1.1.1.1",
+                "Instance": null,
+                "Netbios": null,
+                "QID": 38291,
+                "Result": "TLSv1 session caching is enabled on the target.\nTLSv1.1 session caching is enabled on the target.\nTLSv1.2 session caching is enabled on the target.\nTLSv1.3 session caching is disabled on the target."
+            },
+            {
+                "Dns": "one.one.one.one",
+                "IP": "1.1.1.1",
+                "Instance": null,
+                "Netbios": null,
+                "QID": 86002,
+                "Result": "NAME\tVALUE"
+            },
+            {
+                "Dns": "one.one.one.one",
+                "IP": "1.1.1.1",
+                "Instance": null,
+                "Netbios": null,
+                "QID": 38717,
+                "Result": "Certificate #0 CN=cloudflare-dns.com,O=Cloudflare\\,_Inc.,L=San_Francisco,ST=California,C=US OCSP status: good"
+            },
+            {
+                "Dns": "one.one.one.one",
+                "IP": "1.1.1.1",
+                "Instance": null,
+                "Netbios": null,
+                "QID": 38718,
+                "Result": "Source\tValidated\tName\tURL\tID\tTime\nCertificate #0\t \tCN=cloudflare-dns.com,O=Cloudflare\\, Inc.,L=San Francisco,ST=California,C=US\t \t \t \nCertificate\tno\t(unknown)\t(unknown)\t2979bef09e393921f056739f63a577e5be577d9c600af8f94d5d265c255dc784\tThu 01 Jan 1970 12:00:00 AM GMT\nCertificate\tyes\tDigiCert Yeti2022 Log\tyeti2022.ct.digicert.com/log/\t2245450759552456963fa12ff1f76d86e0232663adc04b7f5dc6835c6ee20f02\tMon 11 Jan 2021 07:24:24 PM GMT"
+            },
+            {
+                "Dns": "one.one.one.one",
+                "IP": "1.1.1.1",
+                "Instance": null,
+                "Netbios": null,
+                "QID": 38628,
+                "Result": "TLSv1.0 is supported"
+            },
+            {
+                "Dns": "one.one.one.one",
+                "IP": "1.1.1.1",
+                "Instance": null,
+                "Netbios": null,
+                "QID": 38794,
+                "Result": "TLSv1.1 is supported"
+            },
+            {
+                "Dns": "one.one.one.one",
+                "IP": "1.1.1.1",
+                "Instance": null,
+                "Netbios": null,
+                "QID": 42350,
+                "Result": "TLS Secure Renegotiation Extension Status: supported."
+            },
+            {
+                "Dns": "one.one.one.one",
+                "IP": "1.1.1.1",
+                "Instance": null,
+                "Netbios": null,
+                "QID": 38597,
+                "Result": "#table\tcols=2\nmy version\ttarget version\n0304\t0303\n0399\t0303\n0400\t0303\n0499\t0303"
+            },
+            {
+                "Dns": "one.one.one.one",
+                "IP": "1.1.1.1",
+                "Instance": null,
+                "Netbios": null,
+                "QID": 38116,
+                "Result": "CIPHER\tKEY-EXCHANGE\tAUTHENTICATIO"
+            },
+            {
+                "Dns": "one.one.one.one",
+                "IP": "1.1.1.1",
+                "Instance": null,
+                "Netbios": null,
+                "QID": 38704,
+                "Result": "NAME\tGROUP\tKEY-SIZE\tFORWARD-SECRET\tCLASSICAL-STRENGTH\tQUANTUM-STRENGTH\nTLSv1"
+            },
+            {
+                "Dns": "one.one.one.one",
+                "IP": "1.1.1.1",
+                "Instance": null,
+                "Netbios": null,
+                "QID": 38706,
+                "Result": "NAME\tSTATUS\nTLSv1\t \nExtended Master Secret\tyes\nEncrypt Then MAC\tno\nHeartbeat\tno"
+            },
+            {
+                "Dns": "one.one.one.one",
+                "IP": "1.1.1.1",
+                "Instance": null,
+                "Netbios": null,
+                "QID": 86565,
+                "Result": "GET / HTTP/1.1\nHost:1.1.1.1:80\n\nGET /Q_Evasive/ HTTP/1.1"
+            },
+            {
+                "Dns": "one.one.one.one",
+                "IP": "1.1.1.1",
+                "Instance": null,
+                "Netbios": null,
+                "QID": 38610,
+                "Result": "TLS_FALLBACK_SCSV is supported on port 443."
+            },
+            {
+                "Dns": "one.one.one.one",
+                "IP": "1.1.1.1",
+                "Instance": null,
+                "Netbios": null,
+                "QID": 12230,
+                "Result": "GET / HTTP/1.0\nHost: one.one.one.one\n\n\n\nHTTP/1.1 301 Moved Permanently"
+            },
+            {
+                "Dns": "one.one.one.one",
+                "IP": "1.1.1.1",
+                "Instance": null,
+                "Netbios": null,
+                "QID": 13910,
+                "Result": "GET / HTTP/1.0\nHost: one.one.one.one\n\n\n\nHTTP/1.1 200 OK\nDate:"
+            },
+            {
+                "Dns": "one.one.one.one",
+                "IP": "1.1.1.1",
+                "Instance": null,
+                "Netbios": null,
+                "QID": 45266,
+                "Result": "Remote Web Server supports HTTP version 1.x on 443 port.GET / HTTP/1.1"
+            },
+            {
+                "Dns": "one.one.one.one",
+                "IP": "1.1.1.1",
+                "Instance": null,
+                "Netbios": null,
+                "QID": 48118,
+                "Result": "HTTP header and method information collected on port 443."
+            },
+            {
+                "Dns": "one.one.one.one",
+                "IP": "1.1.1.1",
+                "Instance": null,
+                "Netbios": null,
+                "QID": 86672,
+                "Result": "Directory\tSource\n/help/\tbrute force\n/faq/\tbrute force\n/help/\tweb page\n/media/\tweb page"
+            },
+            {
+                "Dns": "one.one.one.one",
+                "IP": "1.1.1.1",
+                "Instance": null,
+                "Netbios": null,
+                "QID": 86137,
+                "Result": "Strict-Transport-Security: max-age=31536000"
+            },
+            {
+                "Dns": "one.one.one.one",
+                "IP": "1.1.1.1",
+                "Instance": null,
+                "Netbios": null,
+                "QID": 11827,
+                "Result": "X-Frame-Options or Content-Security-Policy"
+            },
+            {
+                "Dns": "one.one.one.one",
+                "IP": "1.1.1.1",
+                "Instance": null,
+                "Netbios": null,
+                "QID": 48001,
+                "Result": "Content-Security-Policy HTTP Header missing on port 443.\nGET / HTTP/1.0\nHost: one.one.one.one"
+            },
+            {
+                "Dns": "one.one.one.one",
+                "IP": "1.1.1.1",
+                "Instance": null,
+                "Netbios": null,
+                "QID": 48002,
+                "Result": "HTTP Public-Key-Pins Header missing on port 443.\nGET / HTTP/1.0\nHost: one.one.one.one"
+            },
+            {
+                "Dns": "one.one.one.one",
+                "IP": "1.1.1.1",
+                "Instance": null,
+                "Netbios": null,
+                "QID": 48131,
+                "Result": "Referrer-Policy HTTP Header missing on 443 port."
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### VM Scan Fetch
+>|Dns|IP|Instance|Netbios|QID|Result|
+>|---|---|---|---|---|---|
+>| one.one.one.one | 1.1.1.1 |  |  | 82040 | ICMP Reply Type	Triggered By	Additional Information<br/>Echo (type=0 code=0)	Echo Request	Echo Reply |
+>| one.one.one.one | 1.1.1.1 |  |  | 6 | IP address	Host name<br/>1.1.1.1	one.one.one.one |
+>| one.one.one.one | 1.1.1.1 |  |  | 34011 | |
+>| one.one.one.one | 1.1.1.1 |  |  | 48131 | Referrer-Policy HTTP Header missing on 443 port. |
+
 
 ### qualys-pc-scan-fetch
 ***
@@ -19378,6 +19793,41 @@ fetch scan results for a scan
 | Qualys.PC.OPTIONS | unknown | Scan option profile. | 
 | Qualys.PC.STATUS | unknown | Status of the scan. | 
 
+
+#### Command Example
+```!qualys-pc-scan-fetch scan_ref=compliance/1619019653.71885```
+
+#### Context Example
+```json
+{
+    "Qualys": {
+        "PC": {
+            "COMPANY": "SomeCompany",
+            "DATE": "2021-04-21T15:42:48Z",
+            "DURATION": "00:05:42",
+            "EXCLUDED_TARGET": "N/A",
+            "NBHOST_ALIVE": "1",
+            "NBHOST_TOTAL": "1",
+            "OPTIONS": "Scanned Ports: Targeted Scan, Hosts to Scan in Parallel - External Scanners: 15, Hosts to Scan in Parallel - Scanner Appliances: 30, Total Processes to Run in Parallel: 10, HTTP Processes to Run in Parallel: 10, Packet (Burst) Delay: Medium, Intensity: Normal, Overall Performance: Normal, ICMP Host Discovery, Ignore RST packets: Off, Ignore firewall-generated SYN-ACK packets: Off, Do not send ACK or SYN-ACK packets during host discovery: Off",
+            "REPORT_TYPE": "API",
+            "SCAN_HOST": "64.39.99.101 (Scanner 12.3.51-1, Vulnerability Signatures 2.5.162-3)",
+            "STATUS": "FINISHED",
+            "TARGET": "1.1.1.1",
+            "TITLE": "N/A",
+            "USERNAME": "demst2nr"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Policy Compliance Scan
+>|COMPANY|DATE|DURATION|EXCLUDED_TARGET|NBHOST_ALIVE|NBHOST_TOTAL|OPTIONS|REPORT_TYPE|SCAN_HOST|STATUS|TARGET|TITLE|USERNAME|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| SomeCompany | 2021-04-21T15:42:48Z | 00:05:42 | N/A | 1 | 1 | Scanned Ports: Targeted Scan, Hosts to Scan in Parallel - External Scanners: 15, Hosts to Scan in Parallel - Scanner Appliances: 30, Total Processes to Run in Parallel: 10, HTTP Processes to Run in Parallel: 10, Packet (Burst) Delay: Medium, Intensity: Normal, Overall Performance: Normal, ICMP Host Discovery, Ignore RST packets: Off, Ignore firewall-generated SYN-ACK packets: Off, Do not send ACK or SYN-ACK packets during host discovery: Off | API | 64.39.99.101 (Scanner 12.3.51-1, Vulnerability Signatures 2.5.162-3) | FINISHED | 1.1.1.1 | N/A | demst2nr |
+
+
 ### qualys-report-cancel
 ***
 Cancel running report
@@ -19401,6 +19851,21 @@ Cancel running report
 | Qualys.ScheduleScan.DATETIME | Date | Date of when command was executed. | 
 | Qualys.ScheduleScan.TEXT | String | Qualys response for report cancellation. | 
 
+
+#### Command Example
+```!qualys-report-cancel id="9229164"```
+
+#### Context Example
+```json
+{
+    "Qualys": {
+        "Report": {
+            "ID": "9229164"
+        }
+    }
+}
+```
+``` ```
 ### qualys-report-delete
 ***
 Delete a saved report in the user’s Report Share
