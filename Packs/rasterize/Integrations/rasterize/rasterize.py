@@ -367,11 +367,11 @@ def rasterize_pdf_command():
     file_name = f'{file_name}.jpeg'  # type: ignore
 
     with open(file_path, 'rb') as f:
-        output = convert_pdf_to_jpeg(path=os.path.realpath(f.name), max_pages=max_pages, password=password,
+        images = convert_pdf_to_jpeg(path=os.path.realpath(f.name), max_pages=max_pages, password=password,
                                      horizontal=horizontal)
         results = []
-        for i in output:
-            res = fileResult(filename=file_name, data=i)
+        for image in images:
+            res = fileResult(filename=file_name, data=image)
             res['Type'] = entryTypes['image']
             results.append(res)
 
