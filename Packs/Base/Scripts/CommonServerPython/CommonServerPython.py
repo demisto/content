@@ -7108,7 +7108,7 @@ if 'requests' in sys.modules:
                 skip_cert_verification()
 
             # removing trailing = char from env var value added by the server
-            self.timeout = float(os.environ.get('REQUESTS_TIMEOUT.' + get_integration_name(), '')[:-1] or os.environ.get('REQUESTS_TIMEOUT', '')[:-1] or timeout)  # noqa: E501
+            self.timeout = float(os.getenv('REQUESTS_TIMEOUT.' + get_integration_name(), '')[:-1] or os.getenv('REQUESTS_TIMEOUT', '')[:-1] or timeout)  # noqa: E501
 
         def __del__(self):
             try:
