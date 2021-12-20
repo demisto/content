@@ -359,3 +359,26 @@ def test_taxii21_objects(mocker, taxii2_server_v21, demisto_iocs_file, res_file,
         assert response.status_code == 200
         assert response.content_type == 'application/taxii+json;version=2.1'
         assert response.json == objects
+
+
+@pytest.mark.parametrize('api_request', [
+    'objects', 'manifest'
+])
+def test_taxii21_bad_request(mocker, taxii2_server_v21, api_request):
+    """
+        Given
+            TAXII Server v2.1, non-supported filter.
+        When
+            Calling get objects or manifest api request for given collection
+        Then
+            Validate that right error returned.
+    """
+    mocker.patch('TAXII2Server.SERVER', taxii2_server_v21)
+    mocker.patch.object(demisto, 'error')
+    mocker.patch.object(demisto, 'updateModuleHealth')
+    with APP.test_client() as test_client:
+        response = test_client.get(f'/threatintel/collections/e46189b5-c5c8-5c7f-b947-183e0302b4d3/'
+                                   f'{api_request}/?match[version]=3', headers=HEADERS)
+        assert response.status_code == 400
+        assert response.content_type == 'application/taxii+json;version=2.1'
+        assert 'Filtering by id or version is not supported.' in response.json.get('description')

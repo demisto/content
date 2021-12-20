@@ -811,6 +811,9 @@ def taxii2_manifest(api_root: str, collection_id: str):
         limit = 100
         offset = 0
 
+        if request.args.get('match[id]') or request.args.get('match[version]'):
+            raise Exception('Filtering by id or version is not supported.')
+
         try:
             if added_after:
                 datetime.strptime(added_after, STIX_DATE_FORMAT)
@@ -870,6 +873,9 @@ def taxii2_objects(api_root: str, collection_id: str):
         types = argToList(request.args.get('match[type]'))
         limit = 100
         offset = 0
+
+        if request.args.get('match[id]') or request.args.get('match[version]'):
+            raise Exception('Filtering by id or version is not supported.')
 
         try:
             if added_after:
