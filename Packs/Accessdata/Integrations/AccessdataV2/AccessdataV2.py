@@ -273,7 +273,7 @@ def _and_filter(client, filter_json1, filter_json2):
     try:
         filter_json1 = loads(filter_json1)
         filter_json2 = loads(filter_json2)
-    except Exception:
+    except JSONDecodeError:
         raise ValueError("Both filters must be JSON content.")
 
     filter_json = and_(filter_json1, filter_json2)
@@ -293,7 +293,7 @@ def _or_filter(client, filter_json1, filter_json2):
     try:
         filter_json1 = loads(filter_json1)
         filter_json2 = loads(filter_json2)
-    except Exception:
+    except JSONDecodeError:
         raise ValueError("Both filters must be JSON content.")
 
     filter_json = or_(filter_json1, filter_json2)
@@ -312,8 +312,8 @@ def _test_module(client):
     # test the client can reach the case list
     try:
         client.cases
-    except Exception:
-        raise ValueError("Client cannot reach the server with the current configuration.")
+    except DemistoException as exc:
+        raise RuntimeError(str(exc))
 
     return "ok"
 
