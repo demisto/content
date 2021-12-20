@@ -209,17 +209,17 @@ class PrismaCloudComputeClient(BaseClient):
             method="PUT", url_suffix="/feeds/custom/malware", json_data={"feed": feeds}, resp_type="text"
         )
 
-    def get_cve_info(self, cve: str) -> List[dict]:
+    def get_cve_info(self, cve_id: str) -> List[dict]:
         """
         Sends a request to get information about a cve.
 
         Args:
-            cve (str): the cve to get information about.
+            cve_id (str): the cve to get information about.
 
         Returns:
             list[dict]: cves information.
         """
-        return self._http_request(method="GET", url_suffix="/cves", params={"id": cve})
+        return self._http_request(method="GET", url_suffix="/cves", params={"id": cve_id})
 
     def get_defenders(self, params: Optional[dict] = None):
         """
@@ -1041,15 +1041,14 @@ def get_cves(client: PrismaCloudComputeClient, args: dict) -> List[CommandResult
     Returns:
         CommandResults: command-results object.
     """
-    requested_cves = argToList(arg=args.get("cve", []))
+    cve_ids = argToList(arg=args.get("cve_id", []))
     all_cves_information, results, unique_cve_ids = [], [], set()
 
-    for cve in requested_cves:
-        if cves_info := client.get_cve_info(cve=cve):
+    for _id in cve_ids:
+        if cves_info := client.get_cve_info(cve_id=_id):
             all_cves_information.extend(cves_info)
 
     if filtered_cves_information := filter_api_response(api_response=all_cves_information, limit=MAX_API_LIMIT):
-
         for cve_info in filtered_cves_information:
             cve_id, cvss = cve_info.get("cve"), cve_info.get("cvss")
             modified, description = epochs_to_timestamp(epochs=cve_info.get("modified")), cve_info.get("description")
@@ -1063,7 +1062,7 @@ def get_cves(client: PrismaCloudComputeClient, args: dict) -> List[CommandResult
 
                 results.append(
                     CommandResults(
-                        outputs_prefix='CVE',
+                        outputs_prefix="CVE",
                         outputs_key_field=["ID"],
                         outputs=cve_data,
                         indicator=Common.CVE(

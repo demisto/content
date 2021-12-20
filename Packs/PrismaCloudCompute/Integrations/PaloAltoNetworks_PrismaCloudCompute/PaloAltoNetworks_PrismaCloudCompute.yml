@@ -839,10 +839,10 @@ script:
       as cve-2020 or cve-2014 or by severity/distro/package
     deprecated: false
     arguments:
-    - name: cve
+    - name: cve_id
       description: Comma-seperated list of cves, for example,
-        cve=cve-2016-223,cve-2020-3546, the command will find also CVEs that the following strings are part of their names.
-      required: false
+        cve_id=cve-2016-223,cve-2020-3546.
+      required: true
       isArray: true
       defaultValue: ""
     outputs:

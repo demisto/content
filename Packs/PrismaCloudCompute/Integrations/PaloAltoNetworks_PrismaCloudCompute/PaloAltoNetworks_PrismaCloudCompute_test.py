@@ -482,7 +482,7 @@ HTTP_REQUEST_URL_WITH_QUERY_PARAMS = [
         "https://test.com/feeds/custom/ips"
     ),
     (
-        OrderedDict(cve="cve-2104"),
+        OrderedDict(cve_id="cve-2104"),
         get_cves,
         "/cves",
         "https://test.com/cves?id=cve-2104"
@@ -965,7 +965,7 @@ EXPECTED_CONTEXT_OUTPUT_DATA = [
         }
     ),
     (
-        {"cve": "cve"},
+        {"cve_id": "cve_id"},
         get_cves,
         "/cves",
         [
