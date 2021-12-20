@@ -706,57 +706,22 @@ def redlock_get_scan_results():
         })
 
 
-def get_incidents(alerts, last_fetches, last_seen_time):
-    incidents = []
-    for alert in alerts:
-        alert_id = alert.get('id')
-        alert_time = alert.get('alertTime')
-        # skip the alerts that were already fetched or early
-        if alert_id in last_fetches or last_seen_time > alert_time:
-            continue
-        # save alerts in the same time as last_seen_time because alerts could be in the same time
-        if last_seen_time == alert_time:
-            last_fetches.append(alert_id)
-        if last_seen_time < alert_time:
-            last_fetches = [alert_id]
-        last_seen_time = alert_time
-        policy_name = demisto.get(alert, 'policy.name')
-        policy_name = policy_name if policy_name else 'No policy'
-        incidents.append({
-            'name': f"{policy_name} - {alert_id}",
-            'occurred': convert_unix_to_demisto(alert.get('alertTime')),
-            'severity': translate_severity(alert),
-            'rawJSON': json.dumps(alert)
-        })
-    return incidents, last_fetches, last_seen_time
-
-
-def fetch_incidents(limit: int):
+def fetch_incidents():
     """
     Retrieve new incidents periodically based on pre-defined instance parameters
     """
-    now = date_to_timestamp(datetime.now())
-    last_run = demisto.getLastRun()
-    last_seen_time = last_run.get('time')
-    last_fetches = last_run.get('last_fetches', [])
-    if not last_seen_time:  # first time fetch
-        last_seen_time = date_to_timestamp(dateparser.parse(demisto.params().get('fetch_time', '24 hours').strip()))
+    now = int((datetime.utcnow() - datetime.utcfromtimestamp(0)).total_seconds() * 1000)
+    last_run = demisto.getLastRun().get('time')
+    if not last_run:  # first time fetch
+        last_run = parse_date_range(demisto.params().get('fetch_time', '3 days').strip(), to_timestamp=True)[0]
 
-    payload = {
-        'timeRange': {
-            'type': 'absolute',
-            'value': {
-                'startTime': last_seen_time - 5*1000,  # there could be 5 seconds round of the time
-                'endTime': now
-            }
-        },
-        'filters':
-            [{'name': 'alert.status', 'operator': '=', 'value': 'open'},
-             {'name': 'timeRange.type', 'operator': '=', 'value': 'ALERT_OPENED'}],  # to get the alert time
-        "sortBy": [
-            "alerttime:asc"
-        ],
-        'limit': limit}
+    payload = {'timeRange': {
+        'type': 'absolute',
+        'value': {
+            'startTime': last_run,
+            'endTime': now
+        }
+    }, 'filters': [{'name': 'alert.status', 'operator': '=', 'value': 'open'}]}
     if demisto.getParam('ruleName'):
         payload['filters'].append({'name': 'alertRule.name', 'operator': '=',  # type: ignore
                                    'value': demisto.getParam('ruleName')})
@@ -767,25 +732,23 @@ def fetch_incidents(limit: int):
         payload['filters'].append({'name': 'policy.name', 'operator': '=',  # type: ignore
                                    'value': demisto.getParam('policyName')})
     demisto.info("Executing Prisma Cloud (RedLock) fetch_incidents with payload: {}".format(payload))
-    response = req('POST', '/v2/alert', payload, {'detailed': 'true'})
-    alerts = response.get('items')
-    incidents, last_fetches, last_seen_time = get_incidents(alerts, last_fetches, last_seen_time)
-    while alerts and not incidents and response.get('nextPageToken'):
-        payload['pageToken'] = response.get('nextPageToken')
-        response = req('POST', '/v2/alert', payload, {'detailed': 'true'})
-        alerts = response.get('items')
-        incidents, last_fetches, last_seen_time = get_incidents(alerts, last_fetches, last_seen_time)
-    return incidents, last_fetches, last_seen_time
+    response = req('POST', 'alert', payload, {'detailed': 'true'})
+    incidents = []
+    for alert in response:
+        incidents.append({
+            'name': alert.get('policy.name', 'No policy') + ' - ' + alert.get('id'),
+            'occurred': convert_unix_to_demisto(alert.get('alertTime')),
+            'severity': translate_severity(alert),
+            'rawJSON': json.dumps(alert)
+        })
+
+    return incidents, now
 
 
 def main():
     global URL, VERIFY
     handle_proxy()
     params = demisto.params()
-    limit = params.get('limit')
-    limit = arg_to_number(limit)
-    if limit is None or not 0 < limit <= 50:
-        limit = 50
     URL = params.get('url')
     if URL[-1] != '/':
         URL += '/'
@@ -818,9 +781,9 @@ def main():
         elif command == 'redlock-get-scan-results':
             redlock_get_scan_results()
         elif command == 'fetch-incidents':
-            incidents, last_fetches, last_seen_time = fetch_incidents(limit)
+            incidents, new_run = fetch_incidents()
             demisto.incidents(incidents)
-            demisto.setLastRun({'time': last_seen_time, 'last_fetches': last_fetches})
+            demisto.setLastRun({'time': new_run})
         else:
             raise Exception('Unrecognized command: ' + command)
     except Exception as err:

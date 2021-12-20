@@ -36,15 +36,10 @@ configuration:
   name: policySeverity
   required: false
   type: 0
-- defaultvalue: 24 hours
+- defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
     months, 1 year)
   name: fetch_time
-  required: false
-  type: 0
-- defaultvalue: 50
-  display: Maximum number of incidents to pull per fetch
-  name: limit
   required: false
   type: 0
 - display: Use system proxy settings
@@ -1198,7 +1193,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The scan ID. Scan Id can be retrieved by the redlock-list-scans command.
+      description: The scan ID. Scan Id can be retrieved by the redlock-list-scans
+        command.
       isArray: false
       name: scan_id
       required: true
@@ -1217,7 +1213,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The scan ID. Scan Id can be retrieved by the redlock-list-scans command.
+      description: The scan ID. Scan Id can be retrieved by the redlock-list-scans
+        command.
       isArray: false
       name: scan_id
       required: true
