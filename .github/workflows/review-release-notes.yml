@@ -27,7 +27,6 @@ jobs:
           file_exit_code=0
           for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
             echo ""
-            echo ""
             echo "  Checking File: $file"
             demisto-sdk doc-review --release-notes -i "$file" || file_exit_code=$?
             if [ ! $file_exit_code -eq 0 ]; then
