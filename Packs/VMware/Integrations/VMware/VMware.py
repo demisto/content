@@ -134,9 +134,9 @@ def apply_get_vms_filters(args, vm_summery):
     names = argToList(args.get('name'))
     uuids = argToList(args.get('uuid'))
 
-    ip = not vm_summery.guest.ipAddress or not args.get('ip') or vm_summery.guest.ipAddress in ips
-    hostname = not vm_summery.guest.hostName or not args.get('hostname') or vm_summery.guest.hostName == args.get(
-        'hostname')
+    ip = not args.get('ip') or (vm_summery.guest.ipAddress and vm_summery.guest.ipAddress in ips)
+    hostname = not args.get('hostname') or (vm_summery.guest.hostName and vm_summery.guest.hostName == args.get(
+        'hostname'))
     name = not args.get('name') or vm_summery.config.name in names
     uuid = not args.get('uuid') or vm_summery.config.instanceUuid in uuids
 
