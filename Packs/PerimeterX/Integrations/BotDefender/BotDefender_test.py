@@ -117,10 +117,11 @@ def _test_perimeterx_get_investigate_details_base(requests_mock, search_type):
         ]
     }
 
-    ip_address = '5.79.76.181'
-    requests_mock.get(_get_mock_url(ip_address), json=mock_response)
+    ip_address = ['5.79.76.181']
+    mock_url = _get_mock_url()
+    requests_mock.get(mock_url, json=mock_response)
 
-    client = Client(base_url=MOCK_BASE_URL, verify=False, headers=HEADERS)
+    client = Client(base_url=mock_url, verify=False, headers=HEADERS)
 
     args = {
         'search_type': search_type,
@@ -134,7 +135,7 @@ def _test_perimeterx_get_investigate_details_base(requests_mock, search_type):
         'unknown_threshold': 0
     }
 
-    response = perimeterx_get_investigate_details(client=client, args=args, thresholds=thresholds)
+    response = perimeterx_get_investigate_details(client=client, args=args, thresholds=thresholds, api_key="test_key")
 
     assert response.outputs_prefix == 'PerimeterX'
     assert response.outputs == {
