@@ -260,7 +260,7 @@ def prepare_site_list(client: Client, args: Dict) -> List:
     """
     site_id = args.get('site_id')
     site_response = get_authorized_sites(client)
-    if not site_response:
+    if not (site_id or site_response):
         raise ValueError(MESSAGES["NO_AUTHORIZED_SITES_FOUND"])
     if site_id and site_response:
         for site in site_response:
