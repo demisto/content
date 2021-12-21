@@ -134,17 +134,18 @@ class Client(BaseClient):
             kwargs['verify'] = self._verify
             kwargs['timeout'] = self.polling_timeout
 
-            # Set the If-None-Match and If-Modified-Since headers if we have etag or
-            # last_modified values in the context.
-            last_run = demisto.getLastRun()
-            etag = last_run.get(url, {}).get('etag')
-            last_modified = last_run.get(url, {}).get('last_modified')
+            if is_demisto_version_ge('6.5.0'):
+                # Set the If-None-Match and If-Modified-Since headers if we have etag or
+                # last_modified values in the context.
+                last_run = demisto.getLastRun()
+                etag = last_run.get(url, {}).get('etag')
+                last_modified = last_run.get(url, {}).get('last_modified')
 
-            if etag:
-                self.headers['If-None-Match'] = etag
+                if etag:
+                    self.headers['If-None-Match'] = etag
 
-            if last_modified:
-                self.headers['If-Modified-Since'] = last_modified
+                if last_modified:
+                    self.headers['If-Modified-Since'] = last_modified
 
             # set request headers
             if 'headers' in kwargs:
@@ -207,7 +208,7 @@ class Client(BaseClient):
 
             if skip_first_line:
                 next(csvreader)
-            no_update = get_no_update_value(r, url)
+            no_update = get_no_update_value(r, url) if is_demisto_version_ge('6.5.0') else True
             results.append({url: {'result': csvreader, 'no_update': no_update}})
 
         return results
