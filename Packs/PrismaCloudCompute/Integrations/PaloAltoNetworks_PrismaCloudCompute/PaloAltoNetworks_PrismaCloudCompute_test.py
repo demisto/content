@@ -491,7 +491,7 @@ HTTP_REQUEST_URL_WITH_QUERY_PARAMS = [
         OrderedDict(cluster="cluster", hostname="hostname", type="type", offset="0", limit="20", connected=True),
         get_defenders,
         "/defenders",
-        "https://test.com/defenders?cluster=cluster&hostname=hostname&type=type&offset=0&limit=20&connected=true"
+        "https://test.com/defenders?cluster=cluster&connected=true&hostname=hostname&type=type&limit=20&offset=0"
     ),
     (
         OrderedDict(limit="20"),
@@ -512,8 +512,8 @@ HTTP_REQUEST_URL_WITH_QUERY_PARAMS = [
         ),
         get_images_scan_list,
         "/images",
-        "https://test.com/images?clusters=clusters&compact=true&fields=fields"
-        "&hostname=hostname&id=123&name=name&registry=registry&repository=repository&offset=1&limit=3"
+        "https://test.com/images?limit=3&offset=1&compact=true&clusters=clusters&fields=fields&"
+        "hostname=hostname&id=123&name=name&registry=registry&repository=repository"
     ),
     (
         OrderedDict(
@@ -522,8 +522,8 @@ HTTP_REQUEST_URL_WITH_QUERY_PARAMS = [
         ),
         get_hosts_scan_list,
         "/hosts",
-        "https://test.com/hosts?clusters=clusters&compact=true&"
-        "fields=fields&hostname=hostname&provider=provider&offset=1&limit=8"
+        "https://test.com/hosts?limit=8&offset=1&compact=true&clusters=clusters&fields=fields"
+        "&hostname=hostname&provider=provider"
     ),
     (
         OrderedDict(cve="cve"),

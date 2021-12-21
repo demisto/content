@@ -973,11 +973,13 @@ def get_custom_malware_feeds(client: PrismaCloudComputeClient, args: dict) -> Co
     """
     limit, _ = parse_limit_and_offset_values(limit=args.get("limit", "50"))
     feeds_info = client.get_custom_md5_malware()
+
     if "_id" in feeds_info:
         feeds_info.pop("_id")  # not needed, it will be removed from the api in the future.
     if "modified" in feeds_info:
         feeds_info["modified"] = parse_date_string_format(date_string=feeds_info.get("modified", ""))
 
+    # api does not support limit/offset
     if malware_feeds := filter_api_response(api_response=feeds_info.get("feed", []), limit=limit):
         for feed in malware_feeds:
             if "modified" in feed:
@@ -1090,12 +1092,17 @@ def get_defenders(client: PrismaCloudComputeClient, args: dict) -> CommandResult
     Returns:
         CommandResults: command-results object.
     """
-    args["limit"], args["offset"] = parse_limit_and_offset_values(
+    limit, offset = parse_limit_and_offset_values(
         limit=args.get("limit", "20"), offset=args.get("offset", "0")
     )
+    cluster, connected, hostname, type = (
+        args.get("cluster"), args.get("connected"), args.get("hostname"), args.get("type")
+    )
+    params = assign_params(
+        cluster=cluster, connected=connected, hostname=hostname, type=type, limit=limit, offset=offset
+    )
 
-    defenders = client.get_defenders(params=assign_params(**args))
-    if defenders:
+    if defenders := client.get_defenders(params=params):
         for defender in defenders:
             if "lastModified" in defender:
                 defender["lastModified"] = parse_date_string_format(date_string=defender.get("lastModified"))
@@ -1141,6 +1148,7 @@ def get_collections(client: PrismaCloudComputeClient, args: dict) -> CommandResu
     """
     limit, _ = parse_limit_and_offset_values(limit=args.get("limit", "50"))
 
+    # api does not support limit
     if collections := filter_api_response(api_response=client.get_collections(), limit=limit):
         for collection in collections:
             if "modified" in collection:
@@ -1178,10 +1186,11 @@ def get_namespaces(client: PrismaCloudComputeClient, args: dict) -> CommandResul
         CommandResults: command-results object.
     """
     limit, _ = parse_limit_and_offset_values(limit=args.pop("limit", "50"))
+    cluster, collections = args.get("cluster"), args.get("collections")
+    params = assign_params(cluster=cluster, collections=collections)
 
-    if namespaces := filter_api_response(
-        api_response=client.get_namespaces(params=assign_params(**args)), limit=limit
-    ):
+    # api does not support limit
+    if namespaces := filter_api_response(api_response=client.get_namespaces(params=params), limit=limit):
         # when the api returns [""] (a list with empty string), it means that the system does not have any namespaces
         if len(namespaces) == 1 and namespaces[0] == "":
             namespaces, table = [], "No results found"
@@ -1235,15 +1244,25 @@ def get_images_scan_list(client: PrismaCloudComputeClient, args: dict) -> Comman
     Returns:
         CommandResults: command-results object.
     """
-    args["limit"], args["offset"] = parse_limit_and_offset_values(
+    limit, offset = parse_limit_and_offset_values(
         limit=args.pop("limit_record", "10"), offset=args.get("offset", "0")
     )
     stats_limit, _ = parse_limit_and_offset_values(limit=args.pop("limit_stats", "10"))
-    args["compact"] = argToBoolean(value=args.get("compact", "true"))
+    compact = argToBoolean(value=args.get("compact", "true"))
+    clusters, fields, hostname, id, name = (
+        args.get("clusters"), args.get("fields"), args.get("hostname"), args.get("id"), args.get("name")
+    )
+    registry, repository = args.get("registry"), args.get("repository")
 
-    if images_scans := client.get_images_scan_info(params=assign_params(**args)):
+    params = assign_params(
+        limit=limit, offset=offset, compact=compact, clusters=clusters, fields=fields,
+        hostname=hostname, id=id, name=name, registry=registry, repository=repository
+    )
+
+    if images_scans := client.get_images_scan_info(params=params):
         for scan in images_scans:
             if "vulnerabilities" in scan:
+                # filter the vulnerabilities amount according to stats_limit
                 scan["vulnerabilities"] = filter_api_response(
                     api_response=scan.get("vulnerabilities"), limit=stats_limit
                 )
@@ -1252,6 +1271,7 @@ def get_images_scan_list(client: PrismaCloudComputeClient, args: dict) -> Comman
                         if "fixDate" in vuln:
                             vuln["fixDate"] = epochs_to_timestamp(epochs=vuln.get("fixDate", 0))
             if "complianceIssues" in scan:
+                # filter the complianceIssues amount according to stats_limit
                 scan["complianceIssues"] = filter_api_response(
                     api_response=scan.get("complianceIssues"), limit=stats_limit
                 )
@@ -1268,7 +1288,7 @@ def get_images_scan_list(client: PrismaCloudComputeClient, args: dict) -> Comman
         )
 
         if len(images_scans) == 1:  # then there is only one image scan report
-            if args.get("compact", True):
+            if compact:
                 # if the compact is True, the api will filter
                 # the response and send back only vulnerability/compliance statistics
                 vuln_statistics_table = tableToMarkdown(
@@ -1361,13 +1381,21 @@ def get_hosts_scan_list(client: PrismaCloudComputeClient, args: dict) -> Command
     Returns:
         CommandResults: command-results object.
     """
-    args["limit"], args["offset"] = parse_limit_and_offset_values(
+    limit, offset = parse_limit_and_offset_values(
         limit=args.pop("limit_record", "10"), offset=args.get("offset", "0")
     )
     stats_limit, _ = parse_limit_and_offset_values(limit=args.pop("limit_stats", "10"))
-    args["compact"] = argToBoolean(value=args.get("compact", "true"))
+    compact = argToBoolean(value=args.get("compact", "true"))
+    clusters, fields, hostname, provider, distro = (
+        args.get("clusters"), args.get("fields"), args.get("hostname"), args.get("provider"), args.get("distro")
+    )
 
-    if hosts_scans := client.get_hosts_scan_info(params=assign_params(**args)):
+    params = assign_params(
+        limit=limit, offset=offset, compact=compact, clusters=clusters,
+        fields=fields, hostname=hostname, provider=provider, distro=distro
+    )
+
+    if hosts_scans := client.get_hosts_scan_info(params=params):
         for scan in hosts_scans:
             if "vulnerabilities" in scan:
                 scan["vulnerabilities"] = filter_api_response(
@@ -1396,7 +1424,7 @@ def get_hosts_scan_list(client: PrismaCloudComputeClient, args: dict) -> Command
         )
 
         if len(hosts_scans) == 1:  # then there is only one host scan report
-            if args.get("compact", True):
+            if compact:
                 # if the compact is True, the api will filter
                 # the response and send back only vulnerability/compliance statistics
                 vuln_statistics_table = tableToMarkdown(
@@ -1473,6 +1501,7 @@ def get_impacted_resources(client: PrismaCloudComputeClient, args: dict) -> Comm
 
     impacted_images, impacted_hosts, context_output = [], [], []
     for cve in cves:
+        # api does not support offset/limit
         if cve_impacted_resources := client.get_impacted_resources(cve=cve):
             if "riskTree" in cve_impacted_resources and cve_impacted_resources.get("riskTree") is not None:
                 cve_impacted_resources["riskTree"] = dict(
@@ -1486,6 +1515,7 @@ def get_impacted_resources(client: PrismaCloudComputeClient, args: dict) -> Comm
                 for image_details in cve_impacted_resources.get("riskTree", {}).values():
                     for image in image_details:
                         image_table_details = {
+                            "Cve": cve,
                             "Image": image.get("image"),
                             "Container": image.get("container"),
                             "Host": image.get("host"),
@@ -1500,7 +1530,7 @@ def get_impacted_resources(client: PrismaCloudComputeClient, args: dict) -> Comm
                 )
 
                 for host in cve_impacted_resources.get("hosts", []):
-                    host_table_details = {"Hostname": host}
+                    host_table_details = {"Cve": cve, "Hostname": host}
                     if host_table_details not in impacted_hosts:
                         impacted_hosts.append(host_table_details)
 
@@ -1510,13 +1540,13 @@ def get_impacted_resources(client: PrismaCloudComputeClient, args: dict) -> Comm
         impacted_images_table = tableToMarkdown(
             name="Impacted Images",
             t=impacted_images,
-            headers=["Image", "Container", "Host", "Namespace"],
+            headers=["Cve", "Image", "Container", "Host", "Namespace"],
             removeNull=True
         )
         impacted_hosts_table = tableToMarkdown(
             name="Impacted Hosts",
             t=impacted_hosts,
-            headers=["Hostname"],
+            headers=["Cve", "Hostname"],
             removeNull=True
         )
         table = impacted_images_table + impacted_hosts_table
