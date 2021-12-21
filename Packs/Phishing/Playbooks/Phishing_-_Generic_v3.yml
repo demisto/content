@@ -497,7 +497,7 @@ tasks:
           root: incident
           accessor: emailto
       EmailBrand:
-        simple: Gmail
+        simple:
       EmailCC:
         complex:
           root: incident
