@@ -537,9 +537,6 @@ def main() -> None:
     client_credentials = params.get('client_credentials', False)
     enc_key = params.get('enc_key') or (params.get('credentials') or {}).get('password')
 
-    if not app_id:
-        raise Exception('Aplication ID must be provided.')
-
     first_fetch_time = params.get('first_fetch', '3 days').strip()
     fetch_limit = arg_to_number(params.get('max_fetch', 10))
     fetch_timeout = arg_to_number(params.get('fetch_timeout', TIMEOUT))
@@ -549,6 +546,9 @@ def main() -> None:
     args = demisto.args()
 
     try:
+        if not app_id:
+            raise Exception('Aplication ID must be provided.')
+    
         client = Client(
             app_id=app_id,
             verify=verify_certificate,
