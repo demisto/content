@@ -1,0 +1,53 @@
+category: Analytics & SIEM
+commonfields:
+  id: Syslog v2
+  version: -1
+configuration:
+- name: certificate
+  display: Certificate (Required for HTTPS)
+  additionalinfo: Required for HTTPS, if not using server rerouting
+  type: 12
+  required: false
+- display: Private Key (Required for HTTPS)
+  additionalinfo: Required for HTTPS, if not using server rerouting
+  name: private_key
+  required: false
+  type: 14
+- display: Message Regex Filter For Incidents Creation.
+  name: message_regex
+  required: false
+  type: 0
+  additionalinfo: Creates an incident in Cortex XSOAR for every received log message that matches this regex.
+- defaultvalue: '514'
+  display: Port mapping (<port> or <host port>:<docker port>)
+  name: longRunningPort
+  required: true
+  type: 0
+- defaultvalue: 'true'
+  display: Long Running Instance
+  name: longRunning
+  required: false
+  type: 8
+  hidden: true
+description: A Syslog server enables automatically opening incidents from Syslog clients. This integration supports filtering logs to convert to incidents, or alternatively converting all logs.
+display: Syslog v2
+name: Syslog v2
+script:
+  commands:
+  - name: get-mapping-fields
+    description: Returns the list of fields for an incident type. This command should
+      be used for debugging.
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/syslog:1.0.0.24893
+  feed: false
+  longRunning: true
+  longRunningPort: true
+  isFetchSamples: true
+  ismappable: true
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

@@ -12,7 +12,8 @@
     ],
     "useCases": [
         "Hunting",
-        "Incident Response"
+        "Incident Response",
+        "Rapid Breach Response"
     ],
     "keywords": [
         "zero-day",
