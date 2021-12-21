@@ -1,4 +1,4 @@
-This v2 playbook retrieves the original email in the thread as an eml file by using the EWS v2 integration.
+This v2 playbook retrieves the original email in the thread as an eml file by using the EWS v2 or EWSO365 integration.
 This playbook will retrieve the email as an eml and not as an Email object (like the previous version). It also reduces the amount of tasks needed to perform the fetch action.
 You must have the necessary permissions in the EWS integration to execute global search: eDiscovery.
 
