@@ -828,7 +828,7 @@ script:
       isArray: false
       defaultValue: ""
     - name: md5
-      description: Comma-seperated list of md5 hashes to be added
+      description: Comma-separated list of md5 hashes to be added
       required: true
       isArray: true
       defaultValue: ""
@@ -840,7 +840,7 @@ script:
     deprecated: false
     arguments:
     - name: cve_id
-      description: Comma-seperated list of cves, for example,
+      description: Comma-separated list of cves, for example,
         cve_id=cve-2016-223,cve-2020-3546.
       required: true
       isArray: true
@@ -880,7 +880,7 @@ script:
       isArray: false
       defaultValue: ""
     - name: hostname
-      description: Name of a specific defender to retrieve.
+      description: Name of a specific defender to retrieve, can be retrieved from !prisma-cloud-compute-profile-host-list.
       required: false
       isArray: false
       defaultValue: ""
@@ -1052,12 +1052,12 @@ script:
     deprecated: false
     arguments:
     - name: cluster
-      description: Comma-seperated list of cluster names to filter by
+      description: Comma-separated list of cluster names to filter by
       required: false
       isArray: true
       defaultValue: ""
     - name: collections
-      description: Comma-seperated list of collections filter by, can be retrieved from !prisma-cloud-compute-collections-list
+      description: Comma-separated list of collections filter by, can be retrieved from !prisma-cloud-compute-collections-list
       required: false
       isArray: true
       defaultValue: ""
@@ -1076,7 +1076,7 @@ script:
     deprecated: false
     arguments:
     - name: clusters
-      description: Comma-seperated list of cluster names filter by.
+      description: Comma-separated list of cluster names filter by.
       required: false
       isArray: true
       defaultValue: ""
@@ -1091,32 +1091,32 @@ script:
       - "true"
       - "false"
     - name: fields
-      description: Comma-seperated list of fields to retrieve.
+      description: Comma-separated list of fields to retrieve.
       required: false
       isArray: true
       defaultValue: ""
     - name: hostname
-      description: Comma-seperated list of hostnames to filter by.
+      description: Comma-separated list of hostnames to filter by, can be retrieved from !prisma-cloud-compute-profile-host-list.
       required: false
       isArray: true
       defaultValue: ""
     - name: id
-      description: Comma-seperated list of image IDs to filter by.
+      description: Comma-separated list of image IDs to filter by.
       required: false
       isArray: true
       defaultValue: ""
     - name: name
-      description: Comma-seperated list of image names to filter by.
+      description: Comma-separated list of image names to filter by.
       required: false
       isArray: true
       defaultValue: ""
     - name: registry
-      description: Comma-seperated list of image registries to filter by.
+      description: Comma-separated list of image registries to filter by.
       required: false
       isArray: true
       defaultValue: ""
     - name: repository
-      description: Comma-seperated list of image repositories to filter by.
+      description: Comma-separated list of image repositories to filter by.
       required: false
       isArray: true
       defaultValue: ""
@@ -1346,22 +1346,22 @@ script:
         - "true"
         - "false"
     - name: distro
-      description: Comma-seprated list OS distros to filter by.
+      description: Comma-separated list OS distros to filter by.
       required: false
       isArray: true
       defaultValue: ""
     - name: fields
-      description: Comma-seperated list of fields to retrieve.
+      description: Comma-separated list of fields to retrieve.
       required: false
       isArray: true
       defaultValue: ""
     - name: hostname
-      description: Comma-seprated list of hostnames to filter by.
+      description: Comma-separated list of hostnames to filter by, can be retrieved from !prisma-cloud-compute-profile-host-list.
       required: false
       isArray: true
       defaultValue: ""
     - name: provider
-      description: Comma-seprated list of cloud providers to filter by.
+      description: Comma-separated list of cloud providers to filter by.
       required: false
       isArray: true
       defaultValue: ""

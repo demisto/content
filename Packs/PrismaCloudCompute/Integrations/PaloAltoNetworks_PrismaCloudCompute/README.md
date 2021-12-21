@@ -955,7 +955,7 @@ Add custom md5 malware hashes
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | The name that will be attached to the md5 records. | Required | 
-| md5 | Comma-seperated list of md5 hashes to be added. | Required | 
+| md5 | Comma-separated list of md5 hashes to be added. | Required | 
 
 
 #### Context Output
@@ -981,7 +981,7 @@ Get infomration about the cves in the system, will return maximum of 50 records,
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cve_id | Comma-seperated list of cves, for example, cve_id=cve-2016-223,cve-2020-3546. | Required | 
+| cve_id | Comma-separated list of cves, for example, cve_id=cve-2016-223,cve-2020-3546. | Required | 
 
 
 #### Context Output
@@ -1059,7 +1059,7 @@ Retrieve a list of defenders and their information
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | cluster | Scopes the query by cluster name. | Optional | 
-| hostname | Name of a specific defender to retrieve. | Optional | 
+| hostname | Name of a specific defender to retrieve, can be retrieved from !prisma-cloud-compute-profile-host-list. | Optional | 
 | type | Indicates the Defender types to return (e.g., docker, dockerWindows, cri, etc). | Optional | 
 | connected | Indicates whether to return only connected Defenders (true) or disconnected Defenders (false). Possible values are: true, false. | Optional | 
 | limit | The maximum of defender records to return. Default is 20. | Optional | 
@@ -1313,8 +1313,8 @@ Get the containers namespaces names
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cluster | Comma-seperated list of cluster names to filter by. | Optional | 
-| collections | Comma-seperated list of collections filter by, can be retrieved from !prisma-cloud-compute-collections-list. | Optional | 
+| cluster | Comma-separated list of cluster names to filter by. | Optional | 
+| collections | Comma-separated list of collections filter by, can be retrieved from !prisma-cloud-compute-collections-list. | Optional | 
 | limit | The maximum number of namespace names records to return. Default is 50. | Optional | 
 
 
@@ -1362,14 +1362,14 @@ Get images scan report, the report includes vulnerabilities, compliance issues, 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| clusters | Comma-seperated list of cluster names filter by. | Optional | 
+| clusters | Comma-separated list of cluster names filter by. | Optional | 
 | compact | Indicates if only minimal image data is to be returned (i.e., skip vulnerabilities, compliance, and extended image metadata) (true) or not (false). Possible values are: true, false. Default is true. | Optional | 
-| fields | Comma-seperated list of fields to retrieve. | Optional | 
-| hostname | Comma-seperated list of hostnames to filter by. | Optional | 
-| id | Comma-seperated list of image IDs to filter by. | Optional | 
-| name | Comma-seperated list of image names to filter by. | Optional | 
-| registry | Comma-seperated list of image registries to filter by. | Optional | 
-| repository | Comma-seperated list of image repositories to filter by. | Optional | 
+| fields | Comma-separated list of fields to retrieve. | Optional | 
+| hostname | Comma-separated list of hostnames to filter by, can be retrieved from !prisma-cloud-compute-profile-host-list. | Optional | 
+| id | Comma-separated list of image IDs to filter by. | Optional | 
+| name | Comma-separated list of image names to filter by. | Optional | 
+| registry | Comma-separated list of image registries to filter by. | Optional | 
+| repository | Comma-separated list of image repositories to filter by. | Optional | 
 | limit_record | maximum scan images records to return. Default is 10. | Optional | 
 | limit_stats | maximum of compliance/vulnerability records to return. Default is 10. | Optional | 
 | offset | The offset to begin listing images scan results. Default is 0. | Optional | 
@@ -1938,10 +1938,10 @@ Get images scan report, the report includes vulnerabilities, compliance issues, 
 | --- | --- | --- |
 | clusters | Filters results by cluster name. | Optional | 
 | compact | Indicates if only minimal image data is to be returned (i.e., skip vulnerabilities, compliance, and extended image metadata) (true) or not (false). Possible values are: true, false. Default is true. | Optional | 
-| distro | Comma-seprated list OS distros to filter by. | Optional | 
-| fields | Comma-seperated list of fields to retrieve. | Optional | 
-| hostname | Comma-seprated list of hostnames to filter by. | Optional | 
-| provider | Comma-seprated list of cloud providers to filter by. | Optional | 
+| distro | Comma-separated list OS distros to filter by. | Optional | 
+| fields | Comma-separated list of fields to retrieve. | Optional | 
+| hostname | Comma-separated list of hostnames to filter by, can be retrieved from !prisma-cloud-compute-profile-host-list. | Optional | 
+| provider | Comma-separated list of cloud providers to filter by. | Optional | 
 | limit_record | maximum scan hosts records to return. Default is 10. | Optional | 
 | limit_stats | maximum of compliance/vulnerability records to return. Default is 10. | Optional | 
 | offset | The offset to begin listing hosts scan results. Default is 0. | Optional | 
