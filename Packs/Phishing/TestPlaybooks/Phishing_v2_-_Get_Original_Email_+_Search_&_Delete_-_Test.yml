@@ -6,8 +6,8 @@ description: |-
   Prerequisites:
   - The phishing playbook is configured with the correct inputs to allow getting the original email and searching & deleting emails
   - A mail sender with sr-test02 is configured. That user will supposedly attack sr-test01.
-  - sr-test01 has a rule which forwards the test email to Avishai (but does not forward the acknowledgement emails it receives from the phishing playbook!)
-  - EWS v2 is configured as the mail listener with Avishai as the user.
+  - sr-test01 has a rule which forwards the test email to Testbox (but does not forward the acknowledgement emails it receives from the phishing playbook!)
+  - EWS v2 is configured as the mail listener with Testbox as the user.
 starttaskid: "0"
 tasks:
   "0":
