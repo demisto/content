@@ -411,7 +411,7 @@ def test_close_incident_command(mocker, requests_mock):
     mocker.patch.object(demisto, 'args', return_value={
         'incident_id': '3064',
         "summary": "summary",
-        "detail": "details"
+        "details": "details"
     })
     close_incident_command()
     results = demisto.results.call_args[0][0]
