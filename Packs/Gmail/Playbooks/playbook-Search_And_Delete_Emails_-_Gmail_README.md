@@ -11,10 +11,12 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 * GetTime
+* Set
 
 ### Commands
-* gmail-search-all-mailboxes
+* extractIndicators
 * gmail-delete-mail
+* gmail-search-all-mailboxes
 
 ## Playbook Inputs
 ---
@@ -34,4 +36,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Search And Delete Emails - Gmail](https://raw.githubusercontent.com/demisto/content/5153dd815b5288877b560e3fdcc3d9ab28cda57e/Packs/Gmail/doc_files/Search_And_Delete_Emails_-_Gmail.png)
+![Search And Delete Emails - Gmail](../doc_files/Search_And_Delete_Emails_-_Gmail.png)
