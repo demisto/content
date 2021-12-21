@@ -2309,6 +2309,10 @@ def sub_main():
     elif not tenant_id:
         raise Exception('Token / Tenant ID must be provided.')
 
+    del params["tenant_id"]
+    del params["client_id"]
+    del params["client_secret"]
+
     client = EWSClient(tenant_id=tenant_id, client_id=client_id, client_secret=client_secret, **params)
     start_logging()
     try:
