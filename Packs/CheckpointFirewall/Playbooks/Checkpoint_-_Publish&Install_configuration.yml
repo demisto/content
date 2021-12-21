@@ -325,10 +325,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "12":
     id: "12"
     taskid: 5b935b74-d33d-4fd2-8484-845f2fa8a61f
