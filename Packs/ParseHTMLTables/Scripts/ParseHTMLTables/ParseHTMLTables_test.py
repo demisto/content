@@ -533,6 +533,29 @@ def test_main(mocker):
                     ]
                 }
             ]
+        },
+        {
+            "value": """
+                <html>
+                    <h1>table1</h1>
+                    <table>
+                      <tr>
+                        <th>head</th>
+                      </tr>
+                      <tr>
+                        <td>item</td>
+                      </tr>
+                    </table>
+                </html>
+                    """,
+            "results": [
+                {
+                    'table1': {
+                        'head':
+                        'item'
+                    }
+                }
+            ]
         }
     ]
 
