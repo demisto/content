@@ -13,8 +13,7 @@ configuration:
   defaultvalue: ''
   type: 9
   required: true
-- display: Domain of Analyst1 server to use (format - server.thatyouuse.com - No
-    http/https)
+- display: Domain of Analyst1 server to use (format - server.thatyouuse.com - No http/https)
   name: server
   defaultvalue: analysis.cloud.analyst1.com
   type: 0
@@ -608,3 +607,6 @@ fromversion: 5.0.0
 tests:
 - Analyst1 Integration Demonstration - Test
 - Analyst1 Integration Test
+marketplaces:
+- xsoar
+- marketplacev2

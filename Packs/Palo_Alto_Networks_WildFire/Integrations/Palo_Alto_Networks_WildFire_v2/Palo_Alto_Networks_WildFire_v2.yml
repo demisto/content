@@ -821,3 +821,6 @@ fromversion: 5.0.0
 tests:
 - Wildfire Test
 - Detonate File - WildFire - Test
+marketplaces:
+- xsoar
+- marketplacev2

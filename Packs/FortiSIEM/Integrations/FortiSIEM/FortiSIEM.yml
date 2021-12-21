@@ -289,7 +289,8 @@ script:
     arguments:
     - name: group_id
       required: true
-      description: ID of the resource group. Run the "fortisiem-get-lists" command to get the ID. command.
+      description: ID of the resource group. Run the "fortisiem-get-lists" command
+        to get the ID. command.
     - name: object-info
       required: true
       description: 'CSV list of key-value pairs of attributes, for example: name=SomeName,lowIp=192.168.1.1,highIp=192.168.1.2'
@@ -350,7 +351,8 @@ script:
     arguments:
     - name: group_id
       required: true
-      description: ID of the resource group. Run the "fortisiem-get-lists" command to get the ID.
+      description: ID of the resource group. Run the "fortisiem-get-lists" command
+        to get the ID.
     - name: resource_type
       required: true
       auto: PREDEFINED
@@ -379,3 +381,6 @@ script:
 tests:
 - No Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

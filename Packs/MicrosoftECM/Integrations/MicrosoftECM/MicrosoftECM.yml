@@ -4,9 +4,9 @@ commonfields:
 name: Microsoft Endpoint Configuration Manager
 display: Microsoft Endpoint Configuration Manager
 category: IT Services
-description: The Microsoft Endpoint Configuration Manager provides the overall Configuration Management
-  (CM) infrastructure and environment to the product development team (formerly known
-  as SCCM).
+description: The Microsoft Endpoint Configuration Manager provides the overall Configuration
+  Management (CM) infrastructure and environment to the product development team (formerly
+  known as SCCM).
 configuration:
 - display: ECM Server URL (e.g., 192.168.64.128)
   name: ComputerName
@@ -55,12 +55,12 @@ script:
       - Device
       description: 'A type for the collection. Valid values are: "User" and "Device."'
     - name: collection_id
-      description: A collection ID. If you do not specify a collection,
-        all collections in the hierarchy are returned. (You can retrieve the collection ID via `!ms-ecm-collection-list
+      description: A collection ID. If you do not specify a collection, all collections
+        in the hierarchy are returned. (You can retrieve the collection ID via `!ms-ecm-collection-list
         collection_type="Device"`.)
     - name: collection_name
-      description: A collection name. If you do not specify a collection,
-        all collections in the hierarchy are returned. (You can retrieve the collection name via `!ms-ecm-collection-list
+      description: A collection name. If you do not specify a collection, all collections
+        in the hierarchy are returned. (You can retrieve the collection name via `!ms-ecm-collection-list
         collection_type="Device"`)
     outputs:
     - contextPath: MicrosoftECM.Collections.Name
@@ -82,7 +82,8 @@ script:
       description: Whether this collection has provisioned members.
       type: boolean
     - contextPath: MicrosoftECM.Collections.IncludeExcludeCollectionsCount
-      description: The number of collections that are included and excluded in this collection.
+      description: The number of collections that are included and excluded in this
+        collection.
       type: number
     - contextPath: MicrosoftECM.Collections.IsBuiltIn
       description: Whether the collection is built-in.
@@ -109,7 +110,8 @@ script:
       description: The number of members visible at the local site.
       type: number
     - contextPath: MicrosoftECM.Collections.MemberClassName
-      description: Name of the class having instances that are the members of the collection.
+      description: Name of the class having instances that are the members of the
+        collection.
       type: string
     - contextPath: MicrosoftECM.Collections.MemberCount
       description: The number of collection members.
@@ -124,11 +126,11 @@ script:
   - name: ms-ecm-device-list
     arguments:
     - name: collection_id
-      description: Specifies an ID for a device collection (You can retrieve the collection ID via `!ms-ecm-collection-list
-        collection_type="Device"`.)
+      description: Specifies an ID for a device collection (You can retrieve the collection
+        ID via `!ms-ecm-collection-list collection_type="Device"`.)
     - name: collection_name
-      description: 'Specifies the name of a device collection (You can retrieve the collection name via
-        `!ms-ecm-collection-list collection_type="Device"`.)'
+      description: 'Specifies the name of a device collection (You can retrieve the
+        collection name via `!ms-ecm-collection-list collection_type="Device"`.)'
     - name: limit
       defaultValue: '100'
       description: The maximum number of devices to be returned. Default is "100".
@@ -143,9 +145,11 @@ script:
   - name: ms-ecm-script-list
     arguments:
     - name: author
-      description: The author of the script. (You can retrieve the name of the author of the script via the !ms-ecm-script-list command.)
+      description: The author of the script. (You can retrieve the name of the author
+        of the script via the !ms-ecm-script-list command.)
     - name: script_name
-      description: The script name. (You can retrieve the script name via the !ms-ecm-script-list command.)
+      description: The script name. (You can retrieve the script name via the !ms-ecm-script-list
+        command.)
     outputs:
     - contextPath: MicrosoftECM.Scripts.ApprovalState
       description: The approval state of the script.
@@ -241,13 +245,14 @@ script:
     arguments:
     - name: script_guid
       required: true
-      description: The script ID. (You can retrieve the script ID via the via `!ms-ecm-script-list` command.)
+      description: The script ID. (You can retrieve the script ID via the via `!ms-ecm-script-list`
+        command.)
     - name: collection_id
       description: The collection ID. (You can retrieve the collection ID via `!ms-ecm-collection-list
         collection_type="Device"`.)
     - name: collection_name
-      description: The collection name. (You can retrieve the collection name via `!ms-ecm-collection-list
-        collection_type="Device"`.)
+      description: The collection name. (You can retrieve the collection name via
+        `!ms-ecm-collection-list collection_type="Device"`.)
     - name: device_name
       description: A device name in Configuration Manager.
     - name: poll_results
@@ -260,7 +265,8 @@ script:
     - name: timeout
       defaultValue: '30'
       required: false
-      description: The timeout in seconds to poll for invocation results. Default is "30".
+      description: The timeout in seconds to poll for invocation results. Default
+        is "30".
     outputs:
     - contextPath: MicrosoftECM.ScriptsInvocationResults.OperationId
       description: The script invocation operation ID.
@@ -317,7 +323,8 @@ script:
       description: A comment about the approval of the script.
     - name: script_guid
       required: true
-      description: Specifies the script ID. (You can retrieve the script ID via the `!ms-ecm-script-list` command.)
+      description: Specifies the script ID. (You can retrieve the script ID via the
+        `!ms-ecm-script-list` command.)
     description: Approves a Configuration Manager PowerShell script.
   - name: ms-ecm-device-collection-create
     arguments:
@@ -330,7 +337,8 @@ script:
     - name: limiting_collection_name
       required: true
       description: The name of a collection to use as a scope for this collection
-        (You can retrieve the name of the collection via `!ms-ecm-collection-list collection_type="Device"`.)
+        (You can retrieve the name of the collection via `!ms-ecm-collection-list
+        collection_type="Device"`.)
     outputs:
     - contextPath: MicrosoftECM.Collections.Name
       description: The collection name.
@@ -351,7 +359,8 @@ script:
       description: Whether this collection has provisioned members.
       type: boolean
     - contextPath: MicrosoftECM.Collections.IncludeExcludeCollectionsCount
-      description: The number of collections that are included and excluded with this collection.
+      description: The number of collections that are included and excluded with this
+        collection.
       type: number
     - contextPath: MicrosoftECM.Collections.IsBuiltIn
       description: Whether the collection is built-in.
@@ -401,7 +410,8 @@ script:
         `!ms-ecm-collection-list collection_type="Device"`.)'
     - name: device_resource_ids
       required: true
-      description: A comma-separated list of device resource IDs. (You can retrieve the device resource IDs via the `!ms-ecm-device-list` command.)
+      description: A comma-separated list of device resource IDs. (You can retrieve
+        the device resource IDs via the `!ms-ecm-device-list` command.)
     outputs:
     - contextPath: MicrosoftECM.Collections.Name
       description: The collection name.
@@ -422,7 +432,8 @@ script:
       description: Whether the collection has provisioned members.
       type: boolean
     - contextPath: MicrosoftECM.Collections.IncludeExcludeCollectionsCount
-      description: The number of collections that are included and excluded with this collection.
+      description: The number of collections that are included and excluded with this
+        collection.
       type: number
     - contextPath: MicrosoftECM.Collections.IsBuiltIn
       description: Whether the collection is built-in.
@@ -469,11 +480,11 @@ script:
       description: 'The name of a device collection. (You can retrieve the name via
         `!ms-ecm-collection-list collection_type="Device"`.)'
     - name: include_collection_id
-      description: The ID of a device collection to include in the membership
-        rule. (You can retrieve the ID via `!ms-ecm-collection-list collection_type="Device"`.)
+      description: The ID of a device collection to include in the membership rule.
+        (You can retrieve the ID via `!ms-ecm-collection-list collection_type="Device"`.)
     - name: include_collection_name
-      description: The name of a device collection to include in the membership
-        rule. (You can retrieve the name via `!ms-ecm-collection-list collection_type="Device"`.)
+      description: The name of a device collection to include in the membership rule.
+        (You can retrieve the name via `!ms-ecm-collection-list collection_type="Device"`.)
     outputs:
     - contextPath: MicrosoftECM.Collections.Name
       description: The collection name.
@@ -494,7 +505,8 @@ script:
       description: Whether this collection has provisioned members.
       type: boolean
     - contextPath: MicrosoftECM.Collections.IncludeExcludeCollectionsCount
-      description: The number of collections that are included and excluded with this collection.
+      description: The number of collections that are included and excluded with this
+        collection.
       type: number
     - contextPath: MicrosoftECM.Collections.IsBuiltIn
       description: Whether the collection is built-in.
@@ -542,8 +554,8 @@ script:
       description: 'The name of a device collection. (You can retrieve the name via
         `!ms-ecm-collection-list collection_type="Device"`.)'
     - name: exclude_collection_id
-      description: The ID of a device collection to exclude from the membership
-        rule. (You can retrieve the ID via `!ms-ecm-collection-list collection_type="Device"`.)
+      description: The ID of a device collection to exclude from the membership rule.
+        (You can retrieve the ID via `!ms-ecm-collection-list collection_type="Device"`.)
     - name: exclude_collection_name
       description: The name of a device collection to exclude from the membership
         rule. (You can retrieve the name via `!ms-ecm-collection-list collection_type="Device"`.)
@@ -567,7 +579,8 @@ script:
       description: Whether this collection has provisioned members.
       type: boolean
     - contextPath: MicrosoftECM.Collections.IncludeExcludeCollectionsCount
-      description: The number of collections that are included and excluded with this collection.
+      description: The number of collections that are included and excluded with this
+        collection.
       type: number
     - contextPath: MicrosoftECM.Collections.IsBuiltIn
       description: Whether the collection is built-in.
@@ -610,15 +623,15 @@ script:
   - name: ms-ecm-device-collection-members-by-query-add
     arguments:
     - name: collection_id
-      description: The ID of the device collection where the rule is applied.
-        (You can retrieve the ID via `!ms-ecm-collection-list collection_type="Device"`.)
+      description: The ID of the device collection where the rule is applied. (You
+        can retrieve the ID via `!ms-ecm-collection-list collection_type="Device"`.)
     - name: collection_name
-      description: The name of the device collection where the rule is applied.
-        (You can retrieve the name via `!ms-ecm-collection-list collection_type="Device"`.)
+      description: The name of the device collection where the rule is applied. (You
+        can retrieve the name via `!ms-ecm-collection-list collection_type="Device"`.)
     - name: query_expression
       required: true
-      description: The query expression that Configuration Manager uses.
-        For example "select SMS_R_SYSTEM.ResourceID,SMS_R_SYSTEM.ResourceType,SMS_R_SYSTEM.Name,SMS_R_SYSTEM.SMSUniqueIdentifier,SMS_R_SYSTEM.ResourceDomainORWorkgroup,SMS_R_SYSTEM.Client
+      description: The query expression that Configuration Manager uses. For example
+        "select SMS_R_SYSTEM.ResourceID,SMS_R_SYSTEM.ResourceType,SMS_R_SYSTEM.Name,SMS_R_SYSTEM.SMSUniqueIdentifier,SMS_R_SYSTEM.ResourceDomainORWorkgroup,SMS_R_SYSTEM.Client
         from SMS_R_System where (ClientType = 1) OR (SMS_R_System.AgentEdition0 =
         5)" to update the device collections.
     - name: rule_name
@@ -644,7 +657,8 @@ script:
       description: Whether this collection has provisioned members.
       type: boolean
     - contextPath: MicrosoftECM.Collections.IncludeExcludeCollectionsCount
-      description: The number of collections that are included and excluded with this collection.
+      description: The number of collections that are included and excluded with this
+        collection.
       type: number
     - contextPath: MicrosoftECM.Collections.IsBuiltIn
       description: Whether the collection is built-in.
@@ -690,11 +704,14 @@ script:
       required: true
       description: The name of the service.
     - name: device_name
-      description: The device name to start the service in. (You can retrieve the device name via the `!ms-ecm-device-list` command.)
+      description: The device name to start the service in. (You can retrieve the
+        device name via the `!ms-ecm-device-list` command.)
     - name: collection_id
-      description: The ID of the collection to start the service in. (You can retrieve the ID via `!ms-ecm-collection-list collection_type="Device"`.)
+      description: The ID of the collection to start the service in. (You can retrieve
+        the ID via `!ms-ecm-collection-list collection_type="Device"`.)
     - name: collection_name
-      description: The name of the collection to start the service in. (You can retrieve the name via `!ms-ecm-collection-list collection_type="Device"`.)
+      description: The name of the collection to start the service in. (You can retrieve
+        the name via `!ms-ecm-collection-list collection_type="Device"`.)
     - name: poll_results
       defaultValue: 'false'
       description: Whether to poll for the script invocation results. Default is "false".
@@ -705,7 +722,8 @@ script:
     - name: timeout
       defaultValue: '30'
       required: false
-      description: The timeout in seconds to poll for invocation results. Default is "30".
+      description: The timeout in seconds to poll for invocation results. Default
+        is "30".
     outputs:
     - contextPath: MicrosoftECM.ScriptsInvocationResults.OperationId
       description: The script invocation operation ID.
@@ -762,11 +780,14 @@ script:
       required: true
       description: The name of the service.
     - name: device_name
-      description: The device name to start the service in. (You can retrieve the device name via the `!ms-ecm-device-list` command.)
+      description: The device name to start the service in. (You can retrieve the
+        device name via the `!ms-ecm-device-list` command.)
     - name: collection_id
-      description: The ID of the collection to start the service in. (You can retrieve the ID via `!ms-ecm-collection-list collection_type="Device"`.)
+      description: The ID of the collection to start the service in. (You can retrieve
+        the ID via `!ms-ecm-collection-list collection_type="Device"`.)
     - name: collection_name
-      description: The name of the collection to start the service in. (You can retrieve the name via `!ms-ecm-collection-list collection_type="Device"`.)
+      description: The name of the collection to start the service in. (You can retrieve
+        the name via `!ms-ecm-collection-list collection_type="Device"`.)
     - name: poll_results
       defaultValue: 'false'
       description: Whether to poll for the script invocation results. Default is "false".
@@ -777,7 +798,8 @@ script:
     - name: timeout
       defaultValue: '30'
       required: false
-      description: The timeout in seconds to poll for invocation results. Default is "30".
+      description: The timeout in seconds to poll for invocation results. Default
+        is "30".
     outputs:
     - contextPath: MicrosoftECM.ScriptsInvocationResults.OperationId
       description: The script invocation operation ID.
@@ -834,11 +856,14 @@ script:
       required: true
       description: The name of the service.
     - name: device_name
-      description: The device name to start the service in. (You can retrieve the device name via the `!ms-ecm-device-list` command.)
+      description: The device name to start the service in. (You can retrieve the
+        device name via the `!ms-ecm-device-list` command.)
     - name: collection_id
-      description: The ID of the collection to start the service in. (You can retrieve the ID via `!ms-ecm-collection-list collection_type="Device"`.)
+      description: The ID of the collection to start the service in. (You can retrieve
+        the ID via `!ms-ecm-collection-list collection_type="Device"`.)
     - name: collection_name
-      description: The name of the collection to start the service in. (You can retrieve the name via `!ms-ecm-collection-list collection_type="Device"`.)
+      description: The name of the collection to start the service in. (You can retrieve
+        the name via `!ms-ecm-collection-list collection_type="Device"`.)
     - name: poll_results
       defaultValue: 'false'
       description: Whether to poll for the script invocation results. Default is "false".
@@ -849,7 +874,8 @@ script:
     - name: timeout
       defaultValue: '30'
       required: false
-      description: The timeout in seconds to poll for invocation results. Default is "30".
+      description: The timeout in seconds to poll for invocation results. Default
+        is "30".
     outputs:
     - contextPath: MicrosoftECM.ScriptsInvocationResults.OperationId
       description: The script invocation operation ID.
@@ -979,7 +1005,8 @@ script:
       description: Whether there has been a recent heartbeat from the client.
       type: boolean
     - contextPath: MicrosoftECM.Devices.CollectionMemberDetails.LastActiveTime
-      description: The last reported time the client was active. Comes from Client Health.
+      description: The last reported time the client was active. Comes from Client
+        Health.
       type: date
     - contextPath: MicrosoftECM.Devices.CollectionMemberDetails.LastClientCheckTime
       description: The last reported health evaluation time. Comes from Client Health.
@@ -1015,8 +1042,9 @@ script:
       description: Whether the client is a Configuration Manager client.
       type: boolean
     - contextPath: MicrosoftECM.Devices.CollectionMemberDetails.IsBlocked
-      description: Whether the system is blocked. The administrator can manually block/unblock a client in 
-        the Admin console UI. By blocking a client, client communication with the server will be cut off.
+      description: Whether the system is blocked. The administrator can manually block/unblock
+        a client in the Admin console UI. By blocking a client, client communication
+        with the server will be cut off.
       type: boolean
     - contextPath: MicrosoftECM.Devices.CollectionMemberDetails.ExchangeServer
       description: Name of the exchange server for Exchange Active Sync (EAS).
@@ -1164,3 +1192,6 @@ script:
   dockerimage: demisto/powershell-ubuntu:7.1.3.22304
   runonce: false
 fromversion: 5.5.0
+marketplaces:
+- xsoar
+- marketplacev2

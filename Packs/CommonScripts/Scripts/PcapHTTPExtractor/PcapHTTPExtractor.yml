@@ -33,12 +33,14 @@ args:
   required: false
   secret: false
 - default: false
-  description: The allowed content types to display, separated with comma, uses startswith to find a match (ie text,image will display text\html, and image\png).
+  description: The allowed content types to display, separated with comma, uses startswith
+    to find a match (ie text,image will display text\html, and image\png).
   isArray: false
   name: allowedContentTypes
   required: false
   secret: false
-comment: Allows to parse and extract http flows (requests & responses) from a pcap/pcapng file.
+comment: Allows to parse and extract http flows (requests & responses) from a pcap/pcapng
+  file.
 commonfields:
   id: PcapHTTPExtractor
   version: -1
@@ -96,3 +98,6 @@ tests:
 - PcapHTTPExtractor-Test
 subtype: python2
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

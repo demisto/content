@@ -795,8 +795,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: LogPoint search query. This should be the exact query to use
-        to search logs in the LogPoint UI.
+      description: LogPoint search query. This should be the exact query to use to
+        search logs in the LogPoint UI.
       isArray: false
       name: query
       required: true
@@ -811,15 +811,15 @@ script:
       secret: false
     - default: false
       defaultValue: '100'
-      description: Number of logs to fetch. If not provided, the first 100 logs will be
-        displayed.
+      description: Number of logs to fetch. If not provided, the first 100 logs will
+        be displayed.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of LogPoint repos from which logs are to be fetched. If not provided,
-        it will display logs from all repos.
+      description: A comma-separated list of LogPoint repos from which logs are to
+        be fetched. If not provided, it will display logs from all repos.
       isArray: true
       name: repos
       required: false
@@ -830,8 +830,8 @@ script:
     name: lp-get-searchid
     outputs:
     - contextPath: LogPoint.search_id
-      description: Search ID. Use this ID in the lp-search-logs command to get the search
-        result.
+      description: Search ID. Use this ID in the lp-search-logs command to get the
+        search result.
       type: String
   - arguments:
     - default: false
@@ -864,3 +864,6 @@ tests:
 defaultmapperin: LogPoint-mapper
 defaultclassifier: null
 fromversion: 6.0.0
+marketplaces:
+- xsoar
+- marketplacev2

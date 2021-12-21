@@ -2968,3 +2968,6 @@ defaultmapperin: QRadar - Generic Incoming Mapper
 defaultclassifier: QRadar
 tests:
 - QRadar_v3-test
+marketplaces:
+- xsoar
+- marketplacev2

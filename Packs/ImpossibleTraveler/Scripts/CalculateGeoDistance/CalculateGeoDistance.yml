@@ -12,10 +12,12 @@ enabled: true
 args:
 - name: src_coords
   required: true
-  description: Latitude and Longitude coordinates for the first location.  Required format 1.23,4.56
+  description: Latitude and Longitude coordinates for the first location.  Required
+    format 1.23,4.56
 - name: dest_coords
   required: true
-  description: Latitude and Longitude coordinates for the second location.  Required format 1.23,4.56
+  description: Latitude and Longitude coordinates for the second location.  Required
+    format 1.23,4.56
 outputs:
 - contextPath: Geo.Distance
   description: Distance between two sets of coordinates, in miles.
@@ -28,3 +30,6 @@ runas: DBotWeakRole
 tests:
 - Impossible Traveler - Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

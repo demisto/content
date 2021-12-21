@@ -34,7 +34,8 @@ configuration:
   required: false
   type: 0
 - defaultvalue: '10'
-  display: Alerts to fetch per run; note that increasing this value may result in slow performance if too many results are returned at once
+  display: Alerts to fetch per run; note that increasing this value may result in
+    slow performance if too many results are returned at once
   name: fetch_limit
   required: false
   type: 0
@@ -43,7 +44,9 @@ configuration:
   name: include_files
   required: false
   type: 8
-description: Use the Code42 integration to identify potential data exfiltration from insider threats while speeding investigation and response by providing fast access to file events and metadata across physical and cloud environments.
+description: Use the Code42 integration to identify potential data exfiltration from
+  insider threats while speeding investigation and response by providing fast access
+  to file events and metadata across physical and cloud environments.
 display: Code42
 name: Code42
 script:
@@ -75,7 +78,10 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Exposure types to search for. Values can be "All", "RemovableMedia", "ApplicationRead", "CloudStorage", "IsPublic", "SharedViaLink", "SharedViaDomain", or "OutsideTrustedDomains". When "All" is specified with other types, other types would be ignored and filter rule for all types would be applied.
+      description: Exposure types to search for. Values can be "All", "RemovableMedia",
+        "ApplicationRead", "CloudStorage", "IsPublic", "SharedViaLink", "SharedViaDomain",
+        or "OutsideTrustedDomains". When "All" is specified with other types, other
+        types would be ignored and filter rule for all types would be applied.
       isArray: true
       name: exposure
       predefined:
@@ -97,7 +103,11 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Searches for file events by JSON query, hash, username, device hostname, exfiltration type, or a combination of parameters. At least one argument must be passed in the command. If a JSON argument is passed, it will be used to the exclusion of other parameters, otherwise parameters will be combined with an AND clause.
+    description: Searches for file events by JSON query, hash, username, device hostname,
+      exfiltration type, or a combination of parameters. At least one argument must
+      be passed in the command. If a JSON argument is passed, it will be used to the
+      exclusion of other parameters, otherwise parameters will be combined with an
+      AND clause.
     execution: false
     name: code42-securitydata-search
     outputs:
@@ -229,7 +239,8 @@ script:
       type: string
   - arguments:
     - default: false
-      description: The alert ID to retrieve. Alert IDs are associated with alerts that are fetched via fetch-incidents.
+      description: The alert ID to retrieve. Alert IDs are associated with alerts
+        that are fetched via fetch-incidents.
       isArray: false
       name: id
       required: true
@@ -265,7 +276,8 @@ script:
       type: string
   - arguments:
     - default: false
-      description: The alert ID to resolve. Alert IDs are associated with alerts that are fetched via fetch-incidents.
+      description: The alert ID to resolve. Alert IDs are associated with alerts that
+        are fetched via fetch-incidents.
       isArray: false
       name: id
       required: true
@@ -303,7 +315,8 @@ script:
     name: code42-departingemployee-add
     outputs:
     - contextPath: Code42.DepartingEmployee.CaseID
-      description: Internal Code42 Case ID for the Departing Employee. Deprecated. Use Code42.DepartingEmployee.UserID.
+      description: Internal Code42 Case ID for the Departing Employee. Deprecated.
+        Use Code42.DepartingEmployee.UserID.
       type: string
     - contextPath: Code42.DepartingEmployee.UserID
       description: Internal Code42 User ID for the Departing Employee.
@@ -330,7 +343,8 @@ script:
     name: code42-departingemployee-remove
     outputs:
     - contextPath: Code42.DepartingEmployee.CaseID
-      description: Internal Code42 Case ID for the Departing Employee. Deprecated. Use Code42.DepartingEmployee.UserID.
+      description: Internal Code42 Case ID for the Departing Employee. Deprecated.
+        Use Code42.DepartingEmployee.UserID.
       type: string
     - contextPath: Code42.DepartingEmployee.UserID
       description: Internal Code42 User ID for the Departing Employee.
@@ -423,7 +437,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: To filter results by employees who have these risk tags. Comma delimited.
+      description: To filter results by employees who have these risk tags. Comma
+        delimited.
       isArray: false
       name: risktags
       predefined:
@@ -582,7 +597,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Blocks a user in Code42.  A blocked user is not allowed to log in or restore files. Backups will continue if the user is still active.
+    description: Blocks a user in Code42.  A blocked user is not allowed to log in
+      or restore files. Backups will continue if the user is still active.
     execution: false
     name: code42-user-block
     outputs:
@@ -597,7 +613,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Deactivate a user in Code42; signing them out of their devices. Backups discontinue for a deactivated user, and their archives go to cold storage.
+    description: Deactivate a user in Code42; signing them out of their devices. Backups
+      discontinue for a deactivated user, and their archives go to cold storage.
     execution: false
     name: code42-user-deactivate
     outputs:
@@ -612,7 +629,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Removes a block, if one exists, on the user with the given user ID. Unblocked users are allowed to log in and restore.
+    description: Removes a block, if one exists, on the user with the given user ID.
+      Unblocked users are allowed to log in and restore.
     execution: false
     name: code42-user-unblock
     outputs:
@@ -797,3 +815,6 @@ script:
   subtype: python3
   type: python
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

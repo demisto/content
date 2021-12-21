@@ -43,7 +43,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the CyberArk Privileged Access Security (PAS) solution to manage users, safes, vaults, and accounts from Cortex XSOAR.
+description: Use the CyberArk Privileged Access Security (PAS) solution to manage
+  users, safes, vaults, and accounts from Cortex XSOAR.
 display: CyberArk PAS
 name: CyberArkPAS
 script:
@@ -91,8 +92,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Whether or not the user must change the user password from the second
-        log in onward. Can be 'true' or 'false'. Default is 'true'.
+      description: Whether or not the user must change the user password from the
+        second log in onward. Can be 'true' or 'false'. Default is 'true'.
       isArray: false
       name: change_password_on_the_next_logon
       predefined:
@@ -147,7 +148,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Whether the user will be enabled upon creation. Can be 'true' or 'false'. Default is 'true'.
+      description: Whether the user will be enabled upon creation. Can be 'true' or
+        'false'. Default is 'true'.
       isArray: false
       name: enable_user
       predefined:
@@ -156,7 +158,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The distinguished name of the user. The usage is for PKI authentication. This will match the certificate subject name or domain name.
+      description: The distinguished name of the user. The usage is for PKI authentication.
+        This will match the certificate subject name or domain name.
       isArray: false
       name: distinguished_name
       required: false
@@ -273,9 +276,10 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of user permissions.
-        Valid values are: AddSafes, AuditUsers, AddUpdateUsers, ResetUsersPasswords, ActivateUsers, AddNetworkAreas, ManageDirectoryMapping, ManageServerFileCategories, BackupAllSafes, RestoreAllSafes
-        e.g., AddSafes,AuditUsers'
+      description: 'A comma-separated list of user permissions. Valid values are:
+        AddSafes, AuditUsers, AddUpdateUsers, ResetUsersPasswords, ActivateUsers,
+        AddNetworkAreas, ManageDirectoryMapping, ManageServerFileCategories, BackupAllSafes,
+        RestoreAllSafes e.g., AddSafes,AuditUsers'
       isArray: true
       name: vault_authorization
       required: false
@@ -307,7 +311,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Whether the user will be enabled upon creation. Can be 'true' or 'false'. Default is 'true'.
+      description: Whether the user will be enabled upon creation. Can be 'true' or
+        'false'. Default is 'true'.
       isArray: false
       name: enable_user
       predefined:
@@ -316,8 +321,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The distinguished name of the user.
-        The usage is for PKI authentication. This will match the certificate subject name or domain name.
+      description: The distinguished name of the user. The usage is for PKI authentication.
+        This will match the certificate subject name or domain name.
       isArray: false
       name: distinguished_name
       required: false
@@ -335,7 +340,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description:  Update an existing vault user.
+    description: Update an existing vault user.
     execution: false
     name: cyberark-pas-user-update
     outputs:
@@ -398,8 +403,7 @@ script:
       type: Boolean
   - arguments:
     - default: false
-      description: 'Retrieve users using filters.
-        Valid values: userType, componentUser.'
+      description: 'Retrieve users using filters. Valid values: userType, componentUser.'
       isArray: false
       name: filter
       required: false
@@ -411,7 +415,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Return a list of all existing users in the vault that meet the filter and search criteria.
+    description: Return a list of all existing users in the vault that meet the filter
+      and search criteria.
     execution: false
     name: cyberark-pas-users-list
     outputs:
@@ -484,7 +489,8 @@ script:
       description: The locations of the safes.
       type: String
     - contextPath: CyberArkPAS.Safes.ManagingCPM
-      description: The name of the Central Policy Manager (CPM) user who will manage the safes.
+      description: The name of the Central Policy Manager (CPM) user who will manage
+        the safes.
       type: String
     - contextPath: CyberArkPAS.Safes.NumberOfDaysRetention
       description: The number of retained versions of every password that is stored
@@ -495,7 +501,8 @@ script:
         safes.
       type: Number
     - contextPath: CyberArkPAS.Safes.OLACEnabled
-      description: Whether or not to enable Object Level Access Control (OLAC) for the safes.
+      description: Whether or not to enable Object Level Access Control (OLAC) for
+        the safes.
       type: Boolean
   - arguments:
     - default: false
@@ -519,7 +526,8 @@ script:
       description: The location of the safe.
       type: String
     - contextPath: CyberArkPAS.Safes.ManagingCPM
-      description: The name of the Central Policy Manager (CPM) user who will manage the safe.
+      description: The name of the Central Policy Manager (CPM) user who will manage
+        the safe.
       type: String
     - contextPath: CyberArkPAS.Safes.NumberOfDaysRetention
       description: The number of retained versions of every password that is stored
@@ -530,7 +538,8 @@ script:
         safe.
       type: Number
     - contextPath: CyberArkPAS.Safes.OLACEnabled
-      description: Whether or not to enable Object Level Access Control (OLAC) for the safe.
+      description: Whether or not to enable Object Level Access Control (OLAC) for
+        the safe.
       type: Boolean
   - arguments:
     - default: false
@@ -559,7 +568,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The name of the Central Policy Manager (CPM) user who will manage the new safe.
+      description: The name of the Central Policy Manager (CPM) user who will manage
+        the new safe.
       isArray: false
       name: managing_cpm
       required: false
@@ -599,7 +609,8 @@ script:
       description: The location of the safe.
       type: String
     - contextPath: CyberArkPAS.Safes.ManagingCPM
-      description: The name of the Central Policy Manager (CPM) user who will manage the safe.
+      description: The name of the Central Policy Manager (CPM) user who will manage
+        the safe.
       type: String
     - contextPath: CyberArkPAS.Safes.NumberOfDaysRetention
       description: The number of retained versions of every password that is stored
@@ -610,7 +621,8 @@ script:
         safe.
       type: Number
     - contextPath: CyberArkPAS.Safes.OLACEnabled
-      description: Whether or not to enable Object Level Access Control (OLAC) for the safe.
+      description: Whether or not to enable Object Level Access Control (OLAC) for
+        the safe.
       type: Boolean
   - arguments:
     - default: false
@@ -639,7 +651,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The name of the Central Policy Manager (CPM) user who will manage the updated safe.
+      description: The name of the Central Policy Manager (CPM) user who will manage
+        the updated safe.
       isArray: false
       name: managing_cpm
       required: false
@@ -685,7 +698,8 @@ script:
       description: The location of the updated safe.
       type: String
     - contextPath: CyberArkPAS.Safes.ManagingCPM
-      description: The name of the Central Policy Manager (CPM) user who will manage the safe.
+      description: The name of the Central Policy Manager (CPM) user who will manage
+        the safe.
       type: String
     - contextPath: CyberArkPAS.Safes.NumberOfDaysRetention
       description: The number of retained versions of every password that is stored
@@ -696,7 +710,8 @@ script:
         updated safe.
       type: Number
     - contextPath: CyberArkPAS.Safes.OLACEnabled
-      description: Whether or not to enable Object Level Access Control (OLAC) for the updated safe.
+      description: Whether or not to enable Object Level Access Control (OLAC) for
+        the updated safe.
       type: Boolean
   - arguments:
     - default: false
@@ -751,7 +766,8 @@ script:
       required: false
       secret: false
     - default: false
-      description:  The membership expiration date in the format MM\DD\YY. Leave empty if there is no expiration date.
+      description: The membership expiration date in the format MM\DD\YY. Leave empty
+        if there is no expiration date.
       isArray: false
       name: membership_expiration_date
       required: false
@@ -813,7 +829,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The membership expiration date in the format MM\DD\YY. Leave empty if there is no expiration date.
+      description: The membership expiration date in the format MM\DD\YY. Leave empty
+        if there is no expiration date.
       isArray: false
       name: membership_expiration_date
       required: false
@@ -949,7 +966,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Whether the account secret is automatically managed by the Central Policy Manager (CPM). Can be 'true' or 'false'. Default is 'true'.
+      description: Whether the account secret is automatically managed by the Central
+        Policy Manager (CPM). Can be 'true' or 'false'. Default is 'true'.
       isArray: false
       name: automatic_management_enabled
       predefined:
@@ -1164,7 +1182,8 @@ script:
       description: The safes where the accounts were created.
       type: String
     - contextPath: CyberArkPAS.Accounts.secretManagement
-      description: Whether the accounts secrets were automatically managed by the CPM.
+      description: Whether the accounts secrets were automatically managed by the
+        CPM.
       type: String
     - contextPath: CyberArkPAS.Accounts.secretType
       description: The type of passwords.
@@ -1381,3 +1400,6 @@ script:
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

@@ -1,4 +1,5 @@
-comment: Determines which configured Cisco ISE instance is in active/primary state and returns the name of the instance.
+comment: Determines which configured Cisco ISE instance is in active/primary state
+  and returns the name of the instance.
 commonfields:
   id: GetCiscoISEActiveInstance
   version: -1
@@ -22,3 +23,6 @@ type: python
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2

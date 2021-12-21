@@ -33,7 +33,8 @@ configuration:
   name: severities
   required: false
   type: 0
-description: Leverage the power of Symantec Managed Security Services for continual threat monitoring and customized guidance 24x7
+description: Leverage the power of Symantec Managed Security Services for continual
+  threat monitoring and customized guidance 24x7
 display: Symantec Managed Security Services
 name: Symantec MSS
 script:
@@ -70,13 +71,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'To change incident assignment to organization (Note: assign to an organization OR a person is required)'
+      description: 'To change incident assignment to organization (Note: assign to
+        an organization OR a person is required)'
       isArray: false
       name: assignOrganization
       required: false
       secret: false
     - default: false
-      description: 'To change incident assignment to person. (Note: assign to an organization OR a person is required)'
+      description: 'To change incident assignment to person. (Note: assign to an organization
+        OR a person is required)'
       isArray: false
       name: assignPerson
       required: false
@@ -104,25 +107,29 @@ script:
     name: symantec-mss-get-incident
   - arguments:
     - default: true
-      description: Incidents created since the specified date (i.e. 2014-09-11T18:57:36.707Z). If not supplied, defaults to the last 24 hours
+      description: Incidents created since the specified date (i.e. 2014-09-11T18:57:36.707Z).
+        If not supplied, defaults to the last 24 hours
       isArray: false
       name: time
       required: false
       secret: false
     - default: false
-      description: Comma-delimited list of valid Security Incident severities set by MSS. If not supplied, all severities are returned
+      description: Comma-delimited list of valid Security Incident severities set
+        by MSS. If not supplied, all severities are returned
       isArray: false
       name: severities
       required: false
       secret: false
     - default: false
-      description: Comma-delimited list of valid Source IP Addresses. If not supplied, all addresses are returned
+      description: Comma-delimited list of valid Source IP Addresses. If not supplied,
+        all addresses are returned
       isArray: false
       name: sourceIp
       required: false
       secret: false
     - default: false
-      description: The maximum number of incidents to return. If not supplied,  all incidents are returned
+      description: The maximum number of incidents to return. If not supplied,  all
+        incidents are returned
       isArray: false
       name: max
       required: false
@@ -142,3 +149,6 @@ script:
 tests:
 - SymantecMSSTest
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

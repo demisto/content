@@ -9,7 +9,8 @@ tags:
 - general
 - transformer
 - entirelist
-comment: Returns the first element of an array.  If the value passed is not an array, it returns the original value that was passed.
+comment: Returns the first element of an array.  If the value passed is not an array,
+  it returns the original value that was passed.
 enabled: true
 args:
 - name: value
@@ -24,3 +25,6 @@ runas: DBotWeakRole
 tests:
 - No test - unit test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

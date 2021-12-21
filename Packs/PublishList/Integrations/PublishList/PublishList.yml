@@ -61,3 +61,6 @@ script:
 fromversion: 6.0.0
 tests:
 - No test
+marketplaces:
+- xsoar
+- marketplacev2

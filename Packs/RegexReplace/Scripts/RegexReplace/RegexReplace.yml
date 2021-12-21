@@ -10,8 +10,7 @@ args:
   required: true
 - auto: PREDEFINED
   defaultValue: "false"
-  description: True if the pattern matching is case insensitive, otherwise
-    False.
+  description: True if the pattern matching is case insensitive, otherwise False.
   name: ignore_case
   predefined:
   - "true"
@@ -48,3 +47,6 @@ type: python
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2

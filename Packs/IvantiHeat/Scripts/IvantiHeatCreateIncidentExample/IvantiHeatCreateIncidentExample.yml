@@ -5,9 +5,9 @@ name: IvantiHeatCreateIncidentExample
 script: ''
 type: python
 tags: []
-comment: This is a sample script that demonstrates how to create an incident in Ivanti Heat.
-  The script generates data of the created incident in JSON format and writes it to the IvantiHeat.CreateIncidentJSON
-  context path.
+comment: This is a sample script that demonstrates how to create an incident in Ivanti
+  Heat. The script generates data of the created incident in JSON format and writes
+  it to the IvantiHeat.CreateIncidentJSON context path.
 enabled: true
 args:
 - name: category
@@ -39,3 +39,6 @@ runas: DBotWeakRole
 fromversion: 5.0.0
 tests:
 - Ivanti Heat - Test
+marketplaces:
+- xsoar
+- marketplacev2

@@ -1,4 +1,5 @@
-comment: A script that creates a table of all the ToDo tasks assigned to the current user.
+comment: A script that creates a table of all the ToDo tasks assigned to the current
+  user.
 commonfields:
   id: MyToDoTasksWidget
   version: -1
@@ -15,3 +16,6 @@ dockerimage: demisto/python3:3.9.8.24399
 fromversion: 6.1.0
 tests:
 - No test
+marketplaces:
+- xsoar
+- marketplacev2

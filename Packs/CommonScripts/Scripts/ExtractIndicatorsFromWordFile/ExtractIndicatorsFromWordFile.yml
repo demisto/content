@@ -1,6 +1,7 @@
 args:
 - default: false
-  description: The entry ID of the word document to be parsed for indicators. The document can be either in DOC or DOCX format.
+  description: The entry ID of the word document to be parsed for indicators. The
+    document can be either in DOC or DOCX format.
   isArray: false
   name: entryID
   required: true
@@ -34,3 +35,6 @@ runonce: false
 fromversion: 5.0.0
 tests:
 - Extract Indicators From File - Generic v2 - Test
+marketplaces:
+- xsoar
+- marketplacev2

@@ -18,7 +18,8 @@ configuration:
   name: enc_key
   required: false
   type: 4
-- display: Token (received from the authorization step - see Detailed Instructions (?) section)
+- display: Token (received from the authorization step - see Detailed Instructions
+    (?) section)
   name: refresh_token
   required: false
   type: 4
@@ -78,15 +79,15 @@ configuration:
   name: record_types_filter
   required: false
   type: 0
-- display: Workloads to fetch. (Comma-separated list of the workloads you wish to fetch.
-    Content records with a workload that isn't specified will not be fetched. If this
-    field is left empty, all workloads will be fetched.)
+- display: Workloads to fetch. (Comma-separated list of the workloads you wish to
+    fetch. Content records with a workload that isn't specified will not be fetched.
+    If this field is left empty, all workloads will be fetched.)
   name: workloads_filter
   required: false
   type: 0
-- display: Operations to fetch. (Comma-separated list of the operations you wish to fetch.
-    Content records with an operation that isn't specified will not be fetched. If
-    this field is left empty, all operations will be fetched.)
+- display: Operations to fetch. (Comma-separated list of the operations you wish to
+    fetch. Content records with an operation that isn't specified will not be fetched.
+    If this field is left empty, all operations will be fetched.)
   name: operations_filter
   required: false
   type: 0
@@ -199,7 +200,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The timeout (in seconds) for the content requesting HTTP call. Default is the value provided as an integration parameter.
+      description: The timeout (in seconds) for the content requesting HTTP call.
+        Default is the value provided as an integration parameter.
       isArray: false
       name: timeout
       required: false
@@ -260,3 +262,6 @@ script:
 tests:
 - No test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

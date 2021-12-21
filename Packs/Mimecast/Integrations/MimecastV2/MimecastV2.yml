@@ -65,14 +65,18 @@ configuration:
   name: fetchDelta
   required: false
   type: 0
-description: Mimecast unified email management offers cloud email services for email security, continuity and archiving emails. Please read detailed instructions in order to understand how to set the integration's parameters.
+description: Mimecast unified email management offers cloud email services for email
+  security, continuity and archiving emails. Please read detailed instructions in
+  order to understand how to set the integration's parameters.
 display: Mimecast v2
 name: MimecastV2
 script:
   commands:
   - arguments:
     - default: true
-      description: The query string xml for the search using Mimecast Unified Search Experience (MUSE) - read more on https://community.mimecast.com/docs/DOC-2262, using this will override other query arguments
+      description: The query string xml for the search using Mimecast Unified Search
+        Experience (MUSE) - read more on https://community.mimecast.com/docs/DOC-2262,
+        using this will override other query arguments
       isArray: false
       name: queryXml
       required: false
@@ -139,7 +143,16 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'These are the attachment types available: optional - messages with and without attachments any - messages with any attachment documents - messages with doc, dot, docx, docm, dotx, dotm, pdf, rtf, html attachments spreadsheets - messages with xls, xlt, xlsx, xlsm, xltx, xltm, xlsb, xlam, csv attachments presentations - messages with ppt, pptx, pptm, potx, potm, ppam, ppsx, ppsm, sldx, sldm, thms, pps attachments text - messages with txt, text, html, log attachments images - messages with jpg, jpeg, png, bmp, gif, psd, tif, tiff attachments media - messages with mp3, mp4, m4a, mpg, mpeg, avi, wav, aac, wma, mov attachments zips - messages with zip, rar, cab, gz, gzip, 7z attachments none - No attachments are to be present in the results'
+      description: 'These are the attachment types available: optional - messages
+        with and without attachments any - messages with any attachment documents
+        - messages with doc, dot, docx, docm, dotx, dotm, pdf, rtf, html attachments
+        spreadsheets - messages with xls, xlt, xlsx, xlsm, xltx, xltm, xlsb, xlam,
+        csv attachments presentations - messages with ppt, pptx, pptm, potx, potm,
+        ppam, ppsx, ppsm, sldx, sldm, thms, pps attachments text - messages with txt,
+        text, html, log attachments images - messages with jpg, jpeg, png, bmp, gif,
+        psd, tif, tiff attachments media - messages with mp3, mp4, m4a, mpg, mpeg,
+        avi, wav, aac, wma, mov attachments zips - messages with zip, rar, cab, gz,
+        gzip, 7z attachments none - No attachments are to be present in the results'
       isArray: false
       name: attachmentType
       predefined:
@@ -162,7 +175,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Search email by text in body, will override the text and subject arguments
+      description: Search email by text in body, will override the text and subject
+        arguments
       isArray: false
       name: body
       required: false
@@ -182,7 +196,9 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Defines if the search should query recently received messages that are not fully processed yet (default false). You can search by mailbox and date time across active messages
+      description: Defines if the search should query recently received messages that
+        are not fully processed yet (default false). You can search by mailbox and
+        date time across active messages
       isArray: false
       name: active
       predefined:
@@ -336,7 +352,10 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'Required if fromType is one of email domain, profile group, individual email address. Expected values: If fromType is email_domain, a domain name without the @ symbol. If fromType is profile_group, the ID of the profile group. If fromType is individual_email_address, an email address.'
+      description: 'Required if fromType is one of email domain, profile group, individual
+        email address. Expected values: If fromType is email_domain, a domain name
+        without the @ symbol. If fromType is profile_group, the ID of the profile
+        group. If fromType is individual_email_address, an email address.'
       isArray: false
       name: fromValue
       required: false
@@ -359,7 +378,10 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'Required if fromType is one of email domain, profile group, individual email address. Expected values: If toType is email_domain, a domain name without the @ symbol. If toType is profile_group, the ID of the profile group. If toType is individual_email_address, an email address.'
+      description: 'Required if fromType is one of email domain, profile group, individual
+        email address. Expected values: If toType is email_domain, a domain name without
+        the @ symbol. If toType is profile_group, the ID of the profile group. If
+        toType is individual_email_address, an email address.'
       isArray: false
       name: toValue
       required: false
@@ -445,7 +467,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Choose to either "permit" (to bypass spam checks) or "block" (to reject the email)
+      description: Choose to either "permit" (to bypass spam checks) or "block" (to
+        reject the email)
       isArray: false
       name: action
       predefined:
@@ -495,7 +518,8 @@ script:
       description: The path of the managed URL
       type: string
     - contextPath: Mimecast.URL.matchType
-      description: Either explicit - applies to the full URL or domain - applies to all URL values in the domain
+      description: Either explicit - applies to the full URL or domain - applies to
+        all URL values in the domain
       type: string
     - contextPath: Mimecast.URL.ID
       description: The Mimecast secure ID of the managed URL
@@ -512,7 +536,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Set to "block" to block list the URL, "permit" to add to allow list.
+      description: Set to "block" to block list the URL, "permit" to add to allow
+        list.
       isArray: false
       name: action
       predefined:
@@ -523,7 +548,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: explicit
-      description: Set to "explicit" to block or permit only instances of the full URL. Set to "domain" to block or permit any URL with the same domain
+      description: Set to "explicit" to block or permit only instances of the full
+        URL. Set to "domain" to block or permit any URL with the same domain
       isArray: false
       name: matchType
       predefined:
@@ -534,7 +560,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Disable rewriting of this URL in emails. Applies only if action = "permit". Default false
+      description: Disable rewriting of this URL in emails. Applies only if action
+        = "permit". Default false
       isArray: false
       name: disableRewrite
       predefined:
@@ -551,7 +578,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Disable User Awareness challenges for this URL. Applies only if action = "permit". Default false
+      description: Disable User Awareness challenges for this URL. Applies only if
+        action = "permit". Default false
       isArray: false
       name: disableUserAwareness
       predefined:
@@ -585,7 +613,8 @@ script:
       description: If logging of user clicks on the URL is disabled
       type: string
     - contextPath: Mimecast.URL.matchType
-      description: Either explicit - applies to the full URL or domain - applies to all URL values in the domain
+      description: Either explicit - applies to the full URL or domain - applies to
+        all URL values in the domain
       type: string
     - contextPath: Mimecast.URL.ID
       description: The Mimecast secure ID of the managed URL
@@ -601,13 +630,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: The start date of messages to return, in the following format, 2015-11-16T14:49:18+0000. Default is the last calendar month
+      description: The start date of messages to return, in the following format,
+        2015-11-16T14:49:18+0000. Default is the last calendar month
       isArray: false
       name: startTime
       required: false
       secret: false
     - default: false
-      description: The end date of messages to return, in the following format, 2015-11-16T14:49:18+0000. Default is the end of the current day
+      description: The end date of messages to return, in the following format, 2015-11-16T14:49:18+0000.
+        Default is the end of the current day
       isArray: false
       name: endTime
       required: false
@@ -615,7 +646,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: INBOX
-      description: 'The message list type, must be one of: inbox or sent, default is inbox'
+      description: 'The message list type, must be one of: inbox or sent, default
+        is inbox'
       isArray: false
       name: view
       predefined:
@@ -660,13 +692,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: Start date of logs to return in the following format 2015-11-16T14:49:18+0000. Default is the start of the current day
+      description: Start date of logs to return in the following format 2015-11-16T14:49:18+0000.
+        Default is the start of the current day
       isArray: false
       name: fromDate
       required: false
       secret: false
     - default: false
-      description: End date of logs to return in the following format 2015-11-16T14:49:18+0000. Default is time of request
+      description: End date of logs to return in the following format 2015-11-16T14:49:18+0000.
+        Default is time of request
       isArray: false
       name: toDate
       required: false
@@ -721,7 +755,8 @@ script:
       description: The file type of the attachment
       type: string
     - contextPath: Mimecast.AttachmentLog.Route
-      description: 'The route of the original email containing the attachment, either: inbound, outbound, internal, or external'
+      description: 'The route of the original email containing the attachment, either:
+        inbound, outbound, internal, or external'
       type: string
   - arguments:
     - default: false
@@ -731,13 +766,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: Start date of logs to return in the following format 2015-11-16T14:49:18+0000. Default is the start of the current day
+      description: Start date of logs to return in the following format 2015-11-16T14:49:18+0000.
+        Default is the start of the current day
       isArray: false
       name: fromDate
       required: false
       secret: false
     - default: false
-      description: End date of logs to return in the following format 2015-11-16T14:49:18+0000. Default is time of request
+      description: End date of logs to return in the following format 2015-11-16T14:49:18+0000.
+        Default is time of request
       isArray: false
       name: toDate
       required: false
@@ -818,7 +855,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The field to search,Defaults to all (meaning all of the preceding fields)
+      description: The field to search,Defaults to all (meaning all of the preceding
+        fields)
       isArray: false
       name: searchField
       predefined:
@@ -838,7 +876,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Filters logs by identifiers, can include any of newly_observed_domain, internal_user_name, repy_address_mismatch, and targeted_threat_dictionary. you can choose more then one identifier separated by comma.
+      description: Filters logs by identifiers, can include any of newly_observed_domain,
+        internal_user_name, repy_address_mismatch, and targeted_threat_dictionary.
+        you can choose more then one identifier separated by comma.
       isArray: true
       name: identifiers
       predefined:
@@ -849,20 +889,23 @@ script:
       required: false
       secret: false
     - default: false
-      description: Start date of logs to return in the following format 2015-11-16T14:49:18+0000. Default is the start of the current day
+      description: Start date of logs to return in the following format 2015-11-16T14:49:18+0000.
+        Default is the start of the current day
       isArray: false
       name: fromDate
       required: false
       secret: false
     - default: false
-      description: End date of logs to return in the following format 2015-11-16T14:49:18+0000. Default is time of request
+      description: End date of logs to return in the following format 2015-11-16T14:49:18+0000.
+        Default is time of request
       isArray: false
       name: toDate
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Filters logs by action, you can choose more then one action separated by comma.
+      description: Filters logs by action, you can choose more then one action separated
+        by comma.
       isArray: true
       name: actions
       predefined:
@@ -914,7 +957,9 @@ script:
       description: The subject of the email
       type: string
     - contextPath: Mimecast.Impersonation.Identifiers
-      description: 'The properties of the message that triggered the action: similar_internal_domain, newly_observed_domain, internal_user_name, reply_address_mismatch, and/or targeted_threat_dictionary'
+      description: 'The properties of the message that triggered the action: similar_internal_domain,
+        newly_observed_domain, internal_user_name, reply_address_mismatch, and/or
+        targeted_threat_dictionary'
       type: string
     - contextPath: Mimecast.Impersonation.Date
       description: The time at which the log was recorded
@@ -953,7 +998,8 @@ script:
       description: Parsed url
       type: string
   - deprecated: false
-    description: discover authentication types that are supported for your account and which base URL to use for the requesting user.
+    description: discover authentication types that are supported for your account
+      and which base URL to use for the requesting user.
     execution: false
     name: mimecast-discover
     outputs:
@@ -983,7 +1029,11 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Defines which copy of the message part to return, must be one of: "delievered" the copy that has been processed by the Mimecast MTA with policies such as URL rewriting applied, OR "received" - the copy of the message that Mimecast originally received. (Only relevant for part argument = message or all)'
+      description: 'Defines which copy of the message part to return, must be one
+        of: "delievered" the copy that has been processed by the Mimecast MTA with
+        policies such as URL rewriting applied, OR "received" - the copy of the message
+        that Mimecast originally received. (Only relevant for part argument = message
+        or all)'
       isArray: false
       name: context
       predefined:
@@ -994,7 +1044,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: PLAIN
-      description: The message type to return. (Only relevant for part argument = message or all)
+      description: The message type to return. (Only relevant for part argument =
+        message or all)
       isArray: false
       name: type
       predefined:
@@ -1007,7 +1058,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: all
-      description: Define what message part to return - download message, get metadata or both.
+      description: Define what message part to return - download message, get metadata
+        or both.
       isArray: false
       name: part
       predefined:
@@ -1101,7 +1153,8 @@ script:
       type: string
   - arguments:
     - default: false
-      description: The Mimecast ID of the message attachment to return. (Can be retrieved from mimecast-get-message)
+      description: The Mimecast ID of the message attachment to return. (Can be retrieved
+        from mimecast-get-message)
       isArray: false
       name: attachmentID
       required: true
@@ -1240,7 +1293,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Adds a user to a group. The email_address and domain_adddress arguments are optional, but one of them must be supplied.
+    description: Adds a user to a group. The email_address and domain_adddress arguments
+      are optional, but one of them must be supplied.
     execution: false
     name: mimecast-add-group-member
     outputs:
@@ -1270,7 +1324,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Removes a user from a group. The email_address and domain_adddress arguments are optional, but one of them must be supplied.
+    description: Removes a user from a group. The email_address and domain_adddress
+      arguments are optional, but one of them must be supplied.
     execution: false
     name: mimecast-remove-group-member
     outputs:
@@ -1365,7 +1420,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The message component by which to search. Can be "hash" or "messagId". Default is "hash".
+      description: The message component by which to search. Can be "hash" or "messagId".
+        Default is "hash".
       isArray: false
       name: search_by
       predefined:
@@ -1381,7 +1437,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Theend date of messages to remediate. Default value is the end of the current day. (Format: yyyy-mm-ddThh:mm:ss+0000)'
+      description: 'Theend date of messages to remediate. Default value is the end
+        of the current day. (Format: yyyy-mm-ddThh:mm:ss+0000)'
       isArray: false
       name: end_date
       required: false
@@ -1545,7 +1602,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The blocked receiver type by which to block receivers in the policy. This argument must match the toValue argument. For example, if you specify email_domain, the fromType must be an email domain.
+      description: The blocked receiver type by which to block receivers in the policy.
+        This argument must match the toValue argument. For example, if you specify
+        email_domain, the fromType must be an email domain.
       isArray: false
       name: toType
       predefined:
@@ -1568,20 +1627,23 @@ script:
       required: false
       secret: false
     - default: false
-      description: The value of the fromType argument. For example, if you specify email_domain for fromType, the fromValue must be an email domain.
+      description: The value of the fromType argument. For example, if you specify
+        email_domain for fromType, the fromValue must be an email domain.
       isArray: false
       name: fromValue
       required: false
       secret: false
     - default: false
-      description: The value of the toType argument. For example, if you specify email_domain for toType, the toValue must be an email domain.
+      description: The value of the toType argument. For example, if you specify email_domain
+        for toType, the toValue must be an email domain.
       isArray: false
       name: toValue
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The part from where addresses are pulled. Can be "envelope_from", "header_from", or "both".
+      description: The part from where addresses are pulled. Can be "envelope_from",
+        "header_from", or "both".
       isArray: false
       name: fromPart
       predefined:
@@ -1643,3 +1705,6 @@ script:
 tests:
 - Mimecast test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

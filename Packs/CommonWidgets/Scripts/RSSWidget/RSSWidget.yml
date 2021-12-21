@@ -5,7 +5,7 @@ name: RSSWidget
 script: ''
 type: python
 tags:
-  - widget
+- widget
 enabled: true
 comment: Script Widget - RSS Feed.
 args:
@@ -36,4 +36,7 @@ dockerimage: demisto/feed-parser:1.0.0.24172
 runas: DBotWeakRole
 fromversion: 5.5.0
 tests:
-  - No tests (auto formatted)
+- No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2

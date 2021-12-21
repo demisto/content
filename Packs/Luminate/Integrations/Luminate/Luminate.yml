@@ -130,3 +130,6 @@ script:
 fromversion: 5.0.0
 tests:
 - Luminate-TestPlaybook
+marketplaces:
+- xsoar
+- marketplacev2

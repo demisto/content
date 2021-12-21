@@ -15,7 +15,8 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'false'
-  description: If true, the indicators that were updated to be false positive will be added to allow list in Demisto. No new indicators will be created.
+  description: If true, the indicators that were updated to be false positive will
+    be added to allow list in Demisto. No new indicators will be created.
   isArray: false
   name: delete_false_positive
   predefined:
@@ -37,7 +38,8 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'false'
-  description: Removes the query string part from indicators, when the rules can be applied.
+  description: Removes the query string part from indicators, when the rules can be
+    applied.
   isArray: false
   name: remove_query
   predefined:
@@ -81,3 +83,6 @@ dependson:
   should:
   - PhishLabs IOC|||phishlabs-global-feed
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

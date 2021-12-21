@@ -481,3 +481,6 @@ script:
 fromversion: 6.0.0
 tests:
 - SailPointIdentityIQ-Test
+marketplaces:
+- xsoar
+- marketplacev2

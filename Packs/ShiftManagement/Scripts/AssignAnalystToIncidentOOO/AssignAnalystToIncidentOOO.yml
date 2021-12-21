@@ -1,6 +1,8 @@
 args:
 - default: false
-  description: The list of roles from which to assign analysts to the shift handover incident. Can be an array or a comma-separated list. Leave empty to assign all analysts.
+  description: The list of roles from which to assign analysts to the shift handover
+    incident. Can be an array or a comma-separated list. Leave empty to assign all
+    analysts.
   isArray: true
   name: roles
   required: false
@@ -26,7 +28,8 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'false'
-  description: Whether to assign all on call analysts to the shift handover incident. Set to "true" to assign all on call analysts.
+  description: Whether to assign all on call analysts to the shift handover incident.
+    Set to "true" to assign all on call analysts.
   isArray: false
   name: assignAll
   predefined:
@@ -59,3 +62,6 @@ runonce: false
 tests:
 - No tests (auto formatted)
 fromversion: 5.5.0
+marketplaces:
+- xsoar
+- marketplacev2

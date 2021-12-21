@@ -189,3 +189,6 @@ script:
   type: python
 tests:
 - Test-AlibabaCloud
+marketplaces:
+- xsoar
+- marketplacev2

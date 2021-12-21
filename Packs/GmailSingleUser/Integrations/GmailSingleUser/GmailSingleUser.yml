@@ -37,7 +37,8 @@ configuration:
   type: 0
 - defaultvalue: '50'
   display: Maximum number of emails to pull per fetch
-  additionalinfo: A maximum of 200 emails per fetch (even if a higher number is configured). Default is 50.
+  additionalinfo: A maximum of 200 emails per fetch (even if a higher number is configured).
+    Default is 50.
   name: fetch_limit
   required: false
   type: 0
@@ -115,8 +116,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of CID images to embed attachments in to the
-        email.
+      description: A comma-separated list of CID images to embed attachments in to
+        the email.
       isArray: true
       name: attachCIDs
       required: false
@@ -222,3 +223,6 @@ tests:
 - Gmail Single User - Test
 defaultclassifier: Gmail Single User
 defaultmapperin: Gmail Single User-mapper
+marketplaces:
+- xsoar
+- marketplacev2

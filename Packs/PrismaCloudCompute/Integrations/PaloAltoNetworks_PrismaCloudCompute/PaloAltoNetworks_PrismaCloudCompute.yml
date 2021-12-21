@@ -39,7 +39,8 @@ configuration:
   name: incidentType
   required: false
   type: 13
-description: Use the Prisma Cloud Compute integration to fetch incidents from your Prisma Cloud Compute environment.
+description: Use the Prisma Cloud Compute integration to fetch incidents from your
+  Prisma Cloud Compute environment.
 display: Palo Alto Networks - Prisma Cloud Compute
 name: PaloAltoNetworks_PrismaCloudCompute
 script:
@@ -54,3 +55,6 @@ script:
 tests:
 - No test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

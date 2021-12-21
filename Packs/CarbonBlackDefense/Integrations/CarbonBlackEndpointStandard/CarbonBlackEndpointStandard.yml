@@ -97,8 +97,8 @@ configuration:
   - '10'
   required: false
   type: 15
-- additionalinfo: Query in Lucene syntax and/or value searches.
-    If defined, the other fetch incidents parameters should be left blank.
+- additionalinfo: Query in Lucene syntax and/or value searches. If defined, the other
+    fetch incidents parameters should be left blank.
   display: Query
   hidden: false
   name: query
@@ -844,7 +844,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Aggregate set of MD5 and SHA-256 hashes associated with the process (including childproc_hash, crossproc_hash, filemod_hash, modload_hash, process_hash).
+      description: Aggregate set of MD5 and SHA-256 hashes associated with the process
+        (including childproc_hash, crossproc_hash, filemod_hash, modload_hash, process_hash).
       isArray: false
       name: hash
       required: false
@@ -1083,7 +1084,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Aggregate set of MD5 and SHA-256 hashes associated with the process (including childproc_hash, crossproc_hash, filemod_hash, modload_hash, process_hash).
+      description: Aggregate set of MD5 and SHA-256 hashes associated with the process
+        (including childproc_hash, crossproc_hash, filemod_hash, modload_hash, process_hash).
       isArray: false
       name: hash
       required: false
@@ -2260,3 +2262,6 @@ script:
 tests:
 - carbonBlackEndpointStandardTestPlaybook
 fromversion: 5.5.0
+marketplaces:
+- xsoar
+- marketplacev2

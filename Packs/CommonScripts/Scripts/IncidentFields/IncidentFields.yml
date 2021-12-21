@@ -14,14 +14,16 @@ args:
   predefined:
   - "true"
   - "false"
-  description: Whether to only return non-system fields. If "true", will only output non-system fields. The default value is "false".
+  description: Whether to only return non-system fields. If "true", will only output
+    non-system fields. The default value is "false".
   defaultValue: "false"
 - name: short_names
   auto: PREDEFINED
   predefined:
   - "true"
   - "false"
-  description: Whether to shorten the incident field names. If "true", will cause output to use shortened field names. The default value is "true".
+  description: Whether to shorten the incident field names. If "true", will cause
+    output to use shortened field names. The default value is "true".
   defaultValue: "true"
 scripttarget: 0
 subtype: python3
@@ -34,3 +36,6 @@ runas: DBotWeakRole
 tests:
 - No test - unit test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

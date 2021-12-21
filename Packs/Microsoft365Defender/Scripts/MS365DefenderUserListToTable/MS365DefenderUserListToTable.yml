@@ -19,3 +19,6 @@ fromversion: 5.5.0
 tests:
 - Microsoft_365_Defender-Test
 comment: comment
+marketplaces:
+- xsoar
+- marketplacev2

@@ -130,3 +130,6 @@ tests:
 - No tests
 defaultmapperin: IAM Sync User - Workday
 fromversion: 6.0.0
+marketplaces:
+- xsoar
+- marketplacev2

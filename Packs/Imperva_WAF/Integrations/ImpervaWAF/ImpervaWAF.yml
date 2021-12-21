@@ -71,7 +71,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Removes all the entries from the IP group indicated by the group name.
+    description: Removes all the entries from the IP group indicated by the group
+      name.
     execution: false
     name: imperva-waf-ip-group-remove-entries
   - deprecated: false
@@ -114,7 +115,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Returns a list of the server groups that applied the web security policies.
+    description: Returns a list of the server groups that applied the web security
+      policies.
     execution: false
     name: imperva-waf-server-group-list-policies
     outputs:
@@ -134,8 +136,8 @@ script:
       description: Indicates whether there is an Fi policy.
       type: Boolean
   - deprecated: false
-    description: Returns a list of names of all web service custom policies in
-      the system.
+    description: Returns a list of names of all web service custom policies in the
+      system.
     execution: false
     name: imperva-waf-web-service-custom-policy-list
     outputs:
@@ -383,7 +385,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The alert severity. Options: high, medium, low, informative, noAlert. Default: medium. '
+      description: 'The alert severity. Options: high, medium, low, informative, noAlert.
+        Default: medium. '
       isArray: false
       name: severity
       predefined:
@@ -484,7 +487,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Match operation for source IP addresses. Options: atLeastOne, excludeAll'
+      description: 'Match operation for source IP addresses. Options: atLeastOne,
+        excludeAll'
       isArray: false
       name: ip-addresses-criteria-operation
       predefined:
@@ -658,15 +662,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: Comma-separated list of country names in which to search. Mandatory when
-        geo-location-criteria-operation is set.
+      description: Comma-separated list of country names in which to search. Mandatory
+        when geo-location-criteria-operation is set.
       isArray: false
       name: country-names
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The match operation for source IP addresses. Options: atLeastOne, excludeAll.'
+      description: 'The match operation for source IP addresses. Options: atLeastOne,
+        excludeAll.'
       isArray: false
       name: ip-addresses-criteria-operation
       predefined:
@@ -764,3 +769,6 @@ script:
 tests:
 - Imperva WAF - Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

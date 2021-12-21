@@ -66,3 +66,6 @@ tests:
 fromversion: 5.0.0
 runas: DBotWeakRole
 runonce: false
+marketplaces:
+- xsoar
+- marketplacev2

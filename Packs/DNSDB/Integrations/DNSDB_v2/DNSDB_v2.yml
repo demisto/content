@@ -433,3 +433,6 @@ script:
   dockerimage: demisto/python3:3.9.8.24399
   isfetch: false
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

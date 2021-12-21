@@ -29,4 +29,7 @@ runonce: false
 dockerimage: demisto/bs4:1.0.0.24033
 fromversion: 5.0.0
 tests:
-  - TestExtractHTMLTables
+- TestExtractHTMLTables
+marketplaces:
+- xsoar
+- marketplacev2

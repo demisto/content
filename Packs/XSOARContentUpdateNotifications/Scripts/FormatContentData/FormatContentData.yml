@@ -21,3 +21,6 @@ fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
 comment: This script formats the value given input from a JSON list into table.
+marketplaces:
+- xsoar
+- marketplacev2

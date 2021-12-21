@@ -19,7 +19,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: An attack simulation platform that provides validations for security controls, responses, and remediation exercises.
+description: An attack simulation platform that provides validations for security
+  controls, responses, and remediation exercises.
 display: AttackIQ Platform
 name: AttackIQFireDrill
 script:
@@ -112,7 +113,8 @@ script:
       description: The total number of assessments.
       type: Number
     - contextPath: AttackIQ.Assessment.RemainingPages
-      description: The number of remaining pages to return. For example, if the total number of pages is 6, and the last fetch was page 5, the value is 1.
+      description: The number of remaining pages to return. For example, if the total
+        number of pages is 6, and the last fetch was page 5, the value is 1.
       type: Number
   - arguments:
     - default: false
@@ -213,7 +215,8 @@ script:
       required: true
       secret: false
     deprecated: true
-    description: Deprecated, without available replacement. Activates the assessment, which is required for execution.
+    description: Deprecated, without available replacement. Activates the assessment,
+      which is required for execution.
     execution: false
     name: attackiq-activate-assessment
   - arguments:
@@ -688,3 +691,6 @@ script:
 tests:
 - AttackIQ - Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

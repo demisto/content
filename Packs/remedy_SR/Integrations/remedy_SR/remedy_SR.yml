@@ -236,3 +236,6 @@ tests:
 - No Test
 beta: true
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

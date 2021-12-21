@@ -185,3 +185,6 @@ script:
 fromversion: 5.0.0
 tests:
 - Identity & Access test playbook
+marketplaces:
+- xsoar
+- marketplacev2

@@ -30,13 +30,15 @@ outputs:
   description: 'Container is the container name in which the alert occurred'
   type: String
 - contextPath: PrismaCloudCompute.AuditAlert.forensicLink
-  description: 'ForensicLink is the link for downloading the forensic data for the related incident'
+  description: 'ForensicLink is the link for downloading the forensic data for the
+    related incident'
   type: String
 - contextPath: PrismaCloudCompute.AuditAlert.fqdn
   description: 'FQDN is the FQDN of the host in which the alert occurred'
   type: String
 - contextPath: PrismaCloudCompute.AuditAlert.function
-  description: 'Function is the name of the serverless function which triggered the alert'
+  description: 'Function is the name of the serverless function which triggered the
+    alert'
   type: String
 - contextPath: PrismaCloudCompute.AuditAlert.host
   description: 'Host is the host name in which the alert occurred'
@@ -45,7 +47,8 @@ outputs:
   description: 'Image is the image name in which the alert occurred'
   type: String
 - contextPath: PrismaCloudCompute.AuditAlert.interactive
-  description: 'Interactive indicates whether the alert belongs to an interactive session'
+  description: 'Interactive indicates whether the alert belongs to an interactive
+    session'
   type: Boolean
 - contextPath: PrismaCloudCompute.AuditAlert.kubernetesResource
   description: 'KubernetesResource is the resource name in which the alert occurred'
@@ -87,3 +90,6 @@ timeout: '0'
 type: python
 dockerimage: demisto/python3:3.9.7.24076
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

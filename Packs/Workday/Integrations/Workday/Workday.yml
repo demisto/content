@@ -276,3 +276,6 @@ script:
 fromversion: 5.0.0
 tests:
 - Workday - Test
+marketplaces:
+- xsoar
+- marketplacev2

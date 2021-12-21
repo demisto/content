@@ -29,7 +29,8 @@ configuration:
   required: false
   type: 13
 - defaultvalue: 3 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
+    months, 1 year)
   name: fetch_time
   required: false
   type: 0
@@ -41,7 +42,8 @@ configuration:
   name: fetch_behviors
   required: false
   type: 8
-description: CounterTack empowers endpoint security teams to assure endpoint protection for Identifying Cyber Threats. Integrating a predictive endpoint protection platform
+description: CounterTack empowers endpoint security teams to assure endpoint protection
+  for Identifying Cyber Threats. Integrating a predictive endpoint protection platform
 display: CounterTack
 name: CounterTack
 script:
@@ -88,7 +90,8 @@ script:
       description: IP address used to connect to the analysis cluster
       type: string
     - contextPath: CounterTack.Endpoint.ClusterHosts
-      description: The list of hosts that the endpoint tries to connect through (in order).
+      description: The list of hosts that the endpoint tries to connect through (in
+        order).
       type: string
     - contextPath: CounterTack.Endpoint.Vendor
       description: OS vendor
@@ -189,7 +192,8 @@ script:
       description: The impact of the highest scoring event (0-100)
       type: number
     - contextPath: CounterTack.Behavior.EndpointId
-      description: The ID of the endpoint, based on the UUID of the last installed endpoint sensor
+      description: The ID of the endpoint, based on the UUID of the last installed
+        endpoint sensor
       type: string
     - contextPath: CounterTack.Behavior.Tenant
       description: The tenant of the behavior.
@@ -223,7 +227,8 @@ script:
       type: date
   - arguments:
     - default: false
-      description: The ID of the endpoint. To get the "endpoint_id", run the `get-endpoints` command.
+      description: The ID of the endpoint. To get the "endpoint_id", run the `get-endpoints`
+        command.
       isArray: false
       name: endpoint_id
       required: true
@@ -267,7 +272,8 @@ script:
       description: The IP address used to connect to the analysis cluster.
       type: string
     - contextPath: CounterTack.Endpoint.ClusterHosts
-      description: The list of hosts that the endpoint tries to connect through (in order).
+      description: The list of hosts that the endpoint tries to connect through (in
+        order).
       type: string
     - contextPath: CounterTack.Endpoint.Vendor
       description: The OS vendor.
@@ -427,13 +433,15 @@ script:
       type: string
   - arguments:
     - default: false
-      description: The ID of the endpoint. To get the "*endpoint_id*", run the `get-endpoints` command.
+      description: The ID of the endpoint. To get the "*endpoint_id*", run the `get-endpoints`
+        command.
       isArray: false
       name: endpoint_id
       required: true
       secret: false
     - default: false
-      description: A CSV list of tags you want to add to the endpoint, for example, "test1,test2".
+      description: A CSV list of tags you want to add to the endpoint, for example,
+        "test1,test2".
       isArray: true
       name: tags
       required: true
@@ -451,7 +459,8 @@ script:
       type: string
   - arguments:
     - default: false
-      description: The tags to be deleted from specified endpoint. To delete more then one, separate the tags with a comma. (e.g test1,test2)
+      description: The tags to be deleted from specified endpoint. To delete more
+        then one, separate the tags with a comma. (e.g test1,test2)
       isArray: true
       name: tags
       required: true
@@ -505,7 +514,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Tags to delete from a behavior. To delete more then one, separate the tags with a comma. (e.g test1,test2)
+      description: Tags to delete from a behavior. To delete more then one, separate
+        the tags with a comma. (e.g test1,test2)
       isArray: true
       name: tags
       required: true
@@ -649,7 +659,8 @@ script:
       description: The time that the file was extracted.
       type: date
     - contextPath: CounterTack.File.Path
-      description: The full file system path of the extracted file, including the filename, as seen on the endpoint.
+      description: The full file system path of the extracted file, including the
+        filename, as seen on the endpoint.
       type: string
     - contextPath: CounterTack.File.Sha256
       description: The SHA-256 digest of the file contents.
@@ -691,7 +702,8 @@ script:
       description: The MD5 digest of the file contents.
       type: string
     - contextPath: File.Path
-      description: The full file system path of the extracted file, including the filename, as seen on the endpoint.
+      description: The full file system path of the extracted file, including the
+        filename, as seen on the endpoint.
       type: string
     - contextPath: File.SHA256
       description: The SHA-256 digest of the file contents.
@@ -704,7 +716,8 @@ script:
       type: number
   - arguments:
     - default: false
-      description: The ID of the endpoint. To get the endpoint_id, run the `get-endpoints` command.
+      description: The ID of the endpoint. To get the endpoint_id, run the `get-endpoints`
+        command.
       isArray: false
       name: endpoint_id
       required: true
@@ -733,7 +746,8 @@ script:
       description: The name of the user requesting the file.
       type: string
     - contextPath: CounterTack.File.Path
-      description: The full file system path of the extracted file, including the filename, as seen on the endpoint.
+      description: The full file system path of the extracted file, including the
+        filename, as seen on the endpoint.
       type: string
     - contextPath: CounterTack.File.Sha256
       description: The SHA-256 digest of the file contents.
@@ -763,7 +777,8 @@ script:
       description: The MD5 digest of the file contents.
       type: string
     - contextPath: File.Path
-      description: The full file system path of the extracted file, including the filename, as seen on the endpoint.
+      description: The full file system path of the extracted file, including the
+        filename, as seen on the endpoint.
       type: string
     - contextPath: File.SHA256
       description: The SHA-256 digest of the file contents.
@@ -776,7 +791,8 @@ script:
       type: number
   - arguments:
     - default: false
-      description: The ID of the requested file. To get the "file_id"m run the `get-all-files` command.
+      description: The ID of the requested file. To get the "file_id"m run the `get-all-files`
+        command.
       isArray: false
       name: file_id
       required: true
@@ -796,7 +812,8 @@ script:
       description: The time that the file was extracted.
       type: date
     - contextPath: CounterTack.File.Path
-      description: Full file system path of the extracted file, including the filename, as seen on the endpoint.
+      description: Full file system path of the extracted file, including the filename,
+        as seen on the endpoint.
       type: string
     - contextPath: CounterTack.File.Sha256
       description: The SHA-256 digest of the file contents.
@@ -838,7 +855,8 @@ script:
       description: The MD5 digest of the file contents.
       type: string
     - contextPath: File.Path
-      description: The full file system path of the extracted file, including the filename, as seen on the endpoint.
+      description: The full file system path of the extracted file, including the
+        filename, as seen on the endpoint.
       type: string
     - contextPath: File.SHA256
       description: The SHA-256 digest of the file contents.
@@ -851,13 +869,15 @@ script:
       type: number
   - arguments:
     - default: false
-      description: The ID of the extracted file. To get the "file_id", run the `get-all-files` command.
+      description: The ID of the extracted file. To get the "file_id", run the `get-all-files`
+        command.
       isArray: false
       name: file_id
       required: true
       secret: false
     deprecated: false
-    description: Downloads an extracted file in ZIP format. The password to unlock the ZIP file is `sentinel`.
+    description: Downloads an extracted file in ZIP format. The password to unlock
+      the ZIP file is `sentinel`.
     execution: false
     name: countertack-download-file
     outputs:
@@ -928,7 +948,8 @@ script:
       description: The start time of the parent process for the source thread.
       type: date
     - contextPath: CounterTack.Event.TargetType
-      description: The system object type that was target of the event (PROCESS, THREAD, REGISTRY, DRIVER, TCPIP,FILE, MUTEX, MEMORY_REGION).
+      description: The system object type that was target of the event (PROCESS, THREAD,
+        REGISTRY, DRIVER, TCPIP,FILE, MUTEX, MEMORY_REGION).
       type: string
     - contextPath: CounterTack.Event.ConditionNames
       description: The names of the condition triggered by the event.
@@ -937,7 +958,8 @@ script:
       description: Is the event an origin for a trace.
       type: boolean
     - contextPath: CounterTack.Event.endpoint_id
-      description: The endpoint ID, based on the UUID of the last installed endpoint sensor.
+      description: The endpoint ID, based on the UUID of the last installed endpoint
+        sensor.
       type: string
     - contextPath: CounterTack.Event.TargetFilePath
       description: The path of the target file.
@@ -1049,13 +1071,15 @@ script:
       type: date
   - arguments:
     - default: false
-      description: The CQL expression to be used for the search (e.g hashes.type = md5)
+      description: The CQL expression to be used for the search (e.g hashes.type =
+        md5)
       isArray: false
       name: expression
       required: true
       secret: false
     deprecated: false
-    description: Searches for hashes using CQL expressions (Contextual Query Language) to represent queries.
+    description: Searches for hashes using CQL expressions (Contextual Query Language)
+      to represent queries.
     execution: false
     name: countertack-search-hashes
     outputs:
@@ -1091,7 +1115,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Request for endpoints search using CQL expression (Contextual Query Language) to represent queries.
+    description: Request for endpoints search using CQL expression (Contextual Query
+      Language) to represent queries.
     execution: false
     name: countertack-search-endpoints
     outputs:
@@ -1147,7 +1172,8 @@ script:
       description: List of hosts the endpoint is currently connected through
       type: String
     - contextPath: CounterTack.Endpoint.ClusterHosts
-      description: The list of hosts that the endpoint tries to connect through (in order).
+      description: The list of hosts that the endpoint tries to connect through (in
+        order).
       type: String
     - contextPath: CounterTack.Endpoint.Status
       description: Collection status of the endpoint (ON, PAUSE, OFF, INIT)
@@ -1220,7 +1246,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Request for behaviors search using CQL expression (Contextual Query Language) to represent queries.
+    description: Request for behaviors search using CQL expression (Contextual Query
+      Language) to represent queries.
     execution: false
     name: countertack-search-behaviors
     outputs:
@@ -1240,7 +1267,8 @@ script:
       description: The name of the condition that triggered the behavior.
       type: String
     - contextPath: CounterTack.Behavior.EndpointId
-      description: The ID of the endpoint, based on the UUID of the last installed endpoint sensor
+      description: The ID of the endpoint, based on the UUID of the last installed
+        endpoint sensor
       type: String
     - contextPath: CounterTack.Behavior.ReportedOn
       description: The time that the behavior was first seen.
@@ -1272,3 +1300,6 @@ script:
 tests:
 - no tests
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

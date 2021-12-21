@@ -152,3 +152,6 @@ script:
   subtype: python3
   type: python
 fromversion: 6.0.0
+marketplaces:
+- xsoar
+- marketplacev2

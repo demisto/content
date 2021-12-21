@@ -1,6 +1,7 @@
 args:
 - default: false
-  description: A comma-separated list of active incident IDs to assign to the next shift, for example, 1,2,3,4.
+  description: A comma-separated list of active incident IDs to assign to the next
+    shift, for example, 1,2,3,4.
   isArray: false
   name: incidentIds
   required: true
@@ -37,3 +38,6 @@ runonce: false
 tests:
 - test_AssignToNextShiftOOO
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

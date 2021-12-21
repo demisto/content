@@ -235,7 +235,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: A comma-separated list of SHA256 file hashes for which to return the block list status.
+      description: A comma-separated list of SHA256 file hashes for which to return
+        the block list status.
       isArray: true
       name: hash_ids
       required: true
@@ -246,7 +247,8 @@ script:
     name: traps-hashes-blacklist-status
     outputs:
     - contextPath: Traps.File.BlacklistStatus
-      description: The block list status of the file hash. Can be "blacklisted" or "none".
+      description: The block list status of the file hash. Can be "blacklisted" or
+        "none".
       type: String
     - contextPath: Traps.File.SHA256
       description: The SHA256 hash of the file.
@@ -295,7 +297,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The ID of the operation for which to get the result of the quarantine operation.
+      description: The ID of the operation for which to get the result of the quarantine
+        operation.
       isArray: false
       name: operation_id
       required: true
@@ -385,3 +388,6 @@ script:
 tests:
 - Traps test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

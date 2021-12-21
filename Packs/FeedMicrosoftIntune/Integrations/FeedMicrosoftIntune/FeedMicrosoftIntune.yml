@@ -38,7 +38,8 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   additionalinfo: Reliability of the source providing the intelligence data
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
+    fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -110,3 +111,6 @@ script:
   feed: true
   runonce: false
   subtype: python3
+marketplaces:
+- xsoar
+- marketplacev2

@@ -24,7 +24,8 @@ configuration:
   type: 8
 - name: incidentFetchInterval
   display: Incidents Fetch Interval
-  additionalinfo: SecurityScorecard is updated on a daily basis therefore there's no need to modify this value.
+  additionalinfo: SecurityScorecard is updated on a daily basis therefore there's
+    no need to modify this value.
   defaultvalue: "1440"
   required: false
   type: 19
@@ -39,7 +40,9 @@ configuration:
   defaultvalue: 2 days
   required: false
   type: 0
-  additionalinfo: First fetch query (<number> <time unit>, e.g., 12 hours, 7 days. SecurityScorecard provides a maximum of 7 days back. To ensure no alerts are missed, it's recommended to use a value less than 2 days.
+  additionalinfo: First fetch query (<number> <time unit>, e.g., 12 hours, 7 days.
+    SecurityScorecard provides a maximum of 7 days back. To ensure no alerts are missed,
+    it's recommended to use a value less than 2 days.
 - name: incidentType
   display: Incident type
   required: false
@@ -90,12 +93,13 @@ script:
     description: Lists all companies in Portfolio.
     arguments:
     - name: portfolio_id
-      description: Portfolio ID. The Portfolio ID can be retrieved using the
-        'securityscorecard-portfolios-list' command.
+      description: Portfolio ID. The Portfolio ID can be retrieved using the 'securityscorecard-portfolios-list'
+        command.
       required: true
       default: false
     - name: grade
-      description: Grade filter. To filter multiple grades, comma-separate them, e.g. A,B.
+      description: Grade filter. To filter multiple grades, comma-separate them, e.g.
+        A,B.
       required: false
       default: false
       auto: PREDEFINED
@@ -107,7 +111,8 @@ script:
       - "E"
       - "F"
     - name: industry
-      description: Industry filter. To filter multiple industries, comma-separate them, e.g. education,financial_services
+      description: Industry filter. To filter multiple industries, comma-separate
+        them, e.g. education,financial_services
       required: false
       default: false
       auto: PREDEFINED
@@ -300,8 +305,7 @@ script:
       description: Initial date for historical data. Value should be in format 'YYYY-MM-DD'
       default: false
     - name: timing
-      description: Timing granularity.
-        or "monthly"
+      description: Timing granularity. or "monthly"
       required: false
       auto: PREDEFINED
       predefined:
@@ -333,13 +337,13 @@ script:
       - "drops"
     - name: score_types
       isArray: true
-      description: Comma-separated list of risk factors to monitor. Possible values are 'overall',
-        'any_factor_score', 'network_security', 'dns_health', 'patching_cadence',
+      description: Comma-separated list of risk factors to monitor. Possible values
+        are 'overall', 'any_factor_score', 'network_security', 'dns_health', 'patching_cadence',
         'endpoint_security', 'ip_reputation', 'application_security', 'cubit_score',
         'hacker_chatter', 'leaked_information', 'social_engineering'.
       required: true
     - name: target
-      description: What do you want to monitor with this alert. This argument is required 
+      description: What do you want to monitor with this alert. This argument is required
         if the `portfolios` argument is not specified.
       auto: PREDEFINED
       predefined:
@@ -348,9 +352,9 @@ script:
       required: false
     - name: portfolios
       isArray: true
-      description: A comma-separated list of Portfolios.
-        to use as a target for the alert. This argument is require if the `target`
-        argument is not specified. You can get a list of portfolios by running `!securityscorecard-portfolios-list`
+      description: A comma-separated list of Portfolios. to use as a target for the
+        alert. This argument is require if the `target` argument is not specified.
+        You can get a list of portfolios by running `!securityscorecard-portfolios-list`
       required: false
     outputs:
     - contextPath: SecurityScorecard.Alerts.GradeChangeAlert.id
@@ -371,8 +375,8 @@ script:
       required: true
     - name: score_types
       isArray: true
-      description: Comma separated list of risk factors to monitor. Possible values are 'overall',
-        'any_factor_score', 'network_security', 'dns_health', 'patching_cadence',
+      description: Comma separated list of risk factors to monitor. Possible values
+        are 'overall', 'any_factor_score', 'network_security', 'dns_health', 'patching_cadence',
         'endpoint_security', 'ip_reputation', 'application_security', 'cubit_score',
         'hacker_chatter', 'leaked_information', 'social_engineering'. For multiple
         factors, provide comma-separated list, i.e. leaked_information,social_engineering.
@@ -387,9 +391,9 @@ script:
       - "any_followed_company"
     - name: portfolios
       isArray: true
-      description: A comma-separated list of Portfolios.
-        to use as a target for the alert. This argument is require if the `target`
-        argument is not specified. You can get a list of portfolios by running `!securityscorecard-portfolios-list`
+      description: A comma-separated list of Portfolios. to use as a target for the
+        alert. This argument is require if the `target` argument is not specified.
+        You can get a list of portfolios by running `!securityscorecard-portfolios-list`
       required: false
     outputs:
     - contextPath: SecurityScorecard.Alerts.ScoreThresholdAlert.id
@@ -459,3 +463,6 @@ script:
     - contextPath: SecurityScorecard.Service.categories
       description: Vendor service provider, e.g. mail_provider, nameserver_provider
       type: array
+marketplaces:
+- xsoar
+- marketplacev2

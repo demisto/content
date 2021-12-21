@@ -31,8 +31,7 @@ args:
   - OPTIONS
   description: HTTP method.
 - name: headers
-  description: Custom HTTP header. Comma separated list
-    of "key=value". e.g. User-Agent=curl/7.54.0,Accept=*/*
+  description: Custom HTTP header. Comma separated list of "key=value". e.g. User-Agent=curl/7.54.0,Accept=*/*
 - name: disable_compression
   defaultValue: "true"
   auto: PREDEFINED
@@ -41,8 +40,8 @@ args:
   - "false"
   description: Disable compression.
 - name: results_map
-  description: Additional information to add to the result. Comma separated list
-    of "key=value". e.g. Content-Type=text/plain,Accept=*/*.
+  description: Additional information to add to the result. Comma separated list of
+    "key=value". e.g. Content-Type=text/plain,Accept=*/*.
 - name: body
   description: HTTP request body.
 - name: proxy
@@ -91,3 +90,6 @@ dockerimage: demisto/rakyll-hey:1.0.0.21598
 runas: DBotWeakRole
 tests:
 - No test
+marketplaces:
+- xsoar
+- marketplacev2

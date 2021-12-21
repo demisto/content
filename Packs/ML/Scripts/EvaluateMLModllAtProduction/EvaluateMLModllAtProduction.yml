@@ -97,3 +97,6 @@ timeout: 120µs
 tests:
 - EvaluateMLModllAtProduction-Test
 comment: Evaluates an ML model in production.
+marketplaces:
+- xsoar
+- marketplacev2

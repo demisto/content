@@ -360,7 +360,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Resolves and updates a detection using the provided arguments. At least one optional argument must be passed, otherwise no change will take place.
+    description: Resolves and updates a detection using the provided arguments. At
+      least one optional argument must be passed, otherwise no change will take place.
     execution: false
     name: cs-falcon-resolve-detection
   - arguments:
@@ -1521,7 +1522,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The date on which the indicator will become inactive (ISO 8601 format, i.e. YYYY-MM-DDThh:mm:ssZ).
+      description: The date on which the indicator will become inactive (ISO 8601
+        format, i.e. YYYY-MM-DDThh:mm:ssZ).
       isArray: false
       name: expiration
       required: false
@@ -1697,12 +1699,14 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Action to take when a host observes the custom IOC. Possible
-        values are: no_action - Save the indicator for future use, but take no action. No severity required.
-        allow - Applies to hashes only. Allow the indicator and do not detect it. Severity does not apply and should not be provided.
-        prevent_no_ui - Applies to hashes only. Block and detect the indicator, but hide it from Activity > Detections. Has a default severity value.
-        prevent - Applies to hashes only. Block the indicator and show it as a detection at the selected severity.
-        detect - Enable detections for the indicator at the selected severity.'
+      description: 'Action to take when a host observes the custom IOC. Possible values
+        are: no_action - Save the indicator for future use, but take no action. No
+        severity required. allow - Applies to hashes only. Allow the indicator and
+        do not detect it. Severity does not apply and should not be provided. prevent_no_ui
+        - Applies to hashes only. Block and detect the indicator, but hide it from
+        Activity > Detections. Has a default severity value. prevent - Applies to
+        hashes only. Block the indicator and show it as a detection at the selected
+        severity. detect - Enable detections for the indicator at the selected severity.'
       isArray: false
       name: action
       predefined:
@@ -1715,8 +1719,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The platforms that the indicator applies to. You can enter multiple platform names, separated by commas.
-      Possible values are: mac, windows and linux.' 
+      description: 'The platforms that the indicator applies to. You can enter multiple
+        platform names, separated by commas. Possible values are: mac, windows and
+        linux.'
       isArray: false
       name: platforms
       predefined:
@@ -1727,9 +1732,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The severity level to apply to this indicator. 
-      Required for the prevent and detect actions. Optional for no_action.
-      Possible values are: informational, low, medium, high, and critical.' 
+      description: 'The severity level to apply to this indicator. Required for the
+        prevent and detect actions. Optional for no_action. Possible values are: informational,
+        low, medium, high, and critical.'
       isArray: false
       name: severity
       predefined:
@@ -1741,7 +1746,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The date on which the indicator will become inactive (ISO 8601 format, i.e. YYYY-MM-DDThh:mm:ssZ).
+      description: The date on which the indicator will become inactive (ISO 8601
+        format, i.e. YYYY-MM-DDThh:mm:ssZ).
       isArray: false
       name: expiration
       required: false
@@ -1761,8 +1767,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether the indicator is applied globally. 
-      Either applied_globally or host_groups must be provided.'
+      description: 'Whether the indicator is applied globally. Either applied_globally
+        or host_groups must be provided.'
       isArray: false
       name: applied_globally
       predefined:
@@ -1771,9 +1777,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'List of host group IDs that the indicator applies to. 
-      Can be retrieved by running the cs-falcon-list-host-groups command.
-      Either applied_globally or host_groups must be provided.'
+      description: 'List of host group IDs that the indicator applies to. Can be retrieved
+        by running the cs-falcon-list-host-groups command. Either applied_globally
+        or host_groups must be provided.'
       isArray: true
       name: host_groups
       required: false
@@ -1821,19 +1827,22 @@ script:
       type: string
   - arguments:
     - default: false
-      description: The ID of the IOC to update. Can be retrieved by running the cs-falcon-search-custom-iocs command.
+      description: The ID of the IOC to update. Can be retrieved by running the cs-falcon-search-custom-iocs
+        command.
       isArray: false
       name: ioc_id
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Action to take when a host observes the custom IOC. Possible
-        values are: no_action - Save the indicator for future use, but take no action. No severity required.
-        allow - Applies to hashes only. Allow the indicator and do not detect it. Severity does not apply and should not be provided.
-        prevent_no_ui - Applies to hashes only. Block and detect the indicator, but hide it from Activity > Detections. Has a default severity value.
-        prevent - Applies to hashes only. Block the indicator and show it as a detection at the selected severity.
-        detect - Enable detections for the indicator at the selected severity.'
+      description: 'Action to take when a host observes the custom IOC. Possible values
+        are: no_action - Save the indicator for future use, but take no action. No
+        severity required. allow - Applies to hashes only. Allow the indicator and
+        do not detect it. Severity does not apply and should not be provided. prevent_no_ui
+        - Applies to hashes only. Block and detect the indicator, but hide it from
+        Activity > Detections. Has a default severity value. prevent - Applies to
+        hashes only. Block the indicator and show it as a detection at the selected
+        severity. detect - Enable detections for the indicator at the selected severity.'
       isArray: false
       name: action
       predefined:
@@ -1846,8 +1855,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The platforms that the indicator applies to. You can enter multiple platform names, separated by commas.
-      Possible values are: mac, windows and linux.' 
+      description: 'The platforms that the indicator applies to. You can enter multiple
+        platform names, separated by commas. Possible values are: mac, windows and
+        linux.'
       isArray: false
       name: platforms
       predefined:
@@ -1858,9 +1868,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The severity level to apply to this indicator. 
-      Required for the prevent and detect actions. Optional for no_action.
-      Possible values are: informational, low, medium, high and critical.' 
+      description: 'The severity level to apply to this indicator. Required for the
+        prevent and detect actions. Optional for no_action. Possible values are: informational,
+        low, medium, high and critical.'
       isArray: false
       name: severity
       predefined:
@@ -1872,7 +1882,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The date on which the indicator will become inactive (ISO 8601 format, i.e. YYYY-MM-DDThh:mm:ssZ).
+      description: The date on which the indicator will become inactive (ISO 8601
+        format, i.e. YYYY-MM-DDThh:mm:ssZ).
       isArray: false
       name: expiration
       required: false
@@ -1933,7 +1944,8 @@ script:
       type: string
   - arguments:
     - default: false
-      description: The ID of the IOC to delete. Can be retrieved by running the cs-falcon-search-custom-iocs command.
+      description: The ID of the IOC to delete. Can be retrieved by running the cs-falcon-search-custom-iocs
+        command.
       isArray: false
       name: ioc_id
       required: true
@@ -2605,8 +2617,8 @@ script:
       isArray: false
       name: group_type
       predefined:
-        - static
-        - dynamic
+      - static
+      - dynamic
       required: true
       secret: false
     - default: false
@@ -2951,3 +2963,6 @@ script:
 tests:
 - Test - CrowdStrike Falcon
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

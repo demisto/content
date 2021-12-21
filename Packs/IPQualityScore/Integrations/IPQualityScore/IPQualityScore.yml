@@ -431,3 +431,6 @@ script:
   script: '-'
   subtype: python3
   type: python
+marketplaces:
+- xsoar
+- marketplacev2

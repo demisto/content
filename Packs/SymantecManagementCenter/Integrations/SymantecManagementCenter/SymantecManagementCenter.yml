@@ -19,20 +19,23 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Symantec Management Center provides a unified management environment for the Symantec Security Platform portfolio of products.
+description: Symantec Management Center provides a unified management environment
+  for the Symantec Security Platform portfolio of products.
 display: Symantec Management Center
 name: Symantec Management Center
 script:
   commands:
   - arguments:
     - default: false
-      description: 'Filter the query filter parameter by the OS build number, for example: "GT 227900". '
+      description: 'Filter the query filter parameter by the OS build number, for
+        example: "GT 227900". '
       isArray: true
       name: build
       required: false
       secret: false
     - default: false
-      description: 'Filter the query filter parameter by description, for example: "CONTAINS" desc".'
+      description: 'Filter the query filter parameter by description, for example:
+        "CONTAINS" desc".'
       isArray: false
       name: description
       required: false
@@ -44,25 +47,29 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Filter the query filter parameter by name, for example: "STARTSWITH CAS". '
+      description: 'Filter the query filter parameter by name, for example: "STARTSWITH
+        CAS". '
       isArray: false
       name: name
       required: false
       secret: false
     - default: false
-      description: 'Filter the query filter parameter by OS version, for example: "LT 2.3".'
+      description: 'Filter the query filter parameter by OS version, for example:
+        "LT 2.3".'
       isArray: false
       name: os_version
       required: false
       secret: false
     - default: false
-      description: 'Filter the query filter parameter by platform, for example: "CONTAINS CAS". '
+      description: 'Filter the query filter parameter by platform, for example: "CONTAINS
+        CAS". '
       isArray: false
       name: platform
       required: false
       secret: false
     - default: false
-      description: 'Filter the query filter parameter by device type, for example: "cas". '
+      description: 'Filter the query filter parameter by device type, for example:
+        "cas". '
       isArray: false
       name: type
       required: false
@@ -96,7 +103,8 @@ script:
       type: String
   - arguments:
     - default: true
-      description: Device UUID. Run the symantec-mc-list-devices command to get the UUID.
+      description: Device UUID. Run the symantec-mc-list-devices command to get the
+        UUID.
       isArray: false
       name: uuid
       required: true
@@ -150,7 +158,8 @@ script:
       type: String
   - arguments:
     - default: true
-      description: Device UUID. Run the symantec-mc-list-devices command to get the UUID.
+      description: Device UUID. Run the symantec-mc-list-devices command to get the
+        UUID.
       isArray: false
       name: uuid
       required: true
@@ -183,7 +192,8 @@ script:
       type: String
   - arguments:
     - default: true
-      description: Device UUID. Run the symantec-mc-list-devices command to get the UUID.
+      description: Device UUID. Run the symantec-mc-list-devices command to get the
+        UUID.
       isArray: false
       name: uuid
       required: true
@@ -219,7 +229,8 @@ script:
       type: String
   - arguments:
     - default: true
-      description: Device UUID. Run the symantec-mc-list-devices command to get the UUID.
+      description: Device UUID. Run the symantec-mc-list-devices command to get the
+        UUID.
       isArray: false
       name: uuid
       required: true
@@ -252,32 +263,37 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: Filter the query filter parameter by content type of policy, e.g., "ENDSWITH URL"
+      description: Filter the query filter parameter by content type of policy, e.g.,
+        "ENDSWITH URL"
       isArray: false
       name: content_type
       required: false
       secret: false
     - default: false
-      description: 'Filter the query filter parameter by description, for example: "CONTAINS desc."'
+      description: 'Filter the query filter parameter by description, for example:
+        "CONTAINS desc."'
       isArray: false
       name: description
       required: false
       secret: false
     - default: false
-      description: 'Filter the query filter parameter by name, for example: "STARTSWITH my_list". '
+      description: 'Filter the query filter parameter by name, for example: "STARTSWITH
+        my_list". '
       isArray: false
       name: name
       required: false
       secret: false
     - default: false
-      description: 'Filter the query filter parameter by referenceId, for example: "EQ my_list". '
+      description: 'Filter the query filter parameter by referenceId, for example:
+        "EQ my_list". '
       isArray: false
       name: reference_id
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Parameter to filter, based on whether the policy is shared or not shared.
+      description: Parameter to filter, based on whether the policy is shared or not
+        shared.
       isArray: false
       name: shared
       predefined:
@@ -329,7 +345,8 @@ script:
       type: Boolean
   - arguments:
     - default: true
-      description: Device UUID. Run the symantec-mc-list-devices command to get the UUID.
+      description: Device UUID. Run the symantec-mc-list-devices command to get the
+        UUID.
       isArray: false
       name: uuid
       required: false
@@ -424,7 +441,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: UUID of the tenant associated with this policy. Run the symantec-mc-list-tenants command to get the tenant UUID.
+      description: UUID of the tenant associated with this policy. Run the symantec-mc-list-tenants
+        command to get the tenant UUID.
       isArray: false
       name: tenant
       required: false
@@ -469,7 +487,8 @@ script:
       type: String
   - arguments:
     - default: true
-      description: Policy UUID. Run the symantec-mc-list-policies command to get the UUID.
+      description: Policy UUID. Run the symantec-mc-list-policies command to get the
+        UUID.
       isArray: false
       name: uuid
       required: true
@@ -515,7 +534,8 @@ script:
       type: String
   - arguments:
     - default: true
-      description: Policy UUID. Run the symantec-mc-list-policies command to get the UUID.
+      description: Policy UUID. Run the symantec-mc-list-policies command to get the
+        UUID.
       isArray: false
       name: uuid
       required: true
@@ -523,7 +543,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Set to "true" to force the policy object to be removed even if it is referenced by another policy.
+      description: Set to "true" to force the policy object to be removed even if
+        it is referenced by another policy.
       isArray: false
       name: force
       predefined:
@@ -565,7 +586,8 @@ script:
       type: Boolean
   - arguments:
     - default: false
-      description: Policy UUID. Run the symantec-mc-list-policies command to get the UUID.
+      description: Policy UUID. Run the symantec-mc-list-policies command to get the
+        UUID.
       isArray: false
       name: uuid
       required: false
@@ -595,7 +617,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: The version of the schema for this content. This value will correspond to the format of the content. Run the symantec-mc-get-policy command to get the schema vesion.
+      description: The version of the schema for this content. This value will correspond
+        to the format of the content. Run the symantec-mc-get-policy command to get
+        the schema vesion.
       isArray: false
       name: schema_version
       required: false
@@ -613,7 +637,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'CSV list of category names to add, for example: "Job Search/Careers, Content Servers".'
+      description: 'CSV list of category names to add, for example: "Job Search/Careers,
+        Content Servers".'
       isArray: true
       name: category
       required: false
@@ -636,12 +661,14 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Adds content to a policy in Symantec MC. Can be IPs, URLs, or category names.
+    description: Adds content to a policy in Symantec MC. Can be IPs, URLs, or category
+      names.
     execution: false
     name: symantec-mc-add-policy-content
   - arguments:
     - default: false
-      description: Policy UUID. Run the symantec-mc-list-policies command to get the UUID.
+      description: Policy UUID. Run the symantec-mc-list-policies command to get the
+        UUID.
       isArray: false
       name: uuid
       required: false
@@ -671,7 +698,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: The version of the schema for this content. This value will correspond to the format of the content. Run the symantec-mc-get-policy command to get the schema version.
+      description: The version of the schema for this content. This value will correspond
+        to the format of the content. Run the symantec-mc-get-policy command to get
+        the schema version.
       isArray: false
       name: schema_version
       required: false
@@ -689,7 +718,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'CSV list of category names to delete, for example: "Job Search/Careers, Content Servers".'
+      description: 'CSV list of category names to delete, for example: "Job Search/Careers,
+        Content Servers".'
       isArray: true
       name: category
       required: false
@@ -700,7 +730,8 @@ script:
     name: symantec-mc-delete-policy-content
   - arguments:
     - default: false
-      description: Policy UUID. Run the symantec-mc-list-policies command to get the UUID.
+      description: Policy UUID. Run the symantec-mc-list-policies command to get the
+        UUID.
       isArray: false
       name: uuid
       required: false
@@ -729,7 +760,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: The version of the schema for this content. This value will correspond to the format of the content. Run the symantec-mc-get-policy command to get the schema version.
+      description: The version of the schema for this content. This value will correspond
+        to the format of the content. Run the symantec-mc-get-policy command to get
+        the schema version.
       isArray: false
       name: schema_version
       required: false
@@ -747,7 +780,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'CSV list of category names to update, for example: "Job Search/Careers, Content Servers".'
+      description: 'CSV list of category names to update, for example: "Job Search/Careers,
+        Content Servers".'
       isArray: true
       name: category
       required: false
@@ -782,3 +816,6 @@ script:
 tests:
 - SymantecMC_TestPlaybook
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

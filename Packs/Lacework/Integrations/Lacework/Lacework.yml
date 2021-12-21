@@ -1176,3 +1176,6 @@ tests:
 fromversion: 5.0.0
 defaultmapperin: Lacework - Incoming Mapper
 defaultclassifier: Lacework - Classifier
+marketplaces:
+- xsoar
+- marketplacev2

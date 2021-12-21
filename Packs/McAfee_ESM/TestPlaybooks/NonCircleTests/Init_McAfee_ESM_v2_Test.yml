@@ -138,3 +138,6 @@ view: |-
   }
 inputs: []
 outputs: []
+marketplaces:
+- xsoar
+- marketplacev2

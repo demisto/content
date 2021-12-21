@@ -33,7 +33,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Query.AI is a decentralized data access and analysis technology that simplifies security investigations across disparate platforms without data duplication.
+description: Query.AI is a decentralized data access and analysis technology that
+  simplifies security investigations across disparate platforms without data duplication.
 display: Query.AI
 name: Query.AI
 script:
@@ -58,7 +59,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Workflow params as JSON object.(If workflow requires params) Eg- {"param1":"value1","param2":"value2"}
+      description: Workflow params as JSON object.(If workflow requires params) Eg-
+        {"param1":"value1","param2":"value2"}
       isArray: false
       name: workflow_params
       required: false
@@ -93,5 +95,7 @@ defaultmapperin: QueryAI-mapper
 defaultclassifier: QueryAI
 tests:
 - No tests
-
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

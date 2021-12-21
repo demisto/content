@@ -231,8 +231,8 @@ script:
       name: limit
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Whether to save a list of IPs on a block list in the Context Data in
-        Demisto. Default is false.
+      description: Whether to save a list of IPs on a block list in the Context Data
+        in Demisto. Default is false.
       name: saveToContext
       predefined:
       - 'true'
@@ -261,3 +261,6 @@ script:
 fromversion: 5.0.0
 tests:
 - AbuseIPDB Test
+marketplaces:
+- xsoar
+- marketplacev2

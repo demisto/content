@@ -13,11 +13,12 @@ configuration:
   hidden: false
   name: ip_ranges
   options:
-    - All GCP customer global and regional external IP ranges
-    - All available Google IP ranges
+  - All GCP customer global and regional external IP ranges
+  - All available Google IP ranges
   required: true
   type: 15
-  additionalinfo: IP address ranges group to be fetched. See integration help for more information.
+  additionalinfo: IP address ranges group to be fetched. See integration help for
+    more information.
 - additionalinfo: Indicators from this integration instance will be marked with this
     reputation
   defaultvalue: None
@@ -43,7 +44,8 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
+    fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -93,7 +95,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the Google IP Ranges integration to get GCP and Google global IP ranges.
+description: Use the Google IP Ranges integration to get GCP and Google global IP
+  ranges.
 display: Google IP Ranges Feed
 name: Google IP Ranges Feed
 script:
@@ -118,3 +121,6 @@ script:
 fromversion: 6.0.0
 tests:
 - Fetch Indicators Test
+marketplaces:
+- xsoar
+- marketplacev2

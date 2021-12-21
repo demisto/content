@@ -89,7 +89,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Timestamp of events (<number> <time unit>. For example, 12 hours, 7 days.
+      description: Timestamp of events (<number> <time unit>. For example, 12 hours,
+        7 days.
       isArray: false
       name: time_stamp
       required: false
@@ -182,3 +183,6 @@ script:
 tests:
 - Akamai_WAF_SIEM-Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

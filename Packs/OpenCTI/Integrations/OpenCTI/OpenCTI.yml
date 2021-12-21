@@ -29,7 +29,8 @@ script:
   commands:
   - arguments:
     - default: false
-      description: The maximum number of indicators to return. Default value is 50. Maximum value is 500.
+      description: The maximum number of indicators to return. Default value is 50.
+        Maximum value is 500.
       isArray: false
       name: limit
       required: false
@@ -68,7 +69,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The last ID from the previous call, from which to begin pagination for this call. You can find this value at the OpenCTI.IndicatorsList.LastRunID context path.
+      description: The last ID from the previous call, from which to begin pagination
+        for this call. You can find this value at the OpenCTI.IndicatorsList.LastRunID
+        context path.
       isArray: false
       name: last_run_id
       required: false
@@ -143,7 +146,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: 'Update the indicator field. The fields that can be updated are: score, description.'
+    description: 'Update the indicator field. The fields that can be updated are:
+      score, description.'
     execution: false
     name: opencti-indicator-field-update
     outputs:
@@ -154,9 +158,8 @@ script:
     - auto: PREDEFINED
       default: false
       description: 'The indicator type to create. Out-of-the-box indicator types supported
-        in XSOAR are: Account, Domain, Email, File-MD5, File-SHA1,
-        File-SHA256, Host, IP, IPV6, Registry Key,
-        and URL.'
+        in XSOAR are: Account, Domain, Email, File-MD5, File-SHA1, File-SHA256, Host,
+        IP, IPV6, Registry Key, and URL.'
       isArray: false
       name: type
       predefined:
@@ -182,21 +185,22 @@ script:
       required: false
       secret: false
     - default: false
-      description: Indicator marking definition ID. Use opencti-marking-definition-list to find all marking definition
-        IDs in OpenCTI.
+      description: Indicator marking definition ID. Use opencti-marking-definition-list
+        to find all marking definition IDs in OpenCTI.
       isArray: false
       name: marking_id
       required: false
       secret: false
     - default: false
-      description: Indicator label ID. Use opencti-label-list to find all label
-        IDs in OpenCTI, or use opencti-label-create to create a new label.
+      description: Indicator label ID. Use opencti-label-list to find all label IDs
+        in OpenCTI, or use opencti-label-create to create a new label.
       isArray: false
       name: label_id
       required: false
       secret: false
     - default: false
-      description: External references URL. Use opencti-external-reference-create to create a new external reference.
+      description: External references URL. Use opencti-external-reference-create
+        to create a new external reference.
       isArray: false
       name: external_references_id
       required: false
@@ -251,14 +255,17 @@ script:
       required: true
       secret: false
     - default: false
-      description: "Value of the field to add. Enter label ID or marking definition ID. Use opencti-label-list to find all label IDs in OpenCTI, or use opencti-label-create to create a new label. Use opencti-marking-definition-list to find all marking definition IDs in OpenCTI."
+      description: "Value of the field to add. Enter label ID or marking definition\
+        \ ID. Use opencti-label-list to find all label IDs in OpenCTI, or use opencti-label-create\
+        \ to create a new label. Use opencti-marking-definition-list to find all marking\
+        \ definition IDs in OpenCTI."
       isArray: false
       name: value
       required: true
       secret: false
     deprecated: false
-    description: Add a field to the indicator. Fields that can be added are marking definition and
-      label.
+    description: Add a field to the indicator. Fields that can be added are marking
+      definition and label.
     execution: false
     name: opencti-indicator-field-add
   - arguments:
@@ -279,14 +286,16 @@ script:
       required: true
       secret: false
     - default: false
-      description: "Value of the field to remove. Enter label ID or marking definition ID. Use opencti-label-list to find all label IDs in OpenCTI or opencti-marking-definition-list to find all marking definition IDs in OpenCTI."
+      description: "Value of the field to remove. Enter label ID or marking definition\
+        \ ID. Use opencti-label-list to find all label IDs in OpenCTI or opencti-marking-definition-list\
+        \ to find all marking definition IDs in OpenCTI."
       isArray: false
       name: value
       required: true
       secret: false
     deprecated: false
-    description: Remove indicator field value. Fields which values can be removed are marking
-      definition and label.
+    description: Remove indicator field value. Fields which values can be removed
+      are marking definition and label.
     execution: false
     name: opencti-indicator-field-remove
   - arguments:
@@ -299,7 +308,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The last ID from the previous call, from which to begin pagination for this call. You can find this value at the OpenCTI.Organizations.organizationsLastRun context path.
+      description: The last ID from the previous call, from which to begin pagination
+        for this call. You can find this value at the OpenCTI.Organizations.organizationsLastRun
+        context path.
       isArray: false
       name: last_run_id
       required: false
@@ -362,7 +373,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The last ID from the previous call, from which to begin pagination for this call. You can find this value at the OpenCTI.Labels.labelsLastRun context path.
+      description: The last ID from the previous call, from which to begin pagination
+        for this call. You can find this value at the OpenCTI.Labels.labelsLastRun
+        context path.
       isArray: false
       name: last_run_id
       required: false
@@ -426,7 +439,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The last ID from the previous call, from which to begin pagination for this call. You can find this value at the OpenCTI.MarkingDefinitions.markingsLastRun context path.
+      description: The last ID from the previous call, from which to begin pagination
+        for this call. You can find this value at the OpenCTI.MarkingDefinitions.markingsLastRun
+        context path.
       isArray: false
       name: last_run_id
       required: false
@@ -456,3 +471,6 @@ script:
 tests:
 - OpenCTI Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

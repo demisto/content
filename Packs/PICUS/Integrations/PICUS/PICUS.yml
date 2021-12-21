@@ -90,10 +90,9 @@ script:
     - description: ' Array of objects (PeerPairParams) Vectors.(Untrusted Peer)'
       name: vector2
       required: true
-    description: Returns the list of the attack results have optional parameters
-      for pagination and filtration. \nExample Command:\n !picus-attack-result-list
-      attack_result=insecure begin_date=2020-01-01 end_date=2020-09-05  vector1=Trusted-Peer1
-      vector2=Untrusted-Peer1
+    description: Returns the list of the attack results have optional parameters for
+      pagination and filtration. \nExample Command:\n !picus-attack-result-list attack_result=insecure
+      begin_date=2020-01-01 end_date=2020-09-05  vector1=Trusted-Peer1 vector2=Untrusted-Peer1
     name: picus-attack-result-list
   - arguments:
     - description: CVE code of the threat to be filtered
@@ -111,8 +110,8 @@ script:
     - description: integer <int64> PID of the threat
       name: threat_id
       required: true
-    description: 'Returns the list of the attack results of a single threat have
-      optional parameters for pagination and filtration. Example Command: !picus-specific-threats-results
+    description: 'Returns the list of the attack results of a single threat have optional
+      parameters for pagination and filtration. Example Command: !picus-specific-threats-results
       threat_id=666059'
     name: picus-specific-threats-results
   - arguments: []
@@ -218,3 +217,6 @@ script:
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2

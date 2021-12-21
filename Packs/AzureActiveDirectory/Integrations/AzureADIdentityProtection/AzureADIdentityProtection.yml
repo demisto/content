@@ -476,3 +476,6 @@ defaultmapperin: Azure Active Directory Identity and Access Incoming Mapper
 defaultclassifier: Azure Active Directory Identity and Access
 tests:
 -  AzureADTest
+marketplaces:
+- xsoar
+- marketplacev2

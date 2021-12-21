@@ -6,7 +6,9 @@ display: SNDBOX
 category: Forensics & Malware Analysis
 description: SNDBOX as a service
 configuration:
-- display: 'Use Public API Key. (By approving SNDBOX public API you are accepting SNDBOX TOS @ https://app.sndbox.com/tos). Public submissions are shared with the community'
+- display: 'Use Public API Key. (By approving SNDBOX public API you are accepting
+    SNDBOX TOS @ https://app.sndbox.com/tos). Public submissions are shared with the
+    community'
   name: public_api_key
   defaultvalue: ''
   type: 8
@@ -195,7 +197,8 @@ script:
     - contextPath: InfoFile.Extension
       description: File Extension
       type: string
-    description: Download a resource belonging to a report. This can be the full report, dropped binaries, etc.
+    description: Download a resource belonging to a report. This can be the full report,
+      dropped binaries, etc.
   - name: sndbox-download-sample
     arguments:
     - name: analysis_id
@@ -233,9 +236,13 @@ script:
     - contextPath: File.Extension
       description: File Extension
       type: string
-    description: Download the sample file of an analysis. for security reasons, the extension will be "dontrun"
+    description: Download the sample file of an analysis. for security reasons, the
+      extension will be "dontrun"
   runonce: false
   dockerimage: demisto/python:2.7.18.24398
 tests:
 - SNDBOX_Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

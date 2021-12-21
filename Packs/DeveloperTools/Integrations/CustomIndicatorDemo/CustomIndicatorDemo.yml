@@ -3,13 +3,15 @@ commonfields:
   id: CustomIndicatorDemo
   version: -1
 configuration: []
-description: This is a demo integration that demonstrates the usage of the CustomIndicator helper class.
+description: This is a demo integration that demonstrates the usage of the CustomIndicator
+  helper class.
 display: CustomIndicatorDemo
 name: CustomIndicatorDemo
 script:
   commands:
   - deprecated: false
-    description: 'This command demonstrates the usage of the CustomIndicator helper class.'
+    description: 'This command demonstrates the usage of the CustomIndicator helper
+      class.'
     execution: false
     name: test-custom-indicator
     outputs:
@@ -24,4 +26,7 @@ script:
   dockerimage: demisto/python3:3.9.8.24399
 fromversion: 5.5.0
 tests:
-  - playbook-CustomIndicatorDemo-test
+- playbook-CustomIndicatorDemo-test
+marketplaces:
+- xsoar
+- marketplacev2

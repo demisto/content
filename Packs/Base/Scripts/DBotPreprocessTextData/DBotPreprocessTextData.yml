@@ -172,3 +172,6 @@ tests:
 - Create Phishing Classifier V2 ML Test
 - DBot Build Phishing Classifier Test - Multiple Algorithms
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

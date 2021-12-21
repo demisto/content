@@ -48,7 +48,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Autonomous detection and investigation of information security incidents and other potential threats.
+description: Autonomous detection and investigation of information security incidents
+  and other potential threats.
 display: Cognni
 name: Cognni
 script:
@@ -141,3 +142,6 @@ script:
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

@@ -472,3 +472,6 @@ script:
 tests:
 - no tests - test in NonCircleTests
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

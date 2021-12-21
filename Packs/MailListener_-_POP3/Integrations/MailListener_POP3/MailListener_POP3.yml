@@ -56,3 +56,6 @@ beta: true
 tests:
 - MailListener-POP3 - Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

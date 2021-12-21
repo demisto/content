@@ -351,3 +351,6 @@ fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
 beta: true
+marketplaces:
+- xsoar
+- marketplacev2

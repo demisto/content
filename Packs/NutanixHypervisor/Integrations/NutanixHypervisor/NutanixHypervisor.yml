@@ -113,8 +113,8 @@ script:
       isArray: false
       name: verbose
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
       required: false
       secret: false
     description: Gets the list of physical hosts configured in the cluster.
@@ -442,7 +442,8 @@ script:
       name: task_ids
       required: true
       isArray: true
-    description: Returns the results of given tasks. If a task is not ready, its status will be returned.
+    description: Returns the results of given tasks. If a task is not ready, its status
+      will be returned.
     name: nutanix-hypervisor-task-results-get
     outputs:
     - contextPath: NutanixHypervisor.Task.timed_out
@@ -592,8 +593,8 @@ script:
       isArray: false
       name: verbose
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
       required: false
       secret: false
     description: Gets the list of alerts generated in the cluster that matches the
@@ -731,7 +732,8 @@ script:
       description: Metric value details.
       type: Unknown
   - arguments:
-    - description: The ID of the alert to acknowledge. Alert ID is the 'id' field returned for alerts by command 'nutanix-hypervisor-alerts-list'
+    - description: The ID of the alert to acknowledge. Alert ID is the 'id' field
+        returned for alerts by command 'nutanix-hypervisor-alerts-list'
       name: alert_id
       required: true
     description: Acknowledges the alert with the specified alert_id.
@@ -891,3 +893,6 @@ fromversion: 5.0.0
 tests:
 - Nutanix-test
 defaultmapperin: NutanixHypervisor-mapper
+marketplaces:
+- xsoar
+- marketplacev2

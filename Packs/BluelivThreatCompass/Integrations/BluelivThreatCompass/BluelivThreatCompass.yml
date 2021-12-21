@@ -200,7 +200,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: New status to assign to the resource. Can be "positive", "negative", "informative", or "not_important".
+      description: New status to assign to the resource. Can be "positive", "negative",
+        "informative", or "not_important".
       isArray: false
       name: status
       predefined:
@@ -263,7 +264,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: '1'
-      description: Rating to assign to the result. Can be a number between 1 and 5. Default is 1.
+      description: Rating to assign to the result. Can be a number between 1 and 5.
+        Default is 1.
       isArray: false
       name: rating
       predefined:
@@ -288,7 +290,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: group
-      description: The new favorite status of the resource. Can be "Not", "User", "Group", or "All".
+      description: The new favorite status of the resource. Can be "Not", "User",
+        "Group", or "All".
       isArray: false
       name: favourite
       predefined:
@@ -364,3 +367,6 @@ script:
   subtype: python3
   type: python
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

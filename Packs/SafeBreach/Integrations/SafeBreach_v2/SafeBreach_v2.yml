@@ -47,7 +47,8 @@ configuration:
   - Protocol
   required: false
   type: 16
-- additionalinfo: Non-Behavioral Indicator from this integration instance will be marked with this reputation
+- additionalinfo: Non-Behavioral Indicator from this integration instance will be
+    marked with this reputation
   display: Non Behavioral Indicator Reputation
   name: nonBehavioralReputation
   hidden: false
@@ -59,7 +60,8 @@ configuration:
   - Bad
   required: false
   type: 15
-- additionalinfo: Behavioral Indicator from this integration instance will be marked with this reputation
+- additionalinfo: Behavioral Indicator from this integration instance will be marked
+    with this reputation
   display: Behavioral Reputation
   hidden: false
   name: behavioralReputation
@@ -95,7 +97,8 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
+    fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -590,3 +593,6 @@ script:
 tests:
 - No tests
 fromversion: 5.5.0
+marketplaces:
+- xsoar
+- marketplacev2

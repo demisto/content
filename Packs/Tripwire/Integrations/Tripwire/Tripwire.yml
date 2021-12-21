@@ -552,3 +552,6 @@ script:
 defaultmapperin: Tripwire-mapper
 defaultclassifier: Tripwire
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

@@ -19,3 +19,6 @@ subtype: python3
 tests:
 - No Tests
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

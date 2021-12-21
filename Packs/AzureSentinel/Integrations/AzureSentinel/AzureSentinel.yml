@@ -951,3 +951,6 @@ tests:
 - No test - Manual test playbook-TestAzureSentinelPlaybook is available in NonCircleTests
   folder
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

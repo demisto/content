@@ -8,7 +8,8 @@ subtype: python3
 tags:
 - infra
 - server
-comment: Common CrowdStrike code that will be appended to each CrowdStrike integration when it is deployed to enable oauth2 authentication automatically.
+comment: Common CrowdStrike code that will be appended to each CrowdStrike integration
+  when it is deployed to enable oauth2 authentication automatically.
 scripttarget: 0
 dependson: {}
 timeout: 0s
@@ -16,3 +17,6 @@ dockerimage: demisto/python3:3.8.6.12176
 fromversion: 5.0.0
 tests:
 - No tests
+marketplaces:
+- xsoar
+- marketplacev2

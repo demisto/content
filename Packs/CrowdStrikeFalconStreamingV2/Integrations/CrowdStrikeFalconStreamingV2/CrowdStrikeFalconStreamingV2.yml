@@ -87,7 +87,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the CrowdStrike Falcon Stream v2 integration to stream detections and audit security events.
+description: Use the CrowdStrike Falcon Stream v2 integration to stream detections
+  and audit security events.
 display: CrowdStrike Falcon Streaming v2
 name: CrowdStrike Falcon Streaming v2
 script:
@@ -110,3 +111,6 @@ tests:
 defaultmapperin: crowdstrike-streaming-api-mapper
 defaultclassifier: crowdstrike-streaming-api
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

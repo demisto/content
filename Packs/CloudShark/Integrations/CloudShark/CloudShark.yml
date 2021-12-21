@@ -4,7 +4,8 @@ commonfields:
 name: CloudShark
 display: CloudShark
 category: Data Enrichment & Threat Intelligence
-description: Use the CloudShark integration to upload, share, and collaborate on network packet capture files using your on-premises CS Enterprise system.
+description: Use the CloudShark integration to upload, share, and collaborate on network
+  packet capture files using your on-premises CS Enterprise system.
 configuration:
 - display: CS Enterprise URL
   name: url
@@ -160,3 +161,6 @@ script:
 tests:
 - CloudShark - Test Playbook
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

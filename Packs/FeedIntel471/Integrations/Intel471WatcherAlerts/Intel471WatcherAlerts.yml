@@ -52,7 +52,8 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-- additionalinfo: The UID(s) of the watcher group(s) for which alerts should be fetched (comma separated).
+- additionalinfo: The UID(s) of the watcher group(s) for which alerts should be fetched
+    (comma separated).
   display: Watcher group UID(s)
   name: watcher_group_uids
   required: false
@@ -81,3 +82,6 @@ script:
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2

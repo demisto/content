@@ -573,3 +573,6 @@ script:
 tests:
 - Microsoft Graph User - Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

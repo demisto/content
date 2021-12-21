@@ -38,11 +38,14 @@ script:
     - name: offset
       description: The number of records to skip
     - name: sha256
-      description: An SHA256 of the submitted sample, only matches samples, not their artifacts.
+      description: An SHA256 of the submitted sample, only matches samples, not their
+        artifacts.
     - name: md5
-      description: An MD5 checksum of the submitted sample, only matches samples, not their artifacts.
+      description: An MD5 checksum of the submitted sample, only matches samples,
+        not their artifacts.
     - name: sha1
-      description: A sha1 of the submitted sample, only matches samples, not their artifacts
+      description: A sha1 of the submitted sample, only matches samples, not their
+        artifacts
     - name: id
       description: a sample ID
     - name: ids
@@ -63,7 +66,8 @@ script:
     - contextPath: ThreatGrid.Sample.Filename
       description: The sample filename
     - contextPath: ThreatGrid.Sample.State
-      description: The state of the sample, one of a stable set of strings "wait, prep, run, proc, succ, fail"
+      description: The state of the sample, one of a stable set of strings "wait,
+        prep, run, proc, succ, fail"
     - contextPath: ThreatGrid.Sample.Status
       description: The sample status, one of a stable set of strings "succ, fail"
     - contextPath: ThreatGrid.Sample.MD5
@@ -80,7 +84,9 @@ script:
       description: The sample analysis starting time
     - contextPath: ThreatGrid.Sample.CompletedAt
       description: The sample completion time
-    description: Search samples on the Threat Grid platform. Input parameters are ANDed together. Only finished samples can be searched (that is, the ones that are having a status of succ or fail.)
+    description: Search samples on the Threat Grid platform. Input parameters are
+      ANDed together. Only finished samples can be searched (that is, the ones that
+      are having a status of succ or fail.)
   - name: threat-grid-get-sample-by-id
     arguments:
     - name: id
@@ -93,7 +99,8 @@ script:
     - contextPath: ThreatGrid.Sample.Filename
       description: The sample filename
     - contextPath: ThreatGrid.Sample.State
-      description: The state of the sample, one of a stable set of strings "wait, prep, run, proc, succ, fail"
+      description: The state of the sample, one of a stable set of strings "wait,
+        prep, run, proc, succ, fail"
     - contextPath: ThreatGrid.Sample.Status
       description: The sample status, one of a stable set of strings "succ, fail"
     - contextPath: ThreatGrid.Sample.MD5
@@ -120,16 +127,19 @@ script:
       description: A comma-separated list of sample IDs.
     outputs:
     - contextPath: ThreatGrid.Sample.ID
-      description: The sample ID, globally unique, and the canonical identifier of this sample analysis
+      description: The sample ID, globally unique, and the canonical identifier of
+        this sample analysis
     - contextPath: ThreatGrid.Sample.State
-      description: The state of the sample, one of a stable set of strings “wait, prep, run, proc, succ, fail”
+      description: The state of the sample, one of a stable set of strings “wait,
+        prep, run, proc, succ, fail”
     description: Get threat grid sample state by id
   - name: threat-grid-upload-sample
     arguments:
     - name: file-id
       required: true
       default: true
-      description: The sample file. Click on the chain like icon after you upload a file in Demisto to find the file-id. 
+      description: The sample file. Click on the chain like icon after you upload
+        a file in Demisto to find the file-id. 
     - name: filename
       required: true
       description: The original filename of the sample, as a string
@@ -141,9 +151,16 @@ script:
       - win7-x64-jp
       - win7-x64-kr
       - win10
-      description: 'a string identifying a specific VM to use. Options: win7-x64: Windows 7 64bit, win7-x64-2: Windows 7 64bit Profile 2, win7-x64-jp: Windows 7 64bit Japanese (Not available on Threat Grid appliances), win7-x64-kr: Windows 7 64bit Korean (Only available on Threat Grid appliances licensed for this VM), win10: Windows 10 (Not available on Threat Grid appliances). NOTE: The standard (English) VMs default to UTF-8 encoding. To support Korean and Japanese character sets, such as S-JIS, submit to the appropriate VM.'
+      description: 'a string identifying a specific VM to use. Options: win7-x64:
+        Windows 7 64bit, win7-x64-2: Windows 7 64bit Profile 2, win7-x64-jp: Windows
+        7 64bit Japanese (Not available on Threat Grid appliances), win7-x64-kr: Windows
+        7 64bit Korean (Only available on Threat Grid appliances licensed for this
+        VM), win10: Windows 10 (Not available on Threat Grid appliances). NOTE: The
+        standard (English) VMs default to UTF-8 encoding. To support Korean and Japanese
+        character sets, such as S-JIS, submit to the appropriate VM.'
     - name: private
-      description: if present, and set to any value but “false” the sample will be marked private
+      description: if present, and set to any value but “false” the sample will be
+        marked private
     - name: tags
       description: A comma-separated list of tags applied to this sample
     - name: playbook
@@ -159,14 +176,23 @@ script:
       - run_dialog_box_ie
       - open_attachment_msg
       - run_dialog_box_dde
-      description: 'Name of a playbook to apply to this sample run. none: Explicitly disables playbooks, default: Default Playbook, alt_tab_programs: Conduct Active Window Change, open_word_embedded_object: Open Embedded Object in Word Document, press_enter: Dialogue OK, visit_site: Visit Website Using Internet Explorer, close_file: Close Active Window, run_dialog_box_ie: Click Run on Internet Explorer Download Dialog Box, open_attachment_msg: Open Outlook Email Attachment, run_dialog_box_dde: Accept Microsoft Office Dialog Boxes to Open Dynamic Data Exchange Content. The current list of playbooks endpoints can be obtained by querying /api/v3/configuration/playbooks.'
+      description: 'Name of a playbook to apply to this sample run. none: Explicitly
+        disables playbooks, default: Default Playbook, alt_tab_programs: Conduct Active
+        Window Change, open_word_embedded_object: Open Embedded Object in Word Document,
+        press_enter: Dialogue OK, visit_site: Visit Website Using Internet Explorer,
+        close_file: Close Active Window, run_dialog_box_ie: Click Run on Internet
+        Explorer Download Dialog Box, open_attachment_msg: Open Outlook Email Attachment,
+        run_dialog_box_dde: Accept Microsoft Office Dialog Boxes to Open Dynamic Data
+        Exchange Content. The current list of playbooks endpoints can be obtained
+        by querying /api/v3/configuration/playbooks.'
     outputs:
     - contextPath: ThreatGrid.Sample.ID
       description: The sample id
     - contextPath: ThreatGrid.Sample.Filename
       description: The sample filename
     - contextPath: ThreatGrid.Sample.State
-      description: The state of the sample, one of a stable set of strings "wait, prep, run, proc, succ, fail"
+      description: The state of the sample, one of a stable set of strings "wait,
+        prep, run, proc, succ, fail"
     - contextPath: ThreatGrid.Sample.Status
       description: The sample status
     - contextPath: ThreatGrid.Sample.MD5
@@ -185,23 +211,35 @@ script:
   - name: threat-grid-search-submissions
     arguments:
     - name: q
-      description: Query text. If you wish to work with an elasticsearch query please set 'advanced' argument to 'true'
+      description: Query text. If you wish to work with an elasticsearch query please
+        set 'advanced' argument to 'true'
     - name: user-only
-      description: Only display submissions created by the current user, as determined by the value of api_key
+      description: Only display submissions created by the current user, as determined
+        by the value of api_key
     - name: org-only
-      description: Only display submissions created by the current user's organization, as determined by the value of api_key.
+      description: Only display submissions created by the current user's organization,
+        as determined by the value of api_key.
     - name: term
-      description: Restrict matches to a subset of submission fields. The value of 'term' is a comma-delimited list of strings which select groups of fields
+      description: Restrict matches to a subset of submission fields. The value of
+        'term' is a comma-delimited list of strings which select groups of fields
     - name: before
-      description: Return submissions created before specified time. Value is a timestring, either ISO-8601, or free-form (see documentation for 'chronic,' at https://github.com/mojombo/chronic)
+      description: Return submissions created before specified time. Value is a timestring,
+        either ISO-8601, or free-form (see documentation for 'chronic,' at https://github.com/mojombo/chronic)
     - name: after
-      description: Return submissions created after specified time. Value is a timestring, either ISO-8601, or free-form (see documentation for 'chronic,' at https://github.com/mojombo/chronic).
+      description: Return submissions created after specified time. Value is a timestring,
+        either ISO-8601, or free-form (see documentation for 'chronic,' at https://github.com/mojombo/chronic).
     - name: state
-      description: 'Restrict match to submissions in specific state or states. Value is a comma-delimited string containing one or more of the values: wait proc succ fail'
+      description: 'Restrict match to submissions in specific state or states. Value
+        is a comma-delimited string containing one or more of the values: wait proc
+        succ fail'
     - name: advanced
-      description: 'When set to ''true'' interprets ''q'' as a Lucene query syntax, allowing matches by specific field, for instance: q=sha256:1b4468 will return items with sha256 equal to 1b4468. q=analysis.threat_score:64 will return analysis whose threat_score value is equal to 64. For reference see: https://lucene.apache.org/core/2_9_4/queryparsersyntax.html'
+      description: 'When set to ''true'' interprets ''q'' as a Lucene query syntax,
+        allowing matches by specific field, for instance: q=sha256:1b4468 will return
+        items with sha256 equal to 1b4468. q=analysis.threat_score:64 will return
+        analysis whose threat_score value is equal to 64. For reference see: https://lucene.apache.org/core/2_9_4/queryparsersyntax.html'
     - name: sort_by
-      description: Sorts by timestamp, submitted_at, analyzed_at, filename, type, state, threat or threat_score, login
+      description: Sorts by timestamp, submitted_at, analyzed_at, filename, type,
+        state, threat or threat_score, login
     - name: sort_order
       description: desc or asc
     - name: limit
@@ -209,14 +247,16 @@ script:
     - name: offset
       description: Return matching submissions starting at the given offset.
     - name: highlight
-      description: Provide a 'matches' field in results, indicating which fields were matched
+      description: Provide a 'matches' field in results, indicating which fields were
+        matched
     outputs:
     - contextPath: ThreatGrid.Sample.ID
       description: The sample ID
     - contextPath: ThreatGrid.Sample.Filename
       description: The name of the sample file
     - contextPath: ThreatGrid.Sample.State
-      description: The state of the sample, one of a stable set of strings "wait, prep, run, proc, succ, fail"
+      description: The state of the sample, one of a stable set of strings "wait,
+        prep, run, proc, succ, fail"
     - contextPath: ThreatGrid.Sample.Status
       description: The status of the sample
     - contextPath: ThreatGrid.Sample.MD5
@@ -250,7 +290,8 @@ script:
       default: true
       description: The sample id
     - name: limit
-      description: Limits the results to not overpopulate the context. Default value is. 20. If you wish to get results with no limit, set this value to "".
+      description: Limits the results to not overpopulate the context. Default value
+        is. 20. If you wish to get results with no limit, set this value to "".
       defaultValue: "20"
     outputs:
     - contextPath: ThreatGrid.Sample.ID
@@ -313,7 +354,8 @@ script:
       description: Artifact family name.
     - contextPath: ThreatGrid.Artifact.ThreatName
       description: Artifact threat name.
-    description: The detailed overview of dynamic and static analysis results for the sample
+    description: The detailed overview of dynamic and static analysis results for
+      the sample
   - name: threat-grid-get-processes-by-id
     arguments:
     - name: id
@@ -324,7 +366,8 @@ script:
     - contextPath: ThreatGrid.Sample.Id
       description: The ID of the sample for which the PCAP needs to be downloaded.
       type: string
-    description: Get a JSON object which contains a timeline of all process activities as determined by the dynamic analysis engine.
+    description: Get a JSON object which contains a timeline of all process activities
+      as determined by the dynamic analysis engine.
   - name: threat-grid-get-pcap-by-id
     arguments:
     - name: id
@@ -337,7 +380,8 @@ script:
       type: string
     - contextPath: Demisto.File
       description: File containing result
-    description: Get the tcpdump PCAP file for a specific Sample ID, with all the network activity of the sample
+    description: Get the tcpdump PCAP file for a specific Sample ID, with all the
+      network activity of the sample
   - name: threat-grid-get-warnings-by-id
     arguments:
     - name: id
@@ -350,7 +394,8 @@ script:
       type: string
     - contextPath: Demisto.File
       description: File containing result
-    description: Gets a JSON structure describing any warnings that occured during the analysis
+    description: Gets a JSON structure describing any warnings that occured during
+      the analysis
   - name: threat-grid-get-summary-by-id
     arguments:
     - name: id
@@ -429,7 +474,9 @@ script:
       type: string
     - contextPath: Demisto.File
       description: File containing result
-    description: Get the report.html file for a specific Sample ID. This is a stand-alone file with a complete report on the sample run. It is designed to be emailed or printed.
+    description: Get the report.html file for a specific Sample ID. This is a stand-alone
+      file with a complete report on the sample run. It is designed to be emailed
+      or printed.
   - name: threat-grid-download-sample-by-id
     arguments:
     - name: id
@@ -442,7 +489,8 @@ script:
       type: string
     - contextPath: Demisto.File
       description: File containing result
-    description: Download a sample by using its ID. The downloaded file is an archive of the sample itself, in a zip format as a form of quarantine.
+    description: Download a sample by using its ID. The downloaded file is an archive
+      of the sample itself, in a zip format as a form of quarantine.
   - name: threat-grid-get-analysis-iocs
     arguments:
     - name: id
@@ -452,7 +500,8 @@ script:
     - name: ioc
       description: The IOC name you want to fetch details for.
     - name: limit
-      description: Limit the number of indicators you would like to see. The list is sorted by indicator severity in descending order. 
+      description: Limit the number of indicators you would like to see. The list
+        is sorted by indicator severity in descending order. 
     outputs:
     - contextPath: ThreatGrid.IOCs.Title
       description: The title of the IOC
@@ -484,14 +533,16 @@ script:
       description: The SHA256 value of the IOC
     - contextPath: ThreatGrid.IOCs.Tags
       description: The tags of the IOC
-    description: Returns a JSON list of the Indicators of Compromise identified in this sample run
+    description: Returns a JSON list of the Indicators of Compromise identified in
+      this sample run
   - name: threat-grid-download-artifact
     deprecated: true
     arguments:
     - name: aid
       required: true
       default: true
-      description: The ID of the artifact (SHA 256) to be downloaded. Only SHA-256 type of ID can be used.
+      description: The ID of the artifact (SHA 256) to be downloaded. Only SHA-256
+        type of ID can be used.
     outputs:
     - contextPath: ThreatGrid.Artifact.Id
       description: The ID of the downloaded artifact
@@ -519,26 +570,37 @@ script:
       description: User login name
     outputs:
     - contextPath: ThreatGrid.User.RateLimit.Minutes
-      description: 'Array of array(s) representing submission(s) per minute(s) or the string"nil" to clear the value. Example: [[5, 1440]] which represents 5 samples per day. This field represent the minutes.'
+      description: 'Array of array(s) representing submission(s) per minute(s) or
+        the string"nil" to clear the value. Example: [[5, 1440]] which represents
+        5 samples per day. This field represent the minutes.'
       type: number
     - contextPath: ThreatGrid.User.RateLimit.Samples
-      description: 'Array of array(s) representing submission(s) per minute(s) or the string"nil" to clear the value. Example: [[5, 1440]] which represents 5 samples per day. This field represent the number of samples allowed.'
+      description: 'Array of array(s) representing submission(s) per minute(s) or
+        the string"nil" to clear the value. Example: [[5, 1440]] which represents
+        5 samples per day. This field represent the number of samples allowed.'
       type: number
     - contextPath: ThreatGrid.User.RateLimit.SubmissionWaitSeconds
-      description: The number of seconds to wait for a submission to get uploaded on the platform.
+      description: The number of seconds to wait for a submission to get uploaded
+        on the platform.
       type: number
     - contextPath: ThreatGrid.User.RateLimit.SubmissionsAvailable
       description: The number of submissions available for the specified username
       type: number
-    description: Get rate limit for a specific user name. ThreatGrid employs a simple rate limiting method for sample submissions by specifying the number of samples which can be submitted within some variable time period by a user. Multiple rate limits can be employed to form overlapping submission limits. For example, 20 submissions per hour AND 400 per day.
+    description: Get rate limit for a specific user name. ThreatGrid employs a simple
+      rate limiting method for sample submissions by specifying the number of samples
+      which can be submitted within some variable time period by a user. Multiple
+      rate limits can be employed to form overlapping submission limits. For example,
+      20 submissions per hour AND 400 per day.
   - name: threat-grid-get-specific-feed
     arguments:
     - name: feed-name
       required: true
       default: true
-      description: The feed name. For a list of possible feed names and how to use them please see - https://panacea.threatgrid.com/doc/main/feeds.html
+      description: The feed name. For a list of possible feed names and how to use
+        them please see - https://panacea.threatgrid.com/doc/main/feeds.html
     - name: feed-period
-      description: Feed daily date (YYYY-MM-DD). Alternatively, you may also write in free text (e.g. '2 days ago')
+      description: Feed daily date (YYYY-MM-DD). Alternatively, you may also write
+        in free text (e.g. '2 days ago')
     - name: output-type
       description: The output type
       defaultValue: json
@@ -552,7 +614,8 @@ script:
     - name: file-entry-id
       required: true
       default: true
-      description: Entry ID of the uploaded file (e.g. the message in the war room with the uploaded file's details).
+      description: Entry ID of the uploaded file (e.g. the message in the war room
+        with the uploaded file's details).
     - name: delay
       description: Time to wait between status checks (in seconds)
       defaultValue: "20"
@@ -610,18 +673,28 @@ script:
       description: The admin user login name to be used for getting the rate limits.
     outputs:
     - contextPath: ThreatGrid.User.RateLimit.Minutes
-      description: 'Array of array(s) representing submission(s) per minute(s) or the string"nil" to clear the value. Example: [[5, 1440]] which represents 5 samples per day. This field represent the minutes.'
+      description: 'Array of array(s) representing submission(s) per minute(s) or
+        the string"nil" to clear the value. Example: [[5, 1440]] which represents
+        5 samples per day. This field represent the minutes.'
       type: number
     - contextPath: ThreatGrid.User.RateLimit.Samples
-      description: 'Array of array(s) representing submission(s) per minute(s) or the string"nil" to clear the value. Example: [[5, 1440]] which represents 5 samples per day. This field represent the number of samples allowed.'
+      description: 'Array of array(s) representing submission(s) per minute(s) or
+        the string"nil" to clear the value. Example: [[5, 1440]] which represents
+        5 samples per day. This field represent the number of samples allowed.'
       type: number
     - contextPath: ThreatGrid.User.RateLimit.SubmissionWaitSeconds
-      description: The number of seconds to wait for a submission to get uploaded on the platform.
+      description: The number of seconds to wait for a submission to get uploaded
+        on the platform.
       type: number
     - contextPath: ThreatGrid.User.RateLimit.SubmissionsAvailable
       description: The number of submissions available for the entire organization.
       type: number
-    description: Get rate limits applied to an organization. ThreatGrid employs a simple rate limiting method for sample submissions by specifying the number of samples which can be submitted within some variable time period by an entire organization and/or per a license basis. Multiple rate limits can be employed to form overlapping submission limits. For example, 20 submissions per hour AND 400 per day.
+    description: Get rate limits applied to an organization. ThreatGrid employs a
+      simple rate limiting method for sample submissions by specifying the number
+      of samples which can be submitted within some variable time period by an entire
+      organization and/or per a license basis. Multiple rate limits can be employed
+      to form overlapping submission limits. For example, 20 submissions per hour
+      AND 400 per day.
   - name: threat-grid-search-ips
     arguments:
     - name: network_dst
@@ -644,7 +717,8 @@ script:
       description: search by IOC name
     - name: tag
       description: search by tag name
-    description: Search IPs. Please provide a single argument (only one) to use this command, as the API supports 1 filter at a time.
+    description: Search IPs. Please provide a single argument (only one) to use this
+      command, as the API supports 1 filter at a time.
   - name: threat-grid-get-analysis-annotations
     arguments:
     - name: id
@@ -706,7 +780,8 @@ script:
       description: Result ID
     - contextPath: ThreatGrid.Sample.Details
       description: Detail of sample
-    description: Search Samples. Please provide a single argument (only one) to use this command, as the API supports 1 filter at a time.
+    description: Search Samples. Please provide a single argument (only one) to use
+      this command, as the API supports 1 filter at a time.
   - name: threat-grid-search-urls
     arguments:
     - name: url
@@ -739,16 +814,19 @@ script:
       description: search by artifact downloaded
     - name: tag
       description: search by url tag
-    description: Search urls. Please provide a single argument (only one) to use this command, as the API supports 1 filter at a time.
+    description: Search urls. Please provide a single argument (only one) to use this
+      command, as the API supports 1 filter at a time.
   - name: threat-grid-get-samples-state
     arguments:
     - name: ids
       description: Comma separated list of sample ids
     outputs:
     - contextPath: ThreatGrid.Sample.ID
-      description: The sample ID, globally unique, and the canonical identifier of this sample analysis
+      description: The sample ID, globally unique, and the canonical identifier of
+        this sample analysis
     - contextPath: ThreatGrid.Sample.State
-      description: The state of the sample, one of a stable set of strings “wait, prep, run, proc, succ, fail”
+      description: The state of the sample, one of a stable set of strings “wait,
+        prep, run, proc, succ, fail”
     description: Get threat grid samples state
   - name: threat-grid-feeds-artifacts
     arguments:
@@ -823,7 +901,8 @@ script:
     - name: user-only
       description: ' If “true”, will only match against samples you submitted'
     - name: sample
-      description: A comma-separated list of sample IDs. Restrict results to these samples.
+      description: A comma-separated list of sample IDs. Restrict results to these
+        samples.
     outputs:
     - contextPath: Demisto.File
       description: File containing result
@@ -1015,3 +1094,6 @@ script:
 tests:
 - ThreatGridTest
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

@@ -29,7 +29,8 @@ configuration:
   name: insecure
   required: false
   type: 8
-description: Manipulates key/value pairs according to an incident utilizing the MongoDB collection.
+description: Manipulates key/value pairs according to an incident utilizing the MongoDB
+  collection.
 display: MongoDB Key Value Store
 name: MongoDB Key Value Store
 script:
@@ -147,8 +148,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Purges all keys/values for an incident. A common use case for this command is when closing
-      an incident. This command clears the entries for the closed incident from the database.
+    description: Purges all keys/values for an incident. A common use case for this
+      command is when closing an incident. This command clears the entries for the
+      closed incident from the database.
     execution: false
     name: mongodb-purge-entries
   - arguments:
@@ -176,3 +178,6 @@ script:
   subtype: python3
 tests:
 - MongoDB KeyValueStore - Test
+marketplaces:
+- xsoar
+- marketplacev2

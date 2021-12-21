@@ -4,7 +4,8 @@ commonfields:
 name: Tufin
 display: Tufin
 category: Network Security
-description: Retrieve and analyze network access controls across Tufin-managed firewalls, SDN, and public cloud to identify vulnerable access paths of an attack
+description: Retrieve and analyze network access controls across Tufin-managed firewalls,
+  SDN, and public cloud to identify vulnerable access paths of an attack
 configuration:
 - display: SecureTrack IP or FQDN
   name: SecureTrack-Server
@@ -59,12 +60,15 @@ script:
     arguments:
     - name: source
       required: true
-      description: Source address/addresses (may contain multiple, comma separated values) e.g. 192.168.100.32 or 192.168.100.32/32,192.168.100.33
+      description: Source address/addresses (may contain multiple, comma separated
+        values) e.g. 192.168.100.32 or 192.168.100.32/32,192.168.100.33
     - name: destination
       required: true
-      description: Destination address/addresses (may contain multiple, comma separated values) e.g. 192.168.100.32 or 192.168.100.32/32,192.168.100.33
+      description: Destination address/addresses (may contain multiple, comma separated
+        values) e.g. 192.168.100.32 or 192.168.100.32/32,192.168.100.33
     - name: service
-      description: Service parameter can be a port (for example, “tcp:80”, “any”) or an application (for example, “Skype”, “Facebook”).
+      description: Service parameter can be a port (for example, “tcp:80”, “any”)
+        or an application (for example, “Skype”, “Facebook”).
     outputs:
     - contextPath: Tufin.Topology.TrafficAllowed
       description: Traffic Permitted
@@ -77,12 +81,15 @@ script:
     arguments:
     - name: source
       required: true
-      description: Source address/addresses (may contain multiple, comma separated values)
+      description: Source address/addresses (may contain multiple, comma separated
+        values)
     - name: destination
       required: true
-      description: Destination address/addresses (may contain multiple, comma separated values)
+      description: Destination address/addresses (may contain multiple, comma separated
+        values)
     - name: service
-      description: Service parameter can be a port (for example, “tcp:80”, “any”) or an application (for example, “Skype”, “Facebook”).
+      description: Service parameter can be a port (for example, “tcp:80”, “any”)
+        or an application (for example, “Skype”, “Facebook”).
     description: Search the Tufin Topology Map, returning an image
   - name: tufin-object-resolve
     arguments:
@@ -98,7 +105,9 @@ script:
     arguments:
     - name: search
       required: true
-      description: The text format is for a field is <fieldname>:<text> for example source:192.168.1.1 or bareword for free text search. See the search info documentation in Securetrack Policy Browser page for more information.
+      description: The text format is for a field is <fieldname>:<text> for example
+        source:192.168.1.1 or bareword for free text search. See the search info documentation
+        in Securetrack Policy Browser page for more information.
     outputs:
     - contextPath: Tufin.Policysearch.NumberRulesFound
       description: Number of rules found via search
@@ -222,7 +231,8 @@ script:
     - contextPath: Tufin.Ticket.CurrentStep
       description: Ticket current step
       type: string
-    description: Get information on a SecureChange Ticket (ID retrieved from SecureChange UI)
+    description: Get information on a SecureChange Ticket (ID retrieved from SecureChange
+      UI)
   - name: tufin-search-applications
     arguments:
     - name: name
@@ -286,4 +296,7 @@ script:
   subtype: python3
 fromversion: 5.0.0
 tests:
-  - no tests
+- no tests
+marketplaces:
+- xsoar
+- marketplacev2

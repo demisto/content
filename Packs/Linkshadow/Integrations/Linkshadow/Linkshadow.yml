@@ -151,3 +151,6 @@ script:
 fromversion: 5.5.0
 tests:
 - No test
+marketplaces:
+- xsoar
+- marketplacev2

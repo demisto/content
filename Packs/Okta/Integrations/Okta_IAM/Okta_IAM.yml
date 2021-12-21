@@ -633,3 +633,6 @@ tests:
 defaultmapperin: Okta IAM - App Sync (mapper)
 defaultclassifier: Okta IAM - App Sync (classifier)
 fromversion: 6.0.0
+marketplaces:
+- xsoar
+- marketplacev2

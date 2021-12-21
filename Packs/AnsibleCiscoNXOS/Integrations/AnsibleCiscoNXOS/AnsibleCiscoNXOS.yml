@@ -2166,8 +2166,8 @@ script:
     - auto: PREDEFINED
       defaultValue: 'No'
       description: Remove any switch logging configuration that does not match what
-        has been configured Not supported for connection local. All nxos_logging
-        tasks must use the same connection type.
+        has been configured Not supported for connection local. All nxos_logging tasks
+        must use the same connection type.
       name: purge
       predefined:
       - 'Yes'
@@ -3876,3 +3876,6 @@ script:
   type: python
 tests:
 - Test-AnsibleCiscoNXOS
+marketplaces:
+- xsoar
+- marketplacev2

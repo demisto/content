@@ -70,3 +70,6 @@ dependson:
   - demisto-api-post
 tests:
 - No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2

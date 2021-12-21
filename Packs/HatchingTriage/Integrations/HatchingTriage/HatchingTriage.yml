@@ -135,7 +135,8 @@ script:
         type: Date
   - arguments:
     - default: false
-      description: Sample's unique identifier, can be found using the query samples command
+      description: Sample's unique identifier, can be found using the query samples
+        command
       isArray: false
       name: sample_id
       required: true
@@ -177,7 +178,8 @@ script:
         type: String
   - arguments:
     - default: false
-      description: Sample's unique identifier, can be found using the query samples command
+      description: Sample's unique identifier, can be found using the query samples
+        command
       isArray: false
       name: sample_id
       required: true
@@ -220,7 +222,8 @@ script:
   - arguments:
     - default: false
       isArray: false
-      description: Sample's unique identifier, can be found using the query samples command
+      description: Sample's unique identifier, can be found using the query samples
+        command
       name: sample_id
       required: true
       secret: false
@@ -232,7 +235,8 @@ script:
     - default: false
       isArray: false
       name: sample_id
-      description: Sample's unique identifier, can be found using the query samples command
+      description: Sample's unique identifier, can be found using the query samples
+        command
       required: true
       secret: false
     - auto: PREDEFINED
@@ -267,7 +271,8 @@ script:
     - default: false
       isArray: false
       name: sample_id
-      description: Sample's unique identifier, can be found using the query samples command
+      description: Sample's unique identifier, can be found using the query samples
+        command
       required: true
       secret: false
     deprecated: false
@@ -309,7 +314,8 @@ script:
     - default: false
       isArray: false
       name: sample_id
-      description: Sample's unique identifier, can be found using the query samples command
+      description: Sample's unique identifier, can be found using the query samples
+        command
       required: true
       secret: false
     - default: false
@@ -357,7 +363,8 @@ script:
     - default: false
       isArray: false
       name: sample_id
-      description: Sample's unique identifier, can be found using the query samples command
+      description: Sample's unique identifier, can be found using the query samples
+        command
       required: true
       secret: false
     - default: false
@@ -374,7 +381,8 @@ script:
     - default: false
       isArray: false
       name: sample_id
-      description: Sample's unique identifier, can be found using the query samples command
+      description: Sample's unique identifier, can be found using the query samples
+        command
       required: true
       secret: false
     - default: false
@@ -391,7 +399,8 @@ script:
     - default: false
       isArray: false
       name: sample_id
-      description: Sample's unique identifier, can be found using the query samples command
+      description: Sample's unique identifier, can be found using the query samples
+        command
       required: true
       secret: false
     - default: false
@@ -409,7 +418,8 @@ script:
     deprecated: false
     execution: false
     name: triage-get-dumped-file
-    description: Retrieves files dumped by the sample. The names can be found under the "dumped" section from the triage report output
+    description: Retrieves files dumped by the sample. The names can be found under
+      the "dumped" section from the triage report output
   - arguments:
     - default: false
       isArray: false
@@ -445,7 +455,8 @@ script:
     deprecated: false
     execution: false
     name: triage-get-users
-    description: Return all users within the company as a paginated list. Returns a single user if a userID is provided
+    description: Return all users within the company as a paginated list. Returns
+      a single user if a userID is provided
   - arguments:
     - default: false
       isArray: false
@@ -525,7 +536,8 @@ script:
     deprecated: false
     execution: false
     name: triage-delete-user
-    description: Delete a user and all associated data, invalidating any sessions and removing their API keys. Any samples submitted by this user are kept
+    description: Delete a user and all associated data, invalidating any sessions
+      and removing their API keys. Any samples submitted by this user are kept
   - arguments:
     - default: false
       isArray: false
@@ -590,7 +602,8 @@ script:
     - default: false
       isArray: false
       name: profileID
-      description: Unique identifier of the profile, can be found by querying for all profiles
+      description: Unique identifier of the profile, can be found by querying for
+        all profiles
       required: false
       secret: false
     deprecated: false
@@ -641,9 +654,9 @@ script:
       name: network
       description: Network configuration the profile should use
       predefined:
-        - drop
-        - internet
-        - proxy
+      - drop
+      - internet
+      - proxy
       required: false
       secret: false
     deprecated: false
@@ -718,3 +731,6 @@ script:
   script: '-'
   subtype: python3
   type: python
+marketplaces:
+- xsoar
+- marketplacev2

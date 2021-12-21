@@ -59,9 +59,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets all the devices based on a particular
-      filter query. The command might execute multiple API calls depending on the
-      amount of devices that are returned.
+    description: Gets all the devices based on a particular filter query. The command
+      might execute multiple API calls depending on the amount of devices that are
+      returned.
     execution: false
     name: mobileiron-cloud-get-devices-data
     outputs:
@@ -111,13 +111,16 @@ script:
       description: Manufacturer of the device that is fetched.
       type: String
     - contextPath: MobileIronCloud.Device.imei
-      description: International Mobile Equipment Identity (IMEI) of the device that is fetched.
+      description: International Mobile Equipment Identity (IMEI) of the device that
+        is fetched.
       type: Unknown
     - contextPath: MobileIronCloud.Device.imei2
-      description: International Mobile Equipment Identity 2 (IMEI2) of the device that is fetched.
+      description: International Mobile Equipment Identity 2 (IMEI2) of the device
+        that is fetched.
       type: Unknown
     - contextPath: MobileIronCloud.Device.imsi
-      description: International mobile subscriber identity (IMSI) of the device that is fetched.
+      description: International mobile subscriber identity (IMSI) of the device that
+        is fetched.
       type: String
     - contextPath: MobileIronCloud.Device.wifiMacAddress
       description: WiFi MAC address of the device that is fetched.
@@ -213,13 +216,16 @@ script:
       description: Manufacturer of the device that is fetched.
       type: String
     - contextPath: MobileIronCloud.Device.imei
-      description: International Mobile Equipment Identity (IMEI) of the device that is fetched.
+      description: International Mobile Equipment Identity (IMEI) of the device that
+        is fetched.
       type: Unknown
     - contextPath: MobileIronCloud.Device.imei2
-      description: International Mobile Equipment Identity2 (IME2) of the device that is fetched.
+      description: International Mobile Equipment Identity2 (IME2) of the device that
+        is fetched.
       type: Unknown
     - contextPath: MobileIronCloud.Device.imsi
-      description: International mobile subscriber identity (IMSI) of the device that is fetched.
+      description: International mobile subscriber identity (IMSI) of the device that
+        is fetched.
       type: String
     - contextPath: MobileIronCloud.Device.wifiMacAddress
       description: WiFi MAC address of the device that is fetched.
@@ -265,8 +271,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets a single device matching the provided value for the device
-      serial number.
+    description: Gets a single device matching the provided value for the device serial
+      number.
     execution: false
     name: mobileiron-cloud-get-device-by-serial
     outputs:
@@ -316,13 +322,16 @@ script:
       description: Manufacturer of the device that is fetched.
       type: String
     - contextPath: MobileIronCloud.Device.imei
-      description: International Mobile Equipment Identity (IMEI) of the device that is fetched.
+      description: International Mobile Equipment Identity (IMEI) of the device that
+        is fetched.
       type: Unknown
     - contextPath: MobileIronCloud.Device.imei2
-      description: International Mobile Equipment Identity 2 (IME2) of the device that is fetched.
+      description: International Mobile Equipment Identity 2 (IME2) of the device
+        that is fetched.
       type: Unknown
     - contextPath: MobileIronCloud.Device.imsi
-      description: International mobile subscriber identity (IMSI) of the device that is fetched.
+      description: International mobile subscriber identity (IMSI) of the device that
+        is fetched.
       type: String
     - contextPath: MobileIronCloud.Device.wifiMacAddress
       description: WiFi MAC address of the device that is fetched.
@@ -390,8 +399,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Sends a wipe action to the device. This is
-      a potentially destructive action as it will completely wipe the device.
+    description: Sends a wipe action to the device. This is a potentially destructive
+      action as it will completely wipe the device.
     execution: false
     name: mobileiron-cloud-wipe-device
   - arguments:
@@ -402,8 +411,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Forces a check in to the particular device based
-      on the device ID.
+    description: Forces a check in to the particular device based on the device ID.
     execution: false
     name: mobileiron-cloud-force-check-in
   - arguments:
@@ -416,7 +424,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: push
-      description: 'The type of notification to send. Possible values are: "email" and "push". Default is "push".'
+      description: 'The type of notification to send. Possible values are: "email"
+        and "push". Default is "push".'
       isArray: false
       name: message_type
       predefined:
@@ -498,13 +507,16 @@ script:
       description: Manufacturer of the device that is fetched.
       type: String
     - contextPath: MobileIronCloud.Device.imei
-      description: International Mobile Equipment Identity (IMEI) of the device that is fetched.
+      description: International Mobile Equipment Identity (IMEI) of the device that
+        is fetched.
       type: Unknown
     - contextPath: MobileIronCloud.Device.imei2
-      description: International Mobile Equipment Identity 2 (IME2) of the device that is fetched.
+      description: International Mobile Equipment Identity 2 (IME2) of the device
+        that is fetched.
       type: Unknown
     - contextPath: MobileIronCloud.Device.imsi
-      description: International mobile subscriber identity (IMSI) of the device that is fetched.
+      description: International mobile subscriber identity (IMSI) of the device that
+        is fetched.
       type: String
     - contextPath: MobileIronCloud.Device.wifiMacAddress
       description: WiFi MAC address of the device that is fetched.
@@ -555,3 +567,6 @@ tests:
 - No tests (auto formatted)
 defaultmapperin: MobileIron Incident Incoming Mapper
 fromversion: 6.0.0
+marketplaces:
+- xsoar
+- marketplacev2

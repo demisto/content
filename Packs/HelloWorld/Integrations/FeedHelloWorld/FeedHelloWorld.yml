@@ -125,3 +125,6 @@ description: 'This is the Feed Hello World integration for getting started with 
   feed integration.'
 tests:
 - No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2

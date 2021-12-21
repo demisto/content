@@ -307,7 +307,8 @@ script:
       description: Deception Support Node ID
     - name: campaign_id
       required: true
-      description: ID of the campaign where you want to deploy a new host. You can execute countercraft-list-campaigns in order to obtain the ID
+      description: ID of the campaign where you want to deploy a new host. You can
+        execute countercraft-list-campaigns in order to obtain the ID
     - name: os_family
       required: true
       auto: PREDEFINED
@@ -448,4 +449,7 @@ script:
   subtype: python3
 fromversion: 5.0.0
 tests:
-  - CounterCraft - Test
+- CounterCraft - Test
+marketplaces:
+- xsoar
+- marketplacev2

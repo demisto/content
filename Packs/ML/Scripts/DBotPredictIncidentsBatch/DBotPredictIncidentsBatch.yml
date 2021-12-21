@@ -117,3 +117,6 @@ dockerimage: demisto/ml:1.0.0.23334
 fromversion: 5.0.0
 tests:
 - VerifyOOBV2Predictions-Test
+marketplaces:
+- xsoar
+- marketplacev2

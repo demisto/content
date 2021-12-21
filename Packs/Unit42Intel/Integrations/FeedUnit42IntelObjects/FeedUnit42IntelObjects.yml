@@ -111,8 +111,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the Unit 42 Intel Objects Feed integration to fetch indicators from Unit 42 
-  Intel Objects.
+description: Use the Unit 42 Intel Objects Feed integration to fetch indicators from
+  Unit 42 Intel Objects.
 display: Unit 42 Intel Objects Feed
 name: Unit42IntelObjectsFeed
 script:
@@ -141,3 +141,6 @@ script:
 tests:
 - Unit42 Intel Objects Feed - Test
 fromversion: 6.5.0
+marketplaces:
+- xsoar
+- marketplacev2

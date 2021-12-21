@@ -63,7 +63,8 @@ configuration:
   - Delivered Messages
   required: false
   type: 15
-- additionalinfo: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes). Proofpoint supports a maximum 1 week fetch back.
+- additionalinfo: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes).
+    Proofpoint supports a maximum 1 week fetch back.
   defaultvalue: 1 hour
   display: First fetch time range
   name: fetch_time
@@ -102,9 +103,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'A comma-separated list of the threat types to return. If empty, all
-        threat types are returned. The following values are accepted: "url", "attachment", and
-        "messageText".'
+      description: 'A comma-separated list of the threat types to return. If empty,
+        all threat types are returned. The following values are accepted: "url", "attachment",
+        and "messageText".'
       isArray: false
       name: threatType
       predefined:
@@ -147,7 +148,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: All
-      description: 'Event types to return. Possible values: "All", "Issues", "Delivered Messages", "Blocked Messages", "Permitted Clicks", and "Blocked Clicks".'
+      description: 'Event types to return. Possible values: "All", "Issues", "Delivered
+        Messages", "Blocked Messages", "Permitted Clicks", and "Blocked Clicks".'
       isArray: false
       name: eventTypes
       predefined:
@@ -181,8 +183,8 @@ script:
       description: The name of the PPS cluster which processed the message.
       type: String
     - contextPath: Proofpoint.MessagesDelivered.fromAddress
-      description: 'The email address contained in the From: header, excluding any friendly
-        name.'
+      description: 'The email address contained in the From: header, excluding any
+        friendly name.'
       type: String
     - contextPath: Proofpoint.MessagesDelivered.headerCC
       description: The CC header.
@@ -228,7 +230,8 @@ script:
       description: A link to the entry about the threat on the TAP Dashboard.
       type: String
     - contextPath: Proofpoint.MessagesDelivered.messageTime
-      description: The time the message was delivered to the user or quarantined by PPS.
+      description: The time the message was delivered to the user or quarantined by
+        PPS.
       type: Date
     - contextPath: Proofpoint.MessagesDelivered.modulesRun
       description: The list of PPS modules that processed the message.
@@ -242,8 +245,8 @@ script:
         PPS.
       type: String
     - contextPath: Proofpoint.MessagesDelivered.quarantineFolder
-      description: The name of the folder that contains the quarantined message.
-        This appears only for messagesBlocked.
+      description: The name of the folder that contains the quarantined message. This
+        appears only for messagesBlocked.
       type: String
     - contextPath: Proofpoint.MessagesDelivered.quarantineRule
       description: The name of the rule that quarantined the message. This appears
@@ -285,8 +288,8 @@ script:
       description: The name of the PPS cluster that processed the message.
       type: String
     - contextPath: Proofpoint.MessagesBlocked.fromAddress
-      description: 'The email address contained in the From: header, excluding any friendly
-        name.'
+      description: 'The email address contained in the From: header, excluding any
+        friendly name.'
       type: String
     - contextPath: Proofpoint.MessagesBlocked.headerCC
       description: The CC header.
@@ -332,7 +335,8 @@ script:
       description: A link to the entry about the threat on the TAP dashboard.
       type: String
     - contextPath: Proofpoint.MessagesBlocked.messageTime
-      description: The time the message was blocked to the user or quarantined by PPS.
+      description: The time the message was blocked to the user or quarantined by
+        PPS.
       type: Date
     - contextPath: Proofpoint.MessagesBlocked.messageTime
       description: The list of PPS modules that processed the message.
@@ -349,8 +353,8 @@ script:
         PPS.
       type: String
     - contextPath: Proofpoint.MessagesBlocked.quarantineFolder
-      description: The name of the folder that contains the quarantined message.
-        This appears only for messagesBlocked.
+      description: The name of the folder that contains the quarantined message. This
+        appears only for messagesBlocked.
       type: String
     - contextPath: Proofpoint.MessagesBlocked.quarantineRule
       description: The name of the rule that quarantined the message. This appears
@@ -360,8 +364,8 @@ script:
       description: A list containing the email addresses of the recipients.
       type: String
     - contextPath: Proofpoint.MessagesBlocked.replyToAddress
-      description: 'The email address contained in the Reply-To: header, excluding any
-        friendly name.'
+      description: 'The email address contained in the Reply-To: header, excluding
+        any friendly name.'
       type: String
     - contextPath: Proofpoint.MessagesBlocked.sender
       description: The email address of the SMTP (envelope) sender. The user-part
@@ -389,9 +393,9 @@ script:
       description: The threat category of the malicious URL.
       type: String
     - contextPath: Proofpoint.ClicksPermitted.clickIP
-      description: The external IP address of the user who clicked the link. If
-        the user is behind a firewall performing network address translation, the
-        IP address of the firewall will be shown.
+      description: The external IP address of the user who clicked the link. If the
+        user is behind a firewall performing network address translation, the IP address
+        of the firewall will be shown.
       type: String
     - contextPath: Proofpoint.ClicksPermitted.clickTime
       description: The time the user clicked the URL.
@@ -439,9 +443,9 @@ script:
       description: The threat category of the malicious URL.
       type: String
     - contextPath: Proofpoint.ClicksBlocked.clickIP
-      description: The external IP address of the user who clicked the link. If
-        the user is behind a firewall performing network address translation, the
-        IP address of the firewall will be shown.
+      description: The external IP address of the user who clicked the link. If the
+        user is behind a firewall performing network address translation, the IP address
+        of the firewall will be shown.
       type: String
     - contextPath: Proofpoint.ClicksBlocked.clickTime
       description: The time the user clicked the URL.
@@ -620,8 +624,8 @@ script:
       description: The location of the dropper file.
       type: String
     - contextPath: Proofpoint.Report.Dropper.URL
-      description: Optional. The name of the static rule inside the sandbox that
-        identified the dropper.
+      description: Optional. The name of the static rule inside the sandbox that identified
+        the dropper.
       type: String
     - contextPath: Proofpoint.Report.Dropper.Rule
       description: Optional. The URL the dropper contacted.
@@ -651,8 +655,8 @@ script:
       description: Optional. The filesystem call made (create, modify, or delete).
       type: String
     - contextPath: Proofpoint.Report.File.Rule
-      description: Optional. The name of the static rule inside the sandbox that
-        identified the suspicious file.
+      description: Optional. The name of the static rule inside the sandbox that identified
+        the suspicious file.
       type: String
     - contextPath: Proofpoint.Report.File.SHA256
       description: Optional. The SH256 hash of the file's contents.
@@ -682,8 +686,7 @@ script:
       description: A friendly display string.
       type: String
     - contextPath: Proofpoint.Report.IDS.Name
-      description: The friendly name of the IDS rule that observed the malicious
-        traffic.
+      description: The friendly name of the IDS rule that observed the malicious traffic.
       type: String
     - contextPath: Proofpoint.Report.IDS.SignatureID
       description: The identifier of the IDS rule that observed the malicious traffic.
@@ -1047,8 +1050,8 @@ script:
       description: The external IP address of the user who clicked the link.
       type: String
     - contextPath: Proofpoint.ClicksPermitted.sender
-      description: The email address of the sender. The user-part is hashed. The domain-part is
-        in cleartext.
+      description: The email address of the sender. The user-part is hashed. The domain-part
+        is in cleartext.
       type: String
     - contextPath: Proofpoint.ClicksPermitted.recipient
       description: The email address of the recipient.
@@ -1112,7 +1115,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get events for blocked messages in the specified time period. Must provide either the interval or time_range arguments.
+    description: Get events for blocked messages in the specified time period. Must
+      provide either the interval or time_range arguments.
     execution: false
     name: proofpoint-get-events-messages-blocked
     outputs:
@@ -1128,7 +1132,8 @@ script:
         threatType, threatUrl.'
       type: List
     - contextPath: Proofpoint.MessagesBlocked.messageTime
-      description: The time the message was delivered to the user or quarantined by PPS.
+      description: The time the message was delivered to the user or quarantined by
+        PPS.
       type: Date
     - contextPath: Proofpoint.MessagesBlocked.impostorScore
       description: The impostor score of the message. Higher scores indicate higher
@@ -1145,12 +1150,12 @@ script:
       description: The subject line of the message, if available.
       type: String
     - contextPath: Proofpoint.MessagesBlocked.quarantineFolder
-      description: The name of the folder that contains the quarantined message. This appears
-        only for blocked messages. For delivered messages will be 'None'.
+      description: The name of the folder that contains the quarantined message. This
+        appears only for blocked messages. For delivered messages will be 'None'.
       type: String
     - contextPath: Proofpoint.MessagesBlocked.quarantineRule
-      description: The name of the rule that quarantined the message. This appears only
-        for messagesBlocked events.
+      description: The name of the rule that quarantined the message. This appears
+        only for messagesBlocked events.
       type: String
     - contextPath: Proofpoint.MessagesBlocked.policyRoutes
       description: The policy routes that the message matched during processing by
@@ -1195,8 +1200,8 @@ script:
     - contextPath: Proofpoint.MessagesBlocked.completelyRewritten
       description: The rewrite status of the message. If value is true, all instances
         of URL threats within the message were successfully rewritten. If the value
-        is false, at least one instance of the threat URL was not rewritten. If
-        the value is 'na', the message did not contain any URL-based threats.
+        is false, at least one instance of the threat URL was not rewritten. If the
+        value is 'na', the message did not contain any URL-based threats.
       type: String
     - contextPath: Proofpoint.MessagesBlocked.id
       description: The unique ID of the message.
@@ -1258,7 +1263,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get events for delivered messages in the specified time period. Must provide either the interval or time_range arguments.
+    description: Get events for delivered messages in the specified time period. Must
+      provide either the interval or time_range arguments.
     execution: false
     name: proofpoint-get-events-messages-delivered
     outputs:
@@ -1274,7 +1280,8 @@ script:
         threatType, threatUrl.'
       type: List
     - contextPath: Proofpoint.MessagesDelivered.messageTime
-      description: The time the message was delivered to the user or quarantined by PPS.
+      description: The time the message was delivered to the user or quarantined by
+        PPS.
       type: Date
     - contextPath: Proofpoint.MessagesDelivered.impostorScore
       description: The impostor score of the message. Higher scores indicate higher
@@ -1291,12 +1298,12 @@ script:
       description: The subject line of the message, if available.
       type: String
     - contextPath: Proofpoint.MessagesDelivered.quarantineFolder
-      description: The name of the folder that contains the quarantined message. This appears
-        only for blocked messages. For delivered messages will be 'None'.
+      description: The name of the folder that contains the quarantined message. This
+        appears only for blocked messages. For delivered messages will be 'None'.
       type: String
     - contextPath: Proofpoint.MessagesDelivered.quarantineRule
-      description: The name of the rule that quarantined the message. This appears only
-        for messagesBlocked events.
+      description: The name of the rule that quarantined the message. This appears
+        only for messagesBlocked events.
       type: String
     - contextPath: Proofpoint.MessagesDelivered.policyRoutes
       description: The policy routes that the message matched during processing by
@@ -1341,8 +1348,8 @@ script:
     - contextPath: Proofpoint.MessagesDelivered.completelyRewritten
       description: The rewrite status of the message. If value is true, all instances
         of URL threats within the message were successfully rewritten. If the value
-        is false, at least one instance of the threat URL was not rewritten. If
-        the value is 'na', the message did not contain any URL-based threats.
+        is false, at least one instance of the threat URL was not rewritten. If the
+        value is 'na', the message did not contain any URL-based threats.
       type: String
     - contextPath: Proofpoint.MessagesDelivered.id
       description: The unique ID of the message.
@@ -1405,7 +1412,8 @@ script:
       secret: false
     deprecated: false
     description: Get events for clicks to malicious URLs permitted and messages delivered
-      containing a known attachment threat within the specified time period. Must provide either the interval or time_range arguments.
+      containing a known attachment threat within the specified time period. Must
+      provide either the interval or time_range arguments.
     execution: false
     name: proofpoint-list-issues
     outputs:
@@ -1434,8 +1442,8 @@ script:
       description: The external IP address of the user who clicked the link.
       type: String
     - contextPath: Proofpoint.ClicksPermitted.sender
-      description: The email address of the sender. The user-part is hashed. The domain-part is
-        in cleartext.
+      description: The email address of the sender. The user-part is hashed. The domain-part
+        is in cleartext.
       type: String
     - contextPath: Proofpoint.ClicksPermitted.recipient
       description: The email address of the recipient.
@@ -1471,7 +1479,8 @@ script:
         threatType, threatUrl.'
       type: List
     - contextPath: Proofpoint.MessagesDelivered.messageTime
-      description: THe time the message was delivered to the user or quarantined by PPS.
+      description: THe time the message was delivered to the user or quarantined by
+        PPS.
       type: Date
     - contextPath: Proofpoint.MessagesDelivered.impostorScore
       description: The impostor score of the message. Higher scores indicate higher
@@ -1488,12 +1497,12 @@ script:
       description: The subject line of the message, if available.
       type: String
     - contextPath: Proofpoint.MessagesDelivered.quarantineFolder
-      description: The name of the folder that contains the quarantined message. This appears
-        only for blocked messages. For delivered messages will be 'None'.
+      description: The name of the folder that contains the quarantined message. This
+        appears only for blocked messages. For delivered messages will be 'None'.
       type: String
     - contextPath: Proofpoint.MessagesDelivered.quarantineRule
-      description: The name of the rule that quarantined the message. This appears only
-        for messagesBlocked events.
+      description: The name of the rule that quarantined the message. This appears
+        only for messagesBlocked events.
       type: String
     - contextPath: Proofpoint.MessagesDelivered.policyRoutes
       description: The policy routes that the message matched during processing by
@@ -1521,8 +1530,8 @@ script:
         any friendly names.'
       type: List
     - contextPath: Proofpoint.MessagesDelivered.Header.replyToAddress
-      description: 'The email address contained in the Reply-To: header, excluding any
-        friendly name.'
+      description: 'The email address contained in the Reply-To: header, excluding
+        any friendly name.'
       type: List
     - contextPath: Proofpoint.MessagesDelivered.Header.toAddresses
       description: 'A list of email addresses contained within the To: header, excluding
@@ -1538,8 +1547,8 @@ script:
     - contextPath: Proofpoint.MessagesDelivered.completelyRewritten
       description: The rewrite status of the message. If value is true, all instances
         of URL threats within the message were successfully rewritten. If the value
-        is false, at least one instance of the threat URL was not rewritten. If
-        the value is 'na', the message did not contain any URL-based threats.
+        is false, at least one instance of the threat URL was not rewritten. If the
+        value is 'na', the message did not contain any URL-based threats.
       type: String
     - contextPath: Proofpoint.MessagesDelivered.id
       description: The unique ID of the message.
@@ -1592,7 +1601,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets a list of IDs of campaigns active in a specified time period. Must provide either the interval or time_range arguments.
+    description: Gets a list of IDs of campaigns active in a specified time period.
+      Must provide either the interval or time_range arguments.
     execution: false
     name: proofpoint-list-campaigns
     outputs:
@@ -1615,7 +1625,8 @@ script:
     name: proofpoint-get-campaign
     outputs:
     - contextPath: Proofpoint.Campaign.info
-      description: The campaign information - ID,name, description, startDate, and notable.
+      description: The campaign information - ID,name, description, startDate, and
+        notable.
       type: List
     - contextPath: Proofpoint.Campaign.actors
       description: A list of actor objects.
@@ -1715,7 +1726,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets a list of the top clickers in the organization for a specified time period.
+    description: Gets a list of the top clickers in the organization for a specified
+      time period.
     execution: false
     name: proofpoint-get-top-clickers
     outputs:
@@ -1763,3 +1775,6 @@ script:
 tests:
 - No test - no instance
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

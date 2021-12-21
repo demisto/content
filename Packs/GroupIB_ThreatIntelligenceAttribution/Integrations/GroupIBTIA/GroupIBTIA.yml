@@ -1342,3 +1342,6 @@ script:
 tests:
 - Group-IB Threat Intelligence & Attribution-Test
 fromversion: 6.0.0
+marketplaces:
+- xsoar
+- marketplacev2

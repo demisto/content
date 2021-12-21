@@ -66,8 +66,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: ID of specific message to retrieve. If ID is given
-        query will be ignored
+      description: ID of specific message to retrieve. If ID is given query will be
+        ignored
       isArray: false
       name: id
       required: false
@@ -197,7 +197,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Updates a PhishER message status. User must provide at least one argument.
+    description: Updates a PhishER message status. User must provide at least one
+      argument.
     execution: false
     name: phisher-update-message
   - arguments:
@@ -246,3 +247,6 @@ script:
 tests:
 - No tests (auto formatted)
 fromversion: 5.5.0
+marketplaces:
+- xsoar
+- marketplacev2

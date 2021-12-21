@@ -4,7 +4,8 @@ commonfields:
 name: PerceptionPoint
 display: PerceptionPoint
 category: Email Gateway
-description: Loads incidents from Perception Point and releases falsely quarantined emails.
+description: Loads incidents from Perception Point and releases falsely quarantined
+  emails.
 configuration:
 - display: Token to use Perception Point's API
   name: pp_token
@@ -69,3 +70,6 @@ script:
 tests:
 - PerceptionPoint Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

@@ -453,3 +453,6 @@ tests:
 - ServiceNow_CMDB_Test
 - ServiceNow_CMDB_OAuth_Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

@@ -55,7 +55,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Integrate with Oracle's services to execute CRUD and Group operations for employee lifecycle processes.
+description: Integrate with Oracle's services to execute CRUD and Group operations
+  for employee lifecycle processes.
 display: Oracle IAM
 name: OracleIAM
 script:
@@ -420,3 +421,6 @@ script:
 tests:
 - No tests
 fromversion: 6.0.0
+marketplaces:
+- xsoar
+- marketplacev2

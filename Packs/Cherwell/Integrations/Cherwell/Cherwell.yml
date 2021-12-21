@@ -247,7 +247,8 @@ script:
     name: cherwell-upload-attachment
     outputs:
     - contextPath: Cherwell.UploadedAttachments.AttachmentFileId
-      description: AttachmentFileId to use to get information about the attachment. attachment
+      description: AttachmentFileId to use to get information about the attachment.
+        attachment
       type: String
     - contextPath: Cherwell.UploadedAttachments.BusinessObjectType
       description: ' Business object type, for example: "Incident". '
@@ -456,7 +457,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Gets information for a field, by one of its properties (Name, Display Name, or id).
+    description: Gets information for a field, by one of its properties (Name, Display
+      Name, or id).
     execution: false
     name: cherwell-get-field-info
     outputs:
@@ -483,7 +485,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Scope owner ID for the saved search. Use "(None)" when no scope owner exists.
+      description: Scope owner ID for the saved search. Use "(None)" when no scope
+        owner exists.
       isArray: false
       name: scope_owner
       required: true
@@ -535,7 +538,8 @@ script:
     name: cherwell-get-business-object-summary
     outputs:
     - contextPath: Cherwell.BusinessObjectSummary.supporting
-      description: Whether the business object is a supporting business object or not.
+      description: Whether the business object is a supporting business object or
+        not.
       type: Boolean
     - contextPath: Cherwell.BusinessObjectSummary.major
       description: Whether the business object is a major business object or not.
@@ -599,7 +603,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The key to find the One-Step Action to run. You can get it using the command cherwell-get-one-step-actions-for-business-object.
+      description: The key to find the One-Step Action to run. You can get it using
+        the command cherwell-get-one-step-actions-for-business-object.
       isArray: false
       name: oneStepAction_StandInKey
       required: true
@@ -611,7 +616,9 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Run a One-Step Action using a OneStepActionRequest. This request is used to start a One-Step Action run with additional information, such as prompt values.
+    description: Run a One-Step Action using a OneStepActionRequest. This request
+      is used to start a One-Step Action run with additional information, such as
+      prompt values.
     execution: false
     name: cherwell-run-one-step-action-on-business-object
     outputs: []
@@ -624,3 +631,6 @@ script:
 tests:
 - Cherwell - test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

@@ -1825,5 +1825,8 @@ script:
   subtype: python3
   type: python
 tests:
-  - Carbon Black Enterprise EDR Test
+- Carbon Black Enterprise EDR Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

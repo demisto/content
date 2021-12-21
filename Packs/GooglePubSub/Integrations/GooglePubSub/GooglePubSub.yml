@@ -43,8 +43,8 @@ configuration:
   name: default_max_msgs
   required: false
   type: 0
-- additionalinfo: Acknowledge fetched incidents. (When toggled off, will not acknowledge fetched
-    messages).
+- additionalinfo: Acknowledge fetched incidents. (When toggled off, will not acknowledge
+    fetched messages).
   display: Acknowledge incidents.
   name: ack_incidents
   required: false
@@ -56,8 +56,8 @@ configuration:
   name: first_fetch_time
   required: false
   type: 0
-description: Google Cloud Pub/Sub is a fully-managed real-time messaging service
-  that enables you to send and receive messages between independent applications.
+description: Google Cloud Pub/Sub is a fully-managed real-time messaging service that
+  enables you to send and receive messages between independent applications.
 display: Google Cloud Pub/Sub
 name: GooglePubSub
 script:
@@ -109,7 +109,8 @@ script:
       secret: false
     - default: false
       description: 'Attributes for this message. If this field is empty, the message
-        must contain non-empty data. The input format is "key=val" pairs separated by commas.'
+        must contain non-empty data. The input format is "key=val" pairs separated
+        by commas.'
       isArray: false
       name: attributes
       required: false
@@ -308,7 +309,8 @@ script:
     - default: false
       description: 'Endpoint configuration attributes that can be used to control
         the message delivery, such as "x-goog-version", that you can use to change
-        the format of the pushed message. The input format is "key=val" pairs separated by commas.'
+        the format of the pushed message. The input format is "key=val" pairs separated
+        by commas.'
       isArray: false
       name: push_attributes
       required: false
@@ -833,8 +835,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: A comma-separated list of IDs to acknowledge, as received from "gcp-pubsub-topic-messages-pull"
-        or from "fetch-incidents".
+      description: A comma-separated list of IDs to acknowledge, as received from
+        "gcp-pubsub-topic-messages-pull" or from "fetch-incidents".
       isArray: true
       name: ack_ids
       required: true
@@ -853,3 +855,6 @@ script:
   subtype: python3
   type: python
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

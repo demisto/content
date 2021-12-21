@@ -879,3 +879,6 @@ script:
   type: python
 tests:
 - MSGraph_DeviceManagement_Test
+marketplaces:
+- xsoar
+- marketplacev2

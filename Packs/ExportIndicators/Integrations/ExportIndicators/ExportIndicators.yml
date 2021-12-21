@@ -51,8 +51,9 @@ configuration:
   required: false
   type: 8
 - defaultvalue: 5 minutes
-  additionalinfo: How often to refresh the exported indicators (e.g., 5 minutes, 12 hours, 7 days, 3 months,
-   1 year). For performance reasons, we do not recommend setting this value to less than 1 minute.
+  additionalinfo: How often to refresh the exported indicators (e.g., 5 minutes, 12
+    hours, 7 days, 3 months, 1 year). For performance reasons, we do not recommend
+    setting this value to less than 1 minute.
   display: Refresh Rate
   name: cache_refresh_rate
   required: false
@@ -330,3 +331,6 @@ script:
 tests:
 - Test_export_indicators_service
 fromversion: 5.5.0
+marketplaces:
+- xsoar
+- marketplacev2

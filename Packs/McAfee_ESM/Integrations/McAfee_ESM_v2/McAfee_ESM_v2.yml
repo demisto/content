@@ -960,3 +960,6 @@ tests:
 - McAfee ESM v2 (v11.3) - Test
 - McAfee ESM Watchlists - Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

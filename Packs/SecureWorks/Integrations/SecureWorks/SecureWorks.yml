@@ -627,3 +627,6 @@ script:
 fromversion: 5.0.0
 tests:
 - secureworks_test
+marketplaces:
+- xsoar
+- marketplacev2

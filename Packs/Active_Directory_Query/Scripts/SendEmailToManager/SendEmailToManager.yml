@@ -8,11 +8,13 @@ type: python
 subtype: python2
 tags:
 - communication
-comment: Send an approval email to the manager of the employee with the given email allowing the manager to reply directly into the incident
+comment: Send an approval email to the manager of the employee with the given email
+  allowing the manager to reply directly into the incident
 system: true
 args:
 - name: email
-  description: The employee email. We will send an email to his manager. If not provided will be taken from incident label 'Email/from'
+  description: The employee email. We will send an email to his manager. If not provided
+    will be taken from incident label 'Email/from'
 - name: manager
   description: The manager attribute in Active Directory. Default is 'manager'.
 - name: allowReply
@@ -20,11 +22,14 @@ args:
   predefined:
   - "true"
   - "false"
-  description: If true, we will add an entitlement to the subject allowing manager to reply to war room
+  description: If true, we will add an entitlement to the subject allowing manager
+    to reply to war room
 - name: body
-  description: The contents of the email body. It's a template that can include $empName and $managerName which will be replaced with actual values.
+  description: The contents of the email body. It's a template that can include $empName
+    and $managerName which will be replaced with actual values.
 - name: request
-  description: The contents of the request from the manager. Will be added below the body. If none is provided, incident details will be taken.
+  description: The contents of the request from the manager. Will be added below the
+    body. If none is provided, incident details will be taken.
 - name: replyEntriesTag
   description: Tag to add on email reply entries
 - name: persistent
@@ -43,3 +48,6 @@ timeout: 0s
 tests:
 - No test
 dockerimage: demisto/python:2.7.18.24398
+marketplaces:
+- xsoar
+- marketplacev2

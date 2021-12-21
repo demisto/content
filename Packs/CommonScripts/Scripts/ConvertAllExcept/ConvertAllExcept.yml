@@ -27,3 +27,6 @@ runas: DBotWeakRole
 tests:
 - No test - used in Prisma Cloud classifier.
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

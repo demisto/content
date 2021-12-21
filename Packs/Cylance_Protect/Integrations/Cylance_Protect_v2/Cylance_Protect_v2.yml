@@ -903,3 +903,6 @@ script:
 tests:
 - Cylance Protect v2 Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

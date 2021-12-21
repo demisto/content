@@ -24,8 +24,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the MalQuery Integration to query the contents of 
-   clean and malicious binary files, which forms part of Falcon's search engine.
+description: Use the MalQuery Integration to query the contents of clean and malicious
+  binary files, which forms part of Falcon's search engine.
 display: CrowdStrike Malquery
 name: CrowdStrikeMalquery
 script:
@@ -33,8 +33,8 @@ script:
   - name: cs-malquery-exact-search
     arguments:
     - name: hex
-      description: The hex pattern to search. For example, deadbeef0102 (for bytes de, ad, be,
-        ef, 01, 02).
+      description: The hex pattern to search. For example, deadbeef0102 (for bytes
+        de, ad, be, ef, 01, 02).
     - name: ascii
       description: The ASCII pattern to search. For example, CrowdStrike.
     - name: wide
@@ -42,24 +42,26 @@ script:
     - name: limit
       description: The maximum number of results to be returned. Default is 100.
     - name: max_size
-      description: The maximum file size. The value can be specified either in bytes or
-        in multiples of KB/MB/GB. For example, 128000, 1.3 KB, 8mb.
+      description: The maximum file size. The value can be specified either in bytes
+        or in multiples of KB/MB/GB. For example, 128000, 1.3 KB, 8mb.
     - name: min_size
-      description: The minimum file size. The value can be specified either in bytes or
-        in multiples of KB/MB/GB. For example, 128000, 1.3 KB, 8mb.
+      description: The minimum file size. The value can be specified either in bytes
+        or in multiples of KB/MB/GB. For example, 128000, 1.3 KB, 8mb.
     - name: max_date
       description: Limits results to files first seen before this date. The format
         is YYYY/MM/DD. For example, 2018/01/31.
     - name: min_date
-      description: Limits results to files first seen after this date. The format is
-        YYYY/MM/DD. For example, 2018/01/31.
+      description: Limits results to files first seen after this date. The format
+        is YYYY/MM/DD. For example, 2018/01/31.
     - name: filter_filetypes
       description: Limits results to certain file types such as EMAIL, PCAP, PDF,
-        PE32. Comma separated values. For a full list of file types, see the MalQuery API documentation.
+        PE32. Comma separated values. For a full list of file types, see the MalQuery
+        API documentation.
       isArray: true
     - name: filter_meta
-      description: Specifies a subset of metadata fields to return in the results. Possible
-        values - sha256, md5, type, size, first_seen, label, family. Comma separated values.
+      description: Specifies a subset of metadata fields to return in the results.
+        Possible values - sha256, md5, type, size, first_seen, label, family. Comma
+        separated values.
       isArray: true
     outputs:
     - contextPath: Malquery.Request_ID
@@ -69,7 +71,7 @@ script:
       \ hex patterns and strings to identify malware samples based upon file content,\
       \ which returns a request ID. Use the request ID in the cs-malquery-get-request command to\ 
       \ retrieve results. You can filter results based on criteria such as file\
-      \ type, file size and first seen date."      
+      \ type, file size and first seen date."
   - name: cs-malquery-hunt
     arguments:
     - name: yara_rule
@@ -77,27 +79,30 @@ script:
       description: The YARA rule to search.
     - name: yar_file_entry_id
       required: false
-      description: A YAR file entry ID that contains the YARA rule to search. Only one Yara rule per request.
+      description: A YAR file entry ID that contains the YARA rule to search. Only
+        one Yara rule per request.
     - name: limit
       description: The maximum number of results to be returned.
     - name: max_size
-      description: The maximum file size. The value can be specified either in bytes or
-        in multiples of KB/MB/GB. For example, 128000, 1.3 KB, 8mb.
+      description: The maximum file size. The value can be specified either in bytes
+        or in multiples of KB/MB/GB. For example, 128000, 1.3 KB, 8mb.
     - name: min_size
       description: The minimum file size. For example, 128000, 1.3 KB, 8mb.
     - name: max_date
       description: Limits results to files first seen before this date. The format
         is YYYY/MM/DD. For example, 2018/01/31.
     - name: min_date
-      description: Limits results to files first seen after this date. The format is
-        YYYY/MM/DD. For example, 2018/01/31.
+      description: Limits results to files first seen after this date. The format
+        is YYYY/MM/DD. For example, 2018/01/31.
     - name: filter_filetypes
       description: Limits results to files of certain types such as EMAIL, PCAP, PDF,
-        PE32. Comma separated values. For a full list of types, see the MalQuery API documentation.
+        PE32. Comma separated values. For a full list of types, see the MalQuery API
+        documentation.
       isArray: true
     - name: filter_meta
-      description: Specifies a subset of metadata fields to return in the results. Possible
-        values - sha256, md5, type, size, first_seen, label, family. Comma separated values.
+      description: Specifies a subset of metadata fields to return in the results.
+        Possible values - sha256, md5, type, size, first_seen, label, family. Comma
+        separated values.
       isArray: true
     outputs:
     - contextPath: Malquery.Request_ID
@@ -105,12 +110,12 @@ script:
       type: String
     description: "Schedules a YARA rule-based search for execution, which returns a request ID.\
       \ Use the request ID in the cs-malquery-get-request command to retrieve results.\
-      \ You can filter based on criteria such as file type, file size and first seen date."      
+      \ You can filter based on criteria such as file type, file size and first seen date."
   - name: cs-malquery-fuzzy-search
     arguments:
     - name: hex
-      description: The hex pattern to search. For example, deadbeef0102 (for bytes de, ad, be,
-        ef, 01, 02).
+      description: The hex pattern to search. For example, deadbeef0102 (for bytes
+        de, ad, be, ef, 01, 02).
     - name: ascii
       description: The ASCII pattern to search. For example, CrowdStrike.
     - name: wide
@@ -118,8 +123,9 @@ script:
     - name: limit
       description: The maximum number of results to be returned. Default is 100.
     - name: filter_meta
-      description: Specifies a subset of metadata fields to return in the results. Possible
-        values - sha256, md5, type, size, first_seen, label, family. Comma separated values.
+      description: Specifies a subset of metadata fields to return in the results.
+        Possible values - sha256, md5, type, size, first_seen, label, family. Comma
+        separated values.
       isArray: true
     outputs:
     - contextPath: Malquery.File.family
@@ -146,9 +152,9 @@ script:
     - contextPath: Malquery.File.sha256
       description: The SHA256 of the file.
       type: String
-    description: Searches Falcon MalQuery quickly. Uses partial matching, but with more potential for false
-      positives. Search for a combination of hex patterns and strings to
-      identify samples based upon file content.
+    description: Searches Falcon MalQuery quickly. Uses partial matching, but with
+      more potential for false positives. Search for a combination of hex patterns
+      and strings to identify samples based upon file content.
   - name: cs-malquery-get-request
     arguments:
     - name: request_id
@@ -275,8 +281,9 @@ script:
     - name: request_id
       required: true
       description: Identifier of a MalQuery request.
-    description: Fetches a zip archive file using the password, "infected" containing the samples.
-      Use this after the cs-malquery-samples-multidownload request has finished processing.
+    description: Fetches a zip archive file using the password, "infected" containing
+      the samples. Use this after the cs-malquery-samples-multidownload request has
+      finished processing.
     outputs:
       - contextPath: File.SHA256
         description: THe SHA256 hash of the file.
@@ -367,3 +374,6 @@ script:
 fromversion: 5.0.0
 tests:
 - CrowdStrikeMalquery-Test
+marketplaces:
+- xsoar
+- marketplacev2

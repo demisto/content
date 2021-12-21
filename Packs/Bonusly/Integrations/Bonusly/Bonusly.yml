@@ -263,7 +263,8 @@ script:
       description: 'Date the bonus was created (given), e.g., 2015-10-28T21:26:50Z.'
       type: Date
     - contextPath: Bonusly.Bonus.reason
-      description: 'The bonus message, e.g., "For signing up for the world''s favorite employee recognition solution! #problem-solving"'
+      description: 'The bonus message, e.g., "For signing up for the world''s favorite
+        employee recognition solution! #problem-solving"'
       type: String
     - contextPath: Bonusly.Bonus.reason_html
       description: HTML representation of the bonus.
@@ -386,7 +387,8 @@ script:
       description: 'Date the bonus was created (given), e.g., 2015-10-28T21:26:50Z.'
       type: Date
     - contextPath: Bonusly.Bonus.reason
-      description: 'The bonus message, e.g., "For signing up for the world''s favorite employee recognition solution! #problem-solving"'
+      description: 'The bonus message, e.g., "For signing up for the world''s favorite
+        employee recognition solution! #problem-solving"'
       type: String
     - contextPath: Bonusly.Bonus.reason_html
       description: HTML representation of the bonus.
@@ -498,7 +500,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'Example +10 @francesco @bumblebee for #integrity #collaboration #execution'
+      description: 'Example +10 @francesco @bumblebee for #integrity #collaboration
+        #execution'
       isArray: false
       name: reason
       required: true
@@ -515,7 +518,8 @@ script:
       description: 'Date the bonus was created (given), e.g., 2015-10-28T21:26:50Z.'
       type: Date
     - contextPath: Bonusly.Bonus.reason
-      description: 'The bonus message, e.g., "For signing up for the world''s favorite employee recognition solution! #problem-solving"'
+      description: 'The bonus message, e.g., "For signing up for the world''s favorite
+        employee recognition solution! #problem-solving"'
       type: String
     - contextPath: Bonusly.Bonus.reason_html
       description: HTML representation of the bonus.
@@ -646,3 +650,6 @@ script:
 tests:
 - No tests
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

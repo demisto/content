@@ -50,8 +50,8 @@ configuration:
   name: concat_username_to_cred_name
   type: 8
   required: false
-  additionalinfo: Should be used in case there are several secrets 
-    under the same folder in order to make the credential object unique.
+  additionalinfo: Should be used in case there are several secrets under the same
+    folder in order to make the credential object unique.
 script:
   script: ''
   type: python
@@ -211,8 +211,8 @@ script:
       description: Whether to show this mount in the UI-specific listing endpoint;
         "unauth" or "hidden", default is "hidden" Default is hidden.
     - name: passthrough_request_headers
-      description: CSV list of headers to add to allow list and pass from the request to the
-        backend
+      description: CSV list of headers to add to allow list and pass from the request
+        to the backend
       isArray: true
     - name: kv_version
       auto: PREDEFINED
@@ -353,3 +353,6 @@ script:
 tests:
 - hashicorp_test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

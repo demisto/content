@@ -24,7 +24,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: 'Integrated advanced threat detection: Enhancing protection from network edge to endpoint'
+description: 'Integrated advanced threat detection: Enhancing protection from network
+  edge to endpoint'
 display: McAfee Advanced Threat Defense
 name: McAfee Advanced Threat Defense
 script:
@@ -61,7 +62,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: ' IPv4 address of the source system or gateway from where the file is downloaded.'
+      description: ' IPv4 address of the source system or gateway from where the file
+        is downloaded.'
       isArray: false
       name: srcIp
       required: false
@@ -74,7 +76,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Value '0' indicates corresponding taskid in API response. Value '1' indicates -1 as taskid in API response.
+      description: Value '0' indicates corresponding taskid in API response. Value
+        '1' indicates -1 as taskid in API response.
       isArray: false
       name: skipTaskId
       predefined:
@@ -104,7 +107,10 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: ' This parameter indicates priority of sample analysis. run_now assigns highest priority (i.e., sample is analyzed right away), add_to_q puts sample in waiting state if there is a waiting queue of samples, default is run_now'
+      description: ' This parameter indicates priority of sample analysis. run_now
+        assigns highest priority (i.e., sample is analyzed right away), add_to_q puts
+        sample in waiting state if there is a waiting queue of samples, default is
+        run_now'
       isArray: false
       name: filePriorityQ
       predefined:
@@ -125,7 +131,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: upload a file/web URL for dynamic analysis by using the provided Analyzer Profile. Only single file/web URL can be submitted at a time.
+    description: upload a file/web URL for dynamic analysis by using the provided
+      Analyzer Profile. Only single file/web URL can be submitted at a time.
     execution: false
     name: atd-file-upload
     outputs:
@@ -182,7 +189,8 @@ script:
       type: number
   - arguments:
     - default: false
-      description: This is the returned TaskId value in the submission step, previously returned value in the File/URL submission step
+      description: This is the returned TaskId value in the submission step, previously
+        returned value in the File/URL submission step
       isArray: false
       name: taskId
       required: false
@@ -196,7 +204,13 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: pdf
-      description: 'Type can be one of the following types: • html — HTML report • txt — Text report • xml — XML report • zip — All files packaged in a single zip file • json — Same as xml but in the JSON format • ioc - Indicators of Compromise format • stix - Structured Threat Information expression. Stix generation is disabled, by default. Use set stixreportstatus enable to enable it. • pdf - Portable Document Format • sample - Download sample from McAfee Advanced Threat Defense'
+      description: 'Type can be one of the following types: • html — HTML report •
+        txt — Text report • xml — XML report • zip — All files packaged in a single
+        zip file • json — Same as xml but in the JSON format • ioc - Indicators of
+        Compromise format • stix - Structured Threat Information expression. Stix
+        generation is disabled, by default. Use set stixreportstatus enable to enable
+        it. • pdf - Portable Document Format • sample - Download sample from McAfee
+        Advanced Threat Defense'
       isArray: false
       name: type
       predefined:
@@ -214,7 +228,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: '3'
-      description: If ATD severity is bigger than the threshold we will consider it malicious
+      description: If ATD severity is bigger than the threshold we will consider it
+        malicious
       isArray: false
       name: threshold
       predefined:
@@ -226,7 +241,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Download the analysis report files. The `Sample Download Access` permission is required.
+    description: Download the analysis report files. The `Sample Download Access`
+      permission is required.
     execution: false
     name: atd-get-report
     outputs:
@@ -279,7 +295,9 @@ script:
       description: The extension of the report file
       type: string
     - contextPath: InfoFile.Name
-      description: The name of the report file, which you can use later, for example, to send the report in an email as part of a playbook task. The report name is the the taskId, for example, 7173.pdf.
+      description: The name of the report file, which you can use later, for example,
+        to send the report in an email as part of a playbook task. The report name
+        is the the taskId, for example, 7173.pdf.
       type: string
     - contextPath: InfoFile.Info
       description: The info of the report file
@@ -297,7 +315,8 @@ script:
       description: For malicious urls, the reason for the vendor to make the decision
       type: string
   - deprecated: false
-    description: display the analyzer profiles. Only the analyzer profiles to which the user has access are displayed.
+    description: display the analyzer profiles. Only the analyzer profiles to which
+      the user has access are displayed.
     execution: false
     name: atd-list-analyzer-profiles
     outputs:
@@ -323,7 +342,8 @@ script:
     - auto: PREDEFINED
       default: true
       defaultValue: STAND_ALONE
-      description: This is the user type associated with a user profile. For example NSP, MWG, STAND_ALONE (default) and so on.
+      description: This is the user type associated with a user profile. For example
+        NSP, MWG, STAND_ALONE (default) and so on.
       isArray: true
       name: userType
       predefined:
@@ -333,7 +353,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: displays the user profile information present on the McAfee Advanced Threat Defense.
+    description: displays the user profile information present on the McAfee Advanced
+      Threat Defense.
     execution: false
     name: atd-list-user
     outputs:
@@ -401,7 +422,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: '3'
-      description: If ATD severity is bigger than the threshold we will consider it malicious
+      description: If ATD severity is bigger than the threshold we will consider it
+        malicious
       isArray: false
       name: threshold
       predefined:
@@ -454,10 +476,12 @@ script:
       description: The actual score (only in case of report type=json)
       type: number
     - contextPath: ATD.Task.taskId
-      description: This is the returned TaskId value in the submission step, previously returned value in the File/URL submission step
+      description: This is the returned TaskId value in the submission step, previously
+        returned value in the File/URL submission step
       type: number
     - contextPath: ATD.Task.jobId
-      description: This is the returned JobId value in the submission step, previously returned value in the File/URL submission step
+      description: This is the returned JobId value in the submission step, previously
+        returned value in the File/URL submission step
       type: number
     - contextPath: ATD.Task.status
       description: The task ID status (Completed or Analyzing)
@@ -521,7 +545,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: '3'
-      description: If ATD severity is bigger than the threshold we will consider it malicious
+      description: If ATD severity is bigger than the threshold we will consider it
+        malicious
       isArray: false
       name: threshold
       predefined:
@@ -568,10 +593,12 @@ script:
       description: The actual score (only in case of report type=json)
       type: number
     - contextPath: ATD.Task.taskId
-      description: This is the returned TaskId value in the submission step, previously returned value in the File/URL submission step
+      description: This is the returned TaskId value in the submission step, previously
+        returned value in the File/URL submission step
       type: number
     - contextPath: ATD.Task.jobId
-      description: This is the returned JobId value in the submission step, previously returned value in the File/URL submission step
+      description: This is the returned JobId value in the submission step, previously
+        returned value in the File/URL submission step
       type: number
     - contextPath: ATD.Task.status
       description: The task ID status (Completed or Analyzing)
@@ -602,7 +629,8 @@ script:
       type: string
   - arguments:
     - default: false
-      description: This is the returned TaskId value in the submission step, previously returned value in the File/URL submission step
+      description: This is the returned TaskId value in the submission step, previously
+        returned value in the File/URL submission step
       isArray: true
       name: taskId
       required: false
@@ -622,10 +650,12 @@ script:
       description: The task ID status (Completed or Analyzing)
       type: string
     - contextPath: ATD.Task.taskId
-      description: This is the returned TaskId value in the submission step, previously returned value in the File/URL submission step
+      description: This is the returned TaskId value in the submission step, previously
+        returned value in the File/URL submission step
       type: string
     - contextPath: ATD.Task.jobId
-      description: This is the returned JobId value in the submission step, previously returned value in the File/URL submission step
+      description: This is the returned JobId value in the submission step, previously
+        returned value in the File/URL submission step
       type: number
     - contextPath: ATD.Task.status
       description: The task ID status (Completed or Analyzing)
@@ -649,3 +679,6 @@ tests:
 - Test Playbook McAfee ATD
 - Detonate Remote File From URL -McAfee-ATD - Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

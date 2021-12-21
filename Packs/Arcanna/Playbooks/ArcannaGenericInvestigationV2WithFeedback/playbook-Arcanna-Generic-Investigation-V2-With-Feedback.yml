@@ -655,3 +655,6 @@ tests:
 fromversion: 5.5.0
 description: Alert Triage using Arcanna.Ai Machine Learning capabilities and reinforcement
   learning by offerring analyst feedback to incidents closed
+marketplaces:
+- xsoar
+- marketplacev2

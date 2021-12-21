@@ -8,7 +8,8 @@ subtype: python3
 tags:
 - infra
 - server
-comment: Common FireEye code that will be appended to each FireEye integration when it is deployed.
+comment: Common FireEye code that will be appended to each FireEye integration when
+  it is deployed.
 scripttarget: 0
 dependson: {}
 timeout: 0s
@@ -16,3 +17,6 @@ dockerimage: demisto/python3:3.9.5.21272
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2

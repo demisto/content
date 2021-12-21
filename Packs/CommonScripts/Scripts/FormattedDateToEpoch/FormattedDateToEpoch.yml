@@ -8,7 +8,9 @@ subtype: python3
 tags:
 - transformer
 - date
-comment: 'Converts a custom-formatted timestamp to UNIX epoch time. Use it to convert custom time stamps to a Demisto date field.  Uses the python strptime format.  For more info, see: https://docs.python.org/3.7/library/datetime.html#strftime-and-strptime-behavior'
+comment: 'Converts a custom-formatted timestamp to UNIX epoch time. Use it to convert
+  custom time stamps to a Demisto date field.  Uses the python strptime format.  For
+  more info, see: https://docs.python.org/3.7/library/datetime.html#strftime-and-strptime-behavior'
 enabled: true
 args:
 - name: value
@@ -25,3 +27,6 @@ runas: DBotWeakRole
 tests:
 - FormattedDateToEpochTest
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

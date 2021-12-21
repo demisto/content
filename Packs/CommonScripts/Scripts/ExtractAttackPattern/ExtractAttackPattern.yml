@@ -2,8 +2,10 @@ commonfields:
   id: ExtractAttackPattern
   version: -1
 name: ExtractAttackPattern
-comment: Extract Attack Pattern Threat Intel Object. After auto extract extracts the Attack Pattern IDs, this script is executed and extracts the value (name) of the Attack Pattern.
-script: |2
+comment: Extract Attack Pattern Threat Intel Object. After auto extract extracts the
+  Attack Pattern IDs, this script is executed and extracts the value (name) of the
+  Attack Pattern.
+script: |
 type: python
 tags:
 - indicator-format
@@ -21,3 +23,6 @@ runas: DBotWeakRole
 tests:
 - ExtractAttackPattern-Test
 fromversion: 5.5.0
+marketplaces:
+- xsoar
+- marketplacev2

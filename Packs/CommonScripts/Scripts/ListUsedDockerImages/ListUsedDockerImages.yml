@@ -1,27 +1,30 @@
 args:
 - default: false
-  description: 'Whether to export the result to context. Possible values: "true" and "false".'
+  description: 'Whether to export the result to context. Possible values: "true" and
+    "false".'
   isArray: false
   name: export_to_context
   required: false
   secret: false
   auto: PREDEFINED
   predefined:
-     - "true"
-     - "false"
+  - "true"
+  - "false"
   defaultValue: "true"
 - default: false
-  description: 'Whether to ignore deprecated automation. Possible values: "true" and "false".'
+  description: 'Whether to ignore deprecated automation. Possible values: "true" and
+    "false".'
   isArray: false
   name: ignore_deprecated_automations
   required: false
   secret: false
   auto: PREDEFINED
   predefined:
-     - "true"
-     - "false"
+  - "true"
+  - "false"
   defaultValue: "true"
-comment: 'List all Docker images that are in use by the installed integrations and automations.'
+comment: 'List all Docker images that are in use by the installed integrations and
+  automations.'
 commonfields:
   id: ListUsedDockerImages
   version: -1
@@ -47,3 +50,6 @@ dockerimage: demisto/python3:3.9.7.24076
 fromversion: 6.1.0
 tests:
 - ListUsedDockerImages - Test
+marketplaces:
+- xsoar
+- marketplacev2

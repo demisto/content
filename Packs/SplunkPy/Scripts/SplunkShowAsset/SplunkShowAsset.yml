@@ -16,6 +16,9 @@ tags:
 - dynamic-section
 type: python
 fromversion: 6.0.0
-comment: Automation to display asset objects from Splunk. 
+comment: Automation to display asset objects from Splunk.
 tests:
 - SplunkShowEnrichment
+marketplaces:
+- xsoar
+- marketplacev2

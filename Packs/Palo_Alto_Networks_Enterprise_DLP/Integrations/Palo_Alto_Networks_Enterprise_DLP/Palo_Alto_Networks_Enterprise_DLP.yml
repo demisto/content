@@ -38,7 +38,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: If "true", will include snippets with the reports. Default is "false". 
+      description: If "true", will include snippets with the reports. Default is "false".
       defaultValue: "false"
     outputs:
     - contextPath: DLP.Report.DataProfile
@@ -64,3 +64,6 @@ script:
 fromversion: 5.0.0
 tests:
 - Palo_Alto_Networks_Enterprise_DLP - Test
+marketplaces:
+- xsoar
+- marketplacev2

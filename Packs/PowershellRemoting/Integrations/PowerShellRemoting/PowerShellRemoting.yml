@@ -3,17 +3,21 @@ commonfields:
   id: PowerShell Remoting
   version: -1
 configuration:
-- additionalinfo: Fully Qualified Domain Name suffix to be added to the hostname. For example mydomain.local
+- additionalinfo: Fully Qualified Domain Name suffix to be added to the hostname.
+    For example mydomain.local
   display: Domain
   name: domain
   required: false
   type: 0
 - display: DNS
-  additionalinfo: Optional IP address of a DNS server the integration will use to resolve your hosts. Use this setting when the host linux machine uses a different DNS from the Windows machines you are targeting.
+  additionalinfo: Optional IP address of a DNS server the integration will use to
+    resolve your hosts. Use this setting when the host linux machine uses a different
+    DNS from the Windows machines you are targeting.
   name: dns
   required: false
   type: 0
-- additionalinfo: Username in the target machine. This can be a local or domain user with administrative privileges
+- additionalinfo: Username in the target machine. This can be a local or domain user
+    with administrative privileges
   display: Username
   name: credentials
   required: true
@@ -68,7 +72,8 @@ script:
       description: The host on which the command was invoked.
       type: string
     - contextPath: PsRemote.FQDN
-      description: The Fully Qualified Domain Name of the host on which the command was invoked.
+      description: The Fully Qualified Domain Name of the host on which the command
+        was invoked.
       type: string
     - contextPath: PsRemote.CommandResult
       description: The result of the command run from the target machine.
@@ -96,8 +101,9 @@ script:
       - "false"
     - name: check_hash
       defaultValue: "false"
-      description: 'Whether to compare the value of the original file with the downloaded file and
-        return an error if any differences are found. Possible values: "true" and "false". Default is "false".'
+      description: 'Whether to compare the value of the original file with the downloaded
+        file and return an error if any differences are found. Possible values: "true"
+        and "false". Default is "false".'
       auto: PREDEFINED
       predefined:
       - "true"
@@ -116,7 +122,8 @@ script:
       description: The host from which the file was downloaded.
       type: string
     - contextPath: PsRemoteDownloadedFile.FQDN
-      description: The Fully Qualified Domain Name of the host from which the file was downloaded.
+      description: The Fully Qualified Domain Name of the host from which the file
+        was downloaded.
       type: string
     - contextPath: PsRemoteDownloadedFile.FileName
       description: File name.
@@ -188,8 +195,9 @@ script:
       - "false"
     - auto: PREDEFINED
       defaultValue: "false"
-      description: 'Whether to compare the values of the original file and uploaded file and
-        return an error if any differences are found. Possible values: "true" and "false". Default is "false".'
+      description: 'Whether to compare the values of the original file and uploaded
+        file and return an error if any differences are found. Possible values: "true"
+        and "false". Default is "false".'
       name: check_hash
       predefined:
       - "true"
@@ -243,7 +251,8 @@ script:
       name: etl_max_size
     - auto: PREDEFINED
       defaultValue: "no"
-      description: 'Whether to overwrite the file in the path. Possible values: "yes" and "no". Default is "no".'
+      description: 'Whether to overwrite the file in the path. Possible values: "yes"
+        and "no". Default is "no".'
       name: overwrite
       predefined:
       - "yes"
@@ -301,8 +310,8 @@ script:
       required: true
     - defaultValue: all
       description: The registry key or hive to export. For example, reg_key_hive=`HKEY_LOCAL_MACHINE`.
-        If the user specifies "all", the entire registry will be exported.
-        Default is "all".
+        If the user specifies "all", the entire registry will be exported. Default
+        is "all".
       name: reg_key_hive
     - description: The path and name on the Windows host where the registry file will
         be created. For example, file_path=c:\hklm.reg.
@@ -312,7 +321,8 @@ script:
     name: ps-remote-export-registry
     outputs:
     - contextPath: PsRemote.CommandResult
-      description: The command results in the remote host - regedit for all or reg export.
+      description: The command results in the remote host - regedit for all or reg
+        export.
       type: string
     - contextPath: PsRemote.RegistryFilePath
       description: The path and name of the registry file.
@@ -330,7 +340,8 @@ script:
       description: The host on which the command was invoked.
       type: string
     - contextPath: PsRemote.FQDN
-      description: The Fully Qualified Domain Name of the host on which the command was invoked.
+      description: The Fully Qualified Domain Name of the host on which the command
+        was invoked.
       type: string
   - arguments:
     - description: 'A single hostname or IP address on which to run the command.'
@@ -361,3 +372,6 @@ fromversion: 6.0.0
 beta: true
 tests:
 - No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2

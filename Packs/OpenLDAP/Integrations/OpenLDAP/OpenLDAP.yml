@@ -100,7 +100,8 @@ script:
     name: ad-authenticate
   - arguments:
     - default: false
-      description: 'A list of group object names to fetch. The list is delimited by a number sign (#).' 
+      description: 'A list of group object names to fetch. The list is delimited by
+        a number sign (#).'
       isArray: false
       name: specific-groups
       required: false
@@ -138,7 +139,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: 'Whether to return the name attribute. Possible values are: "true" and "false". Default is "true".'
+      description: 'Whether to return the name attribute. Possible values are: "true"
+        and "false". Default is "true".'
       isArray: false
       name: attribute-name-pull
       predefined:
@@ -149,7 +151,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: 'Whether to return the mail attribute. Possible values are: "true" and "false". Default is "true".'
+      description: 'Whether to return the mail attribute. Possible values are: "true"
+        and "false". Default is "true".'
       isArray: false
       name: attribute-mail-pull
       predefined:
@@ -158,7 +161,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Performs a simple bind operation on the LDAP server and returns the      authenticated user's groups.
+    description: Performs a simple bind operation on the LDAP server and returns the      authenticated
+      user's groups.
     execution: false
     name: ad-authenticate-and-roles
   dockerimage: demisto/ldap:1.0.0.23980
@@ -173,3 +177,6 @@ script:
 tests:
 - No test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

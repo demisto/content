@@ -270,8 +270,8 @@ script:
       isArray: false
       name: polling
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     - default: false
       description: Interval in seconds between each poll.
       isArray: false
@@ -814,3 +814,6 @@ defaultclassifier: SplunkPy
 defaultmapperin: SplunkPy-mapper
 defaultmapperout: Splunk - Notable Generic Outgoing Mapper
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

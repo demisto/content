@@ -23,13 +23,15 @@ args:
   required: true
   secret: false
 - default: false
-  description: Lower bound port range to be checked. If fromPort and toPort are not specified, all ports will be included.
+  description: Lower bound port range to be checked. If fromPort and toPort are not
+    specified, all ports will be included.
   isArray: false
   name: fromPort
   required: false
   secret: false
 - default: false
-  description: Upper bound port range to be checked. If fromPort and toPort are not specified, all ports will be included.
+  description: Upper bound port range to be checked. If fromPort and toPort are not
+    specified, all ports will be included.
   isArray: false
   name: toPort
   required: false
@@ -90,3 +92,6 @@ dockerimage: demisto/python3:3.9.7.24076
 runas: DBotWeakRole
 runonce: false
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

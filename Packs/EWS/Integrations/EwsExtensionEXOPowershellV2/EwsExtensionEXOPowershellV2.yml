@@ -377,3 +377,6 @@ script:
 fromversion: 5.5.0
 tests:
 - 'EWS Extension: Powershell Online V2 Test'
+marketplaces:
+- xsoar
+- marketplacev2

@@ -11,13 +11,15 @@ enabled: true
 args:
 - name: query
   required: true
-  description: The query used to check whether there are sufficient incidents in Cortex XSOAR.
+  description: The query used to check whether there are sufficient incidents in Cortex
+    XSOAR.
 - name: size
   required: true
   description: The amount of incidents in which to check.
 outputs:
 - contextPath: IncidentsCheck.Size
-  description: The number of incidents in Cortex XSOAR that is expected to match the query.
+  description: The number of incidents in Cortex XSOAR that is expected to match the
+    query.
   type: number
 - contextPath: IncidentsCheck.ConditionMet
   description: Whether there are enough incidents in Cortex XSOAR that match the query.
@@ -32,3 +34,6 @@ dockerimage: demisto/python3:3.9.7.24076
 runas: DBotWeakRole
 tests:
 - No test
+marketplaces:
+- xsoar
+- marketplacev2

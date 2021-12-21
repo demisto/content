@@ -2,7 +2,8 @@ args:
 - description: Input string from incident.
   name: value
   required: true
-- description: Incident field values from incident, If you are using this automation as classification & mapping the recommended value is "${.}".
+- description: Incident field values from incident, If you are using this automation
+    as classification & mapping the recommended value is "${.}".
   name: inc
   required: true
 comment: Convert Splunk CIM Fields Dynamic Into Fields Value
@@ -27,3 +28,6 @@ type: python
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2

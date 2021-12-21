@@ -19,3 +19,6 @@ type: python
 fromversion: 5.5.0
 tests:
 - Microsoft_365_Defender-Test
+marketplaces:
+- xsoar
+- marketplacev2

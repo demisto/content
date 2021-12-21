@@ -44,3 +44,6 @@ timeout: '0'
 type: python
 fromversion: 6.0.0
 dockerimage: demisto/teams:1.0.0.20407
+marketplaces:
+- xsoar
+- marketplacev2

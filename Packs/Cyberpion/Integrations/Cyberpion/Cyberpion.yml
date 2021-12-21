@@ -207,3 +207,6 @@ tests:
 defaultmapperin: Cyberpion-Mapper
 defaultclassifier: Cyberpion-Classifier
 fromversion: 6.0.0
+marketplaces:
+- xsoar
+- marketplacev2

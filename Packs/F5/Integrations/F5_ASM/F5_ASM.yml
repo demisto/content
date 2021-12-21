@@ -3645,3 +3645,6 @@ script:
 tests:
 - playbook-F5_ASM-Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

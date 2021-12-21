@@ -1227,8 +1227,7 @@ script:
       description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Score
-      description:
-        The actual score.
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
       description: The indicator type.
@@ -1396,3 +1395,6 @@ script:
 tests:
 - AutoFocus V2 test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

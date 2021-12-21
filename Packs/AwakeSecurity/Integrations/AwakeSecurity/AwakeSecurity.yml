@@ -119,10 +119,12 @@ script:
       description: Number of TCP sessions for this device
       type: number
     - contextPath: AwakeSecurity.Devices.ackTime
-      description: Date of the last TCP session acknowledgment of the device associated with the specified email address
+      description: Date of the last TCP session acknowledgment of the device associated
+        with the specified email address
       type: number
     - contextPath: AwakeSecurity.Devices.whiteListed
-      description: Is the device associated with the specified email address in the allow list
+      description: Is the device associated with the specified email address in the
+        allow list
       type: bool
     description: Query devices in Awake Security
   - name: awake-query-activities
@@ -235,7 +237,8 @@ script:
       description: Number of devices currently interacting with the specified domain
       type: number
     - contextPath: AwakeSecurity.Domains.totalDevices
-      description: Total number of devices that have interacted with the specified domain
+      description: Total number of devices that have interacted with the specified
+        domain
       type: number
     - contextPath: AwakeSecurity.Domains.intelCount
       description: Number of matches of imported intel against the specified domain
@@ -307,7 +310,8 @@ script:
       required: true
       description: The domain name
     - name: lookback_minutes
-      description: How many minutes of history to query from the current time. Default is 480
+      description: How many minutes of history to query from the current time. Default
+        is 480
       defaultValue: "480"
     outputs:
     - contextPath: AwakeSecurity.Domains.approxBytesTransferred
@@ -317,7 +321,8 @@ script:
       description: Domains with the same registrant
       type: unknown
     - contextPath: AwakeSecurity.Domains.domainsWithSameRegistrant.registrationDate
-      description: Date that the domain with the same registrant as the specified domain was registered
+      description: Date that the domain with the same registrant as the specified
+        domain was registered
       type: string
     - contextPath: AwakeSecurity.Domains.IntelSources
       description: Indicators of compromise from Awake Security
@@ -353,7 +358,8 @@ script:
       description: Subdomains of the specified domain
       type: string
     - contextPath: AwakeSecurity.Domains.topDevices
-      description: LIst of devices that accessed the specified domain (maximum is 10)
+      description: LIst of devices that accessed the specified domain (maximum is
+        10)
       type: string
     - contextPath: AwakeSecurity.Domains.totalNumDevices
       description: Total number of devices that accessed the specified domain
@@ -383,7 +389,8 @@ script:
       required: true
       description: The IP address
     - name: lookback_minutes
-      description: How many minutes of history to query from the current time. Default is 480
+      description: How many minutes of history to query from the current time. Default
+        is 480
       defaultValue: "480"
     outputs:
     - contextPath: AwakeSecurity.IPs.activityCount
@@ -425,7 +432,8 @@ script:
     - name: email
       description: The email address
     - name: lookback_minutes
-      description: How many minutes of history to query from the current time. Default is 480
+      description: How many minutes of history to query from the current time. Default
+        is 480
       defaultValue: "480"
     outputs:
     - contextPath: AwakeSecurity.Emails.deviceId
@@ -441,19 +449,23 @@ script:
       description: Date that the email address was last seen in Awake Security
       type: string
     - contextPath: AwakeSecurity.Emails.duration
-      description: Time (in seconds) between the email address first seen date and last seen date in Awake Security
+      description: Time (in seconds) between the email address first seen date and
+        last seen date in Awake Security
       type: string
     - contextPath: AwakeSecurity.Emails.os
-      description: Operating system of the device associated with the specified email address
+      description: Operating system of the device associated with the specified email
+        address
       type: string
     - contextPath: AwakeSecurity.Emails.deviceType
       description: Device type associated with the specified email address
       type: string
     - contextPath: AwakeSecurity.Emails.ips
-      description: IP addresses that the device associated with the specified email address accessed
+      description: IP addresses that the device associated with the specified email
+        address accessed
       type: string
     - contextPath: AwakeSecurity.Emails.monitoringPointIds
-      description: Monitoring point IDs on which the device associated with the specified email address were seen
+      description: Monitoring point IDs on which the device associated with the specified
+        email address were seen
       type: string
     - contextPath: AwakeSecurity.Emails.application
       description: Email applications associated with this email address
@@ -462,16 +474,20 @@ script:
       description: Notability (risk score) of the specified email address
       type: number
     - contextPath: AwakeSecurity.Emails.numberSimilarDevices
-      description: Number of similar devices associated with the device of the specified email addresses
+      description: Number of similar devices associated with the device of the specified
+        email addresses
       type: number
     - contextPath: AwakeSecurity.Emails.numberSessions
-      description: Number of TCP sessions the device associated with this email address initiated
+      description: Number of TCP sessions the device associated with this email address
+        initiated
       type: number
     - contextPath: AwakeSecurity.Emails.ackTime
-      description: Date of the last TCP session acknowledgment of the device associated with the specified email address
+      description: Date of the last TCP session acknowledgment of the device associated
+        with the specified email address
       type: string
     - contextPath: AwakeSecurity.Emails.whiteListed
-      description: Is the device associated with the specified email address in the allow list
+      description: Is the device associated with the specified email address in the
+        allow list
       type: bool
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -492,7 +508,8 @@ script:
       required: true
       description: The device ID
     - name: lookback_minutes
-      description: How many minutes of history to query from the current time. Default is 480
+      description: How many minutes of history to query from the current time. Default
+        is 480
       defaultValue: "480"
     outputs:
     - contextPath: AwakeSecurity.Devices.deviceScore
@@ -505,7 +522,8 @@ script:
       description: Percentile of the specified device for notable domains accessed
       type: number
     - contextPath: AwakeSecurity.Devices.notableDomainCount.weight
-      description: Importance given to the suspicious domains when calculating the specified device risk score
+      description: Importance given to the suspicious domains when calculating the
+        specified device risk score
       type: number
     - contextPath: AwakeSecurity.Devices.iocCount.value
       description: Number of suspicious IOCs associated with the specified device
@@ -514,25 +532,31 @@ script:
       description: Percentile of the specified device for notable IOCs
       type: number
     - contextPath: AwakeSecurity.Devices.iocCount.weight
-      description: Importance given to the IOCs when calculating the specified device risk score
+      description: Importance given to the IOCs when calculating the specified device
+        risk score
       type: number
     - contextPath: AwakeSecurity.Devices.watchlistCount.value
-      description: Total number of current threat behaviors associated with the specified device
+      description: Total number of current threat behaviors associated with the specified
+        device
       type: number
     - contextPath: AwakeSecurity.Devices.watchlistCount.percentile
-      description: How this device compares to other devices for number of threat behaviors
+      description: How this device compares to other devices for number of threat
+        behaviors
       type: number
     - contextPath: AwakeSecurity.Devices.watchlistCount.weight
-      description: Importance given to the threat behaviors when calculating the specified device risk score
+      description: Importance given to the threat behaviors when calculating the specified
+        device risk score
       type: number
     - contextPath: AwakeSecurity.Devices.activityCount.value
-      description: Number of characteristic artifacts associated with the specified device
+      description: Number of characteristic artifacts associated with the specified
+        device
       type: number
     - contextPath: AwakeSecurity.Devices.activityCount.percentile
       description: How this device compares to other devices for characteristic artifacts
       type: number
     - contextPath: AwakeSecurity.Devices.activityCount.weight
-      description: Importance given to the characteristic artifacts when calculating the specified device risk score
+      description: Importance given to the characteristic artifacts when calculating
+        the specified device risk score
       type: number
     - contextPath: AwakeSecurity.Devices.deviceName
       description: Device name
@@ -598,7 +622,8 @@ script:
       description: List of IP addresses associated with the specified device
       type: unknown
     - contextPath: AwakeSecurity.Devices.usernames
-      description: List of usernames that were inferred as accounts on the specified device
+      description: List of usernames that were inferred as accounts on the specified
+        device
       type: string
     - contextPath: AwakeSecurity.Devices.emails
       description: List of email addresses associated with the specified device
@@ -607,7 +632,8 @@ script:
       description: Date of the last TCP session acknowledgment of the specified device
       type: string
     - contextPath: AwakeSecurity.Devices.whiteListed
-      description: Is the device associated with the specified email address in the allow list
+      description: Is the device associated with the specified email address in the
+        allow list
       type: bool
     - contextPath: AwakeSecurity.Devices.protocols.name
       description: Type of protocol used by the specified device
@@ -618,3 +644,6 @@ script:
 tests:
 - awake_security_test_pb
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

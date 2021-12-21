@@ -24,9 +24,9 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: The RiskIQ Digital Footprint integration enables your security team to manage
-  assets outside your firewall. Using the integration, you can view asset details, add or update
-  assets and analyze your digital footprint from the adversary's perspective.
+description: The RiskIQ Digital Footprint integration enables your security team to
+  manage assets outside your firewall. Using the integration, you can view asset details,
+  add or update assets and analyze your digital footprint from the adversary's perspective.
 display: RiskIQ Digital Footprint
 name: RiskIQDigitalFootprint
 script:
@@ -34,9 +34,9 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'The type of the asset for which connections are to be fetched. Valid
-        types include: Domain, Host, IP Address, IP Block, ASN, Page, SSL Cert, Contact. This
-        argument supports a single value only.'
+      description: 'The type of the asset for which connections are to be fetched.
+        Valid types include: Domain, Host, IP Address, IP Block, ASN, Page, SSL Cert,
+        Contact. This argument supports a single value only.'
       isArray: false
       name: type
       predefined:
@@ -62,7 +62,8 @@ script:
       default: false
       description: Setting this value to true will search the entire global inventory.
         Setting it to false will search for assets in the workspace associated with
-        the authentication token. The default value for this argument is false. This argument supports a single value only.
+        the authentication token. The default value for this argument is false. This
+        argument supports a single value only.
       isArray: false
       name: global
       predefined:
@@ -80,8 +81,8 @@ script:
     - default: false
       description: The response contains a page of assets for each related asset type.
         Size determines the number of associated assets of each type that are returned.
-        The default value for this argument is 20. The more associated assets you retrive, the longer it will take 
-        to fetch the response.
+        The default value for this argument is 20. The more associated assets you
+        retrive, the longer it will take to fetch the response.
       isArray: false
       name: size
       required: false
@@ -253,7 +254,8 @@ script:
     - auto: PREDEFINED
       default: false
       description: The period of time for which the changes summary is to be fetched.
-        Supported ranges are 1, 7, and 30 days. The default value is 1. This argument supports a single value only.
+        Supported ranges are 1, 7, and 30 days. The default value is 1. This argument
+        supports a single value only.
       isArray: false
       name: range
       predefined:
@@ -365,8 +367,7 @@ script:
       default: false
       description: The type of change. Valid options for asset types are Added or
         Removed and for asset detail types are Added or Changed. The default value
-        for this argument is Added. This argument supports a
-        single value only.
+        for this argument is Added. This argument supports a single value only.
       isArray: false
       name: measure
       predefined:
@@ -405,8 +406,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The number of matching assets to return per page. The default value for this argument is 20. 
-                   The more associated assets you retrive, the longer it will take to fetch the response.
+      description: The number of matching assets to return per page. The default value
+        for this argument is 20. The more associated assets you retrive, the longer
+        it will take to fetch the response.
       isArray: false
       name: size
       required: false
@@ -486,8 +488,8 @@ script:
       description: Description of the asset.
       type: String
     - contextPath: RiskIQDigitalFootprint.AssetChanges.hostExcluded
-      description: 'When set to True, only IP Addresses associated with confirmed IP Blocks
-        will be included in the results. Possible values: True, False.'
+      description: 'When set to True, only IP Addresses associated with confirmed
+        IP Blocks will be included in the results. Possible values: True, False.'
       type: Boolean
     - contextPath: RiskIQDigitalFootprint.AssetChanges.id
       description: ID of the asset.
@@ -670,8 +672,8 @@ script:
       default: false
       description: Setting this value to true will search the entire global inventory.
         Setting it to false will search for assets in the workspace associated with
-        the authentication token. The default value for this argument is false. 
-        This argument supports a single value only.
+        the authentication token. The default value for this argument is false. This
+        argument supports a single value only.
       isArray: false
       name: global
       predefined:
@@ -681,9 +683,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: When specified and set as 'true', only return recent data on the asset.
-        The default value for this argument is false. This argument
-        supports a single value only.
+      description: When specified and set as 'true', only return recent data on the
+        asset. The default value for this argument is false. This argument supports
+        a single value only.
       isArray: false
       name: recent
       predefined:
@@ -695,8 +697,8 @@ script:
       description: Digital Footprint (Global Inventory) assets potentially contain
         pages of related data, for example attributes, cookies and host pairs. Size
         determines the number for each of these associated items that are returned.
-        The more associated assets you retrive, the longer it will take 
-        to fetch the response.
+        The more associated assets you retrive, the longer it will take to fetch the
+        response.
       isArray: false
       name: size
       required: false
@@ -3433,8 +3435,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Asset type. Possible values are: Domain, Host, IP Address, IP Block,
-        ASN, Page, SSL Cert, Contact. This argument supports a single value only.'
+      description: 'Asset type. Possible values are: Domain, Host, IP Address, IP
+        Block, ASN, Page, SSL Cert, Contact. This argument supports a single value
+        only.'
       isArray: true
       name: type
       predefined:
@@ -3450,9 +3453,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Set the asset state. Possible values are: Candidate, Approved Inventory,
-        Requires Investigation, Dependencies, Monitor Only. This argument supports
-        a single value only.'
+      description: 'Set the asset state. Possible values are: Candidate, Approved
+        Inventory, Requires Investigation, Dependencies, Monitor Only. This argument
+        supports a single value only.'
       isArray: false
       name: state
       predefined:
@@ -3465,9 +3468,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Set the asset Priority. Possible values are: High, Medium, Low, None.
-        The default value for this argument from RiskIQ platform is None. This argument
-        supports a single value only.'
+      description: 'Set the asset Priority. Possible values are: High, Medium, Low,
+        None. The default value for this argument from RiskIQ platform is None. This
+        argument supports a single value only.'
       isArray: false
       name: priority
       predefined:
@@ -3502,9 +3505,9 @@ script:
     - auto: PREDEFINED
       default: false
       description: When true, the request will fail if an invalid update is detected.
-        If false, any invalid updates will be skipped but others will continue.
-        The default value for this argumentis true. This argument
-        supports a single value only.
+        If false, any invalid updates will be skipped but others will continue. The
+        default value for this argumentis true. This argument supports a single value
+        only.
       isArray: false
       name: fail_on_error
       predefined:
@@ -3542,8 +3545,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Designated as an enterprise asset. Possible values are: true or false.
-        This argument supports a single value only.'
+      description: 'Designated as an enterprise asset. Possible values are: true or
+        false. This argument supports a single value only.'
       isArray: false
       name: enterprise
       predefined:
@@ -3603,9 +3606,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Set the asset state. Possible values are: Candidate, Approved Inventory,
-        Requires Investigation, Dependencies, Monitor Only. This argument supports
-        a single value only.'
+      description: 'Set the asset state. Possible values are: Candidate, Approved
+        Inventory, Requires Investigation, Dependencies, Monitor Only. This argument
+        supports a single value only.'
       isArray: false
       name: state
       predefined:
@@ -3618,9 +3621,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Set the asset priority. Possible values are: High, Medium, Low, None.
-        The default value for this argument is None. This argument
-        supports a single value only.'
+      description: 'Set the asset priority. Possible values are: High, Medium, Low,
+        None. The default value for this argument is None. This argument supports
+        a single value only.'
       isArray: false
       name: priority
       predefined:
@@ -3632,8 +3635,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Remove an asset from inventory. Possible value is: Dismissed. This
-        argument supports a single value only.'
+      description: 'Remove an asset from inventory. Possible value is: Dismissed.
+        This argument supports a single value only.'
       isArray: false
       name: removed_state
       predefined:
@@ -3652,8 +3655,8 @@ script:
       default: false
       description: When true, the request will fail if an invalid update is detected.
         When false, any invalid updates will be skipped but others will continue.
-        The default value for this argumentis true. This argument
-        supports a single value only.
+        The default value for this argumentis true. This argument supports a single
+        value only.
       isArray: false
       name: fail_on_error
       predefined:
@@ -3705,8 +3708,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Designated as an enterprise asset. Possible values are: true or false.
-        This argument supports a single value only.'
+      description: 'Designated as an enterprise asset. Possible values are: true or
+        false. This argument supports a single value only.'
       isArray: false
       name: enterprise
       predefined:
@@ -3750,3 +3753,6 @@ script:
 tests:
 - RiskIQDigitalFootprint-Test
 fromversion: 5.5.0
+marketplaces:
+- xsoar
+- marketplacev2

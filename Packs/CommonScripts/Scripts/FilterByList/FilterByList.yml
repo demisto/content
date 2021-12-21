@@ -7,7 +7,8 @@ args:
   secret: false
 - default: false
   defaultValue: Indicators Whitelist
-  description: Name of the list against which to check the value. The default is the Indicators Whitelist.
+  description: Name of the list against which to check the value. The default is the
+    Indicators Whitelist.
   isArray: false
   name: listname
   required: false
@@ -15,7 +16,8 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'No'
-  description: Whether to ignore the case of the item for which you are searching. Default is "No".
+  description: Whether to ignore the case of the item for which you are searching.
+    Default is "No".
   isArray: false
   name: ignorecase
   predefined:
@@ -26,7 +28,8 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'No'
-  description: Whether to match the exact item in the list, or look for any string that contains it. Default is "No".
+  description: Whether to match the exact item in the list, or look for any string
+    that contains it. Default is "No".
   isArray: false
   name: matchexact
   predefined:
@@ -36,12 +39,14 @@ args:
   secret: false
 - default: false
   defaultValue: ','
-  description: A one-character string used to delimit fields. For example, a comma "," should match the list separator configuration.
+  description: A one-character string used to delimit fields. For example, a comma
+    "," should match the list separator configuration.
   isArray: false
   name: delimiter
   required: false
   secret: false
-comment: Checks whether the specified item is in a list. The default list is the Demisto Indicators Whitelist.
+comment: Checks whether the specified item is in a list. The default list is the Demisto
+  Indicators Whitelist.
 commonfields:
   id: FilterByList
   version: -1
@@ -70,3 +75,6 @@ tests:
 - FilterByList - Test
 fromversion: 5.0.0
 dockerimage: demisto/python:2.7.18.24066
+marketplaces:
+- xsoar
+- marketplacev2

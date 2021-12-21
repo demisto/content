@@ -20,7 +20,8 @@ configuration:
   required: false
   type: 8
 - defaultvalue: 3 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
+    months, 1 year)
   name: fetch_time
   required: false
   type: 0
@@ -37,7 +38,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the Fidelis Endpoint integration for advanced endpoint detection and response (EDR) across Windows, Mac and Linux OSes for faster threat remediation.
+description: Use the Fidelis Endpoint integration for advanced endpoint detection
+  and response (EDR) across Windows, Mac and Linux OSes for faster threat remediation.
 display: Fidelis EDR
 name: Fidelis EDR
 script:
@@ -60,13 +62,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The start of the time range of returned values in UTC format. For example: 0001-01-01T00:00:00Z'
+      description: 'The start of the time range of returned values in UTC format.
+        For example: 0001-01-01T00:00:00Z'
       isArray: false
       name: start_date
       required: false
       secret: false
     - default: false
-      description: 'The end of the time range of returned values in UTC format. For example: 0001-01-01T00:00:00Z'
+      description: 'The end of the time range of returned values in UTC format. For
+        example: 0001-01-01T00:00:00Z'
       isArray: false
       name: end_date
       required: false
@@ -210,13 +214,15 @@ script:
       type: Boolean
   - arguments:
     - default: false
-      description: A comma-separated list of hosts in which to search for the specified file.
+      description: A comma-separated list of hosts in which to search for the specified
+        file.
       isArray: true
       name: host
       required: false
       secret: false
     - default: false
-      description: A comma-separated list MD5 hashes to search for. Get the hashes from the queries commands.
+      description: A comma-separated list MD5 hashes to search for. Get the hashes
+        from the queries commands.
       isArray: true
       name: md5
       required: true
@@ -241,7 +247,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Searches for files on multiple hosts, using file hash, file extension, file size, and other search criteria.
+    description: Searches for files on multiple hosts, using file hash, file extension,
+      file size, and other search criteria.
     execution: false
     name: fidelis-endpoint-file-search
     outputs:
@@ -343,7 +350,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The file name to download (including extension). Get the file name from the file-search-result-metadata command. command).
+      description: The file name to download (including extension). Get the file name
+        from the file-search-result-metadata command. command).
       isArray: false
       name: file_name
       required: true
@@ -375,7 +383,8 @@ script:
       description: The file information.
       type: String
     - contextPath: File.Type
-      description: The file type, as determined by libmagic (same as displayed in file entries).
+      description: The file type, as determined by libmagic (same as displayed in
+        file entries).
       type: String
     - contextPath: File.MD5
       description: The MD5 hash of the file.
@@ -497,7 +506,9 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'The script execution job ID. Get the ID the following commands: script-execution, file-search, list-processes, kill-process-by-pid, delete-file, network-isolation, remove-network-isolation.'
+      description: 'The script execution job ID. Get the ID the following commands:
+        script-execution, file-search, list-processes, kill-process-by-pid, delete-file,
+        network-isolation, remove-network-isolation.'
       isArray: false
       name: job_id
       required: true
@@ -596,7 +607,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Terminates the process that matches the required parameter's process ID.
+    description: Terminates the process that matches the required parameter's process
+      ID.
     execution: false
     name: fidelis-endpoint-kill-process
     outputs:
@@ -680,7 +692,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'The server IP address that can communicate with the isolated endpoint. For example: 2.2.2.2.'
+      description: 'The server IP address that can communicate with the isolated endpoint.
+        For example: 2.2.2.2.'
       isArray: false
       name: allowed_server
       required: true
@@ -692,7 +705,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Quarantines an endpoint. While isolated, the endpoint's network communication is restricted to only the allowed servers.
+    description: Quarantines an endpoint. While isolated, the endpoint's network communication
+      is restricted to only the allowed servers.
     execution: false
     name: fidelis-endpoint-isolate-network
     outputs:
@@ -746,7 +760,9 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'The script execution job result ID. Get the ID from the following commands: script-execution, file-search, list-processes, kill-process-by-pid, delete-file, network-isolation, remove-network-isolation.'
+      description: 'The script execution job result ID. Get the ID from the following
+        commands: script-execution, file-search, list-processes, kill-process-by-pid,
+        delete-file, network-isolation, remove-network-isolation.'
       isArray: false
       name: job_result_id
       required: true
@@ -947,7 +963,8 @@ script:
       description: 'The file extension, for example: "txt".'
       type: String
     - contextPath: File.Type
-      description: The file type, as determined by libmagic (same as displayed in file entries).
+      description: The file type, as determined by libmagic (same as displayed in
+        file entries).
       type: Number
     - contextPath: File.Path
       description: The path where the file is located.
@@ -1485,7 +1502,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Query entity type. Can be "antiMalware", "dns", "file", "network", "process", "registry", "remoteThread", "script", "usb", or "windowsevent".
+      description: Query entity type. Can be "antiMalware", "dns", "file", "network",
+        "process", "registry", "remoteThread", "script", "usb", or "windowsevent".
       isArray: false
       name: entity_type
       predefined:
@@ -1502,19 +1520,22 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'Column to query. For example: hash, name, remoteIP, dnsQuestion, localIP.'
+      description: 'Column to query. For example: hash, name, remoteIP, dnsQuestion,
+        localIP.'
       isArray: false
       name: column
       required: true
       secret: false
     - default: false
-      description: The value to query. Can be an IP address, file hash, file path, and so on.
+      description: The value to query. Can be an IP address, file hash, file path,
+        and so on.
       isArray: false
       name: value
       required: true
       secret: false
     - default: false
-      description: 'The operator, which describes how the "value" relates to the "field" (for example: "=", "!=", ">", "<").'
+      description: 'The operator, which describes how the "value" relates to the "field"
+        (for example: "=", "!=", ">", "<").'
       isArray: false
       name: operator
       required: true
@@ -1527,7 +1548,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'An additional filter to use in the query. For example: pid = 1234, pid > 1233.'
+      description: 'An additional filter to use in the query. For example: pid = 1234,
+        pid > 1233.'
       isArray: false
       name: additional_filter
       required: false
@@ -1617,3 +1639,6 @@ script:
 tests:
 - no tests test is in non-cricle Fidelis Endpoint - Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

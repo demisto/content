@@ -5,12 +5,15 @@ name: KeylightCreateIssue
 script: ''
 type: python
 tags: []
-comment: Use this script to simplify the process of creating or updating a record in Keylight (v2). You specify custom arguments for which to populate the components. The arguments in this documentation are meant as examples only.
+comment: Use this script to simplify the process of creating or updating a record
+  in Keylight (v2). You specify custom arguments for which to populate the components.
+  The arguments in this documentation are meant as examples only.
 enabled: true
 args:
 - name: task_id
   required: true
-  description: The task ID (task name) of the task to create. This is not a lookup field.
+  description: The task ID (task name) of the task to create. This is not a lookup
+    field.
 - name: project
   required: true
   description: The project name to create. This is a lookup field.
@@ -28,3 +31,6 @@ runonce: false
 dockerimage: demisto/python3:3.9.7.24076
 runas: DBotWeakRole
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

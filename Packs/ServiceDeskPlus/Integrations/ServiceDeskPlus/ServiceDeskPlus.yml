@@ -889,3 +889,6 @@ script:
 tests:
 - Service Desk Plus Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

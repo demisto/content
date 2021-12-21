@@ -172,3 +172,6 @@ script:
 tests:
 - IPInfo_v2Test
 fromversion: 5.5.0
+marketplaces:
+- xsoar
+- marketplacev2

@@ -103,16 +103,16 @@ script:
       required: true
       secret: false
     - default: false
-      description: If specified, targets to be scanned instead of the default.
-        This value can be an array where each index is a target, or an array with a single
+      description: If specified, targets to be scanned instead of the default. This
+        value can be an array where each index is a target, or an array with a single
         index of comma-separated targets.
       isArray: false
       name: scanTargets
       required: false
       secret: false
     deprecated: false
-    description: Launches a scan with existing or custom targets. You can specify custom
-      targets in the command arguments.
+    description: Launches a scan with existing or custom targets. You can specify
+      custom targets in the command arguments.
     execution: false
     name: tenable-io-launch-scan
     outputs:
@@ -136,9 +136,9 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'no'
-      description: 'If true, the report will contain remediation and host
-        information for the specified scan. Otherwise, the report will only contain
-        vulnerabilities. Possible values: "yes" and "no".'
+      description: 'If true, the report will contain remediation and host information
+        for the specified scan. Otherwise, the report will only contain vulnerabilities.
+        Possible values: "yes" and "no".'
       isArray: false
       name: detailed
       predefined:
@@ -149,7 +149,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'no'
-      description: 'Whether to return the basic details of the specified scan. Possible values: "yes" and "no".'
+      description: 'Whether to return the basic details of the specified scan. Possible
+        values: "yes" and "no".'
       isArray: false
       name: info
       predefined:
@@ -173,7 +174,8 @@ script:
       type: string
     - contextPath: TenableIO.Scan.Status
       description: 'The status of the scan ("completed", "aborted", "imported", "pending",
-        "running", "resuming", "canceling", "cancelled", "pausing", "paused", "stopping", "stopped").'
+        "running", "resuming", "canceling", "cancelled", "pausing", "paused", "stopping",
+        "stopped").'
       type: string
     - contextPath: TenableIO.Scan.StartTime
       description: The scheduled start time for the scan.
@@ -387,7 +389,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Resumes all scans inputted as an array. Will resume scans whose status is 'Paused'.
+    description: Resumes all scans inputted as an array. Will resume scans whose status
+      is 'Paused'.
     execution: false
     name: tenable-io-resume-scan
     outputs:
@@ -406,7 +409,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Pauses all scans inputted as an array. Will pause scans whose status is 'Running'.
+    description: Pauses all scans inputted as an array. Will pause scans whose status
+      is 'Running'.
     execution: false
     name: tenable-io-pause-scan
     outputs:
@@ -429,3 +433,6 @@ script:
 tests:
 - Tenable.io test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

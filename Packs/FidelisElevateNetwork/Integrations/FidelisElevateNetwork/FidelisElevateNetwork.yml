@@ -28,11 +28,13 @@ configuration:
   required: false
   type: 13
 - defaultvalue: 3 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
+    months, 1 year)
   name: fetch_time
   required: false
   type: 0
-description: Automate Detection and Response to Network Threats and data leakage in your organization with Fidelis Elevate Network Integration.
+description: Automate Detection and Response to Network Threats and data leakage in
+  your organization with Fidelis Elevate Network Integration.
 display: Fidelis Elevate Network
 name: Fidelis Elevate Network
 script:
@@ -184,13 +186,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: If the time_frame value is Custom, specify the start time for the time range, for example, 2017-06-01T12:48:16.734.
+      description: If the time_frame value is Custom, specify the start time for the
+        time range, for example, 2017-06-01T12:48:16.734.
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: If the time_frame value is Custom, specify the end time for the time range, for example, 2017-06-01T12:48:16.734.
+      description: If the time_frame value is Custom, specify the end time for the
+        time range, for example, 2017-06-01T12:48:16.734.
       isArray: false
       name: end_time
       required: false
@@ -286,7 +290,8 @@ script:
       type: string
   - arguments:
     - default: false
-      description: Component IP address. Run the 'fidelis-list-pcap-components' command to get this value.
+      description: Component IP address. Run the 'fidelis-list-pcap-components' command
+        to get this value.
       isArray: false
       name: component_ip
       required: true
@@ -350,7 +355,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: If the time_frame value is Custom, specify the start time for the time range, for example, 2017-06-01T12:48:16.734.
+      description: If the time_frame value is Custom, specify the start time for the
+        time range, for example, 2017-06-01T12:48:16.734.
       isArray: false
       name: start_time
       predefined:
@@ -358,7 +364,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: If the time_frame value is Custom, specify the end time for the time range, for example,2017-06-01T12:48:16.734.
+      description: If the time_frame value is Custom, specify the end time for the
+        time range, for example,2017-06-01T12:48:16.734.
       isArray: false
       name: end_time
       required: false
@@ -377,7 +384,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Direction of the request. Can be "s2c" (server to client) or "c2s" (client to server).
+      description: Direction of the request. Can be "s2c" (server to client) or "c2s"
+        (client to server).
       isArray: false
       name: request_direction
       predefined:
@@ -467,19 +475,22 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Today,Yesterday,Last 7 Days,Last Hour,Last 24 Hours,Last 48 Hours,Last 30 Days,Custom
+      description: Today,Yesterday,Last 7 Days,Last Hour,Last 24 Hours,Last 48 Hours,Last
+        30 Days,Custom
       isArray: false
       name: time_frame
       required: false
       secret: false
     - default: false
-      description: If the time_frame value is Custom, specify the start time for the time range, for example, 2017-06-01T12:48:16.734.
+      description: If the time_frame value is Custom, specify the start time for the
+        time range, for example, 2017-06-01T12:48:16.734.
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: If the time_frame value is Custom, specify the start time for the time range, for example, 2017-06-01T12:48:16.734.
+      description: If the time_frame value is Custom, specify the start time for the
+        time range, for example, 2017-06-01T12:48:16.734.
       isArray: false
       name: end_time
       required: false
@@ -497,7 +508,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns a list of alerts, by source IP address or destination IP address.
+    description: Returns a list of alerts, by source IP address or destination IP
+      address.
     execution: false
     name: fidelis-list-alerts-by-ip
     outputs:
@@ -1119,3 +1131,6 @@ script:
 tests:
 - Fidelis-Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

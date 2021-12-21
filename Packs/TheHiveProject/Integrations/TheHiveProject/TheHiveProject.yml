@@ -68,13 +68,17 @@ script:
       description: Limit the number of returned results.
     outputs:
     - contextPath: TheHive.Cases._routing
-      description: The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case.
+      description: The root level object which the current object belongs to. For
+        example, a log entry is part of a task, which is part of a case. The _routing
+        in this example would point to the ID of the case.
       type: string
     - contextPath: TheHive.Cases._parent
-      description: The direct parent level object which the current object belongs to.
+      description: The direct parent level object which the current object belongs
+        to.
       type: string
     - contextPath: TheHive.Cases.customFields
-      description: Any fields that the user of TheHiveProject has added to the platform and filled in as part of a case.
+      description: Any fields that the user of TheHiveProject has added to the platform
+        and filled in as part of a case.
     - contextPath: TheHive.Cases.caseId
       description: The order of the case.
       type: number
@@ -117,16 +121,20 @@ script:
       description: Severity of the case.
       type: number
     - contextPath: TheHive.Cases.pap
-      description: Permissible Actions Protocol (PAP), used to indicate what kind of action is allowed.
+      description: Permissible Actions Protocol (PAP), used to indicate what kind
+        of action is allowed.
       type: number
     - contextPath: TheHive.Cases.createdBy
       description: The user who created the case.
       type: string
     - contextPath: TheHive.Cases.tasks._routing
-      description: The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case.
+      description: The root level object which the current object belongs to. For
+        example, a log entry is part of a task, which is part of a case. The _routing
+        in this example would point to the ID of the case.
       type: string
     - contextPath: TheHive.Cases.tasks._parent
-      description: The direct parent level object which the current object belongs to.
+      description: The direct parent level object which the current object belongs
+        to.
       type: string
     - contextPath: TheHive.Cases.tasks.flag
       description: A boolean flag used for filtering.
@@ -162,10 +170,13 @@ script:
       description: Log message.
       type: string
     - contextPath: TheHive.Cases.tasks.logs._routing
-      description: The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case.
+      description: The root level object which the current object belongs to. For
+        example, a log entry is part of a task, which is part of a case. The _routing
+        in this example would point to the ID of the case.
       type: string
     - contextPath: TheHive.Cases.tasks.logs._parent
-      description: The direct parent level object which the current object belongs to.
+      description: The direct parent level object which the current object belongs
+        to.
       type: string
     - contextPath: TheHive.Cases.tasks.logs.startDate
       description: Datetime the log was started on, for example, 2018-06-29 08:15:27.243860.
@@ -199,13 +210,17 @@ script:
       description: ID of the case.
     outputs:
     - contextPath: TheHive.Cases._routing
-      description: The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case.
+      description: The root level object which the current object belongs to. For
+        example, a log entry is part of a task, which is part of a case. The _routing
+        in this example would point to the ID of the case.
       type: string
     - contextPath: TheHive.Cases._parent
-      description: The direct parent level object which the current object belongs to.
+      description: The direct parent level object which the current object belongs
+        to.
       type: string
     - contextPath: TheHive.Cases.customFields
-      description: Any fields that the user of TheHiveProject has added to the platform and filled in as part of a case.
+      description: Any fields that the user of TheHiveProject has added to the platform
+        and filled in as part of a case.
     - contextPath: TheHive.Cases.caseId
       description: The order of the case.
       type: number
@@ -248,16 +263,20 @@ script:
       description: Severity of the case.
       type: number
     - contextPath: TheHive.Cases.pap
-      description: Permissible Actions Protocol (PAP), used to indicate what kind of action is allowed.
+      description: Permissible Actions Protocol (PAP), used to indicate what kind
+        of action is allowed.
       type: number
     - contextPath: TheHive.Cases.createdBy
       description: The user who created the case.
       type: string
     - contextPath: TheHive.Cases.tasks._routing
-      description: The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case.
+      description: The root level object which the current object belongs to. For
+        example, a log entry is part of a task, which is part of a case. The _routing
+        in this example would point to the ID of the case.
       type: string
     - contextPath: TheHive.Cases.tasks._parent
-      description: The direct parent level object which the current object belongs to.
+      description: The direct parent level object which the current object belongs
+        to.
       type: string
     - contextPath: TheHive.Cases.tasks.flag
       description: A boolean flag used for filtering.
@@ -293,10 +312,13 @@ script:
       description: Log message.
       type: string
     - contextPath: TheHive.Cases.tasks.logs._routing
-      description: The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case.
+      description: The root level object which the current object belongs to. For
+        example, a log entry is part of a task, which is part of a case. The _routing
+        in this example would point to the ID of the case.
       type: string
     - contextPath: TheHive.Cases.tasks.logs._parent
-      description: The direct parent level object which the current object belongs to.
+      description: The direct parent level object which the current object belongs
+        to.
       type: string
     - contextPath: TheHive.Cases.tasks.logs.startDate
       description: Datetime the log was started on, for example, 2018-06-29 08:15:27.243860.
@@ -354,7 +376,8 @@ script:
       - "1"
       - "2"
       - "3"
-      description: 'Traffic Light Protocol designation for the case (default is 2: amber).'
+      description: 'Traffic Light Protocol designation for the case (default is 2:
+        amber).'
     - name: tags
       description: Tags added to the case.
     - name: resolutionStatus
@@ -384,13 +407,17 @@ script:
       description: Raw query (for use with v4 of TheHive Project and upwards).
     outputs:
     - contextPath: TheHive.Cases._routing
-      description: The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case.
+      description: The root level object which the current object belongs to. For
+        example, a log entry is part of a task, which is part of a case. The _routing
+        in this example would point to the ID of the case.
       type: string
     - contextPath: TheHive.Cases._parent
-      description: The direct parent level object which the current object belongs to.
+      description: The direct parent level object which the current object belongs
+        to.
       type: string
     - contextPath: TheHive.Cases.customFields
-      description: Any fields that the user of TheHiveProject has added to the platform and filled in as part of a case.
+      description: Any fields that the user of TheHiveProject has added to the platform
+        and filled in as part of a case.
     - contextPath: TheHive.Cases.caseId
       description: The order of the case.
       type: number
@@ -433,16 +460,20 @@ script:
       description: Severity of the case.
       type: number
     - contextPath: TheHive.Cases.pap
-      description: Permissible Actions Protocol (PAP), used to indicate what kind of action is allowed.
+      description: Permissible Actions Protocol (PAP), used to indicate what kind
+        of action is allowed.
       type: number
     - contextPath: TheHive.Cases.createdBy
       description: The user who created the case.
       type: string
     - contextPath: TheHive.Cases.tasks._routing
-      description: The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case.
+      description: The root level object which the current object belongs to. For
+        example, a log entry is part of a task, which is part of a case. The _routing
+        in this example would point to the ID of the case.
       type: string
     - contextPath: TheHive.Cases.tasks._parent
-      description: The direct parent level object which the current object belongs to.
+      description: The direct parent level object which the current object belongs
+        to.
       type: string
     - contextPath: TheHive.Cases.tasks.flag
       description: A boolean flag used for filtering.
@@ -478,10 +509,13 @@ script:
       description: Log message.
       type: string
     - contextPath: TheHive.Cases.tasks.logs._routing
-      description: The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case.
+      description: The root level object which the current object belongs to. For
+        example, a log entry is part of a task, which is part of a case. The _routing
+        in this example would point to the ID of the case.
       type: string
     - contextPath: TheHive.Cases.tasks.logs._parent
-      description: The direct parent level object which the current object belongs to.
+      description: The direct parent level object which the current object belongs
+        to.
       type: string
     - contextPath: TheHive.Cases.tasks.logs.startDate
       description: Datetime the log was started on, for example, 2018-06-29 08:15:27.243860.
@@ -575,13 +609,17 @@ script:
       description: Status of the case.
     outputs:
     - contextPath: TheHive.Cases._routing
-      description: The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case.
+      description: The root level object which the current object belongs to. For
+        example, a log entry is part of a task, which is part of a case. The _routing
+        in this example would point to the ID of the case.
       type: string
     - contextPath: TheHive.Cases._parent
-      description: The direct parent level object which the current object belongs to.
+      description: The direct parent level object which the current object belongs
+        to.
       type: string
     - contextPath: TheHive.Cases.customFields
-      description: Any fields that the user of TheHiveProject has added to the platform and filled in as part of a case.
+      description: Any fields that the user of TheHiveProject has added to the platform
+        and filled in as part of a case.
     - contextPath: TheHive.Cases.caseId
       description: The order of the case.
       type: number
@@ -624,16 +662,20 @@ script:
       description: Severity of the case.
       type: number
     - contextPath: TheHive.Cases.pap
-      description: Permissible Actions Protocol (PAP), used to indicate what kind of action is allowed.
+      description: Permissible Actions Protocol (PAP), used to indicate what kind
+        of action is allowed.
       type: number
     - contextPath: TheHive.Cases.createdBy
       description: The user who created the case.
       type: string
     - contextPath: TheHive.Cases.tasks._routing
-      description: The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case.
+      description: The root level object which the current object belongs to. For
+        example, a log entry is part of a task, which is part of a case. The _routing
+        in this example would point to the ID of the case.
       type: string
     - contextPath: TheHive.Cases.tasks._parent
-      description: The direct parent level object which the current object belongs to.
+      description: The direct parent level object which the current object belongs
+        to.
       type: string
     - contextPath: TheHive.Cases.tasks.flag
       description: A boolean flag used for filtering.
@@ -669,10 +711,13 @@ script:
       description: Log message.
       type: string
     - contextPath: TheHive.Cases.tasks.logs._routing
-      description: The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case.
+      description: The root level object which the current object belongs to. For
+        example, a log entry is part of a task, which is part of a case. The _routing
+        in this example would point to the ID of the case.
       type: string
     - contextPath: TheHive.Cases.tasks.logs._parent
-      description: The direct parent level object which the current object belongs to.
+      description: The direct parent level object which the current object belongs
+        to.
       type: string
     - contextPath: TheHive.Cases.tasks.logs.startDate
       description: Datetime the log was started on, for example, 2018-06-29 08:15:27.243860.
@@ -752,13 +797,17 @@ script:
       description: Metrics of the case.
     outputs:
     - contextPath: TheHive.Cases._routing
-      description: The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case.
+      description: The root level object which the current object belongs to. For
+        example, a log entry is part of a task, which is part of a case. The _routing
+        in this example would point to the ID of the case.
       type: string
     - contextPath: TheHive.Cases._parent
-      description: The direct parent level object which the current object belongs to.
+      description: The direct parent level object which the current object belongs
+        to.
       type: string
     - contextPath: TheHive.Cases.customFields
-      description: Any fields that the user of TheHiveProject has added to the platform and filled in as part of a case.
+      description: Any fields that the user of TheHiveProject has added to the platform
+        and filled in as part of a case.
     - contextPath: TheHive.Cases.caseId
       description: The order of the case.
       type: number
@@ -801,16 +850,20 @@ script:
       description: Severity of the case.
       type: number
     - contextPath: TheHive.Cases.pap
-      description: Permissible Actions Protocol (PAP), used to indicate what kind of action is allowed.
+      description: Permissible Actions Protocol (PAP), used to indicate what kind
+        of action is allowed.
       type: number
     - contextPath: TheHive.Cases.createdBy
       description: The user who created the case.
       type: string
     - contextPath: TheHive.Cases.tasks._routing
-      description: The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case.
+      description: The root level object which the current object belongs to. For
+        example, a log entry is part of a task, which is part of a case. The _routing
+        in this example would point to the ID of the case.
       type: string
     - contextPath: TheHive.Cases.tasks._parent
-      description: The direct parent level object which the current object belongs to.
+      description: The direct parent level object which the current object belongs
+        to.
       type: string
     - contextPath: TheHive.Cases.tasks.flag
       description: A boolean flag used for filtering.
@@ -846,10 +899,13 @@ script:
       description: Log message.
       type: string
     - contextPath: TheHive.Cases.tasks.logs._routing
-      description: The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case.
+      description: The root level object which the current object belongs to. For
+        example, a log entry is part of a task, which is part of a case. The _routing
+        in this example would point to the ID of the case.
       type: string
     - contextPath: TheHive.Cases.tasks.logs._parent
-      description: The direct parent level object which the current object belongs to.
+      description: The direct parent level object which the current object belongs
+        to.
       type: string
     - contextPath: TheHive.Cases.tasks.logs.startDate
       description: Datetime the log was started on, for example, 2018-06-29 08:15:27.243860.
@@ -880,7 +936,7 @@ script:
     arguments:
     - name: id
       required: true
-      description: Case ID 
+      description: Case ID
     - name: title
       required: true
       description: Title of the case.
@@ -938,13 +994,17 @@ script:
       description: Case ID
     outputs:
     - contextPath: TheHive.Cases._routing
-      description: The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case.
+      description: The root level object which the current object belongs to. For
+        example, a log entry is part of a task, which is part of a case. The _routing
+        in this example would point to the ID of the case.
       type: string
     - contextPath: TheHive.Cases._parent
-      description: The direct parent level object which the current object belongs to.
+      description: The direct parent level object which the current object belongs
+        to.
       type: string
     - contextPath: TheHive.Cases.customFields
-      description: Any fields that the user of TheHiveProject has added to the platform and filled in as part of a case.
+      description: Any fields that the user of TheHiveProject has added to the platform
+        and filled in as part of a case.
     - contextPath: TheHive.Cases.caseId
       description: The order of the case.
       type: number
@@ -987,16 +1047,20 @@ script:
       description: Severity of the case.
       type: number
     - contextPath: TheHive.Cases.pap
-      description: Permissible Actions Protocol (PAP), used to indicate what kind of action is allowed.
+      description: Permissible Actions Protocol (PAP), used to indicate what kind
+        of action is allowed.
       type: number
     - contextPath: TheHive.Cases.createdBy
       description: The user who created the case.
       type: string
     - contextPath: TheHive.Cases.tasks._routing
-      description: The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case.
+      description: The root level object which the current object belongs to. For
+        example, a log entry is part of a task, which is part of a case. The _routing
+        in this example would point to the ID of the case.
       type: string
     - contextPath: TheHive.Cases.tasks._parent
-      description: The direct parent level object which the current object belongs to.
+      description: The direct parent level object which the current object belongs
+        to.
       type: string
     - contextPath: TheHive.Cases.tasks.flag
       description: A boolean flag used for filtering.
@@ -1039,13 +1103,17 @@ script:
       description: ID of the second case.
     outputs:
     - contextPath: TheHive.Cases._routing
-      description: The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case.
+      description: The root level object which the current object belongs to. For
+        example, a log entry is part of a task, which is part of a case. The _routing
+        in this example would point to the ID of the case.
       type: string
     - contextPath: TheHive.Cases._parent
-      description: The direct parent level object which the current object belongs to.
+      description: The direct parent level object which the current object belongs
+        to.
       type: string
     - contextPath: TheHive.Cases.customFields
-      description: Any fields that the user of TheHiveProject has added to the platform and filled in as part of a case.
+      description: Any fields that the user of TheHiveProject has added to the platform
+        and filled in as part of a case.
     - contextPath: TheHive.Cases.caseId
       description: The order of the case.
       type: number
@@ -1088,16 +1156,20 @@ script:
       description: Severity of the case.
       type: number
     - contextPath: TheHive.Cases.pap
-      description: Permissible Actions Protocol (PAP), used to indicate what kind of action is allowed.
+      description: Permissible Actions Protocol (PAP), used to indicate what kind
+        of action is allowed.
       type: number
     - contextPath: TheHive.Cases.createdBy
       description: The user who created the case.
       type: string
     - contextPath: TheHive.Cases.tasks._routing
-      description: The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case.
+      description: The root level object which the current object belongs to. For
+        example, a log entry is part of a task, which is part of a case. The _routing
+        in this example would point to the ID of the case.
       type: string
     - contextPath: TheHive.Cases.tasks._parent
-      description: The direct parent level object which the current object belongs to.
+      description: The direct parent level object which the current object belongs
+        to.
       type: string
     - contextPath: TheHive.Cases.tasks.flag
       description: A boolean flag used for filtering.
@@ -1133,10 +1205,13 @@ script:
       description: Log message.
       type: string
     - contextPath: TheHive.Cases.tasks.logs._routing
-      description: The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case.
+      description: The root level object which the current object belongs to. For
+        example, a log entry is part of a task, which is part of a case. The _routing
+        in this example would point to the ID of the case.
       type: string
     - contextPath: TheHive.Cases.tasks.logs._parent
-      description: The direct parent level object which the current object belongs to.
+      description: The direct parent level object which the current object belongs
+        to.
       type: string
     - contextPath: TheHive.Cases.tasks.logs.startDate
       description: Datetime the log was started on, for example, 2018-06-29 08:15:27.243860.
@@ -1176,10 +1251,13 @@ script:
       description: Task ID
     outputs:
     - contextPath: TheHive.Tasks._routing
-      description: The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case.
+      description: The root level object which the current object belongs to. For
+        example, a log entry is part of a task, which is part of a case. The _routing
+        in this example would point to the ID of the case.
       type: string
     - contextPath: TheHive.Tasks._parent
-      description: The direct parent level object which the current object belongs to.
+      description: The direct parent level object which the current object belongs
+        to.
       type: string
     - contextPath: TheHive.Tasks.flag
       description: A boolean flag used for filtering.
@@ -1215,10 +1293,13 @@ script:
       description: Log message.
       type: string
     - contextPath: TheHive.Tasks.logs._routing
-      description: The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case.
+      description: The root level object which the current object belongs to. For
+        example, a log entry is part of a task, which is part of a case. The _routing
+        in this example would point to the ID of the case.
       type: string
     - contextPath: TheHive.Tasks.logs._parent
-      description: The direct parent level object which the current object belongs to.
+      description: The direct parent level object which the current object belongs
+        to.
       type: string
     - contextPath: TheHive.Tasks.logs.startDate
       description: Datetime the log was started on, for example, 2018-06-29 08:15:27.243860.
@@ -1358,7 +1439,8 @@ script:
       required: true
       description: Observable message.
     - name: startDate
-      description: Datetime the observable was started on, for example, 2018-06-29 08:15:27.243860.
+      description: Datetime the observable was started on, for example, 2018-06-29
+        08:15:27.243860.
     - name: tlp
       auto: PREDEFINED
       predefined:
@@ -1441,3 +1523,6 @@ script:
 fromversion: 6.0.0
 tests:
 - Playbook_TheHiveProject_Test
+marketplaces:
+- xsoar
+- marketplacev2

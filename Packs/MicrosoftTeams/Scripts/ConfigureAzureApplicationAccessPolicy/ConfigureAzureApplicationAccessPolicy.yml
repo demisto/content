@@ -24,7 +24,8 @@ args:
   required: false
   secret: false
 comment: This script grants a user the permissions needed to create a Teams meeting.
-  It connects to MS Teams, creating an application access policy to a chosen application and then grants a user permissions.
+  It connects to MS Teams, creating an application access policy to a chosen application
+  and then grants a user permissions.
 commonfields:
   id: ConfigureAzureApplicationAccessPolicy
   version: -1
@@ -48,3 +49,6 @@ dockerimage: demisto/powershell-teams:1.0.0.22275
 fromversion: 5.5.0
 tests:
 - No test
+marketplaces:
+- xsoar
+- marketplacev2

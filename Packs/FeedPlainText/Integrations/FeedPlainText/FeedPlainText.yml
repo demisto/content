@@ -25,7 +25,8 @@ configuration:
   required: false
   type: 8
 - additionalinfo: Type of the indicator in the feed. If auto-detect is checked then
-    the value set as Indicator Type will be ignored. If the "Custom" option is selected, the Custom Indicator Type parameter must be provided.
+    the value set as Indicator Type will be ignored. If the "Custom" option is selected,
+    the Custom Indicator Type parameter must be provided.
   display: Indicator Type
   name: indicator_type
   options:
@@ -48,8 +49,8 @@ configuration:
   - Custom
   required: false
   type: 15
-- additionalinfo: The indicator type to be used in case of 'Custom' option chosen in the 
-    Indicator Type field.
+- additionalinfo: The indicator type to be used in case of 'Custom' option chosen
+    in the Indicator Type field.
   display: Custom Indicator Type
   hidden: false
   name: custom_indicator_type
@@ -206,3 +207,6 @@ script:
 tests:
 - PlainText Feed - Test
 fromversion: 5.5.0
+marketplaces:
+- xsoar
+- marketplacev2

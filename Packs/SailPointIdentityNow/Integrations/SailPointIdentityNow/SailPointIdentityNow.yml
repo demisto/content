@@ -697,3 +697,6 @@ tests:
 - SailPointIdentityNow-Test
 defaultmapperin: SailPoint IdentityNow Trigger Mapper
 fromversion: 6.0.0
+marketplaces:
+- xsoar
+- marketplacev2

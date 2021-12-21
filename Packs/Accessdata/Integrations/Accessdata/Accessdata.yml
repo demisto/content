@@ -4,9 +4,11 @@ commonfields:
 name: Accessdata
 display: Accessdata
 category: Forensics & Malware Analysis
-description: Use the Accessdata integration to protect against and provide additional visibility into phishing and other malicious email attacks.
+description: Use the Accessdata integration to protect against and provide additional
+  visibility into phishing and other malicious email attacks.
 configuration:
-- display: Server URL with scheme (FQDN or IP address in X.X.X.X format with scheme specified)
+- display: Server URL with scheme (FQDN or IP address in X.X.X.X format with scheme
+    specified)
   name: server_name
   defaultvalue: server_url
   type: 0
@@ -88,7 +90,8 @@ script:
     - contextPath: Accessdata.File.Contents
       description: The contents of the file.
       type: string
-    description: Reads the file from a case folder and returns the contents to the current context.
+    description: Reads the file from a case folder and returns the contents to the
+      current context.
   - name: accessdata-jobstatus-scan
     arguments:
     - name: caseJobID
@@ -178,3 +181,6 @@ script:
 tests:
 - No test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

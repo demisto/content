@@ -2138,3 +2138,6 @@ script:
 tests:
 - Carbon Black Enterprise Protection V2 Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

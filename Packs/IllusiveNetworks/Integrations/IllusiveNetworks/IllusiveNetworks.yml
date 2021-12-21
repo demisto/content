@@ -45,7 +45,10 @@ configuration:
   - ALL
   required: true
   type: 15
-description: The Illusive Attack Management API allows customers to retrieve detected incidents with a forensics timeline, attack surface insights, collect forensics on-demand, and manage a variety of operations with regard to deceptive entities, deception policies, and more.
+description: The Illusive Attack Management API allows customers to retrieve detected
+  incidents with a forensics timeline, attack surface insights, collect forensics
+  on-demand, and manage a variety of operations with regard to deceptive entities,
+  deception policies, and more.
 display: IllusiveNetworks
 name: IllusiveNetworks
 script:
@@ -138,7 +141,8 @@ script:
       description: The host Active Directory Organizational Unit
       type: String
     - contextPath: Illusive.AttackSurfaceInsightsHost.SourceConnectivityExposure
-      description: The host Source Connectivity Exposure to crown jewels and domain user credentials
+      description: The host Source Connectivity Exposure to crown jewels and domain
+        user credentials
       type: Number
   - deprecated: false
     description: Retrieve Crown-Jewels insights from Attack Surface Manager
@@ -164,7 +168,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: ALL
-      description: The status of the desired deceptive users (APPROVED, SUGGESTED, ALL)
+      description: The status of the desired deceptive users (APPROVED, SUGGESTED,
+        ALL)
       isArray: false
       name: type
       predefined:
@@ -197,13 +202,15 @@ script:
       description: Whether the deceptive user is a genuine user in Active Directory
       type: Boolean
     - contextPath: Illusive.DeceptiveUser.activeUser
-      description: In case the deceptive user is a real AD user, indicates whether he is active
+      description: In case the deceptive user is a real AD user, indicates whether
+        he is active
       type: Boolean
   - arguments:
     - auto: PREDEFINED
       default: false
       defaultValue: ALL
-      description: The status of the desired deceptive servers (APPROVED, SUGGESTED, ALL)
+      description: The status of the desired deceptive servers (APPROVED, SUGGESTED,
+        ALL)
       isArray: false
       name: type
       predefined:
@@ -382,7 +389,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Collect forensics on a specified host and retrieve the forensics timeline
+    description: Collect forensics on a specified host and retrieve the forensics
+      timeline
     execution: false
     name: illusive-run-forensics-on-demand
     outputs:
@@ -649,3 +657,6 @@ script:
 defaultmapperin: Illusive Networks-mapper
 defaultclassifier: Illusive Networks
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

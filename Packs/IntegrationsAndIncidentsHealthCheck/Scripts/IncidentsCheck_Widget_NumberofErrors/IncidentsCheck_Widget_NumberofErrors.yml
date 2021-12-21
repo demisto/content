@@ -1,5 +1,5 @@
-comment: Data output script for populating the dashboard number graph widget with the
-  number of entries ID errors.
+comment: Data output script for populating the dashboard number graph widget with
+  the number of entries ID errors.
 commonfields:
   id: IncidentsCheck-Widget-NumberofErrors
   version: -1
@@ -18,3 +18,6 @@ type: python
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2

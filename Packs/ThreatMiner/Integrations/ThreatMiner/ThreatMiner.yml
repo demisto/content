@@ -199,7 +199,8 @@ script:
       required: true
       description: File hash (md5, sha1, sha256)
     - name: threshold
-      description: If ThreatScore is greater or equal than the threshold, then file will be considered malicious
+      description: If ThreatScore is greater or equal than the threshold, then file
+        will be considered malicious
       defaultValue: "10"
     outputs:
     - contextPath: ThreatMiner.File.MD5
@@ -292,3 +293,6 @@ script:
 tests:
 - ThreatMiner-Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

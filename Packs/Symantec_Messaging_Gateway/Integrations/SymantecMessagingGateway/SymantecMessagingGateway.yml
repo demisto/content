@@ -123,3 +123,6 @@ script:
     description: Returns a list of all blocked IP addresses.
   dockerimage: demisto/bs4:1.0.0.24033
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

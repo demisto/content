@@ -145,3 +145,6 @@ tests:
 fromversion: 6.0.0
 defaultmapperin: LogsignSIEM Mapper
 defaultclassifier: LogsignSIEM Classifier
+marketplaces:
+- xsoar
+- marketplacev2

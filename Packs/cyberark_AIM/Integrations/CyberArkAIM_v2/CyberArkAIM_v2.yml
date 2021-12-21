@@ -24,7 +24,8 @@ configuration:
   required: true
   type: 0
 - display: A comma-separated list of credential names in the safe.
-  additionalinfo: Partial names are not supported. If left empty, no credentials will be fetched.
+  additionalinfo: Partial names are not supported. If left empty, no credentials will
+    be fetched.
   hidden: false
   name: credential_names
   required: false
@@ -69,7 +70,8 @@ name: CyberArkAIM v2
 script:
   commands:
   - deprecated: false
-    description: Lists all available credentials according to the list of credential names configured.
+    description: Lists all available credentials according to the list of credential
+      names configured.
     execution: false
     name: cyberark-aim-list-credentials
     outputs:
@@ -100,3 +102,6 @@ script:
 tests:
 - No tests
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

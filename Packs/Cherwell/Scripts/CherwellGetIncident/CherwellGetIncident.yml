@@ -15,7 +15,10 @@ args:
   name: id_value
   required: true
   secret: false
-comment: This script is an example script of how to retrieve an incident from Cherwell. The script wraps the cherwell-get-business-object command of the cherwell integration. When writing your own script to get a business object, follow the instructions found in the configuration section of the script, but do not change the execution section.
+comment: This script is an example script of how to retrieve an incident from Cherwell.
+  The script wraps the cherwell-get-business-object command of the cherwell integration.
+  When writing your own script to get a business object, follow the instructions found
+  in the configuration section of the script, but do not change the execution section.
 commonfields:
   id: CherwellGetIncident
   version: -1
@@ -62,3 +65,6 @@ subtype: python3
 tests:
 - Cherwell Example Scripts - test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

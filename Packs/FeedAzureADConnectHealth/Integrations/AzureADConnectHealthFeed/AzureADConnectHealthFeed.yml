@@ -112,3 +112,6 @@ script:
   feed: true
   runonce: false
   subtype: python3
+marketplaces:
+- xsoar
+- marketplacev2

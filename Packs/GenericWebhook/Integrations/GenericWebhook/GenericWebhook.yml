@@ -34,15 +34,16 @@ configuration:
   name: incidentType
   type: 13
   required: false
-- additionalinfo: Because this is a push-based integration, it cannot fetch sample events in
-    the mapping wizard. After you finish mapping, it is recommended to turn off the sample
-    events storage to reduce performance overhead.
+- additionalinfo: Because this is a push-based integration, it cannot fetch sample
+    events in the mapping wizard. After you finish mapping, it is recommended to turn
+    off the sample events storage to reduce performance overhead.
   display: Store sample events for mapping
   hidden: false
   name: store_samples
   required: false
   type: 8
-description: The Generic Webhook integration is used to create incidents on event triggers. The trigger can be any query posted to the integration.
+description: The Generic Webhook integration is used to create incidents on event
+  triggers. The trigger can be any query posted to the integration.
 display: Generic Webhook
 name: Generic Webhook
 script:
@@ -59,4 +60,7 @@ script:
   isFetchSamples: true
 fromversion: 5.5.0
 tests:
-  - Generic Webhook - Test
+- Generic Webhook - Test
+marketplaces:
+- xsoar
+- marketplacev2

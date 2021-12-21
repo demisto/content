@@ -419,7 +419,7 @@ script:
           required: false
           secret: false
       deprecated: false
-      description: Returns information and a reputation for each actor in the input list. 
+      description: Returns information and a reputation for each actor in the input list.
       execution: false
       name: sixgill-get-actor
       outputs:
@@ -568,3 +568,6 @@ script:
   subtype: python3
   type: python
 fromversion: 5.5.0
+marketplaces:
+- xsoar
+- marketplacev2

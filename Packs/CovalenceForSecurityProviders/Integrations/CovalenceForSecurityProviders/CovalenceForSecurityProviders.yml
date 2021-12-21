@@ -68,7 +68,8 @@ configuration:
   name: incidentType
   required: false
   type: 13
-description: Triggers by any alert from endpoint, cloud, and network security monitoring, with mitigation steps where applicable. Query Covalence for more detail.
+description: Triggers by any alert from endpoint, cloud, and network security monitoring,
+  with mitigation steps where applicable. Query Covalence for more detail.
 display: Covalence For Security Providers
 fromversion: 5.0.0
 name: Covalence For Security Providers
@@ -1300,3 +1301,6 @@ script:
   type: python
 tests:
 - No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2

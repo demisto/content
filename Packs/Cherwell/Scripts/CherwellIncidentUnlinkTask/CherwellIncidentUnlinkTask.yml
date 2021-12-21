@@ -11,7 +11,11 @@ args:
   name: task_record_id
   required: true
   secret: false
-comment: This script is an example script of how to unlink a task from an incident in Cherwell. The script wraps the cherwell-unlink-business-object command of the cherwell integration. When writing your own script to unlink business objects, follow the instructions found in the configuration section of the script, but do not change the execution section.
+comment: This script is an example script of how to unlink a task from an incident
+  in Cherwell. The script wraps the cherwell-unlink-business-object command of the
+  cherwell integration. When writing your own script to unlink business objects, follow
+  the instructions found in the configuration section of the script, but do not change
+  the execution section.
 commonfields:
   id: CherwellIncidentUnlinkTask
   version: -1
@@ -30,3 +34,6 @@ dependson:
 tests:
 - Cherwell Example Scripts - test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

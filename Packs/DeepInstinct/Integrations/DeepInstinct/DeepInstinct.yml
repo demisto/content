@@ -178,7 +178,8 @@ script:
     - contextPath: DeepInstinct.Events.events.reoccurrence_count
       description: event reoccurrence_count
       type: number
-    description: Get all events. Max events in response can be 50, use first_event_id parameter to define first event id to get
+    description: Get all events. Max events in response can be 50, use first_event_id
+      parameter to define first event id to get
   - name: deepinstinct-get-all-groups
     arguments: []
     outputs:
@@ -316,3 +317,6 @@ script:
   type: python
   subtype: python3
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

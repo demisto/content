@@ -34,8 +34,8 @@ args:
   isArray: false
   name: returnType
   predefined:
-    - summary
-    - incidents
+  - summary
+  - incidents
   required: false
   secret: false
 comment: Show clustering model information - model summary and incidents in specific
@@ -49,10 +49,13 @@ script: '-'
 subtype: python3
 system: false
 tags:
-  - widget
+- widget
 timeout: '0'
 type: python
 fromversion: 6.2.0
 tests:
 - No tests (auto formatted)
 dockerimage: demisto/python3:3.9.7.24076
+marketplaces:
+- xsoar
+- marketplacev2

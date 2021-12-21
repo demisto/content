@@ -129,3 +129,6 @@ script:
 fromversion: 6.0.0
 tests:
 - AlphaVantage Test Playbook
+marketplaces:
+- xsoar
+- marketplacev2

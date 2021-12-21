@@ -123,24 +123,27 @@ script:
     description: 'Gets the details of the alarms using the filter criteria.'
     arguments:
     - name: alarm_status
-      description: 'The alarm status. Possible values: "New", "Opened", "Working", "Escalated", Closed, "Closed_FalseAlarm", "Closed_Resolved", "Closed_Unresolved", "Closed_Reported", "Closed_Monitor".'
+      description: 'The alarm status. Possible values: "New", "Opened", "Working",
+        "Escalated", Closed, "Closed_FalseAlarm", "Closed_Resolved", "Closed_Unresolved",
+        "Closed_Reported", "Closed_Monitor".'
       required: false
       isArray: false
       auto: PREDEFINED
       predefined:
-        - New
-        - Opened
-        - Working
-        - Escalated
-        - Closed
-        - Closed_FalseAlarm
-        - Closed_Resolved
-        - Closed_Unresolved
-        - Closed_Reported
-        - Closed_Monitor
+      - New
+      - Opened
+      - Working
+      - Escalated
+      - Closed
+      - Closed_FalseAlarm
+      - Closed_Resolved
+      - Closed_Unresolved
+      - Closed_Reported
+      - Closed_Monitor
     - name: offset
       defaultValue: "0"
-      description: 'The number of alarms to skip before starting to collect the result set.'
+      description: 'The number of alarms to skip before starting to collect the result
+        set.'
       required: false
       isArray: false
     - name: count
@@ -187,14 +190,17 @@ script:
       contextPath: LogRhythm.Alarm.associatedCases
       description: 'The alarm associated cases.'
   - name: lr-alarm-update
-    description: 'Updates the alarm status and RBP based on the alarm ID supplied. alarm_status or rbp are required.'
+    description: 'Updates the alarm status and RBP based on the alarm ID supplied.
+      alarm_status or rbp are required.'
     arguments:
     - name: alarm_id
       description: 'The alarm ID.'
       required: true
       isArray: false
     - name: alarm_status
-      description: 'The alarm status. Possible values: "New", "Opened", "Working", "Escalated", Closed, "Closed_FalseAlarm", "Closed_Resolved", "Closed_Unresolved", "Closed_Reported", "Closed_Monitor".'
+      description: 'The alarm status. Possible values: "New", "Opened", "Working",
+        "Escalated", Closed, "Closed_FalseAlarm", "Closed_Resolved", "Closed_Unresolved",
+        "Closed_Reported", "Closed_Monitor".'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -215,7 +221,8 @@ script:
       isArray: false
     outputs: []
   - name: lr-alarm-add-comment
-    description: 'Updates the Alarm History table with comments in the Comments column based on the alarm ID supplied.'
+    description: 'Updates the Alarm History table with comments in the Comments column
+      based on the alarm ID supplied.'
     arguments:
     - name: alarm_id
       description: 'The alarm ID.'
@@ -238,21 +245,24 @@ script:
       required: false
       isArray: false
     - name: date_updated
-      description: 'Filter by when the alarm was updated. The returned value will be greater than or equal to the given date.'
+      description: 'Filter by when the alarm was updated. The returned value will
+        be greater than or equal to the given date.'
       required: false
       isArray: false
     - name: type
-      description: 'Filter by history type. Possible type: "comment", "status", and "rbp".'
+      description: 'Filter by history type. Possible type: "comment", "status", and
+        "rbp".'
       required: false
       isArray: false
       auto: PREDEFINED
       predefined:
-        - comment
-        - status
-        - rbp
+      - comment
+      - status
+      - rbp
     - name: offset
       defaultValue: "0"
-      description: 'The number of items to skip before starting to collect the result set.'
+      description: 'The number of items to skip before starting to collect the result
+        set.'
       required: false
       isArray: false
     - name: count
@@ -266,7 +276,8 @@ script:
       description: 'The alarm ID.'
     - type: Number
       contextPath: LogRhythm.AlarmHistory.personId
-      description: The ID of the person who edited the alarm (changed status/ added comment, etc.).
+      description: The ID of the person who edited the alarm (changed status/ added
+        comment, etc.).
     - type: String
       contextPath: LogRhythm.AlarmHistory.comments
       description: 'The alarm comments.'
@@ -298,7 +309,8 @@ script:
       description: The number of events related to the alarm.
     - type: Number
       contextPath: LogRhythm.AlarmEvents.bytesIn
-      description: The number of bytes received or input from a device, system, or process.
+      description: The number of bytes received or input from a device, system, or
+        process.
     - type: Unknown
       contextPath: LogRhythm.AlarmEvents.bytesOut
       description: The number of bytes sent from a device, system, or process.
@@ -328,10 +340,12 @@ script:
       description: The number of alarm events.
     - type: Number
       contextPath: LogRhythm.AlarmEvents.directionId
-      description: The direction by ID of the activity between a log’s origin and impacted zones.
+      description: The direction by ID of the activity between a log’s origin and
+        impacted zones.
     - type: String
       contextPath: LogRhythm.AlarmEvents.directionName
-      description: The direction by name of the activity between a log’s origin and impacted zones. Values can be Internal, External, Outbound, Local, or Unknown.
+      description: The direction by name of the activity between a log’s origin and
+        impacted zones. Values can be Internal, External, Outbound, Local, or Unknown.
     - type: String
       contextPath: LogRhythm.AlarmEvents.domain
       description: 'The alarm event domain.'
@@ -385,7 +399,8 @@ script:
       description: The longitude of the location that was impacted by the alarm.
     - type: Number
       contextPath: LogRhythm.AlarmEvents.impactedLocation.parentLocationId
-      description: The parent location ID of the location that was impacted by the alarm.
+      description: The parent location ID of the location that was impacted by the
+        alarm.
     - type: String
       contextPath: LogRhythm.AlarmEvents.impactedLocation.recordStatus
       description: The record status of the location that was impacted by the alarm.
@@ -412,7 +427,8 @@ script:
       description: The NAT port that was impacted by the alarm.
     - type: String
       contextPath: LogRhythm.AlarmEvents.impactedNetwork.beginIPRange.value
-      description: 'The beginning of the IP range for the network that was impacted by the alarm.'
+      description: 'The beginning of the IP range for the network that was impacted
+        by the alarm.'
     - type: Date
       contextPath: LogRhythm.AlarmEvents.impactedNetwork.dateUpdated
       description: 'The date the impacted network was last updated.'
@@ -421,7 +437,8 @@ script:
       description: The risk threshold of the network impacted by the alarm.
     - type: String
       contextPath: LogRhythm.AlarmEvents.impactedNetwork.endIPRange.value
-      description: 'The end of the IP range for the network that was impacted by the alarm.'
+      description: 'The end of the IP range for the network that was impacted by the
+        alarm.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.impactedNetwork.entityId
       description: The ID of the entity for the network that was impacted by the alarm.
@@ -442,7 +459,8 @@ script:
       description: The ID of the network that was impacted by the alarm.
     - type: String
       contextPath: LogRhythm.AlarmEvents.impactedNetwork.recordStatus
-      description: The status of the record of the network that was impacted by the alarm.
+      description: The status of the record of the network that was impacted by the
+        alarm.
     - type: String
       contextPath: LogRhythm.AlarmEvents.impactedNetwork.shortDesc
       description: The short description of the network that was impacted by the alarm.
@@ -454,7 +472,8 @@ script:
       description: The zone that was impacted by the alarm.
     - type: Number
       contextPath: LogRhythm.AlarmEvents.itemsPacketsIn
-      description: Items such as packets received or input from a device, system, or process.
+      description: Items such as packets received or input from a device, system,
+        or process.
     - type: Number
       contextPath: LogRhythm.AlarmEvents.itemsPacketsOut
       description: Items such as packets sent from a device, system, or process.
@@ -490,7 +509,8 @@ script:
       description: 'The event MPE rule name.'
     - type: Date
       contextPath: LogRhythm.AlarmEvents.normalDateMax
-      description: If the message is aggregated, the maximum creation date contained in the group of logs. It can be in UTC or user-selected time zone.
+      description: If the message is aggregated, the maximum creation date contained
+        in the group of logs. It can be in UTC or user-selected time zone.
     - type: String
       contextPath: LogRhythm.AlarmEvents.objectName
       description: 'The object name of the event.'
@@ -562,7 +582,8 @@ script:
       description: 'The NAT port of where the event originated.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.originNetwork.beginIPRange.value
-      description: 'The beginning address of the IP range of the network where the event originated.'
+      description: 'The beginning address of the IP range of the network where the
+        event originated.'
     - type: Date
       contextPath: LogRhythm.AlarmEvents.originNetwork.dateUpdated
       description: 'The date of the network when the event originate was last updated.'
@@ -804,7 +825,9 @@ script:
       required: false
       isArray: false
     - name: timestamp_filter_type
-      description: 'The type by which to filter case results combined with the argument timestamp. Possible values: "updatedAfter", "updatedBefore", "createdAfter", and "createdBefore".'
+      description: 'The type by which to filter case results combined with the argument
+        timestamp. Possible values: "updatedAfter", "updatedBefore", "createdAfter",
+        and "createdBefore".'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -814,11 +837,13 @@ script:
       - createdAfter
       - createdBefore
     - name: timestamp
-      description: 'The timestamp by which to filter case results combined with the argument timestamp_filter_type.'
+      description: 'The timestamp by which to filter case results combined with the
+        argument timestamp_filter_type.'
       required: false
       isArray: false
     - name: priority
-      description: 'The priority by which to filter the results. Possible values: "1", "2", "3", "4", and "5", where 1 is the highest priority.'
+      description: 'The priority by which to filter the results. Possible values:
+        "1", "2", "3", "4", and "5", where 1 is the highest priority.'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -829,7 +854,9 @@ script:
       - '4'
       - '5'
     - name: status
-      description: 'The status by which to filter the results. Possible values are "1", (created), "2" (completed), "3" (incident), "4" (mitigated), and "5" (resolved).'
+      description: 'The status by which to filter the results. Possible values are
+        "1", (created), "2" (completed), "3" (incident), "4" (mitigated), and "5"
+        (resolved).'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -848,11 +875,13 @@ script:
       required: false
       isArray: true
     - name: text
-      description: 'Filter results that have a case number or name that contains the specified value.'
+      description: 'Filter results that have a case number or name that contains the
+        specified value.'
       required: false
       isArray: false
     - name: evidence_type
-      description: 'Filter results that have evidence of the specified type. Possible values: "alarm", "userEvents", "log", no"te, and "file".'
+      description: 'Filter results that have evidence of the specified type. Possible
+        values: "alarm", "userEvents", "log", no"te, and "file".'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -863,7 +892,8 @@ script:
       - note
       - file
     - name: reference_id
-      description: 'Filter results that have evidence with the given reference identifier. For example, an alarm ID.'
+      description: 'Filter results that have evidence with the given reference identifier.
+        For example, an alarm ID.'
       required: false
       isArray: false
     - name: external_id
@@ -872,7 +902,8 @@ script:
       isArray: false
     - name: offset
       defaultValue: "0"
-      description: 'The number of cases to skip before starting to collect the result set.'
+      description: 'The number of cases to skip before starting to collect the result
+        set.'
       required: false
       isArray: false
     - name: count
@@ -976,7 +1007,8 @@ script:
       required: true
       isArray: false
     - name: priority
-      description: 'The priority by which to filter the results. Possible values: "1", "2", "3", "4", and "5", where 1 is the highest priority.'
+      description: 'The priority by which to filter the results. Possible values:
+        "1", "2", "3", "4", and "5", where 1 is the highest priority.'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -991,7 +1023,8 @@ script:
       required: false
       isArray: false
     - name: due_date
-      description: 'The timedate of when the case is due, as an RFC 3339 formatted string. E.g., 2020-04-20T14:15:22Z.'
+      description: 'The timedate of when the case is due, as an RFC 3339 formatted
+        string. E.g., 2020-04-20T14:15:22Z.'
       required: false
       isArray: false
     - name: summary
@@ -1087,7 +1120,8 @@ script:
       contextPath: LogRhythm.Case.tags.number
       description: 'The case tag number.'
   - name: lr-case-update
-    description: 'Update case information. For example, the case name, priority, and due date.'
+    description: 'Update case information. For example, the case name, priority, and
+      due date.'
     arguments:
     - name: case_id
       description: 'Unique identifier for the case.'
@@ -1098,7 +1132,8 @@ script:
       required: false
       isArray: false
     - name: priority
-      description: 'The priority of the case. Possible values: "1", "2", "3", "4", and "5", where 1 is the highest priority.'
+      description: 'The priority of the case. Possible values: "1", "2", "3", "4",
+        and "5", where 1 is the highest priority.'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -1113,7 +1148,8 @@ script:
       required: false
       isArray: false
     - name: due_date
-      description: 'The timedate of when the case is due, as an RFC 3339 formatted string. E.g., 2020-04-20T14:15:22Z.'
+      description: 'The timedate of when the case is due, as an RFC 3339 formatted
+        string. E.g., 2020-04-20T14:15:22Z.'
       required: false
       isArray: false
     - name: summary
@@ -1224,7 +1260,8 @@ script:
       required: true
       isArray: false
     - name: status
-      description: 'The case status. Possible values: "Created", "Completed", "Incident", "Mitigated", and "Resolved".'
+      description: 'The case status. Possible values: "Created", "Completed", "Incident",
+        "Mitigated", and "Resolved".'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -1330,7 +1367,8 @@ script:
       required: true
       isArray: false
     - name: evidence_type
-      description: 'Filter results that have evidence of the specified type. Possible values are: "alarm", "userEvents", "log", "note", and "file".'
+      description: 'Filter results that have evidence of the specified type. Possible
+        values are: "alarm", "userEvents", "log", "note", and "file".'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -1341,7 +1379,8 @@ script:
       - note
       - file
     - name: status
-      description: 'Filter results that have a specific evidence status. Possible values: "pending", "completed", and "failed".'
+      description: 'Filter results that have a specific evidence status. Possible
+        values: "pending", "completed", and "failed".'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -1830,12 +1869,14 @@ script:
     description: 'Return a list of tags using filter criteria.'
     arguments:
     - name: tag_name
-      description: 'Filter results that have a tag name that contains the specified value.'
+      description: 'Filter results that have a tag name that contains the specified
+        value.'
       required: false
       isArray: false
     - name: offset
       defaultValue: "0"
-      description: 'The number of tags to skip before starting to collect the result set.'
+      description: 'The number of tags to skip before starting to collect the result
+        set.'
       required: false
       isArray: false
     - name: count
@@ -1863,7 +1904,8 @@ script:
       contextPath: LogRhythm.Tag.createdBy.disabled
       description: 'Whether the user is disabled.'
   - name: lr-case-collaborators-list
-    description: 'Returns the owner and a list of collaborators associated with a specific case.'
+    description: 'Returns the owner and a list of collaborators associated with a
+      specific case.'
     arguments:
     - name: case_id
       description: 'Unique identifier for the case.'
@@ -1941,7 +1983,8 @@ script:
       isArray: false
     - name: offset
       defaultValue: "0"
-      description: 'The number of entities to skip before starting to collect the result set.'
+      description: 'The number of entities to skip before starting to collect the
+        result set.'
       required: false
       isArray: false
     - name: count
@@ -1994,7 +2037,8 @@ script:
       - retired
     - name: offset
       defaultValue: "0"
-      description: 'The number of hosts to skip before starting to collect the result set.'
+      description: 'The number of hosts to skip before starting to collect the result
+        set.'
       required: false
       isArray: false
     - name: count
@@ -2064,7 +2108,8 @@ script:
       contextPath: LogRhythm.Host.eventlogPassword
       description: 'The event log password.'
   - name: lr-users-list
-    description: 'Returns user records based on the permissions of the currently logged in user and the specified criteria.'
+    description: 'Returns user records based on the permissions of the currently logged
+      in user and the specified criteria.'
     arguments:
     - name: user_ids
       description: 'A comma-separated list of user IDs.'
@@ -2084,7 +2129,8 @@ script:
       - Retired
     - name: offset
       defaultValue: "0"
-      description: 'The ID of users to skip before starting to collect the result set.'
+      description: 'The ID of users to skip before starting to collect the result
+        set.'
       required: false
       isArray: false
     - name: count
@@ -2136,7 +2182,10 @@ script:
     description: 'Returns list details using the filter criteria.'
     arguments:
     - name: list_type
-      description: 'The list type. Possible values: "None", "Application", "Classification", "CommonEvent", "Host", "Location", "MsgSource", "MsgSourceType", "MPERule", "Network", "User", "GeneralValue", "Entity", "RootEntity", "IP", "IPRange", and "Identity".'
+      description: 'The list type. Possible values: "None", "Application", "Classification",
+        "CommonEvent", "Host", "Location", "MsgSource", "MsgSourceType", "MPERule",
+        "Network", "User", "GeneralValue", "Entity", "RootEntity", "IP", "IPRange",
+        and "Identity".'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -2163,7 +2212,8 @@ script:
       required: false
       isArray: false
     - name: can_edit
-      description: 'Specifies if Write Only (true) or Read Only (false) lists are required for a user. Possible values: "true" and "false".'
+      description: 'Specifies if Write Only (true) or Read Only (false) lists are
+        required for a user. Possible values: "true" and "false".'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -2242,11 +2292,14 @@ script:
       description: 'The list revisit date.'
   - name: lr-list-summary-create-update
     description: 'Updates a list summary based on the GUID and other required details.
-     Searches the system for existing list summaries by GUID.
-      Creates a new list summary if the GUID does not exist. Otherwise, updates the list summary.'
+      Searches the system for existing list summaries by GUID. Creates a new list
+      summary if the GUID does not exist. Otherwise, updates the list summary.'
     arguments:
     - name: list_type
-      description: 'The list type. Possible values: "None", "Application", "Classification", "CommonEvent", "Host", "Location", "MsgSource", "MsgSourceType", "MPERule", "Network", "User", "GeneralValue", "Entity", "RootEntity", "IP", "IPRange", and "Identity".'
+      description: 'The list type. Possible values: "None", "Application", "Classification",
+        "CommonEvent", "Host", "Location", "MsgSource", "MsgSourceType", "MPERule",
+        "Network", "User", "GeneralValue", "Entity", "RootEntity", "IP", "IPRange",
+        and "Identity".'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -2273,7 +2326,8 @@ script:
       required: true
       isArray: false
     - name: enabled
-      description: 'Whether the list auto import is enabled. Possible values: "true" and "false".'
+      description: 'Whether the list auto import is enabled. Possible values: "true"
+        and "false".'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -2281,7 +2335,8 @@ script:
       - 'true'
       - 'false'
     - name: use_patterns
-      description: 'Whether the auto import use patterns is enabled. Possible values: "true" and "false".'
+      description: 'Whether the auto import use patterns is enabled. Possible values:
+        "true" and "false".'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -2289,7 +2344,8 @@ script:
       - 'true'
       - 'false'
     - name: replace_existing
-      description: 'Whether the auto import replace existing is enabled. Possible values: "true" and "false".'
+      description: 'Whether the auto import replace existing is enabled. Possible
+        values: "true" and "false".'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -2297,7 +2353,8 @@ script:
       - 'true'
       - 'false'
     - name: read_access
-      description: 'The read permission level. Possible values: "Private", "PublicAll", "PublicGlobalAdmin", "PublicGlobalAnalyst", "PublicRestrictedAnalyst", "PublicRestrictedAdmin".'
+      description: 'The read permission level. Possible values: "Private", "PublicAll",
+        "PublicGlobalAdmin", "PublicGlobalAnalyst", "PublicRestrictedAnalyst", "PublicRestrictedAdmin".'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -2309,7 +2366,8 @@ script:
       - PublicRestrictedAnalyst
       - PublicRestrictedAdmin
     - name: write_access
-      description: 'The write permission level. Possible values: "Private", "PublicAll", "PublicGlobalAdmin", "PublicGlobalAnalyst", "PublicRestrictedAnalyst", "PublicRestrictedAdmin".'
+      description: 'The write permission level. Possible values: "Private", "PublicAll",
+        "PublicGlobalAdmin", "PublicGlobalAnalyst", "PublicRestrictedAnalyst", "PublicRestrictedAdmin".'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -2321,7 +2379,8 @@ script:
       - PublicRestrictedAnalyst
       - PublicRestrictedAdmin
     - name: restricted_read
-      description: 'Whether the list is read restricted. Possible values: "true" and "false".'
+      description: 'Whether the list is read restricted. Possible values: "true" and
+        "false".'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -2518,7 +2577,8 @@ script:
       required: true
       isArray: false
     - name: items
-      description: 'The body of the list item so that the list can be updated with new items (JSON format).'
+      description: 'The body of the list item so that the list can be updated with
+        new items (JSON format).'
       required: true
       isArray: false
     outputs:
@@ -3701,7 +3761,8 @@ script:
     outputs:
     - type: String
       contextPath: LogRhythm.Search.TaskId
-      description: 'The task ID returned from the database for the current search. This is actually the search GUID.'
+      description: 'The task ID returned from the database for the current search.
+        This is actually the search GUID.'
     - type: String
       contextPath: LogRhythm.Search.StatusMessage
       description: 'The task status returned from the database for the current search.'
@@ -3763,10 +3824,12 @@ script:
       description: 'Log classification name.'
       type: String
   - name: lr-get-query-result
-    description: 'Get the search query result for the specified task ID. The task ID can be retrieved from the lr-execute-search-query command.'
+    description: 'Get the search query result for the specified task ID. The task
+      ID can be retrieved from the lr-execute-search-query command.'
     arguments:
     - name: task_id
-      description: 'The task ID. The task ID can be retrieved from the lr-execute-search-query command.'
+      description: 'The task ID. The task ID can be retrieved from the lr-execute-search-query
+        command.'
       required: true
       isArray: false
     - name: page_size
@@ -3856,7 +3919,9 @@ script:
       required: false
       isArray: false
     - name: risk-level
-      description: 'The host risk level. Possible values: "None", "Low-Low", "Low-Medium", "Low-High", "Medium-Low", "Medium-Medium", "Medium-High", "High-Low", "High-Medium", and "High-High".'
+      description: 'The host risk level. Possible values: "None", "Low-Low", "Low-Medium",
+        "Low-High", "Medium-Low", "Medium-Medium", "Medium-High", "High-Low", "High-Medium",
+        and "High-High".'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -3872,7 +3937,9 @@ script:
       - High-Medium
       - High-High
     - name: threat-level
-      description: 'The host threat level. Possible values: "None", "Low-Low", "Low-Medium", "Low-High", "Medium-Low", "Medium-Medium", "Medium-High", "High-Low", "High-Medium", and "High-High".'
+      description: 'The host threat level. Possible values: "None", "Low-Low", "Low-Medium",
+        "Low-High", "Medium-Low", "Medium-Medium", "Medium-High", "High-Low", "High-Medium",
+        and "High-High".'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -3909,7 +3976,8 @@ script:
       - DMZ
       - Internal
     - name: use-eventlog-credentials
-      description: 'Whether to use the event log credentials. Possible values: "true" and "false".'
+      description: 'Whether to use the event log credentials. Possible values: "true"
+        and "false".'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -3917,7 +3985,8 @@ script:
       - 'true'
       - 'false'
     - name: os-type
-      description: 'The Agent server type on which the operating system is installed. Possible values: "None", "Server", and "Desktop".'
+      description: 'The Agent server type on which the operating system is installed.
+        Possible values: "None", "Server", and "Desktop".'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -3926,7 +3995,10 @@ script:
       - Server
       - Desktop
     - name: os
-      description: 'The operating system type supported by LogRhythm. Possible values: "Unknown", "Other", "WindowsNT4","Windows2000Professional", "Windows2000Server", "Windows2003Standard", "Windows2003Enterprise", "Windows95", "WindowsXP", "WindowsVista", "Linux", "Solaris", "AIX", "HPUX", and "Windows".'
+      description: 'The operating system type supported by LogRhythm. Possible values:
+        "Unknown", "Other", "WindowsNT4","Windows2000Professional", "Windows2000Server",
+        "Windows2003Standard", "Windows2003Enterprise", "Windows95", "WindowsXP",
+        "WindowsVista", "Linux", "Solaris", "AIX", "HPUX", and "Windows".'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -4038,7 +4110,8 @@ script:
       required: false
       isArray: false
     - name: record_status
-      description: 'Filter by object record status. Possible values: "all", "retired", "active".'
+      description: 'Filter by object record status. Possible values: "all", "retired",
+        "active".'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -4047,11 +4120,13 @@ script:
       - retired
       - active
     - name: bip
-      description: 'The starting IP address to allow records to be filtered on a specified IP address, e.g., 127.0.0.1.'
+      description: 'The starting IP address to allow records to be filtered on a specified
+        IP address, e.g., 127.0.0.1.'
       required: false
       isArray: false
     - name: eip
-      description: 'The ending IP address to allow records to be filtered on a specified IP address, e.g., 127.0.0.1.'
+      description: 'The ending IP address to allow records to be filtered on a specified
+        IP address, e.g., 127.0.0.1.'
       required: false
       isArray: false
     - name: count
@@ -4061,7 +4136,8 @@ script:
       isArray: false
     - name: offset
       defaultValue: "0"
-      description: 'The number of networks to skip before starting to collect the result set.'
+      description: 'The number of networks to skip before starting to collect the
+        result set.'
       required: false
       isArray: false
     outputs:
@@ -4117,3 +4193,6 @@ defaultclassifier: LogRhythm Classifier
 defaultmapperin: LogRhythm Mapper
 tests:
 - LogRhythmRestV2-test
+marketplaces:
+- xsoar
+- marketplacev2

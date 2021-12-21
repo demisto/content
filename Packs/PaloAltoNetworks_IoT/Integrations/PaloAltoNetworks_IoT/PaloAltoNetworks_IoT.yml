@@ -46,13 +46,15 @@ configuration:
   defaultvalue: "true"
   type: 8
   required: false
-  additionalinfo: When selected, the integration fetches IoT alerts from the IoT Security Portal.
+  additionalinfo: When selected, the integration fetches IoT alerts from the IoT Security
+    Portal.
 - display: Fetch IoT Vulnerabilities
   name: fetch_vulns
   defaultvalue: "true"
   type: 8
   required: false
-  additionalinfo: When selected, the integration fetches IoT vulnerabilities from the IoT Security Portal.
+  additionalinfo: When selected, the integration fetches IoT vulnerabilities from
+    the IoT Security Portal.
 - display: The timeout for querying APIs
   name: api_timeout
   defaultvalue: "60"
@@ -323,3 +325,6 @@ script:
   subtype: python3
   dockerimage: demisto/python3:3.9.8.24399
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

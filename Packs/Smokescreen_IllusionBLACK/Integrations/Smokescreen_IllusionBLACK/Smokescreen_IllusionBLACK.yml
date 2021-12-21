@@ -199,3 +199,6 @@ script:
 fromversion: 5.0.0
 defaultclassifier: Smokescreen IllusionBLACK
 defaultmapperin: Smokescreen IllusionBLACK-mapper
+marketplaces:
+- xsoar
+- marketplacev2

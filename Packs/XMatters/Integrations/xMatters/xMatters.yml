@@ -207,3 +207,6 @@ script:
 fromversion: 5.5.0
 tests:
 - no tests
+marketplaces:
+- xsoar
+- marketplacev2

@@ -34,9 +34,9 @@ configuration:
   required: false
   type: 8
 description: Trustwave SEG is a secure messaging solution that protects businesses
-  and users from email-borne threats, including phishing, blended threats, and spam. Trustwave
-  Secure Email Gateway also delivers improved policy enforcement and data leakage
-  prevention.
+  and users from email-borne threats, including phishing, blended threats, and spam.
+  Trustwave Secure Email Gateway also delivers improved policy enforcement and data
+  leakage prevention.
 display: Trustwave Secure Email Gateway
 name: trustwave secure email gateway
 script:
@@ -91,7 +91,8 @@ script:
       description: The configuration version of the automatic configuration backup.
       type: Number
     - contextPath: TrustwaveSEG.AutomaticBackupConfig.info.containsDkimKeys
-      description: Whether there are DomainKeys Identified Mail (DKIM) keys for the automatic configuration backup.
+      description: Whether there are DomainKeys Identified Mail (DKIM) keys for the
+        automatic configuration backup.
       type: Boolean
     - contextPath: TrustwaveSEG.AutomaticBackupConfig.info.productVersion
       description: The product version of the automatic configuration backup.
@@ -228,22 +229,23 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Start time in the format of: YYYY-mm-ddTHH:MM:SSZ or i.e., 3 months, 1 week,
-        1 day ago, etc. Given only the start_time, end_time will be set to the current
-        time.'
+      description: 'Start time in the format of: YYYY-mm-ddTHH:MM:SSZ or i.e., 3 months,
+        1 week, 1 day ago, etc. Given only the start_time, end_time will be set to
+        the current time.'
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: 'End time in the format of: YYYY-mm-ddTHH:MM:SSZ or i.e., 3 months, 1 week,
-        1 day ago, etc.'
+      description: 'End time in the format of: YYYY-mm-ddTHH:MM:SSZ or i.e., 3 months,
+        1 week, 1 day ago, etc.'
       isArray: false
       name: end_time
       required: false
       secret: false
     deprecated: false
-    description: Gets Trustwave SEG statistics. Must provide a start time or time range.
+    description: Gets Trustwave SEG statistics. Must provide a start time or time
+      range.
     execution: false
     name: trustwave-seg-statistics
     outputs:
@@ -581,23 +583,23 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: 'An optional time range of the search, i.e., 3 months, 1 week, 1
-        day ago, etc.'
+      description: 'An optional time range of the search, i.e., 3 months, 1 week,
+        1 day ago, etc.'
       isArray: false
       name: time_range
       required: false
       secret: false
     - default: false
-      description: 'Start time of the search in the format: YYYY-mm-ddTHH:MM:SSZ or i.e., 3 months,
-        1 week, 1 day ago, etc. Given only the start_time, end_time will be set to
-        the current time.'
+      description: 'Start time of the search in the format: YYYY-mm-ddTHH:MM:SSZ or
+        i.e., 3 months, 1 week, 1 day ago, etc. Given only the start_time, end_time
+        will be set to the current time.'
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: 'End time of the search in the format: YYYY-mm-ddTHH:MM:SSZ or i.e., 3
-        months, 1 week, 1 day ago, etc.'
+      description: 'End time of the search in the format: YYYY-mm-ddTHH:MM:SSZ or
+        i.e., 3 months, 1 week, 1 day ago, etc.'
       isArray: false
       name: end_time
       required: false
@@ -610,7 +612,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The ID of the folder in which to search for information (e.g., 1006).'
+      description: 'The ID of the folder in which to search for information (e.g.,
+        1006).'
       isArray: false
       name: folder_id
       required: false
@@ -622,8 +625,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The classification ID. Can be found by using the classification command
-        (e.g., 37).'
+      description: 'The classification ID. Can be found by using the classification
+        command (e.g., 37).'
       isArray: false
       name: classification
       required: false
@@ -767,50 +770,50 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'The block number of the message to search for (e.g., 106098471075840). Can be retrieved
-        from the find message endpoint.'
+      description: 'The block number of the message to search for (e.g., 106098471075840).
+        Can be retrieved from the find message endpoint.'
       isArray: false
       name: block_number
       required: true
       secret: false
     - default: false
-      description: 'Edition of the message (e.g., "607ef9ae0000"). Can be retrieved from the find message
-        endpoint.'
+      description: 'Edition of the message (e.g., "607ef9ae0000"). Can be retrieved
+        from the find message endpoint.'
       isArray: false
       name: edition
       required: true
       secret: false
     - default: false
-      description: 'Folder ID of the message (e.g., 1006). Can be retrieved from the find message
-        endpoint.'
+      description: 'Folder ID of the message (e.g., 1006). Can be retrieved from the
+        find message endpoint.'
       isArray: false
       name: folder_id
       required: true
       secret: false
     - default: false
-      description: 'The name of the message (e.g., "B607ef9ac0000"). Can be retrieved from the find message
-        endpoint.'
+      description: 'The name of the message (e.g., "B607ef9ac0000"). Can be retrieved
+        from the find message endpoint.'
       isArray: false
       name: message_name
       required: true
       secret: false
     - default: false
-      description: 'The recipient of the message (e.g., email@example.com). Can be retrieved from the find
-        message endpoint.'
+      description: 'The recipient of the message (e.g., email@example.com). Can be
+        retrieved from the find message endpoint.'
       isArray: false
       name: recipient
       required: true
       secret: false
     - default: false
-      description: 'The server ID of the message (e.g., 1). Can be retrieved from the find
-        message endpoint. '
+      description: 'The server ID of the message (e.g., 1). Can be retrieved from
+        the find message endpoint. '
       isArray: false
       name: server_id
       required: true
       secret: false
     - default: false
-      description: 'The time the message was logged (e.g., 1618934189). Can be retrieved from the find
-        message endpoint. '
+      description: 'The time the message was logged (e.g., 1618934189). Can be retrieved
+        from the find message endpoint. '
       isArray: false
       name: time_logged
       required: true
@@ -846,3 +849,6 @@ script:
   subtype: python3
   type: python
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

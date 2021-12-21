@@ -6023,3 +6023,6 @@ script:
   type: python
 tests:
 - Test-AnsibleWindows
+marketplaces:
+- xsoar
+- marketplacev2

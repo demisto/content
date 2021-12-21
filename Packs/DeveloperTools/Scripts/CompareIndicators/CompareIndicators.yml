@@ -11,11 +11,13 @@ enabled: true
 args:
 - name: base_list
   required: true
-  description: Either a list of Indicators of Compromise or an EntryID to a File containing a list.
+  description: Either a list of Indicators of Compromise or an EntryID to a File containing
+    a list.
   isArray: true
 - name: compare_to_list
   required: true
-  description: Either a list of Indicators of Compromise or an EntryID to a File containing a list.
+  description: Either a list of Indicators of Compromise or an EntryID to a File containing
+    a list.
   isArray: true
 outputs:
 - contextPath: IndicatorsCompare.BaseList
@@ -31,3 +33,6 @@ dockerimage: demisto/netutils:1.0.0.24101
 runas: DBotWeakRole
 tests:
 - No test
+marketplaces:
+- xsoar
+- marketplacev2

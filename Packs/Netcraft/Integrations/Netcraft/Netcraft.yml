@@ -4,7 +4,8 @@ commonfields:
 name: Netcraft
 display: Netcraft
 category: Network Security
-description: An integration for Netcraft, allowing you to open and handle takedown requests.
+description: An integration for Netcraft, allowing you to open and handle takedown
+  requests.
 configuration:
 - display: Credentials
   name: credentials
@@ -35,10 +36,12 @@ script:
     arguments:
     - name: attack
       required: true
-      description: The attack location you want taken down. For example, a phishing URL or fraudulent email address.
+      description: The attack location you want taken down. For example, a phishing
+        URL or fraudulent email address.
     - name: comment
       required: true
-      description: The reason for submitting the attack, such as a description of the attack.
+      description: The reason for submitting the attack, such as a description of
+        the attack.
     outputs:
     - contextPath: Netcraft.Takedown.DateSubmitted
       description: The date and time of reporting.
@@ -53,10 +56,12 @@ script:
       description: The person/account that submitted the takedown.
       type: String
     - contextPath: Netcraft.Takedown.Domain
-      description: The domain of the URL or email address being taken down. This will be blank for attacks without a domain name.
+      description: The domain of the URL or email address being taken down. This will
+        be blank for attacks without a domain name.
       type: String
     - contextPath: Netcraft.Takedown.Hostname
-      description: The full hostname of the URL or email address being taken down. This will be blank for attacks without a hostname.
+      description: The full hostname of the URL or email address being taken down.
+        This will be blank for attacks without a hostname.
       type: String
     - contextPath: Netcraft.Takedown.CountryCode
       description: ISO country code of the hosting country.
@@ -65,16 +70,19 @@ script:
       description: Whether the domain is thought to be fraudulent.
       type: String
     - contextPath: Netcraft.Takedown.TargetedURL
-      description: The URL that this attack is masquarading as. For example, the URL of the legitimate login form that the attack targets.
+      description: The URL that this attack is masquarading as. For example, the URL
+        of the legitimate login form that the attack targets.
       type: String
     - contextPath: Netcraft.Takedown.Certificate
-      description: HTTPS certificate details for the hostname, or null if no certificate was found. The value returned is the output of PHP's openssl_x509_parse function.
+      description: HTTPS certificate details for the hostname, or null if no certificate
+        was found. The value returned is the output of PHP's openssl_x509_parse function.
       type: Unknown
     - contextPath: Netcraft.Takedown.ID
       description: The ID of the takedown.
       type: Number
     - contextPath: Netcraft.Takedown.GroupID
-      description: The group ID of the takedown, can potentially be the same as ID, or empty if there is no group.
+      description: The group ID of the takedown, can potentially be the same as ID,
+        or empty if there is no group.
       type: Number
     - contextPath: Netcraft.Takedown.Status
       description: The status of the takedown.
@@ -105,13 +113,15 @@ script:
     - name: ip
       description: The IP by which to filter.
     - name: region
-      description: The region by which to filter. If the region is invalid or not specified, all regions are returned.
+      description: The region by which to filter. If the region is invalid or not
+        specified, all regions are returned.
     outputs:
     - contextPath: Netcraft.Takedown.ID
       description: The ID of the takedown.
       type: number
     - contextPath: Netcraft.Takedown.GroupID
-      description: The group ID of the takedown, can potentially be the same as ID or empty if there is no group.
+      description: The group ID of the takedown, can potentially be the same as ID
+        or empty if there is no group.
       type: number
     - contextPath: Netcraft.Takedown.Status
       description: The status of the takedown.
@@ -144,7 +154,8 @@ script:
       description: "\tThe domain of the URL or email address being taken down. This will be blank for attacks without a domain name."
       type: Unknown
     - contextPath: Netcraft.Takedown.Hostname
-      description: The full hostname of the URL or email address being taken down. This will be blank for attacks without a hostname.
+      description: The full hostname of the URL or email address being taken down.
+        This will be blank for attacks without a hostname.
       type: Unknown
     - contextPath: Netcraft.Takedown.CountryCode
       description: ISO country code of the hosting country.
@@ -153,12 +164,16 @@ script:
       description: Whether the domain is thought to be fraudulent.
       type: Unknown
     - contextPath: Netcraft.Takedown.TargetedURL
-      description: The URL which this attack is masquerading as. For example, the URL of the legitimate login form that the attack targets.
+      description: The URL which this attack is masquerading as. For example, the
+        URL of the legitimate login form that the attack targets.
       type: Unknown
     - contextPath: Netcraft.Takedown.Certificate
-      description: TTPS certificate details for the hostname, or null if no certificate was found. The value returned is the output of PHP's openssl_x509_parse function.
+      description: TTPS certificate details for the hostname, or null if no certificate
+        was found. The value returned is the output of PHP's openssl_x509_parse function.
       type: Unknown
-    description: Returns information on existing takedowns. You can retrieve the takedown ID when you report the malicious URL and open the takedown, using the netcraft-report-attack command.
+    description: Returns information on existing takedowns. You can retrieve the takedown
+      ID when you report the malicious URL and open the takedown, using the netcraft-report-attack
+      command.
   - name: netcraft-get-takedown-notes
     arguments:
     - name: takedown_id
@@ -179,10 +194,13 @@ script:
       description: The ID of the note.
       type: number
     - contextPath: Netcraft.Takedown.Note.GroupID
-      description: If this note is attached to all takedowns in a group, group_id is the ID of that group. Otherwise, the value 0 means the note is sent to a single takedown.
+      description: If this note is attached to all takedowns in a group, group_id
+        is the ID of that group. Otherwise, the value 0 means the note is sent to
+        a single takedown.
       type: number
     - contextPath: Netcraft.Takedown.Note.Author
-      description: The author of the note. "Netcraft" denotes a Netcraft authored note.
+      description: The author of the note. "Netcraft" denotes a Netcraft authored
+        note.
       type: string
     - contextPath: Netcraft.Takedown.Note.Note
       description: The content (text) of the note.
@@ -215,3 +233,6 @@ script:
   runonce: false
   subtype: python3
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

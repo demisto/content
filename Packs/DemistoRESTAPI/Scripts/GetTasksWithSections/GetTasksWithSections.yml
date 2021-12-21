@@ -36,7 +36,8 @@ outputs:
   description: Task owner
   type: string
 - contextPath: Tasks.state
-  description: Task state (inprogress, Completed, WillNotBeExecuted, Error, Waiting, Blocked, and empty string for not started)
+  description: Task state (inprogress, Completed, WillNotBeExecuted, Error, Waiting,
+    Blocked, and empty string for not started)
   type: string
 - contextPath: Tasks.scriptId
   description: Task related script (empty if manual)
@@ -61,7 +62,10 @@ runonce: false
 sensitive: true
 dependson:
   must:
-    - demisto-api-get
+  - demisto-api-get
 tests:
 - GetTasksWithSections SetIRProcedures end to end test
 fromversion: 6.0.0
+marketplaces:
+- xsoar
+- marketplacev2

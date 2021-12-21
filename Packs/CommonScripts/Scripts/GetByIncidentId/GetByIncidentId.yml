@@ -11,7 +11,8 @@ enabled: true
 args:
 - name: incident_id
   default: true
-  description: The ID of the incident from which to get context values. The default is the current incident.
+  description: The ID of the incident from which to get context values. The default
+    is the current incident.
 - name: get_key
   required: true
   description: The key to get
@@ -24,3 +25,6 @@ runas: DBotWeakRole
 tests:
 - No test - tested with unittest
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

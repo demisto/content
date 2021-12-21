@@ -1548,9 +1548,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: If confidence is greater than the threshold the URL is
-        considered malicious, otherwise it is considered good. This argument 
-        overrides the default URL threshold defined as a parameter.
+      description: If confidence is greater than the threshold the URL is considered
+        malicious, otherwise it is considered good. This argument overrides the default
+        URL threshold defined as a parameter.
       isArray: false
       name: threshold
       required: false
@@ -1639,3 +1639,6 @@ script:
 tests:
 - ThreatStream-Test
 fromversion: 6.0.0
+marketplaces:
+- xsoar
+- marketplacev2

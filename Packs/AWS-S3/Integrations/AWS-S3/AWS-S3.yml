@@ -551,3 +551,6 @@ script:
 tests:
 - 97393cfc-2fc4-4dfe-8b6e-af64067fc436
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

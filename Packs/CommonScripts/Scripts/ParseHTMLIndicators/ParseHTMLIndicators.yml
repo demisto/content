@@ -44,3 +44,6 @@ runas: DBotWeakRole
 fromversion: 5.5.0
 tests:
 - ParseHTMLIndicators-Test
+marketplaces:
+- xsoar
+- marketplacev2

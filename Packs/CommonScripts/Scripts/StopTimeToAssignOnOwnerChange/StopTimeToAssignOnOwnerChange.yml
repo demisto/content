@@ -22,3 +22,6 @@ runas: DBotWeakRole
 tests:
 - SLA Scripts - Test
 dockerimage: demisto/python:2.7.18.24066
+marketplaces:
+- xsoar
+- marketplacev2

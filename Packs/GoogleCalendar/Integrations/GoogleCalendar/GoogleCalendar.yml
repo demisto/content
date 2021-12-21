@@ -15,15 +15,17 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Google Calendar is a time-management and scheduling calendar service developed by Google. This integration helps you to perform various tasks on the access control list (ACL).
+description: Google Calendar is a time-management and scheduling calendar service
+  developed by Google. This integration helps you to perform various tasks on the
+  access control list (ACL).
 display: Google Calendar
 name: GoogleCalendar
 script:
   commands:
   - arguments:
     - default: false
-      description: Identifier of the calendar. To access the primary calendar
-        of the currently logged in user, use the "primary" keyword.
+      description: Identifier of the calendar. To access the primary calendar of the
+        currently logged in user, use the "primary" keyword.
       isArray: false
       name: calendar_id
       required: true
@@ -93,7 +95,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Whether to send notifications about the calendar sharing change. Default is "true".
+      description: Whether to send notifications about the calendar sharing change.
+        Default is "true".
       isArray: false
       name: send_notifications
       predefined:
@@ -147,7 +150,8 @@ script:
       secret: false
     - default: false
       defaultValue: '100'
-      description: Maximum number of entries returned on a result page. Default is 100. The page size cannot be greater than 250 entries.
+      description: Maximum number of entries returned on a result page. Default is
+        100. The page size cannot be greater than 250 entries.
       isArray: false
       name: max_results
       required: false
@@ -162,8 +166,8 @@ script:
       default: false
       defaultValue: 'false'
       description: Whether to include deleted ACLs in the result. Deleted ACLs are
-        represented by the role "none". Deleted ACLs will always be included
-        if syncToken is provided. Default is "false".
+        represented by the role "none". Deleted ACLs will always be included if syncToken
+        is provided. Default is "false".
       isArray: false
       name: show_deleted
       predefined:
@@ -234,3 +238,6 @@ script:
 tests:
 - GoogleCalendar-Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

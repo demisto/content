@@ -22,3 +22,6 @@ runas: DBotWeakRole
 tests:
 - ExtraHop_v2-Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

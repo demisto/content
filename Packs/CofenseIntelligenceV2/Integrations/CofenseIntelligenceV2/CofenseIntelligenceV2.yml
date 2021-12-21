@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: CofenseIntelligenceV2
 display: Cofense Intelligence v2
-category: Data Enrichment & Threat Intelligence 
+category: Data Enrichment & Threat Intelligence
 description: 'Use the Cofense Intelligence integration to check the reputation of
   URLs, IP addresses, file hashes, and email addresses.'
 configuration:
@@ -1100,5 +1100,8 @@ script:
   runonce: false
   subtype: python3
 tests:
-  - Cofense Intelligence v2 test
+- Cofense Intelligence v2 test
 fromversion: 5.5.0
+marketplaces:
+- xsoar
+- marketplacev2

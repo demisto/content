@@ -37,3 +37,6 @@ runas: DBotWeakRole
 fromversion: 5.0.0
 tests:
 - RegexGroups Test
+marketplaces:
+- xsoar
+- marketplacev2

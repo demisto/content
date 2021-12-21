@@ -3063,3 +3063,6 @@ script:
 tests:
 - Jamf_v2_test
 fromversion: 5.5.0
+marketplaces:
+- xsoar
+- marketplacev2

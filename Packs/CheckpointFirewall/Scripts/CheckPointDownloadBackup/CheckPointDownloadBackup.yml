@@ -1,6 +1,7 @@
 args:
 - default: false
-  description: RemoteAccess instance of the CheckPoint firewall appliances to back up.
+  description: RemoteAccess instance of the CheckPoint firewall appliances to back
+    up.
   isArray: false
   name: device
   required: true
@@ -20,3 +21,6 @@ fromversion: 5.0.0
 tests:
 - No tests
 dockerimage: demisto/python3:3.9.7.24076
+marketplaces:
+- xsoar
+- marketplacev2

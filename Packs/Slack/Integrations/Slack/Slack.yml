@@ -549,7 +549,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Specify True to include only archived channels, False to include only unarchived channels, or leave blank for no effect
+      description: Specify True to include only archived channels, False to include
+        only unarchived channels, or leave blank for no effect
       isArray: false
       name: is_archived
       predefined:
@@ -559,7 +560,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Specify True to find the general channel (if other filters also match), False to exclude the general channel, or leave blank for no effect
+      description: Specify True to find the general channel (if other filters also
+        match), False to exclude the general channel, or leave blank for no effect
       isArray: false
       name: is_general
       predefined:
@@ -569,7 +571,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Specify True to include only private channels, False to include only public channels, or leave blank for no effect
+      description: Specify True to include only private channels, False to include
+        only public channels, or leave blank for no effect
       isArray: false
       name: is_private
       predefined:
@@ -619,3 +622,6 @@ script:
   subtype: python3
   type: python
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

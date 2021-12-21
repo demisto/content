@@ -4,9 +4,9 @@ commonfields:
 name: CyrenThreatInDepth
 display: Cyren Threat InDepth Threat Intelligence Feed
 category: Data Enrichment & Threat Intelligence
-description: Threat InDepth's actionable and contextualized intelligence helps
-  enterprises improve their threat detection and response by providing unprecedented
-  visibility into new email-borne security threats faster than other security vendors.
+description: Threat InDepth's actionable and contextualized intelligence helps enterprises
+  improve their threat detection and response by providing unprecedented visibility
+  into new email-borne security threats faster than other security vendors.
 fromversion: 6.0.0
 defaultmapperin: Cyren Threat InDepth Indicator Mapper
 configuration:
@@ -50,10 +50,10 @@ configuration:
   type: 1
   required: false
 - additionalinfo: Incremental feeds pull only new or modified indicators that have
-   been sent from the integration. As the determination if the indicator is new or
-   modified happens on the 3rd-party vendor's side, and only indicators that are
-   new or modified are sent to Cortex XSOAR, all indicators coming from these feeds
-   are labeled new or modified.
+    been sent from the integration. As the determination if the indicator is new or
+    modified happens on the 3rd-party vendor's side, and only indicators that are
+    new or modified are sent to Cortex XSOAR, all indicators coming from these feeds
+    are labeled new or modified.
   defaultvalue: "true"
   display: Incremental Feed
   hidden: false
@@ -72,7 +72,8 @@ configuration:
   additionalinfo: When selected, the exclusion list is ignored for indicators from
     this feed. This means that if an indicator from this feed is on the exclusion
     list, the indicator might still be added to the system.
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
+    fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -106,15 +107,17 @@ configuration:
   - Phishing URLs
   - Malware URLs
   - Malware Hashes
-  additionalinfo: Choose from the available options to ingest the type of data you are interested in.
-    Keep in mind that the API token issued to you only corresponds to one of the data types each.
+  additionalinfo: Choose from the available options to ingest the type of data you
+    are interested in. Keep in mind that the API token issued to you only corresponds
+    to one of the data types each.
 - display: Maximum number of indicators
   name: max_indicators
   defaultvalue: "100000"
   type: 0
   required: false
-  additionalinfo: Maximum number of indicators to be fetched each time. The value cannot
-    be higher than 100.000. If you provide a value higher than that it will be capped at 100.000.
+  additionalinfo: Maximum number of indicators to be fetched each time. The value
+    cannot be higher than 100.000. If you provide a value higher than that it will
+    be capped at 100.000.
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -140,7 +143,8 @@ script:
     execution: true
     name: cyren-threat-indepth-get-indicators
   - arguments:
-    - description: The new offset from the feed (if not provided, the latest offset is taken).
+    - description: The new offset from the feed (if not provided, the latest offset
+        is taken).
       isArray: false
       name: offset
       required: false
@@ -160,3 +164,6 @@ script:
   longRunningPort: false
   runonce: false
   subtype: python3
+marketplaces:
+- xsoar
+- marketplacev2

@@ -494,3 +494,6 @@ script:
 defaultclassifier: Claroty
 defaultmapperin: Claroty-mapper
 
+marketplaces:
+- xsoar
+- marketplacev2

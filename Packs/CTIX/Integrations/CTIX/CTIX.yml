@@ -751,3 +751,6 @@ script:
   subtype: python3
 tests:
 - No tests
+marketplaces:
+- xsoar
+- marketplacev2

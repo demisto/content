@@ -119,9 +119,9 @@ script:
       description: 'The level of information to be returned. Possible values: "concise", "normal", and "extended".'
       auto: PREDEFINED
       predefined:
-        - 'concise'
-        - 'normal'
-        - 'extended'
+      - 'concise'
+      - 'normal'
+      - 'extended'
       isArray: false
       name: info_level
       required: false
@@ -135,14 +135,14 @@ script:
     - default: false
       description: 'The type of the malware object. Possible values: "domain_match", "malware_callback", "malware_object", "web_infection", "infection_match", "riskware-infection", "riskware-callback", "riskware-object".'
       predefined:
-        - 'domain_match'
-        - 'malware_callback'
-        - 'malware_object'
-        - 'web_infection'
-        - 'infection_match'
-        - 'riskware-infection'
-        - 'riskware-callback'
-        - 'riskware-object'
+      - 'domain_match'
+      - 'malware_callback'
+      - 'malware_object'
+      - 'web_infection'
+      - 'infection_match'
+      - 'riskware-infection'
+      - 'riskware-callback'
+      - 'riskware-object'
       isArray: false
       name: malware_type
       required: false
@@ -173,7 +173,7 @@ script:
       secret: false
     - default: false
       defaultValue: '20'
-      description: Maximum number of alerts to return. 
+      description: Maximum number of alerts to return.
       isArray: false
       name: limit
       required: false
@@ -240,7 +240,7 @@ script:
       secret: false
     - default: false
       defaultValue: '30'
-      description: Timeout (in seconds) to retrieve the alert details. 
+      description: Timeout (in seconds) to retrieve the alert details.
       isArray: false
       name: timeout
     deprecated: false
@@ -322,7 +322,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Downloads malware artifacts data for the specified UUID as a zip file.
+    description: Downloads malware artifacts data for the specified UUID as a zip
+      file.
     execution: false
     name: fireeye-cm-get-artifacts-by-uuid
     outputs:
@@ -370,7 +371,9 @@ script:
       type: string
   - arguments:
     - default: false
-      description: The time interval in which to search. This filter is used with the end_time filter. If the duration is not specified, the system defaults to duration=12_hours, end_time=current_time.
+      description: The time interval in which to search. This filter is used with
+        the end_time filter. If the duration is not specified, the system defaults
+        to duration=12_hours, end_time=current_time.
       auto: PREDEFINED
       predefined:
       - '1_hour'
@@ -393,22 +396,24 @@ script:
       defaultValue: 'false'
       auto: PREDEFINED
       predefined:
-        - 'false'
-        - 'true'
-      description: 'Specifies whether to include all IPS events or MVX-correlated events only. Possible values: "true" and "false".'
+      - 'false'
+      - 'true'
+      description: 'Specifies whether to include all IPS events or MVX-correlated
+        events only. Possible values: "true" and "false".'
       isArray: false
       name: mvx_correlated_only
       required: false
       secret: false
     - default: false
       defaultValue: '20'
-      description: Maximum number of events to return. 
+      description: Maximum number of events to return.
       isArray: false
       name: limit
       required: false
       secret: false
     deprecated: false
-    description: Retrieves information about existing IPS NX events. An IPS enabled appliance is a prerequisite to be able to retrieve IPS event data.
+    description: Retrieves information about existing IPS NX events. An IPS enabled
+      appliance is a prerequisite to be able to retrieve IPS event data.
     execution: false
     name: fireeye-cm-get-events
     outputs:
@@ -512,7 +517,7 @@ script:
       secret: false
     - default: false
       defaultValue: '20'
-      description: Number of emails to return. 
+      description: Number of emails to return.
       isArray: false
       name: limit
       required: false
@@ -548,7 +553,8 @@ script:
       type: string
   - arguments:
     - default: false
-      description: A comma-separated list of quarantined email queue IDs. Supports up to 100 IDs.
+      description: A comma-separated list of quarantined email queue IDs. Supports
+        up to 100 IDs.
       isArray: true
       name: queue_ids
       required: true
@@ -560,12 +566,14 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Releases and deletes quarantined emails. This is not available when Email Security is in Drop mode.
+    description: Releases and deletes quarantined emails. This is not available when
+      Email Security is in Drop mode.
     execution: false
     name: fireeye-cm-release-quarantined-emails
   - arguments:
     - default: false
-      description: A comma-separated list of quarantined email queue IDs. Supports up to 100 IDs.
+      description: A comma-separated list of quarantined email queue IDs. Supports
+        up to 100 IDs.
       isArray: true
       name: queue_ids
       required: true
@@ -577,7 +585,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Deletes quarantined emails. This is not available when Email Security is in Drop mode.
+    description: Deletes quarantined emails. This is not available when Email Security
+      is in Drop mode.
     execution: false
     name: fireeye-cm-delete-quarantined-emails
   - arguments:
@@ -665,7 +674,8 @@ script:
       secret: false
     - default: false
       defaultValue: '100'
-      description: The maximum number of items covered by each report. This option is required only for IPS TopN reports. 
+      description: The maximum number of items covered by each report. This option
+        is required only for IPS TopN reports.
       isArray: false
       name: limit
       required: false
@@ -676,19 +686,22 @@ script:
       - 'A'
       - 'B'
       - 'AB'
-      description: The internet interface to one of the values. This option is required only for IPS reports. 
+      description: The internet interface to one of the values. This option is required
+        only for IPS reports.
       isArray: false
       name: interface
       required: false
       secret: false
     - default: false
-      description: Alert ID. This argument is only relevant when retrieving a report of type alertDetailsReport.
+      description: Alert ID. This argument is only relevant when retrieving a report
+        of type alertDetailsReport.
       isArray: false
       name: alert_id
       required: false
       secret: false
     - default: false
-      description: Infection ID. This argument is only relevant when retrieving a report of type alertDetailsReport with conjunction to the infection_type argument.
+      description: Infection ID. This argument is only relevant when retrieving a
+        report of type alertDetailsReport with conjunction to the infection_type argument.
       isArray: false
       name: infection_id
       required: false
@@ -697,11 +710,11 @@ script:
       description: 'Infection type. Possible values: "malware-object", "malware-callback", "infection-match", "domain-match", "web-infection". This argument is only relevant when retrieving a report of type alertDetailsReport with conjunction to the infection_id argument.'
       auto: PREDEFINED
       predefined:
-        - 'malware-object'
-        - 'malware-callback'
-        - 'infection-match'
-        - 'domain-match'
-        - 'web-infection'
+      - 'malware-object'
+      - 'malware-callback'
+      - 'infection-match'
+      - 'domain-match'
+      - 'web-infection'
       name: infection_type
       required: false
       secret: false
@@ -744,3 +757,6 @@ script:
 fromversion: 5.5.0
 tests:
 - FireEye Central Management - Test
+marketplaces:
+- xsoar
+- marketplacev2

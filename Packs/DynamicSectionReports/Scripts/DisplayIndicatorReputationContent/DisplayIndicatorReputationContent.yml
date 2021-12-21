@@ -6,7 +6,8 @@ enabled: true
 name: DisplayIndicatorReputationContent
 runas: DBotWeakRole
 runonce: false
-comment: 'Display the indicator context object in markdown format in a dynamic section layout'
+comment: 'Display the indicator context object in markdown format in a dynamic section
+  layout'
 script: ''
 scripttarget: 0
 subtype: python3
@@ -16,3 +17,6 @@ type: python
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2

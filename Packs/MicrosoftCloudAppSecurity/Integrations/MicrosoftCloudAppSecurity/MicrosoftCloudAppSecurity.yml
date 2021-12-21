@@ -637,13 +637,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: Timeout of the request to Microsoft CAS, in seconds. Default is 60 seconds.
+      description: Timeout of the request to Microsoft CAS, in seconds. Default is
+        60 seconds.
       isArray: false
       name: timeout
       required: false
       secret: false
     deprecated: false
-    description: Returns a list of activities that match the specified filters. In case of timeout errors, please consider increasing the timeout argument.
+    description: Returns a list of activities that match the specified filters. In
+      case of timeout errors, please consider increasing the timeout argument.
     execution: false
     name: microsoft-cas-activities-list
     outputs:
@@ -1128,3 +1130,6 @@ script:
 tests:
 - MicrosoftCloudAppSecurity-Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

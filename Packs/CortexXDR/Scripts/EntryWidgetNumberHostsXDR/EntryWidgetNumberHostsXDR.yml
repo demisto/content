@@ -16,3 +16,6 @@ fromversion: 5.0.0
 comment: Entry widget that returns the number of hosts in a Cortex XDR incident.
 tests:
 - No test - no need to test widget
+marketplaces:
+- xsoar
+- marketplacev2

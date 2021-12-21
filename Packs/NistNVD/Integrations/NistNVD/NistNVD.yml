@@ -35,7 +35,8 @@ script:
     - defaultValue: "0"
       description: 'Using for paging. Default: 0'
       name: startIndex
-    description: You can get latest vulnerabilities with given time from National Vulnerability Database. 
+    description: You can get latest vulnerabilities with given time from National
+      Vulnerability Database.
     name: nvd-get-vulnerability
   - arguments:
     - default: true
@@ -159,3 +160,6 @@ script:
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2

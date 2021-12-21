@@ -3263,3 +3263,6 @@ tests:
 - Google Chronicle Backstory List Detections - Test
 - Google Chronicle Backstory Reputation - Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

@@ -46,7 +46,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: directionless ip address. For valid search either a IP or Src Host or a Dest Host value is required
+      description: directionless ip address. For valid search either a IP or Src Host
+        or a Dest Host value is required
       isArray: false
       name: ip
       required: false
@@ -58,31 +59,38 @@ script:
       required: false
       secret: false
     - default: false
-      description: List of comma delimited Source IP addresses to search with a maximum of 10 IP addresses per search. For valid search either a Src Host or a Dest Host value is required.
+      description: List of comma delimited Source IP addresses to search with a maximum
+        of 10 IP addresses per search. For valid search either a Src Host or a Dest
+        Host value is required.
       isArray: true
       name: src_host_list
       required: false
       secret: false
     - default: false
-      description: List of comma delimited Destination IP addresses to search with a maximum of 10 IP addresses per search. For valid search either a Src Host or a Dest Host value is required.
+      description: List of comma delimited Destination IP addresses to search with
+        a maximum of 10 IP addresses per search. For valid search either a Src Host
+        or a Dest Host value is required.
       isArray: true
       name: dest_host_list
       required: false
       secret: false
     - default: false
-      description: List of comma delimited Source Port addresses to search with a maximum of 10 Port addresses per search.
+      description: List of comma delimited Source Port addresses to search with a
+        maximum of 10 Port addresses per search.
       isArray: true
       name: src_port_list
       required: false
       secret: false
     - default: false
-      description: List of comma delimited Destination Port addresses to search with a maximum of 10 Port addresses per search.
+      description: List of comma delimited Destination Port addresses to search with
+        a maximum of 10 Port addresses per search.
       isArray: true
       name: dest_port_list
       required: false
       secret: false
     - default: false
-      description: IANA defined IP Protocol Name or Number. For example - either use TCP or tcp or 6 for tcp protocol
+      description: IANA defined IP Protocol Name or Number. For example - either use
+        TCP or tcp or 6 for tcp protocol
       isArray: false
       name: protocol
       required: false
@@ -111,7 +119,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Create a search task on EndaceProbe. Search is issued against all Rotation Files on EndaceProbe.
+    description: Create a search task on EndaceProbe. Search is issued against all
+      Rotation Files on EndaceProbe.
     execution: false
     name: endace-create-search
     outputs:
@@ -132,12 +141,14 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get search status from EndaceProbe. This command can be polled in a loop until response is received or polling timer is over.
+    description: Get search status from EndaceProbe. This command can be polled in
+      a loop until response is received or polling timer is over.
     execution: false
     name: endace-get-search-status
     outputs:
     - contextPath: Endace.Search.Response.JobID
-      description: This is the job ID of search query which we polled to get search status
+      description: This is the job ID of search query which we polled to get search
+        status
       type: String
     - contextPath: Endace.Search.Response.JobProgress
       description: 'Progress of this search Job '
@@ -173,7 +184,10 @@ script:
       description: 'Error message '
       type: String
     - contextPath: Endace.Search.Delete.Status
-      description: Delete status, queryNotFound indicates that the search query has already expired before this operation, which is expected as EndaceProbe purges inactive tasks after api timer expire. Deleted indicates an active search query is now deleted.
+      description: Delete status, queryNotFound indicates that the search query has
+        already expired before this operation, which is expected as EndaceProbe purges
+        inactive tasks after api timer expire. Deleted indicates an active search
+        query is now deleted.
       type: String
   - arguments:
     - default: false
@@ -224,43 +238,55 @@ script:
       required: false
       secret: false
     - default: false
-      description: List of comma delimited Source IP addresses to search with a maximum of 10 IP addresses per search. For valid search either a Src Host or a Dest Host value is required.
+      description: List of comma delimited Source IP addresses to search with a maximum
+        of 10 IP addresses per search. For valid search either a Src Host or a Dest
+        Host value is required.
       isArray: false
       name: src_host_list
       required: false
       secret: false
     - default: false
-      description: List of comma delimited Destination IP addresses to search with a maximum of 10 IP addresses per search. For valid search either a Src Host or a Dest Host value is required.
+      description: List of comma delimited Destination IP addresses to search with
+        a maximum of 10 IP addresses per search. For valid search either a Src Host
+        or a Dest Host value is required.
       isArray: false
       name: dest_host_list
       required: false
       secret: false
     - default: false
-      description: List of comma delimited Source Port addresses to search with a maximum of 10 Port addresses per search.
+      description: List of comma delimited Source Port addresses to search with a
+        maximum of 10 Port addresses per search.
       isArray: false
       name: src_port_list
       required: false
       secret: false
     - default: false
-      description: List of comma delimited Destination Port addresses to search with a maximum of 10 Port addresses per search.
+      description: List of comma delimited Destination Port addresses to search with
+        a maximum of 10 Port addresses per search.
       isArray: false
       name: dest_port_list
       required: false
       secret: false
     - default: false
-      description: IANA defined IP Protocol Name or Number. For example - either use TCP or tcp or 6 for tcp protocol.
+      description: IANA defined IP Protocol Name or Number. For example - either use
+        TCP or tcp or 6 for tcp protocol.
       isArray: false
       name: protocol
       required: false
       secret: false
     - default: false
-      description: Name of the archive file. For example, archive_filename could be an event ID. To keep archive filename unique, value of epoch seconds at the time of execution of the command is appended to this filename argument. For example - if the event id is 123456789, then archive_filename is 123456789-epochtime.
+      description: Name of the archive file. For example, archive_filename could be
+        an event ID. To keep archive filename unique, value of epoch seconds at the
+        time of execution of the command is appended to this filename argument. For
+        example - if the event id is 123456789, then archive_filename is 123456789-epochtime.
       isArray: false
       name: archive_filename
       required: true
       secret: false
     deprecated: false
-    description: Create an archive task to archive packets of interest on EndaceProbe. Archived packets can later be downloaded from EndaceProbe as a PCAP file. Archived Files never expire. Allowed chars are text, numbers, dash and underscore.
+    description: Create an archive task to archive packets of interest on EndaceProbe.
+      Archived packets can later be downloaded from EndaceProbe as a PCAP file. Archived
+      Files never expire. Allowed chars are text, numbers, dash and underscore.
     execution: false
     name: endace-create-archive
     outputs:
@@ -268,7 +294,10 @@ script:
       description: Name of the archived File
       type: String
     - contextPath: Endace.Archive.Task.P2Vurl
-      description: Endace Pivot to Vision URL to archived packets that links to an Investigation Dashboard on EndaceProbe. This enables an analyst to utilize tools available on EndaceProbe for further drill down on packets of interests without needing to download a PCAP.
+      description: Endace Pivot to Vision URL to archived packets that links to an
+        Investigation Dashboard on EndaceProbe. This enables an analyst to utilize
+        tools available on EndaceProbe for further drill down on packets of interests
+        without needing to download a PCAP.
       type: String
     - contextPath: Endace.Archive.Task.Status
       description: Status of archived task
@@ -326,20 +355,24 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'Name of the file (without extension) to download from EndaceProbe. Text, numbers, underscore or dash is supported. '
+      description: 'Name of the file (without extension) to download from EndaceProbe.
+        Text, numbers, underscore or dash is supported. '
       isArray: false
       name: filename
       required: true
       secret: false
     - default: false
       defaultValue: '50'
-      description: User defined upper size limit on file download (in MegaBytes). A PCAP File with size less than or equal to this limit can be downloaded from EndaceProbe. Minimum size is 1 (MB). Default Upper Limit is 50 (MB).
+      description: User defined upper size limit on file download (in MegaBytes).
+        A PCAP File with size less than or equal to this limit can be downloaded from
+        EndaceProbe. Minimum size is 1 (MB). Default Upper Limit is 50 (MB).
       isArray: false
       name: filesizelimit
       required: true
       secret: false
     deprecated: false
-    description: Download a copy of the PCAP file from EndaceProbe if PCAP file size is within the threshold value defined by filesizelimit.
+    description: Download a copy of the PCAP file from EndaceProbe if PCAP file size
+      is within the threshold value defined by filesizelimit.
     execution: false
     name: endace-download-pcap
     outputs:
@@ -350,13 +383,15 @@ script:
       description: File size in MegaBytes
       type: String
     - contextPath: Endace.Download.PCAP.FileType
-      description: The file downloaded from EndaceProbe is either a Rotation File or Archive.
+      description: The file downloaded from EndaceProbe is either a Rotation File
+        or Archive.
       type: String
     - contextPath: Endace.Download.PCAP.FileURL
       description: URL to PCAP file on EndaceProbe.
       type: String
     - contextPath: Endace.Download.PCAP.FileUser
-      description: Username of the person who has permission to download this PCAP from EndaceProbe.
+      description: Username of the person who has permission to download this PCAP
+        from EndaceProbe.
       type: String
     - contextPath: Endace.Download.PCAP.Status
       description: Download status of the PCAP file.
@@ -366,7 +401,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Base name of the archived file to be deleted on EndaceProbe. Filename must be without any extension. Refer to Endace.Archive.Response.FileName field
+      description: Base name of the archived file to be deleted on EndaceProbe. Filename
+        must be without any extension. Refer to Endace.Archive.Response.FileName field
       isArray: false
       name: archived_filename
       required: true
@@ -395,3 +431,6 @@ script:
   subtype: python3
   type: python
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

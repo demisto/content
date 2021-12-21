@@ -52,3 +52,6 @@ script:
     description: Scan targets with the given parameters
     execution: true
   dockerimage: demisto/nmap:1.0.0.23290
+marketplaces:
+- xsoar
+- marketplacev2

@@ -8,7 +8,8 @@ configuration:
   name: feed
   required: false
   type: 8
-- additionalinfo: Indicators from this integration instance will be marked with this reputation
+- additionalinfo: Indicators from this integration instance will be marked with this
+    reputation
   defaultvalue: Good
   display: Indicator Reputation
   name: feedReputation
@@ -38,7 +39,8 @@ configuration:
   name: limit
   required: false
   type: 0
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
+    fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -122,3 +124,6 @@ fromversion: 5.5.0
 tests:
 - Majestic Million Test Playbook
 
+marketplaces:
+- xsoar
+- marketplacev2

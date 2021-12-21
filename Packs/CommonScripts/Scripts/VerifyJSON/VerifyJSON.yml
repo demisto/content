@@ -11,7 +11,8 @@ args:
   name: schema
   required: false
   secret: false
-comment: Verifies if the supplied JSON string is valid and optionally verifies against a provided schema. The script utilizes Powershell's Test-JSON cmdlet. 
+comment: Verifies if the supplied JSON string is valid and optionally verifies against
+  a provided schema. The script utilizes Powershell's Test-JSON cmdlet.
 commonfields:
   id: VerifyJSON
   version: -1
@@ -31,3 +32,6 @@ dockerimage: demisto/powershell:7.1.3.22028
 fromversion: 5.5.0
 tests:
 - VerifyJSON - Test
+marketplaces:
+- xsoar
+- marketplacev2

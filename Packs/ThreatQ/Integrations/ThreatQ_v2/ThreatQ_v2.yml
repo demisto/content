@@ -29,7 +29,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: 'A threat intelligence platform that collects and interprets intelligence data from open sources and manages indicator scoring, types, and attributes.'
+description: 'A threat intelligence platform that collects and interprets intelligence
+  data from open sources and manages indicator scoring, types, and attributes.'
 display: ThreatQ v2
 name: ThreatQ v2
 script:
@@ -453,7 +454,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The type of indicator, such as email address, IP address, Registry key, binary string, and so on.
+      description: The type of indicator, such as email address, IP address, Registry
+        key, binary string, and so on.
       isArray: false
       name: type
       predefined:
@@ -493,7 +495,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The status of the indicator. Can be: "Active", "Expired", "Indirect", "Review", or "Whitelisted".'
+      description: 'The status of the indicator. Can be: "Active", "Expired", "Indirect",
+        "Review", or "Whitelisted".'
       isArray: false
       name: status
       predefined:
@@ -517,13 +520,17 @@ script:
       required: false
       secret: false
     - default: false
-      description: Attributes names list, separated by commas. The i-th element in the attributes names list corresponds to the i-th element in the attributes values list.
+      description: Attributes names list, separated by commas. The i-th element in
+        the attributes names list corresponds to the i-th element in the attributes
+        values list.
       isArray: true
       name: attributes_names
       required: false
       secret: false
     - default: false
-      description: Attributes values list, separated by commas. The i-th element in the attributes values list corresponds to the i-th element in the attributes names list.
+      description: Attributes values list, separated by commas. The i-th element in
+        the attributes values list corresponds to the i-th element in the attributes
+        names list.
       isArray: true
       name: attributes_values
       required: false
@@ -587,7 +594,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The type of the object to add. Can be: "indicator", "event", "adversary", or "attachment".'
+      description: 'The type of the object to add. Can be: "indicator", "event", "adversary",
+        or "attachment".'
       isArray: false
       name: obj_type
       predefined:
@@ -610,7 +618,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'The type of the object. Can be: "indicator", "event", "adversary", or "attachment".'
+      description: 'The type of the object. Can be: "indicator", "event", "adversary",
+        or "attachment".'
       isArray: false
       name: obj_type
       predefined:
@@ -657,7 +666,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The type of the first object. Can be: "indicator", "adversary", or "event".'
+      description: 'The type of the first object. Can be: "indicator", "adversary",
+        or "event".'
       isArray: false
       name: obj1_type
       predefined:
@@ -668,7 +678,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The type of the second object. Can be: "indicator", "adversary", or "event".'
+      description: 'The type of the second object. Can be: "indicator", "adversary",
+        or "event".'
       isArray: false
       name: obj2_type
       predefined:
@@ -695,13 +706,17 @@ script:
       required: false
       secret: false
     - default: false
-      description: List of attributes names, separated by commas. The i-th element in the attributes names list corresponds to the i-th element in the attributes values list.
+      description: List of attributes names, separated by commas. The i-th element
+        in the attributes names list corresponds to the i-th element in the attributes
+        values list.
       isArray: true
       name: attributes_names
       required: false
       secret: false
     - default: false
-      description: List of attributes values, separated by commas. The i-th element in the attributes values list corresponds to the i-th element in the attributes names list.
+      description: List of attributes values, separated by commas. The i-th element
+        in the attributes values list corresponds to the i-th element in the attributes
+        names list.
       isArray: true
       name: attributes_values
       required: false
@@ -747,7 +762,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The type of the event, such as malware, watchlist, command and control, and so on.
+      description: The type of the event, such as malware, watchlist, command and
+        control, and so on.
       isArray: false
       name: type
       predefined:
@@ -779,13 +795,17 @@ script:
       required: false
       secret: false
     - default: false
-      description: List of attributes names, separated by commas. The i-th element in the attributes names list corresponds to the i-th element in the attributes values list.
+      description: List of attributes names, separated by commas. The i-th element
+        in the attributes names list corresponds to the i-th element in the attributes
+        values list.
       isArray: true
       name: attributes_names
       required: false
       secret: false
     - default: false
-      description: List of attributes values, separated by commas. The i-th element in the attributes values list corresponds to the i-th element in the attributes names list.
+      description: List of attributes values, separated by commas. The i-th element
+        in the attributes values list corresponds to the i-th element in the attributes
+        names list.
       isArray: true
       name: attributes_values
       required: false
@@ -989,7 +1009,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The new status of the indicator. Can be: "Active", "Expired", "Indirect", "Review", or "Whitelisted".'
+      description: 'The new status of the indicator. Can be: "Active", "Expired",
+        "Indirect", "Review", or "Whitelisted".'
       isArray: false
       name: status
       predefined:
@@ -1273,7 +1294,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Category of the file, such as CrowdStrike Intelligence, FireEye Analysis, PDF, and so on.
+      description: Category of the file, such as CrowdStrike Intelligence, FireEye
+        Analysis, PDF, and so on.
       isArray: false
       name: file_category
       predefined:
@@ -1306,7 +1328,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'off'
-      description: 'Zips malware files for safer downloading. Can be: "on", or "off". Default is off.'
+      description: 'Zips malware files for safer downloading. Can be: "on", or "off".
+        Default is off.'
       isArray: false
       name: malware_safety_lock
       predefined:
@@ -1373,7 +1396,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'The type of the object. Can be: "indicator", "event", "attachment" or "adversary".'
+      description: 'The type of the object. Can be: "indicator", "event", "attachment"
+        or "adversary".'
       isArray: false
       name: obj_type
       predefined:
@@ -1390,7 +1414,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Searches for an object by object type and ID. Generic and DBotScore contexts also may be generated.
+    description: Searches for an object by object type and ID. Generic and DBotScore
+      contexts also may be generated.
     execution: false
     name: threatq-search-by-id
     outputs:
@@ -1550,7 +1575,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The type of the first object. Can be: "adversary", "indicator", or "event".'
+      description: 'The type of the first object. Can be: "adversary", "indicator",
+        or "event".'
       isArray: false
       name: obj1_type
       predefined:
@@ -1567,7 +1593,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The type of the second object. Can be: "adversary", "indicator", or "event".'
+      description: 'The type of the second object. Can be: "adversary", "indicator",
+        or "event".'
       isArray: false
       name: obj2_type
       predefined:
@@ -1589,7 +1616,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The type of the object. Can be: "indicator", "event", "adversary" or "attachment".'
+      description: 'The type of the object. Can be: "indicator", "event", "adversary"
+        or "attachment".'
       isArray: false
       name: obj_type
       predefined:
@@ -1612,7 +1640,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The type of the object. Can be: "indicator", "event", "adversary", or "attachment".'
+      description: 'The type of the object. Can be: "indicator", "event", "adversary",
+        or "attachment".'
       isArray: false
       name: obj_type
       predefined:
@@ -1647,7 +1676,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The type of the object. Can be: "indicator", "event", "adversary", or "attachment".'
+      description: 'The type of the object. Can be: "indicator", "event", "adversary",
+        or "attachment".'
       isArray: false
       name: obj_type
       predefined:
@@ -1676,7 +1706,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The type of the object. Can be: "indicator", "event", "adversary", or "attachment".'
+      description: 'The type of the object. Can be: "indicator", "event", "adversary",
+        or "attachment".'
       isArray: false
       name: obj_type
       predefined:
@@ -1750,7 +1781,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The type of the new indicator, such as email address, Filename, Binary string and so on.
+      description: The type of the new indicator, such as email address, Filename,
+        Binary string and so on.
       isArray: false
       name: type
       predefined:
@@ -1859,7 +1891,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Type of the event, such as DoS Attack, Malware, Watchlist, and so on.
+      description: Type of the event, such as DoS Attack, Malware, Watchlist, and
+        so on.
       isArray: false
       name: type
       predefined:
@@ -1934,7 +1967,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The manual indicator score. Can be: "Generated Score" or "1", "2", "3", "4", "5", "6", "7", "8", "9" or "10".'
+      description: 'The manual indicator score. Can be: "Generated Score" or "1",
+        "2", "3", "4", "5", "6", "7", "8", "9" or "10".'
       isArray: false
       name: score
       predefined:
@@ -1953,7 +1987,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Modifies an indicator's score in ThreatQ. The final indicator score is the highest of the manual and generated scores.
+    description: Modifies an indicator's score in ThreatQ. The final indicator score
+      is the highest of the manual and generated scores.
     execution: false
     name: threatq-update-score
     outputs:
@@ -2132,7 +2167,8 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of objects to return in one response (maximum is 200).
+      description: The maximum number of objects to return in one response (maximum
+        is 200).
       isArray: false
       name: limit
       required: false
@@ -2189,3 +2225,6 @@ script:
   type: python
   subtype: python3
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

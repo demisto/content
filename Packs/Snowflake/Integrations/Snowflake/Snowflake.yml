@@ -47,7 +47,8 @@ configuration:
   name: isFetch
   required: false
   type: 8
-- display: Fetch query to retrieve new incidents. This field is mandatory when 'Fetches incidents' is set to true.
+- display: Fetch query to retrieve new incidents. This field is mandatory when 'Fetches
+    incidents' is set to true.
   name: fetch_query
   required: false
   type: 0
@@ -56,11 +57,14 @@ configuration:
   name: fetch_time
   required: false
   type: 0
-- display: The name of the field/column that contains the datetime object or timestamp for the data being fetched (case sensitive). This field is mandatory when 'Fetches incidents' is set to true.
+- display: The name of the field/column that contains the datetime object or timestamp
+    for the data being fetched (case sensitive). This field is mandatory when 'Fetches
+    incidents' is set to true.
   name: datetime_column
   required: false
   type: 0
-- display: The name of the field/column in the fetched data from which the name for the demisto incident will be assigned (case sensitive)
+- display: The name of the field/column in the fetched data from which the name for
+    the demisto incident will be assigned (case sensitive)
   name: incident_name_column
   required: false
   type: 0
@@ -86,25 +90,29 @@ script:
       required: true
       secret: false
     - default: false
-      description: The warehouse to use for the query. If not specified, the default will be used.
+      description: The warehouse to use for the query. If not specified, the default
+        will be used.
       isArray: false
       name: warehouse
       required: false
       secret: false
     - default: false
-      description: The database to use for the query. If not specified, the default will be used.
+      description: The database to use for the query. If not specified, the default
+        will be used.
       isArray: false
       name: database
       required: false
       secret: false
     - default: false
-      description: The schema to use for the query. If not specified, the default will be used.
+      description: The schema to use for the query. If not specified, the default
+        will be used.
       isArray: false
       name: schema
       required: false
       secret: false
     - default: false
-      description: The role to use for the query. If not specified, the default will be used.
+      description: The role to use for the query. If not specified, the default will
+        be used.
       isArray: false
       name: role
       required: false
@@ -117,7 +125,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A CSV list of columns to display in the specified order, for example: "Name, ID, Timestamp"'
+      description: 'A CSV list of columns to display in the specified order, for example:
+        "Name, ID, Timestamp"'
       isArray: true
       name: columns
       required: false
@@ -147,25 +156,29 @@ script:
       required: true
       secret: false
     - default: false
-      description: The warehouse to use for the query. If not specified, the default will be used.
+      description: The warehouse to use for the query. If not specified, the default
+        will be used.
       isArray: false
       name: warehouse
       required: false
       secret: false
     - default: false
-      description: The database to use for the query. If not specified, the default will be used.
+      description: The database to use for the query. If not specified, the default
+        will be used.
       isArray: false
       name: database
       required: false
       secret: false
     - default: false
-      description: The schema to use for the query. If not specified, the default will be used.
+      description: The schema to use for the query. If not specified, the default
+        will be used.
       isArray: false
       name: schema
       required: false
       secret: false
     - default: false
-      description: The role to use for the query. If not specified, the default will be used.
+      description: The role to use for the query. If not specified, the default will
+        be used.
       isArray: false
       name: role
       required: false
@@ -183,3 +196,6 @@ script:
 tests:
 - Snowflake-Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

@@ -20,8 +20,8 @@ args:
   secret: false
 - default: false
   defaultValue: '0'
-  description: The results offset page. Only change when the number
-    of the results exceed the limit.
+  description: The results offset page. Only change when the number of the results
+    exceed the limit.
   isArray: false
   name: offset
   required: false
@@ -40,7 +40,8 @@ args:
   secret: false
 - default: false
   defaultValue: id,score,investigationIDs
-  description: A comma-separated list of fields in the object to poplulate. Defaults are id, score, and investigationIDs.
+  description: A comma-separated list of fields in the object to poplulate. Defaults
+    are id, score, and investigationIDs.
   isArray: false
   name: populateFields
   required: false
@@ -64,3 +65,6 @@ dockerimage: demisto/python3:3.9.8.24399
 runas: DBotWeakRole
 runonce: false
 fromversion: 5.5.0
+marketplaces:
+- xsoar
+- marketplacev2

@@ -44,7 +44,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: 'Rapid7 InsightIDR is a Cloud-Based SIEM that detect and respond to security incidents.'
+description: 'Rapid7 InsightIDR is a Cloud-Based SIEM that detect and respond to security
+  incidents.'
 display: Rapid7 InsightIDR
 name: Rapid7 InsightIDR
 script:
@@ -57,19 +58,17 @@ script:
       required: false
       secret: false
     - default: false
-      description: "Only investigations whose\
-        \ createTime is after this date will be returned. If this argument\
-        \ is omitted, investigations with any create_time may be returned. Use ISO\
-        \ time format (e.g., 2018-07-01T00:00:00Z)."
+      description: "Only investigations whose createTime is after this date will be\
+        \ returned. If this argument is omitted, investigations with any create_time\
+        \ may be returned. Use ISO time format (e.g., 2018-07-01T00:00:00Z)."
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: "Only investigations whose\
-        \ createTime is before this date will be returned. If this argument\
-        \ is omitted, investigations with any create_time may be returned. Use ISO\
-        \ time format (e.g., 2018-07-01T00:00:00Z)."
+      description: "Only investigations whose createTime is before this date will\
+        \ be returned. If this argument is omitted, investigations with any create_time\
+        \ may be returned. Use ISO time format (e.g., 2018-07-01T00:00:00Z)."
       isArray: false
       name: end_time
       required: false
@@ -77,7 +76,8 @@ script:
     - auto: PREDEFINED
       default: false
       description: Only investigations whose status matches one of the entries in
-        the list will be returned. If this argument is omitted, all investigations will be returned.
+        the list will be returned. If this argument is omitted, all investigations
+        will be returned.
       isArray: false
       name: statuses
       predefined:
@@ -100,7 +100,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: List all open/closed investigations. You can filter results by time range and investigation status.
+    description: List all open/closed investigations. You can filter results by time
+      range and investigation status.
     execution: false
     name: rapid7-insight-idr-list-investigations
     outputs:
@@ -178,19 +179,17 @@ script:
       type: String
   - arguments:
     - default: false
-      description: "Only investigations whose\
-        \ createTime is before this date will be returned. If this argument\
-        \ is omitted, investigations with any create_time may be returned - Use ISO\
-        \ time format (e.g., 2018-07-01T00:00:00Z)."
+      description: "Only investigations whose createTime is before this date will\
+        \ be returned. If this argument is omitted, investigations with any create_time\
+        \ may be returned - Use ISO time format (e.g., 2018-07-01T00:00:00Z)."
       isArray: false
       name: start_time
       required: true
       secret: false
     - default: false
-      description: "AOnly investigations whose\
-        \ createTime is before this date will be returned. If this argument\
-        \ is omitted, investigations with any create_time may be returned. Use ISO\
-        \ time format (e.g., 2018-07-01T00:00:00Z)."
+      description: "AOnly investigations whose createTime is before this date will\
+        \ be returned. If this argument is omitted, investigations with any create_time\
+        \ may be returned. Use ISO time format (e.g., 2018-07-01T00:00:00Z)."
       isArray: false
       name: end_time
       required: true
@@ -199,7 +198,8 @@ script:
       default: false
       description: The name of an investigation source. Only investigations from this
         source will be closed. If the source is ALERT, an alert type must be specified
-        as well. Can be "ALERT", "MANUAL", or "HUNT""The LEQL query to match desired log events. Do not use a calculation.more
+        as well. Can be "ALERT", "MANUAL", or "HUNT""The LEQL query to match desired
+        log events. Do not use a calculation.more
       isArray: false
       name: source
       predefined:
@@ -209,22 +209,24 @@ script:
       required: true
       secret: false
     - default: false
-      description: The category of alerts to closed. This argument is
-        required if the source is ALERT and ignored for other sources. This value
-        must be an exact match of the alert type returned by the List Investigations response.
+      description: The category of alerts to closed. This argument is required if
+        the source is ALERT and ignored for other sources. This value must be an exact
+        match of the alert type returned by the List Investigations response.
       isArray: true
       name: alert_type
       required: false
       secret: false
     - default: false
-      description: The maximum number of alerts to close with this request.
-        If this argument is not specified then there is no maximum. If this limit
-        is exceeded, then a 400 error response is returned. The minimum value is 0.
+      description: The maximum number of alerts to close with this request. If this
+        argument is not specified then there is no maximum. If this limit is exceeded,
+        then a 400 error response is returned. The minimum value is 0.
       name: max_investigations_to_close
       required: false
       secret: false
     deprecated: false
-    description: Bulk closes investigations according to the specified investigation create-time date range. You can specify the maximum number of alerts to close per call. If that maximum is exceeded a 400 error response is returned.
+    description: Bulk closes investigations according to the specified investigation
+      create-time date range. You can specify the maximum number of alerts to close
+      per call. If that maximum is exceeded a 400 error response is returned.
     execution: false
     name: rapid7-insight-idr-close-investigations
     outputs:
@@ -246,7 +248,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Assigns a user to an investigation according to the specified user email  address.
+    description: Assigns a user to an investigation according to the specified user
+      email  address.
     execution: false
     name: rapid7-insight-idr-assign-user
     outputs:
@@ -358,7 +361,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Adds new indicators to a threat (IP addresses, hashes, domains, and URLs).
+    description: Adds new indicators to a threat (IP addresses, hashes, domains, and
+      URLs).
     execution: false
     name: rapid7-insight-idr-add-threat-indicators
     outputs:
@@ -406,7 +410,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Deletes existing indicators from a threat and adds new indicators to the threat.
+    description: Deletes existing indicators from a threat and adds new indicators
+      to the threat.
     execution: false
     name: rapid7-insight-idr-replace-threat-indicators
     outputs:
@@ -468,9 +473,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The relative time range in a readable format. Optional if "from" \
-        is supplied. For example: Last 4 Days. Note that if start_time, end_time and\
-        \ time_range is not provided the default will be Last 3 days.'
+      description: 'The relative time range in a readable format. Optional if "from"
+        \ is supplied. For example: Last 4 Days. Note that if start_time, end_time
+        and\ \ time_range is not provided the default will be Last 3 days.'
       isArray: false
       name: time_range
       required: false
@@ -483,15 +488,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The maximum number of log events to download; cannot exceed 20 million.
-        The default is 20 million. The argument value should be written like this: "10 thousand"
-        or "2 million").'
+      description: 'The maximum number of log events to download; cannot exceed 20
+        million. The default is 20 million. The argument value should be written like
+        this: "10 thousand" or "2 million").'
       isArray: false
       name: limit
       required: false
       secret: false
     deprecated: false
-    description: Downloads logs for from your InsightsIDR instance. The maximum number of logs per call is 10.
+    description: Downloads logs for from your InsightsIDR instance. The maximum number
+      of logs per call is 10.
     execution: false
     name: rapid7-insight-idr-download-logs
     outputs: []
@@ -509,8 +515,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: A time range string (i.e 1 week, 1 day) - While using
-        this parameter, start_time and end_time isn't needed
+      description: A time range string (i.e 1 week, 1 day) - While using this parameter,
+        start_time and end_time isn't needed
       isArray: false
       name: time_range
       required: false
@@ -530,7 +536,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The maximum number of log entries to return per page. Default of 50.
+      description: The maximum number of log entries to return per page. Default of
+        50.
       isArray: false
       name: logs_per_page
       required: false
@@ -569,8 +576,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: A time range string (e.g., 1 week, 1 day) - While using
-        this parameter, start_time and end_time isn't needed
+      description: A time range string (e.g., 1 week, 1 day) - While using this parameter,
+        start_time and end_time isn't needed
       isArray: false
       name: time_range
       required: false
@@ -590,7 +597,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The maximum number of log entries to return per page. Default of 50.
+      description: The maximum number of log entries to return per page. Default of
+        50.
       isArray: false
       name: logs_per_page
       required: false
@@ -627,3 +635,6 @@ script:
 tests:
 - No tests
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

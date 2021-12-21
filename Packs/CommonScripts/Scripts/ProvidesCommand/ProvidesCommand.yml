@@ -19,7 +19,10 @@ args:
   predefined:
   - "true"
   - "false"
-  description: Filters results to integrations that are enabled or disabled.  'true' or 'false'.  Will return both types by default.  False means that an integration instance is either not defined or not enabled.  True means that an integration instance is both defined and enabled.
+  description: Filters results to integrations that are enabled or disabled.  'true'
+    or 'false'.  Will return both types by default.  False means that an integration
+    instance is either not defined or not enabled.  True means that an integration
+    instance is both defined and enabled.
 scripttarget: 0
 dependson:
   must:
@@ -31,3 +34,6 @@ runas: DBotWeakRole
 tests:
 - No test - unit test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

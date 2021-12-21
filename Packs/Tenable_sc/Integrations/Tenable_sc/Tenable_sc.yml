@@ -28,11 +28,13 @@ configuration:
   required: false
   type: 13
 - defaultvalue: 3 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
+    months, 1 year)
   name: fetch_time
   required: false
   type: 0
-description: With Tenable.sc (formerly SecurityCenter) you get a real-time, continuous assessment of your security posture so you can find and fix vulnerabilities faster.
+description: With Tenable.sc (formerly SecurityCenter) you get a real-time, continuous
+  assessment of your security posture so you can find and fix vulnerabilities faster.
 display: Tenable.sc
 name: Tenable.sc
 script:
@@ -41,7 +43,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to return only manageable scans. Returns both usable and manageable scans by default.
+      description: Whether to return only manageable scans. Returns both usable and
+        manageable scans by default.
       isArray: false
       name: manageable
       predefined:
@@ -80,7 +83,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Valid IP/Hostname of a specific target to scan. Must be provided with diagnosticPassword.
+      description: Valid IP/Hostname of a specific target to scan. Must be provided
+        with diagnosticPassword.
       isArray: false
       name: diagnostic_target
       required: false
@@ -126,7 +130,8 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The number of objects to return in one response (maximum limit is 200).
+      description: The number of objects to return in one response (maximum limit
+        is 200).
       isArray: false
       name: limit
       required: false
@@ -316,7 +321,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to return only manageable scan credentials. Returns both usable and manageable by default.
+      description: Whether to return only manageable scan credentials. Returns both
+        usable and manageable by default.
       isArray: false
       name: manageable
       predefined:
@@ -357,7 +363,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to return only manageable scan policies. Returns both usable and manageable by default.
+      description: Whether to return only manageable scan policies. Returns both usable
+        and manageable by default.
       isArray: false
       name: manageable
       predefined:
@@ -398,7 +405,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to return only manageable reports. Returns both usable and manageable by default.
+      description: Whether to return only manageable reports. Returns both usable
+        and manageable by default.
       isArray: false
       name: manageable
       predefined:
@@ -489,7 +497,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Scan zone ID (default is all zones), can be retrieved from list-zones command
+      description: Scan zone ID (default is all zones), can be retrieved from list-zones
+        command
       isArray: false
       name: zone_id
       required: false
@@ -508,7 +517,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Either all assets or comma separated asset IDs to scan, can be retrieved from list-assets command
+      description: Either all assets or comma separated asset IDs to scan, can be
+        retrieved from list-assets command
       isArray: true
       name: asset_ids
       predefined:
@@ -533,13 +543,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: Comma separated list of report definition IDs to create post-scan, can be retrieved from list-report-definitions command
+      description: Comma separated list of report definition IDs to create post-scan,
+        can be retrieved from list-report-definitions command
       isArray: true
       name: report_ids
       required: false
       secret: false
     - default: false
-      description: Comma separated credentials IDs to use, can be retrieved from list-credentials command
+      description: Comma separated credentials IDs to use, can be retrieved from list-credentials
+        command
       isArray: true
       name: credentials
       required: false
@@ -581,7 +593,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Dependent scan ID in case of a dependent schedule, can be retrieved from list-scans command
+      description: Dependent scan ID in case of a dependent schedule, can be retrieved
+        from list-scans command
       isArray: false
       name: dependent_id
       required: false
@@ -627,7 +640,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to return only manageable assets. Returns both usable and manageable by default.
+      description: Whether to return only manageable assets. Returns both usable and
+        manageable by default.
       isArray: false
       name: manageable
       predefined:
@@ -678,7 +692,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Asset owner ID, default is the Session User ID, can be retrieved from the list-users command
+      description: Asset owner ID, default is the Session User ID, can be retrieved
+        from the list-users command
       isArray: false
       name: owner_id
       required: false
@@ -763,7 +778,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to return only manageable alerts. Returns both usable and manageable by default.
+      description: Whether to return only manageable alerts. Returns both usable and
+        manageable by default.
       isArray: false
       name: manageable
       predefined:
@@ -862,7 +878,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Repository ID to get the device from, can be retrieved from list-repositories command
+      description: Repository ID to get the device from, can be retrieved from list-repositories
+        command
       isArray: false
       name: repository_id
       required: false
@@ -1052,7 +1069,8 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The number of objects to return in one response (maximum limit is 200).
+      description: The number of objects to return in one response (maximum limit
+        is 200).
       isArray: false
       name: limit
       required: false
@@ -1113,3 +1131,6 @@ script:
 tests:
 - tenable-sc-test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

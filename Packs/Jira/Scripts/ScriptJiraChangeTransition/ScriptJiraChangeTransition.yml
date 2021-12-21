@@ -17,3 +17,6 @@ comment: |-
   This script changes the transition field of an issue. It gets the new Jira status and updates the Cortex XSOAR incident status.
 tests:
 - Jira-v2-Test
+marketplaces:
+- xsoar
+- marketplacev2

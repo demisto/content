@@ -38,9 +38,9 @@ configuration:
   required: false
   type: 13
 - additionalinfo: 'The statuses of the incidents that will be fetched. If no status
-      is provided then incidents of all the statuses will be fetched. Note: an incident
-      whose status was changed to a filtered status after its creation time will not
-      be fetched.'
+    is provided then incidents of all the statuses will be fetched. Note: an incident
+    whose status was changed to a filtered status after its creation time will not
+    be fetched.'
   display: Incident Soc Statuses to Fetch
   hidden: false
   name: soc_status
@@ -439,3 +439,6 @@ script:
 tests:
 - Perch-Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

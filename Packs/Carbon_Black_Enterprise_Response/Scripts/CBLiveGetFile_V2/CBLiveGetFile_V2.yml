@@ -129,3 +129,6 @@ dependson:
   - cb-list-sensors
   - cb-list-sessions
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

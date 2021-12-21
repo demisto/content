@@ -7,7 +7,8 @@ args:
   secret: false
 - auto: PREDEFINED
   default: false
-  description: A comma-separated list of protocols to output as context. If empty, will not output any protocols to context.
+  description: A comma-separated list of protocols to output as context. If empty,
+    will not output any protocols to context.
   isArray: true
   name: protocol_output
   predefined:
@@ -29,7 +30,8 @@ args:
   secret: false
 - auto: PREDEFINED
   default: false
-  description: Whether to extract IP, URL, and Email from PCAP file. Can be "True" or "False".
+  description: Whether to extract IP, URL, and Email from PCAP file. Can be "True"
+    or "False".
   isArray: false
   name: extract_strings
   predefined:
@@ -79,7 +81,8 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'False'
-  description: Output to context the source and destination IPs in the PCAP file. Can be "True" or "False". The default is "False".
+  description: Output to context the source and destination IPs in the PCAP file.
+    Can be "True" or "False". The default is "False".
   isArray: false
   name: extract_ips
   predefined:
@@ -415,3 +418,6 @@ tests:
 - No tests (auto formatted)
 subtype: python3
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

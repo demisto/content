@@ -189,17 +189,20 @@ script:
       description: Public name of the user to whom the space permission applies.
       type: String
     - contextPath: ConfluenceCloud.Space.permissions.subjects.user.results.profilePicture.path
-      description: Path of the user's profile picture to whom the space permission applies.
+      description: Path of the user's profile picture to whom the space permission
+        applies.
       type: String
     - contextPath: ConfluenceCloud.Space.permissions.subjects.user.results.profilePicture.width
-      description: Width in pixels of the user's profile picture to whom the space permission applies.
+      description: Width in pixels of the user's profile picture to whom the space
+        permission applies.
       type: Number
     - contextPath: ConfluenceCloud.Space.permissions.subjects.user.results.profilePicture.height
-      description: Height in pixels of the user's profile picture to whom the space permission applies.
+      description: Height in pixels of the user's profile picture to whom the space
+        permission applies.
       type: Number
     - contextPath: ConfluenceCloud.Space.permissions.subjects.user.results.profilePicture.isDefault
-      description: Whether the profile picture of the user is the default picture to whom the space
-        permission applies.
+      description: Whether the profile picture of the user is the default picture
+        to whom the space permission applies.
       type: Boolean
     - contextPath: ConfluenceCloud.Space.permissions.subjects.user.results.displayName
       description: Display name of the user to whom the space permission applies.
@@ -458,11 +461,12 @@ script:
       description: Profile picture of the user who last updated the content.
       type: String
     - contextPath: ConfluenceCloud.Content.version.by.profilePicture.width
-      description: Width in pixels of the profile picture of the user who last updated the content.
+      description: Width in pixels of the profile picture of the user who last updated
+        the content.
       type: Number
     - contextPath: ConfluenceCloud.Content.version.by.profilePicture.height
-      description: Height in pixels of the profile picture of the user who last updated the
-        content.
+      description: Height in pixels of the profile picture of the user who last updated
+        the content.
       type: Number
     - contextPath: ConfluenceCloud.Content.version.by.profilePicture.isDefault
       description: Whether the profile picture is the default profile picture.
@@ -772,11 +776,12 @@ script:
       description: Profile picture of the user who last updated the comment.
       type: String
     - contextPath: ConfluenceCloud.Comment.version.by.profilePicture.width
-      description: Width in pixels of the profile picture of the user who last updated the comment.
+      description: Width in pixels of the profile picture of the user who last updated
+        the comment.
       type: Number
     - contextPath: ConfluenceCloud.Comment.version.by.profilePicture.height
-      description: Height in pixels of the profile picture of the user who last updated the
-        comment.
+      description: Height in pixels of the profile picture of the user who last updated
+        the comment.
       type: Number
     - contextPath: ConfluenceCloud.Comment.version.by.profilePicture.isDefault
       description: Whether the profile picture is the default profile picture.
@@ -1000,7 +1005,7 @@ script:
       description: The description of the space in plain format in plain format.
       type: String
     - contextPath: ConfluenceCloud.Space.description.plain.representation
-      description: Representation format of the description in plain format. 
+      description: Representation format of the description in plain format.
       type: String
     - contextPath: ConfluenceCloud.Space.homepage.id
       description: ID of the homepage of the space.
@@ -1051,17 +1056,20 @@ script:
       description: Public name to whom the space permission applies.
       type: String
     - contextPath: ConfluenceCloud.Space.permissions.subjects.user.results.profilePicture.path
-      description: Path of the user's profile picture to whom the space permission applies.
+      description: Path of the user's profile picture to whom the space permission
+        applies.
       type: String
     - contextPath: ConfluenceCloud.Space.permissions.subjects.user.results.profilePicture.width
-      description: Width in pixels of the user's profile picture to whom the space permission applies.
+      description: Width in pixels of the user's profile picture to whom the space
+        permission applies.
       type: Number
     - contextPath: ConfluenceCloud.Space.permissions.subjects.user.results.profilePicture.height
-      description: Height in pixels of the user's profile picture to whom the space permission applies.
+      description: Height in pixels of the user's profile picture to whom the space
+        permission applies.
       type: Number
     - contextPath: ConfluenceCloud.Space.permissions.subjects.user.results.profilePicture.isDefault
-      description: Whether the profile picture of the user is the default to whom the space
-        permission applies.
+      description: Whether the profile picture of the user is the default to whom
+        the space permission applies.
       type: Boolean
     - contextPath: ConfluenceCloud.Space.permissions.subjects.user.results.displayName
       description: Display name of the user to whom the space permission applies.
@@ -1339,11 +1347,12 @@ script:
       description: Profile picture path of the user who last updated the content.
       type: String
     - contextPath: ConfluenceCloud.Content.version.by.profilePicture.width
-      description: Width in pixels of the profile picture of the user who last updated the content.
+      description: Width in pixels of the profile picture of the user who last updated
+        the content.
       type: Number
     - contextPath: ConfluenceCloud.Content.version.by.profilePicture.height
-      description: Height in pixels of the profile picture of the user who last updated the
-        content.
+      description: Height in pixels of the profile picture of the user who last updated
+        the content.
       type: Number
     - contextPath: ConfluenceCloud.Content.version.by.profilePicture.isDefault
       description: Whether the profile picture is the default profile picture.
@@ -1669,11 +1678,12 @@ script:
       description: Profile picture path of the user who last updated the content.
       type: String
     - contextPath: ConfluenceCloud.Content.version.by.profilePicture.width
-      description: Width in pixels of the profile picture of the user who last updated the content.
+      description: Width in pixels of the profile picture of the user who last updated
+        the content.
       type: Number
     - contextPath: ConfluenceCloud.Content.version.by.profilePicture.height
-      description: Height in pixels of the profile picture of the user who last updated the
-        content.
+      description: Height in pixels of the profile picture of the user who last updated
+        the content.
       type: Number
     - contextPath: ConfluenceCloud.Content.version.by.profilePicture.isDefault
       description: Whether the profile picture is the default profile picture.
@@ -1962,11 +1972,12 @@ script:
       description: Profile picture path of the user who last updated the content.
       type: String
     - contextPath: ConfluenceCloud.Content.version.by.profilePicture.width
-      description: Width in pixels of the profile picture of the user who last updated the content.
+      description: Width in pixels of the profile picture of the user who last updated
+        the content.
       type: Number
     - contextPath: ConfluenceCloud.Content.version.by.profilePicture.height
-      description: Height in pixels of the profile picture of the user who last updated the
-        content.
+      description: Height in pixels of the profile picture of the user who last updated
+        the content.
       type: Number
     - contextPath: ConfluenceCloud.Content.version.by.profilePicture.isDefault
       description: Whether the profile picture is the default profile picture.
@@ -2185,3 +2196,6 @@ script:
 tests:
 - No tests (auto formatted)
 fromversion: 6.2.0
+marketplaces:
+- xsoar
+- marketplacev2

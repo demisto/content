@@ -291,7 +291,8 @@ script:
       description: Scroll token to paginate through results.
       type: string
     - contextPath: GreyNoise.IP.bot
-      description: Whether the IP is associated with known bot activity or not. Common examples include credential stuffing, content scraping, or brute force attacks.
+      description: Whether the IP is associated with known bot activity or not. Common
+        examples include credential stuffing, content scraping, or brute force attacks.
       type: Boolean
   - arguments:
     - default: false
@@ -576,7 +577,8 @@ script:
       description: TCP port connection where the HASSH hash was identified.
       type: number
     - contextPath: GreyNoise.IP.bot
-      description: Whether the IP is associated with known bot activity or not. Common examples include credential stuffing, content scraping, or brute force attacks.
+      description: Whether the IP is associated with known bot activity or not. Common
+        examples include credential stuffing, content scraping, or brute force attacks.
       type: Boolean
   dockerimage: demisto/greynoise:1.0.0.24037
   feed: false
@@ -590,3 +592,6 @@ script:
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

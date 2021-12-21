@@ -30,3 +30,6 @@ fromversion: 5.0.0
 dockerimage: demisto/python3:3.9.7.24076
 tests:
 - Base64Decode - Test
+marketplaces:
+- xsoar
+- marketplacev2

@@ -55,7 +55,8 @@ configuration:
   required: false
   additionalinfo: Only entries with these tags are retrieved from the XSOAR server.
     If no tags are listed, no entries are retrieved.
-- additionalinfo: Choose the tags to filter the enties you wish to send to the other XSOAR instance.
+- additionalinfo: Choose the tags to filter the enties you wish to send to the other
+    XSOAR instance.
   defaultvalue: ""
   display: Outgoing Entry Tags
   hidden: false
@@ -73,7 +74,9 @@ configuration:
   required: false
   type: 15
 - display: Disable fetching for incidents came from this integration
-  additionalinfo: Enable this option to disable mirroring of incidents came from the integration of XSOAR Mirroring. This adds `-sourceBrand:“XSOAR Mirroring”` to your query.
+  additionalinfo: Enable this option to disable mirroring of incidents came from the
+    integration of XSOAR Mirroring. This adds `-sourceBrand:“XSOAR Mirroring”` to
+    your query.
   name: disable_from_same_integration
   defaultvalue: "true"
   type: 8
@@ -110,7 +113,8 @@ script:
       defaultValue: "10"
     - default: false
       defaultValue: id,name,type,status,severity,owner,occured
-      description: Which columns to display. Default is 'id,name,type,status,severity,owner,occured'. To display all columns, insert 'all'.
+      description: Which columns to display. Default is 'id,name,type,status,severity,owner,occured'.
+        To display all columns, insert 'all'.
       isArray: true
       name: columns
       required: false
@@ -156,3 +160,6 @@ script:
 defaultmapperin: XSOAR-Incoming-Mapper
 tests:
 - No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2

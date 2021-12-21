@@ -16,7 +16,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the CloudConvert integration to convert your files to the desired format.
+description: Use the CloudConvert integration to convert your files to the desired
+  format.
 display: CloudConvert
 name: CloudConvert
 script:
@@ -29,7 +30,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The file's War Room entry ID. If a URL is supplied, do not use this argument.
+      description: The file's War Room entry ID. If a URL is supplied, do not use
+        this argument.
       isArray: false
       name: entry_id
       required: false
@@ -305,7 +307,9 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'Whether to download the converted file to a URL or as a War Room entry. Possible values are: "url" and "war_room_entry". Note that if you download the file as a War Room entry, a URL of the file will also be generated.'
+      description: 'Whether to download the converted file to a URL or as a War Room
+        entry. Possible values are: "url" and "war_room_entry". Note that if you download
+        the file as a War Room entry, a URL of the file will also be generated.'
       isArray: false
       name: download_as
       predefined:
@@ -376,5 +380,8 @@ script:
   subtype: python3
   type: python
 tests:
-  - CloudConvert-test
+- CloudConvert-test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

@@ -46,3 +46,6 @@ dockerimage: demisto/xsoar-tools:1.0.0.23423
 tests:
 - MarketplacePackInstaller_Test
 fromversion: 6.0.0
+marketplaces:
+- xsoar
+- marketplacev2

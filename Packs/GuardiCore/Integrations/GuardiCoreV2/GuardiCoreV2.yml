@@ -930,7 +930,7 @@ script:
           description: The incident event's reputation tags process path.
           type: String
         - contextPath: Guardicore.Incident.events.reputation_tags.tag_args.side
-          description: The incident event's reputation tags arguments side. 
+          description: The incident event's reputation tags arguments side.
           type: Number
         - contextPath: Guardicore.Incident.events.reputation_tags.tag_args.reason
           description: The incident event's reputation tags reason.
@@ -984,7 +984,7 @@ script:
           description: The incident event's destination virtual machine name.
           type: String
         - contextPath: Guardicore.Incident.is_bc_format_incident
-          description: Whether the incident is in backwards compatibility format. 
+          description: Whether the incident is in backwards compatibility format.
           type: String
     - arguments:
         - default: false
@@ -1042,7 +1042,7 @@ script:
             - 'Deception'
             - 'Network Scan'
             - 'Reveal'
-            - 'Experimental' 
+            - 'Experimental'
           isArray: true
           name: incident_type
           required: false
@@ -1279,4 +1279,7 @@ script:
   subtype: python3
   type: python
 tests:
-  - GuardiCoreV2-Test
+- GuardiCoreV2-Test
+marketplaces:
+- xsoar
+- marketplacev2

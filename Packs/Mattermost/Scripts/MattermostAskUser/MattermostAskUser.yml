@@ -7,7 +7,8 @@ subtype: python2
 script: ''
 tags:
 - mattermost
-comment: Ask a user a question on Mattermost and expect a response. The response can also close a task (might be conditional) in a playbook.
+comment: Ask a user a question on Mattermost and expect a response. The response can
+  also close a task (might be conditional) in a playbook.
 enabled: true
 args:
 - name: user
@@ -22,7 +23,8 @@ args:
 - name: option2
   description: Second option for the user reply. "no" is the default.
 - name: task
-  description: Which task should we close with the reply. If none then no playbook tasks will be closed.
+  description: Which task should we close with the reply. If none then no playbook
+    tasks will be closed.
 - name: replyEntriesTag
   description: Tag to add on email reply entries
 - name: persistent
@@ -41,3 +43,6 @@ fromversion: 5.0.0
 dockerimage: demisto/python:2.7.18.24398
 tests:
 - No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2

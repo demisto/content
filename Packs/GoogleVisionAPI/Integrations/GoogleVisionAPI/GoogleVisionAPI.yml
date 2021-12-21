@@ -3,7 +3,8 @@ commonfields:
   id: Google Vision AI
   version: -1
 configuration:
-- display: Google service account JSON (a credentials JSON generated from Google API Manager or from GCP console)
+- display: Google service account JSON (a credentials JSON generated from Google API
+    Manager or from GCP console)
   name: auth_json
   required: true
   type: 4
@@ -50,3 +51,6 @@ script:
   type: python
   subtype: python3
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

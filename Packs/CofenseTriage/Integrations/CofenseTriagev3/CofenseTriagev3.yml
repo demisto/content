@@ -2394,3 +2394,6 @@ tests:
 defaultmapperin: Cofense Triage Report - Incoming Mapper
 defaultclassifier: Cofense Triage - Classifier
 fromversion: 6.0.0
+marketplaces:
+- xsoar
+- marketplacev2

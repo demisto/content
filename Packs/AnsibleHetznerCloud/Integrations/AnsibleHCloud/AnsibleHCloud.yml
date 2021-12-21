@@ -436,3 +436,6 @@ script:
   type: python
 tests:
 - Test-AnsibleHCloud
+marketplaces:
+- xsoar
+- marketplacev2

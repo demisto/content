@@ -51,7 +51,8 @@ configuration:
   required: false
   type: 13
 - additionalinfo: Fetch vulnerabilities with CVS score that exactly equals the provided
-    value. This can be a decimal point number. Disabled if empty. Mutually exclusive with cvss_score_greater_than
+    value. This can be a decimal point number. Disabled if empty. Mutually exclusive
+    with cvss_score_greater_than
   display: Fetch vulnerabilities with CVSS with exact value
   hidden: false
   name: cvss_score
@@ -1074,3 +1075,6 @@ script:
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
+marketplaces:
+- xsoar
+- marketplacev2

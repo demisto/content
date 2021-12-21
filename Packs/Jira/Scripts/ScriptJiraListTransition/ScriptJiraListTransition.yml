@@ -17,3 +17,6 @@ comment: |-
 runas: DBotWeakRole
 tests:
 - Jira-v2-Test
+marketplaces:
+- xsoar
+- marketplacev2

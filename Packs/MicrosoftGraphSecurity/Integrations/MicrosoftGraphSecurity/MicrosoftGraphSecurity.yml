@@ -353,3 +353,6 @@ script:
 tests:
 - Microsoft Graph Security Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

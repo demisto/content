@@ -55,7 +55,8 @@ script:
       description: For malicious IP addresses, the vendor that made the decision.
       type: string
     - contextPath: IP.Malicious.Description
-      description: For malicious IP addresses, the reason that the vendor made the decision.
+      description: For malicious IP addresses, the reason that the vendor made the
+        decision.
       type: string
     - contextPath: SlashNext.IP.Value
       description: Value of the IoC.
@@ -81,7 +82,8 @@ script:
     - contextPath: SlashNext.IP.LastSeen
       description: Time when the IoC was last observed.
       type: date
-    description: Looks up an IP address indicator in the SlashNext Threat Intelligence database.
+    description: Looks up an IP address indicator in the SlashNext Threat Intelligence
+      database.
   - name: domain
     arguments:
     - name: domain
@@ -107,7 +109,8 @@ script:
       description: For malicious domain names, the vendor that made the decision.
       type: string
     - contextPath: Domain.Malicious.Description
-      description: For malicious domain names, the reason that the vendor made the decision.
+      description: For malicious domain names, the reason that the vendor made the
+        decision.
       type: string
     - contextPath: SlashNext.Domain.Value
       description: Value of the IoC.
@@ -133,7 +136,8 @@ script:
     - contextPath: SlashNext.Domain.LastSeen
       description: Time when the IoC was last observed.
       type: date
-    description: Looks up a Fully Qualified Domain Name (FQDN) indicator in the SlashNext Threat Intelligence database.
+    description: Looks up a Fully Qualified Domain Name (FQDN) indicator in the SlashNext
+      Threat Intelligence database.
   - name: url
     arguments:
     - name: url
@@ -186,7 +190,8 @@ script:
       description: Time when the IoC was last observed.
       type: date
     - contextPath: SlashNext.URL.Final.Value
-      description: Final IoC value (in case original IoC is a redirector to the same domain).
+      description: Final IoC value (in case original IoC is a redirector to the same
+        domain).
       type: string
     - contextPath: SlashNext.URL.Final.Type
       description: Type of the final IoC.
@@ -195,7 +200,8 @@ script:
       description: SlashNext Phishing Incident Response verdict on the final IoC.
       type: string
     - contextPath: SlashNext.URL.Landing.Value
-      description: Landing IoC value (in case original IoC is a redirector to a different domain).
+      description: Landing IoC value (in case original IoC is a redirector to a different
+        domain).
       type: string
     - contextPath: SlashNext.URL.Landing.Type
       description: Type of landing IoC.
@@ -218,12 +224,14 @@ script:
     - contextPath: SlashNext.URL.Landing.LastSeen
       description: Time when the landing IoC was last observed.
       type: date
-    description: Queries the SlashNext Cloud database and retrieves the reputation of a url.
+    description: Queries the SlashNext Cloud database and retrieves the reputation
+      of a url.
   - name: slashnext-host-reputation
     arguments:
     - name: host
       required: true
-      description: The host to look up in the SlashNext Threat Intelligence database. Can be either a domain name or an IPv4 address.
+      description: The host to look up in the SlashNext Threat Intelligence database.
+        Can be either a domain name or an IPv4 address.
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -244,7 +252,8 @@ script:
       description: For malicious IP addresses, the vendor that made the decision.
       type: string
     - contextPath: IP.Malicious.Description
-      description: For malicious IP addresses, the reason that the vendor made the decision.
+      description: For malicious IP addresses, the reason that the vendor made the
+        decision.
       type: string
     - contextPath: SlashNext.IP.Value
       description: Value of the IoC.
@@ -277,7 +286,8 @@ script:
       description: For malicious domain names, the vendor that made the decision.
       type: string
     - contextPath: Domain.Malicious.Description
-      description: For malicious domain names, the reason that the vendor made the decision.
+      description: For malicious domain names, the reason that the vendor made the
+        decision.
       type: string
     - contextPath: SlashNext.Domain.Value
       description: Value of the IoC.
@@ -303,12 +313,14 @@ script:
     - contextPath: SlashNext.Domain.LastSeen
       description: Time when the IoC was last observed.
       type: date
-    description: Queries the SlashNext Cloud database and retrieves the reputation of a host.
+    description: Queries the SlashNext Cloud database and retrieves the reputation
+      of a host.
   - name: slashnext-host-report
     arguments:
     - name: host
       required: true
-      description: The host to look up in the SlashNext Threat Intelligence database. Can be either a domain name or an IPv4 address.
+      description: The host to look up in the SlashNext Threat Intelligence database.
+        Can be either a domain name or an IPv4 address.
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -329,7 +341,8 @@ script:
       description: For malicious IP addresses, the vendor that made the decision.
       type: string
     - contextPath: IP.Malicious.Description
-      description: For malicious IP addresses, the reason that the vendor made the decision.
+      description: For malicious IP addresses, the reason that the vendor made the
+        decision.
       type: string
     - contextPath: SlashNext.IP.Value
       description: Value of the IoC.
@@ -362,7 +375,8 @@ script:
       description: For malicious domain names, the vendor that made the decision.
       type: string
     - contextPath: Domain.Malicious.Description
-      description: For malicious domain names, the reason that the vendor made the decision.
+      description: For malicious domain names, the reason that the vendor made the
+        decision.
       type: string
     - contextPath: SlashNext.Domain.Value
       description: Value of the IoC.
@@ -388,12 +402,15 @@ script:
     - contextPath: SlashNext.Domain.LastSeen
       description: Time when the IoC was last observed.
       type: date
-    description: Queries the SlashNext Cloud database and retrieves a detailed report for a host and associated URL.
+    description: Queries the SlashNext Cloud database and retrieves a detailed report
+      for a host and associated URL.
   - name: slashnext-host-urls
     arguments:
     - name: host
       required: true
-      description: The host to look up in the SlashNext Threat Intelligence database, for which to return a list of associated URLs. Can be either a domain name or an IPv4 address.
+      description: The host to look up in the SlashNext Threat Intelligence database,
+        for which to return a list of associated URLs. Can be either a domain name
+        or an IPv4 address.
     - name: limit
       description: The maximum number of URL records to fetch. Default is "10".
       defaultValue: "10"
@@ -447,7 +464,8 @@ script:
       description: Time when the IoC was last observed.
       type: date
     - contextPath: SlashNext.URL.Final.Value
-      description: Final IoC value (in case original IoC is a redirector to the same domain).
+      description: Final IoC value (in case original IoC is a redirector to the same
+        domain).
       type: string
     - contextPath: SlashNext.URL.Final.Type
       description: Type of the final IoC.
@@ -456,13 +474,15 @@ script:
       description: SlashNext Phishing Incident Response verdict on the final IoC.
       type: string
     - contextPath: SlashNext.URL.Landing.Value
-      description: Landing IoC value (in case original IoC is a redirector to a different domain).
+      description: Landing IoC value (in case original IoC is a redirector to a different
+        domain).
       type: string
     - contextPath: SlashNext.URL.Landing.Type
       description: Type of landing IoC.
       type: string
     - contextPath: SlashNext.URL.Landing.ScanID
-      description: Scan ID to be used to get the landing IoC forensics data for further investigation.
+      description: Scan ID to be used to get the landing IoC forensics data for further
+        investigation.
       type: string
     - contextPath: SlashNext.URL.Landing.Verdict
       description: SlashNext Phishing Incident Response verdict on the landing IoC.
@@ -482,7 +502,8 @@ script:
     - contextPath: SlashNext.URL.Landing.LastSeen
       description: Time when the landing IoC was last observed.
       type: date
-    description: Queries the SlashNext Cloud database and retrieves a list of all URLs associated with the specified host.
+    description: Queries the SlashNext Cloud database and retrieves a list of all
+      URLs associated with the specified host.
   - name: slashnext-url-reputation
     arguments:
     - name: url
@@ -535,7 +556,8 @@ script:
       description: Time when the IoC was last observed.
       type: date
     - contextPath: SlashNext.URL.Final.Value
-      description: Final IoC value (in case original IoC is a redirector to the same domain).
+      description: Final IoC value (in case original IoC is a redirector to the same
+        domain).
       type: string
     - contextPath: SlashNext.URL.Final.Type
       description: Type of the final IoC.
@@ -544,7 +566,8 @@ script:
       description: SlashNext Phishing Incident Response verdict on the final IoC.
       type: string
     - contextPath: SlashNext.URL.Landing.Value
-      description: Landing IoC value (in case original IoC is a redirector to a different domain).
+      description: Landing IoC value (in case original IoC is a redirector to a different
+        domain).
       type: string
     - contextPath: SlashNext.URL.Landing.Type
       description: Type of landing IoC.
@@ -567,14 +590,17 @@ script:
     - contextPath: SlashNext.URL.Landing.LastSeen
       description: Time when the landing IoC was last observed.
       type: date
-    description: Queries the SlashNext Cloud database and retrieves the reputation of a url.
+    description: Queries the SlashNext Cloud database and retrieves the reputation
+      of a url.
   - name: slashnext-url-scan
     arguments:
     - name: url
       required: true
       description: The URL to scan.
     - name: extended_info
-      description: Whether to download forensics data, such as screenshot, HTML, and rendered text. If "true", forensics data will be returned. If "false" (or empty) forensics data will not be returned. Default is "false".
+      description: Whether to download forensics data, such as screenshot, HTML, and
+        rendered text. If "true", forensics data will be returned. If "false" (or
+        empty) forensics data will not be returned. Default is "false".
       defaultValue: "false"
     outputs:
     - contextPath: DBotScore.Indicator
@@ -626,7 +652,8 @@ script:
       description: Time when the IoC was last observed.
       type: date
     - contextPath: SlashNext.URL.Final.Value
-      description: Final IoC value (in case original IoC is a redirector to the same domain).
+      description: Final IoC value (in case original IoC is a redirector to the same
+        domain).
       type: string
     - contextPath: SlashNext.URL.Final.Type
       description: Type of the final IoC.
@@ -635,13 +662,15 @@ script:
       description: SlashNext Phishing Incident Response verdict on the final IoC.
       type: string
     - contextPath: SlashNext.URL.Landing.Value
-      description: Landing IoC value (in case original IoC is a redirector to a different domain).
+      description: Landing IoC value (in case original IoC is a redirector to a different
+        domain).
       type: string
     - contextPath: SlashNext.URL.Landing.Type
       description: Type of landing IoC.
       type: string
     - contextPath: SlashNext.URL.Landing.ScanID
-      description: Scan ID to be used to get the landing IoC forensics data for further investigation.
+      description: Scan ID to be used to get the landing IoC forensics data for further
+        investigation.
       type: string
     - contextPath: SlashNext.URL.Landing.Verdict
       description: SlashNext Phishing Incident Response verdict on the landing IoC.
@@ -661,17 +690,27 @@ script:
     - contextPath: SlashNext.URL.Landing.LastSeen
       description: Time when the landing IoC was last observed.
       type: date
-    description: Performs a real-time URL scan with SlashNext cloud-based SEER Engine. If the specified URL already exists in the cloud database, scan results will be returned immediately. If not, this command will submit a URL scan request and return with the message "check back later" and include a unique Scan ID. You can check the results of this scan using the "slashnext-scan-report" command anytime after 60 seconds using the returned Scan ID.
+    description: Performs a real-time URL scan with SlashNext cloud-based SEER Engine.
+      If the specified URL already exists in the cloud database, scan results will
+      be returned immediately. If not, this command will submit a URL scan request
+      and return with the message "check back later" and include a unique Scan ID.
+      You can check the results of this scan using the "slashnext-scan-report" command
+      anytime after 60 seconds using the returned Scan ID.
   - name: slashnext-url-scan-sync
     arguments:
     - name: url
       required: true
       description: The URL to scan.
     - name: timeout
-      description: A timeout value in seconds. If the system is unable to complete a scan within the specified timeout, a timeout error will be returned. You can run the command again with a different timeout. If no timeout value is specified, a default timeout value is 60 seconds.
+      description: A timeout value in seconds. If the system is unable to complete
+        a scan within the specified timeout, a timeout error will be returned. You
+        can run the command again with a different timeout. If no timeout value is
+        specified, a default timeout value is 60 seconds.
       defaultValue: "60"
     - name: extended_info
-      description: Whether to download forensics data, such as screenshot, HTML, and rendered text. If "true", forensics data will be returned. If "false" (or empty) forensics data will not be returned. Default is "false".
+      description: Whether to download forensics data, such as screenshot, HTML, and
+        rendered text. If "true", forensics data will be returned. If "false" (or
+        empty) forensics data will not be returned. Default is "false".
       defaultValue: "false"
     outputs:
     - contextPath: DBotScore.Indicator
@@ -723,7 +762,8 @@ script:
       description: Time when the IoC was last observed.
       type: date
     - contextPath: SlashNext.URL.Final.Value
-      description: Final IoC value (in case original IoC is a redirector to the same domain).
+      description: Final IoC value (in case original IoC is a redirector to the same
+        domain).
       type: string
     - contextPath: SlashNext.URL.Final.Type
       description: Type of the final IoC.
@@ -732,13 +772,15 @@ script:
       description: SlashNext Phishing Incident Response verdict on the final IoC.
       type: string
     - contextPath: SlashNext.URL.Landing.Value
-      description: Landing IoC value (in case original IoC is a redirector to a different domain).
+      description: Landing IoC value (in case original IoC is a redirector to a different
+        domain).
       type: string
     - contextPath: SlashNext.URL.Landing.Type
       description: Type of landing IoC.
       type: string
     - contextPath: SlashNext.URL.Landing.ScanID
-      description: Scan ID to be used to get the landing IoC forensics data for further investigation.
+      description: Scan ID to be used to get the landing IoC forensics data for further
+        investigation.
       type: string
     - contextPath: SlashNext.URL.Landing.Verdict
       description: SlashNext Phishing Incident Response verdict on the landing IoC.
@@ -758,14 +800,21 @@ script:
     - contextPath: SlashNext.URL.Landing.LastSeen
       description: Time when the landing IoC was last observed.
       type: date
-    description: Performs a real-time URL scan with SlashNext cloud-based SEER Engine in a blocking mode. If the specified URL already exists in the cloud database, scan result will be returned immediately. If not, this command will submit a URL scan request and wait for the scan to finish. The scan may take up to 60 seconds to finish.
+    description: Performs a real-time URL scan with SlashNext cloud-based SEER Engine
+      in a blocking mode. If the specified URL already exists in the cloud database,
+      scan result will be returned immediately. If not, this command will submit a
+      URL scan request and wait for the scan to finish. The scan may take up to 60
+      seconds to finish.
   - name: slashnext-scan-report
     arguments:
     - name: scanid
       required: true
-      description: Scan ID of the scan for which to get the report. Can be retrieved from the "slashnext-url-scan" command or "slashnext-url-scan-sync" command.
+      description: Scan ID of the scan for which to get the report. Can be retrieved
+        from the "slashnext-url-scan" command or "slashnext-url-scan-sync" command.
     - name: extended_info
-      description: Whether to download forensics data, such as screenshot, HTML, and rendered text. If "true", forensics data will be returned. If "false" (or empty) forensics data will not be returned. Default is "false".
+      description: Whether to download forensics data, such as screenshot, HTML, and
+        rendered text. If "true", forensics data will be returned. If "false" (or
+        empty) forensics data will not be returned. Default is "false".
       defaultValue: "false"
     outputs:
     - contextPath: DBotScore.Indicator
@@ -817,7 +866,8 @@ script:
       description: Time when the IoC was last observed.
       type: date
     - contextPath: SlashNext.URL.Final.Value
-      description: Final IoC value (in case original IoC is a redirector to same the domain).
+      description: Final IoC value (in case original IoC is a redirector to same the
+        domain).
       type: string
     - contextPath: SlashNext.URL.Final.Type
       description: Type of the final IoC.
@@ -826,13 +876,15 @@ script:
       description: SlashNext Phishing Incident Response verdict on the final IoC.
       type: string
     - contextPath: SlashNext.URL.Landing.Value
-      description: Landing IoC value (in case original IoC is a redirector to a different domain).
+      description: Landing IoC value (in case original IoC is a redirector to a different
+        domain).
       type: string
     - contextPath: SlashNext.URL.Landing.Type
       description: Type of landing IoC.
       type: string
     - contextPath: SlashNext.URL.Landing.ScanID
-      description: Scan ID to be used to get the landing IoC forensics data for further investigation.
+      description: Scan ID to be used to get the landing IoC forensics data for further
+        investigation.
       type: string
     - contextPath: SlashNext.URL.Landing.Verdict
       description: SlashNext Phishing Incident Response verdict on the landing IoC.
@@ -852,27 +904,34 @@ script:
     - contextPath: SlashNext.URL.Landing.LastSeen
       description: Time when the landing IoC was last observed.
       type: date
-    description: Retrieves the results of a URL scan against a previous scan request. If the scan is finished, results will be returned immediately; otherwise the message "check back later" will be returned.
+    description: Retrieves the results of a URL scan against a previous scan request.
+      If the scan is finished, results will be returned immediately; otherwise the
+      message "check back later" will be returned.
   - name: slashnext-download-screenshot
     arguments:
     - name: scanid
       required: true
-      description: Scan ID. Can be retrieved from the "slashnext-url-scan" command or the "slashnext-url-scan-sync" command.
+      description: Scan ID. Can be retrieved from the "slashnext-url-scan" command
+        or the "slashnext-url-scan-sync" command.
     - name: resolution
-      description: Resolution of the web page screenshot. Can be "high" or "medium". Default is "high".
+      description: Resolution of the web page screenshot. Can be "high" or "medium".
+        Default is "high".
       defaultValue: "high"
-    description: Downloads a screenshot of a web page against a previous URL scan request.
+    description: Downloads a screenshot of a web page against a previous URL scan
+      request.
   - name: slashnext-download-html
     arguments:
     - name: scanid
       required: true
-      description: Scan ID. Can be retrieved from the "slashnext-url-scan" command or the "slashnext-url-scan-sync" command.
+      description: Scan ID. Can be retrieved from the "slashnext-url-scan" command
+        or the "slashnext-url-scan-sync" command.
     description: Downloads a web page HTML against a previous URL scan request.
   - name: slashnext-download-text
     arguments:
     - name: scanid
       required: true
-      description: Scan ID. Can be retrieved from the "slashnext-url-scan" command or the "slashnext-url-scan-sync" command.
+      description: Scan ID. Can be retrieved from the "slashnext-url-scan" command
+        or the "slashnext-url-scan-sync" command.
     description: Downloads the text of a web page against a previous URL scan request.
   - name: slashnext-api-quota
     arguments: []
@@ -889,6 +948,10 @@ script:
     - contextPath: SlashNext.Quota.IsExpired
       description: Quota Expiration Status
       type: boolean
-    description: Queries the SlashNext cloud database and retrieves the details of API quota.
+    description: Queries the SlashNext cloud database and retrieves the details of
+      API quota.
   runonce: false
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

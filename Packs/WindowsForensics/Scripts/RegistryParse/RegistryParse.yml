@@ -22,9 +22,9 @@ args:
   - Networks
   - USB
   - LastLoggedOnUser
-- description: A comma-separated list of registry paths to parse.
-    Try to keep your searches as exact as possible, for example registry_path=`HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows
-    NT\CurrentVersion\AeDebug\AutoExclusionList`. 
+- description: A comma-separated list of registry paths to parse. Try to keep your
+    searches as exact as possible, for example registry_path=`HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows
+    NT\CurrentVersion\AeDebug\AutoExclusionList`.
   name: customRegistryPaths
 comment: "This command uses the Registry Parse automation to extract critical forensics data from\
   \ a registry file. The essential values are specified by the argument. \n"
@@ -63,3 +63,6 @@ type: python
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2

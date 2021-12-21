@@ -4,7 +4,9 @@ commonfields:
 name: Druva Ransomware Response
 display: Druva Ransomware Response
 category: Data Enrichment & Threat Intelligence
-description: Druva Ransomware Response Integration provides ransomware protection for endpoints, SaaS applications and data center workloads for Druva Ransomware Recovery customers.
+description: Druva Ransomware Response Integration provides ransomware protection
+  for endpoints, SaaS applications and data center workloads for Druva Ransomware
+  Recovery customers.
 configuration:
 - display: Druva API URL
   name: url
@@ -72,11 +74,14 @@ script:
       description: The ID of the resource to quarantine.
     - name: resource_type
       required: true
-      description: 'The resource type to quarantine. Can be: "Endpoint", "File Server", or "NAS".'
+      description: 'The resource type to quarantine. Can be: "Endpoint", "File Server",
+        or "NAS".'
     - name: from_date
-      description: 'Date from which a quarantine range should start. If not provided, it is considered open ended. For example, 2020-10-25.'
+      description: 'Date from which a quarantine range should start. If not provided,
+        it is considered open ended. For example, 2020-10-25.'
     - name: to_date
-      description: 'Date from which a quarantine range should end. If not provided, it is considered open ended. For example, 2020-10-25.'
+      description: 'Date from which a quarantine range should end. If not provided,
+        it is considered open ended. For example, 2020-10-25.'
     outputs:
     - contextPath: Druva.QuarantinedRangeID
       description: The range ID of the Quarantined Resource.
@@ -110,11 +115,14 @@ script:
       description: The ID of range to be updated.
     - name: resource_type
       required: true
-      description: 'The resource type to be updated. Can be: "Endpoint", "File Server", or "NAS".'
+      description: 'The resource type to be updated. Can be: "Endpoint", "File Server",
+        or "NAS".'
     - name: from_date
-      description: 'The date from which a quarantine range should start. If not provided, it is open-ended. For example, 2020-10-25.'
+      description: 'The date from which a quarantine range should start. If not provided,
+        it is open-ended. For example, 2020-10-25.'
     - name: to_date
-      description: 'The date from which a quarantine range should end. If not provided, it is open-ended. For example, 2020-10-25.'
+      description: 'The date from which a quarantine range should end. If not provided,
+        it is open-ended. For example, 2020-10-25.'
     outputs:
     - contextPath: Druva.updatedQuarantineRange
       description: The range ID of the updated quarantined range.
@@ -151,7 +159,8 @@ script:
     - contextPath: Druva.quarantinedSnapshots.snapshotID
       description: ID of the quarantined snapshot.
       type: string
-    description: 'Deletes a quarantined Snapshot. Snapshots that are deleted cannot be recovered.'
+    description: 'Deletes a quarantined Snapshot. Snapshots that are deleted cannot
+      be recovered.'
     execution: true
   - name: druva-endpoint-search-file-hash
     arguments:
@@ -182,8 +191,14 @@ script:
       description: 'Select a Resource ID in which to restore.'
     - name: restore_location
       required: true
-      description: 'Specify the target Restore Location. Can be: "Desktop" - if you want to restore the data to the desktop on the target device, "Original" - if you want to restore data to the same location from which it was backed up, or to restore the data to a custom location, specify the absolute path of the location. For example,  /Users/username/Desktop'
-    description: 'Restores data to a replacement device and deletes a quarantined Snapshot. This command restores your endpoint data from a day prior to the snapshot. Any changes made after the snapshot date may be lost.'
+      description: 'Specify the target Restore Location. Can be: "Desktop" - if you
+        want to restore the data to the desktop on the target device, "Original" -
+        if you want to restore data to the same location from which it was backed
+        up, or to restore the data to a custom location, specify the absolute path
+        of the location. For example,  /Users/username/Desktop'
+    description: 'Restores data to a replacement device and deletes a quarantined
+      Snapshot. This command restores your endpoint data from a day prior to the snapshot.
+      Any changes made after the snapshot date may be lost.'
     execution: true
   - name: druva-endpoint-check-restore-status
     arguments:
@@ -196,10 +211,15 @@ script:
     - name: resource_id
       required: true
       description: ID of endpoint resource to be decommissioned
-    description: 'Wipes remotely an infected Endpoint Resource and deletes a quarantined Snapshot. This command remote wipes data from the endpoint. This action cannot be undone.'
+    description: 'Wipes remotely an infected Endpoint Resource and deletes a quarantined
+      Snapshot. This command remote wipes data from the endpoint. This action cannot
+      be undone.'
     execution: true
   dockerimage: demisto/python3:3.9.7.24076
   isfetch: false
   runonce: false
   subtype: python3
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

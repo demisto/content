@@ -1,12 +1,14 @@
 args:
 - default: false
-  description: Certificate in PEM format. This argument is mutually exclusive with the "entry_id" argument.
+  description: Certificate in PEM format. This argument is mutually exclusive with
+    the "entry_id" argument.
   isArray: false
   name: pem
   required: false
   secret: false
 - default: false
-  description: Certificate entry ID (in DER or PEM format). This argument is mutually exclusive with the "pem" argument.
+  description: Certificate entry ID (in DER or PEM format). This argument is mutually
+    exclusive with the "pem" argument.
   isArray: false
   name: entry_id
   required: false
@@ -140,4 +142,7 @@ subtype: python3
 dockerimage: demisto/crypto:1.0.0.24037
 fromversion: 6.0.0
 tests:
-  - X509Certificate Test Playbook
+- X509Certificate Test Playbook
+marketplaces:
+- xsoar
+- marketplacev2

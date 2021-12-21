@@ -1,7 +1,7 @@
 args:
 - default: false
-  description: The action to make. If update is chosen and the key does not exist, a
-    new key will be added.
+  description: The action to make. If update is chosen and the key does not exist,
+    a new key will be added.
   isArray: false
   name: action
   required: true
@@ -38,3 +38,6 @@ dockerimage: demisto/python3:3.9.7.24076
 fromversion: 6.0.0
 tests:
 - TestEditServerConfig
+marketplaces:
+- xsoar
+- marketplacev2

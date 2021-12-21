@@ -2675,3 +2675,6 @@ script:
 tests:
 - No Tests- non-certified partner, test was moved to non circle folder.
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

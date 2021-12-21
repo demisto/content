@@ -4,7 +4,8 @@ commonfields:
 name: BitDam
 display: BitDam
 category: Email Gateway
-description: BitDam secure email gateway protects from advanced content-borne threats with the most accurate prevention of known and unknown threats, at their source.
+description: BitDam secure email gateway protects from advanced content-borne threats
+  with the most accurate prevention of known and unknown threats, at their source.
 configuration:
 - display: BitDam API URL
   name: url
@@ -35,7 +36,9 @@ script:
     arguments:
     - name: entryId
       required: true
-      description: The file's entry ID from the War Room. Supported files types are doc, dot, docx, docm, dotx, dotm, pdf, rtf, xls, xlt, xlsx, xlsm, xltx, xltm, xlsb, xlam, csv, ppt, pptx, pptm, potx, potm, ppam, ppsx, ppsm and pps.
+      description: The file's entry ID from the War Room. Supported files types are
+        doc, dot, docx, docm, dotx, dotm, pdf, rtf, xls, xlt, xlsx, xlsm, xltx, xltm,
+        xlsb, xlam, csv, ppt, pptx, pptm, potx, potm, ppam, ppsx, ppsm and pps.
     outputs:
     - contextPath: BitDam.FileScan.SHA1
       description: The SHA1 hash of the file.
@@ -45,7 +48,8 @@ script:
     arguments:
     - name: idValue
       required: true
-      description: The value of the file's unique identifier (for example - file's SHA1)
+      description: The value of the file's unique identifier (for example - file's
+        SHA1)
     outputs:
     - contextPath: BitDam.Analysis.Status
       description: The status of the analysis. Can be "DONE" or "IN_PROGRESS".
@@ -83,3 +87,6 @@ script:
 tests:
 - Detonate File - BitDam Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

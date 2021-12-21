@@ -111,8 +111,7 @@ script:
       description: The user-assigned display name of the Project.
       type: String
     - contextPath: GRM.Project.ID
-      description: 'The unique, user-assigned ID of
-        the Project.'
+      description: 'The unique, user-assigned ID of the Project.'
       type: String
     - contextPath: GRM.Project.Number
       description: The number uniquely identifying the project.
@@ -194,27 +193,22 @@ script:
     name: grm-list-projects
     outputs:
     - contextPath: GRM.Project.Name
-      description: The user-assigned display name
-        of the Project.
+      description: The user-assigned display name of the Project.
       type: String
     - contextPath: GRM.Project.ID
-      description: 'The unique, user-assigned ID of
-        the Project.'
+      description: 'The unique, user-assigned ID of the Project.'
       type: String
     - contextPath: GRM.Project.Number
-      description: The number uniquely identifying
-        the project.
+      description: The number uniquely identifying the project.
       type: String
     - contextPath: GRM.Project.State
       description: The Project lifecycle state.
       type: String
     - contextPath: GRM.Project.CreateTime
-      description: The time the resource was
-        created
+      description: The time the resource was created
       type: Date
     - contextPath: GRM.Project.Label
-      description: The labels associated with this
-        Project.
+      description: The labels associated with this Project.
       type: Unknown
     - contextPath: GRM.Project.Parent.ID
       description: ID of the parent resource.
@@ -286,8 +280,7 @@ script:
     name: grm-update-project
     outputs:
     - contextPath: GRM.Project.Name
-      description: The user-assigned display name
-        of the Project.
+      description: The user-assigned display name of the Project.
       type: String
     - contextPath: GRM.Project.ID
       description: The unique, user-assigned ID of the Project.
@@ -347,9 +340,9 @@ script:
     name: grm-search-organizations
     outputs:
     - contextPath: GRM.Organization.Name
-      description: 'The resource name of the
-        organization. This is the organization''s relative path in the API. Its format
-        is "organizations/[organization_id]" e.g. "organizations/1234".'
+      description: 'The resource name of the organization. This is the organization''s
+        relative path in the API. Its format is "organizations/[organization_id]"
+        e.g. "organizations/1234".'
       type: String
     - contextPath: GRM.Organization.State
       description: The organization's current lifecycle state.
@@ -374,9 +367,9 @@ script:
     name: grm-get-organization
     outputs:
     - contextPath: GRM.Organization.Name
-      description: 'The resource name of the
-        organization. This is the organization''s relative path in the API. Its format
-        is "organizations/[organization_id]" e.g. "organizations/1234".'
+      description: 'The resource name of the organization. This is the organization''s
+        relative path in the API. Its format is "organizations/[organization_id]"
+        e.g. "organizations/1234".'
       type: String
     - contextPath: GRM.Organization.State
       description: The organization's current lifecycle state.
@@ -473,4 +466,7 @@ script:
   subtype: python2
 fromversion: 5.0.0
 tests:
-  - GoogleResourceManager-Test
+- GoogleResourceManager-Test
+marketplaces:
+- xsoar
+- marketplacev2

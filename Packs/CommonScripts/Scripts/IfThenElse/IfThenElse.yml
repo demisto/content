@@ -60,3 +60,6 @@ runas: DBotWeakRole
 fromversion: 5.0.0
 tests:
 - IfThenElse-Test
+marketplaces:
+- xsoar
+- marketplacev2

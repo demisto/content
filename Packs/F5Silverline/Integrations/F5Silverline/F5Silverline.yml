@@ -212,7 +212,8 @@ script:
       secret: false
     deprecated: false
     description: Delete an existing particular threatening IP address object by its
-      object ID or by its IP address. If both id and ip are given, delete operation will be done by the given object_id.
+      object ID or by its IP address. If both id and ip are given, delete operation
+      will be done by the given object_id.
     execution: false
     name: f5-silverline-ip-object-delete
   dockerimage: demisto/python3:3.9.8.24399
@@ -224,3 +225,6 @@ script:
 tests:
 - F5Silverline_TestPlaybook
 fromversion: 6.0.0
+marketplaces:
+- xsoar
+- marketplacev2

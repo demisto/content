@@ -56,7 +56,8 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
+    fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -111,8 +112,8 @@ configuration:
 description: The Office 365 IP Address and URL web service is a read-only API provided
   by Microsoft to expose the URLs and IPs used by Office 365. The Office 365 Feed
   integration fetches indicators from the service, with which you can create a list
-  (allow list, block list, EDL, etc.) for your SIEM or firewall service to ingest and
-  apply to its policy rules.
+  (allow list, block list, EDL, etc.) for your SIEM or firewall service to ingest
+  and apply to its policy rules.
 display: Office 365 Feed
 name: Office 365 Feed
 script:
@@ -154,3 +155,6 @@ script:
 tests:
 - Office365_Feed_Test
 fromversion: 5.5.0
+marketplaces:
+- xsoar
+- marketplacev2

@@ -33,3 +33,6 @@ runonce: false
 fromversion: 5.0.0
 tests:
 - No tests (unit test)
+marketplaces:
+- xsoar
+- marketplacev2

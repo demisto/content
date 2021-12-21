@@ -4,7 +4,8 @@ commonfields:
 name: Genians
 display: Genians
 category: Network Security
-description: Use the Genian NAC integration to block IP addresses using the assign tag.
+description: Use the Genian NAC integration to block IP addresses using the assign
+  tag.
 detaileddescription:
 configuration:
 - display: Server IP (e.g. 172.29.62.26)
@@ -72,3 +73,6 @@ script:
 fromversion: 5.5.0
 tests:
 - No tests- test in NonCircleTests
+marketplaces:
+- xsoar
+- marketplacev2

@@ -627,3 +627,6 @@ tests:
 - virusTotalPrivateAPI-test-playbook
 - File Enrichment - Virus Total Private API Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

@@ -34,9 +34,9 @@ configuration:
   required: false
   defaultvalue:
   type: 15
-  additionalinfo: itemName - Fetch activities for this drive item. The
-    format is "items/ITEM_ID". folderName - Fetch activities for this drive folder
-    and all children and descendants. The format is "items/ITEM_ID".
+  additionalinfo: itemName - Fetch activities for this drive item. The format is "items/ITEM_ID".
+    folderName - Fetch activities for this drive folder and all children and descendants.
+    The format is "items/ITEM_ID".
   options:
   - itemName
   - folderName
@@ -99,7 +99,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether the shared drive is hidden from the default view. Possible values: "True" and "False".'
+      description: 'Whether the shared drive is hidden from the default view. Possible
+        values: "True" and "False".'
       isArray: false
       name: hidden
       predefined:
@@ -188,8 +189,8 @@ script:
       default: false
       defaultValue: "true"
       description: 'Whether to include changes indicating that items have been removed
-        from the list of changes, for example by deletion or loss of access.
-        Possible values: "true" and "false".'
+        from the list of changes, for example by deletion or loss of access. Possible
+        values: "true" and "false".'
       isArray: false
       name: include_removed
       predefined:
@@ -200,7 +201,7 @@ script:
     - default: false
       defaultValue: 100
       description: The maximum number of changes to return per page. Acceptable values
-        are 1 to 1000, inclusive. 
+        are 1 to 1000, inclusive.
       isArray: false
       name: page_size
       required: false
@@ -210,7 +211,8 @@ script:
       defaultValue: "false"
       description: 'Whether to restrict the results to changes inside the My Drive
         hierarchy. This omits changes to files such as those in the Application Data
-        folder or shared files which have not been added to My Drive. Possible values: "true" and "false".'
+        folder or shared files which have not been added to My Drive. Possible values:
+        "true" and "false".'
       isArray: false
       name: restrict_to_my_drive
       predefined:
@@ -2142,8 +2144,8 @@ script:
         restriction of this file.
       type: Boolean
     - contextPath: GoogleDrive.File.File.capabilities.canChangeSecurityUpdateEnabled
-      description: Whether the current user can change the 'security update enabled' field
-        on link shared metadata.
+      description: Whether the current user can change the 'security update enabled'
+        field on link shared metadata.
       type: Boolean
     - contextPath: GoogleDrive.File.File.capabilities.canComment
       description: Whether the current user can comment on this file.
@@ -2496,8 +2498,8 @@ script:
         restriction of this file.
       type: Boolean
     - contextPath: GoogleDrive.File.File.capabilities.canChangeSecurityUpdateEnabled
-      description: Whether the current user can change the 'security update enabled' field
-        on link shared metadata.
+      description: Whether the current user can change the 'security update enabled'
+        field on link shared metadata.
       type: Boolean
     - contextPath: GoogleDrive.File.File.capabilities.canComment
       description: Whether the current user can comment on this file.
@@ -2801,8 +2803,8 @@ script:
         restriction of this file.
       type: Boolean
     - contextPath: GoogleDrive.File.File.capabilities.canChangeSecurityUpdateEnabled
-      description: Whether the current user can change the 'security update enabled' field
-        on link shared metadata.
+      description: Whether the current user can change the 'security update enabled'
+        field on link shared metadata.
       type: Boolean
     - contextPath: GoogleDrive.File.File.capabilities.canComment
       description: Whether the current user can comment on this file.
@@ -3039,7 +3041,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: "false"
-      description: 'Whether a confirmation email will be sent. Possible values: "true" and "false".'
+      description: 'Whether a confirmation email will be sent. Possible values: "true"
+        and "false".'
       isArray: false
       name: send_notification_email
       predefined:
@@ -3050,7 +3053,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: "reader"
-      description: 'The role granted by this permission. Possible values: "owner", "organizer", "fileOrganizer", "writer", "commenter", and "reader".'
+      description: 'The role granted by this permission. Possible values: "owner",
+        "organizer", "fileOrganizer", "writer", "commenter", and "reader".'
       isArray: false
       name: role
       predefined:
@@ -3136,7 +3140,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: "reader"
-      description: 'The role granted by this permission. Possible values: "owner", "organizer", "fileOrganizer", "writer", "commenter", and "reader".'
+      description: 'The role granted by this permission. Possible values: "owner",
+        "organizer", "fileOrganizer", "writer", "commenter", and "reader".'
       isArray: false
       name: role
       predefined:
@@ -3206,3 +3211,6 @@ fromversion: 5.0.0
 tests:
 - GoogleDrive-Test
 - Google Drive Permissions Test
+marketplaces:
+- xsoar
+- marketplacev2

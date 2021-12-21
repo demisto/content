@@ -43,7 +43,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Analyse retro hunts, read live hunt notifications and download files from VirusTotal.
+description: Analyse retro hunts, read live hunt notifications and download files
+  from VirusTotal.
 display: VirusTotal - Premium (API v3)
 name: VirusTotal - Premium (API v3)
 script:
@@ -209,7 +210,8 @@ script:
     name: vt-private-zip-download
   - arguments:
     - default: true
-      description: Sandbox report ID. Can be aquired from vt-file-sandbox-report in VirusTotal (API v3) integration.
+      description: Sandbox report ID. Can be aquired from vt-file-sandbox-report in
+        VirusTotal (API v3) integration.
       isArray: false
       name: report_id
       required: true
@@ -1781,3 +1783,6 @@ defaultmapperin: VirusTotal Intelligence LiveHunt Notification
 fromversion: 5.5.0
 tests:
 - VirusTotal Premium v3 TestPlaybook
+marketplaces:
+- xsoar
+- marketplacev2

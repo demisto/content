@@ -27,7 +27,8 @@ outputs:
   description: 'ServiceType is the cloud service type for example: ECR, GCR'
   type: String
 - contextPath: PrismaCloudCompute.CloudDiscoveryAlert.region
-  description: 'Region is the region that was scanned, for example: GCP - "us-east-1", Azure - "westus"'
+  description: 'Region is the region that was scanned, for example: GCP - "us-east-1",
+    Azure - "westus"'
   type: String
 - contextPath: PrismaCloudCompute.CloudDiscoveryAlert.project
   description: 'Project is the GCP project that was scanned'
@@ -36,7 +37,8 @@ outputs:
   description: 'Registry is the Azure registry that was scanned, for example: testcloudscanregistry.azurecr.io'
   type: String
 - contextPath: PrismaCloudCompute.CloudDiscoveryAlert.protected
-  description: 'Protected is the number of protected entities (registries, functions, clusters)'
+  description: 'Protected is the number of protected entities (registries, functions,
+    clusters)'
   type: Number
 - contextPath: PrismaCloudCompute.CloudDiscoveryAlert.total
   description: 'Total is total number of entities found in cloud scan'
@@ -81,7 +83,8 @@ outputs:
   description: 'ResourceGroup is the the azure resource group containing the entity'
   type: String
 - contextPath: PrismaCloudCompute.CloudDiscoveryAlert.entities.containerGroup
-  description: 'ContainerGroup is the azure aci container group the container belongs to'
+  description: 'ContainerGroup is the azure aci container group the container belongs
+    to'
   type: String
 - contextPath: PrismaCloudCompute.CloudDiscoveryAlert.entities.image
   description: 'Image is the image of an aci container'
@@ -99,3 +102,6 @@ timeout: '0'
 type: python
 dockerimage: demisto/python3:3.9.7.24076
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

@@ -63,3 +63,6 @@ subtype: python3
 tests:
 - Cherwell Example Scripts - test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

@@ -2,9 +2,9 @@ args:
 - description: 'Forensic file EntryID '
   name: ForensicFileEntry
   required: true
-comment: Analyzes the forensic data to detect brand impersonation attacks. 
-  This script uses the HMRC brand as an example, please modify the attributes 
-  associated with your company’s brand.
+comment: Analyzes the forensic data to detect brand impersonation attacks. This script
+  uses the HMRC brand as an example, please modify the attributes associated with
+  your company’s brand.
 commonfields:
   id: BrandImpersonationDetection
   version: -1
@@ -26,3 +26,6 @@ type: python
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2

@@ -4,7 +4,9 @@ commonfields:
 name: PiHole
 display: PiHole
 category: IT Services
-description: Pi-hole is a network-level advertisement and Internet tracker blocking application which acts as a DNS sinkhole and optionally a DHCP server, intended for use on a private network.
+description: Pi-hole is a network-level advertisement and Internet tracker blocking
+  application which acts as a DNS sinkhole and optionally a DHCP server, intended
+  for use on a private network.
 configuration:
 - display: Server URL
   name: url
@@ -55,7 +57,8 @@ script:
     - contextPath: PiHole.OverTimeData10mins
       description: Data over last 10mins
       type: string
-    description: Data needed for generating the domains/ads over time graph on the Pi-hole web dashboard
+    description: Data needed for generating the domains/ads over time graph on the
+      Pi-hole web dashboard
   - name: pihole-get-topitems
     arguments:
     - name: limit
@@ -218,3 +221,6 @@ script:
 tests:
 - No Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

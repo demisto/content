@@ -49,7 +49,8 @@ script:
   commands:
   - arguments:
     - default: true
-      description: A comma-separated list of URLs to add to block list. For example, snapchat.com,facebook.com.
+      description: A comma-separated list of URLs to add to block list. For example,
+        snapchat.com,facebook.com.
       isArray: true
       name: url
       required: true
@@ -197,8 +198,8 @@ script:
     name: zscaler-undo-whitelist-url
   - arguments:
     - default: true
-      description: A comma-separated list of IP addresses to remove from the allow list.
-        For example, 8.8.8.8,1.2.3.4.
+      description: A comma-separated list of IP addresses to remove from the allow
+        list. For example, 8.8.8.8,1.2.3.4.
       isArray: true
       name: ip
       required: true
@@ -221,8 +222,8 @@ script:
     name: zscaler-whitelist-ip
   - arguments:
     - default: true
-      description: A comma-separated list of IP addresses to remove from the allow list.
-        For example, 8.8.8.8,1.2.3.4.
+      description: A comma-separated list of IP addresses to remove from the allow
+        list. For example, 8.8.8.8,1.2.3.4.
       isArray: true
       name: ip
       required: true
@@ -379,7 +380,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to display the URLs of each category in the War Room. URLs will always be returned to the Context Data.
+      description: Whether to display the URLs of each category in the War Room. URLs
+        will always be returned to the Context Data.
       isArray: false
       name: displayURL
       predefined:
@@ -390,7 +392,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to retrieve only custom categories to the War Room. 
+      description: Whether to retrieve only custom categories to the War Room.
       isArray: false
       name: custom_categories_only
       predefined:
@@ -401,7 +403,9 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to retrieve only a list containing URL category IDs and names. Even if *displayURL* is set to true, URLs will not be returned. Please note - the API does not support the combination of custom_only and get_ids_and_names_only.
+      description: Whether to retrieve only a list containing URL category IDs and
+        names. Even if *displayURL* is set to true, URLs will not be returned. Please
+        note - the API does not support the combination of custom_only and get_ids_and_names_only.
       isArray: false
       name: get_ids_and_names_only
       predefined:
@@ -442,7 +446,8 @@ script:
       - 'url'
       - 'ip'
     - default: false
-      description: Query (Python regular expression) to match against. For example, 8.*.*.8
+      description: Query (Python regular expression) to match against. For example,
+        8.*.*.8
       name: query
     outputs:
     - contextPath: Zscaler.Blacklist
@@ -548,3 +553,6 @@ script:
 tests:
 - Zscaler Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

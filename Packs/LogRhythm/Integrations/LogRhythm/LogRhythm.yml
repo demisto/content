@@ -555,3 +555,6 @@ script:
 tests:
 - LogRhythm-Test-Playbook
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

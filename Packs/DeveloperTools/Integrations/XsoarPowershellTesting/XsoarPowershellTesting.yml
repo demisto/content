@@ -3,7 +3,8 @@ commonfields:
   id: XsoarPowershellTesting
   version: -1
 configuration: []
-description: Powershell Integration for testing that Powershell support is working as expected.
+description: Powershell Integration for testing that Powershell support is working
+  as expected.
 display: XSOAR Powershell Testing
 name: XsoarPowershellTesting
 script:
@@ -65,3 +66,6 @@ script:
 fromversion: 5.5.0
 tests:
 - XsoarPowershellTesting-Test
+marketplaces:
+- xsoar
+- marketplacev2

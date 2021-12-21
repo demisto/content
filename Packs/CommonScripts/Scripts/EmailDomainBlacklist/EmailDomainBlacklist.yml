@@ -9,7 +9,9 @@ tags:
 - transformer
 - general
 - entirelist
-comment: Accepts an array of domains as a block list, and a list of email addresses. The script then filters out any email address whose domain is in the block list.  The filtered list will be returned as an array.
+comment: Accepts an array of domains as a block list, and a list of email addresses.
+  The script then filters out any email address whose domain is in the block list.  The
+  filtered list will be returned as an array.
 enabled: true
 args:
 - name: value
@@ -27,3 +29,6 @@ runas: DBotWeakRole
 tests:
 - No test - unit test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

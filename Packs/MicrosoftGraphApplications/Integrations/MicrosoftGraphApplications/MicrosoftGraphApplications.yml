@@ -264,3 +264,6 @@ script:
 fromversion: 5.0.0
 tests:
 - MSGraph Applications Test
+marketplaces:
+- xsoar
+- marketplacev2

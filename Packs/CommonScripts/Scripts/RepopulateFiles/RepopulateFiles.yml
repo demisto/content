@@ -5,7 +5,8 @@ name: RepopulateFiles
 script: ''
 tags:
 - Utility
-comment: After running DeleteContext, this script can repopulate all the file entries in the ${File} context key
+comment: After running DeleteContext, this script can repopulate all the file entries
+  in the ${File} context key
 enabled: true
 scripttarget: 0
 type: python
@@ -16,3 +17,6 @@ fromversion: 5.0.0
 dockerimage: demisto/python3:3.9.7.24076
 tests:
 - No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2

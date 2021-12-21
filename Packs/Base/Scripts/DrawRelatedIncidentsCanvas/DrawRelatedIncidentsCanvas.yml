@@ -67,3 +67,6 @@ contentitemexportablefields:
   contentitemfields:
     fromServerVersion: 6.1.0
 
+marketplaces:
+- xsoar
+- marketplacev2

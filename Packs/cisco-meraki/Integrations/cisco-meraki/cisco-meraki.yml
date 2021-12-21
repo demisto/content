@@ -640,7 +640,8 @@ script:
       description: Table's headers to be shown by order.
     outputs:
     - contextPath: Devices
-      description: List of devices. Each includes Serial, NetworkId, Model, ClaimedAt, PublicIp, and MAC.
+      description: List of devices. Each includes Serial, NetworkId, Model, ClaimedAt,
+        PublicIp, and MAC.
       type: list
     description: List of inventories for an organization.
   - name: meraki-fetch-networks
@@ -652,7 +653,8 @@ script:
       description: Table's headers to be shown by order.
     outputs:
     - contextPath: Network
-      description: List of networks. Each includes ID, Name, Type, OrganizationId, Tags, and TimeZone.
+      description: List of networks. Each includes ID, Name, Type, OrganizationId,
+        Tags, and TimeZone.
       type: list
     description: List the networks in an organization.
   - name: meraki-fetch-devices
@@ -664,7 +666,8 @@ script:
       description: Table's headers to be shown by order.
     outputs:
     - contextPath: Device
-      description: List of devices. Each includes Serial, Name, Lat, Lng, Model, NetworkId, Tags, MAC, and Address.
+      description: List of devices. Each includes Serial, Name, Lat, Lng, Model, NetworkId,
+        Tags, MAC, and Address.
       type: list
     description: List the devices in a network.
   - name: meraki-fetch-device-uplink
@@ -691,7 +694,8 @@ script:
       description: Table's headers to be shown by order.
     outputs:
     - contextPath: SSID
-      description: List of SSIDs. Each includes Number, NetworkId, Name, SplashPage, BandSelection, Enabled, AuthMode, and WalledGardenRanges.
+      description: List of SSIDs. Each includes Number, NetworkId, Name, SplashPage,
+        BandSelection, Enabled, AuthMode, and WalledGardenRanges.
       type: list
     description: List the SSIDs in a network.
   - name: meraki-fetch-clients
@@ -706,7 +710,8 @@ script:
       description: Table's headers to be shown by order.
     outputs:
     - contextPath: Client
-      description: List of clients. Each includes ID, MAC, IP, Description, mDNSName, Hostname, Usage, and VLAN.
+      description: List of clients. Each includes ID, MAC, IP, Description, mDNSName,
+        Hostname, Usage, and VLAN.
       type: list
     description: List the clients of a device, up to a maximum of a month ago.
   - name: meraki-fetch-firewall-rules
@@ -721,7 +726,8 @@ script:
       description: Table's headers to be shown by order.
     outputs:
     - contextPath: Firewall
-      description: List of firewalls. Each includes Number, NetworkId, Policy, Protocol, DestPort, DestCidr, and Comment.
+      description: List of firewalls. Each includes Number, NetworkId, Policy, Protocol,
+        DestPort, DestCidr, and Comment.
       type: list
     description: List of L3 firewall rules for an SSID.
   - name: meraki-remove-device
@@ -745,7 +751,8 @@ script:
       description: Table's headers to be shown by order.
     outputs:
     - contextPath: Device
-      description: Device which includes Serial, Name, Lat, Lng, Model, NetworkId, Tags, MAC, and Address
+      description: Device which includes Serial, Name, Lat, Lng, Model, NetworkId,
+        Tags, MAC, and Address
     description: Get a single device.
   - name: meraki-update-device
     arguments:
@@ -767,7 +774,8 @@ script:
       description: New longitude of the device.
     outputs:
     - contextPath: Device
-      description: Updated device which includes Serial, Name, Lat, Lng, Model, NetworkId, Tags, MAC, and Address.
+      description: Updated device which includes Serial, Name, Lat, Lng, Model, NetworkId,
+        Tags, MAC, and Address.
     description: Update the attributes of a device.
   - name: meraki-claim-device
     arguments:
@@ -834,3 +842,6 @@ hidden: false
 tests:
 - Cisco-Meraki-Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

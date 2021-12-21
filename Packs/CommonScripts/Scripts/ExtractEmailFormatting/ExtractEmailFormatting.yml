@@ -21,3 +21,6 @@ dockerimage: demisto/python3:3.9.7.24076
 fromversion: 5.5.0
 tests:
 - ExtractEmailV2-Test
+marketplaces:
+- xsoar
+- marketplacev2

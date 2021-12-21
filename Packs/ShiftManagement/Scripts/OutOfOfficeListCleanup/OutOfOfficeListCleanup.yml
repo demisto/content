@@ -7,7 +7,8 @@ type: python
 tags:
 - ooo
 - Shift Management
-comment: Removes any users from the out-of-office list whose 'off until day' is in the past.
+comment: Removes any users from the out-of-office list whose 'off until day' is in
+  the past.
 enabled: true
 args:
 - name: listname
@@ -21,3 +22,6 @@ runas: DBotWeakRole
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2

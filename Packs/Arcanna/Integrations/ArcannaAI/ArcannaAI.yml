@@ -262,3 +262,6 @@ tests:
 - No tests (auto formatted)
 defaultclassifier: 'null'
 fromversion: 5.5.0
+marketplaces:
+- xsoar
+- marketplacev2

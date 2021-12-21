@@ -53,7 +53,8 @@ args:
   predefined:
   - "false"
   - "true"
-  description: Only set to 'true' if used in a playbook task and you want that failure will return an error.
+  description: Only set to 'true' if used in a playbook task and you want that failure
+    will return an error.
   defaultValue: "false"
 - name: unpack_matches
   auto: PREDEFINED
@@ -70,3 +71,6 @@ runas: DBotWeakRole
 tests:
 - No test - unit test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

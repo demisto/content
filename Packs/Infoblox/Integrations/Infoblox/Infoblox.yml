@@ -94,8 +94,8 @@ script:
       name: page_size
     - description: The next page ID that was returned when last running this command.
       name: next_page_id
-    - description: The DNS view in which the records are located. For example 'External'. By default, the
-        'default' DNS view is searched.
+    - description: The DNS view in which the records are located. For example 'External'.
+        By default, the 'default' DNS view is searched.
       name: view
     description: Lists all response policy rules that belong to the given response
       policy zone.
@@ -242,8 +242,8 @@ script:
       name: comment
     - description: The substitute name to assign (substitute domain only).
       name: substitute_name
-    - description: The DNS view in which the records are located. For example 'External'. By default, the
-        'default' DNS view is searched.
+    - description: The DNS view in which the records are located. For example 'External'.
+        By default, the 'default' DNS view is searched.
       name: view
     description: Creates a response policy rule.
     name: infoblox-create-rpz-rule
@@ -739,3 +739,6 @@ script:
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2

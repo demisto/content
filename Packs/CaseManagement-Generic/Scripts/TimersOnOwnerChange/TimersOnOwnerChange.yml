@@ -23,3 +23,6 @@ type: python
 fromversion: 5.0.0
 tests:
 - No test
+marketplaces:
+- xsoar
+- marketplacev2

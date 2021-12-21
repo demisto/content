@@ -190,19 +190,22 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Start date/time for which to retrieve activity data (in the format MM/dd/yyyy HH:mm:ss).
+      description: Start date/time for which to retrieve activity data (in the format
+        MM/dd/yyyy HH:mm:ss).
       isArray: false
       name: from
       required: true
       secret: false
     - default: false
-      description: End date/time for which to retrieve activity data (in the format MM/dd/yyyy HH:mm:ss).
+      description: End date/time for which to retrieve activity data (in the format
+        MM/dd/yyyy HH:mm:ss).
       isArray: false
       name: to
       required: true
       secret: false
     - default: false
-      description: Free-text query. For example, query=“resourcegroupname=WindowsSnare and policyname=Possible Privilege Escalation - Self Escalation”.
+      description: Free-text query. For example, query=“resourcegroupname=WindowsSnare
+        and policyname=Possible Privilege Escalation - Self Escalation”.
       isArray: false
       name: query
       required: false
@@ -316,19 +319,22 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Start date/time for which to retrieve activity data (in the format MM/dd/yyyy HH:mm:ss).
+      description: Start date/time for which to retrieve activity data (in the format
+        MM/dd/yyyy HH:mm:ss).
       isArray: false
       name: from
       required: true
       secret: false
     - default: false
-      description: End date/time for which to retrieve activity data (in the format MM/dd/yyyy HH:mm:ss).
+      description: End date/time for which to retrieve activity data (in the format
+        MM/dd/yyyy HH:mm:ss).
       isArray: false
       name: to
       required: true
       secret: false
     - default: false
-      description: Free-text query. For example, query="resourcegroupname=WindowsSnare and policyname=Possible Privilege Escalation - Self Escalation"."
+      description: Free-text query. For example, query="resourcegroupname=WindowsSnare
+        and policyname=Possible Privilege Escalation - Self Escalation"."
       isArray: false
       name: query
       required: false
@@ -520,19 +526,22 @@ script:
       type: String
   - arguments:
     - default: false
-      description: ' Start time range for which to return incidents (<number> <time unit>, e.g., 1 hour, 30 minutes)'
+      description: ' Start time range for which to return incidents (<number> <time
+        unit>, e.g., 1 hour, 30 minutes)'
       isArray: false
       name: from
       required: true
       secret: false
     - default: false
-      description: End date/time for which to retrieve incidents (in the format MM/dd/yyyy HH:mm:ss) Default is current time.
+      description: End date/time for which to retrieve incidents (in the format MM/dd/yyyy
+        HH:mm:ss) Default is current time.
       isArray: false
       name: to
       required: false
       secret: false
     - default: false
-      description: The incident type. Can be "updated", "opened", or "closed". Supports multiple selections.
+      description: The incident type. Can be "updated", "opened", or "closed". Supports
+        multiple selections.
       isArray: false
       name: incident_types
       required: false
@@ -562,7 +571,8 @@ script:
       description: Incident priority.
       type: String
     - contextPath: Securonix.Incidents.Reason
-      description: Reason for the incident. Usually includes policy name and/or possible threat name.
+      description: Reason for the incident. Usually includes policy name and/or possible
+        threat name.
       type: String
     - contextPath: Securonix.Incidents.IncidentStatus
       description: Incident status.
@@ -619,7 +629,8 @@ script:
       description: Incident priority.
       type: String
     - contextPath: Securonix.Incidents.Reason
-      description: Reason for the incident. Usually includes policy name and/or possible threat name.
+      description: Reason for the incident. Usually includes policy name and/or possible
+        threat name.
       type: String
     - contextPath: Securonix.Incidents.IncidentStatus
       description: Incident status.
@@ -706,7 +717,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'Action to perform on the incident. You can see them using securonix-get-incident-available-actions. e.g: "CLAIM", "ASSIGN TO SECOPS", "ASSIGN TO ANALYST", "RELEASE", or "COMMENT".'
+      description: 'Action to perform on the incident. You can see them using securonix-get-incident-available-actions.
+        e.g: "CLAIM", "ASSIGN TO SECOPS", "ASSIGN TO ANALYST", "RELEASE", or "COMMENT".'
       isArray: false
       name: action
       predefined:
@@ -714,7 +726,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'The parameters, if needed, to perform the action. For example, for the ASSIGN TO ANALYST action: assigntouserid={user_id},assignedTo=USER.'
+      description: 'The parameters, if needed, to perform the action. For example,
+        for the ASSIGN TO ANALYST action: assigntouserid={user_id},assignedTo=USER.'
       isArray: false
       name: action_parameters
       required: false
@@ -858,7 +871,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The entity type. Can be "Users", "Activityaccount", "RGActivityaccount", "Resources", or "Activityip".
+      description: The entity type. Can be "Users", "Activityaccount", "RGActivityaccount",
+        "Resources", or "Activityip".
       isArray: false
       name: entity_type
       predefined:
@@ -877,7 +891,8 @@ script:
       secret: false
     - default: false
       defaultValue: '30'
-      description: The number of days after which the entity will be removed from the watchlist. The default value is "30".
+      description: The number of days after which the entity will be removed from
+        the watchlist. The default value is "30".
       isArray: false
       name: expiry_days
       required: false
@@ -888,7 +903,8 @@ script:
     name: securonix-add-entity-to-watchlist
   - arguments:
     - default: false
-      description: 'The violation name or policy name. For example: "Uploads to personal Websites".'
+      description: 'The violation name or policy name. For example: "Uploads to personal
+        Websites".'
       isArray: false
       name: violation_name
       required: true
@@ -901,7 +917,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The entity type. Can be "Users", "Activityaccount", "RGActivityaccount", "Resources", or "Activityip".
+      description: The entity type. Can be "Users", "Activityaccount", "RGActivityaccount",
+        "Resources", or "Activityip".
       isArray: false
       name: entity_type
       predefined:
@@ -913,14 +930,16 @@ script:
       required: true
       secret: false
     - default: false
-      description: The entity name associated with the violation. Can be "LanID" or "Workemail". For more information, see the Securonix documentation.
+      description: The entity name associated with the violation. Can be "LanID" or
+        "Workemail". For more information, see the Securonix documentation.
       isArray: false
       name: entity_name
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The action name. Can be "Mark as concern and create incident", "Non-Concern", or "Mark in progress (still investigating)".
+      description: The action name. Can be "Mark as concern and create incident",
+        "Non-Concern", or "Mark in progress (still investigating)".
       isArray: false
       name: action_name
       predefined:
@@ -937,7 +956,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The incident severity (criticality) for the new incident. Can be "Low", "High", or "Critical".
+      description: The incident severity (criticality) for the new incident. Can be
+        "Low", "High", or "Critical".
       isArray: false
       name: criticality
       predefined:
@@ -954,7 +974,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The workflow name. This argument is optional, but required when the action_name argument is set to "Mark as concern and create incident". Can be "SOCTeamReview", "ActivityOutlierWorkflow", or "AccessCertificationWorkflow".
+      description: The workflow name. This argument is optional, but required when
+        the action_name argument is set to "Mark as concern and create incident".
+        Can be "SOCTeamReview", "ActivityOutlierWorkflow", or "AccessCertificationWorkflow".
       isArray: false
       name: workflow
       predefined:
@@ -964,7 +986,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Creates an incident. For more information about the required arguments, see the Securonix documentation.
+    description: Creates an incident. For more information about the required arguments,
+      see the Securonix documentation.
     execution: false
     name: securonix-create-incident
     outputs:
@@ -981,7 +1004,8 @@ script:
       description: The incident priority.
       type: String
     - contextPath: Securonix.Incidents.Reason
-      description: The reason that the incident was created. Usually includes the policy name and/or possible threat name.
+      description: The reason that the incident was created. Usually includes the
+        policy name and/or possible threat name.
       type: String
     - contextPath: Securonix.Incidents.IncidentStatus
       description: The incident status.
@@ -1025,3 +1049,6 @@ script:
 tests:
 - No test - no instance
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

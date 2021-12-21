@@ -40,7 +40,8 @@ configuration:
   required: true
   type: 15
   additionalinfo: Reliability of the source providing the intelligence data
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
+    fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -56,10 +57,10 @@ configuration:
   required: false
   type: 17
   options:
-    - never
-    - interval
-    - indicatorType
-    - suddenDeath
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
 - display: ""
   name: feedExpirationInterval
   required: false
@@ -98,8 +99,9 @@ configuration:
   name: feedTags
   required: false
   type: 0
-description: The SSL IP Blacklist contains all hosts (IP addresses) that SSLBL has seen in the past 30 days and
-  identified as being associated with a malicious SSL certificate.
+description: The SSL IP Blacklist contains all hosts (IP addresses) that SSLBL has
+  seen in the past 30 days and identified as being associated with a malicious SSL
+  certificate.
 display: abuse.ch SSL Blacklist Feed
 name: abuse.ch SSL Blacklist Feed
 script:
@@ -132,3 +134,6 @@ script:
   subtype: python3
   type: python
 fromversion: 5.5.0
+marketplaces:
+- xsoar
+- marketplacev2

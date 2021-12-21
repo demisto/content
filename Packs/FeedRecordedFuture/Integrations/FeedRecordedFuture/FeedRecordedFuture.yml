@@ -213,3 +213,6 @@ script:
 tests:
 - RecordedFutureFeed - Test
 fromversion: 5.5.0
+marketplaces:
+- xsoar
+- marketplacev2

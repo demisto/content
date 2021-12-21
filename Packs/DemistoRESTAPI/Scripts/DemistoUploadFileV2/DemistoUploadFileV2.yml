@@ -39,3 +39,6 @@ runonce: false
 dependson:
   must:
   - demisto-api-multipart
+marketplaces:
+- xsoar
+- marketplacev2

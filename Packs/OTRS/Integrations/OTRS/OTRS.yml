@@ -29,7 +29,8 @@ configuration:
   required: false
   type: 13
 - defaultvalue: Any
-  display: Queues to fetch tickets from  ("Any" fetches from all queues. CSV supported, e.g., Misc,Raw)
+  display: Queues to fetch tickets from  ("Any" fetches from all queues. CSV supported,
+    e.g., Misc,Raw)
   name: fetch_queue
   required: false
   type: 0
@@ -44,11 +45,13 @@ configuration:
   required: false
   type: 16
 - defaultvalue: 3 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
+    months, 1 year)
   name: fetch_time
   required: false
   type: 0
-description: Service management suite that comprises ticketing, workflow automation, and notification.
+description: Service management suite that comprises ticketing, workflow automation,
+  and notification.
 fromversion: 5.0.0
 display: OTRS
 name: OTRS
@@ -56,19 +59,23 @@ script:
   commands:
   - arguments:
     - default: true
-      description: Ticket ID of the ticket to get details of. If not supplied, the ticket_number argument is required.
+      description: Ticket ID of the ticket to get details of. If not supplied, the
+        ticket_number argument is required.
       isArray: false
       name: ticket_id
       required: false
       secret: false
     - default: false
-      description: Ticket Number of the ticket to get details of. If not supplied, the ticket_id argument is required.
+      description: Ticket Number of the ticket to get details of. If not supplied,
+        the ticket_id argument is required.
       isArray: false
       name: ticket_number
       required: false
       secret: false
     deprecated: false
-    description: Retrieves details for an OTRS ticket by ticket ID or ticket number. The arguments are both optional, but at least one is required for this integration to run.
+    description: Retrieves details for an OTRS ticket by ticket ID or ticket number.
+      The arguments are both optional, but at least one is required for this integration
+      to run.
     execution: false
     name: otrs-get-ticket
     outputs:
@@ -180,13 +187,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: Filter for a ticket created before this date. Given in format "<number> <time unit>", e.g. 1 day, 30 minutes, 2 weeks, 6 months, 1 year
+      description: Filter for a ticket created before this date. Given in format "<number>
+        <time unit>", e.g. 1 day, 30 minutes, 2 weeks, 6 months, 1 year
       isArray: false
       name: created_before
       required: false
       secret: false
     - default: false
-      description: Filter for a ticket created after this date. Given in format "<number> <time unit>", e.g. 1 day, 30 minutes, 2 weeks, 6 months, 1 year
+      description: Filter for a ticket created after this date. Given in format "<number>
+        <time unit>", e.g. 1 day, 30 minutes, 2 weeks, 6 months, 1 year
       isArray: false
       name: created_after
       required: false
@@ -321,13 +330,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Dynamic fields to apply to the new ticket, in the format: field1=value1,field2=value2. For example: ProcessManagementProcessID=1,ProcessManagementActivityStatus=2'
+      description: 'Dynamic fields to apply to the new ticket, in the format: field1=value1,field2=value2.
+        For example: ProcessManagementProcessID=1,ProcessManagementActivityStatus=2'
       isArray: false
       name: dynamic_fields
       required: false
       secret: false
     - default: false
-      description: 'File entry ID of the file to add as an attachment to the new ticket in CSV format, e.g., 123@20,124@21 '
+      description: 'File entry ID of the file to add as an attachment to the new ticket
+        in CSV format, e.g., 123@20,124@21 '
       isArray: false
       name: attachment
       required: false
@@ -437,13 +448,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Dynamic fields to apply to the updated ticket, in the format: field1=value1,field2=value2. For example: ProcessManagementProcessID=1,ProcessManagementActivityStatus=2'
+      description: 'Dynamic fields to apply to the updated ticket, in the format:
+        field1=value1,field2=value2. For example: ProcessManagementProcessID=1,ProcessManagementActivityStatus=2'
       isArray: false
       name: dynamic_fields
       required: false
       secret: false
     - default: false
-      description: 'File entry ID of the file to add as an attachment to the updated ticket in CSV format, e.g., 123@20,124@21 '
+      description: 'File entry ID of the file to add as an attachment to the updated
+        ticket in CSV format, e.g., 123@20,124@21 '
       isArray: false
       name: attachment
       required: false
@@ -527,3 +540,6 @@ script:
   type: python
 tests:
 - OTRS Test
+marketplaces:
+- xsoar
+- marketplacev2

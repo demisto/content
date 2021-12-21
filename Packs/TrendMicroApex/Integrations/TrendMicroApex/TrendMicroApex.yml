@@ -23,7 +23,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Trend Micro Apex One central automation to manage agents and User-Defined Suspicious Objects
+description: Trend Micro Apex One central automation to manage agents and User-Defined
+  Suspicious Objects
 display: Trend Micro Apex One
 name: Trend Micro Apex
 script:
@@ -43,18 +44,21 @@ script:
       required: false
       secret: false
     - default: false
-      description: Filters the list to suspicious objects that match the specified string
+      description: Filters the list to suspicious objects that match the specified
+        string
       isArray: false
       name: content_filter
       required: false
       secret: false
     deprecated: true
-    description: Retrieve a list of User-Defined Suspicious Objects from the Apex One Central server.
+    description: Retrieve a list of User-Defined Suspicious Objects from the Apex
+      One Central server.
     execution: false
     name: trendmicro-apex-usdo-list
     outputs:
     - contextPath: TrendMicroApex.USDO.type
-      description: 'Indicator type of the USDO object, for example: ip, file, file_sha1, url, domain.'
+      description: 'Indicator type of the USDO object, for example: ip, file, file_sha1,
+        url, domain.'
       type: String
     - contextPath: TrendMicroApex.USDO.content
       description: Indicator content of the USDO object.
@@ -83,14 +87,17 @@ script:
       required: true
       secret: false
     - default: false
-      description: The suspicious object content for the specified type, for example 8.8.8.8 (for type "file", provide the binary content of the suspicious file as a base64 string)
+      description: The suspicious object content for the specified type, for example
+        8.8.8.8 (for type "file", provide the binary content of the suspicious file
+        as a base64 string)
       isArray: false
       name: content
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The scan action to perform on the suspicious object (The "quarantine" scan action is only available for file type objects)
+      description: The scan action to perform on the suspicious object (The "quarantine"
+        scan action is only available for file type objects)
       isArray: false
       name: scan_action
       predefined:
@@ -106,13 +113,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The UTC expiration date and time of the suspicious object, for example: 2020-01-25T09:00:00Z'
+      description: 'The UTC expiration date and time of the suspicious object, for
+        example: 2020-01-25T09:00:00Z'
       isArray: false
       name: expiration
       required: false
       secret: false
     deprecated: true
-    description: Add suspicious file, file SHA-1, IP address, domain, or URL objects to the User-Defined Suspicious Object list.
+    description: Add suspicious file, file SHA-1, IP address, domain, or URL objects
+      to the User-Defined Suspicious Object list.
     execution: false
     name: trendmicro-apex-usdo-add
   - arguments:
@@ -135,7 +144,8 @@ script:
       required: true
       secret: false
     deprecated: true
-    description: Delete suspicious file SHA-1, IP address, domain, or URL objects from the User-Defined Suspicious Object list.
+    description: Delete suspicious file SHA-1, IP address, domain, or URL objects
+      from the User-Defined Suspicious Object list.
     execution: false
     name: trendmicro-apex-usdo-delete
   - arguments:
@@ -153,18 +163,21 @@ script:
       required: false
       secret: false
     - default: false
-      description: Filters the list to suspicious objects that match the specified string
+      description: Filters the list to suspicious objects that match the specified
+        string
       isArray: false
       name: content_filter
       required: false
       secret: false
     deprecated: false
-    description: Retrieve a list of User-Defined Suspicious Objects from the Apex One Central server.
+    description: Retrieve a list of User-Defined Suspicious Objects from the Apex
+      One Central server.
     execution: false
     name: trendmicro-apex-udso-list
     outputs:
     - contextPath: TrendMicroApex.UDSO.type
-      description: 'Indicator type of the UDSO object, for example: ip, file, file_sha1, url, domain.'
+      description: 'Indicator type of the UDSO object, for example: ip, file, file_sha1,
+        url, domain.'
       type: String
     - contextPath: TrendMicroApex.UDSO.content
       description: Indicator content of the UDSO object.
@@ -193,14 +206,17 @@ script:
       required: true
       secret: false
     - default: false
-      description: The suspicious object content for the specified type, for example 8.8.8.8 (for type "file", provide the binary content of the suspicious file as a base64 string)
+      description: The suspicious object content for the specified type, for example
+        8.8.8.8 (for type "file", provide the binary content of the suspicious file
+        as a base64 string)
       isArray: false
       name: content
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The scan action to perform on the suspicious object (The "quarantine" scan action is only available for file type objects)
+      description: The scan action to perform on the suspicious object (The "quarantine"
+        scan action is only available for file type objects)
       isArray: false
       name: scan_action
       predefined:
@@ -216,13 +232,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The UTC expiration date and time of the suspicious object, for example: 2020-01-25T09:00:00Z'
+      description: 'The UTC expiration date and time of the suspicious object, for
+        example: 2020-01-25T09:00:00Z'
       isArray: false
       name: expiration
       required: false
       secret: false
     deprecated: false
-    description: Add suspicious file SHA-1, IP address, domain, or URL objects to the User-Defined Suspicious Object list.
+    description: Add suspicious file SHA-1, IP address, domain, or URL objects to
+      the User-Defined Suspicious Object list.
     execution: false
     name: trendmicro-apex-udso-add
   - arguments:
@@ -257,14 +275,17 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Delete suspicious file SHA-1, IP address, domain, or URL objects from the User-Defined Suspicious Object list.
+    description: Delete suspicious file SHA-1, IP address, domain, or URL objects
+      from the User-Defined Suspicious Object list.
     execution: false
     name: trendmicro-apex-udso-delete
   - arguments:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Whether to allow multiple matches or not. If this parameter is set to "false", and the provided parameters match multiple agents, the action will be unsuccessful.
+      description: Whether to allow multiple matches or not. If this parameter is
+        set to "false", and the provided parameters match multiple agents, the action
+        will be unsuccessful.
       isArray: false
       name: multi_match
       predefined:
@@ -310,7 +331,9 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Whether to allow multiple matches or not. If this argument is set to "false", and the provided parameters match multiple agents, the action will be unsuccessful.
+      description: Whether to allow multiple matches or not. If this argument is set
+        to "false", and the provided parameters match multiple agents, the action
+        will be unsuccessful.
       isArray: false
       name: multi_match
       predefined:
@@ -354,13 +377,17 @@ script:
     name: trendmicro-apex-restore
   - arguments:
     - default: false
-      description: 'The log ID of the first record to query. Note: For Pattern Update Status and Engine Update Status logs, the value of page_token must be "0".'
+      description: 'The log ID of the first record to query. Note: For Pattern Update
+        Status and Engine Update Status logs, the value of page_token must be "0".'
       isArray: false
       name: page_token
       required: false
       secret: false
     - default: false
-      description: 'The date/time of the first record to query, in one of the following formats:  ''2020-06-21T08:00:00Z'', ''Jun 21 2020 08:00:00 GMT+00:00''. In some cases the command might return logs that were created before the specified time. This is a known issue with the API.'
+      description: 'The date/time of the first record to query, in one of the following
+        formats:  ''2020-06-21T08:00:00Z'', ''Jun 21 2020 08:00:00 GMT+00:00''. In
+        some cases the command might return logs that were created before the specified
+        time. This is a known issue with the API.'
       isArray: false
       name: since_time
       required: false
@@ -400,7 +427,11 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retrieves a maximum of 1000 logs of detection types from the server. The `Pattern Update Status` and `Engine Update Status` log types returns all logs (no maximum) from the specified "since_time". In some cases the command might return alerts that were created before the specified time. This is a known issue with the API.
+    description: Retrieves a maximum of 1000 logs of detection types from the server.
+      The `Pattern Update Status` and `Engine Update Status` log types returns all
+      logs (no maximum) from the specified "since_time". In some cases the command
+      might return alerts that were created before the specified time. This is a known
+      issue with the API.
     execution: false
     name: trendmicro-apex-list-logs
     outputs:
@@ -426,7 +457,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Log
-      description: 'The scan action to perform. Can be ''Log'', ''Block'' or ''Quarantine''. Default is ''Log''. '
+      description: 'The scan action to perform. Can be ''Log'', ''Block'' or ''Quarantine''.
+        Default is ''Log''. '
       isArray: false
       name: file_scan_action
       predefined:
@@ -448,7 +480,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Adds the uploaded file information to the User-Defined Suspicious Objects list. If the file already exists, it will be updated with the new arguments.
+    description: Adds the uploaded file information to the User-Defined Suspicious
+      Objects list. If the file already exists, it will be updated with the new arguments.
     execution: false
     name: trendmicro-apex-udso-file-add
   - arguments:
@@ -483,7 +516,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retrieves a list of managed product servers reporting to Apex One Central.
+    description: Retrieves a list of managed product servers reporting to Apex One
+      Central.
     execution: false
     name: trendmicro-apex-managed-servers-list
     outputs:
@@ -611,7 +645,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Filter the agents by endpoint IP address range represented by comma separated ranges list. Example: "Starting_IP_Address,Ending_IP_Address"'
+      description: 'Filter the agents by endpoint IP address range represented by
+        comma separated ranges list. Example: "Starting_IP_Address,Ending_IP_Address"'
       isArray: false
       name: filter_by_ip_address
       required: false
@@ -641,7 +676,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retrieves a list of Security Agents with the Endpoint Sensor feature enabled.
+    description: Retrieves a list of Security Agents with the Endpoint Sensor feature
+      enabled.
     execution: false
     name: trendmicro-apex-endpoint-sensors-list
     outputs:
@@ -789,7 +825,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Operator used in the investigation. 'AND' - return endpoints that match all the criteria specified. 'OR' - return endpoints that match one of the specified criteria.
+      description: Operator used in the investigation. 'AND' - return endpoints that
+        match all the criteria specified. 'OR' - return endpoints that match one of
+        the specified criteria.
       isArray: false
       name: operator
       predefined:
@@ -804,14 +842,17 @@ script:
       required: false
       secret: false
     - default: false
-      description: The source of criteria used to store the record in BIF. The default value is 0 (UNKNOWN).
+      description: The source of criteria used to store the record in BIF. The default
+        value is 0 (UNKNOWN).
       isArray: false
       name: criteria_source
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Scope of the search results. For example, if the value is Three months, perform assessment on data within the last 90 days only. Can be "Default", "All", "One month", "Three months", "Six months", or "Twelve months".
+      description: Scope of the search results. For example, if the value is Three
+        months, perform assessment on data within the last 90 days only. Can be "Default",
+        "All", "One month", "Three months", "Six months", or "Twelve months".
       isArray: false
       name: search_period
       predefined:
@@ -824,7 +865,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Creates a new historical investigation on all Security Agents with Endpoint Sensor enabled using the specified criteria, search operator, and match condition.
+    description: Creates a new historical investigation on all Security Agents with
+      Endpoint Sensor enabled using the specified criteria, search operator, and match
+      condition.
     execution: false
     name: trendmicro-apex-historical-investigation-create
     outputs:
@@ -878,7 +921,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Filter the results by the scan method type. Can be "Search Windows registry", "Memory scan using YARA", or "Disk scan using OpenIOC".
+      description: Filter the results by the scan method type. Can be "Search Windows
+        registry", "Memory scan using YARA", or "Disk scan using OpenIOC".
       isArray: false
       name: filter_by_scan_type
       predefined:
@@ -894,7 +938,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The method used for the investigation. Supports comma-separated values. Possible values are: "Windows registry", "YARA rule file", "IOC rule file", and "Disk IOC rule file".'
+      description: 'The method used for the investigation. Supports comma-separated
+        values. Possible values are: "Windows registry", "YARA rule file", "IOC rule
+        file", and "Disk IOC rule file".'
       isArray: true
       name: scan_type
       required: true
@@ -926,7 +972,8 @@ script:
       description: Date and time when the investigation was finished.
       type: Date
     - contextPath: TrendMicroApex.InvestigationResult.specificAgentType
-      description: Indicates how targets were selected for the investigation. 0-All, 1-Specific.
+      description: Indicates how targets were selected for the investigation. 0-All,
+        1-Specific.
       type: Number
     - contextPath: TrendMicroApex.InvestigationResult.progressInfo.safeCount
       description: Number of agents with "No match" status.
@@ -994,3 +1041,6 @@ script:
 tests:
 - Trend Micro Apex - Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

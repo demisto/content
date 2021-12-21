@@ -497,3 +497,6 @@ tests:
 defaultclassifier: Microsoft Graph Mail Single User
 defaultmapperin: Microsoft Graph Mail Single User-mapper
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

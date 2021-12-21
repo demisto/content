@@ -333,8 +333,8 @@ script:
       description: 'The type of project configuration to retrieve. If this  meter
         isn''t specified, the request retrieves the effective configuration. That
         is, the configuration that is actually applied to the project, which may be
-        from: the repository the administrator-set, project configuration the
-        global configuration. If you do specify this value, it must be one of: `repository`
+        from: the repository the administrator-set, project configuration the global
+        configuration. If you do specify this value, it must be one of: `repository`
         to retrieve the configuration specified by a YAML file in the repository.
         A 404 status is returned if there is no repository configuration. `administrator`
         to retrieve the administrator-set, project configuration. A 404 status is
@@ -642,3 +642,6 @@ script:
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
+marketplaces:
+- xsoar
+- marketplacev2

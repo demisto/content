@@ -18,8 +18,8 @@ configuration:
   name: api_secret_key
   required: true
   type: 4
-- additionalinfo: Comma-separated list of owners to fetch indicators from. (If
-    not specified will retrieve only indicators owned by account)
+- additionalinfo: Comma-separated list of owners to fetch indicators from. (If not
+    specified will retrieve only indicators owned by account)
   display: Owners
   name: owners
   required: false
@@ -54,7 +54,8 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
+    fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -144,3 +145,6 @@ script:
 tests:
 - FeedThreatConnect-Test
 fromversion: 5.5.0
+marketplaces:
+- xsoar
+- marketplacev2

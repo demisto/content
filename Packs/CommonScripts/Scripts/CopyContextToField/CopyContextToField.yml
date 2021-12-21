@@ -12,7 +12,8 @@ args:
   required: true
   secret: false
 - default: false
-  description: 'The incidents query on which to apply the copy process. For example, to apply this to all incidents of type "Phishing", use the query: "type:Phishing".'
+  description: 'The incidents query on which to apply the copy process. For example,
+    to apply this to all incidents of type "Phishing", use the query: "type:Phishing".'
   isArray: false
   name: incidentsQuery
   required: true
@@ -54,3 +55,6 @@ fromversion: 5.0.0
 dockerimage: demisto/python:2.7.18.24398
 tests:
 - CopyContextToFieldTest
+marketplaces:
+- xsoar
+- marketplacev2

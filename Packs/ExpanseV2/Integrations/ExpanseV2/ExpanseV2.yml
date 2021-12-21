@@ -118,10 +118,10 @@ configuration:
   name: sync_tags
   required: false
   type: 0
-description: The Xpanse integration for Cortex XSOAR leverages the Expander API
-  to create incidents from Xpanse issues. It also leverages Xpanse's unparalleled
-  view of the Internet to enrich IPs, domains and certificates using information from
-  assets discovered by Xpanse Expander and risky flows detected by Xpanse Behavior.
+description: The Xpanse integration for Cortex XSOAR leverages the Expander API to
+  create incidents from Xpanse issues. It also leverages Xpanse's unparalleled view
+  of the Internet to enrich IPs, domains and certificates using information from assets
+  discovered by Xpanse Expander and risky flows detected by Xpanse Behavior.
 display: Cortex Xpanse
 name: ExpanseV2
 script:
@@ -6386,3 +6386,6 @@ tests:
 defaultmapperin: ExpanseV2-mapper
 defaultclassifier: ExpanseV2
 fromversion: 6.0.0
+marketplaces:
+- xsoar
+- marketplacev2

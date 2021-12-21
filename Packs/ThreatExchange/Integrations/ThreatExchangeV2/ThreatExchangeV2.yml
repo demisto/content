@@ -84,16 +84,16 @@ script:
       secret: false
     - default: false
       description: 'The start timestamp for collecting malware. Supported time formats:
-        epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text
-        (e.g., 24 hours ago).'
+        epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free
+        text (e.g., 24 hours ago).'
       isArray: false
       name: since
       required: false
       secret: false
     - default: false
       description: 'The end timestamp for collecting malware. Supported time formats:
-        epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text
-        (e.g., 24 hours ago).'
+        epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free
+        text (e.g., 24 hours ago).'
       isArray: false
       name: until
       required: false
@@ -203,16 +203,16 @@ script:
       secret: false
     - default: false
       description: 'The start timestamp for collecting malware. Supported time formats:
-        epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text
-        (e.g., 24 hours ago).'
+        epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free
+        text (e.g., 24 hours ago).'
       isArray: false
       name: since
       required: false
       secret: false
     - default: false
       description: 'The end timestamp for collecting malware. Supported time formats:
-        epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text
-        (e.g., 24 hours ago).'
+        epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free
+        text (e.g., 24 hours ago).'
       isArray: false
       name: until
       required: false
@@ -259,8 +259,7 @@ script:
       type: String
     - contextPath: ThreatExchange.IP.confidence
       description: A rating, from 0-100, on how confident the publisher is of the
-        threat indicator's status. 0 is least confident. 100 is
-        most confident.
+        threat indicator's status. 0 is least confident. 100 is most confident.
       type: Number
     - contextPath: ThreatExchange.IP.indicator.id
       description: The ID of the threat indicator described by the descriptor.
@@ -339,16 +338,16 @@ script:
       secret: false
     - default: false
       description: 'The start timestamp for collecting malware. Supported time formats:
-        epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text
-        (e.g., 24 hours ago).'
+        epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free
+        text (e.g., 24 hours ago).'
       isArray: false
       name: since
       required: false
       secret: false
     - default: false
       description: 'The end timestamp for collecting malware. Supported time formats:
-        epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text
-        (e.g., 24 hours ago).'
+        epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free
+        text (e.g., 24 hours ago).'
       isArray: false
       name: until
       required: false
@@ -388,8 +387,7 @@ script:
       type: String
     - contextPath: ThreatExchange.URL.confidence
       description: A rating, from 0-100, on how confident the publisher is of the
-        threat indicator's status. 0 is least confident. 100 is
-        most confident.
+        threat indicator's status. 0 is least confident. 100 is most confident.
       type: Number
     - contextPath: ThreatExchange.URL.indicator.id
       description: The ID of the threat indicator described by the descriptor.
@@ -460,24 +458,24 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of headers to display in human-readable format.
-        For example: header1,header2,header3.'
+      description: 'A comma-separated list of headers to display in human-readable
+        format. For example: header1,header2,header3.'
       isArray: false
       name: headers
       required: false
       secret: false
     - default: false
       description: 'The start timestamp for collecting malware. Supported time formats:
-        epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text
-        (e.g., 24 hours ago).'
+        epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free
+        text (e.g., 24 hours ago).'
       isArray: false
       name: since
       required: false
       secret: false
     - default: false
       description: 'The end timestamp for collecting malware. Supported time formats:
-        epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text
-        (e.g., 24 hours ago).'
+        epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free
+        text (e.g., 24 hours ago).'
       isArray: false
       name: until
       required: false
@@ -514,8 +512,7 @@ script:
       type: String
     - contextPath: ThreatExchange.Domain.confidence
       description: A rating, from 0-100, on how confident the publisher is of the
-        threat indicator's status. 0 is least confident. 100 is
-        most confident.
+        threat indicator's status. 0 is least confident. 100 is most confident.
       type: Number
     - contextPath: ThreatExchange.Domain.indicator.id
       description: The ID of the threat indicator described by the descriptor.
@@ -672,24 +669,24 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of headers to display in human-readable format.
-        For example: header1,header2,header3.'
+      description: 'A comma-separated list of headers to display in human-readable
+        format. For example: header1,header2,header3.'
       isArray: false
       name: headers
       required: false
       secret: false
     - default: false
       description: 'The start timestamp for collecting malware. Supported time formats:
-        epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text
-        (e.g., 24 hours ago).'
+        epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free
+        text (e.g., 24 hours ago).'
       isArray: false
       name: since
       required: false
       secret: false
     - default: false
       description: 'The end timestamp for collecting malware. Supported time formats:
-        epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text
-        (e.g., 24 hours ago).'
+        epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free
+        text (e.g., 24 hours ago).'
       isArray: false
       name: until
       required: false
@@ -898,3 +895,6 @@ tests:
 - ThreatExchangeV2-test
 hidden: false
 fromversion: 5.5.0
+marketplaces:
+- xsoar
+- marketplacev2

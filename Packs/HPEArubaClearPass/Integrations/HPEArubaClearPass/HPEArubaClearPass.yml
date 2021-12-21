@@ -529,3 +529,6 @@ script:
 tests:
 - HPEArubaClearPass_TestPlaybook
 fromversion: 6.0.0
+marketplaces:
+- xsoar
+- marketplacev2

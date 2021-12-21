@@ -21,7 +21,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the CrowdStrike Falcon X integration to submit files, file hashes, URLs, and FTPs for sandbox analysis, and to retrieve reports.
+description: Use the CrowdStrike Falcon X integration to submit files, file hashes,
+  URLs, and FTPs for sandbox analysis, and to retrieve reports.
 display: CrowdStrike Falcon X
 name: CrowdStrike Falcon X
 script:
@@ -41,7 +42,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Determines the visibility of this file in Falcon MalQuery. Can be "true" or "false". If "true", the file is confidential.
+      description: Determines the visibility of this file in Falcon MalQuery. Can
+        be "true" or "false". If "true", the file is confidential.
       isArray: false
       name: is_confidential
       predefined:
@@ -58,7 +60,8 @@ script:
     - auto: PREDEFINED
       default:
       defaultValue: "no"
-      description: Whether to submit the given file to the sandbox. Can be "yes" or "no". Default is "no".
+      description: Whether to submit the given file to the sandbox. Can be "yes" or
+        "no". Default is "no".
       isArray: false
       name: submit_file
       predefined:
@@ -79,8 +82,9 @@ script:
       type: String
   - arguments:
     - default: false
-      description: SHA256 ID of the sample, which is a SHA256 hash value. Find the sample
-        ID from the response when uploading a malware sample or search with the cs-fx-upload-file command.
+      description: SHA256 ID of the sample, which is a SHA256 hash value. Find the
+        sample ID from the response when uploading a malware sample or search with
+        the cs-fx-upload-file command.
       isArray: false
       name: sha256
       required: true
@@ -131,7 +135,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether the sandbox analysis routes network traffic via TOR. Can be "true" or "false". If true, sandbox analysis routes network traffic via TOR.
+      description: Whether the sandbox analysis routes network traffic via TOR. Can
+        be "true" or "false". If true, sandbox analysis routes network traffic via
+        TOR.
       isArray: false
       name: enable_tor
       predefined:
@@ -181,7 +187,8 @@ script:
   - arguments:
     - default: false
       description: ID of a submitted malware sample. Find a submission ID from the
-        response when submitting a malware sample or search with the cs-fx-submit-uploaded-file command.
+        response when submitting a malware sample or search with the cs-fx-submit-uploaded-file
+        command.
       isArray: true
       name: ids
       required: true
@@ -251,7 +258,8 @@ script:
   - arguments:
     - default: false
       description: ID of a submitted malware sample. Find a submission ID from the
-        response when submitting a malware sample or search with the cs-fx-submit-uploaded-file command.
+        response when submitting a malware sample or search with the cs-fx-submit-uploaded-file
+        command.
       isArray: true
       name: ids
       required: true
@@ -321,7 +329,8 @@ script:
   - arguments:
     - default: false
       description: ID of a submitted malware sample. Find a submission ID from the
-        response when submitting a malware sample or search with the cs-fx-submit-uploaded-file/url command.
+        response when submitting a malware sample or search with the cs-fx-submit-uploaded-file/url
+        command.
       isArray: true
       name: ids
       required: true
@@ -532,7 +541,9 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: 'Whether the sandbox analysis routes network traffic via TOR. Can be "true" or "false". If true, sandbox analysis routes network traffic via TOR. Default is false.'
+      description: 'Whether the sandbox analysis routes network traffic via TOR. Can
+        be "true" or "false". If true, sandbox analysis routes network traffic via
+        TOR. Default is false.'
       isArray: false
       name: enable_tor
       predefined:
@@ -617,3 +628,6 @@ script:
 fromversion: 5.0.0
 tests:
 - No tests - no instance
+marketplaces:
+- xsoar
+- marketplacev2

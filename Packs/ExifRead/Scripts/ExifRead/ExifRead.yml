@@ -26,4 +26,7 @@ runonce: false
 dockerimage: demisto/exifread:1.0.0.24238
 fromversion: 5.0.0
 tests:
-  - ExifReadTest
+- ExifReadTest
+marketplaces:
+- xsoar
+- marketplacev2

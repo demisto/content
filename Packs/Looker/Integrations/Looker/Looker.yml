@@ -23,14 +23,16 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the Looker integration to query an explore, save queries as looks, run looks, and fetch look results as incidents.
+description: Use the Looker integration to query an explore, save queries as looks,
+  run looks, and fetch look results as incidents.
 display: Looker
 name: Looker
 script:
   commands:
   - arguments:
     - default: true
-      description: ID of the look. Can be found in the look's URL, or by running the 'looker-search-looks' command.
+      description: ID of the look. Can be found in the look's URL, or by running the
+        'looker-search-looks' command.
       isArray: false
       name: id
       required: false
@@ -144,7 +146,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Filters for the query, passed as a semicolon-separated list with the format: "field name=filter value;..." (Field name format: "object_name.field_name").'
+      description: 'Filters for the query, passed as a semicolon-separated list with
+        the format: "field name=filter value;..." (Field name format: "object_name.field_name").'
       isArray: true
       name: filters
       required: false
@@ -180,7 +183,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Runs a query by defining it in the command arguments, rather than a saved query in looker.
+    description: Runs a query by defining it in the command arguments, rather than
+      a saved query in looker.
     execution: false
     name: looker-run-inline-query
     outputs:
@@ -207,7 +211,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Filters for the query, passed as a semicolon-separated list with the format: "field name=filter value;..." (Field name format: "object_name.field_name").'
+      description: 'Filters for the query, passed as a semicolon-separated list with
+        the format: "field name=filter value;..." (Field name format: "object_name.field_name").'
       isArray: true
       name: filters
       required: false
@@ -271,3 +276,6 @@ script:
 tests:
 - Test-Looker
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

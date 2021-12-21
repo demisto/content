@@ -33,8 +33,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: none
-      description: The computer information to include in the response.
-        Note that the information is appended to the context data only.
+      description: The computer information to include in the response. Note that
+        the information is appended to the context data only.
       isArray: true
       name: expand
       predefined:
@@ -68,7 +68,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: 'Whether to display only overrides defined for the current computer. Possible values: "true" and "false".'
+      description: 'Whether to display only overrides defined for the current computer.
+        Possible values: "true" and "false".'
       name: overrides
       predefined:
       - 'true'
@@ -143,7 +144,8 @@ script:
       - hostGUID
       - ID
     - auto: PREDEFINED
-      description: 'The type of the field. Possible values: "boolean", "numeric", "choice", "id", and "string".'
+      description: 'The type of the field. Possible values: "boolean", "numeric",
+        "choice", "id", and "string".'
       required: true
       name: field_type
       predefined:
@@ -153,8 +155,10 @@ script:
       - id
       - string
     - auto: PREDEFINED
-      description: 'The comparison operation to use. Possible values: "less-than", "less-than-or-equal", "equal",  "greater-than-or-equal", "greater-than", and "not-equal".'
-      name: operation 
+      description: 'The comparison operation to use. Possible values: "less-than",
+        "less-than-or-equal", "equal",  "greater-than-or-equal", "greater-than", and
+        "not-equal".'
+      name: operation
       predefined:
       - less-than
       - less-than-or-equal
@@ -198,15 +202,15 @@ script:
       description: ID of the relay list that is assigned to the computer.
       type: integer
   - arguments:
-    - description: The ID number of the computer to get. The ID can be obtained from the
-        trendmicro-list-computers and trendmicro-search-computers commands.
+    - description: The ID number of the computer to get. The ID can be obtained from
+        the trendmicro-list-computers and trendmicro-search-computers commands.
       name: computer_id
       required: true
     - auto: PREDEFINED
       default: false
       defaultValue: none
-      description: The computer information to include in the response.
-        Note that the information is appended to the context data only.
+      description: The computer information to include in the response. Note that
+        the information is appended to the context data only.
       isArray: true
       name: expand
       predefined:
@@ -240,7 +244,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: 'Whether to display only overrides defined for the current computer. Possible values: "true" and "false".'
+      description: 'Whether to display only overrides defined for the current computer.
+        Possible values: "true" and "false".'
       name: overrides
       predefined:
       - 'true'
@@ -273,8 +278,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: none
-      description: The computer information to include in the response.
-        Note that the information is appended to the context data only.
+      description: The computer information to include in the response. Note that
+        the information is appended to the context data only.
       isArray: true
       name: expand
       predefined:
@@ -308,7 +313,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: 'Whether to display only overrides defined for the current computer. Possible values: "true" and "false".'
+      description: 'Whether to display only overrides defined for the current computer.
+        Possible values: "true" and "false".'
       name: overrides
       predefined:
       - 'true'
@@ -395,7 +401,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: 'Whether to display only overrides defined for the current computer. Possible values: "true" and "false".'
+      description: 'Whether to display only overrides defined for the current computer.
+        Possible values: "true" and "false".'
       name: overrides
       predefined:
       - 'true'
@@ -432,8 +439,8 @@ script:
     description: Delete a certain computer.
     name: trendmicro-delete-computer
   - arguments:
-    - description: The ID number of the computer. The ID can be obtained from the trendmicro-list-computers
-        and trendmicro-search-computers commands.
+    - description: The ID number of the computer. The ID can be obtained from the
+        trendmicro-list-computers and trendmicro-search-computers commands.
       name: computer_id
       required: true
     - auto: PREDEFINED
@@ -663,7 +670,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: 'Whether to display only overrides defined for the current computer. Possible values: "true" and "false".'
+      description: 'Whether to display only overrides defined for the current computer.
+        Possible values: "true" and "false".'
       name: overrides
       predefined:
       - 'true'
@@ -681,8 +689,8 @@ script:
       description: The value of a setting.
       type: string
   - arguments:
-    - description: The ID number of the computer. The ID can be obtained from the trendmicro-list-computers
-        and trendmicro-search-computers commands.
+    - description: The ID number of the computer. The ID can be obtained from the
+        trendmicro-list-computers and trendmicro-search-computers commands.
       name: computer_id
       required: true
     - auto: PREDEFINED
@@ -912,7 +920,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: 'Whether to display only overrides defined for the current computer. Possible values: "true" and "false".'
+      description: 'Whether to display only overrides defined for the current computer.
+        Possible values: "true" and "false".'
       name: overrides
       predefined:
       - 'true'
@@ -933,8 +942,8 @@ script:
       description: The value of a setting.
       type: string
   - arguments:
-    - description: The ID number of the computer. The ID can be obtained from the trendmicro-list-computers
-        and trendmicro-search-computers commands.
+    - description: The ID number of the computer. The ID can be obtained from the
+        trendmicro-list-computers and trendmicro-search-computers commands.
       name: computer_id
       required: true
     - auto: PREDEFINED
@@ -1164,7 +1173,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: 'Whether to display only overrides defined for the current computer. Possible values: "true" and "false".'
+      description: 'Whether to display only overrides defined for the current computer.
+        Possible values: "true" and "false".'
       name: overrides
       predefined:
       - 'true'
@@ -1216,7 +1226,9 @@ script:
   - arguments:
     - description: The maximum number of objects to return.
       name: max_items
-    - description: The name of the field. The possible values are ID, type, name, description, parentGroupID, directoryID, externalID, virtualID, virtualType, virtualName, cloudType, cloudResourceType, and cloudID.
+    - description: The name of the field. The possible values are ID, type, name,
+        description, parentGroupID, directoryID, externalID, virtualID, virtualType,
+        virtualName, cloudType, cloudResourceType, and cloudID.
       name: field_name
       required: true
       auto: PREDEFINED
@@ -1235,7 +1247,8 @@ script:
       - cloudResourceType
       - cloudID
     - auto: PREDEFINED
-      description: 'The type of the field. Possible values: "boolean", "numeric", "choice", "id", and "string".'
+      description: 'The type of the field. Possible values: "boolean", "numeric",
+        "choice", "id", and "string".'
       required: true
       name: field_type
       predefined:
@@ -1245,7 +1258,9 @@ script:
       - id
       - string
     - auto: PREDEFINED
-      description: 'The comparison operation to use. Possible values: "less-than", "less-than-or-equal", "equal",  "greater-than-or-equal", "greater-than", and "not-equal".'
+      description: 'The comparison operation to use. Possible values: "less-than",
+        "less-than-or-equal", "equal",  "greater-than-or-equal", "greater-than", and
+        "not-equal".'
       name: operation
       predefined:
       - less-than
@@ -1390,7 +1405,8 @@ script:
       - contextID
     - auto: PREDEFINED
       defaultValue: string
-      description: 'The type of the field. Possible values: "boolean", "numeric", "choice", "id", and "string".'
+      description: 'The type of the field. Possible values: "boolean", "numeric",
+        "choice", "id", and "string".'
       name: field_type
       predefined:
       - boolean
@@ -1401,7 +1417,9 @@ script:
     - auto: PREDEFINED
       required: true
       default: false
-      description: 'The comparison operation to use. Possible values: "less-than", "less-than-or-equal", "equal",  "greater-than-or-equal", "greater-than", and "not-equal".'
+      description: 'The comparison operation to use. Possible values: "less-than",
+        "less-than-or-equal", "equal",  "greater-than-or-equal", "greater-than", and
+        "not-equal".'
       name: operation
       predefined:
       - less-than
@@ -1769,7 +1787,8 @@ script:
       required: true
     - description: Description of the firewall rule.
       name: description
-    - description: 'Action of the packet filter. Possible values: "log-only", "allow", "deny", "force-allow", "bypass".'
+    - description: 'Action of the packet filter. Possible values: "log-only", "allow",
+        "deny", "force-allow", "bypass".'
       name: action
       required: true
       auto: PREDEFINED
@@ -1779,7 +1798,8 @@ script:
       - deny
       - force-allow
       - bypass
-    - description: 'Priority of the packet filter. Possible values: "0", "1", "2", "3", "4".'
+    - description: 'Priority of the packet filter. Possible values: "0", "1", "2",
+        "3", "4".'
       name: priority
       auto: PREDEFINED
       predefined:
@@ -1795,7 +1815,8 @@ script:
       predefined:
       - incoming
       - outgoing
-    - description: 'Supported frame types. Possible values: "any", "ip", "arp", "revarp", "ipv4", "ipv6", and "other".'
+    - description: 'Supported frame types. Possible values: "any", "ip", "arp", "revarp",
+        "ipv4", "ipv6", and "other".'
       name: frame_type
       auto: PREDEFINED
       predefined:
@@ -1810,7 +1831,8 @@ script:
       name: frame_number
     - description: Whether the frame setting should be inverted.
       name: frame_not
-    - description: 'Protocol. Possible values: "any", "icmp", "igmp", "ggp", "udp", pu"p, "idp", "nd", "raw", "tcp-dudp", "icmpv6", and "other".'
+    - description: 'Protocol. Possible values: "any", "icmp", "igmp", "ggp", "udp",
+        pu"p, "idp", "nd", "raw", "tcp-dudp", "icmpv6", and "other".'
       name: protocol
       auto: PREDEFINED
       predefined:
@@ -1831,7 +1853,8 @@ script:
       name: protocol_number
     - description: Whether the protocol setting should be inverted.
       name: protocol_not
-    - description: 'Source IP type. Possible values: "any", "single", "multiple", "masked-ip", "range", and "ip-list".'
+    - description: 'Source IP type. Possible values: "any", "single", "multiple",
+        "masked-ip", "range", and "ip-list".'
       name: source_ip_type
       auto: PREDEFINED
       predefined:
@@ -1856,7 +1879,8 @@ script:
       name: source_ip_list_id
     - description: Whether the source IP setting should be inverted.
       name: source_ip_not
-    - description: 'Source MAC type. Possible values: "any", "single", "multiple", and "mac-list".'
+    - description: 'Source MAC type. Possible values: "any", "single", "multiple",
+        and "mac-list".'
       name: source_mac_type
       auto: PREDEFINED
       predefined:
@@ -1873,7 +1897,8 @@ script:
       name: source_mac_list_id
     - description: Whether the source MAC setting should be inverted.
       name: source_mac_not
-    - description: 'The type of source port. Possible values: "any", "multiple", and "port-list".'
+    - description: 'The type of source port. Possible values: "any", "multiple", and
+        "port-list".'
       name: source_port_type
       auto: PREDEFINED
       predefined:
@@ -1887,7 +1912,8 @@ script:
       name: source_port_list_id
     - description: Whether the source port setting should be inverted.
       name: source_port_not
-    - description: 'Destination IP type. Possible values: "any", "single", "multiple", "range", "masked-ip", and "ip-list".'
+    - description: 'Destination IP type. Possible values: "any", "single", "multiple",
+        "range", "masked-ip", and "ip-list".'
       name: destination_ip_type
       auto: PREDEFINED
       predefined:
@@ -1912,7 +1938,8 @@ script:
       name: destination_ip_list_id
     - description: Whether the destination IP setting should be inverted.
       name: destination_ip_not
-    - description: 'Destination MAC type. Possible values: "any", "single", "multiple", and "mac-list".'
+    - description: 'Destination MAC type. Possible values: "any", "single", "multiple",
+        and "mac-list".'
       name: destination_mac_type
       auto: PREDEFINED
       predefined:
@@ -1929,7 +1956,8 @@ script:
       name: destination_mac_list_id
     - description: Whether the destination MAC setting should be inverted.
       name: destination_mac_not
-    - description: 'The type of destination port. Possible values: "any", "multiple", and "port-list".'
+    - description: 'The type of destination port. Possible values: "any", "multiple",
+        and "port-list".'
       name: destination_port_type
       auto: PREDEFINED
       predefined:
@@ -1957,7 +1985,8 @@ script:
       name: context_id
     - isArray: true
       name: tcpflags
-      description: 'The TCP flags the rule should filter by. Possible values: "syn", "ack", "psh", "urg", "fin", and "rst".'
+      description: 'The TCP flags the rule should filter by. Possible values: "syn",
+        "ack", "psh", "urg", "fin", and "rst".'
       auto: PREDEFINED
       predefined:
       - syn
@@ -2147,7 +2176,8 @@ script:
       type: boolean
   - arguments:
     - description: The ID number of the firewall rule to get. The ID can be obtained
-        from the trendmicro-list-firewall-rules and trendmicro-search-firewall-rules commands..
+        from the trendmicro-list-firewall-rules and trendmicro-search-firewall-rules
+        commands..
       name: firewall_rule_id
       required: true
     description: Get information about a certain firewall rule.
@@ -2330,7 +2360,8 @@ script:
       name: name
     - description: Description of the firewall rule.
       name: description
-    - description: 'Action of the packet filter. Possible values: "log-only", "allow", "deny", "force-allow", "bypass".'
+    - description: 'Action of the packet filter. Possible values: "log-only", "allow",
+        "deny", "force-allow", "bypass".'
       name: action
       auto: PREDEFINED
       predefined:
@@ -2339,7 +2370,8 @@ script:
       - deny
       - force-allow
       - bypass
-    - description: 'Priority of the packet filter. Possible values: "0", "1", "2", "3", "4".'
+    - description: 'Priority of the packet filter. Possible values: "0", "1", "2",
+        "3", "4".'
       name: priority
       auto: PREDEFINED
       predefined:
@@ -2354,7 +2386,8 @@ script:
       predefined:
       - incoming
       - outgoing
-    - description: 'Supported frame types. Possible values: "any", "ip", "arp", "revarp", "ipv4", "ipv6", and "other".'
+    - description: 'Supported frame types. Possible values: "any", "ip", "arp", "revarp",
+        "ipv4", "ipv6", and "other".'
       name: frame_type
       auto: PREDEFINED
       predefined:
@@ -2369,7 +2402,8 @@ script:
       name: frame_number
     - description: Whether the frame setting should be inverted.
       name: frame_not
-    - description: 'Protocol. Possible values: "any", "icmp", "igmp", "ggp", "udp", pu"p, "idp", "nd", "raw", "tcp-dudp", "icmpv6", and "other".'
+    - description: 'Protocol. Possible values: "any", "icmp", "igmp", "ggp", "udp",
+        pu"p, "idp", "nd", "raw", "tcp-dudp", "icmpv6", and "other".'
       name: protocol
       auto: PREDEFINED
       predefined:
@@ -2390,7 +2424,8 @@ script:
       name: protocol_number
     - description: Whether the protocol setting should be inverted.
       name: protocol_not
-    - description: 'Source IP type. Possible values: "any", "single", "multiple", "masked-ip", "range", and "ip-list".'
+    - description: 'Source IP type. Possible values: "any", "single", "multiple",
+        "masked-ip", "range", and "ip-list".'
       name: source_ip_type
       auto: PREDEFINED
       predefined:
@@ -2415,7 +2450,8 @@ script:
       name: source_ip_list_id
     - description: Whether the source IP setting should be inverted.
       name: source_ip_not
-    - description: 'Source MAC type. Possible values: "any", "single", "multiple", and "mac-list".'
+    - description: 'Source MAC type. Possible values: "any", "single", "multiple",
+        and "mac-list".'
       name: source_mac_type
       auto: PREDEFINED
       predefined:
@@ -2432,7 +2468,8 @@ script:
       name: source_mac_list_id
     - description: Whether the source MAC setting should be inverted.
       name: source_mac_not
-    - description: 'The type of source port. Possible values: "any", "multiple", and "port-list".'
+    - description: 'The type of source port. Possible values: "any", "multiple", and
+        "port-list".'
       name: source_port_type
       auto: PREDEFINED
       predefined:
@@ -2446,7 +2483,8 @@ script:
       name: source_port_list_id
     - description: Whether the source port setting should be inverted.
       name: source_port_not
-    - description: 'Destination IP type. Possible values: "any", "single", "multiple", "range", "masked-ip", and "ip-list".'
+    - description: 'Destination IP type. Possible values: "any", "single", "multiple",
+        "range", "masked-ip", and "ip-list".'
       name: destination_ip_type
       auto: PREDEFINED
       predefined:
@@ -2471,7 +2509,8 @@ script:
       name: destination_ip_list_id
     - description: Whether the destination IP setting should be inverted.
       name: destination_ip_not
-    - description: 'Destination MAC type. Possible values: "any", "single", "multiple", and "mac-list".'
+    - description: 'Destination MAC type. Possible values: "any", "single", "multiple",
+        and "mac-list".'
       name: destination_mac_type
       auto: PREDEFINED
       predefined:
@@ -2488,7 +2527,8 @@ script:
       name: destination_mac_list_id
     - description: Whether the destination MAC setting should be inverted.
       name: destination_mac_not
-    - description: 'The type of destination port. Possible values: "any", "multiple", and "port-list".'
+    - description: 'The type of destination port. Possible values: "any", "multiple",
+        and "port-list".'
       name: destination_port_type
       auto: PREDEFINED
       predefined:
@@ -2516,7 +2556,8 @@ script:
       name: context_id
     - isArray: true
       name: tcpflags
-      description: 'The TCP flags the rule should filter by. Possible values: "syn", "ack", "psh", "urg", "fin", and "rst".'
+      description: 'The TCP flags the rule should filter by. Possible values: "syn",
+        "ack", "psh", "urg", "fin", and "rst".'
       auto: PREDEFINED
       predefined:
       - syn
@@ -2706,20 +2747,22 @@ script:
       type: boolean
   - arguments:
     - description: The ID number of the firewall rule to delete. The ID can be obtained
-        from the trendmicro-list-firewall-rules and trendmicro-search-firewall-rules commands.
+        from the trendmicro-list-firewall-rules and trendmicro-search-firewall-rules
+        commands.
       name: firewall_rule_id
       required: true
     description: Delete a certain firewall rule.
     name: trendmicro-delete-firewall-rule
   - arguments:
-    - description: The ID number of the computer. The ID can be obtained from the trendmicro-list-computers
-        and trendmicro-search-computers commands.
+    - description: The ID number of the computer. The ID can be obtained from the
+        trendmicro-list-computers and trendmicro-search-computers commands.
       name: computer_id
       required: true
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: 'Whether to return only rule IDs assigned directly to the current computer. Possible values: "true" and "false".'
+      description: 'Whether to return only rule IDs assigned directly to the current
+        computer. Possible values: "true" and "false".'
       name: overrides
       predefined:
       - 'true'
@@ -2732,14 +2775,15 @@ script:
       description: List of the assigned firewall rule IDs.
       type: array
   - arguments:
-    - description: The ID number of the computer. The ID can be obtained from the trendmicro-list-computers
-        and trendmicro-search-computers commands.
+    - description: The ID number of the computer. The ID can be obtained from the
+        trendmicro-list-computers and trendmicro-search-computers commands.
       name: computer_id
       required: true
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: 'Whether to return only rule IDs assigned directly to the current computer. Possible values: "true" and "false".'
+      description: 'Whether to return only rule IDs assigned directly to the current
+        computer. Possible values: "true" and "false".'
       name: overrides
       predefined:
       - 'true'
@@ -2755,14 +2799,15 @@ script:
       description: List of the assigned firewall rule IDs.
       type: array
   - arguments:
-    - description: The ID number of the computer. The ID can be obtained from the trendmicro-list-computers
-        and trendmicro-search-computers commands.
+    - description: The ID number of the computer. The ID can be obtained from the
+        trendmicro-list-computers and trendmicro-search-computers commands.
       name: computer_id
       required: true
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: 'Whether to return only rule IDs assigned directly to the current computer. Possible values: "true" and "false".'
+      description: 'Whether to return only rule IDs assigned directly to the current
+        computer. Possible values: "true" and "false".'
       name: overrides
       predefined:
       - 'true'
@@ -2778,14 +2823,15 @@ script:
       description: List of assigned firewall rule IDs.
       type: array
   - arguments:
-    - description: The ID number of the policy to get. The ID can be obtained from the
-        trendmicro-list-policies and trendmicro-search-policies commands.
+    - description: The ID number of the policy to get. The ID can be obtained from
+        the trendmicro-list-policies and trendmicro-search-policies commands.
       name: policy_id
       required: true
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: 'Whether to display only overrides defined for the current policy. Possible values: "true" and "false".'
+      description: 'Whether to display only overrides defined for the current policy.
+        Possible values: "true" and "false".'
       name: overrides
       predefined:
       - 'true'
@@ -2811,14 +2857,15 @@ script:
         changes.
       type: string
   - arguments:
-    - description: The ID number of the policy to modify. The ID can be obtained from the
-        trendmicro-list-policies and trendmicro-search-policies commands.
+    - description: The ID number of the policy to modify. The ID can be obtained from
+        the trendmicro-list-policies and trendmicro-search-policies commands.
       name: policy_id
       required: true
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: 'Whether to display only overrides defined for the current policy. Possible values: "true" and "false".'
+      description: 'Whether to display only overrides defined for the current policy.
+        Possible values: "true" and "false".'
       name: overrides
       predefined:
       - 'true'
@@ -2856,8 +2903,8 @@ script:
         changes.
       type: string
   - arguments:
-    - description: The ID number of the policy to delete. The ID can be obtained from the
-        trendmicro-list-policies and trendmicro-search-policies commands.
+    - description: The ID number of the policy to delete. The ID can be obtained from
+        the trendmicro-list-policies and trendmicro-search-policies commands.
       name: policy_id
       required: true
     description: Delete a certain policy.
@@ -3094,7 +3141,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: 'Whether to display only overrides defined for the current policy. Possible values: "true" and "false".'
+      description: 'Whether to display only overrides defined for the current policy.
+        Possible values: "true" and "false".'
       name: overrides
       predefined:
       - 'true'
@@ -3343,7 +3391,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: 'Whether to display only overrides defined for the current computer. Possible values: "true" and "false".'
+      description: 'Whether to display only overrides defined for the current computer.
+        Possible values: "true" and "false".'
       name: overrides
       predefined:
       - 'true'
@@ -3594,7 +3643,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: 'Whether to display only overrides defined for the current policy. Possible values: "true" and "false".'
+      description: 'Whether to display only overrides defined for the current policy.
+        Possible values: "true" and "false".'
       name: overrides
       predefined:
       - 'true'
@@ -3615,7 +3665,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: 'Whether to display only overrides defined for the current policy. Possible values: "true" and "false".'
+      description: 'Whether to display only overrides defined for the current policy.
+        Possible values: "true" and "false".'
       name: overrides
       predefined:
       - 'true'
@@ -3644,14 +3695,16 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: 'Whether to display only overrides defined for the current computer. Possible values: "true" and "false".'
+      description: 'Whether to display only overrides defined for the current computer.
+        Possible values: "true" and "false".'
       name: overrides
       predefined:
       - 'true'
       - 'false'
     - description: The maximum number of objects to return.
       name: max_items
-    - description: 'The field name to search for. Possible values: "ID", "parentID", "name", "description", "recommendationScanMode", and "autoRequiresUpdate".'
+    - description: 'The field name to search for. Possible values: "ID", "parentID",
+        "name", "description", "recommendationScanMode", and "autoRequiresUpdate".'
       isArray: true
       name: field_name
       required: true
@@ -3665,7 +3718,8 @@ script:
       - autoRequiresUpdate
     - auto: PREDEFINED
       required: true
-      description: 'The type of the field. Possible values: "boolean", "numeric", "choice", "id", and "string".'
+      description: 'The type of the field. Possible values: "boolean", "numeric",
+        "choice", "id", and "string".'
       name: field_type
       predefined:
       - boolean
@@ -3674,7 +3728,9 @@ script:
       - id
       - string
     - auto: PREDEFINED
-      description: 'The comparison operation to use. Possible values: "less-than", "less-than-or-equal", "equal",  "greater-than-or-equal", "greater-than", and "not-equal".'
+      description: 'The comparison operation to use. Possible values: "less-than",
+        "less-than-or-equal", "equal",  "greater-than-or-equal", "greater-than", and
+        "not-equal".'
       name: operation
       predefined:
       - less-than
@@ -3718,7 +3774,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: 'Whether to display only overrides defined for the current policy. Possible values: "true" and "false".'
+      description: 'Whether to display only overrides defined for the current policy.
+        Possible values: "true" and "false".'
       name: overrides
       predefined:
       - 'true'
@@ -3769,8 +3826,8 @@ script:
         and trendmicro-search-computers commands.
       name: computer_id
       required: true
-    - description: The firewall rule ID to remove. The ID can be obtained from the trendmicro-list-firewall-rules
-        and trendmicro-search-firewall-rules commands.
+    - description: The firewall rule ID to remove. The ID can be obtained from the
+        trendmicro-list-firewall-rules and trendmicro-search-firewall-rules commands.
       name: firewall_rule_id
       required: true
     description: Remove a firewall rule ID from a certain computer.
@@ -4051,3 +4108,6 @@ script:
 tests:
 - No tests
 fromversion: 6.0.0
+marketplaces:
+- xsoar
+- marketplacev2

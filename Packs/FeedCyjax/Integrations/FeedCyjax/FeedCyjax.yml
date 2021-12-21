@@ -1,7 +1,8 @@
 category: Data Enrichment & Threat Intelligence
 display: Cyjax Feed
 name: Cyjax Feed
-description: 'The feed allows customers to pull indicators of compromise from cyber incidents (IP addresses, URLs, domains, CVE and file hashes)'
+description: 'The feed allows customers to pull indicators of compromise from cyber
+  incidents (IP addresses, URLs, domains, CVE and file hashes)'
 commonfields:
   id: Cyjax Feed
   version: -1
@@ -32,7 +33,8 @@ configuration:
   required: false
   type: 8
 - display: Indicator Reputation
-  additionalinfo: Indicators from this integration instance will be marked with this reputation
+  additionalinfo: Indicators from this integration instance will be marked with this
+    reputation
   defaultvalue: Suspicious
   name: feedReputation
   options:
@@ -56,13 +58,14 @@ configuration:
   required: true
   type: 15
 - name: tlp_color
-  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
+    fetched from the feed
   display: Traffic Light Protocol Color
   options:
-    - RED
-    - AMBER
-    - GREEN
-    - WHITE
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
   required: false
   type: 15
 - name: use_cyjax_tlp
@@ -91,7 +94,11 @@ configuration:
   required: false
   type: 1
   display: ""
-- additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. As the determination if the indicator is new or modified happens on the 3rd-party vendor's side, and only indicators that are new or modified are sent to Cortex XSOAR, all indicators coming from these feeds are labeled new or modified.
+- additionalinfo: Incremental feeds pull only new or modified indicators that have
+    been sent from the integration. As the determination if the indicator is new or
+    modified happens on the 3rd-party vendor's side, and only indicators that are
+    new or modified are sent to Cortex XSOAR, all indicators coming from these feeds
+    are labeled new or modified.
   display: Incremental Feed
   name: feedIncremental
   defaultvalue: true
@@ -112,7 +119,8 @@ configuration:
   type: 19
 - defaultvalue: 3 days
   display: First fetch time
-  additionalinfo: The time interval for the first fetch (retroactive). For example 3 days, 1 hour
+  additionalinfo: The time interval for the first fetch (retroactive). For example
+    3 days, 1 hour
   name: first_fetch
   required: true
   type: 0
@@ -148,8 +156,9 @@ script:
     name: cyjax-indicator-sighting
     description: Get sighting of a indicator
   - name: cyjax-unset-indicators-last-fetch-date
-    description: 'Unset the indicators feed last fetch date. Should only be used if user needs to use `re-fetch` button
-     and wants to fetch old indicators from Cyjax. Next feed will use date set in first_fetch (default is last 3 days)'
+    description: 'Unset the indicators feed last fetch date. Should only be used if
+      user needs to use `re-fetch` button and wants to fetch old indicators from Cyjax.
+      Next feed will use date set in first_fetch (default is last 3 days)'
   isfetch: false
   feed: true
   runonce: false
@@ -160,3 +169,6 @@ script:
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2

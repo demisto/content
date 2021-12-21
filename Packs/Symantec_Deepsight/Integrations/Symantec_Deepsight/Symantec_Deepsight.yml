@@ -98,7 +98,8 @@ script:
       description: The domain associated with the IP address
       type: string
     - contextPath: Deepsight.IP.TargetCountries
-      description: Three-letter ISO3 code representing a country associated with the IP address's activity
+      description: Three-letter ISO3 code representing a country associated with the
+        IP address's activity
       type: Unknown
     - contextPath: Deepsight.IP.Report.ID
       description: The MATI report identification number
@@ -110,13 +111,18 @@ script:
       description: The MATI report identification date
       type: date
     - contextPath: Deepsight.IP.ReputationValues.Reputation
-      description: A value that combines an item’s behaviors exhibited, confidence in the listing, hostility of the item, consecutive listings and listing ratio; values range from 1 to 10 with higher values representing a worse reputation
+      description: A value that combines an item’s behaviors exhibited, confidence
+        in the listing, hostility of the item, consecutive listings and listing ratio;
+        values range from 1 to 10 with higher values representing a worse reputation
       type: number
     - contextPath: Deepsight.IP.ReputationValues.Confidence
-      description: Shows our confidence on whether the listing is correct or a false positive with values ranging from 1 to 5 with higher values representing more confidence in the listing
+      description: Shows our confidence on whether the listing is correct or a false
+        positive with values ranging from 1 to 5 with higher values representing more
+        confidence in the listing
       type: number
     - contextPath: Deepsight.IP.ReputationValues.Hostility
-      description: Enumerates the IP address’ hostility level with values ranging from 1 to 5 with higher values representing a more hostile item
+      description: Enumerates the IP address’ hostility level with values ranging
+        from 1 to 5 with higher values representing a more hostile item
       type: number
     - contextPath: IP.Malicious.Description
       description: Description of the malicious IP
@@ -179,10 +185,12 @@ script:
       description: The expiration date of the domain
       type: date
     - contextPath: Domain.WHOIS.NameServers
-      description: An array of name servers associated with the registered person in the whois record
+      description: An array of name servers associated with the registered person
+        in the whois record
       type: string
     - contextPath: Deepsight.Domain.WHOIS.NameServers
-      description: An array of name servers associated with the registered person in the whois record
+      description: An array of name servers associated with the registered person
+        in the whois record
       type: string
     - contextPath: Domain.WHOIS.Registrar.Name
       description: The name of the domain's registrar
@@ -212,19 +220,25 @@ script:
       description: The time and date that the domain last appeared in the database
       type: date
     - contextPath: Deepsight.Domain.ReputationValues.Reputation
-      description: A value that combines an item’s behaviors exhibited, confidence in the listing, hostility of the item, consecutive listings and listing ratio; values range from 1 to 10 with higher values representing a worse reputation
+      description: A value that combines an item’s behaviors exhibited, confidence
+        in the listing, hostility of the item, consecutive listings and listing ratio;
+        values range from 1 to 10 with higher values representing a worse reputation
       type: number
     - contextPath: Deepsight.Domain.ReputationValues.Confidence
-      description: Shows our confidence on whether the listing is correct or a false positive with values ranging from 1 to 5 with higher values representing more confidence in the listing
+      description: Shows our confidence on whether the listing is correct or a false
+        positive with values ranging from 1 to 5 with higher values representing more
+        confidence in the listing
       type: number
     - contextPath: Deepsight.Domain.ReputationValues.Hostility
-      description: ' Enumerates the IP address’ hostility level with values ranging from 1 to 5 with higher values representing a more hostile item'
+      description: ' Enumerates the IP address’ hostility level with values ranging
+        from 1 to 5 with higher values representing a more hostile item'
       type: string
     - contextPath: Deepsight.Domain.Domain
       description: The domain itself
       type: string
     - contextPath: Deepsight.Domain.TargetCountries
-      description: Three-letter ISO3 code representing a country associated with the domain's activity
+      description: Three-letter ISO3 code representing a country associated with the
+        domain's activity
       type: unknown
     - contextPath: Deepsight.Domain.Report.ID
       description: The MATI report identification number
@@ -239,7 +253,8 @@ script:
       description: A subcategory of behaviour
       type: string
     - contextPath: Deepsight.Domain.Behaviour.Behaviour
-      description: 'Indicates that the domain has been observed as part of a specific activity: Attack, Bot, CnC, Fraud, Malware, Phish_host, or Spam'
+      description: 'Indicates that the domain has been observed as part of a specific
+        activity: Attack, Bot, CnC, Fraud, Malware, Phish_host, or Spam'
       type: string
     - contextPath: Deepsight.Domain.Behaviour.Description
       description: A description of the activity observed
@@ -302,10 +317,12 @@ script:
       description: ' The MATI report date'
       type: date
     - contextPath: File.Malicious.Description
-      description: The description of the malicious file, including it's reputation (if found in Deepsight data)
+      description: The description of the malicious file, including it's reputation
+        (if found in Deepsight data)
       type: string
     - contextPath: Deepsight.File.Malicious.Description
-      description: The description of the malicious file, including it's reputation (if found in Deepsight data)
+      description: The description of the malicious file, including it's reputation
+        (if found in Deepsight data)
       type: string
     - contextPath: File.Malicious.Vendor
       description: The vendor of the data about the malicious file
@@ -372,3 +389,6 @@ tests:
 - Symantec Deepsight Test
 beta: true
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

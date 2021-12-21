@@ -23,8 +23,8 @@ args:
   isArray: false
   name: set_http_as_suspicious
   predefined:
-   - 'false'
-   - 'true'
+  - 'false'
+  - 'true'
   required: false
   secret: false
 outputs:
@@ -55,3 +55,6 @@ fromversion: 5.0.0
 dockerimage: demisto/python:2.7.18.24066
 tests:
 - No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2

@@ -13,12 +13,14 @@ configuration:
   required: false
   type: 0
 - defaultvalue: SUSPICIOUS
-  display: 'Email Severity: The DBot reputation for compromised emails (SUSPICIOUS or MALICIOUS)'
+  display: 'Email Severity: The DBot reputation for compromised emails (SUSPICIOUS
+    or MALICIOUS)'
   name: default_dbot_score_email
   required: false
   type: 0
 - defaultvalue: SUSPICIOUS
-  display: 'Domain Severity: The DBot reputation for compromised domains (SUSPICIOUS or MALICIOUS)'
+  display: 'Domain Severity: The DBot reputation for compromised domains (SUSPICIOUS
+    or MALICIOUS)'
   name: default_dbot_score_domain
   required: false
   type: 0
@@ -30,7 +32,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Uses the Have I Been Pwned? service to check whether email addresses, domains, or usernames were compromised in previous breaches.
+description: Uses the Have I Been Pwned? service to check whether email addresses,
+  domains, or usernames were compromised in previous breaches.
 display: Have I Been Pwned? v2
 name: Have I Been Pwned? V2
 script:
@@ -51,7 +54,8 @@ script:
       description: For compromised email addresses, the vendor that made the decision.
       type: String
     - contextPath: Account.Email.Pwned-V2.Compromised.Reporters
-      description: For compromised email addresses, the reporters for the vendor to make the compromised decision.
+      description: For compromised email addresses, the reporters for the vendor to
+        make the compromised decision.
       type: String
     - contextPath: Account.Email.Address
       description: The email address.
@@ -60,7 +64,8 @@ script:
       description: For malicious email addresses, the vendor that made the decision.
       type: String
     - contextPath: Email.Malicious.Description
-      description: For malicious email addresses, the reason that the vendor made the decision.
+      description: For malicious email addresses, the reason that the vendor made
+        the decision.
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -90,7 +95,8 @@ script:
       description: For compromised domains, the vendor that made the decision.
       type: String
     - contextPath: Domain.Pwned-V2.Compromised.Reporters
-      description: For compromised domains, the reporters for the vendor to make the compromised decision.
+      description: For compromised domains, the reporters for the vendor to make the
+        compromised decision.
       type: String
     - contextPath: Domain.Name
       description: Domain name.
@@ -129,7 +135,8 @@ script:
       description: For compromised email addresses, the vendor that made the decision.
       type: String
     - contextPath: Account.Email.Pwned-V2.Compromised.Reporters
-      description: For compromised email addresses, the reporters for the vendor to make the compromised decision.
+      description: For compromised email addresses, the reporters for the vendor to
+        make the compromised decision.
       type: String
     - contextPath: Account.Email.Address
       description: The email address.
@@ -138,7 +145,8 @@ script:
       description: For malicious email addresses, the vendor that made the decision.
       type: String
     - contextPath: Email.Malicious.Description
-      description: For malicious email addresses, the reason that the vendor made the decision.
+      description: For malicious email addresses, the reason that the vendor made
+        the decision.
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -168,7 +176,8 @@ script:
       description: For compromised domains, the vendor that made the decision.
       type: String
     - contextPath: Domain.Pwned-V2.Compromised.Reporters
-      description: For compromised domains, the reporters for the vendor to make the compromised decision.
+      description: For compromised domains, the reporters for the vendor to make the
+        compromised decision.
       type: String
     - contextPath: Domain.Name
       description: The domain name.
@@ -207,7 +216,8 @@ script:
       description: For compromised usernames, the vendor that made the decision.
       type: String
     - contextPath: Username.Pwned-V2.Compromised.Reporters
-      description: For compromised usernames, the reporters for the vendor to make the compromised decision.
+      description: For compromised usernames, the reporters for the vendor to make
+        the compromised decision.
       type: String
     - contextPath: Username.Name
       description: The username name.
@@ -230,3 +240,6 @@ script:
 tests:
 - Pwned v2 test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

@@ -5,7 +5,8 @@ args:
   name: ids
   required: true
   secret: false
-comment: 'This automation allows to delete a relationship between indicator objects based on the relationship id.'
+comment: 'This automation allows to delete a relationship between indicator objects
+  based on the relationship id.'
 commonfields:
   id: DeleteIndicatorRelationships
   version: -1
@@ -22,3 +23,6 @@ dockerimage: demisto/python3:3.9.7.24076
 fromversion: 6.2.0
 tests:
 - Relationships scripts - Test
+marketplaces:
+- xsoar
+- marketplacev2

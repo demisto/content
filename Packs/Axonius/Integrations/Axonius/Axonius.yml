@@ -526,3 +526,6 @@ script:
     - contextPath: Axonius.Devices.labels
       type: String
       description: Tags assigned to the asset
+marketplaces:
+- xsoar
+- marketplacev2

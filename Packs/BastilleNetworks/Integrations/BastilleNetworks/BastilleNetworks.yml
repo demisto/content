@@ -68,7 +68,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: RF monitoring for wireless intrusion detection and policy enforcement. Visit https://www.bastille.net for details.
+description: RF monitoring for wireless intrusion detection and policy enforcement.
+  Visit https://www.bastille.net for details.
 display: Bastille Networks
 name: Bastille Networks
 script:
@@ -349,3 +350,6 @@ script:
   subtype: python3
   type: python
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

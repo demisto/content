@@ -87,7 +87,8 @@ script:
       secret: false
     - default: false
       defaultValue: '10'
-      description: The maximum number of cases to return. Default is 20. Maximum is 200.
+      description: The maximum number of cases to return. Default is 20. Maximum is
+        200.
       isArray: false
       name: max_records
       required: false
@@ -103,7 +104,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The date field by which to query when you specify the begin_date and end_date arguments.
+      description: The date field by which to query when you specify the begin_date
+        and end_date arguments.
       isArray: false
       name: date_field
       predefined:
@@ -125,7 +127,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The time range for which to return incident (<number> <time unit>, for example, 12 hours, 7 days.
+      description: The time range for which to return incident (<number> <time unit>,
+        for example, 12 hours, 7 days.
       isArray: false
       name: period
       required: false
@@ -504,14 +507,16 @@ script:
       secret: false
     - default: false
       defaultValue: '20'
-      description: The maximum number of cases to return. Default is 20. Maximum is 200.
+      description: The maximum number of cases to return. Default is 20. Maximum is
+        200.
       isArray: false
       name: max_records
       required: false
       secret: false
     - default: false
       defaultValue: '0'
-      description: Paginate results used in conjunction with the max_records argument. First 200 records maxRecords=200&offset=0 second 200 records maxRecords=200&offset=200
+      description: Paginate results used in conjunction with the max_records argument.
+        First 200 records maxRecords=200&offset=0 second 200 records maxRecords=200&offset=200
       isArray: false
       name: offset
       predefined:
@@ -520,7 +525,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The date field by which to query when you specify the begin_date and end_date arguments.
+      description: The date field by which to query when you specify the begin_date
+        and end_date arguments.
       isArray: false
       name: date_field
       predefined:
@@ -542,7 +548,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The time range for which to return incident (<number> <time unit>, for example, 12 hours, 7 days.
+      description: The time range for which to return incident (<number> <time unit>,
+        for example, 12 hours, 7 days.
       isArray: false
       name: period
       required: false
@@ -741,7 +748,8 @@ script:
       secret: false
     - default: false
       defaultValue: '20'
-      description: The maximum number of cases to return. Default is 20. Maximum is 200.
+      description: The maximum number of cases to return. Default is 20. Maximum is
+        200.
       isArray: false
       name: max_records
       required: false
@@ -755,7 +763,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The date field by which to query when you specify the begin_date and end_date arguments.
+      description: The date field by which to query when you specify the begin_date
+        and end_date arguments.
       isArray: false
       name: Date_field
       predefined:
@@ -777,7 +786,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The time range for which to return incident (<number> <time unit>, for example, 12 hours, 7 days.
+      description: The time range for which to return incident (<number> <time unit>,
+        for example, 12 hours, 7 days.
       isArray: false
       name: period
       required: false
@@ -966,3 +976,6 @@ script:
 tests:
 - PhishlabsIOC_DRP-Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

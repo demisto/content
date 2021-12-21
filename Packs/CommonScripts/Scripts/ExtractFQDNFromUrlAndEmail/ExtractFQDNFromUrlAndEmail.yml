@@ -24,3 +24,6 @@ subtype: python3
 tests:
 - ExtractFQDNFromUrlAndEmail-Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

@@ -8,10 +8,14 @@ subtype: python3
 tags:
 - infra
 - server
-comment: Common G Suite code that will be appended to each Google/GSuite integration when it is deployed.
+comment: Common G Suite code that will be appended to each Google/GSuite integration
+  when it is deployed.
 system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
 dockerimage: demisto/googleapi-python3:1.0.0.12698
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

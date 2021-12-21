@@ -1,7 +1,8 @@
 args:
 - auto: PREDEFINED
   default: false
-  description: A list of dictionaries of headers in the form of "Header name":"Header value".
+  description: A list of dictionaries of headers in the form of "Header name":"Header
+    value".
   isArray: true
   name: headers
   predefined:
@@ -235,7 +236,8 @@ args:
   - Pass
   required: false
   secret: false
-comment: Checks the authenticity of an email based on the email's SPF, DMARC, and DKIM.
+comment: Checks the authenticity of an email based on the email's SPF, DMARC, and
+  DKIM.
 commonfields:
   id: CheckEmailAuthenticity
   version: -1
@@ -246,7 +248,8 @@ outputs:
   description: SPF ID
   type: String
 - contextPath: Email.SPF.Validation-Result
-  description: 'Validation Result. Possible values are "None", "Neutral", "Pass", "Fail", "SoftFail", "TempError", and "PermError". '
+  description: 'Validation Result. Possible values are "None", "Neutral", "Pass",
+    "Fail", "SoftFail", "TempError", and "PermError". '
   type: String
 - contextPath: Email.SPF.Reason
   description: Reason for the SPF result, which is located in the headers of the email.
@@ -264,7 +267,8 @@ outputs:
   description: DMARC ID.
   type: String
 - contextPath: Email.DMARC.Validation-Result
-  description: DMARC reason. Possible values are "None", "Pass", "Fail", "Temperror", and "Permerror".
+  description: DMARC reason. Possible values are "None", "Pass", "Fail", "Temperror",
+    and "Permerror".
   type: String
 - contextPath: Email.DMARC.Tags
   description: DMARC Tags (if found)
@@ -288,7 +292,8 @@ outputs:
   description: DMARC information extracted from the email.
   type: Unknown
 - contextPath: Email.DKIM.Validation-Result
-  description: Validation result. Possible values are "None", "Pass", "Fail", "Policy", "Neutral", "Temperror", and "Permerror".
+  description: Validation result. Possible values are "None", "Pass", "Fail", "Policy",
+    "Neutral", "Temperror", and "Permerror".
   type: Unknown
 script: '-'
 system: false
@@ -303,3 +308,6 @@ dockerimage: demisto/python:2.7.18.24066
 runas: DBotWeakRole
 runonce: false
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

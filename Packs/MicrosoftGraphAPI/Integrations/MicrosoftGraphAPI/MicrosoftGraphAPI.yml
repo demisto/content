@@ -43,8 +43,9 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the Microsoft Graph API integration to interact with Microsoft
-  APIs that do not have dedicated integrations in Cortex XSOAR, for example, Mail Single-User, etc.
+description: Use the Microsoft Graph API integration to interact with Microsoft APIs
+  that do not have dedicated integrations in Cortex XSOAR, for example, Mail Single-User,
+  etc.
 display: Microsoft Graph API
 name: Microsoft Graph API
 script:
@@ -75,7 +76,7 @@ script:
       default: false
       defaultValue: v1.0
       description: 'The version of the Microsoft Graph API to use. Possible values
-        are: "v1.0" or "beta". Default is "v1.0.' 
+        are: "v1.0" or "beta". Default is "v1.0.'
       isArray: false
       name: api_version
       predefined:
@@ -100,7 +101,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: If "true" will populate the API response to the context data. Possible values are "true" or "false". Default is "true".
+      description: If "true" will populate the API response to the context data. Possible
+        values are "true" or "false". Default is "true".
       isArray: false
       name: populate_context
       predefined:
@@ -138,3 +140,6 @@ script:
 fromversion: 5.0.0
 tests:
 - Microsoft Graph API - Test
+marketplaces:
+- xsoar
+- marketplacev2

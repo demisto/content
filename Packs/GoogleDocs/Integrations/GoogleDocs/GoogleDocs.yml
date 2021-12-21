@@ -78,13 +78,17 @@ script:
       required: true
       secret: false
     - default: false
-      description: The target revision ID of the document to which the write request will be applied. If a newer revision exists you will receive an error. If you specify the target_revision_id argument, you cannot use this argument.
+      description: The target revision ID of the document to which the write request
+        will be applied. If a newer revision exists you will receive an error. If
+        you specify the target_revision_id argument, you cannot use this argument.
       isArray: false
       name: required_revision_id
       required: false
       secret: false
     - default: false
-      description: The target revision ID of the document to which the write request will be applied. If a newer revision exists you will receive an error. If you specify the required_revision_id argument, you cannot use this argument.
+      description: The target revision ID of the document to which the write request
+        will be applied. If a newer revision exists you will receive an error. If
+        you specify the required_revision_id argument, you cannot use this argument.
       isArray: false
       name: target_revision_id
       required: false
@@ -114,3 +118,6 @@ script:
 tests:
 - GoogleDocs-test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

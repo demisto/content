@@ -1771,7 +1771,8 @@ script:
       description: The date when this intel was last updated.
       type: date
     - contextPath: Tanium.IntelDoc.Type
-      description: The shortened type name of the intel. For example, "openioc", "stix", "yara".
+      description: The shortened type name of the intel. For example, "openioc", "stix",
+        "yara".
       type: String
   - arguments:
     - description: The intel document ID.
@@ -1819,3 +1820,6 @@ script:
 tests:
 - Tanium Threat Response Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

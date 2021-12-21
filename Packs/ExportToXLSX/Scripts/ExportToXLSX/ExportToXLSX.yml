@@ -12,7 +12,8 @@ args:
   required: true
   secret: false
 - default: false
-  description: The sheet name. Separate multiple sheet names using a comma ",", for example, sheet1,sheet2.
+  description: The sheet name. Separate multiple sheet names using a comma ",", for
+    example, sheet1,sheet2.
   isArray: true
   name: sheet_name
   required: true
@@ -26,7 +27,8 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'true'
-  description: Whether table headers should be bold. If this argument is set to "true", table headers are bold. Default is "true".
+  description: Whether table headers should be bold. If this argument is set to "true",
+    table headers are bold. Default is "true".
   isArray: false
   name: bold
   predefined:
@@ -37,7 +39,8 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'true'
-  description: Whether borders should be added to table cells. If this argument is set to "true", borders are added to table cells. Default is "true".
+  description: Whether borders should be added to table cells. If this argument is
+    set to "true", borders are added to table cells. Default is "true".
   isArray: false
   name: border
   predefined:
@@ -62,3 +65,6 @@ runonce: false
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

@@ -52,7 +52,8 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
+    fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -111,7 +112,8 @@ configuration:
   required: false
   type: 8
 description: A PassiveTotal with Security Intelligence Services Feed provides you
-  with newly observed Domain, Malware, Phishing, Content and Scam Blacklist with Hourly ingestion available.
+  with newly observed Domain, Malware, Phishing, Content and Scam Blacklist with Hourly
+  ingestion available.
 display: Security Intelligence Services Feed
 name: SecurityIntelligenceServicesFeed
 script:
@@ -162,3 +164,6 @@ script:
 tests:
 - SecurityIntelligenceServicesFeed - Test
 fromversion: 5.5.0
+marketplaces:
+- xsoar
+- marketplacev2

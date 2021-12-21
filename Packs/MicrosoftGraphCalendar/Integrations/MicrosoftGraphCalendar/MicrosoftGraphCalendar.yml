@@ -811,3 +811,6 @@ script:
 tests:
 - Microsoft Graph Calendar - Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

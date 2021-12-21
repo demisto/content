@@ -18,8 +18,8 @@ args:
 - name: title
   description: The markdown title.
 - name: headers
-  description: Comma-separated list of table header values. Default will include
-    all available table headers.
+  description: Comma-separated list of table header values. Default will include all
+    available table headers.
 - name: is_auto_json_transform
   description: Try transforming complex JSON automatically.
 - name: json_transform_properties
@@ -32,3 +32,6 @@ dockerimage: demisto/python3:3.9.8.24399
 runas: DBotWeakRole
 tests:
 - JsonToTable - Test Playbook
+marketplaces:
+- xsoar
+- marketplacev2

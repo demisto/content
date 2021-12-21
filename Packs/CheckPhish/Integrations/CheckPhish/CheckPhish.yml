@@ -12,7 +12,8 @@ configuration:
   name: token
   required: true
   type: 4
-- display: 'Good Dispositions (CheckPhish labels for non-phishing URLs. Default is "clean")'
+- display: 'Good Dispositions (CheckPhish labels for non-phishing URLs. Default is
+    "clean")'
   name: good_disp
   options:
   - adult
@@ -27,7 +28,8 @@ configuration:
   - suspicious
   required: false
   type: 16
-- display: 'Suspicious dispositions (CheckPhish labels for suspicious phishing URLs). Default is "drug_spam", "gambling", "hacked_website", "streaming", "suspicious"'
+- display: 'Suspicious dispositions (CheckPhish labels for suspicious phishing URLs).
+    Default is "drug_spam", "gambling", "hacked_website", "streaming", "suspicious"'
   name: susp_disp
   options:
   - adult
@@ -42,7 +44,8 @@ configuration:
   - suspicious
   required: false
   type: 16
-- display: 'Bad dispositions (CheckPhish labels for phishing URLs). Defaults are "cryptojacking", "phish", "likely_phish", "scam".'
+- display: 'Bad dispositions (CheckPhish labels for phishing URLs). Defaults are "cryptojacking",
+    "phish", "likely_phish", "scam".'
   name: bad_disp
   options:
   - adult
@@ -208,3 +211,6 @@ script:
   subtype: python2
   dockerimage: demisto/python:2.7.18.24398
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

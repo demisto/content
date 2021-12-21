@@ -16,7 +16,8 @@ args:
   default: true
   description: The War Room entryID of the file to convert.
 - name: format
-  description: 'Output format to which to convert. Can specify only file extension, such as: "pdf" or <ext:writer> such  as  "txt:Text (Encoded)". Default is "pdf".'
+  description: 'Output format to which to convert. Can specify only file extension,
+    such as: "pdf" or <ext:writer> such  as  "txt:Text (Encoded)". Default is "pdf".'
   defaultValue: pdf
 - name: all_files
   auto: PREDEFINED
@@ -45,3 +46,6 @@ scripttarget: 0
 runonce: false
 dockerimage: demisto/office-utils:2.0.0.5456
 runas: DBotWeakRole
+marketplaces:
+- xsoar
+- marketplacev2

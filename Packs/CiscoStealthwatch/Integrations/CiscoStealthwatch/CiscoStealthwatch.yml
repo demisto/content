@@ -33,7 +33,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'Start time in the format: YYYY-mm-ddTHH:MM:SSZ. If start_time is provided but end_time is not provided, the end_time will be set to the current time.'
+      description: 'Start time in the format: YYYY-mm-ddTHH:MM:SSZ. If start_time
+        is provided but end_time is not provided, the end_time will be set to the
+        current time.'
       isArray: false
       name: start_time
       required: false
@@ -45,7 +47,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'An optional time range, for example: 3 months, 1 week, 1 day ago, etc.'
+      description: 'An optional time range, for example: 3 months, 1 week, 1 day ago,
+        etc.'
       isArray: false
       name: time_range
       required: false
@@ -64,8 +67,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Initializes the flow search based on specified arguments. Must provide a start
-      time, time range, or start time and end time.
+    description: Initializes the flow search based on specified arguments. Must provide
+      a start time, time range, or start time and end time.
     execution: false
     name: cisco-stealthwatch-query-flows-initialize
     outputs:
@@ -86,7 +89,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The ID of the search from the cisco-stealthwatch-query-flows-initialize command.
+      description: The ID of the search from the cisco-stealthwatch-query-flows-initialize
+        command.
       isArray: false
       name: search_id
       required: true
@@ -110,13 +114,15 @@ script:
       required: true
       secret: false
     - default: false
-      description: The ID of the search from the cisco-stealthwatch-query-flows-initialize command.
+      description: The ID of the search from the cisco-stealthwatch-query-flows-initialize
+        command.
       isArray: false
       name: search_id
       required: true
       secret: false
     deprecated: false
-    description: Retrieves the flow search results. Use this command after the search job completes.
+    description: Retrieves the flow search results. Use this command after the search
+      job completes.
     execution: false
     name: cisco-stealthwatch-query-flows-results
     outputs:
@@ -200,8 +206,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Lists all domains if no domain is specified or gets a specified domain (called tenant(s) in the
-      API).
+    description: Lists all domains if no domain is specified or gets a specified domain
+      (called tenant(s) in the API).
     execution: false
     name: cisco-stealthwatch-list-tenants
     outputs:
@@ -225,8 +231,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Gets the hourly traffic summary of the byte count for a single host group (called
-      tenant in the API).
+    description: Gets the hourly traffic summary of the byte count for a single host
+      group (called tenant in the API).
     execution: false
     name: cisco-stealthwatch-get-tag-hourly-traffic-report
     outputs:
@@ -256,8 +262,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Gets the top alarming host groups (called tags on the API) for a specific
-      domain (called tenant in the API).
+    description: Gets the top alarming host groups (called tags on the API) for a
+      specific domain (called tenant in the API).
     execution: false
     name: cisco-stealthwatch-get-top-alarming-tags
     outputs:
@@ -278,7 +284,8 @@ script:
       type: str
   - arguments:
     - default: false
-      description: The ID of the tenant for which to initialize its list security events.
+      description: The ID of the tenant for which to initialize its list security
+        events.
       isArray: false
       name: tenant_id
       required: true
@@ -303,8 +310,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Initializes the list of security events for a domain (called tenant on
-      the API).
+    description: Initializes the list of security events for a domain (called tenant
+      on the API).
     execution: false
     name: cisco-stealthwatch-list-security-events-initialize
     outputs:
@@ -319,7 +326,8 @@ script:
       type: str
   - arguments:
     - default: false
-      description: The ID of the tenant for which to get its list of security events status.
+      description: The ID of the tenant for which to get its list of security events
+        status.
       isArray: false
       name: tenant_id
       required: true
@@ -343,7 +351,8 @@ script:
       type: str
   - arguments:
     - default: false
-      description: The ID of the tenant for which to retrieve its list security events results.
+      description: The ID of the tenant for which to retrieve its list security events
+        results.
       isArray: false
       name: tenant_id
       required: true
@@ -362,8 +371,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Lists the security events results. Use this command after the search job
-      completes.
+    description: Lists the security events results. Use this command after the search
+      job completes.
     execution: false
     name: cisco-stealthwatch-list-security-events-results
     outputs:
@@ -407,5 +416,8 @@ script:
   subtype: python3
   type: python
 tests:
-  - Cisco Stealthwatch Test
+- Cisco Stealthwatch Test
 fromversion: 5.5.0
+marketplaces:
+- xsoar
+- marketplacev2

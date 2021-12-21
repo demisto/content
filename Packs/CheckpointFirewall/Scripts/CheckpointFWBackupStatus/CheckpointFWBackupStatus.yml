@@ -9,7 +9,8 @@ tags:
 - checkpoint
 comment: Connect to a CheckPoint firewall appliance using SSH and retrieve the status
   for backup tasks. The user account being used to access the device must be set to
-  use the SSH shell and not the built-in CheckPoint CLI. For more information, consult the CheckPoint documentation.
+  use the SSH shell and not the built-in CheckPoint CLI. For more information, consult
+  the CheckPoint documentation.
 enabled: true
 args:
 - name: devices
@@ -36,3 +37,6 @@ fromversion: 5.0.0
 tests:
 - No tests
 dockerimage: demisto/python:2.7.18.24066
+marketplaces:
+- xsoar
+- marketplacev2

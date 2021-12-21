@@ -146,3 +146,6 @@ script:
 fromversion: 5.5.0
 tests:
 - BitcoinAbuse-test
+marketplaces:
+- xsoar
+- marketplacev2

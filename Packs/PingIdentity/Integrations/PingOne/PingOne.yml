@@ -82,7 +82,8 @@ script:
       description: Group id.
     - name: userId
       description: User id.
-    description: Add user to the group. One of the following has to be given username or userId and groupName or groupId.
+    description: Add user to the group. One of the following has to be given username
+      or userId and groupName or groupId.
   - name: pingone-remove-from-group
     arguments:
     - name: username
@@ -93,7 +94,8 @@ script:
       description: User id.
     - name: groupId
       description: Group id.
-    description: Remove user from the group. One of the following has to be given username or userId and groupName or groupId.
+    description: Remove user from the group. One of the following has to be given
+      username or userId and groupName or groupId.
   - name: pingone-get-groups
     arguments:
     - name: username
@@ -146,7 +148,8 @@ script:
     - contextPath: PingOne.Account.UpdatedAt
       description: PingOne account updated date.
       type: date
-    description: Returns a PingOne user. One of the following has to be given username or userId.
+    description: Returns a PingOne user. One of the following has to be given username
+      or userId.
   - name: pingone-create-user
     arguments:
     - name: username
@@ -222,10 +225,14 @@ script:
       description: Username.
     - name: userId
       description: User id.
-    description: Delete a PingOne user. One of the following has to be given username or userId.
+    description: Delete a PingOne user. One of the following has to be given username
+      or userId.
   dockerimage: demisto/python3:3.9.7.24076
   runonce: false
   subtype: python3
 fromversion: 6.0.0
 tests:
 - No tests
+marketplaces:
+- xsoar
+- marketplacev2

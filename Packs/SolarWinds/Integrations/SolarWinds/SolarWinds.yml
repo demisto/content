@@ -3,20 +3,20 @@ commonfields:
   id: SolarWinds
   version: -1
 configuration:
-- additionalinfo: 'Name or IP address of the Orion server you want to connect
-    to. Do not specify the port number. Examples: myorigin.mydomain.local, 12.153.24.2'
+- additionalinfo: 'Name or IP address of the Orion server you want to connect to.
+    Do not specify the port number. Examples: myorigin.mydomain.local, 12.153.24.2'
   display: Name or IP address of the Orion server
   name: server
   required: true
   type: 0
-- additionalinfo: Admin can create users such as guests from the Orion platform and provide
-    access permission according to need.
+- additionalinfo: Admin can create users such as guests from the Orion platform and
+    provide access permission according to need.
   display: Username of the account
   name: credentials
   required: true
   type: 9
-- additionalinfo: 'Note: "Type of incident to be fetched" and "Incident type"
-    should be the same to fetch similar types of incidents.'
+- additionalinfo: 'Note: "Type of incident to be fetched" and "Incident type" should
+    be the same to fetch similar types of incidents.'
   defaultvalue: Alert
   display: Type of incident to be fetched
   hidden: false
@@ -35,8 +35,8 @@ configuration:
   type: 0
 - additionalinfo: 'Date or relative timestamp to start fetching incidents from. For
     Alert, incidents will be fetched based on triggered date. For Event, the incidents
-    will be fetched based on event time. (Formats accepted:  2 minutes, 2 hours,
-    2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.).'
+    will be fetched based on event time. (Formats accepted:  2 minutes, 2 hours, 2
+    days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.).'
   defaultvalue: 3 days
   display: First fetch time interval
   hidden: false
@@ -57,9 +57,9 @@ configuration:
   - Critical
   required: false
   type: 16
-- additionalinfo: Filter alerts based on the type of property to monitor. If
-    not specified, it will fetch all types of alerts. To list additional object types,
-    use the query 'SELECT DISTINCT ObjectType FROM Orion.AlertConfigurations' in the swis-query
+- additionalinfo: Filter alerts based on the type of property to monitor. If not specified,
+    it will fetch all types of alerts. To list additional object types, use the query
+    'SELECT DISTINCT ObjectType FROM Orion.AlertConfigurations' in the swis-query
     command.
   display: Object Types
   hidden: false
@@ -93,8 +93,8 @@ configuration:
   required: false
   type: 16
 - additionalinfo: Filter events based on the type. If not specified, it will fetch
-    all types of events. To list additional event types, use the query 'SELECT Name FROM
-    Orion.EventTypes' in the swis-query command.
+    all types of events. To list additional event types, use the query 'SELECT Name
+    FROM Orion.EventTypes' in the swis-query command.
   display: Event Types
   hidden: false
   name: event_types
@@ -146,9 +146,9 @@ configuration:
   name: isFetch
   required: false
   type: 8
-description: The SolarWinds integration interacts with the SWIS API to allow you
-  to fetch alerts and events. It also provides commands to retrieve lists of alerts
-  and events.
+description: The SolarWinds integration interacts with the SWIS API to allow you to
+  fetch alerts and events. It also provides commands to retrieve lists of alerts and
+  events.
 display: SolarWinds
 name: SolarWinds
 script:
@@ -175,8 +175,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of event types. For example:
-        "Warning", "Informational", "Node Up", etc.'
+      description: 'A comma-separated list of event types. For example: "Warning",
+        "Informational", "Node Up", etc.'
       isArray: true
       name: event_type
       required: false
@@ -207,8 +207,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: ascending
-      description: 'Order by which the response will be sorted. Possible values:
-        "ascending" and "descending".'
+      description: 'Order by which the response will be sorted. Possible values: "ascending"
+        and "descending".'
       isArray: false
       name: sort_order
       predefined:
@@ -218,8 +218,8 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: The page number from which to retrieve events. By default, the per-page
-        limit is 50 events. You can change this value in the limit argument.
+      description: The page number from which to retrieve events. By default, the
+        per-page limit is 50 events. You can change this value in the limit argument.
       isArray: false
       name: page
       required: false
@@ -234,8 +234,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retrieves a list of events according to filter values provided in the command
-      arguments.
+    description: Retrieves a list of events according to filter values provided in
+      the command arguments.
     execution: true
     name: swis-event-list
     outputs:
@@ -304,8 +304,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of the type of property to monitor.
-        For example: "Node", "IPAM.IPRequests", "Orion"."DiscoveryLogs", "APM: Component",
+      description: 'A comma-separated list of the type of property to monitor. For
+        example: "Node", "IPAM.IPRequests", "Orion"."DiscoveryLogs", "APM: Component",
         "IPAM Networks", "Orion.NodesForecastCapacity", "APM: Application", "Orion.VolumesForecastCapacity",
         "Orion.NodesForecastCapacity", etc.'
       isArray: true
@@ -354,8 +354,8 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: The page number from which to retrieve alerts. By default, the per-page
-        limit is 50 alerts. You can change this value in the limit argument.
+      description: The page number from which to retrieve alerts. By default, the
+        per-page limit is 50 alerts. You can change this value in the limit argument.
       isArray: false
       name: page
       required: false
@@ -545,3 +545,6 @@ script:
 tests:
 - No tests (auto formatted)
 fromversion: 5.5.0
+marketplaces:
+- xsoar
+- marketplacev2

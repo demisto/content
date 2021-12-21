@@ -4,7 +4,8 @@ commonfields:
 name: WhatsMyBrowser
 display: WhatIsMyBrowser
 category: Data Enrichment & Threat Intelligence
-description: Parse user agents and determine if they are malicious as well as enrich information about the agent
+description: Parse user agents and determine if they are malicious as well as enrich
+  information about the agent
 configuration:
 - display: URL for WhatIsMyBrowser
   name: url
@@ -67,3 +68,6 @@ script:
 tests:
 - WhatsMyBrowser-Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

@@ -3922,7 +3922,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Page number to retrieve releases from. If limit argument is not given, defaults to 1.
+      description: Page number to retrieve releases from. If limit argument is not
+        given, defaults to 1.
       isArray: false
       name: page
       required: false
@@ -3934,19 +3935,22 @@ script:
       required: false
       secret: false
     - default: false
-      description: Maximum number of releases data to retrieve. Will get results of the first pages. Cannot be given with page_size or page arguments.
+      description: Maximum number of releases data to retrieve. Will get results of
+        the first pages. Cannot be given with page_size or page arguments.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: The name of the organization containing the repository. Defaults to organization instance parameter if not given.
+      description: The name of the organization containing the repository. Defaults
+        to organization instance parameter if not given.
       isArray: false
       name: organization
       required: false
       secret: false
     - default: false
-      description: The repository containing the releases. Defaults to repository instance parameter if not given.
+      description: The repository containing the releases. Defaults to repository
+        instance parameter if not given.
       isArray: false
       name: repository
       required: false
@@ -4070,3 +4074,6 @@ script:
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2

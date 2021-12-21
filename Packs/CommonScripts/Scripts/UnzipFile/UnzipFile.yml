@@ -60,3 +60,6 @@ tests:
 - ZipFile-Test
 - UnzipFile-Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

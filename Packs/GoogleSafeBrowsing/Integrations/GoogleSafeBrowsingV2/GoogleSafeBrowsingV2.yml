@@ -46,7 +46,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Search Safe Browsing, The Safe Browsing APIs (v4) let your client applications check URLs against Google's constantly updated lists of unsafe web resources.
+description: Search Safe Browsing, The Safe Browsing APIs (v4) let your client applications
+  check URLs against Google's constantly updated lists of unsafe web resources.
 display: Google Safe Browsing v2
 name: Google Safe Browsing v2
 script:
@@ -111,3 +112,6 @@ script:
 tests:
 - Google Safe Browsing V2 Test
 fromversion: 5.5.0
+marketplaces:
+- xsoar
+- marketplacev2

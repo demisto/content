@@ -1098,3 +1098,6 @@ script:
 fromversion: 5.0.0
 tests:
 - FireEye HX Test
+marketplaces:
+- xsoar
+- marketplacev2

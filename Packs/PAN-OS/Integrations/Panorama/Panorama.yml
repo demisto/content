@@ -205,7 +205,10 @@ script:
       - 'false'
     - description: Push description.
       name: description
-    description: Pushes rules from PAN-OS to the configured device group. In order to push the configuration to Prisma Access managed tenants (single or multi tenancy), use the device group argument with the device group which is associated with the tenant ID.
+    description: Pushes rules from PAN-OS to the configured device group. In order
+      to push the configuration to Prisma Access managed tenants (single or multi
+      tenancy), use the device group argument with the device group which is associated
+      with the tenant ID.
     name: panorama-push-to-device-group
     outputs:
     - contextPath: Panorama.Push.DeviceGroup
@@ -1869,7 +1872,8 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: Timeout value to automatically unregister the IPs. Only applicable to PAN-OS 9.x and higher. Can not be used with persistent as true.
+    - description: Timeout value to automatically unregister the IPs. Only applicable
+        to PAN-OS 9.x and higher. Can not be used with persistent as true.
       name: timeout
     description: Registers IP addresses to a tag.
     name: panorama-register-ip-tag
@@ -3425,3 +3429,6 @@ fromversion: 5.0.0
 tests:
 - palo_alto_firewall_test_pb
 - palo_alto_panorama_test_pb
+marketplaces:
+- xsoar
+- marketplacev2

@@ -36,3 +36,6 @@ dockerimage: demisto/python3:3.9.7.24076
 tests:
 - IsUrlPartOfDomain Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

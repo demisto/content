@@ -17,8 +17,8 @@ configuration:
   required: false
   type: 8
 description: Use the HYAS Insight integration to interactively lookup PassiveDNS,
-  DynamicDNS, WHOIS, Malware and C2 Attribution Information – either as playbook tasks or through API
-  calls in the War Room.
+  DynamicDNS, WHOIS, Malware and C2 Attribution Information – either as playbook tasks
+  or through API calls in the War Room.
 display: HYAS Insight
 name: HYAS Insight
 script:
@@ -454,3 +454,6 @@ script:
   script: '-'
   subtype: python3
   type: python
+marketplaces:
+- xsoar
+- marketplacev2

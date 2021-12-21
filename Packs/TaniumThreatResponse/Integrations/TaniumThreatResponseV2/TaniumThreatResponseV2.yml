@@ -50,7 +50,8 @@ configuration:
   required: false
   type: 8
 description: Use the Tanium Threat Response integration to manage endpoint processes,
-  evidence, alerts, files, snapshots, and connections. This integration works with Tanium Threat Response version 3.0.159 and above.
+  evidence, alerts, files, snapshots, and connections. This integration works with
+  Tanium Threat Response version 3.0.159 and above.
 display: Tanium Threat Response v2
 name: Tanium Threat Response v2
 script:
@@ -466,7 +467,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of connection statuses to filter connections by, for example status=connected,waiting.
+      description: A comma-separated list of connection statuses to filter connections
+        by, for example status=connected,waiting.
       isArray: true
       name: status
       required: false
@@ -477,19 +479,22 @@ script:
       - waiting
       - connected
     - default: false
-      description: A comma-separated list of IPs to filter connections by, for example status=1.1.1.1,1.1.1.1.
+      description: A comma-separated list of IPs to filter connections by, for example
+        status=1.1.1.1,1.1.1.1.
       isArray: true
       name: ip
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of platforms to filter connections by, for example platform=Linux,Windows.
+      description: A comma-separated list of platforms to filter connections by, for
+        example platform=Linux,Windows.
       isArray: true
       name: platform
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of hostnames to filter connections by, for example hostname=host1,host2.
+      description: A comma-separated list of hostnames to filter connections by, for
+        example hostname=host1,host2.
       isArray: true
       name: hostname
       required: false
@@ -547,8 +552,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: IP address to connect. Use tanium-tr-get-system-status to get
-        all possible IPs.
+      description: IP address to connect. Use tanium-tr-get-system-status to get all
+        possible IPs.
       isArray: false
       name: ip
       required: true
@@ -633,12 +638,13 @@ script:
       description: The number of Tanium Signal documents associated with this label.
       type: Number
     - contextPath: Tanium.Label.updatedAt
-      description: The date this label was last updated, not including the intel
-        and signal counts.
+      description: The date this label was last updated, not including the intel and
+        signal counts.
       type: Date
   - arguments:
     - default: false
-      description: The label ID. Use tanium-tr-intel-docs-labels-list command to get the available label IDs.
+      description: The label ID. Use tanium-tr-intel-docs-labels-list command to get
+        the available label IDs.
       isArray: false
       name: label_id
       required: true
@@ -693,19 +699,22 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of hostnames to filter downloaded files by, for example hostname=host1,host2.
+      description: A comma-separated list of hostnames to filter downloaded files
+        by, for example hostname=host1,host2.
       isArray: true
       name: hostname
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of hashes to filter downloaded files by, for example hash=123,456.
+      description: A comma-separated list of hashes to filter downloaded files by,
+        for example hash=123,456.
       isArray: true
       name: hash
       required: false
       secret: false
     - default: false
-      description: Get the downloaded files with a process start time that matches the specified date and time, for example process_time_start=2019-09-03T17:51:40.000Z.
+      description: Get the downloaded files with a process start time that matches
+        the specified date and time, for example process_time_start=2019-09-03T17:51:40.000Z.
       isArray: false
       name: process_time_start
       required: false
@@ -1525,13 +1534,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of hostnames to filter event evidences by, for example hostname=123,456.
+      description: A comma-separated list of hostnames to filter event evidences by,
+        for example hostname=123,456.
       isArray: true
       name: hostname
       required: false
       secret: false
     - default: false
-      description: Get the event evidences that match a specific type, for example type=file.
+      description: Get the event evidences that match a specific type, for example
+        type=file.
       isArray: false
       name: type
       required: false
@@ -2024,19 +2035,24 @@ script:
       description: The date when this intel was last updated.
       type: Date
     - contextPath: Tanium.IntelDoc.revisionId
-      description: The number of times the contents of the intel with this ID have been updated.
+      description: The number of times the contents of the intel with this ID have
+        been updated.
       type: Number
     - contextPath: Tanium.IntelDoc.Type
-      description: The shortened type name of the intel. For example, "openioc", "stix", "yara".
+      description: The shortened type name of the intel. For example, "openioc", "stix",
+        "yara".
       type: String
     - contextPath: Tanium.IntelDoc.typeVersion
-      description: The version number of the intel type. For example, "1.0", "2.3", etc.
+      description: The version number of the intel type. For example, "1.0", "2.3",
+        etc.
       type: String
     - contextPath: Tanium.IntelDoc.intrinsicId
-      description: The unique identifier claimed by the intel document, such as a guid or other built-in ID.
+      description: The unique identifier claimed by the intel document, such as a
+        guid or other built-in ID.
       type: String
     - contextPath: Tanium.IntelDoc.Md5
-      description: The hex digest of the MD5 sum of the contents of the document that represents this intel.
+      description: The hex digest of the MD5 sum of the contents of the document that
+        represents this intel.
       type: String
     - contextPath: Tanium.IntelDoc.Size
       description: The size of the intel document contents, in bytes.
@@ -2101,19 +2117,24 @@ script:
       description: The date when this intel was last updated.
       type: Date
     - contextPath: Tanium.IntelDoc.revisionId
-      description: The number of times the contents of the intel with this ID have been updated.
+      description: The number of times the contents of the intel with this ID have
+        been updated.
       type: Number
     - contextPath: Tanium.IntelDoc.Type
-      description: The shortened type name of the intel. For example, "openioc", "stix", "yara".
+      description: The shortened type name of the intel. For example, "openioc", "stix",
+        "yara".
       type: String
     - contextPath: Tanium.IntelDoc.typeVersion
-      description: The version number of the intel type. For example, "1.0", "2.3", etc.
+      description: The version number of the intel type. For example, "1.0", "2.3",
+        etc.
       type: String
     - contextPath: Tanium.IntelDoc.intrinsicId
-      description: The unique identifier claimed by the intel document, such as a guid or other built-in ID.
+      description: The unique identifier claimed by the intel document, such as a
+        guid or other built-in ID.
       type: String
     - contextPath: Tanium.IntelDoc.Md5
-      description: The hex digest of the MD5 sum of the contents of the document that represents this intel.
+      description: The hex digest of the MD5 sum of the contents of the document that
+        represents this intel.
       type: String
     - contextPath: Tanium.IntelDoc.Size
       description: The size of the intel document contents, in bytes.
@@ -2200,7 +2221,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of statuses to filter system status by, for example status=Blocked,Leader.
+      description: A comma-separated list of statuses to filter system status by,
+        for example status=Blocked,Leader.
       isArray: true
       name: status
       required: false
@@ -2211,19 +2233,22 @@ script:
       - Leader
       - Normal
       - Slow link
-      description: A comma-separated list of IP servers to filter system status by, for example ip_server=1.1.1.1,2.2.2.2.
+      description: A comma-separated list of IP servers to filter system status by,
+        for example ip_server=1.1.1.1,2.2.2.2.
       isArray: true
       name: ip_server
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of IP clients to filter system-status by, for example ip_client=1.1.1.1,2.2.2.2.
+      description: A comma-separated list of IP clients to filter system-status by,
+        for example ip_client=1.1.1.1,2.2.2.2.
       isArray: true
       name: ip_client
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of hostnames to filter system-status by, for example hostname=host1,host2.
+      description: A comma-separated list of hostnames to filter system-status by,
+        for example hostname=host1,host2.
       isArray: true
       name: hostname
       required: false
@@ -2235,8 +2260,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets system status, including connections, client IDs,
-      hostnames, and IPs.
+    description: Gets system status, including connections, client IDs, hostnames,
+      and IPs.
     execution: false
     hidden: false
     name: tanium-tr-get-system-status
@@ -2284,3 +2309,6 @@ defaultmapperin: Tanium Threat Response
 tests:
 - Tanium Threat Response V2 Test
 fromversion: 6.0.0
+marketplaces:
+- xsoar
+- marketplacev2

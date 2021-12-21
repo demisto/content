@@ -231,3 +231,6 @@ script:
     arguments:
     - name: domain
       description: Specify domain e.g. mycompany.com
+marketplaces:
+- xsoar
+- marketplacev2

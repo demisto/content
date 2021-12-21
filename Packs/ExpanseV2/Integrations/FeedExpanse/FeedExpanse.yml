@@ -161,3 +161,6 @@ script:
 fromversion: 6.0.0
 tests:
 - Feed Expanse Test
+marketplaces:
+- xsoar
+- marketplacev2

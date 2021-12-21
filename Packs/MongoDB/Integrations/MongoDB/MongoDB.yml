@@ -40,7 +40,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: A comma-separated list of ObjectIds to get. Can be retrieved from the `mongodb-query` command.
+      description: A comma-separated list of ObjectIds to get. Can be retrieved from
+        the `mongodb-query` command.
       isArray: true
       name: object_id
       required: true
@@ -64,7 +65,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'A JSON query to search for in the collection, in the format: `{"key": "value"}`. e.g {"_id": "mongodbid"}. Search by regex is supported, for more details refer to the Integration documentation.'
+      description: 'A JSON query to search for in the collection, in the format: `{"key":
+        "value"}`. e.g {"_id": "mongodbid"}. Search by regex is supported, for more
+        details refer to the Integration documentation.'
       isArray: false
       name: query
       required: true
@@ -90,7 +93,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Searches for items by using the specified JSON query. Search by regex is supported.
+    description: Searches for items by using the specified JSON query. Search by regex
+      is supported.
     execution: false
     name: mongodb-query
     outputs:
@@ -108,7 +112,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'The entry to insert, in JSON format. Can include the `_id` argument or not, for example: `{"key": "value"}`'
+      description: 'The entry to insert, in JSON format. Can include the `_id` argument
+        or not, for example: `{"key": "value"}`'
       isArray: false
       name: entry
       required: true
@@ -132,13 +137,16 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'A query that matches the document to update, in the format: `{"key": "value"}`.'
+      description: 'A query that matches the document to update, in the format: `{"key":
+        "value"}`.'
       isArray: false
       name: filter
       required: true
       secret: false
     - default: false
-      description: 'The content with which to update the entry, in the format: {"$set": {"key": "value"}}. You can use Update Operators or Aggregation Pipeline. For more information, see the integration documentation.'
+      description: 'The content with which to update the entry, in the format: {"$set":
+        {"key": "value"}}. You can use Update Operators or Aggregation Pipeline. For
+        more information, see the integration documentation.'
       isArray: false
       name: update
       required: true
@@ -146,7 +154,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Whether to update a single entry. If false, will set all found entries. If false, will set all found entries.
+      description: Whether to update a single entry. If false, will set all found
+        entries. If false, will set all found entries.
       isArray: false
       name: update_one
       predefined:
@@ -166,7 +175,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'A query that matches the document to delete, for example: `{"key": "value"}`.'
+      description: 'A query that matches the document to delete, for example: `{"key":
+        "value"}`.'
       isArray: false
       name: filter
       required: true
@@ -174,7 +184,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Whether to delete a single entry from the database. If false, will set all found entries.
+      description: Whether to delete a single entry from the database. If false, will
+        set all found entries.
       isArray: false
       name: delete_one
       predefined:
@@ -225,7 +236,8 @@ script:
       secret: false
     - default: false
       description: 'A JSON pipeline query to search by in the collection. Pipeline
-        query should by list of dictionaries. For example: [{"key1": "value1"}, {"key2": "value2"}]'
+        query should by list of dictionaries. For example: [{"key1": "value1"}, {"key2":
+        "value2"}]'
       isArray: false
       name: pipeline
       required: true
@@ -267,3 +279,6 @@ script:
 tests:
 - MongoDB - Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

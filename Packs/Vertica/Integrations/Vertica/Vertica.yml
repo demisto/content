@@ -36,7 +36,8 @@ script:
       required: true
       description: A SQL query to perform on the Vertica database.
     - name: limit
-      description: The maximum number of results to be returned from the query. (Use 0 for all results)
+      description: The maximum number of results to be returned from the query. (Use
+        0 for all results)
       defaultValue: "50"
     outputs:
     - contextPath: Vertica.Query
@@ -52,3 +53,6 @@ script:
 tests:
 - Vertica Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

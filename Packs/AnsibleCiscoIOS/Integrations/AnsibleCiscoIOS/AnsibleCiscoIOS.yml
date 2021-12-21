@@ -1174,3 +1174,6 @@ script:
   type: python
 tests:
 - Test-AnsibleCiscoIOS
+marketplaces:
+- xsoar
+- marketplacev2

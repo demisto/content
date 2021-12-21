@@ -33,7 +33,8 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
+    fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -83,7 +84,8 @@ configuration:
   - Reports
   required: true
   type: 16
-- display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year). Leave empty to fetch from the first indicator available.
+- display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months,
+    1 year). Leave empty to fetch from the first indicator available.
   name: first_fetch_timestamp
   required: false
   type: 0
@@ -152,5 +154,8 @@ script:
   subtype: python3
   type: python
 tests:
-  - playbook-FeedFireEye_test
+- playbook-FeedFireEye_test
 fromversion: 5.5.0
+marketplaces:
+- xsoar
+- marketplacev2

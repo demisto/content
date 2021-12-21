@@ -4,9 +4,9 @@ commonfields:
 name: Twitter
 display: Twitter
 category: Utilities
-description: 'The Twitter Integration allows users to parse Twitter for Users,
-  Tweets, and additional info about users. Perform enhanced searches with additional
-  search arguments. Search results are returned as a markdown table. '
+description: 'The Twitter Integration allows users to parse Twitter for Users, Tweets,
+  and additional info about users. Perform enhanced searches with additional search
+  arguments. Search results are returned as a markdown table. '
 configuration:
 - display: API Key
   name: apikey
@@ -94,3 +94,6 @@ script:
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2

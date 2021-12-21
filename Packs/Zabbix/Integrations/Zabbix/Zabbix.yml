@@ -40,7 +40,8 @@ script:
   - name: zabbix-hostgroup-get
     arguments:
     - name: params_graphids
-      description: Return only host groups that contain hosts or templates with the given graphs.
+      description: Return only host groups that contain hosts or templates with the
+        given graphs.
     - name: params_groupids
       description: Return only host groups with the given host group IDs.
     - name: params_hostids
@@ -56,7 +57,8 @@ script:
     - name: params_templateids
       description: Return only host groups that contain the given templates.
     - name: params_triggerids
-      description: Return only host groups that contain hosts or templates with the given triggers.
+      description: Return only host groups that contain hosts or templates with the
+        given triggers.
     - name: params_with_applications
       description: Return only host groups that contain hosts with applications.
     - name: params_with_graphs
@@ -70,9 +72,11 @@ script:
     - name: params_with_monitored_httptests
       description: Return only host groups that contain hosts with enabled web checks.
     - name: params_with_monitored_items
-      description: Return only host groups that contain hosts or templates with enabled items.
+      description: Return only host groups that contain hosts or templates with enabled
+        items.
     - name: params_with_monitored_triggers
-      description: Return only host groups that contain hosts with enabled triggers. All of the items used in the trigger must also be enabled.
+      description: Return only host groups that contain hosts with enabled triggers.
+        All of the items used in the trigger must also be enabled.
     - name: params_with_simple_graph_items
       description: Return only host groups that contain hosts with numeric items.
     - name: params_with_triggers
@@ -136,7 +140,8 @@ script:
     - name: params_with_monitored_items
       description: Return only hosts that have enabled items.
     - name: params_with_monitored_triggers
-      description: Return only hosts that have enabled triggers. All of the items used in the trigger must also be enabled.
+      description: Return only hosts that have enabled triggers. All of the items
+        used in the trigger must also be enabled.
     - name: params_with_simple_graph_items
       description: Return only hosts that have items with numeric type of information.
     - name: params_with_triggers
@@ -253,10 +258,12 @@ script:
       description: Certificate subject.
       type: string
     - contextPath: Zabbix.Host.tls_psk_identity
-      description: PSK identity. Required if either tls_connect or tls_accept has PSK enabled.
+      description: PSK identity. Required if either tls_connect or tls_accept has
+        PSK enabled.
       type: string
     - contextPath: Zabbix.Host.tls_psk
-      description: The preshared key, at least 32 hex digits. Required if either tls_connect or tls_accept has PSK enabled.
+      description: The preshared key, at least 32 hex digits. Required if either tls_connect
+        or tls_accept has PSK enabled.
       type: string
     description: Get hosts
   - name: zabbix-trigger-get
@@ -276,7 +283,8 @@ script:
     - name: params_functions
       description: Return only triggers that use the given functions.
     - name: params_group
-      description: Return only triggers that belong to hosts from the host group with the given name.
+      description: Return only triggers that belong to hosts from the host group with
+        the given name.
     - name: params_host
       description: Return only triggers that belong to host with the given name.
     - name: params_inherited
@@ -284,11 +292,13 @@ script:
     - name: params_templated
       description: If set to true return only triggers that belong to templates.
     - name: params_monitored
-      description: Return only enabled triggers that belong to monitored hosts and contain only enabled items.
+      description: Return only enabled triggers that belong to monitored hosts and
+        contain only enabled items.
     - name: params_active
       description: Return only enabled triggers that belong to monitored hosts.
     - name: params_maintenance
-      description: If set to true return only enabled triggers that belong to hosts in maintenance.
+      description: If set to true return only enabled triggers that belong to hosts
+        in maintenance.
     - name: params_withUnacknowledgedEvents
       description: Return only triggers that have unacknowledged events.
     - name: params_withAcknowledgedEvents
@@ -296,19 +306,25 @@ script:
     - name: params_withLastEventUnacknowledged
       description: Return only triggers with the last event unacknowledged.
     - name: params_skipDependent
-      description: Skip triggers in a problem state that are dependent on other triggers. Note that the other triggers are ignored if disabled, have disabled items or disabled item hosts.
+      description: Skip triggers in a problem state that are dependent on other triggers.
+        Note that the other triggers are ignored if disabled, have disabled items
+        or disabled item hosts.
     - name: params_lastChangeSince
-      description: Return only triggers that have changed their state after the given time (use timestamp format).
+      description: Return only triggers that have changed their state after the given
+        time (use timestamp format).
     - name: params_lastChangeTill
-      description: Return only triggers that have changed their state before the given time (use timestamp format).
+      description: Return only triggers that have changed their state before the given
+        time (use timestamp format).
     - name: params_only_true
       description: Return only triggers that have recently been in a problem state.
     - name: params_min_severity
-      description: Return only triggers with severity greater or equal than the given severity.
+      description: Return only triggers with severity greater or equal than the given
+        severity.
     - name: params_evaltype
       description: Rules for tag searching.
     - name: params_tags
-      description: Return only triggers with given tags. Exact match by tag and case-sensitive or case-insensitive search by tag value depending on operator value.
+      description: Return only triggers with given tags. Exact match by tag and case-sensitive
+        or case-insensitive search by tag value depending on operator value.
     outputs:
     - contextPath: Zabbix.Trigger.triggerid
       description: ID of the trigger.
@@ -323,7 +339,8 @@ script:
       description: Additional description of the trigger.
       type: string
     - contextPath: Zabbix.Trigger.error
-      description: Error text if there have been any problems when updating the state of the trigger.
+      description: Error text if there have been any problems when updating the state
+        of the trigger.
       type: string
     - contextPath: Zabbix.Trigger.flags
       description: Origin of the trigger.
@@ -373,13 +390,16 @@ script:
     - name: params_eventids
       description: Return only events with the given IDs.
     - name: params_groupids
-      description: Return only events created by objects that belong to the given host groups.
+      description: Return only events created by objects that belong to the given
+        host groups.
     - name: params_hostids
-      description: Return only events created by objects that belong to the given hosts.
+      description: Return only events created by objects that belong to the given
+        hosts.
     - name: params_objectids
       description: Return only events created by the given objects.
     - name: params_applicationids
-      description: Return only events created by objects that belong to the given applications. Applies only if object is trigger or item.
+      description: Return only events created by objects that belong to the given
+        applications. Applies only if object is trigger or item.
     - name: params_source
       description: Return only events with the given type.
     - name: params_object
@@ -389,23 +409,31 @@ script:
     - name: params_suppressed
       description: true - return only suppressed events;
     - name: params_severities
-      description: Return only events with given event severities. Applies only if object is trigger.
+      description: Return only events with given event severities. Applies only if
+        object is trigger.
     - name: params_evaltype
       description: Rules for tag searching.
     - name: params_tags
-      description: Return only events with given tags. Exact match by tag and case-insensitive search by value and operator.
+      description: Return only events with given tags. Exact match by tag and case-insensitive
+        search by value and operator.
     - name: params_eventid_from
       description: Return only events with IDs greater or equal to the given ID.
     - name: params_eventid_till
       description: Return only events with IDs less or equal to the given ID.
     - name: params_time_from
-      description: Return only events that have been created after or at the given time (use timestamp format).
+      description: Return only events that have been created after or at the given
+        time (use timestamp format).
     - name: params_time_till
-      description: Return only events that have been created before or at the given time (use timestamp format).
+      description: Return only events that have been created before or at the given
+        time (use timestamp format).
     - name: params_problem_time_from
-      description: Returns only events that were in the problem state starting with problem_time_from. Applies only if the source is trigger event and object is trigger. Mandatory if problem_time_till is specified (use timestamp format).
+      description: Returns only events that were in the problem state starting with
+        problem_time_from. Applies only if the source is trigger event and object
+        is trigger. Mandatory if problem_time_till is specified (use timestamp format).
     - name: params_problem_time_till
-      description: Returns only events that were in the problem state until problem_time_till. Applies only if the source is trigger event and object is trigger. Mandatory if problem_time_from is specified (use timestamp format).
+      description: Returns only events that were in the problem state until problem_time_till.
+        Applies only if the source is trigger event and object is trigger. Mandatory
+        if problem_time_from is specified (use timestamp format).
     - name: params_value
       description: Return only events with the given values.
     outputs:
@@ -443,7 +471,9 @@ script:
       description: Recovery event ID
       type: string
     - contextPath: Zabbix.Event.c_eventid
-      description: ID of the event that was used to override (close) current event under global correlation rule. See correlationid to identify exact correlation rule.
+      description: ID of the event that was used to override (close) current event
+        under global correlation rule. See correlationid to identify exact correlation
+        rule.
       type: string
     - contextPath: Zabbix.Event.correlationid
       description: ID of the correlation rule that generated closing of the problem.
@@ -464,3 +494,6 @@ script:
   type: python
   subtype: python3
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

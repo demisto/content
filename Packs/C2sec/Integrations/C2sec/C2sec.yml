@@ -105,7 +105,8 @@ script:
       description: Issue ID.
       type: string
     - contextPath: C2sec.Domain.Issue.Asset
-      description: Asset associated with the issues. For example, IP addresses, website URLs, and so on.
+      description: Asset associated with the issues. For example, IP addresses, website
+        URLs, and so on.
       type: string
     - contextPath: C2sec.Domain.Issue.Component
       description: The component used in the issue.
@@ -194,3 +195,6 @@ script:
     description: Query Data for specific component for companies in the portfolio
   runonce: false
   dockerimage: demisto/python3:3.9.8.24399
+marketplaces:
+- xsoar
+- marketplacev2

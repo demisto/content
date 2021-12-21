@@ -414,3 +414,6 @@ script:
   runonce: false
 tests:
 - No test - partner integration (test pb exists - Cofense Triage Test)
+marketplaces:
+- xsoar
+- marketplacev2

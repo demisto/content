@@ -123,7 +123,8 @@ script:
       description: The current deployment or provisioning state.
       type: String
     - contextPath: AzureKS.ManagedCluster.properties.agentPoolProfiles.orchestratorVersion
-      description: Version of the orchestrator specified when creating the managed cluster.
+      description: Version of the orchestrator specified when creating the managed
+        cluster.
       type: String
     - contextPath: AzureKS.ManagedCluster.properties.linuxProfile.adminUsername
       description: The name of the administrator account.
@@ -258,8 +259,8 @@ script:
       secret: false
     - default: false
       description: The name of an existing Log Analytics workspace to use for storing
-        monitoring data. Can be retrieved in the Log Analytics workspace from the Azure
-        portal.
+        monitoring data. Can be retrieved in the Log Analytics workspace from the
+        Azure portal.
       isArray: false
       name: monitoring_resource_name
       required: false
@@ -278,3 +279,6 @@ script:
   subtype: python3
   type: python
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

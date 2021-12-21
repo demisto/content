@@ -135,7 +135,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Page number to retrieve the reports from the specified page. Default value is 1.
+      description: Page number to retrieve the reports from the specified page. Default
+        value is 1.
       isArray: false
       name: page_number
       required: false
@@ -645,7 +646,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Page number to retrieve the programs from the specified page. Default value is 1.
+      description: Page number to retrieve the programs from the specified page. Default
+        value is 1.
       isArray: false
       name: page_number
       required: false
@@ -694,3 +696,6 @@ tests:
 - No tests (auto formatted)
 defaultmapperin: HackerOne - Incoming Mapper
 fromversion: 6.0.0
+marketplaces:
+- xsoar
+- marketplacev2

@@ -100,3 +100,6 @@ script:
 tests:
 - AlexaV2 Test Playbook
 fromversion: 5.5.0
+marketplaces:
+- xsoar
+- marketplacev2

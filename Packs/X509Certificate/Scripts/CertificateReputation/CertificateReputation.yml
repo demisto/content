@@ -6,14 +6,15 @@ args:
   required: true
   secret: false
 - default: false
-  description: Whether to set validation checks in the indicator. Possible values are "true" and "false".
+  description: Whether to set validation checks in the indicator. Possible values
+    are "true" and "false".
   isArray: false
   name: update_indicator
   required: false
   secret: false
   predefined:
-    - 'true'
-    - 'false'
+  - 'true'
+  - 'false'
 comment: Enrich and calculate the reputation of a certificate indicator.
 commonfields:
   id: CertificateReputation
@@ -137,9 +138,12 @@ outputs:
 script: '-'
 system: false
 tags:
-  - reputation
+- reputation
 timeout: '0'
 type: python
 subtype: python3
 dockerimage: demisto/python3:3.9.7.24076
 fromversion: 6.0.0
+marketplaces:
+- xsoar
+- marketplacev2

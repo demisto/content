@@ -6797,3 +6797,6 @@ script:
 tests:
 - AWS - EC2 Test Playbook
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

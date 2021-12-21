@@ -17,3 +17,6 @@ tests:
 - No tests (auto formatted)
 comment: 'This script populates results for the dynamic content shown in the incident
   layout.'
+marketplaces:
+- xsoar
+- marketplacev2

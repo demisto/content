@@ -28,3 +28,6 @@ fromversion: 6.0.0
 dependson:
   must:
   - Penfield|||penfield-get-assignee
+marketplaces:
+- xsoar
+- marketplacev2

@@ -6,7 +6,8 @@ args:
   description: Fields to be returned (comma separated string).
   name: fields
   isArray: true
-comment: Recursively extracts specified fields from provided list of assets for Prisma Cloud attribution use case.
+comment: Recursively extracts specified fields from provided list of assets for Prisma
+  Cloud attribution use case.
 commonfields:
   id: PrismaCloudAttribution
   version: -1
@@ -46,3 +47,6 @@ type: python
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2

@@ -692,3 +692,7 @@ script:
 fromversion: 5.0.0
 tests:
   - Active Directory Test
+marketplaces:
+  - xsoar
+  - marketplacev2
+commonfields:

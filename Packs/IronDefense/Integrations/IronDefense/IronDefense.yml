@@ -49,7 +49,8 @@ configuration:
   - Other
   required: false
   type: 16
-- display: Alert Notification SubCategories to Exclude, See https://ironnet.atlassian.net/wiki/x/hADvGg for values (Enter in comma separated list format)
+- display: Alert Notification SubCategories to Exclude, See https://ironnet.atlassian.net/wiki/x/hADvGg
+    for values (Enter in comma separated list format)
   name: alertSubCategories
   required: false
   type: 12
@@ -96,7 +97,8 @@ configuration:
   - Other
   required: false
   type: 16
-- display: Event Notification SubCategories to Exclude, See https://ironnet.atlassian.net/wiki/x/hADvGg for values (Enter in comma separated list format)
+- display: Event Notification SubCategories to Exclude, See https://ironnet.atlassian.net/wiki/x/hADvGg
+    for values (Enter in comma separated list format)
   name: eventSubCategories
   required: false
   type: 12
@@ -145,7 +147,10 @@ configuration:
   - High Cognitive System Score
   required: false
   type: 16
-description: The IronDefense Integration for Cortex XSOAR allows users to interact with IronDefense alerts within Cortex XSOAR. The Integration provides the ability to rate alerts, update alert statuses, add comments to alerts, to report observed bad activity, get alerts, get events, and get IronDome information.
+description: The IronDefense Integration for Cortex XSOAR allows users to interact
+  with IronDefense alerts within Cortex XSOAR. The Integration provides the ability
+  to rate alerts, update alert statuses, add comments to alerts, to report observed
+  bad activity, get alerts, get events, and get IronDome information.
 display: IronDefense
 name: IronDefense
 script:
@@ -159,7 +164,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The severity rating of the alert. Can be: "Undecided", "Benign", "Suspicious", "Malicious".'
+      description: 'The severity rating of the alert. Can be: "Undecided", "Benign",
+        "Suspicious", "Malicious".'
       isArray: false
       name: severity
       predefined:
@@ -171,7 +177,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Determines whether the rating was expected. Can be: "Unknown", "Expected", "Unexpected". Use "Unknown" if the rating is undecided.'
+      description: 'Determines whether the rating was expected. Can be: "Unknown",
+        "Expected", "Unexpected". Use "Unknown" if the rating is undecided.'
       isArray: false
       name: expectation
       predefined:
@@ -236,7 +243,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The alert status to set. Can be: "Awaiting Review", "Under Review", "Closed".'
+      description: 'The alert status to set. Can be: "Awaiting Review", "Under Review",
+        "Closed".'
       isArray: false
       name: status
       predefined:
@@ -291,19 +299,22 @@ script:
       required: false
       secret: false
     - default: false
-      description: The start time of the observed bad activity in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
+      description: The start time of the observed bad activity in RFC 3339 format
+        (E.g. 2017-10-13T07:20:50.52Z).
       isArray: false
       name: activity_start_time
       required: true
       secret: false
     - default: false
-      description: The end time of the observed bad activity in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
+      description: The end time of the observed bad activity in RFC 3339 format (E.g.
+        2017-10-13T07:20:50.52Z).
       isArray: false
       name: activity_end_time
       required: true
       secret: false
     deprecated: false
-    description: Submits an observed bad endpoint to IronDefense to create Threat. Intelligence Rules (TIR).
+    description: Submits an observed bad endpoint to IronDefense to create Threat.
+      Intelligence Rules (TIR).
     execution: false
     name: irondefense-report-observed-bad-activity
   - arguments:
@@ -349,7 +360,8 @@ script:
       description: The end time of this event's activity.
       type: Date
     - contextPath: IronDefense.Event.iron_dome_shared_time
-      description: The time when the event was sent to IronDome - not present if not shared with irondome.
+      description: The time when the event was sent to IronDome - not present if not
+        shared with irondome.
       type: Date
     - contextPath: IronDefense.Event.is_whitelisted
       description: True if the event activity was whitelisted, false otherwise.
@@ -382,7 +394,8 @@ script:
       description: The byte count of outgoing traffic for this event.
       type: Number
     - contextPath: IronDefense.Event.total_bytes
-      description: The byte count of the total traffic (in either direction) for this event.
+      description: The byte count of the total traffic (in either direction) for this
+        event.
       type: Number
     - contextPath: IronDefense.Event.url
       description: The related URL for this event, if applicable.
@@ -391,16 +404,20 @@ script:
       description: The list of distinct raw data formats for this event.
       type: String
     - contextPath: IronDefense.Event.src_entity_attribute
-      description: The source entity attribute related to this event, if one could be determined.
+      description: The source entity attribute related to this event, if one could
+        be determined.
       type: String
     - contextPath: IronDefense.Event.src_entity_attribute_type
-      description: The source entity attribute type related to this event, if one could be determined.
+      description: The source entity attribute type related to this event, if one
+        could be determined.
       type: String
     - contextPath: IronDefense.Event.dst_entity_attribute
-      description: The destination entity attribute related to this event, if one could be determined.
+      description: The destination entity attribute related to this event, if one
+        could be determined.
       type: String
     - contextPath: IronDefense.Event.dst_entity_attribute_type
-      description: The destination entity attribute type related to this event, if one could be determined.
+      description: The destination entity attribute type related to this event, if
+        one could be determined.
       type: String
     - contextPath: IronDefense.Event.vue_url
       description: The url for displaying the event within IronVUE.
@@ -484,73 +501,85 @@ script:
       required: false
       secret: false
     - default: false
-      description: The minimum Alert created date to filter by in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
+      description: The minimum Alert created date to filter by in RFC 3339 format
+        (E.g. 2017-10-13T07:20:50.52Z).
       isArray: false
       name: min_created
       required: false
       secret: false
     - default: false
-      description: The maximum Alert created date to filter by in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
+      description: The maximum Alert created date to filter by in RFC 3339 format
+        (E.g. 2017-10-13T07:20:50.52Z).
       isArray: false
       name: max_created
       required: false
       secret: false
     - default: false
-      description: The minimum Alert updated date to filter by in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
+      description: The minimum Alert updated date to filter by in RFC 3339 format
+        (E.g. 2017-10-13T07:20:50.52Z).
       isArray: false
       name: min_updated
       required: false
       secret: false
     - default: false
-      description: The maximum Alert updated date to filter by in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
+      description: The maximum Alert updated date to filter by in RFC 3339 format
+        (E.g. 2017-10-13T07:20:50.52Z).
       isArray: false
       name: max_updated
       required: false
       secret: false
     - default: false
-      description: The minimum Alert first event created date to filter by in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
+      description: The minimum Alert first event created date to filter by in RFC
+        3339 format (E.g. 2017-10-13T07:20:50.52Z).
       isArray: false
       name: min_first_event_created
       required: false
       secret: false
     - default: false
-      description: The maximum Alert first event created date to filter by in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
+      description: The maximum Alert first event created date to filter by in RFC
+        3339 format (E.g. 2017-10-13T07:20:50.52Z).
       isArray: false
       name: max_first_event_created
       required: false
       secret: false
     - default: false
-      description: The minimum Alert last event created date to filter by in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
+      description: The minimum Alert last event created date to filter by in RFC 3339
+        format (E.g. 2017-10-13T07:20:50.52Z).
       isArray: false
       name: min_last_event_created
       required: false
       secret: false
     - default: false
-      description: The maximum Alert last event created date to filter by in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
+      description: The maximum Alert last event created date to filter by in RFC 3339
+        format (E.g. 2017-10-13T07:20:50.52Z).
       isArray: false
       name: max_last_event_created
       required: false
       secret: false
     - default: false
-      description: The minimum Alert first event start date to filter by in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
+      description: The minimum Alert first event start date to filter by in RFC 3339
+        format (E.g. 2017-10-13T07:20:50.52Z).
       isArray: false
       name: min_first_event_start_time
       required: false
       secret: false
     - default: false
-      description: The maximum Alert first event start date to filter by in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
+      description: The maximum Alert first event start date to filter by in RFC 3339
+        format (E.g. 2017-10-13T07:20:50.52Z).
       isArray: false
       name: max_first_event_start_time
       required: false
       secret: false
     - default: false
-      description: The minimum Alert last event end date to filter by in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
+      description: The minimum Alert last event end date to filter by in RFC 3339
+        format (E.g. 2017-10-13T07:20:50.52Z).
       isArray: false
       name: min_last_event_end_time
       required: false
       secret: false
     - default: false
-      description: The maximum Alert last event end date to filter by in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
+      description: The maximum Alert last event end date to filter by in RFC 3339
+        format (E.g. 2017-10-13T07:20:50.52Z).
       isArray: false
       name: max_last_event_end_time
       required: false
@@ -837,16 +866,20 @@ script:
       description: The comments about this malicious alert correlation.
       type: String
     - contextPath: IronDome.Notification.dome_notification.severity_malicious_details.generated_threat_intel_rules.ip
-      description: The IP of a Threat Intelligence rule that was automatically created based on an IronDome correlation.
+      description: The IP of a Threat Intelligence rule that was automatically created
+        based on an IronDome correlation.
       type: String
     - contextPath: IronDome.Notification.dome_notification.severity_malicious_details.generated_threat_intel_rules.domain
-      description: The domain of a Threat Intelligence rule that was automatically created based on an IronDome correlation.
+      description: The domain of a Threat Intelligence rule that was automatically
+        created based on an IronDome correlation.
       type: String
     - contextPath: IronDome.Notification.dome_notification.severity_malicious_details.generated_threat_intel_rules.rule_id
-      description: The rule ID of a Threat Intelligence rule that was automatically created based on an IronDome correlation.
+      description: The rule ID of a Threat Intelligence rule that was automatically
+        created based on an IronDome correlation.
       type: String
     - contextPath: IronDome.Notification.dome_notification.severity_malicious_details.generated_threat_intel_rules.vue_url
-      description: The IronVUE URL of a Threat Intelligence rule that was automatically created based on an IronDome correlation.
+      description: The IronVUE URL of a Threat Intelligence rule that was automatically
+        created based on an IronDome correlation.
       type: String
     - contextPath: IronDome.Notification.dome_notification.high_cognitive_system_score_details.enterprise_alert_score
       description: The alert score for the enterprise.
@@ -909,7 +942,8 @@ script:
       description: The end time of this event's activity.
       type: Date
     - contextPath: IronDefense.Event.iron_dome_shared_time
-      description: The time when the event was sent to IronDome - not present if not shared with irondome.
+      description: The time when the event was sent to IronDome - not present if not
+        shared with irondome.
       type: Date
     - contextPath: IronDefense.Event.is_whitelisted
       description: True if the event activity was whitelisted, false otherwise.
@@ -942,7 +976,8 @@ script:
       description: The byte count of outgoing traffic for this event.
       type: Number
     - contextPath: IronDefense.Event.total_bytes
-      description: The byte count of the total traffic (in either direction) for this event.
+      description: The byte count of the total traffic (in either direction) for this
+        event.
       type: Number
     - contextPath: IronDefense.Event.url
       description: The related URL for this event, if applicable.
@@ -951,16 +986,20 @@ script:
       description: The list of distinct raw data formats for this event.
       type: String
     - contextPath: IronDefense.Event.src_entity_attribute
-      description: The source entity attribute related to this event, if one could be determined.
+      description: The source entity attribute related to this event, if one could
+        be determined.
       type: String
     - contextPath: IronDefense.Event.src_entity_attribute_type
-      description: The source entity attribute type related to this event, if one could be determined.
+      description: The source entity attribute type related to this event, if one
+        could be determined.
       type: String
     - contextPath: IronDefense.Event.dst_entity_attribute
-      description: The destination entity attribute related to this event, if one could be determined.
+      description: The destination entity attribute related to this event, if one
+        could be determined.
       type: String
     - contextPath: IronDefense.Event.dst_entity_attribute_type
-      description: The destination entity attribute type related to this event, if one could be determined.
+      description: The destination entity attribute type related to this event, if
+        one could be determined.
       type: String
     - contextPath: IronDefense.Event.vue_url
       description: The url for displaying the event within IronVUE.
@@ -988,3 +1027,6 @@ tests:
 fromversion: 5.0.0
 defaultclassifier: IronDefense
 defaultmapperin: IronDefense-mapper
+marketplaces:
+- xsoar
+- marketplacev2

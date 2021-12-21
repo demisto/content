@@ -436,7 +436,8 @@ script:
       description: An example of the given Synapse element.
       type: String
     - contextPath: Synapse.Model.Form
-      description: A form is the definition of an object in the Synapse data model (node).
+      description: A form is the definition of an object in the Synapse data model
+        (node).
       type: String
     - contextPath: Synapse.Model.Properties
       description: The unique properties associated with the given Synapse object.
@@ -457,3 +458,6 @@ script:
   subtype: python3
   type: python
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

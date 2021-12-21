@@ -51,7 +51,8 @@ configuration:
   name: comment_tag
   type: 0
 - display: Escalate entry tag
-  additionalinfo: Adding this tag to a Note will reassign the alert back to CriticalStart SOC
+  additionalinfo: Adding this tag to a Note will reassign the alert back to CriticalStart
+    SOC
   defaultvalue: escalate
   name: escalate_tag
   type: 0
@@ -108,8 +109,8 @@ script:
       required: false
       secret: false
     execution: false
-    description: Get remote data from a remote incident. This command should only be called
-      manually for debugging purposes.
+    description: Get remote data from a remote incident. This command should only
+      be called manually for debugging purposes.
   - name: ztap-get-alert-entries
     arguments:
     - default: false
@@ -134,3 +135,6 @@ defaultclassifier: ZeroTrustAnalyticsPlatform - Classifier
 defaultmapperout: ZeroTrustAnalyticsPlatform - Outgoing Mapper
 tests:
 - No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2

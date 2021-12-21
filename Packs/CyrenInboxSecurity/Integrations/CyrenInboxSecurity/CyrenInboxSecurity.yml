@@ -100,3 +100,6 @@ tests:
 - No tests (auto formatted)
 defaultclassifier: Cyren Inbox Security Classifier
 defaultmapperin: Cyren Inbox Security Mapper
+marketplaces:
+- xsoar
+- marketplacev2

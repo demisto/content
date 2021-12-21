@@ -7405,3 +7405,6 @@ script:
   type: python
 tests:
 - Test-AnsibleLinux
+marketplaces:
+- xsoar
+- marketplacev2

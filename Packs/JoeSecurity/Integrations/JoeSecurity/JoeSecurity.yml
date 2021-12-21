@@ -498,7 +498,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Download a resource belonging to a report. This can be the full report, dropped binaries, etc.
+    description: Download a resource belonging to a report. This can be the full report,
+      dropped binaries, etc.
     execution: false
     name: joe-download-report
     outputs:
@@ -620,7 +621,8 @@ script:
       type: string
   - arguments:
     - default: true
-      description: 'Search string which will search in the following fields only: webid, md5, sha1, sha256, filename, URL, comments.'
+      description: 'Search string which will search in the following fields only:
+        webid, md5, sha1, sha256, filename, URL, comments.'
       isArray: false
       name: query
       required: true
@@ -695,7 +697,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Download the sample file of an analysis. for security reasons, the extension will be "dontrun"
+    description: Download the sample file of an analysis. for security reasons, the
+      extension will be "dontrun"
     execution: false
     name: joe-download-sample
     outputs:
@@ -739,3 +742,6 @@ tests:
 - JoeSecurityTestPlaybook
 - JoeSecurityTestDetonation
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

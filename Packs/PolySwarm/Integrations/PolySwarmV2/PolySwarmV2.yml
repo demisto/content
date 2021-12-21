@@ -18,7 +18,8 @@ configuration:
   required: true
   type: 0
   additionalinfo: the segment of PolySwarm's marketplace to query on.
-description: Real-time threat intelligence from a crowd-sourced network of security experts and antivirus companies.
+description: Real-time threat intelligence from a crowd-sourced network of security
+  experts and antivirus companies.
 display: PolySwarm
 name: PolySwarmV2
 script:
@@ -52,13 +53,15 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'The value of the file hash for which to retrieve the reputation information. The hash type can be: "SHA256", "SHA1", or "MD5".'
+      description: 'The value of the file hash for which to retrieve the reputation
+        information. The hash type can be: "SHA256", "SHA1", or "MD5".'
       isArray: false
       name: hash
       required: false
       secret: false
     - default: true
-      description: 'The type of the file hash for which to retrieve the reputation information. The hash type can be: "SHA256", "SHA1", or "MD5".'
+      description: 'The type of the file hash for which to retrieve the reputation
+        information. The hash type can be: "SHA256", "SHA1", or "MD5".'
       isArray: true
       name: file
       required: false
@@ -265,7 +268,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'The type of the file hash to rescan. The hash type can be: "SHA256", "SHA1", or "MD5".'
+      description: 'The type of the file hash to rescan. The hash type can be: "SHA256",
+        "SHA1", or "MD5".'
       isArray: false
       name: hash
       required: true
@@ -292,7 +296,8 @@ script:
       type: String
   - arguments:
     - default: true
-      description: 'The file hash type to download. The hash type can be: "SHA256", "SHA1", or "MD5".'
+      description: 'The file hash type to download. The hash type can be: "SHA256",
+        "SHA1", or "MD5".'
       isArray: false
       name: hash
       required: true
@@ -354,7 +359,8 @@ script:
       description: Aliases of the tags.
       type: String
     - contextPath: File.Tags.PublicTagName
-      description: The public name of the tag. This is usually used as the ID of the tag.
+      description: The public name of the tag. This is usually used as the ID of the
+        tag.
       type: String
     - contextPath: File.Tags.TagName
       description: The simple name of the tag.
@@ -396,3 +402,6 @@ script:
   type: python
   dockerimage: demisto/polyswarm:1.0.0.18926
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

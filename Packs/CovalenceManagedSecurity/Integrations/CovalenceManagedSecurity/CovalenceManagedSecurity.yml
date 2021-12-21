@@ -37,7 +37,8 @@ configuration:
   name: max_fetch
   required: false
   type: 0
-description: Triggers by triaged alerts from endpoint, cloud, and network security monitoring. Contains event details and easy-to-follow mitigation steps.
+description: Triggers by triaged alerts from endpoint, cloud, and network security
+  monitoring. Contains event details and easy-to-follow mitigation steps.
 display: Covalence Managed Security
 fromversion: 5.0.0
 name: Covalence Managed Security
@@ -183,3 +184,6 @@ script:
   type: python
 tests:
 - No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2

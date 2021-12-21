@@ -18,7 +18,8 @@ configuration:
   required: true
   type: 4
 - defaultvalue: 3 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
+    months, 1 year)
   name: fetch_time
   required: false
   type: 0
@@ -38,7 +39,10 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: FireEye Helix is a security operations platform. FireEye Helix integrates security tools and augments them with next-generation SIEM, orchestration and threat intelligence tools such as alert management, search, analysis, investigations and reporting.
+description: FireEye Helix is a security operations platform. FireEye Helix integrates
+  security tools and augments them with next-generation SIEM, orchestration and threat
+  intelligence tools such as alert management, search, analysis, investigations and
+  reporting.
 display: FireEye Helix
 name: FireEyeHelix
 script:
@@ -57,7 +61,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Output values to display in the command result (comma separated values (no spaces) as they appear in the context. e.g. ID,Name,Hostname).
+      description: Output values to display in the command result (comma separated
+        values (no spaces) as they appear in the context. e.g. ID,Name,Hostname).
       isArray: true
       name: headers
       required: false
@@ -237,7 +242,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: A comma-separated list (no spaces) of output values to display in the command result, e.g., ID,Name,Hostname.
+      description: A comma-separated list (no spaces) of output values to display
+        in the command result, e.g., ID,Name,Hostname.
       isArray: true
       name: headers
       required: false
@@ -456,7 +462,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: A comma-separated list (no spaces) of output values to display in the command result, e.g., ID,Type,SourceIPv4).
+      description: A comma-separated list (no spaces) of output values to display
+        in the command result, e.g., ID,Type,SourceIPv4).
       isArray: true
       name: headers
       required: false
@@ -713,13 +720,18 @@ script:
       description: Number of notes in the case.
       type: Number
     - contextPath: FireEyeHelix.Case.Priority
-      description: Provides an indication of the order in which the case should be examined as compared to other cases. Priority can be "Critical", "High", "Medium", or "Low".
+      description: Provides an indication of the order in which the case should be
+        examined as compared to other cases. Priority can be "Critical", "High", "Medium",
+        or "Low".
       type: String
     - contextPath: FireEyeHelix.Case.PriorityOrder
-      description: Provides an indication of the order in which the case should be examined as compared to other cases. Priority order can be "4", "3", "2", or "1".
+      description: Provides an indication of the order in which the case should be
+        examined as compared to other cases. Priority order can be "4", "3", "2",
+        or "1".
       type: Number
     - contextPath: FireEyeHelix.Case.Severity
-      description: The potential impact that the case could have on the organization if it is a true positive. It is calculated based on the risk of the alert.
+      description: The potential impact that the case could have on the organization
+        if it is a true positive. It is calculated based on the risk of the alert.
       type: Number
     - contextPath: FireEyeHelix.Case.State
       description: State of the case.
@@ -847,7 +859,8 @@ script:
       description: Name of the list.
       type: String
     - contextPath: FireEyeHelix.List.ContentTypes
-      description: Content types of the list. Can be Email, FQDN, IPv4, Ipv6, SHA1, MD5, or Misc.
+      description: Content types of the list. Can be Email, FQDN, IPv4, Ipv6, SHA1,
+        MD5, or Misc.
       type: String
     - contextPath: FireEyeHelix.List.CreatorID
       description: ID of the creator.
@@ -907,7 +920,8 @@ script:
       description: Name of the list.
       type: String
     - contextPath: FireEyeHelix.List.ContentTypes
-      description: Content types of the list. Can be Email, FQDN, IPv4, Ipv6, SHA1, MD5, or Misc.
+      description: Content types of the list. Can be Email, FQDN, IPv4, Ipv6, SHA1,
+        MD5, or Misc.
       type: String
     - contextPath: FireEyeHelix.List.CreatorID
       description: ID of the creator.
@@ -1028,7 +1042,8 @@ script:
       description: Name of the list.
       type: String
     - contextPath: FireEyeHelix.List.ContentTypes
-      description: Content types of the list. Can be Email, FQDN, IPv4, IPv6, SHA1, MD5, or Misc.
+      description: Content types of the list. Can be Email, FQDN, IPv4, IPv6, SHA1,
+        MD5, or Misc.
       type: String
     - contextPath: FireEyeHelix.List.CreatorID
       description: ID of the list creator.
@@ -1155,7 +1170,8 @@ script:
       description: Name of the list.
       type: String
     - contextPath: FireEyeHelix.List.ContentTypes
-      description: Content types of the list. Can be Email, FQDN, IPv4, IPv6, SHA1, MD5, or Misc.
+      description: Content types of the list. Can be Email, FQDN, IPv4, IPv6, SHA1,
+        MD5, or Misc.
       type: String
     - contextPath: FireEyeHelix.List.CreatorID
       description: ID of the creator.
@@ -1241,7 +1257,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of field names by which to sort the results. For example: “createDate” or "-updateDate,riskOrder"'
+      description: 'A comma-separated list of field names by which to sort the results.
+        For example: “createDate” or "-updateDate,riskOrder"'
       isArray: false
       name: sort
       required: false
@@ -1285,10 +1302,14 @@ script:
       description: Name of the user who updated the rule.
       type: String
     - contextPath: FireEyeHelix.Rule.Risk
-      description: 'The risk to your environment when an event matches this rule. Can be low, medium, high, or critical.'
+      description: 'The risk to your environment when an event matches this rule.
+        Can be low, medium, high, or critical.'
       type: String
     - contextPath: FireEyeHelix.Rule.Confidence
-      description: Confidence that indicates how likely it is that the rule will detect events that correspond to the type of activity anticipated (that is, the likelihood that the rule will produce true positives). Confidence and Severity combine to form the risk attribute of the alert. Can be low, medium, or high.
+      description: Confidence that indicates how likely it is that the rule will detect
+        events that correspond to the type of activity anticipated (that is, the likelihood
+        that the rule will produce true positives). Confidence and Severity combine
+        to form the risk attribute of the alert. Can be low, medium, or high.
       type: String
     - contextPath: FireEyeHelix.Rule.Severity
       description: |-
@@ -1402,7 +1423,10 @@ script:
       required: false
       secret: false
     - default: false
-      description: Returns the unique values for the specified field and groups them based on the specified frequency. For example, groupby="srcipv4 5 100" will group the top five srcipv4 addresses that have at least 100 occurrences. Supports comma-separated values.
+      description: Returns the unique values for the specified field and groups them
+        based on the specified frequency. For example, groupby="srcipv4 5 100" will
+        group the top five srcipv4 addresses that have at least 100 occurrences. Supports
+        comma-separated values.
       isArray: false
       name: groupby
       required: false
@@ -1416,7 +1440,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: desc
-      description: Controls the order of the results sorted by the sort_by argument. Can be "asc" for ascending or "desc" for descending. Default is "desc".
+      description: Controls the order of the results sorted by the sort_by argument.
+        Can be "asc" for ascending or "desc" for descending. Default is "desc".
       isArray: false
       name: sort_order
       predefined:
@@ -1437,7 +1462,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list (no spaces) of output values to display in the command result, e.g., ID,Type,SourceIPv4.
+      description: A comma-separated list (no spaces) of output values to display
+        in the command result, e.g., ID,Type,SourceIPv4.
       isArray: true
       name: headers
       required: false
@@ -1787,7 +1813,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: A comma-separated list of output values to display in the command result, e.g., ID,Type,SourceIPv4.
+      description: A comma-separated list of output values to display in the command
+        result, e.g., ID,Type,SourceIPv4.
       isArray: true
       name: headers
       required: false
@@ -1949,7 +1976,10 @@ script:
       required: false
       secret: false
     - default: false
-      description: Returns the unique values for the specified field and groups them based on the specified frequency. For example groupby="srcipv4 5 100" will group the top five srcipv4 addresses that have at least 100 occurences. Supports comma-separated values.
+      description: Returns the unique values for the specified field and groups them
+        based on the specified frequency. For example groupby="srcipv4 5 100" will
+        group the top five srcipv4 addresses that have at least 100 occurences. Supports
+        comma-separated values.
       isArray: false
       name: groupby
       required: false
@@ -1963,7 +1993,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: desc
-      description: Controls the order of the results sorted by the sort_by argument. Can be "asc" for ascending or "desc" for descending. Default is "desc".
+      description: Controls the order of the results sorted by the sort_by argument.
+        Can be "asc" for ascending or "desc" for descending. Default is "desc".
       isArray: false
       name: sort_order
       predefined:
@@ -2034,3 +2065,6 @@ script:
   subtype: python3
 tests:
 - No test - no license
+marketplaces:
+- xsoar
+- marketplacev2

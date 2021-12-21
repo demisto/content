@@ -1174,3 +1174,6 @@ tests:
 - MicrosoftGraphMail-Test_dev
 - MicrosoftGraphMail-Test_prod
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

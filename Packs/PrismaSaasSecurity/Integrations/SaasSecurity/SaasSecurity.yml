@@ -523,3 +523,6 @@ defaultmapperout: Saas Security - Outgoing Mapper
 fromversion: 6.0.0
 tests:
 - SaasSecurity-Test
+marketplaces:
+- xsoar
+- marketplacev2

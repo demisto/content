@@ -9,7 +9,8 @@ configuration:
   required: true
   type: 0
 - display: Article content max size in KB
-  additionalinfo: Default is 45KB. If you increase the limit substantialy, it may slow performance. You need to specify only a number, e.g., 50.
+  additionalinfo: Default is 45KB. If you increase the limit substantialy, it may
+    slow performance. You need to specify only a number, e.g., 50.
   name: max_size
   defaultvalue: '45'
   required: false
@@ -125,3 +126,6 @@ script:
 tests:
 - No tests
 fromversion: 6.2.0
+marketplaces:
+- xsoar
+- marketplacev2

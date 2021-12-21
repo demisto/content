@@ -41,8 +41,8 @@ script:
     - description: 'Offset for paging. By default, a Null value will accumulate all results.'
       name: offset
       required: false
-    - description: 'Page size for paging. By default, a Null value will accumulate all
-        results.'  
+    - description: 'Page size for paging. By default, a Null value will accumulate
+        all results.'
       name: page_length
       required: false
     description: Returns a list of assets for the specified asset type.
@@ -66,14 +66,16 @@ script:
     - description: Asset ID. MacAddress for device, zb_ticketid for alert and vulnerability.
       name: asset_id
       required: true
-    description: Returns details for the passed asset ID. Can be an alert-id, vulnerability-id, mac-address.
+    description: Returns details for the passed asset ID. Can be an alert-id, vulnerability-id,
+      mac-address.
     name: panw-iot-3rd-party-get-single-asset
     outputs:
     - contextPath: PanwIot3rdParty.SingleAsset
       description: Asset details.
   - arguments:
     - auto: PREDEFINED
-      description: Message status to report to PANW IoT Cloud. Can be "error", "success", or "disabled".
+      description: Message status to report to PANW IoT Cloud. Can be "error", "success",
+        or "disabled".
       name: status
       predefined:
       - error
@@ -84,7 +86,8 @@ script:
       name: message
       required: true
     - auto: PREDEFINED
-      description: Name of PANW IoT 3rd Party integration. Can be "siem", "ise", or "sericenow".
+      description: Name of PANW IoT 3rd Party integration. Can be "siem", "ise", or
+        "sericenow".
       name: integration_name
       predefined:
       - siem
@@ -95,7 +98,8 @@ script:
       name: playbook_name
       required: true
     - auto: PREDEFINED
-      description: Type of asset associated with the status report. Can be "device", "alert", or "vulnerability".
+      description: Type of asset associated with the status report. Can be "device",
+        "alert", or "vulnerability".
       name: asset_type
       predefined:
       - device
@@ -114,7 +118,8 @@ script:
       - vulnerability
       required: true
     - auto: PREDEFINED
-      description: The output format to convert the asset to. Can be "CiscoISECustomAttributes", "SIEM", or "ServiceNow".
+      description: The output format to convert the asset to. Can be "CiscoISECustomAttributes",
+        "SIEM", or "ServiceNow".
       name: output_format
       predefined:
       - CiscoISECustomAttributes
@@ -129,8 +134,8 @@ script:
       name: servicenow_map
     - description: Incident triggered by PANW IoT cloud API.
       name: incident
-    description: Converts the passed asset (alert, device, or vulnerability) to a 3rd party
-      data format.
+    description: Converts the passed asset (alert, device, or vulnerability) to a
+      3rd party data format.
     name: panw-iot-3rd-party-convert-assets-to-external-format
     outputs:
     - contextPath: PanwIot3rdParty.VulnerabilityCEFSyslogs
@@ -155,3 +160,6 @@ script:
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2

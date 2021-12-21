@@ -23,3 +23,6 @@ runonce: false
 tests:
 - No test
 subtype: python3
+marketplaces:
+- xsoar
+- marketplacev2

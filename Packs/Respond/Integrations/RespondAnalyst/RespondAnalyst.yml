@@ -257,3 +257,6 @@ tests:
 - No tests (auto formatted)
 defaultclassifier: Mandiant Automated Defense Classifier
 defaultmapperin: Mandiant Automated Defense Incoming Mapper
+marketplaces:
+- xsoar
+- marketplacev2

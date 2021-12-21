@@ -6,8 +6,9 @@ script: ''
 type: python
 subtype: python3
 tags: []
-comment: Runs validation and linting using the Demisto SDK on content items, such as integrations, automations and content packs.
-  This automation script is used as part of the content validation that runs as part of the contribution flow.
+comment: Runs validation and linting using the Demisto SDK on content items, such
+  as integrations, automations and content packs. This automation script is used as
+  part of the content validation that runs as part of the contribution flow.
 enabled: true
 args:
 - default: false
@@ -23,7 +24,8 @@ args:
   required: false
   secret: false
 - default: false
-  description: ID of War Room file entry for the ZIP content pack or the integration/automation YAML.
+  description: ID of War Room file entry for the ZIP content pack or the integration/automation
+    YAML.
   isArray: false
   name: entry_id
   required: false
@@ -31,16 +33,17 @@ args:
 - name: use_system_proxy
   auto: PREDEFINED
   predefined:
-    - "yes"
-    - "no"
+  - "yes"
+  - "no"
   description: Use system proxy settings to download required models from GitHub.
   defaultValue: "yes"
 - name: trust_any_certificate
   auto: PREDEFINED
   predefined:
-    - "yes"
-    - "no"
-  description: Trust any certificate (not secure) to download required models from GitHub.
+  - "yes"
+  - "no"
+  description: Trust any certificate (not secure) to download required models from
+    GitHub.
   defaultValue: "no"
 outputs:
 - contextPath: ValidationResult.Name
@@ -60,3 +63,6 @@ fromversion: 5.5.0
 dockerimage: demisto/xsoar-tools:1.0.0.19258
 tests:
 - ValidateContent - Test
+marketplaces:
+- xsoar
+- marketplacev2

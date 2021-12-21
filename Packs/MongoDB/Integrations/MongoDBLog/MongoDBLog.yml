@@ -118,3 +118,6 @@ script:
   subtype: python3
 tests:
 - MongoDBLog - Test
+marketplaces:
+- xsoar
+- marketplacev2

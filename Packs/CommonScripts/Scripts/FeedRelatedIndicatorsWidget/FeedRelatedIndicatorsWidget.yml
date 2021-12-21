@@ -1,4 +1,5 @@
-comment: Widget script to view information about the relationship between an indicator, entity and other indicators and connect to indicators, if relevant.
+comment: Widget script to view information about the relationship between an indicator,
+  entity and other indicators and connect to indicators, if relevant.
 commonfields:
   id: FeedRelatedIndicatorsWidget
   version: -1
@@ -13,3 +14,6 @@ timeout: '0'
 type: python
 dockerimage: demisto/python3:3.9.7.24076
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

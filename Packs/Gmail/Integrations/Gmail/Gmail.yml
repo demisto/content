@@ -16,12 +16,15 @@ configuration:
   name: query
   required: false
   type: 0
-  additionalinfo: Used for searching emails in the inbox. The query language follows the Gmail query specification. For example - "from:example@demisto.com is:unread".
+  additionalinfo: Used for searching emails in the inbox. The query language follows
+    the Gmail query specification. For example - "from:example@demisto.com is:unread".
 - display: Events user key (e.g., example@demisto.com)
   name: queryUserKey
   required: false
   type: 0
-  additionalinfo: Use this to specify the email account to search for messages with the search query. By default, the integration uses the email address specified in the credentials.
+  additionalinfo: Use this to specify the email account to search for messages with
+    the search query. By default, the integration uses the email address specified
+    in the credentials.
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -1905,7 +1908,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of CID images to embed as attachments inside the email.
+      description: A comma-separated list of CID images to embed as attachments inside
+        the email.
       isArray: true
       name: attachCIDs
       required: false
@@ -2256,3 +2260,6 @@ tests:
 - Gmail Convert Html Test
 - GmailTest
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

@@ -173,7 +173,8 @@ script:
       - 'false'
     - auto: PREDEFINED
       defaultValue: 'False'
-      description: Quiesce guest file system (needs VMWare Tools installed). Default is "False".
+      description: Quiesce guest file system (needs VMWare Tools installed). Default
+        is "False".
       name: quiesce
       predefined:
       - 'true'
@@ -252,3 +253,6 @@ script:
 fromversion: 5.0.0
 tests:
 - VMWare Test
+marketplaces:
+- xsoar
+- marketplacev2

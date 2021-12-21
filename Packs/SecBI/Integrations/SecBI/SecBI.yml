@@ -19,7 +19,9 @@ configuration:
   name: insecure
   required: false
   type: 8
-description: A threat, intelligence, and investigation platform, enabled by automation of detection and investigation, including remediation and prevention policy enforcements on all integrated appliances.
+description: A threat, intelligence, and investigation platform, enabled by automation
+  of detection and investigation, including remediation and prevention policy enforcements
+  on all integrated appliances.
 display: SecBI
 name: SecBI
 script:
@@ -123,3 +125,6 @@ script:
 tests:
 - SecBI - Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

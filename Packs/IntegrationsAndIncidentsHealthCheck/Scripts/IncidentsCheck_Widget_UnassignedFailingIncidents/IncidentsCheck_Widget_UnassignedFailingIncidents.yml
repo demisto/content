@@ -1,5 +1,5 @@
-comment: Data output script for populating the dashboard number graph widget with the
-  number of unassigned failing incidents.
+comment: Data output script for populating the dashboard number graph widget with
+  the number of unassigned failing incidents.
 commonfields:
   id: IncidentsCheck-Widget-UnassignedFailingIncidents
   version: -1
@@ -18,3 +18,6 @@ type: python
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2

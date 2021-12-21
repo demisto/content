@@ -22,8 +22,9 @@ configuration:
   name: on_demand
   required: false
   type: 8
-- additionalinfo: How often to refresh the EDL (e.g., 5 minutes, 12 hours, 7 days, 3 months,
-    1 year). For performance reasons, we do not recommend setting this value to less than 1 minute.
+- additionalinfo: How often to refresh the EDL (e.g., 5 minutes, 12 hours, 7 days,
+    3 months, 1 year). For performance reasons, we do not recommend setting this value
+    to less than 1 minute.
   defaultvalue: 5 minutes
   display: Refresh Rate
   name: cache_refresh_rate
@@ -35,9 +36,9 @@ configuration:
   required: false
   type: 8
   hidden: true
-- additionalinfo: Will run the EDL service on this port from within Cortex XSOAR. Requires
-    a unique port for each long-running integration instance. Do not use the same
-    port for multiple instances.
+- additionalinfo: Will run the EDL service on this port from within Cortex XSOAR.
+    Requires a unique port for each long-running integration instance. Do not use
+    the same port for multiple instances.
   display: Listen Port
   name: longRunningPort
   required: true
@@ -87,8 +88,8 @@ configuration:
   - To Ranges
   required: false
   type: 15
-- additionalinfo: Internal page size used when querying Cortex XSOAR for the EDL. By default,
-    this value shouldn't be changed.
+- additionalinfo: Internal page size used when querying Cortex XSOAR for the EDL.
+    By default, this value shouldn't be changed.
   defaultvalue: '2000'
   display: XSOAR Indicator Page Size
   hidden: false
@@ -155,12 +156,13 @@ script:
       default: false
       defaultValue: false
       description: If set to True, a URL that includes a port number will be reformatted
-        to remove the port. For example, 'www.example.com:9999/path' would become 'www.example.com/path'.
+        to remove the port. For example, 'www.example.com:9999/path' would become
+        'www.example.com/path'.
       isArray: false
       name: url_port_stripping
       predefined:
-        - 'False'
-        - 'True'
+      - 'False'
+      - 'True'
       required: false
       secret: false
     - auto: PREDEFINED
@@ -170,8 +172,8 @@ script:
       isArray: false
       name: add_comment_if_empty
       predefined:
-        - 'False'
-        - 'True'
+      - 'False'
+      - 'True'
       required: false
       secret: false
     - auto: PREDEFINED
@@ -210,3 +212,6 @@ tests:
 - Test_EDL
 - EDL Performance Test
 fromversion: 5.5.0
+marketplaces:
+- xsoar
+- marketplacev2

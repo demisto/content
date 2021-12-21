@@ -188,3 +188,6 @@ script:
 fromversion: 5.5.0
 tests:
 - iDefense_v2_Test
+marketplaces:
+- xsoar
+- marketplacev2

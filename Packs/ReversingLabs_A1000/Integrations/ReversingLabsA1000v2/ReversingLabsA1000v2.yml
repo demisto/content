@@ -339,5 +339,8 @@ script:
   subtype: python3
   type: python
 tests:
-  - No tests (auto formatted)
+- No tests (auto formatted)
 fromversion: 5.5.0
+marketplaces:
+- xsoar
+- marketplacev2

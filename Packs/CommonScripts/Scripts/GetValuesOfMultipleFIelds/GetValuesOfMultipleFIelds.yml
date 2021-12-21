@@ -4,7 +4,8 @@ args:
   description: The base context path under which to find the fields. For example Demisto.Results.
 - name: list
   required: true
-  description: The list of fields to retrieve from context. The list can contain comma seperated values. For example key1,key1
+  description: The list of fields to retrieve from context. The list can contain comma
+    seperated values. For example key1,key1
   isArray: true
 - name: value
   required: false
@@ -31,3 +32,6 @@ type: python
 fromversion: 5.0.0
 tests:
 - GetValuesOfMultipleFIelds Test
+marketplaces:
+- xsoar
+- marketplacev2

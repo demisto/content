@@ -1,4 +1,5 @@
-comment: Returns a table widget of enabled feed integration instances that errors out on indicators fetch.
+comment: Returns a table widget of enabled feed integration instances that errors
+  out on indicators fetch.
 commonfields:
   id: FeedIntegrationErrorWidget
   version: -1
@@ -15,3 +16,6 @@ dockerimage: demisto/python3:3.9.7.24076
 fromversion: 6.1.0
 tests:
 - No test
+marketplaces:
+- xsoar
+- marketplacev2

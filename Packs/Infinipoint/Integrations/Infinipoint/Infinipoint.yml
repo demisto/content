@@ -1004,3 +1004,6 @@ script:
   script: '-'
   subtype: python3
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

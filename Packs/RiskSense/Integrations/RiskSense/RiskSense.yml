@@ -2100,3 +2100,6 @@ tests:
 - RiskSense Get Unique Open Findings - Test
 - RiskSense Get Apps Detail - Test
 - RiskSense Apply Tag - Test
+marketplaces:
+- xsoar
+- marketplacev2

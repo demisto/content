@@ -195,32 +195,39 @@ script:
       required: true
       secret: false
     - default: false
-      description: Comma separated list of arguments needed to execute the package command. Please run 'tn-get-package' for a detailed list of arguments
+      description: Comma separated list of arguments needed to execute the package
+        command. Please run 'tn-get-package' for a detailed list of arguments
       isArray: false
       name: package_args
       required: false
       secret: false
     - default: false
-      description: Semicolon separated list of strings. Each string must describe a sensor and a filter which limits which computers the action will deploy package to (e.g. Operating System, that contains:Windows; Computer Name, that contains:WIN)
+      description: Semicolon separated list of strings. Each string must describe
+        a sensor and a filter which limits which computers the action will deploy
+        package to (e.g. Operating System, that contains:Windows; Computer Name, that
+        contains:WIN)
       isArray: false
       name: action_filters
       required: false
       secret: false
     - default: false
-      description: Comma separated list of options to apply to action_filters (e.g.  "max_data_age:3600,and"). Default is "or".
+      description: Comma separated list of options to apply to action_filters (e.g.  "max_data_age:3600,and").
+        Default is "or".
       isArray: false
       name: action_options
       required: false
       secret: false
     - default: false
-      description: Semicolon separated list of sensor results that apply to the package. A separate action will be issued for each given variable .
+      description: Semicolon separated list of sensor results that apply to the package.
+        A separate action will be issued for each given variable .
       isArray: false
       name: sensor_variables
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Specifies whether to wait for result completion after deploying action
+      description: Specifies whether to wait for result completion after deploying
+        action
       isArray: false
       name: get_results
       predefined:
@@ -287,7 +294,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Ask the server to parse the question text and choose the first parsed result as the question to run
+    description: Ask the server to parse the question text and choose the first parsed
+      result as the question to run
     execution: false
     name: tn-ask-question
     outputs:
@@ -584,12 +592,14 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Ask the server to parse the question text and return all parsing options
+    description: Ask the server to parse the question text and return all parsing
+      options
     execution: false
     name: tn-parse-query
   - arguments:
     - default: false
-      description: A semicolon separated list of sensors (columns) to include in a question. For detailed information please use !tn-get-sensor
+      description: A semicolon separated list of sensors (columns) to include in a
+        question. For detailed information please use !tn-get-sensor
       isArray: false
       name: sensors
       required: false
@@ -601,7 +611,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: A semicolon separated list of options that apply to the whole question. Options are ignore_case, match_case, match_any_value, match_all_values, max_data_age, value_type, and, or
+      description: A semicolon separated list of options that apply to the whole question.
+        Options are ignore_case, match_case, match_any_value, match_all_values, max_data_age,
+        value_type, and, or
       isArray: false
       name: question_options
       required: false
@@ -648,13 +660,15 @@ script:
       secret: false
     - default: false
       defaultValue: '99'
-      description: Percentage of mr_tested out of estimated_total to consider the question
+      description: Percentage of mr_tested out of estimated_total to consider the
+        question
       isArray: false
       name: complete_pct
       required: false
       secret: false
     - default: false
-      description: Print an extended command usage description to the War Room. Default is False.
+      description: Print an extended command usage description to the War Room. Default
+        is False.
       isArray: false
       name: help
       predefined:
@@ -754,3 +768,6 @@ script:
 tests:
 - Tanium Test Playbook
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

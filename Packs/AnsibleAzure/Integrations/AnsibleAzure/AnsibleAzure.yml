@@ -3343,3 +3343,6 @@ script:
   type: python
 tests:
 - Test-AnsibleAzure
+marketplaces:
+- xsoar
+- marketplacev2

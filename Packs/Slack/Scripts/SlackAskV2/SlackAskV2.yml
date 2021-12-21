@@ -139,3 +139,6 @@ dependson:
   must:
   - SlackV3|||send-notification
 fromversion: 5.5.0
+marketplaces:
+- xsoar
+- marketplacev2

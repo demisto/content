@@ -40,7 +40,8 @@ configuration:
   - Critical
   required: false
   type: 15
-- additionalinfo: Whether to disable automatic notifications to the configured notifications channel.
+- additionalinfo: Whether to disable automatic notifications to the configured notifications
+    channel.
   display: Disable Automatic Notifications
   hidden: false
   name: auto_notifications
@@ -365,3 +366,6 @@ script:
 tests:
 - Microsoft Teams - Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

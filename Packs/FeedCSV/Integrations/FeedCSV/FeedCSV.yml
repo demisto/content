@@ -33,7 +33,8 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
+    fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -103,8 +104,8 @@ configuration:
   required: false
   type: 0
 - additionalinfo: The names to apply to the fields in the CSV feed. The name for the
-    field containing the indicator should be "value".
-    If left empty, the fetch will use existing headers only ('value' header is expected).
+    field containing the indicator should be "value". If left empty, the fetch will
+    use existing headers only ('value' header is expected).
   display: Field Names
   name: fieldnames
   required: false
@@ -199,3 +200,6 @@ script:
 tests:
 - CSV_Feed_Test
 fromversion: 5.5.0
+marketplaces:
+- xsoar
+- marketplacev2

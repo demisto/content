@@ -315,3 +315,6 @@ script:
   type: python
 tests:
 - Test-AnsibleKubernetes
+marketplaces:
+- xsoar
+- marketplacev2

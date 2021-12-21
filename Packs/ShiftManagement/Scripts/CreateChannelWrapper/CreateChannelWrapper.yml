@@ -7,7 +7,9 @@ type: python
 tags:
 - Shift Management
 - ooo
-comment: Creates a channel in Slack v2 or in Microsoft Teams. If both Slack v2 and Microsoft Teams are available, it creates the channel in both Slack v2 and Microsoft Teams.
+comment: Creates a channel in Slack v2 or in Microsoft Teams. If both Slack v2 and
+  Microsoft Teams are available, it creates the channel in both Slack v2 and Microsoft
+  Teams.
 enabled: true
 args:
 - name: name
@@ -33,3 +35,6 @@ dockerimage: demisto/python3:3.9.7.24076
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2

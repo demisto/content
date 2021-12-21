@@ -47,7 +47,11 @@ args:
   - record_id
   required: true
   secret: false
-comment: This script is an example script of how to update an incident in Cherwell. The script wraps the update-business-object command of the cherwell integration. When writing your own script to update a business object, follow the instructions found in the configuration section of the script, but do not change the execution section.
+comment: This script is an example script of how to update an incident in Cherwell.
+  The script wraps the update-business-object command of the cherwell integration.
+  When writing your own script to update a business object, follow the instructions
+  found in the configuration section of the script, but do not change the execution
+  section.
 commonfields:
   id: CherwellUpdateIncident
   version: -1
@@ -73,3 +77,6 @@ subtype: python3
 tests:
 - Cherwell Example Scripts - test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

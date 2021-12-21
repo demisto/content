@@ -3,7 +3,9 @@ commonfields:
   id: Palo Alto Networks Threat Vault
   version: -1
 configuration:
-- additionalinfo: TIM customers that upgraded to version 6.2 or above, can have this value pre-configured in their main account so no additional input is needed. To use this feature, upgrade your license so it includes the license key.
+- additionalinfo: TIM customers that upgraded to version 6.2 or above, can have this
+    value pre-configured in their main account so no additional input is needed. To
+    use this feature, upgrade your license so it includes the license key.
   display: API Key
   name: api_key
   required: false
@@ -16,7 +18,9 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the Palo Alto Networks Threat Vault to research the latest threats (vulnerabilities/exploits, viruses, and spyware) that Palo Alto Networks next-generation firewalls can detect and prevent.
+description: Use the Palo Alto Networks Threat Vault to research the latest threats
+  (vulnerabilities/exploits, viruses, and spyware) that Palo Alto Networks next-generation
+  firewalls can detect and prevent.
 display: Palo Alto Networks Threat Vault
 name: Palo Alto Networks Threat Vault
 script:
@@ -137,7 +141,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets the antispyware signature. For more details see the integration README.
+    description: Gets the antispyware signature. For more details see the integration
+      README.
     execution: false
     name: threatvault-antispyware-signature-get-by-id
     outputs:
@@ -341,7 +346,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Search type. "ips" for antispyware, "dns" for DNS, and "panav" for antivirus.
+      description: Search type. "ips" for antispyware, "dns" for DNS, and "panav"
+        for antivirus.
       isArray: false
       name: search_type
       predefined:
@@ -384,3 +390,6 @@ script:
 tests:
 - PANW Threat Vault - Signature Search - Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

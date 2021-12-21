@@ -102,11 +102,13 @@ script:
     - name: threat_score
       description: Filters by the threat score.
     - name: threat_score_gte
-      description: Filters by the threat score that is greater than or equal to the score provided.
+      description: Filters by the threat score that is greater than or equal to the
+        score provided.
     - name: certainty_score
       description: Filters by the certainty score.
     - name: certainty_score_gte
-      description: Filters by the certainty score greater than or equal to the score provided.
+      description: Filters by the certainty score greater than or equal to the score
+        provided.
     - name: last_timestamp
       description: Filters by last timestamp.
     - name: host_id
@@ -172,8 +174,10 @@ script:
       description: 'The source IP address of the host attributed to the security event.'
       type: String
     - contextPath: Vectra.Detection.SourceAccount
-      description: 'A dictionary with fields that describe the Account from which the detection originates.'
-    description: Returns a list of detection objects, which contain all the information related to security events detected on the network.
+      description: 'A dictionary with fields that describe the Account from which
+        the detection originates.'
+    description: Returns a list of detection objects, which contain all the information
+      related to security events detected on the network.
   - name: vectra-get-hosts
     arguments:
     - name: host_id
@@ -189,7 +193,8 @@ script:
     - name: name
       description: Filters by name.
     - name: state
-      description: 'Filters by state ("active", "inactive", "suspended", "ignored", "ignored" - for all).'
+      description: 'Filters by state ("active", "inactive", "suspended", "ignored",
+        "ignored" - for all).'
       auto: PREDEFINED
       predefined:
       - active
@@ -201,15 +206,18 @@ script:
     - name: threat_score
       description: Filters by the threat score.
     - name: threat_score_gte
-      description: Filters by the threat score, greater than or equal to the score provided.
+      description: Filters by the threat score, greater than or equal to the score
+        provided.
     - name: certainty_score
       description: filter by certainty score
     - name: certainty_score_gte
-      description: Filters by the certainty score, greater than or equal to the score provided.
+      description: Filters by the certainty score, greater than or equal to the score
+        provided.
     - name: last_detection_timestamp
       description: Filters by the last_detection_timestamp.
     - name: tags
-      description: 'Filters by a comma-separated list of tags. Returns hosts that contain any of the tags specified, e.g., tags=baz | tags=foo,bar.'
+      description: 'Filters by a comma-separated list of tags. Returns hosts that
+        contain any of the tags specified, e.g., tags=baz | tags=foo,bar.'
     - name: key_assest
       description: 'Filters by the key asset. Can be "True" or "False".'
     - name: mac_address
@@ -237,7 +245,8 @@ script:
       description: 'The current threat score correlated to this host.'
       type: Number
     - contextPath: Vectra.Host.LastDetection
-      description: 'Last detection activity from this host (Timestamp format: YYYY-MM-DD HH-MM-SS GMT).'
+      description: 'Last detection activity from this host (Timestamp format: YYYY-MM-DD
+        HH-MM-SS GMT).'
       type: String
     - contextPath: Vectra.Host.IP
       description: 'Last source IP address associated with this host.'
@@ -245,7 +254,8 @@ script:
     - contextPath: Vectra.Host.ID
       description: 'ID of the host.'
       type: Number
-    description: Returns host information, which includes data that correlates the host data to detected security events.
+    description: Returns host information, which includes data that correlates the
+      host data to detected security events.
   - name: vectra-triage
     arguments: []
     outputs:
@@ -281,20 +291,23 @@ script:
       description: Kerberos Account.
     - contextPath: Vectra.Rule.Remote.Kerberos.Service
       description: Kerberos Service.
-    description: The rules branch can be used to retrieve a listing of configured Triage rules
+    description: The rules branch can be used to retrieve a listing of configured
+      Triage rules
   - name: vectra-get-host-by-id
     arguments:
     - name: host_id
       required: true
       default: true
-      description: The ID of the required host. Can be retrieved from the vectra-get-hosts command.
+      description: The ID of the required host. Can be retrieved from the vectra-get-hosts
+        command.
     description: Returns a host by ID.
   - name: vectra-get-detection-by-id
     arguments:
     - name: detection_id
       required: true
       default: true
-      description: The ID of the required detection. Can be retrieve from the vectra-get-detections command.
+      description: The ID of the required detection. Can be retrieve from the vectra-get-detections
+        command.
     description: Returns detections by detection ID.
   - name: vectra-get-users
     description: Retrieves the current list of Users
@@ -304,7 +317,8 @@ script:
     - name: role
       description: 'Filters by role.'
     - name: account_type
-      description: 'Filters by account type (Local, Special, Limited Time Link, LDAP, TACACS).'
+      description: 'Filters by account type (Local, Special, Limited Time Link, LDAP,
+        TACACS).'
     - name: authentication_profile
       description: 'Filter by authentication profile (LDAP or TACACS only).'
     - name: last_login_gte
@@ -315,13 +329,15 @@ script:
       description: 'The ID of the Proxy object.'
     outputs:
     - contextPath: Vectra.Proxy.Source
-      description: 'Whether the proxy was auto-detected by Cognito or was added by a user.'
+      description: 'Whether the proxy was auto-detected by Cognito or was added by
+        a user.'
       type: String
     - contextPath: Vectra.Proxy.ID
       description: 'The ID of the Proxy.'
       type: String
     - contextPath: Vectra.Proxy.Source
-      description: 'Whether the proxy was auto-detected by Cognito or was added by a user.'
+      description: 'Whether the proxy was auto-detected by Cognito or was added by
+        a user.'
       type: String
     - contextPath: Vectra.Proxy.ConsidersProxy
       description: 'Whether to consider the object as a proxy.'
@@ -329,14 +345,16 @@ script:
     - contextPath: Vectra.Proxy.Address
       description: 'The proxy IP address.'
       type: String
-    description: Retrieves the current list of proxy IP addresses, or single proxy IP address by proxy ID.
+    description: Retrieves the current list of proxy IP addresses, or single proxy
+      IP address by proxy ID.
   - name: vectra-get-threatfeed
     arguments:
     - name: threatfeed_id
       description: 'The ID of the ThreatFeed object.'
     outputs:
     - contextPath: Vectra.ThreatFeed.Category
-      description: 'The category in which the detection will fire if a match is observed with any indicator in the ThreatFeed.'
+      description: 'The category in which the detection will fire if a match is observed
+        with any indicator in the ThreatFeed.'
       type: String
     - contextPath: Vectra.ThreatFeed.Name
       description: 'The name of the ThreatFeed.'
@@ -345,20 +363,25 @@ script:
       description: 'The default certainty to use for indicators in the STIX file.'
       type: String
     - contextPath: Vectra.ThreatFeed.IndicatorType
-      description: 'The default indicatorType to use for the observables in the STIX file.'
+      description: 'The default indicatorType to use for the observables in the STIX
+        file.'
       type: String
     - contextPath: Vectra.ThreatFeed.Duration
-      description: 'The default duration for which indicators in the ThreatFeed are valid.'
+      description: 'The default duration for which indicators in the ThreatFeed are
+        valid.'
       type: Number
     - contextPath: Vectra.ThreatFeed.ID
       description: 'The ID of the ThreatFeed.'
       type: String
-    description: Retrieves the current list of all ThreatFeeds, or single ThreatFeed by ThreatFeed ID.
+    description: Retrieves the current list of all ThreatFeeds, or single ThreatFeed
+      by ThreatFeed ID.
   - name: vectra-search
     arguments:
     - name: query_string
       required: true
-      description: 'The query to perform, e.g., `host.threat:>=50 and host.certainty:>=50` will find all hosts in the critical quadrant. `host.owner_name:bob` will find hosts with probable owner that contains the phrase “bob” in it.'
+      description: 'The query to perform, e.g., `host.threat:>=50 and host.certainty:>=50`
+        will find all hosts in the critical quadrant. `host.owner_name:bob` will find
+        hosts with probable owner that contains the phrase “bob” in it.'
     - name: search_type
       description: 'The type of search to perform. Can be "Hosts" or "Detections".'
       required: true
@@ -367,10 +390,14 @@ script:
       - hosts
       - detections
     - name: page_size
-      description: 'Number of results returned per page. The default page_size is 50, max. is 5000.'
+      description: 'Number of results returned per page. The default page_size is
+        50, max. is 5000.'
     description: "Runs an advanced search on hosts and detections."
   isfetch: true
   dockerimage: demisto/python3:3.9.7.24076
 tests:
 - No test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

@@ -16,3 +16,6 @@ type: python
 tests:
 - no tests
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

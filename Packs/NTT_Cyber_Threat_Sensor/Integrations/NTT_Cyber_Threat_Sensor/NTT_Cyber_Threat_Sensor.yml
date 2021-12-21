@@ -124,3 +124,6 @@ tests:
 - No tests (auto formatted)
 defaultclassifier: NTT Cyber Threat Sensor - Classifier
 defaultmapperin: NTT Cyber Threat Sensor - mapper
+marketplaces:
+- xsoar
+- marketplacev2

@@ -61,3 +61,6 @@ dockerimage: demisto/bs4-py3:1.0.0.24176
 fromversion: '6.0.0'
 tests:
 - No tests
+marketplaces:
+- xsoar
+- marketplacev2

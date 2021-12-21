@@ -6,7 +6,9 @@ script: '-'
 type: python
 subtype: python2
 tags: []
-comment: Gets docker image latest tag. Script simulates the docker pull flow but doesn't actually pull the image. Returns an entry with the docker image latest tag if all is good, otherwise will return an error.
+comment: Gets docker image latest tag. Script simulates the docker pull flow but doesn't
+  actually pull the image. Returns an entry with the docker image latest tag if all
+  is good, otherwise will return an error.
 args:
 - name: docker_image
   required: true
@@ -29,3 +31,6 @@ tests:
 - No test - no testplaybook, but unit tests exist
 fromversion: 5.0.0
 dockerimage: demisto/python:2.7.18.24066
+marketplaces:
+- xsoar
+- marketplacev2

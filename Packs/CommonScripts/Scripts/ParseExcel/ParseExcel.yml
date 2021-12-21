@@ -22,3 +22,6 @@ dockerimage: demisto/xlrd-py3:1.0.0.23423
 tests:
 - ParseExcel-test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

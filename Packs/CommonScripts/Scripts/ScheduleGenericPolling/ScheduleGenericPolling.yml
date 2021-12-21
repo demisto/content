@@ -51,3 +51,6 @@ runonce: false
 tests:
 - No test
 dockerimage: demisto/python:2.7.18.24066
+marketplaces:
+- xsoar
+- marketplacev2

@@ -1605,3 +1605,6 @@ script:
 fromversion: 5.0.0
 tests:
 - APIVoid Test
+marketplaces:
+- xsoar
+- marketplacev2

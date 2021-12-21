@@ -6,7 +6,8 @@ args:
   required: true
   secret: false
 - default: false
-  description: 'Name of the output file, for example: zipName="test" would result in output file "test.zip"'
+  description: 'Name of the output file, for example: zipName="test" would result
+    in output file "test.zip"'
   isArray: false
   name: zipName
   required: false
@@ -55,7 +56,8 @@ outputs:
   description: "The file extension, for example: 'xls'."
   type: String
 - contextPath: File.Type
-  description: The file type, as determined by libmagic (same as displayed in file entries).
+  description: The file type, as determined by libmagic (same as displayed in file
+    entries).
   type: String
 script: '-'
 system: false
@@ -68,3 +70,6 @@ subtype: python3
 dockerimage: demisto/python_zipfile:1.0.0.12410
 runonce: false
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

@@ -6,7 +6,8 @@ script: ''
 type: python
 tags:
 - dynamic-section
-comment: Displays the phishing campaign senders' email addresses and the number of incidents each email address appears in.
+comment: Displays the phishing campaign senders' email addresses and the number of
+  incidents each email address appears in.
 enabled: true
 scripttarget: 0
 subtype: python3
@@ -16,3 +17,6 @@ runas: DBotWeakRole
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2

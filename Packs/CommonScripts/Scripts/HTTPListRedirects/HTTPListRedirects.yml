@@ -20,7 +20,8 @@ args:
   - "true"
   - "false"
   defaultValue: "true"
-  description: Should we use HEAD instead of GET. Safer but might not be the same response.
+  description: Should we use HEAD instead of GET. Safer but might not be the same
+    response.
 - name: use_system_proxy
   auto: PREDEFINED
   predefined:
@@ -43,3 +44,6 @@ fromversion: 5.0.0
 dockerimage: demisto/python:2.7.18.24066
 tests:
 - No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2

@@ -70,3 +70,6 @@ tests:
 defaultmapperin: PingCastle-Report-Mapper
 defaultclassifier: PingCastle-Report-Classifier
 fromversion: 5.5.0
+marketplaces:
+- xsoar
+- marketplacev2

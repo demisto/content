@@ -702,3 +702,6 @@ script:
 tests:
 - AWS-Lambda-Test (Read-Only)
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

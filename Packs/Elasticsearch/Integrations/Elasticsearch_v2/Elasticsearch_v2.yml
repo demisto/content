@@ -7,7 +7,8 @@ configuration:
   name: url
   required: true
   type: 0
-  additionalinfo: The Elasticsearch server to which the integration connects. Ensure that the URL includes the correct Elasticsearch port. By default this is 9200.
+  additionalinfo: The Elasticsearch server to which the integration connects. Ensure
+    that the URL includes the correct Elasticsearch port. By default this is 9200.
 - additionalinfo: Provide Username + Passoword instead of API key + API ID
   display: Username for server login
   name: credentials
@@ -22,7 +23,9 @@ configuration:
   required: false
   type: 8
 - defaultvalue: Elasticsearch
-  additionalinfo: In some hosted ElasticSearch environments, the standard ElasticSearch client is not supported. If you encounter any related client issues, please consider using the OpenSearch client type.
+  additionalinfo: In some hosted ElasticSearch environments, the standard ElasticSearch
+    client is not supported. If you encounter any related client issues, please consider
+    using the OpenSearch client type.
   display: Client type
   name: client_type
   options:
@@ -326,3 +329,6 @@ script:
   type: python
   ismappable: true
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

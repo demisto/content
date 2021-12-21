@@ -1,13 +1,19 @@
 args:
 - default: false
-  description: 'A comma-separated list of entities for which to search for relationships. For example: 192.168.1.1,192.168.1.2. The search applies to both entity A or entity B values. This argument can be used in conjunction with the entityType and the relationship arguments and all arguments will be treated with the AND operator.'
+  description: 'A comma-separated list of entities for which to search for relationships.
+    For example: 192.168.1.1,192.168.1.2. The search applies to both entity A or entity
+    B values. This argument can be used in conjunction with the entityType and the
+    relationship arguments and all arguments will be treated with the AND operator.'
   isArray: true
   name: entities
   required: false
   secret: false
 - auto: PREDEFINED
   default: false
-  description: 'A comma-separated list of entity types for which to search for relationships. For example: IP,URL. This argument can be used in conjunction with the entities and the relationship arguments and all arguments will be treated with the AND operator.'
+  description: 'A comma-separated list of entity types for which to search for relationships.
+    For example: IP,URL. This argument can be used in conjunction with the entities
+    and the relationship arguments and all arguments will be treated with the AND
+    operator.'
   isArray: true
   name: entities_types
   required: false
@@ -38,7 +44,10 @@ args:
   - Course of Action
   - Infrastructure.
 - default: false
-  description: 'A comma-separated list of relationship types for which to search for relationships. For example: related-to,contains. This argument can be used in conjunction with the entities and the entitiesTypes arguments and all arguments will be treated with the AND operator.'
+  description: 'A comma-separated list of relationship types for which to search for
+    relationships. For example: related-to,contains. This argument can be used in
+    conjunction with the entities and the entitiesTypes arguments and all arguments
+    will be treated with the AND operator.'
   isArray: true
   auto: PREDEFINED
   name: relationships
@@ -124,7 +133,10 @@ args:
   secret: false
 - default: false
   defaultValue: 'false'
-  description: 'Whether all of the relationships attributes will be returned or just the basic attributes. Default is false and the returned values will be name, entity A value, entity A type, entity B value, entity B type, relationships type. If true, all attributes will be returned.'
+  description: 'Whether all of the relationships attributes will be returned or just
+    the basic attributes. Default is false and the returned values will be name, entity
+    A value, entity A type, entity B value, entity B type, relationships type. If
+    true, all attributes will be returned.'
   isArray: false
   name: verbose
   required: false
@@ -144,8 +156,11 @@ args:
   predefined:
   - 'true'
   - 'false'
-comment: 'This automation outputs the indicator relationships to context according to the provided query, using the entities, entityTypes, and relationships arguments. All arguments will use the AND operator. For example, using the following arguments entities=8.8.8.8
-          entities_types=Domain will provide only relationships that the 8.8.8.8 indicator has with indicators of type domain.'
+comment: 'This automation outputs the indicator relationships to context according
+  to the provided query, using the entities, entityTypes, and relationships arguments.
+  All arguments will use the AND operator. For example, using the following arguments
+  entities=8.8.8.8 entities_types=Domain will provide only relationships that the
+  8.8.8.8 indicator has with indicators of type domain.'
 commonfields:
   id: SearchIndicatorRelationships
   version: -1
@@ -205,3 +220,6 @@ dockerimage: demisto/python3:3.9.7.24076
 fromversion: 6.2.0
 tests:
 - Relationships scripts - Test
+marketplaces:
+- xsoar
+- marketplacev2

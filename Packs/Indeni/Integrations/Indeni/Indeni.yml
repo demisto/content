@@ -53,7 +53,10 @@ configuration:
   name: maxPullSize
   required: false
   type: 0
-description: Indeni is a turn-key automated monitoring providing visibility for security infrastructure. Indeni's production-ready Knowledge is curated from vetted, community-sourced experience, to deliver automation of tedious tasks with integration with your existing processes.
+description: Indeni is a turn-key automated monitoring providing visibility for security
+  infrastructure. Indeni's production-ready Knowledge is curated from vetted, community-sourced
+  experience, to deliver automation of tedious tasks with integration with your existing
+  processes.
 display: Indeni
 name: Indeni
 script:
@@ -208,3 +211,6 @@ script:
 fromversion: 5.0.0
 defaultclassifier: Indeni
 defaultmapperin: Indeni-mapper
+marketplaces:
+- xsoar
+- marketplacev2

@@ -19,7 +19,8 @@ configuration:
   name: base_url
   required: true
   type: 0
-- additionalinfo: Use a self-deployed Azure application and authenticate using the Client Credentials flow.
+- additionalinfo: Use a self-deployed Azure application and authenticate using the
+    Client Credentials flow.
   display: Use Client Credentials Authorization Flow
   name: client_credentials
   required: false
@@ -85,11 +86,13 @@ script:
     name: microsoft-365-defender-auth-start
   - deprecated: false
     description: Run this command to complete the authorization process. Should be
-      used after running the microsoft-365-defender-auth-start command. (for device-code mode)
+      used after running the microsoft-365-defender-auth-start command. (for device-code
+      mode)
     execution: false
     name: microsoft-365-defender-auth-complete
   - deprecated: false
-    description: Run this command if you need to rerun the authentication process. (for device-code mode)
+    description: Run this command if you need to rerun the authentication process.
+      (for device-code mode)
     execution: false
     name: microsoft-365-defender-auth-reset
   - deprecated: false
@@ -332,3 +335,6 @@ tests:
 defaultmapperin: Microsoft 365 Defender - Incoming Mapper
 fromversion: 5.5.0
 beta: true
+marketplaces:
+- xsoar
+- marketplacev2

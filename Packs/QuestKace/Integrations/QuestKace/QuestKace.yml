@@ -26,12 +26,15 @@ configuration:
   name: fetch_shaping
   required: false
   type: 0
-  additionalinfo: The shaping parameter limits the number or returned results. To get extended data use the shaping parameter. If the parameter is not used, all the data will be returned.
+  additionalinfo: The shaping parameter limits the number or returned results. To
+    get extended data use the shaping parameter. If the parameter is not used, all
+    the data will be returned.
 - display: Filter for the tickets
   name: fetch_filter
   required: false
   type: 0
-  additionalinfo: Adding this argument will enable you to filter the results. For example, "id eq 2" , "machine.name eq Mac".
+  additionalinfo: Adding this argument will enable you to filter the results. For
+    example, "id eq 2" , "machine.name eq Mac".
 - defaultvalue: '50'
   display: Fetch limit per query
   name: fetch_limit
@@ -42,7 +45,8 @@ configuration:
   name: fetch_queue_id
   required: false
   type: 0
-  additionalinfo: If you want to fetch incidents of specific queues, provide a comma-separated list of queue IDs. By default, all tickets from all queues will be returned.
+  additionalinfo: If you want to fetch incidents of specific queues, provide a comma-separated
+    list of queue IDs. By default, all tickets from all queues will be returned.
 - display: Incident type
   name: incidentType
   required: false
@@ -55,7 +59,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the Comprehensive Quest KACE solution to Provision, manage, secure, and service all network-connected devices.
+description: Use the Comprehensive Quest KACE solution to Provision, manage, secure,
+  and service all network-connected devices.
 display: Quest KACE Systems Management Appliance (Beta)
 name: QuestKace
 script:
@@ -601,3 +606,6 @@ script:
 tests:
 - QuestKace test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

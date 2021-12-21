@@ -259,3 +259,6 @@ script:
   isfetch: true
 hidden: false
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

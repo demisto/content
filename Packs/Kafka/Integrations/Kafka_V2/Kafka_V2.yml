@@ -129,7 +129,8 @@ script:
       secret: false
     - default: false
       defaultValue: Earliest
-      description: Message offset to filter by. Acceptable values are 'Earliest', 'Latest', or any other offest number.
+      description: Message offset to filter by. Acceptable values are 'Earliest',
+        'Latest', or any other offest number.
       isArray: false
       name: offset
       required: false
@@ -184,3 +185,6 @@ script:
 tests:
 - No Test - Can not connect to instance from remote
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

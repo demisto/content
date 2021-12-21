@@ -188,3 +188,6 @@ script:
 fromversion: 5.0.0
 tests:
 - Anomali Match Forensic Search - Test
+marketplaces:
+- xsoar
+- marketplacev2

@@ -28,16 +28,19 @@ configuration:
   required: false
   type: 13
 - defaultvalue: 3 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
+    months, 1 year)
   name: fetch_time
   required: false
   type: 0
 - defaultvalue: MALOP CREATION TIME
-  display: Fetch by "MALOP CREATION TIME" or by "MALOP UPDATE TIME" (Fetching by Malop update time might create duplicates of Malops as incidents)
+  display: Fetch by "MALOP CREATION TIME" or by "MALOP UPDATE TIME" (Fetching by Malop
+    update time might create duplicates of Malops as incidents)
   name: fetch_by
   required: false
   type: 0
-description: Endpoint detection and response to manage and query malops, connections and processes.
+description: Endpoint detection and response to manage and query malops, connections
+  and processes.
 display: Cybereason
 name: Cybereason
 script:
@@ -118,7 +121,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: If process is not known to reputation services and its image file is unsigned
+      description: If process is not known to reputation services and its image file
+        is unsigned
       isArray: false
       name: unsignedUnknownReputation
       predefined:
@@ -138,7 +142,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: If process was identified elevating its privileges to local system user
+      description: If process was identified elevating its privileges to local system
+        user
       isArray: false
       name: privilegesEscalation
       predefined:
@@ -148,7 +153,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: If the process was executed by PsExec service and is suspicious as being executed maliciously
+      description: If the process was executed by PsExec service and is suspicious
+        as being executed maliciously
       isArray: false
       name: maliciousPsExec
       predefined:
@@ -342,7 +348,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The total number of results to return for your Server. Ensure you make the limit a reasonable number to maximize Server performance and not to overload the system.
+      description: The total number of results to return for your Server. Ensure you
+        make the limit a reasonable number to maximize Server performance and not
+        to overload the system.
       isArray: false
       name: totalResultLimit
       required: false
@@ -356,7 +364,17 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: MALOP
-      description: 'The level of detail to provide in the response. Possible values include:  SPECIFIC:  References value contain only the count in the ElementValues class. The Suspicions map is calculated for each results, with the suspicion name and the first time the suspicion appeared. The Evidence map is not calculated for the results. CUSTOM:  Reference values contain the specific Elements, up to the limit defined in the perFeatureLimit parameter. The Suspicions map is not calculated for the results. The Evidence map is not calculated for the results. DETAILS:  Reference values contain the specific Elements, up to the limit defined in the perFeatureLimit parameter. The Suspicions map is calculated for each result, containing the suspicion name and the first time the suspicion appeared. The Evidence map is not calculated for the results.'
+      description: 'The level of detail to provide in the response. Possible values
+        include:  SPECIFIC:  References value contain only the count in the ElementValues
+        class. The Suspicions map is calculated for each results, with the suspicion
+        name and the first time the suspicion appeared. The Evidence map is not calculated
+        for the results. CUSTOM:  Reference values contain the specific Elements,
+        up to the limit defined in the perFeatureLimit parameter. The Suspicions map
+        is not calculated for the results. The Evidence map is not calculated for
+        the results. DETAILS:  Reference values contain the specific Elements, up
+        to the limit defined in the perFeatureLimit parameter. The Suspicions map
+        is calculated for each result, containing the suspicion name and the first
+        time the suspicion appeared. The Evidence map is not calculated for the results.'
       isArray: false
       name: templateContext
       predefined:
@@ -374,7 +392,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Malop GUIDs to filter by (Comma separated values supported, e.g. 11.5681864988155542407,11.1773255057963879999)
+      description: Malop GUIDs to filter by (Comma separated values supported, e.g.
+        11.5681864988155542407,11.1773255057963879999)
       isArray: false
       name: malopGuid
       required: false
@@ -388,7 +407,8 @@ script:
       description: The unique globally unique identifier (guid) for the Malop.
       type: string
     - contextPath: Cybereason.Malops.CreationTime
-      description: The time reported as when the malicious behavior began on the system. This is not the time that the Malop was first detected by Cybereason.
+      description: The time reported as when the malicious behavior began on the system.
+        This is not the time that the Malop was first detected by Cybereason.
       type: string
     - contextPath: Cybereason.Malops.DecisionFeature
       description: The reason that Cybereason has raised the Malop.
@@ -413,13 +433,15 @@ script:
       type: string
   - arguments:
     - default: false
-      description: Array of malop GUIDs separated by comma. (Malop GUID can be retrieved with the command cybereason-query-malops command)
+      description: Array of malop GUIDs separated by comma. (Malop GUID can be retrieved
+        with the command cybereason-query-malops command)
       isArray: false
       name: malopGuids
       required: true
       secret: false
     - default: false
-      description: Machine names which were affected by malop. Comma separated values supported (e.g., machine1,machine2)
+      description: Machine names which were affected by malop. Comma separated values
+        supported (e.g., machine1,machine2)
       isArray: false
       name: machineName
       required: false
@@ -485,7 +507,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Malop GUID to add comment to. (Malop GUID can be retrieved with the command cybereason-query-malops command)
+      description: Malop GUID to add comment to. (Malop GUID can be retrieved with
+        the command cybereason-query-malops command)
       isArray: false
       name: malopGuid
       required: true
@@ -592,7 +615,8 @@ script:
       description: File creation time
       type: date
     - contextPath: Cybereason.File.Suspicion
-      description: File suspicions object of suspicion as key and detected date as value
+      description: File suspicions object of suspicion as key and detected date as
+        value
       type: string
     - contextPath: Cybereason.File.OSVersion
       description: Machine OS version on which file is located
@@ -711,3 +735,6 @@ script:
 tests:
 - Cybereason Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

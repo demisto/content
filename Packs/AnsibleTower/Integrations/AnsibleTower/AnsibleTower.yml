@@ -811,7 +811,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: The ID of the job. 
+      description: The ID of the job.
       isArray: false
       name: job_id
       required: true
@@ -1295,7 +1295,7 @@ script:
       type: Boolean
     - contextPath: AnsibleAWX.AdhocCommand.started
       description: The date and time the job was queued to start.
-      type: 
+      type:
     - contextPath: AnsibleAWX.AdhocCommand.finished
       description: The date and time the job finished execution.
       type: Date
@@ -1478,3 +1478,6 @@ script:
 tests:
 - AnsibleTower_Test_playbook
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

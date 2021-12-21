@@ -184,3 +184,6 @@ script:
 fromversion: 5.0.0
 tests:
 - generic-sql
+marketplaces:
+- xsoar
+- marketplacev2

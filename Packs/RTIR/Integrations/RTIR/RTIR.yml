@@ -51,7 +51,8 @@ configuration:
   name: fetch_limit
   required: false
   type: 0
-description: Request Tracker for Incident Response is a ticketing system which provides pre-configured queues and workflows designed for incident response teams.
+description: Request Tracker for Incident Response is a ticketing system which provides
+  pre-configured queues and workflows designed for incident response teams.
 display: RTIR
 name: RTIR
 script:
@@ -77,13 +78,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people will receive future updates.
+      description: Sends a carbon-copy of this update to a comma-delimited list of
+        email addresses. These people will receive future updates.
       isArray: false
       name: cc
       required: false
       secret: false
     - default: false
-      description: Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people will receive future updates.
+      description: Sends a carbon-copy of this update to a comma-delimited list of
+        administrative email addresses. These people will receive future updates.
       isArray: false
       name: admin-cc
       required: false
@@ -125,13 +128,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: Attachment to add to the ticket, given as Entry ID. Comma separated values supported, e.g. entryID1,entryID2
+      description: Attachment to add to the ticket, given as Entry ID. Comma separated
+        values supported, e.g. entryID1,entryID2
       isArray: true
       name: attachment
       required: false
       secret: false
     - default: false
-      description: 'Ticket custom fields, given in format: field1=value1,field2=value2, e.g. IP=8.8.8.8,HowReported=Email. Note: the command does not create custom fields, these should be created on RTIR.'
+      description: 'Ticket custom fields, given in format: field1=value1,field2=value2,
+        e.g. IP=8.8.8.8,HowReported=Email. Note: the command does not create custom
+        fields, these should be created on RTIR.'
       isArray: false
       name: customfields
       required: false
@@ -176,7 +182,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Ticket queue (Comma separated values supported, e.g. General,Incident reports,Incidents)
+      description: Ticket queue (Comma separated values supported, e.g. General,Incident
+        reports,Incidents)
       isArray: false
       name: queue
       required: true
@@ -206,19 +213,22 @@ script:
       required: false
       secret: false
     - default: false
-      description: Date after which the ticket was created, in format of YYYY-MM-DD, e.g. 2011-02-24
+      description: Date after which the ticket was created, in format of YYYY-MM-DD,
+        e.g. 2011-02-24
       isArray: false
       name: created-after
       required: false
       secret: false
     - default: false
-      description: Date on which the ticket was created, in format of YYYY-MM-DD, e.g. 2011-02-24
+      description: Date on which the ticket was created, in format of YYYY-MM-DD,
+        e.g. 2011-02-24
       isArray: false
       name: created-on
       required: false
       secret: false
     - default: false
-      description: Date before which the ticket was created, in format of YYYY-MM-DD, e.g. 2011-02-24
+      description: Date before which the ticket was created, in format of YYYY-MM-DD,
+        e.g. 2011-02-24
       isArray: false
       name: created-before
       required: false
@@ -237,7 +247,8 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: A limit for the max number of results that will return from the search. 0 means no limit, which is the default.
+      description: A limit for the max number of results that will return from the
+        search. 0 means no limit, which is the default.
       isArray: false
       name: results_limit
       required: false
@@ -348,7 +359,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Ticket custom fields, given in format: field1=value1,field2=value2, e.g. IP=8.8.8.8,HowReported=Email. Note: the command does not create custom fields, these should be created on RTIR.'
+      description: 'Ticket custom fields, given in format: field1=value1,field2=value2,
+        e.g. IP=8.8.8.8,HowReported=Email. Note: the command does not create custom
+        fields, these should be created on RTIR.'
       isArray: false
       name: customfields
       required: false
@@ -468,7 +481,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Gets a list of all attachments details and data content related to the ticket.
+    description: Gets a list of all attachments details and data content related to
+      the ticket.
     execution: false
     name: rtir-ticket-attachments
     outputs:
@@ -531,7 +545,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Attachment to add to the ticket, given as Entry ID. Comma separated values supported, e.g. entryID1,entryID2
+      description: Attachment to add to the ticket, given as Entry ID. Comma separated
+        values supported, e.g. entryID1,entryID2
       isArray: true
       name: attachment
       required: false
@@ -572,3 +587,6 @@ script:
 tests:
 - RTIR Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

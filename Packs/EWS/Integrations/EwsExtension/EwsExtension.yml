@@ -1839,3 +1839,6 @@ script:
 tests:
 - O365 - EWS - Extension - Test
 fromversion: 5.5.0
+marketplaces:
+- xsoar
+- marketplacev2

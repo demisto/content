@@ -43,7 +43,8 @@ configuration:
   required: false
   type: 0
 - defaultvalue: auto-discovery
-  display: Time Format e.g. %Y-%m-%dT%H:%M:%SZ. Select "auto-discovery" to try to automatically determine the format.
+  display: Time Format e.g. %Y-%m-%dT%H:%M:%SZ. Select "auto-discovery" to try to
+    automatically determine the format.
   name: time_format
   required: false
   type: 0
@@ -291,7 +292,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The time frame by which to filter the results, for example: Last 48 Hours.'
+      description: 'The time frame by which to filter the results, for example: Last
+        48 Hours.'
       isArray: false
       name: time_frame
       predefined:
@@ -421,3 +423,6 @@ script:
   type: python
   subtype: python3
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

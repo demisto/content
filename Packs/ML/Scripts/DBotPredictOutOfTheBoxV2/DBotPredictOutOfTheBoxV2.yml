@@ -106,7 +106,7 @@ subtype: python3
 system: false
 timeout: 60µs
 type: python
-dockerimage:  demisto/ml:1.0.0.20606
+dockerimage: demisto/ml:1.0.0.20606
 runonce: true
 tests:
 - DbotPredictOufOfTheBoxTestV2
@@ -116,3 +116,6 @@ tags:
 - ml
 comment: Predict phishing incidents using the out-of-the-box pre-trained model.
 fromversion: 5.5.0
+marketplaces:
+- xsoar
+- marketplacev2

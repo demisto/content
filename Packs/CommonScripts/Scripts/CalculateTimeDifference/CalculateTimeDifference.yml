@@ -30,3 +30,6 @@ tests:
 - Impossible Traveler - Test
 fromversion: 5.0.0
 dockerimage: demisto/python:2.7.18.24066
+marketplaces:
+- xsoar
+- marketplacev2

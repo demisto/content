@@ -54,7 +54,8 @@ configuration:
   name: mapper_out
   required: true
   type: 0
-description: Integrate with Envoy Identity Access Management services to execute CRUD operations to employee lifecycle processes.
+description: Integrate with Envoy Identity Access Management services to execute CRUD
+  operations to employee lifecycle processes.
 display: Envoy IAM
 name: Envoy IAM
 script:
@@ -274,3 +275,6 @@ script:
 tests:
 - No tests
 fromversion: 6.0.0
+marketplaces:
+- xsoar
+- marketplacev2

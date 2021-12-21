@@ -777,3 +777,6 @@ tests:
 defaultmapperin: GoogleCloudSCC-mapper
 defaultclassifier: GoogleCloudSCC
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

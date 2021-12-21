@@ -45,7 +45,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: The ID of the device to send a message to. 
+      description: The ID of the device to send a message to.
       isArray: false
       name: device_id
       required: true
@@ -64,7 +64,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The type of message to send. Possible values are: "pns", "sms" and "email".'
+      description: 'The type of message to send. Possible values are: "pns", "sms"
+        and "email".'
       isArray: false
       name: message_type
       predefined:
@@ -79,18 +80,19 @@ script:
     name: mobileiron-core-send-message
   - arguments:
     - default: false
-      description: The ID of the device on which to update the operating system. 
+      description: The ID of the device on which to update the operating system.
       isArray: false
       name: device_id
       required: true
       secret: false
     deprecated: false
-    description: Updates the operating system on the particular device based on the device ID.
+    description: Updates the operating system on the particular device based on the
+      device ID.
     execution: false
     name: mobileiron-core-update-os
   - arguments:
     - default: false
-      description: The ID of the device to unlock. 
+      description: The ID of the device to unlock.
       isArray: false
       name: device_id
       required: true
@@ -107,7 +109,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Enables voice roaming on the particular device based on the device ID.
+    description: Enables voice roaming on the particular device based on the device
+      ID.
     execution: false
     name: mobileiron-core-enable-voice-roaming
   - arguments:
@@ -118,7 +121,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Disables voice roaming on the particular device based on the device ID.
+    description: Disables voice roaming on the particular device based on the device
+      ID.
     execution: false
     name: mobileiron-core-disable-voice-roaming
   - arguments:
@@ -129,7 +133,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Enables data roaming on the particular device based on the device ID.
+    description: Enables data roaming on the particular device based on the device
+      ID.
     execution: false
     name: mobileiron-core-enable-data-roaming
   - arguments:
@@ -140,7 +145,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Disables data roaming on the particular device based on the device ID.
+    description: Disables data roaming on the particular device based on the device
+      ID.
     execution: false
     name: mobileiron-core-disable-data-roaming
   - arguments:
@@ -151,7 +157,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Enables a personal hotspot on the particular device based on the device ID.
+    description: Enables a personal hotspot on the particular device based on the
+      device ID.
     execution: false
     name: mobileiron-core-enable-personal-hotspot
   - arguments:
@@ -162,7 +169,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Disables a personal hotspot on the particular device based on the device ID.
+    description: Disables a personal hotspot on the particular device based on the
+      device ID.
     execution: false
     name: mobileiron-core-disable-personal-hotspot
   - arguments:
@@ -173,7 +181,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Unlocks an app connect container on the particular device based on the device ID.
+    description: Unlocks an app connect container on the particular device based on
+      the device ID.
     execution: false
     name: mobileiron-core-unlock-app-connect-container
   - arguments:
@@ -212,7 +221,8 @@ script:
   - arguments:
     - default: true
       defaultValue: common.status = "ACTIVE"
-      description: 'The query used to filter the list of devices. Default is: common.status = "ACTIVE".'
+      description: 'The query used to filter the list of devices. Default is: common.status
+        = "ACTIVE".'
       isArray: false
       name: query
       required: true
@@ -247,7 +257,8 @@ script:
       description: Status of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_imei
-      description: International Mobile Equipment Identity (IMEI) of the device that was fetched.
+      description: International Mobile Equipment Identity (IMEI) of the device that
+        was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_platform
       description: Platform of the device that was fetched.
@@ -271,7 +282,8 @@ script:
       description: ID of the device that was fetched.
       type: Number
     - contextPath: MobileIronCore.Device.common_imsi
-      description: International mobile subscriber identity (IMSI) of the device that was fetched.
+      description: International mobile subscriber identity (IMSI) of the device that
+        was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_owner
       description: Owner of the device that was fetched.
@@ -361,7 +373,8 @@ script:
       description: Status of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_imei
-      description: International Mobile Equipment Identity (IMEI) of the device that was fetched.
+      description: International Mobile Equipment Identity (IMEI) of the device that
+        was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_platform
       description: Platform of the device that was fetched.
@@ -385,7 +398,8 @@ script:
       description: ID of the device that was fetched.
       type: Number
     - contextPath: MobileIronCore.Device.common_imsi
-      description: International mobile subscriber identity (IMSI) of the device that was fetched.
+      description: International mobile subscriber identity (IMSI) of the device that
+        was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_owner
       description: Owner of the device that was fetched.
@@ -475,7 +489,8 @@ script:
       description: Status of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_imei
-      description: International Mobile Equipment Identity (IMEI) of the device that was fetched.
+      description: International Mobile Equipment Identity (IMEI) of the device that
+        was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_platform
       description: Platform of the device that was fetched.
@@ -499,7 +514,8 @@ script:
       description: ID of the device that was fetched.
       type: Number
     - contextPath: MobileIronCore.Device.common_imsi
-      description: International mobile subscriber identity (IMSI) of the device that was fetched.
+      description: International mobile subscriber identity (IMSI) of the device that
+        was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_owner
       description: Owner of the device that was fetched.
@@ -589,7 +605,8 @@ script:
       description: Status of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_imei
-      description: International Mobile Equipment Identity (IMEI) of the device that was fetched.
+      description: International Mobile Equipment Identity (IMEI) of the device that
+        was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_platform
       description: Platform of the device that was fetched.
@@ -613,7 +630,8 @@ script:
       description: ID of the device that was fetched.
       type: Number
     - contextPath: MobileIronCore.Device.common_imsi
-      description: International mobile subscriber identity (IMSI) of the device that was fetched.
+      description: International mobile subscriber identity (IMSI) of the device that
+        was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_owner
       description: Owner of the device that was fetched.
@@ -703,7 +721,8 @@ script:
       description: Status of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_imei
-      description: International Mobile Equipment Identity (IMEI) of the device that was fetched.
+      description: International Mobile Equipment Identity (IMEI) of the device that
+        was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_platform
       description: Platform of the device that was fetched.
@@ -727,7 +746,8 @@ script:
       description: ID of the device that was fetched.
       type: Number
     - contextPath: MobileIronCore.Device.common_imsi
-      description: International mobile subscriber identity (IMSI) of the device that was fetched.
+      description: International mobile subscriber identity (IMSI) of the device that
+        was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_owner
       description: Owner of the device that was fetched.
@@ -799,3 +819,6 @@ tests:
 - No tests (auto formatted)
 defaultmapperin: MobileIron Incident Incoming Mapper
 fromversion: 6.0.0
+marketplaces:
+- xsoar
+- marketplacev2

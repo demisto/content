@@ -90,8 +90,9 @@ configuration:
   defaultvalue: '3'
   type: 0
   required: false
-- additionalinfo: 'Select the list of relationships to retrieve from the API. Note that relationships that are signed with * key are
-                    available only for the VirusTotal premium API key.'
+- additionalinfo: 'Select the list of relationships to retrieve from the API. Note
+    that relationships that are signed with * key are available only for the VirusTotal
+    premium API key.'
   display: IP Relationships
   name: ip_relationships
   options:
@@ -102,8 +103,9 @@ configuration:
   required: false
   type: 16
   defaultvalue: 'communicating files,* downloaded files,referrer files,* urls'
-- additionalinfo: 'Select the list of relationships to retrieve from the API. Note that relationships that are signed with * key are
-                    available only for the VirusTotal premium API key.'
+- additionalinfo: 'Select the list of relationships to retrieve from the API. Note
+    that relationships that are signed with * key are available only for the VirusTotal
+    premium API key.'
   display: Domain Relationships
   name: domain_relationships
   options:
@@ -122,9 +124,12 @@ configuration:
   - '* urls'
   required: false
   type: 16
-  defaultvalue: '* cname records,* caa records,communicating files,* downloaded files,immediate parent,* mx records,* ns records,parent,referrer files,siblings,* soa records,subdomains,* urls'
-- additionalinfo: 'Select the list of relationships to retrieve from the API. Note that relationships that are signed with * key are
-                    available only for the VirusTotal premium API key.'
+  defaultvalue: '* cname records,* caa records,communicating files,* downloaded files,immediate
+    parent,* mx records,* ns records,parent,referrer files,siblings,* soa records,subdomains,*
+    urls'
+- additionalinfo: 'Select the list of relationships to retrieve from the API. Note
+    that relationships that are signed with * key are available only for the VirusTotal
+    premium API key.'
   display: URL Relationships
   name: url_relationships
   options:
@@ -140,9 +145,12 @@ configuration:
   - '* referrer urls'
   required: false
   type: 16
-  defaultvalue: 'communicating files,* contacted domains,* contacted ips,* downloaded files,last serving ip address,network location,* redirecting urls,* redirects to,* referrer files,* referrer urls'
-- additionalinfo: 'Select the list of relationships to retrieve from the API. Note that relationships that are signed with * key are
-                    available only for the VirusTotal premium API key.'
+  defaultvalue: 'communicating files,* contacted domains,* contacted ips,* downloaded
+    files,last serving ip address,network location,* redirecting urls,* redirects
+    to,* referrer files,* referrer urls'
+- additionalinfo: 'Select the list of relationships to retrieve from the API. Note
+    that relationships that are signed with * key are available only for the VirusTotal
+    premium API key.'
   display: File Relationships
   name: file_relationships
   options:
@@ -894,8 +902,9 @@ script:
     - name: resource
       required: true
       default: false
-      description: The file hash (MD5, SHA1, orSHA256), Domain, URL or IP on which you're commenting
-        on. If not supplied, will try to determine if it's a hash or a url.
+      description: The file hash (MD5, SHA1, orSHA256), Domain, URL or IP on which
+        you're commenting on. If not supplied, will try to determine if it's a hash
+        or a url.
     - name: resource_type
       required: false
       default: false
@@ -957,8 +966,9 @@ script:
     - name: resource
       required: true
       default: false
-      description: The file hash (MD5, SHA1, orSHA256), Domain, URL or IP on which you're commenting
-        on. If not supplied, will try to determine if it's a hash or a url.
+      description: The file hash (MD5, SHA1, orSHA256), Domain, URL or IP on which
+        you're commenting on. If not supplied, will try to determine if it's a hash
+        or a url.
     - name: resource_type
       required: false
       default: false
@@ -1057,8 +1067,8 @@ script:
       isArray: false
       auto: PREDEFINED
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     - name: limit
       description: Maximum number of results to fetch.
       defaultValue: 10
@@ -1374,3 +1384,6 @@ script:
 tests:
 - VirusTotalV3-test
 - VirusTotal (API v3) Detonate Test
+marketplaces:
+- xsoar
+- marketplacev2

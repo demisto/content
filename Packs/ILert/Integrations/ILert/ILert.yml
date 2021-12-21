@@ -48,8 +48,8 @@ script:
     - description: Must be either HIGH or LOW. Will overwrite the evaluated priority
         of the alert source.
       name: priority
-    description: Creates a new event/incident in iLert (in order to use this command you
-      have to enter the Integration Key in the integration settings)
+    description: Creates a new event/incident in iLert (in order to use this command
+      you have to enter the Integration Key in the integration settings)
     name: ilert-submit-event
   - arguments:
     - description: The incident key is used to reference the open incident which is
@@ -75,3 +75,6 @@ script:
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2

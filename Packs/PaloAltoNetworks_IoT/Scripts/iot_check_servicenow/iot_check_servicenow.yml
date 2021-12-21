@@ -1,4 +1,5 @@
-comment: Close the XSOAR incident if the IoT ServiceNow ticket was closed. This command should be run in a Job.
+comment: Close the XSOAR incident if the IoT ServiceNow ticket was closed. This command
+  should be run in a Job.
 commonfields:
   id: iot-security-check-servicenow
   version: -1
@@ -14,3 +15,6 @@ subtype: python3
 dockerimage: demisto/python3:3.9.7.24076
 runas: DBotRole
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

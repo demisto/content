@@ -12,7 +12,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: You thought you know DBot... guess again! Here are some super secrete facts about DBot we bet you didn't know.
+description: You thought you know DBot... guess again! Here are some super secrete
+  facts about DBot we bet you didn't know.
 display: DBot Truth Bombs
 name: DBot Truth Bombs
 script:
@@ -41,3 +42,6 @@ script:
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2

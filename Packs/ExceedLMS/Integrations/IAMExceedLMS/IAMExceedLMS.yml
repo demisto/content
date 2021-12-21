@@ -55,7 +55,8 @@ configuration:
   name: mapper_out
   required: true
   type: 0
-description: Integrate with Exceed LMS Identity Access Management services to execute CRUD operations to employee lifecycle processes.
+description: Integrate with Exceed LMS Identity Access Management services to execute
+  CRUD operations to employee lifecycle processes.
 display: ExceedLMS IAM
 name: ExceedLMS IAM
 script:
@@ -276,3 +277,6 @@ script:
 tests:
 - No tests
 fromversion: 6.0.0
+marketplaces:
+- xsoar
+- marketplacev2

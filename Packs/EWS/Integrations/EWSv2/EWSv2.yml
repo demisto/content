@@ -1243,3 +1243,6 @@ tests:
 defaultmapperin: EWS v2-mapper
 defaultclassifier: EWS v2
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

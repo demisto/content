@@ -1193,7 +1193,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The scan ID. Scan Id can be retrieved by the redlock-list-scans command.
+      description: The scan ID. Scan Id can be retrieved by the redlock-list-scans
+        command.
       isArray: false
       name: scan_id
       required: true
@@ -1212,7 +1213,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The scan ID. Scan Id can be retrieved by the redlock-list-scans command.
+      description: The scan ID. Scan Id can be retrieved by the redlock-list-scans
+        command.
       isArray: false
       name: scan_id
       required: true
@@ -1276,3 +1278,6 @@ tests:
 defaultmapperin: RedLock-mapper
 defaultclassifier: RedLock
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

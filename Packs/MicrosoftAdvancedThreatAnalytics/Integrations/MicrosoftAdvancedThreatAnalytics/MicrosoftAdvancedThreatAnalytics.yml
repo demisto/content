@@ -61,8 +61,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use Microsoft Advanced Threat Analytics integration to manage suspicious activities, 
-  monitoring alerts and entities.
+description: Use Microsoft Advanced Threat Analytics integration to manage suspicious
+  activities, monitoring alerts and entities.
 display: Microsoft Advanced Threat Analytics
 name: Microsoft Advanced Threat Analytics
 script:
@@ -77,8 +77,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The specified status of the suspicious activities to retrieve (comma-separated
-        values supported). Can be: "Open", "Closed", and "Suppressed".'
+      description: 'The specified status of the suspicious activities to retrieve
+        (comma-separated values supported). Can be: "Open", "Closed", and "Suppressed".'
       isArray: false
       name: status
       predefined:
@@ -89,8 +89,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The specified severity of the suspicious activities to retrieve (comma-separated
-        values supported). Can be: "Low", "High", and "Medium".'
+      description: 'The specified severity of the suspicious activities to retrieve
+        (comma-separated values supported). Can be: "Low", "High", and "Medium".'
       isArray: false
       name: severity
       predefined:
@@ -108,7 +108,8 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of suspicious activities to retrieve. Default is 50.
+      description: The maximum number of suspicious activities to retrieve. Default
+        is 50.
       isArray: false
       name: limit
       required: false
@@ -121,9 +122,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Suspicious activities which occurred before the given
-        time to retrieve. Supported formats: ISO 8601 (for example, 2020-07-28T10:00:00Z) and time period
-        (for example, 24 hours).'
+      description: 'Suspicious activities which occurred before the given time to
+        retrieve. Supported formats: ISO 8601 (for example, 2020-07-28T10:00:00Z)
+        and time period (for example, 24 hours).'
       isArray: false
       name: end_time
       required: false
@@ -134,8 +135,7 @@ script:
     name: ms-ata-suspicious-activities-list
     outputs:
     - contextPath: MicrosoftATA.SuspiciousActivity.DescriptionDetailFormatKeys
-      description: The Description detail of the suspicious activity format
-        keys.
+      description: The Description detail of the suspicious activity format keys.
       type: String
     - contextPath: MicrosoftATA.SuspiciousActivity.DescriptionFormatKey
       description: The description format key of the suspicious activity.
@@ -239,7 +239,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The status for which to update. Can be: "Open", "Closed", "Suppressed", or "Delete".'
+      description: 'The status for which to update. Can be: "Open", "Closed", "Suppressed",
+        or "Delete".'
       isArray: false
       name: status
       predefined:
@@ -288,7 +289,8 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of monitoring alerts to retrieve. Default is 50.
+      description: The maximum number of monitoring alerts to retrieve. Default is
+        50.
       isArray: false
       name: limit
       required: false
@@ -302,8 +304,8 @@ script:
       secret: false
     - default: false
       description: 'Monitoring alerts which occurred before the given time to retrieve.
-        Supported formats: ISO 8601 (for example, 2020-07-28T10:00:00Z) and time period (for example,
-        24 hours).'
+        Supported formats: ISO 8601 (for example, 2020-07-28T10:00:00Z) and time period
+        (for example, 24 hours).'
       isArray: false
       name: end_time
       required: false
@@ -316,7 +318,8 @@ script:
       description: The format key description of the monitoring alert.
       type: String
     - contextPath: MicrosoftATA.MonitoringAlert.DomainSynchronizerNotAssignedDomainDnsNames
-      description: The domain synchronizer not assigned domain DNS name of the monitoring alert.
+      description: The domain synchronizer not assigned domain DNS name of the monitoring
+        alert.
       type: String
     - contextPath: MicrosoftATA.MonitoringAlert.EndTime
       description: The end time of the monitoring alert.
@@ -362,8 +365,9 @@ script:
       type: Date
   - arguments:
     - default: false
-      description: The identifier of an entity to retrieve. Can be retrieved by
-        running the ms-ata-suspicious-activities-list command (from the RelatedUniqueEntityIds output).
+      description: The identifier of an entity to retrieve. Can be retrieved by running
+        the ms-ata-suspicious-activities-list command (from the RelatedUniqueEntityIds
+        output).
       isArray: false
       name: id
       required: true
@@ -494,7 +498,8 @@ script:
       description: The number of entity profile suspicious activities with low severity.
       type: Number
     - contextPath: MicrosoftATA.Entity.Profile.SuspiciousActivitySeverityToCountMapping.Medium
-      description: The number of entity profile suspicious activities with medium severity.
+      description: The number of entity profile suspicious activities with medium
+        severity.
       type: Number
     - contextPath: MicrosoftATA.Entity.Profile.Type
       description: The type of the entity profile.
@@ -515,4 +520,7 @@ fromversion: 5.0.0
 defaultclassifier: Microsoft Advanced Threat Analytics
 defaultmapperin: Microsoft Advanced Threat Analytics-mapper
 tests:
-  - Microsoft Advanced Threat Analytics - Test
+- Microsoft Advanced Threat Analytics - Test
+marketplaces:
+- xsoar
+- marketplacev2

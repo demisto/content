@@ -38,12 +38,14 @@ configuration:
   required: false
   type: 13
 - defaultvalue: 3 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
+    months, 1 year)
   name: fetch_time
   required: false
   type: 0
 - defaultvalue: '5'
-  display: Minimum risk score for importing incidents (0-10), where 0 is low risk and 10 is high risk. Relevant for API version 2.0.
+  display: Minimum risk score for importing incidents (0-10), where 0 is low risk
+    and 10 is high risk. Relevant for API version 2.0.
   name: fetch_threat_rank
   required: false
   type: 0
@@ -53,7 +55,8 @@ configuration:
   required: false
   type: 0
 - display: Site IDs
-  additionalinfo: Comma-separated list of Site IDs to fetch incidents for. Leave blank to fetch all sites.
+  additionalinfo: Comma-separated list of Site IDs to fetch incidents for. Leave blank
+    to fetch all sites.
   name: fetch_site_ids
   type: 0
   required: false
@@ -62,7 +65,8 @@ configuration:
   required: false
   type: 4
   additionalinfo: Use the "API Token (Recommended)" parameter instead.
-description: Use the SentinelOne integration to send requests to your management server and get responses with data pulled from agents or from the management database.
+description: Use the SentinelOne integration to send requests to your management server
+  and get responses with data pulled from agents or from the management database.
 display: SentinelOne v2
 name: SentinelOne V2
 script:
@@ -76,7 +80,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'A comma-separated list of scan statuses by which to filter the results, for example: "started,aborted".'
+      description: 'A comma-separated list of scan statuses by which to filter the
+        results, for example: "started,aborted".'
       isArray: false
       name: scan_status
       predefined:
@@ -170,7 +175,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'Exclusion item type. The options are: file_type, path, white_hash, certificate, or browser.'
+      description: 'Exclusion item type. The options are: file_type, path, white_hash,
+        certificate, or browser.'
       isArray: false
       name: exclusion_type
       predefined:
@@ -189,7 +195,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: OS type. Can be "windows", "windows_legacy", "macos", or "linux". OS type is required for hash exclusions.
+      description: OS type. Can be "windows", "windows_legacy", "macos", or "linux".
+        OS type is required for hash exclusions.
       isArray: false
       name: os_type
       predefined:
@@ -207,7 +214,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Exclusion mode (path exclusion only). Can be "suppress", "disable_in_process_monitor_deep", "disable_in_process_monitor", "disable_all_monitors", or "disable_all_monitors_deep".
+      description: Exclusion mode (path exclusion only). Can be "suppress", "disable_in_process_monitor_deep",
+        "disable_in_process_monitor", "disable_all_monitors", or "disable_all_monitors_deep".
       isArray: false
       name: exclusion_mode
       predefined:
@@ -259,7 +267,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'A comma-separated list of OS types by which to filter, for example: "windows, linux".'
+      description: 'A comma-separated list of OS types by which to filter, for example:
+        "windows, linux".'
       isArray: true
       name: os_types
       predefined:
@@ -271,7 +280,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Exclusion type. Can be "file_type", "path", "white_hash", "certificate", "browser".
+      description: Exclusion type. Can be "file_type", "path", "white_hash", "certificate",
+        "browser".
       isArray: false
       name: exclusion_type
       predefined:
@@ -322,7 +332,8 @@ script:
       description: User name of the user that added the exclusion item.
       type: string
     - contextPath: SentinelOne.Exclusions.Mode
-      description: 'A comma-separated list of modes by which to filter (path exclusions only), for example: "suppress".'
+      description: 'A comma-separated list of modes by which to filter (path exclusions
+        only), for example: "suppress".'
       type: string
   - arguments:
     - default: false
@@ -344,14 +355,16 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The content hash of the threat. Supports a comma-separated list of hashes.
+      description: The content hash of the threat. Supports a comma-separated list
+        of hashes.
       isArray: true
       name: content_hash
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: A comma-separated list of mitigation statuses. Can be "mitigated", "active", "blocked", "suspicious", "pending", or "suspicious_resolved".
+      description: A comma-separated list of mitigation statuses. Can be "mitigated",
+        "active", "blocked", "suspicious", "pending", or "suspicious_resolved".
       isArray: true
       name: mitigation_status
       predefined:
@@ -364,25 +377,29 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Searches for threats created before this timestamp, for example: "2018-02-27T04:49:26.257525Z".'
+      description: 'Searches for threats created before this timestamp, for example:
+        "2018-02-27T04:49:26.257525Z".'
       isArray: false
       name: created_before
       required: false
       secret: false
     - default: false
-      description: 'Searches for threats created after this timestamp, for example: "2018-02-27T04:49:26.257525Z".'
+      description: 'Searches for threats created after this timestamp, for example:
+        "2018-02-27T04:49:26.257525Z".'
       isArray: false
       name: created_after
       required: false
       secret: false
     - default: false
-      description: 'Searches for threats created on or before this timestamp, for example: "2018-02-27T04:49:26.257525Z".'
+      description: 'Searches for threats created on or before this timestamp, for
+        example: "2018-02-27T04:49:26.257525Z".'
       isArray: false
       name: created_until
       required: false
       secret: false
     - default: false
-      description: 'Search for threats created on or after this timestamp, for example: "2018-02-27T04:49:26.257525Z".'
+      description: 'Search for threats created on or after this timestamp, for example:
+        "2018-02-27T04:49:26.257525Z".'
       isArray: false
       name: created_from
       required: false
@@ -399,7 +416,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Threat display name. For API version 2.0 it can be a partial display name, doesn't have to be an exact match.
+      description: Threat display name. For API version 2.0 it can be a partial display
+        name, doesn't have to be an exact match.
       isArray: false
       name: display_name
       required: false
@@ -412,7 +430,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Full free-text search for fields. Can be "content_hash", "file_display_name", "file_path", "computer_name", or "uuid".
+      description: Full free-text search for fields. Can be "content_hash", "file_display_name",
+        "file_path", "computer_name", or "uuid".
       isArray: false
       name: query
       required: false
@@ -425,7 +444,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'CSV list of threat classifications to search, for example: "Malware", "Network", "Benign".'
+      description: 'CSV list of threat classifications to search, for example: "Malware",
+        "Network", "Benign".'
       isArray: false
       name: classifications
       predefined:
@@ -436,13 +456,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: Risk level threshold to retrieve (1-10). Relevant for API version 2.0 only.
+      description: Risk level threshold to retrieve (1-10). Relevant for API version
+        2.0 only.
       isArray: false
       name: rank
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of Site IDs to search for threats, for example: "225494730938493804,225494730938493915".'
+      description: 'A comma-separated list of Site IDs to search for threats, for
+        example: "225494730938493804,225494730938493915".'
       isArray: true
       name: site_ids
       required: false
@@ -486,11 +508,13 @@ script:
       description: The number representing the cloud reputation (1-10).
       type: Number
     - contextPath: SentinelOne.Threat.MarkedAsBenign
-      description: Whether the threat is marked as benign. Relevant for version 2.0 only.
+      description: Whether the threat is marked as benign. Relevant for version 2.0
+        only.
       type: Boolean
   - arguments:
     - default: false
-      description: 'A comma-separated list of group IDs by which to filter, for example: "225494730938493804,225494730938493915".'
+      description: 'A comma-separated list of group IDs by which to filter, for example:
+        "225494730938493804,225494730938493915".'
       isArray: true
       name: group_ids
       required: false
@@ -558,7 +582,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Mitigation action. Can be "kill", "quarantine", "un-quarantine", "remediate", or "rollback-remediation".
+      description: Mitigation action. Can be "kill", "quarantine", "un-quarantine",
+        "remediate", or "rollback-remediation".
       isArray: false
       name: action
       predefined:
@@ -576,7 +601,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Applies a mitigation action to a group of threats that match the specified input filter.
+    description: Applies a mitigation action to a group of threats that match the
+      specified input filter.
     execution: false
     name: sentinelone-mitigate-threat
     outputs:
@@ -692,7 +718,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Returns sites that support the specified features. Can be "firewall-control", "device-control", or "ioc".
+      description: Returns sites that support the specified features. Can be "firewall-control",
+        "device-control", or "ioc".
       isArray: false
       name: features
       predefined:
@@ -714,7 +741,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The suite of product features active for this site. Can be "Core" or "Complete".
+      description: The suite of product features active for this site. Can be "Core"
+        or "Complete".
       isArray: false
       name: suite
       predefined:
@@ -904,7 +932,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Return activities created on or before this timestamp, for example: "2018-02-27T04:49:26.257525Z".'
+      description: 'Return activities created on or before this timestamp, for example:
+        "2018-02-27T04:49:26.257525Z".'
       isArray: false
       name: created_until
       required: false
@@ -920,43 +949,50 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of activity IDs by which to filter, for example: "225494730938493804,225494730938493915".'
+      description: 'A comma-separated list of activity IDs by which to filter, for
+        example: "225494730938493804,225494730938493915".'
       isArray: true
       name: activities_ids
       required: false
       secret: false
     - default: false
-      description: 'Return activities created before this timestamp, for example: "2018-02-27T04:49:26.257525Z".'
+      description: 'Return activities created before this timestamp, for example:
+        "2018-02-27T04:49:26.257525Z".'
       isArray: false
       name: created_before
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of threat IDs for which to return activities, for example: "225494730938493804,225494730938493915".'
+      description: 'A comma-separated list of threat IDs for which to return activities,
+        for example: "225494730938493804,225494730938493915".'
       isArray: true
       name: threats_ids
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of activity codes to return, for example: "52,53,71,72".'
+      description: 'A comma-separated list of activity codes to return, for example:
+        "52,53,71,72".'
       isArray: true
       name: activity_types
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of user IDs for users that invoked the activity (if applicable), for example: "225494730938493804,225494730938493915".'
+      description: 'A comma-separated list of user IDs for users that invoked the
+        activity (if applicable), for example: "225494730938493804,225494730938493915".'
       isArray: true
       name: user_ids
       required: false
       secret: false
     - default: false
-      description: 'Return activities created on or after this timestamp, for example: "2018-02-27T04:49:26.257525Z".'
+      description: 'Return activities created on or after this timestamp, for example:
+        "2018-02-27T04:49:26.257525Z".'
       isArray: false
       name: created_from
       required: false
       secret: false
     - default: false
-      description: 'Return activities created within this range (inclusive), for example: "1514978764288-1514978999999".'
+      description: 'Return activities created within this range (inclusive), for example:
+        "1514978764288-1514978999999".'
       isArray: false
       name: created_between
       required: false
@@ -994,7 +1030,8 @@ script:
       description: Secondary description.
       type: String
     - contextPath: SentinelOne.Activity.OsFamily
-      description: Agent's OS type (if applicable). Can be "linux", "macos", "windows", or "windows_legacy".
+      description: Agent's OS type (if applicable). Can be "linux", "macos", "windows",
+        or "windows_legacy".
       type: String
     - contextPath: SentinelOne.Activity.ActivityType
       description: Activity type.
@@ -1043,7 +1080,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of group IDs by which to filter, for example: "225494730938493804,225494730938493915".'
+      description: 'A comma-separated list of group IDs by which to filter, for example:
+        "225494730938493804,225494730938493915".'
       isArray: true
       name: group_ids
       required: false
@@ -1077,7 +1115,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The rank sets the priority of a dynamic group over others, for example, "1", which is the highest priority.
+      description: The rank sets the priority of a dynamic group over others, for
+        example, "1", which is the highest priority.
       isArray: false
       name: rank
       required: false
@@ -1097,7 +1136,8 @@ script:
       description: The ID of the site of which this group is a member.
       type: String
     - contextPath: SentinelOne.Group.filterName
-      description: If the group is dynamic, the name of the filter which is used to associate agents.
+      description: If the group is dynamic, the name of the filter which is used to
+        associate agents.
       type: String
     - contextPath: SentinelOne.Group.creatorId
       description: The ID of the user that created the group.
@@ -1118,13 +1158,15 @@ script:
       description: Number of agents in the group.
       type: Number
     - contextPath: SentinelOne.Group.filterId
-      description: If the group is dynamic, the group ID of the filter that is used to associate agents.
+      description: If the group is dynamic, the group ID of the filter that is used
+        to associate agents.
       type: String
     - contextPath: SentinelOne.Group.isDefault
       description: Whether the groups is the default group of the site.
       type: Boolean
     - contextPath: SentinelOne.Group.inherits
-      description: Whether the policy is inherited from a site. "False" if the group has its own edited policy.
+      description: Whether the policy is inherited from a site. "False" if the group
+        has its own edited policy.
       type: Boolean
     - contextPath: SentinelOne.Group.type
       description: Group type. Can be static or dynamic
@@ -1199,7 +1241,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: A comma-separated list of agent IDs to connect to the network. Run the list-agents command to get a list of agent IDs.
+      description: A comma-separated list of agent IDs to connect to the network.
+        Run the list-agents command to get a list of agent IDs.
       isArray: true
       name: agent_id
       required: true
@@ -1217,7 +1260,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: A comma-separated list of agent IDs to disconnect from the network. Run the list-agents command to get a list of agent IDs.
+      description: A comma-separated list of agent IDs to disconnect from the network.
+        Run the list-agents command to get a list of agent IDs.
       isArray: true
       name: agent_id
       required: true
@@ -1281,7 +1325,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'QueryId obtained when creating a query in the sentinelone-create-query command. Example: "q1xx2xx3".'
+      description: 'QueryId obtained when creating a query in the sentinelone-create-query
+        command. Example: "q1xx2xx3".'
       isArray: false
       name: query_id
       required: true
@@ -1316,7 +1361,8 @@ script:
       description: Site name.
       type: String
     - contextPath: SentinelOne.Event.EventType
-      description: Event type. Can be "events", "file", "ip", "url", "dns", "process", "registry", "scheduled_task", or "logins".
+      description: Event type. Can be "events", "file", "ip", "url", "dns", "process",
+        "registry", "scheduled_task", or "logins".
       type: String
     - contextPath: SentinelOne.Event.ProcessName
       description: The name of the process.
@@ -1341,7 +1387,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Query start date, for example, "2019-08-03T04:49:26.257525Z". Limited to 93 days ago.
+      description: Query start date, for example, "2019-08-03T04:49:26.257525Z". Limited
+        to 93 days ago.
       isArray: false
       name: from_date
       required: true
@@ -1353,7 +1400,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Runs a Deep Visibility Query and returns the queryId. You can use the queryId for all other commands, such as the sentinelone-get-events command.
+    description: Runs a Deep Visibility Query and returns the queryId. You can use
+      the queryId for all other commands, such as the sentinelone-get-events command.
     execution: false
     name: sentinelone-create-query
     outputs:
@@ -1371,7 +1419,8 @@ script:
       type: Date
   - arguments:
     - default: false
-      description: 'The queryId that is returned when creating a query under Create Query. Example: "q1xx2xx3". Get the query_id from the "get-query-id" command.'
+      description: 'The queryId that is returned when creating a query under Create
+        Query. Example: "q1xx2xx3". Get the query_id from the "get-query-id" command.'
       isArray: false
       name: query_id
       required: true
@@ -1441,7 +1490,9 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'A free-text search term, will match applicable attributes (sub-string match). Note: A device''s physical addresses will only be matched if they start with the search term  (not if they contain the search term).'
+      description: 'A free-text search term, will match applicable attributes (sub-string
+        match). Note: A device''s physical addresses will only be matched if they
+        start with the search term  (not if they contain the search term).'
       isArray: false
       name: query
       required: false
@@ -1468,7 +1519,9 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'A free-text search term, will match applicable attributes (sub-string match). Note: A device''s physical addresses will only be matched if they start with the search term  (not if they contain the search term).'
+      description: 'A free-text search term, will match applicable attributes (sub-string
+        match). Note: A device''s physical addresses will only be matched if they
+        start with the search term  (not if they contain the search term).'
       isArray: false
       name: query
       required: false
@@ -1501,3 +1554,6 @@ tests:
 - SentinelOne V2.1 - Test
 - SentinelOne V2.0 - Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

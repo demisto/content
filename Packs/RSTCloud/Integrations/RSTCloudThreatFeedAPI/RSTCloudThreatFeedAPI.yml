@@ -134,7 +134,8 @@ script:
       description: The autonomous system name for the IP address.
       type: String
     - contextPath: RST.IP.Organization
-      description: The organisation name for the autonomous system name for the IP address.
+      description: The organisation name for the autonomous system name for the IP
+        address.
       type: String
     - contextPath: RST.IP.ISP
       description: The Internet Service Provider name for the autonomous system name
@@ -408,3 +409,6 @@ script:
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
+marketplaces:
+- xsoar
+- marketplacev2

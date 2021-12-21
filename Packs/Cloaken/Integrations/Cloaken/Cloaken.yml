@@ -4,7 +4,8 @@ commonfields:
 name: Cloaken
 display: Cloaken
 category: Data Enrichment & Threat Intelligence
-description: Unshorten URLs onsite using the power of a Tor proxy server to prevent leaking IP addresses to adversaries.
+description: Unshorten URLs onsite using the power of a Tor proxy server to prevent
+  leaking IP addresses to adversaries.
 configuration:
 - display: Server URL (e.g., https://cloaken.cypherint.com)
   name: server_url
@@ -66,3 +67,6 @@ script:
   dockerimage: demisto/cloaken:1.0.0.24037
   runonce: false
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

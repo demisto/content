@@ -22,3 +22,6 @@ runas: DBotWeakRole
 fromversion: 5.5.0
 tests:
 - TestGraPlayBook
+marketplaces:
+- xsoar
+- marketplacev2

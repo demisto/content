@@ -11,7 +11,8 @@ args:
   name: right
   required: true
   secret: false
-comment: Check if number of availble addresses in IPv4 or IPv6 CIDR is greater than given number.
+comment: Check if number of availble addresses in IPv4 or IPv6 CIDR is greater than
+  given number.
 commonfields:
   id: GreaterCidrNumAddresses
   version: -1
@@ -26,3 +27,6 @@ timeout: '0'
 type: python
 dockerimage: demisto/python3:3.9.7.24076
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

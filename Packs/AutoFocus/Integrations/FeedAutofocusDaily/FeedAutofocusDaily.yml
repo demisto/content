@@ -8,20 +8,23 @@ configuration:
   required: false
   defaultvalue: 'true'
   type: 8
-- additionalinfo: TIM customers that upgraded to version 6.2 or above, can have this value pre-configured in their main account so no additional input is needed. To use this feature, upgrade your license so it includes the license key.
+- additionalinfo: TIM customers that upgraded to version 6.2 or above, can have this
+    value pre-configured in their main account so no additional input is needed. To
+    use this feature, upgrade your license so it includes the license key.
   display: API Key
   name: api_key
   required: false
   type: 4
-- additionalinfo: Indicators from this integration instance will be marked with this reputation
+- additionalinfo: Indicators from this integration instance will be marked with this
+    reputation
   defaultvalue: Bad
   display: Indicator Reputation
   name: feedReputation
   options:
-    - None
-    - Good
-    - Suspicious
-    - Bad
+  - None
+  - Good
+  - Suspicious
+  - Bad
   required: false
   type: 18
 - additionalinfo: Reliability of the source providing the intelligence data
@@ -37,7 +40,8 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
+    fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -51,10 +55,10 @@ configuration:
   name: feedExpirationPolicy
   display: ""
   options:
-    - never
-    - interval
-    - indicatorType
-    - suddenDeath
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
   required: false
   type: 17
 - defaultvalue: '20160'
@@ -62,7 +66,11 @@ configuration:
   name: feedExpirationInterval
   required: false
   type: 1
-- additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. As the determination if the indicator is new or modified happens on the 3rd-party vendor's side, and only indicators that are new or modified are sent to Cortex XSOAR, all indicators coming from these feeds are labeled new or modified.
+- additionalinfo: Incremental feeds pull only new or modified indicators that have
+    been sent from the integration. As the determination if the indicator is new or
+    modified happens on the 3rd-party vendor's side, and only indicators that are
+    new or modified are sent to Cortex XSOAR, all indicators coming from these feeds
+    are labeled new or modified.
   display: Incremental Feed
   name: feedIncremental
   defaultvalue: true
@@ -74,9 +82,9 @@ configuration:
   name: feedFetchInterval
   required: false
   type: 19
-- additionalinfo: When selected, the exclusion list is ignored for indicators from this
-    feed. This means that if an indicator from this feed is on the exclusion list, the
-    indicator might still be added to the system.
+- additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
   required: false
@@ -95,7 +103,11 @@ configuration:
   name: feedTags
   required: false
   type: 0
-description: Use the AutoFocus Daily feed to export threat intelligence data produced by AutoFocus and connected services to provide actionable data for the Palo Alto Networks firewall as well as third party TIP and SIEM solutions. AutoFocus feed return a list which includes IP addresses, domains, URLs, and hash indicators which are updated daily.
+description: Use the AutoFocus Daily feed to export threat intelligence data produced
+  by AutoFocus and connected services to provide actionable data for the Palo Alto
+  Networks firewall as well as third party TIP and SIEM solutions. AutoFocus feed
+  return a list which includes IP addresses, domains, URLs, and hash indicators which
+  are updated daily.
 display: AutoFocus Daily Feed
 name: AutoFocus Daily Feed
 script:
@@ -130,4 +142,7 @@ script:
   type: python
 fromversion: 5.5.0
 tests:
-  - No tests
+- No tests
+marketplaces:
+- xsoar
+- marketplacev2

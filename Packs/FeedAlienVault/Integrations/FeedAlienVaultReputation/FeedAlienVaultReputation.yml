@@ -14,10 +14,10 @@ configuration:
   type: 18
   required: false
   options:
-    - None
-    - Good
-    - Suspicious
-    - Bad
+  - None
+  - Good
+  - Suspicious
+  - Bad
   additionalinfo: Indicators from this integration instance will be marked with this
     reputation
 - display: Source Reliability
@@ -26,14 +26,15 @@ configuration:
   type: 15
   required: true
   options:
-    - A - Completely reliable
-    - B - Usually reliable
-    - C - Fairly reliable
-    - D - Not usually reliable
-    - E - Unreliable
-    - F - Reliability cannot be judged
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
   additionalinfo: Reliability of the source providing the intelligence data
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
+    fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -49,10 +50,10 @@ configuration:
   type: 17
   required: false
   options:
-    - never
-    - interval
-    - indicatorType
-    - suddenDeath
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
 - display: ""
   name: feedExpirationInterval
   defaultvalue: "20160"
@@ -86,7 +87,7 @@ configuration:
   required: false
   type: 0
 description: Use the AlienVault Reputation feed integration to fetch indicators from
-    the feed.
+  the feed.
 display: AlienVault Reputation Feed
 name: AlienVault Reputation Feed
 script:
@@ -119,5 +120,8 @@ script:
   subtype: python3
   type: python
 tests:
-  - AlienVaultReputationFeed_Test
+- AlienVaultReputationFeed_Test
 fromversion: 5.5.0
+marketplaces:
+- xsoar
+- marketplacev2

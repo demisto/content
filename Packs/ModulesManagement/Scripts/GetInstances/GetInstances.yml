@@ -6,10 +6,11 @@ script: ''
 type: python
 tags: []
 enabled: true
-comment: Returns integration instances configured in Cortex XSOAR. You can filter by instance status and/or brand name (vendor).
+comment: Returns integration instances configured in Cortex XSOAR. You can filter
+  by instance status and/or brand name (vendor).
 args:
 - name: brand
-  description: Brand name to filter instances by. 
+  description: Brand name to filter instances by.
   isArray: true
 - defaultValue: "active"
   name: instance_status
@@ -18,7 +19,8 @@ args:
   - "active"
   - "both"
   - "disabled"
-  description: Instance status to filter instances by. Can be "active", "disabled", or "both". Default is "active".
+  description: Instance status to filter instances by. Can be "active", "disabled",
+    or "both". Default is "active".
 outputs:
 - contextPath: Modules.name
   description: The instance name.
@@ -43,3 +45,6 @@ runas: DBotWeakRole
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2

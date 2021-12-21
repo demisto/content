@@ -21,13 +21,15 @@ configuration:
   type: 9
   hiddenusername: true
 - defaultvalue: OauthKey
-  additionalinfo: Will be ignored if other required fields are not provided (for example both the Access Token and the Private Key).
+  additionalinfo: Will be ignored if other required fields are not provided (for example
+    both the Access Token and the Private Key).
   display: Consumer key (OAuth 1.0)
   name: consumerKey
   required: false
   type: 0
 - display: Access Token
-  additionalinfo: Used for both OAuth 1.0 and Personal Access Token authentication methods.
+  additionalinfo: Used for both OAuth 1.0 and Personal Access Token authentication
+    methods.
   name: accessToken
   required: false
   type: 0
@@ -372,7 +374,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: A text field for describing the environment in which the issue occurred (for example - environment="IE9 on Windows 7").
+      description: A text field for describing the environment in which the issue
+        occurred (for example - environment="IE9 on Windows 7").
       isArray: false
       name: environment
       required: false
@@ -573,7 +576,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: A text field for describing the environment in which the issue occurred (for example - environment="IE9 on Windows 7").
+      description: A text field for describing the environment in which the issue
+        occurred (for example - environment="IE9 on Windows 7").
       isArray: false
       name: environment
       required: false
@@ -723,3 +727,6 @@ tests:
 - Jira-v2-Test
 defaultmapperin: classifier-mapper-incoming-JiraV2
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

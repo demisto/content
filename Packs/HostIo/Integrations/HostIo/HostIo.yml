@@ -118,3 +118,6 @@ script:
 fromversion: 5.0.0
 tests:
 - HostIo_Test
+marketplaces:
+- xsoar
+- marketplacev2

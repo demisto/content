@@ -4709,3 +4709,6 @@ script:
   type: python
 tests:
 - Test-AnsibleVMware
+marketplaces:
+- xsoar
+- marketplacev2

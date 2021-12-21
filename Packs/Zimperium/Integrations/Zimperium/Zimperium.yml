@@ -43,7 +43,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Fetch and investigate mobile security alerts, generated based on anomalous or unauthorized activities detected on a user's mobile device.
+description: Fetch and investigate mobile security alerts, generated based on anomalous
+  or unauthorized activities detected on a user's mobile device.
 name: Zimperium
 fromversion: 5.0.0
 display: Zimperium
@@ -273,7 +274,8 @@ script:
       description: User middle name.
       type: String
     - contextPath: Zimperium.Users.lastSyncFromMdm
-      description: Last time the user synced from MDM, e.g., AirWatch, Mobile Iron, etc.
+      description: Last time the user synced from MDM, e.g., AirWatch, Mobile Iron,
+        etc.
       type: Date
     - contextPath: Zimperium.Users.lastZconsoleLogin
       description: User last login to the Zimperium console.
@@ -315,7 +317,8 @@ script:
       description: Whether the user is a superuser.
       type: bool
     - contextPath: Zimperium.Users.syncedFromMdm
-      description: Whether the user is synced from MDM, e.g., AirWatch, Mobile Iron, etc.
+      description: Whether the user is synced from MDM, e.g., AirWatch, Mobile Iron,
+        etc.
       type: bool
     - contextPath: Zimperium.Users.termsVersion
       description: User terms version.
@@ -363,7 +366,8 @@ script:
       description: User last login date.
       type: Date
     - contextPath: Zimperium.Users.lastSyncFromMdm
-      description: Last time the user synced from MDM, e.g., AirWatch, Mobile Iron, etc.
+      description: Last time the user synced from MDM, e.g., AirWatch, Mobile Iron,
+        etc.
       type: Unknown
     - contextPath: Zimperium.Users.lastZconsoleLogin
       description: User last login to the Zimperium console.
@@ -405,7 +409,8 @@ script:
       description: Whether the user is a superuser.
       type: bool
     - contextPath: Zimperium.Users.syncedFromMdm
-      description: Whether the user is synced from MDM, e.g., AirWatch, Mobile Iron, etc.
+      description: Whether the user is synced from MDM, e.g., AirWatch, Mobile Iron,
+        etc.
       type: bool
     - contextPath: Zimperium.Users.termsVersion
       description: User terms version.
@@ -1073,3 +1078,6 @@ tests:
 - Test Convert file hash to corresponding hashes
 defaultmapperin: Zimperium-mapper
 defaultclassifier: Zimperium
+marketplaces:
+- xsoar
+- marketplacev2

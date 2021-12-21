@@ -24,9 +24,10 @@ configuration:
   name: fetchQuery
   required: false
   type: 0
-  additionalinfo: The Splunk search query by which to fetch events. The default query fetches ES notable events.
-   You can edit this query to fetch other types of events.
-    Note, that to fetch ES noatable events, make sure to include the \`notable\` macro in your query.
+  additionalinfo: The Splunk search query by which to fetch events. The default query
+    fetches ES notable events. You can edit this query to fetch other types of events.
+    Note, that to fetch ES noatable events, make sure to include the \`notable\` macro
+    in your query.
 - defaultvalue: '50'
   display: Fetch Limit (Max.- 200, Recommended less than 50)
   name: fetch_limit
@@ -185,7 +186,8 @@ configuration:
   additionalinfo: The limit of how many events to retrieve per each one of the enrichment
     types (Drilldown, Asset, and Identity). To retrieve all events, enter "0" (not
     recommended).
-- display: 'Advanced: Extensive logging (for debugging purposes) - Please use this option unless advised otherwise.'
+- display: 'Advanced: Extensive logging (for debugging purposes) - Please use this
+    option unless advised otherwise.'
   name: extensive_logs
   type: 8
   required: false
@@ -201,8 +203,8 @@ configuration:
   name: unique_id_fields
   type: 0
   required: false
-  additionalinfo: Use this parameter to specify a list of comma separated fields, which
-    together are a unique identifier for the events you with to fetch.
+  additionalinfo: Use this parameter to specify a list of comma separated fields,
+    which together are a unique identifier for the events you with to fetch.
 description: Runs queries on Splunk servers.
 display: SplunkPy Prerelease (Beta)
 name: SplunkPyPreRelease
@@ -810,3 +812,6 @@ defaultclassifier: SplunkPy
 defaultmapperin: SplunkPy-mapper
 fromversion: 5.0.0
 beta: true
+marketplaces:
+- xsoar
+- marketplacev2

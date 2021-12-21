@@ -15,8 +15,8 @@ configuration:
   name: credentials
   required: false
   type: 9
-- additionalinfo: The API token was created in the Tanium platform and should
-    be used for OAuth 2 authentication. See Help (?) for more information.
+- additionalinfo: The API token was created in the Tanium platform and should be used
+    for OAuth 2 authentication. See Help (?) for more information.
   display: API Token
   hidden: false
   name: api_token
@@ -1558,3 +1558,6 @@ script:
 tests:
 - Tanium v2 - Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

@@ -6,7 +6,9 @@ script: ''
 type: python
 tags:
 - field-display
-comment: Gets the IDs of incidents with lower similarity. Used to fill the optional values of the multi-select "Phishing Campaign Select Campaign Lower Similarity Incidents" incident field.
+comment: Gets the IDs of incidents with lower similarity. Used to fill the optional
+  values of the multi-select "Phishing Campaign Select Campaign Lower Similarity Incidents"
+  incident field.
 enabled: true
 scripttarget: 0
 subtype: python3
@@ -16,3 +18,6 @@ runas: DBotWeakRole
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2

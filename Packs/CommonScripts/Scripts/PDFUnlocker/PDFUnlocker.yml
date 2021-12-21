@@ -22,4 +22,7 @@ scripttarget: 0
 dockerimage: demisto/pypdf2:1.0.0.24277
 fromversion: 5.0.0
 tests:
-  - PDFUnlocker-Test
+- PDFUnlocker-Test
+marketplaces:
+- xsoar
+- marketplacev2

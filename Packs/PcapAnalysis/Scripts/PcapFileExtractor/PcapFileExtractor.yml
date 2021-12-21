@@ -129,3 +129,6 @@ dockerimage: demisto/pcap-miner:1.0.0.9769
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2

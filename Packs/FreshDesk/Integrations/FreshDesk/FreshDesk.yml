@@ -1329,3 +1329,6 @@ script:
 tests:
 - Freshdesk-Test
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2
