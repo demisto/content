@@ -26,7 +26,7 @@ PY_PRIVATE_FUNCS = ["raiseTable", "zoomField", "epochToTimestamp", "formatTimeCo
                     "BaseHTTPClient", "DemistoHandler", "DebugLogger", "FeedIndicatorType", "Indicator",
                     "IndicatorType", "EntryType", "EntryFormat", "abstractmethod",
                     "HTTPAdapter", "Retry", "Common", "randint", "GetDemistoVersion", "get_demisto_version",
-                    "BaseWidget", "UTC", "WarningsHandler"]
+                    "BaseWidget", "UTC", "WarningsHandler", "__line__", "_find_relevant_module"]
 
 PY_IRREGULAR_FUNCS = {"LOG": {"argList": ["message"]}}
 

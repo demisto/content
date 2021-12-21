@@ -37,6 +37,21 @@ _MODULES_LINE_MAPPING = {
 }
 
 def register_module_line(module_name, pre_post, line):
+    """
+        Register a module in the line mapping for traceback line correction algorithm.
+
+        :type module_name: ``str``
+        :param module_name: the name of the module. (required)
+
+        :type pre_post: ``str``
+        :param pre_post: Whether to register the line as the start or the end of the module. (required)
+
+        :type line: ``int``
+        :param line: the line number to record. (required)
+
+        :return: None
+        :rtype: ``None``
+    """
     global _MODULES_LINE_MAPPING
     try:
         if pre_post not in ('pre', 'post'):
@@ -51,7 +66,7 @@ def register_module_line(module_name, pre_post, line):
             'module: "{}" pre_post: "{}" line: "{}".\nError: {}'.format(module_name, pre_post, line, exc))
 
 
-def find_relevant_module(line):
+def _find_relevant_module(line):
     global _MODULES_LINE_MAPPING
 
     relevant_module = ''
@@ -66,9 +81,18 @@ def find_relevant_module(line):
 
 
 def fix_traceback_line_numbers(trace_str):
+    """
+    Fixes the given traceback line numbers.
+
+    :type trace_str: ``str``
+    :param trace_str: The traceback string to edit. (required)
+
+    :return: The new formated traceback.
+    :rtype: ``str``
+    """
     for number in re.findall('line (\d+)', trace_str):
         line_num = int(number)
-        module = find_relevant_module(line_num)
+        module = _find_relevant_module(line_num)
         if module:
             actual_number = line_num - _MODULES_LINE_MAPPING.get(module, {'pre':0})['pre']
             actual_number_str = '{}<{}>'.format(actual_number, module)
