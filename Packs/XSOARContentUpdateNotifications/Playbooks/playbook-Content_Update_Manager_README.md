@@ -37,7 +37,7 @@ The content update flow can be triggered in one of the following ways.
   
  
 ## Playbook Inputs
- ---
+---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- | 

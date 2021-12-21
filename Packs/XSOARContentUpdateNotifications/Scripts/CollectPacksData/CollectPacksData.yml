@@ -1,6 +1,6 @@
 commonfields:
-  id: 5daec73b-3413-4c8a-82c0-4d43c825cf52
-  version: 4
+  id: CollectPacksData.yml
+  version: -1
 name: CollectPacksData
 comment: This script collects the data of packs with updates.
 script: ''
@@ -10,7 +10,8 @@ enabled: true
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.9.5.22665
+dockerimage: demisto/python3:3.9.8.24399
 runas: DBotWeakRole
+fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
