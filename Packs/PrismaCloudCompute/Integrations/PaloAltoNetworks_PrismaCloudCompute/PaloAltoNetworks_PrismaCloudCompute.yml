@@ -1101,7 +1101,7 @@ script:
       isArray: true
       defaultValue: ""
     - name: id
-      description: Comma-separated list of image IDs to filter by.
+      description: Comma-separated list of image IDs to filter by, run !prisma-cloud-compute-images-scan-list without any arguments to get image IDs.
       required: false
       isArray: true
       defaultValue: ""

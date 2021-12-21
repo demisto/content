@@ -1366,7 +1366,7 @@ Get images scan report, the report includes vulnerabilities, compliance issues, 
 | compact | Indicates if only minimal image data is to be returned (i.e., skip vulnerabilities, compliance, and extended image metadata) (true) or not (false). Possible values are: true, false. Default is true. | Optional | 
 | fields | Comma-separated list of fields to retrieve. | Optional | 
 | hostname | Comma-separated list of hostnames to filter by, can be retrieved from !prisma-cloud-compute-profile-host-list. | Optional | 
-| id | Comma-separated list of image IDs to filter by. | Optional | 
+| id | Comma-separated list of image IDs to filter by, run !prisma-cloud-compute-images-scan-list without any arguments to get image IDs. | Optional | 
 | name | Comma-separated list of image names to filter by. | Optional | 
 | registry | Comma-separated list of image registries to filter by. | Optional | 
 | repository | Comma-separated list of image repositories to filter by. | Optional | 
