@@ -1,8 +1,10 @@
 import pytest
 import Qualysv2
-from Qualysv2 import is_empty_result, format_and_validate_response,\
-    parse_two_keys_dict, create_ip_list_dicts, build_args_dict, handle_general_result,\
-    change_dict_keys, COMMANDS_ARGS_DATA, limit_ip_results
+from Qualysv2 import is_empty_result, format_and_validate_response, \
+    parse_two_keys_dict, create_ip_list_dicts, build_args_dict, handle_general_result, \
+    change_dict_keys, COMMANDS_ARGS_DATA, limit_ip_results, build_host_detection_table_to_markdown, List, Any, \
+    Client
+import re
 from CommonServerPython import DemistoException
 import requests
 
@@ -636,7 +638,7 @@ def test_handle_general_result_missing_output_builder():
         - raise a TypeError exception, None is not callable, must be provided
     """
     with pytest.raises(TypeError):
-        raw_xml_response = '<?xml version="1.0" encoding="UTF-8" ?>'\
+        raw_xml_response = '<?xml version="1.0" encoding="UTF-8" ?>' \
                            '<!DOCTYPE SIMPLE_RETURN SYSTEM' \
                            ' "https://qualysapi.qg2.apps.qualys.com/api/2.0/simple_return.dtd">' \
                            '<SIMPLE_RETURN><RESPONSE>' \
@@ -645,3 +647,59 @@ def test_handle_general_result_missing_output_builder():
                            '</RESPONSE></SIMPLE_RETURN>'
         command_name = 'qualys-ip-add'
         handle_general_result(result=raw_xml_response, command_name=command_name, output_builder=None)
+
+
+class TestHostDetectionMarkdownBuilder:
+    HOST_DETECTION_MARKDOWN_INPUTS = [([], '### Host Detection List\n**No entries.**\n'),
+                                      ([{'ID': 'ID123', 'IP': '1.1.1.1', 'DNS_DATA': {'data': 'dns data'},
+                                         'DETECTION_LIST': {
+                                             'DETECTION': [{'QID': '123', 'RESULTS': 'FOUND DETECTION'}]}}],
+                                       "### Host Detection List\n|DETECTIONS|DNS_DATA|ID|IP|\n|---|---|---|---|\n| {"
+                                       "'QID': '123', 'RESULTS': 'FOUND DETECTION'} | data: dns data | ID123 | "
+                                       "1.1.1.1 |\n")]
+
+    @pytest.mark.parametrize('parsed_outputs, expected', HOST_DETECTION_MARKDOWN_INPUTS)
+    def test_build_host_detection_table_to_markdown(self, parsed_outputs: List[Any], expected: str):
+        assert build_host_detection_table_to_markdown(parsed_outputs) == expected
+
+
+class MockResponse:
+    def __init__(self, text, status_code, json=None, reason=None):
+        self.text = text
+        self.json = json
+        self.status_code = status_code
+        self.reason = reason
+
+    def json(self):
+        if self.json:
+            return self.json
+        raise Exception('No JSON')
+
+
+class TestClientClass:
+    ERROR_HANDLER_INPUTS = [
+        (MockResponse('''<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE SIMPLE_RETURN SYSTEM "https://qualysapi.qg2.apps.qualys.com/api/2.0/simple_return.dtd">
+<SIMPLE_RETURN>
+  <RESPONSE>
+    <DATETIME>2021-12-21T08:59:39Z</DATETIME>
+    <CODE>999</CODE>
+    <TEXT>Internal error. Please contact customer support.</TEXT>
+    <ITEM_LIST>
+      <ITEM>
+        <KEY>Incident Signature</KEY>
+        <VALUE>8ecaf66401cf247f5a6d75afd56bf847</VALUE>
+      </ITEM>
+    </ITEM_LIST>
+  </RESPONSE>
+</SIMPLE_RETURN>''', 500),
+         'Error in API call [500] - None\nError Code: 999\nError Message: Internal error. Please '
+         'contact customer support.'),
+        (MockResponse('Invalid XML', 500), 'Error in API call [500] - None\nInvalid XML')
+    ]
+
+    @pytest.mark.parametrize('response, error_message', ERROR_HANDLER_INPUTS)
+    def test_error_handler(self, response, error_message):
+        client: Client = Client('test.com', 'testuser', 'testpassword', False, False, None)
+        with pytest.raises(DemistoException, match=re.escape(error_message)):
+            client.error_handler(response)

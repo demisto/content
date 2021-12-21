@@ -13,27 +13,26 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 API_SUFFIX = '/api/2.0/fo/'
 
 # Arguments that need to be parsed as dates
-DATE_ARGUMENTS = {
-    'launched_after_datetime': '%Y-%m-%d',
-    'launched_before_datetime': '%Y-%m-%d',
-    'expires_before_datetime': '%Y-%m-%d',
-    'no_vm_scan_since': '%Y-%m-%d',
-    'vm_scan_since': '%Y-%m-%d',
-    'no_compliance_scan_since': '%Y-%m-%d',
-    'last_modified_after': '%Y-%m-%d',
-    'last_modified_before': '%Y-%m-%d',
-    'last_modified_by_user_after': '%Y-%m-%d',
-    'last_modified_by_user_before': '%Y-%m-%d',
-    'last_modified_by_service_after': '%Y-%m-%d',
-    'last_modified_by_service_before': '%Y-%m-%d',
-    'published_after': '%Y-%m-%d',
-    'published_before': '%Y-%m-%d',
-    'start_date': '%m/%d/%Y'
-}
+DATE_ARGUMENTS = {'launched_after_datetime': '%Y-%m-%d', 'launched_before_datetime': '%Y-%m-%d',
+                  'expires_before_datetime': '%Y-%m-%d', 'no_vm_scan_since': '%Y-%m-%d', 'vm_scan_since': '%Y-%m-%d',
+                  'no_compliance_scan_since': '%Y-%m-%d', 'last_modified_after': '%Y-%m-%d',
+                  'last_modified_before': '%Y-%m-%d', 'last_modified_by_user_after': '%Y-%m-%d',
+                  'last_modified_by_user_before': '%Y-%m-%d', 'last_modified_by_service_after': '%Y-%m-%d',
+                  'last_modified_by_service_before': '%Y-%m-%d', 'published_after': '%Y-%m-%d',
+                  'published_before': '%Y-%m-%d', 'start_date': '%m/%d/%Y'
+                  }
 
 
 # Markdown Builders
 def build_host_detection_table_to_markdown(parsed_outputs: List[Any]) -> str:
+    """
+    Builds the readable output for host list detection.
+    Args:
+        parsed_outputs (List[Any]): Host detection outputs.
+
+    Returns:
+        (str): Readable output.
+    """
     readable_outputs = []
     for output in parsed_outputs:
         readable_output = {
@@ -1040,7 +1039,6 @@ class Client(BaseClient):
     def __init__(self, base_url, username, password, verify=True, proxy=False, headers=None):
         super().__init__(base_url, verify=verify, proxy=proxy, headers=headers, auth=(username, password))
 
-    @logger
     def error_handler(self, res):
         err_msg = f'Error in API call [{res.status_code}] - {res.reason}'
         try:
@@ -1052,7 +1050,7 @@ class Client(BaseClient):
                 error_entry = res.json()
                 err_msg += '\n{}'.format(json.dumps(error_entry))
                 raise DemistoException(err_msg, res=res)
-            except ValueError:
+            except (ValueError, TypeError):
                 err_msg += '\n{}'.format(res.text)
                 raise DemistoException(err_msg, res=res)
         raise DemistoException(err_msg, res=res)
@@ -1074,7 +1072,7 @@ class Client(BaseClient):
             params=args_values,
             resp_type=command_api_data['resp_type'],
             timeout=60,
-            error_handler=self.error_handler
+            # error_handler=self.error_handler
         )
 
 
