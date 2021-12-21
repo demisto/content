@@ -1571,9 +1571,9 @@ def main():
     args: dict = demisto.args()
     params: dict = demisto.params()
     self_deployed: bool = params.get('self_deployed', False)
-    tenant_id: str = params.get('tenant_id', '')
-    auth_and_token_url: str = params.get('auth_id', '')
-    enc_key: str = params.get('enc_key', '')
+    tenant_id: str = params.get('tenant_id', '') or params.get('_tenant_id', '')
+    auth_and_token_url: str = params.get('auth_id', '') or params.get('_auth_id', '')
+    enc_key: str = params.get('enc_key', '') or (params.get('credentials') or {}).get('password', '')
     server = params.get('url', '')
     base_url: str = urljoin(server, '/v1.0')
     endpoint = GRAPH_BASE_ENDPOINTS.get(server, 'com')
@@ -1581,6 +1581,13 @@ def main():
     ok_codes: tuple = (200, 201, 202, 204)
     use_ssl: bool = not params.get('insecure', False)
     proxy: bool = params.get('proxy', False)
+
+    if not enc_key:
+        raise Exception('Key must be provided.')
+    if not auth_and_token_url:
+        raise Exception('ID must be provided.')
+    if not tenant_id:
+        raise Exception('Token must be provided.')
 
     # params related to mailbox to fetch incidents
     mailbox_to_fetch = params.get('mailbox_to_fetch', '')
