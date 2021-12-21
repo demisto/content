@@ -41,11 +41,11 @@ The content update flow can be triggered in one of the following ways.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- | 
-| notificationemail | Provides semi-colon delimited e-mail addresses for the new content notifications. <br/>Note: You must have an installed and configured integration that supports the send-mail command. | incident.contentupdatemanageremail | Optional |
-| slackuser | Provides a Slack username for the new content notifications. <br/>Note: You must have an installed and configured Slack integration. | incident.contentupdatemanagerslackusername | Optional |
-| slackchannel | Provides a Slack channel for the new content notifications. </br>Note: You must have an installed and configured Slack integration. Also, make sure the Cortex XSOAR application has access to this channel. | incident.contentupdatemanagerslackchannel | Optional |
+| notificationemail | Provides semi-colon delimited e-mail addresses for the new content notifications. Note: You must have an installed and configured integration that supports the send-mail command. | incident.contentupdatemanageremail | Optional |
+| slackuser | Provides a Slack username for the new content notifications. Note: You must have an installed and configured Slack integration. | incident.contentupdatemanagerslackusername | Optional |
+| slackchannel | Provides a Slack channel for the new content notifications. Note: You must have an installed and configured Slack integration. Also, make sure the Cortex XSOAR application has access to this channel. | incident.contentupdatemanagerslackchannel | Optional |
 | packs | A CSV of packs to monitor. | incident.contentupdatemanagerpackselection | Required |
-| auto_update | Establishes whether to automatically update the content packs if there are available updates or wait for an analyst's approval or the manual update process.<br/> Specify 'Yes' for auto-update or 'No' for manual update. | | Optional |
+| auto_update | Establishes whether to automatically update the content packs if there are available updates or wait for an analyst's approval or the manual update process. Specify 'Yes' for auto-update or 'No' for manual update. | No default value | Optional |
 
  
 ## Playbook Outputs

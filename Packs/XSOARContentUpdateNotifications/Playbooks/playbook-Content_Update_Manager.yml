@@ -629,7 +629,7 @@ tasks:
       - "17"
     scriptarguments:
       closeNotes:
-        simple: The "Content Update Manager" has finished it's run.
+        simple: The "Content Update Manager" has finished its run.
       closeReason:
         simple: Resolved
     separatecontext: false

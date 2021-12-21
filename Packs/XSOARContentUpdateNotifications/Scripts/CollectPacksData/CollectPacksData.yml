@@ -1,5 +1,5 @@
 commonfields:
-  id: CollectPacksData.yml
+  id: CollectPacksData
   version: -1
 name: CollectPacksData
 comment: This script collects the data of packs with updates.
