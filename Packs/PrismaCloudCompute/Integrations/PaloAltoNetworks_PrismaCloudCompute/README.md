@@ -941,6 +941,7 @@ List all custom uploaded md5 malwares.
 | first_md5_hash | md5_hash1 | false |
 | second_md5_hash | md5_hash2 | false |
 
+
 ### prisma-cloud-compute-custom-feeds-malware-add
 ***
 Add custom md5 malware hashes
@@ -967,18 +968,20 @@ There is no context output for this command.
 #### Human Readable Output
 Successfully updated the custom md5 malware feeds
 
+
 ### cve
 ***
 Get infomration about the cves in the system, will return maximum of 50 records, it is possible to query for partial cve description such as cve-2020 or cve-2014 or by severity/distro/package
 
 
 #### Base Command
+
 `cve`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cve | Comma-seperated list of cves, for example, cve_id=cve-2016-223,cve-2020-3546. | Required | 
+| cve_id | Comma-seperated list of cves, for example, cve_id=cve-2016-223,cve-2020-3546. | Required | 
 
 
 #### Context Output
@@ -1042,6 +1045,7 @@ Get infomration about the cves in the system, will return maximum of 50 records,
 |---|---|---|---|
 | 6.5 | SchedMD Slurm 21.08.* before 21.08.4 has Incorrect Access Control. On sites using the new AccountingStoreFlags=job_script and/or job_env options, the access control rules in SlurmDBD may permit users to request job scripts and environment files to which they should not have access. | CVE-2021-43337 | November 18, 2021 08:40:01 AM |
 
+
 ### prisma-cloud-compute-defenders-list
 ***
 Retrieve a list of defenders and their information
@@ -1057,7 +1061,7 @@ Retrieve a list of defenders and their information
 | cluster | Scopes the query by cluster name. | Optional | 
 | hostname | Name of a specific defender to retrieve. | Optional | 
 | type | Indicates the Defender types to return (e.g., docker, dockerWindows, cri, etc). | Optional | 
-| connected | Indicates whether to return only connected Defenders (true) or disconnected Defenders (false). | Optional | 
+| connected | Indicates whether to return only connected Defenders (true) or disconnected Defenders (false). Possible values are: true, false. | Optional | 
 | limit | The maximum of defender records to return. Default is 20. | Optional | 
 | offset | The offset number to begin listing defenders and their information. Default is 0. | Optional | 
 
@@ -1198,7 +1202,8 @@ Retrieve a list of defenders and their information
 ### Defenders Information
 |Hostname|Version|Status|Listener|
 |---|---|---|---|
-| host1 | 21.04.439 | Connected since September 02, 2021 11:05:08 AM | none |
+| host1 | 21.04.439 | Connected since September 02, 2021 11:05:08 AM | none
+
 
 ### prisma-cloud-compute-collections-list
 ***
@@ -1294,6 +1299,8 @@ Retrieves a list of all collections
 |---|---|---|---|
 | All | System - all resources collection | system | September 02, 2021 11:05:06 AM |
 
+
+
 ### prisma-cloud-compute-container-namespace-list
 ***
 Get the containers namespaces names
@@ -1306,8 +1313,8 @@ Get the containers namespaces names
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cluster | Clusters is the cluster name to filter by. | Optional | 
-| collections | Collections are collections to filter by. | Optional | 
+| cluster | Comma-seperated list of cluster names to filter by. | Optional | 
+| collections | Comma-seperated list of collections filter by, can be retrieved from !prisma-cloud-compute-collections-list. | Optional | 
 | limit | The maximum number of namespace names records to return. Default is 50. | Optional | 
 
 
@@ -1342,6 +1349,7 @@ Get the containers namespaces names
 | namespace2 |
 | namespace3 |
 
+
 ### prisma-cloud-compute-images-scan-list
 ***
 Get images scan report, the report includes vulnerabilities, compliance issues, binaries, etc.
@@ -1354,14 +1362,14 @@ Get images scan report, the report includes vulnerabilities, compliance issues, 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| clusters | Filters results by cluster name. | Optional | 
+| clusters | Comma-seperated list of cluster names filter by. | Optional | 
 | compact | Indicates if only minimal image data is to be returned (i.e., skip vulnerabilities, compliance, and extended image metadata) (true) or not (false). Possible values are: true, false. Default is true. | Optional | 
-| fields | List of fields to retrieve. | Optional | 
-| hostname | Filters results by hostnames. | Optional | 
-| id | Filters the results by image ID. | Optional | 
-| name | Filters results by image name. | Optional | 
-| registry | Filters results by image registry. | Optional | 
-| repository | Filters results by image repository. | Optional | 
+| fields | Comma-seperated list of fields to retrieve. | Optional | 
+| hostname | Comma-seperated list of hostnames to filter by. | Optional | 
+| id | Comma-seperated list of image IDs to filter by. | Optional | 
+| name | Comma-seperated list of image names to filter by. | Optional | 
+| registry | Comma-seperated list of image registries to filter by. | Optional | 
+| repository | Comma-seperated list of image repositories to filter by. | Optional | 
 | limit_record | maximum scan images records to return. Default is 10. | Optional | 
 | limit_stats | maximum of compliance/vulnerability records to return. Default is 10. | Optional | 
 | offset | The offset to begin listing images scan results. Default is 0. | Optional | 
@@ -1428,8 +1436,8 @@ Get images scan report, the report includes vulnerabilities, compliance issues, 
 | PrismaCloudCompute.ReportsImagesScan.vulnerabilitiesCount | Number | Total number of vulnerabilities. | 
 | PrismaCloudCompute.ReportsImagesScan.vulnerabilityDistribution | Unknown | Distribution counts the number of vulnerabilities per type | 
 | PrismaCloudCompute.ReportsImagesScan.vulnerabilityRiskScore | Number | Image's CVE risk score. | 
-| PrismaCloudCompute.ReportsImagesScan.wildFireUsage | Unknown | Usage holds wildfire usage stats, period for the usage varies with context |
-| PrismaCloudCompute.ReportsImagesScan.complianceIssuesCount | Number | Number of compliance issues |
+| PrismaCloudCompute.ReportsImagesScan.wildFireUsage | Unknown | Usage holds wildfire usage stats, period for the usage varies with context | 
+| PrismaCloudCompute.ReportsImagesScan.complianceIssuesCount | Number | Number of compliance issues | 
 
 
 #### Command Example
@@ -1916,7 +1924,6 @@ Get images scan report, the report includes vulnerabilities, compliance issues, 
 | 0 | 1 | 0 | 0 |
 
 
-
 ### prisma-cloud-compute-hosts-scan-list
 ***
 Get images scan report, the report includes vulnerabilities, compliance issues, binaries, etc.
@@ -1931,10 +1938,10 @@ Get images scan report, the report includes vulnerabilities, compliance issues, 
 | --- | --- | --- |
 | clusters | Filters results by cluster name. | Optional | 
 | compact | Indicates if only minimal image data is to be returned (i.e., skip vulnerabilities, compliance, and extended image metadata) (true) or not (false). Possible values are: true, false. Default is true. | Optional | 
-| distro | Filters results by OS distro. | Optional | 
-| fields | List of fields to retrieve. | Optional | 
-| hostname | Filters results by hostnames. | Optional | 
-| provider | Filters results by cloud provider. | Optional | 
+| distro | Comma-seprated list OS distros to filter by. | Optional | 
+| fields | Comma-seperated list of fields to retrieve. | Optional | 
+| hostname | Comma-seprated list of hostnames to filter by. | Optional | 
+| provider | Comma-seprated list of cloud providers to filter by. | Optional | 
 | limit_record | maximum scan hosts records to return. Default is 10. | Optional | 
 | limit_stats | maximum of compliance/vulnerability records to return. Default is 10. | Optional | 
 | offset | The offset to begin listing hosts scan results. Default is 0. | Optional | 
@@ -1992,7 +1999,8 @@ Get images scan report, the report includes vulnerabilities, compliance issues, 
 | PrismaCloudCompute.ReportHostScan.vulnerabilityDistribution | Unknown | Distribution counts the number of vulnerabilities per type | 
 | PrismaCloudCompute.ReportHostScan.vulnerabilityRiskScore | Number | Image's CVE risk score. | 
 | PrismaCloudCompute.ReportHostScan.wildFireUsage | Unknown | Usage holds wildfire usage stats, period for the usage varies with context | 
-| PrismaCloudCompute.ReportHostScan.complianceIssuesCount | Number | Number of compliance issues |
+| PrismaCloudCompute.ReportHostScan.complianceIssuesCount | Unknown | Number of compliance issues | 
+
 
 #### Command Example
 ```!prisma-cloud-compute-hosts-scan-list hostname=host123 compact=false limit_stats=2```
@@ -2415,6 +2423,7 @@ Get images scan report, the report includes vulnerabilities, compliance issues, 
 |---|---|---|---|
 | 1 | 16 | 0 | 0 |
 
+
 ### prisma-cloud-compute-vulnerabilities-impacted-resources-list
 ***
 prisma-cloud-compute-vulnerabilities-impacted-resources-list
@@ -2443,7 +2452,7 @@ prisma-cloud-compute-vulnerabilities-impacted-resources-list
 
 
 #### Command Example
-```!prisma-cloud-compute-vulnerabilities-impacted-resources-list cve=CVE-2018-14600```
+```!prisma-cloud-compute-vulnerabilities-impacted-resources-list cve=CVE-2021-31535,CVE-2018-14600```
 
 #### Context Example
 
@@ -2477,14 +2486,15 @@ prisma-cloud-compute-vulnerabilities-impacted-resources-list
 
 #### Human Readable Output
 ### Impacted Images
-|Image|
-|---|
-| image_name_1 |
-| image_name_2 |
+|Cve|Image|
+|---|---|
+| CVE-2021-31535 | demisto/python:1.2-alpine |
+| CVE-2021-31535 | demisto/python:1.3-alpine |
+| CVE-2018-14600 | demisto/python:1.2-alpine |
+| CVE-2018-14600 | demisto/python:1.3-alpine |
 ### Impacted Hosts
-|Hostname|
-|---|
-| host1 |
-| host2 |
+|Cve|Hostname|
+|---|---|
+| CVE-2021-31535 | ip-172-31-23-249.eu-west-1.compute.internal |
 
 

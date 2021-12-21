@@ -198,7 +198,7 @@ class PrismaCloudComputeClient(BaseClient):
         """
         return self._http_request(method="GET", url_suffix="/feeds/custom/malware")
 
-    def add_custom_md5_malware(self, feeds: List[str]):
+    def add_custom_md5_malware(self, feeds: List[str]) -> None:
         """
         Sends a request to add md5 malware hashes.
 
@@ -221,7 +221,7 @@ class PrismaCloudComputeClient(BaseClient):
         """
         return self._http_request(method="GET", url_suffix="/cves", params={"id": cve_id})
 
-    def get_defenders(self, params: Optional[dict] = None):
+    def get_defenders(self, params: Optional[dict] = None) -> List[dict]:
         """
         Sends a request to get defenders information.
 
@@ -619,7 +619,7 @@ def get_profile_host_list(client: PrismaCloudComputeClient, args: dict) -> Comma
                 removeNull=True
             )
     else:
-        table = "No results found"
+        table = "No results found."
 
     return CommandResults(
         outputs_prefix="PrismaCloudCompute.ProfileHost",
@@ -705,7 +705,7 @@ def get_container_profile_list(client: PrismaCloudComputeClient, args: dict) -> 
                 removeNull=True
             )
     else:
-        table = "No results found"
+        table = "No results found."
 
     return CommandResults(
         outputs_prefix='PrismaCloudCompute.ProfileContainer',
@@ -747,7 +747,7 @@ def get_container_hosts_list(client: PrismaCloudComputeClient, args: dict) -> Co
             headerTransform=lambda word: word[0].upper() + word[1:]
         )
     else:
-        context_output, table = {}, "No results found"
+        context_output, table = {}, "No results found."
 
     return CommandResults(
         outputs_prefix="PrismaCloudCompute.ProfileContainerHost",
@@ -808,7 +808,7 @@ def get_profile_container_forensic_list(client: PrismaCloudComputeClient, args: 
             headerTransform=lambda word: word[0].upper() + word[1:]
         )
     else:
-        context_output, table = {}, "No results found"
+        context_output, table = {}, "No results found."
 
     return CommandResults(
         outputs_prefix='PrismaCloudCompute.ContainerForensic',
@@ -868,7 +868,7 @@ def get_profile_host_forensic_list(client: PrismaCloudComputeClient, args: dict)
             headerTransform=lambda word: word[0].upper() + word[1:]
         )
     else:
-        context_output, table = {}, "No results found"
+        context_output, table = {}, "No results found."
 
     return CommandResults(
         outputs_prefix='PrismaCloudCompute.HostForensic',
@@ -924,7 +924,7 @@ def get_custom_feeds_ip_list(client: PrismaCloudComputeClient) -> CommandResults
             headerTransform=lambda word: word[0].upper() + word[1:]
         )
     else:
-        table = "No results found"
+        table = "No results found."
 
     return CommandResults(
         outputs_prefix="PrismaCloudCompute.CustomFeedIP",
@@ -995,11 +995,11 @@ def get_custom_malware_feeds(client: PrismaCloudComputeClient, args: dict) -> Co
         )
         feeds_info["feed"] = malware_feeds
     else:
-        table = "No results found"
+        table = "No results found."
 
     return CommandResults(
         outputs_prefix="PrismaCloudCompute.CustomFeedMalware",
-        outputs=feeds_info if table != "No results found" else None,
+        outputs=feeds_info if table != "No results found." else None,
         readable_output=table,
         outputs_key_field="digest",
         raw_response=feeds_info
@@ -1020,7 +1020,8 @@ def add_custom_malware_feeds(client: PrismaCloudComputeClient, args: dict) -> Co
     """
     # the api overrides the md5 malware hashes, therefore it is necessary to add those who exist to the 'PUT' request.
     feeds = client.get_custom_md5_malware().get("feed", [])
-    name, md5s = args.get("name"), argToList(arg=args.get("md5", []))
+    name = args.get("name")
+    md5s = argToList(arg=args.get("md5", []))
 
     existing_md5s = set([feed.get("md5") for feed in feeds])
     for md5 in md5s:
@@ -1077,7 +1078,7 @@ def get_cves(client: PrismaCloudComputeClient, args: dict) -> List[CommandResult
 
         return results
 
-    return [CommandResults(readable_output="No results found")]
+    return [CommandResults(readable_output="No results found.")]
 
 
 def get_defenders(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
@@ -1105,7 +1106,7 @@ def get_defenders(client: PrismaCloudComputeClient, args: dict) -> CommandResult
     if defenders := client.get_defenders(params=params):
         for defender in defenders:
             if "lastModified" in defender:
-                defender["lastModified"] = parse_date_string_format(date_string=defender.get("lastModified"))
+                defender["lastModified"] = parse_date_string_format(date_string=defender.get("lastModified", ""))
 
         table = tableToMarkdown(
             name="Defenders Information",
@@ -1124,7 +1125,7 @@ def get_defenders(client: PrismaCloudComputeClient, args: dict) -> CommandResult
             headerTransform=lambda word: word[0].upper() + word[1:]
         )
     else:
-        table = "No results found"
+        table = "No results found."
 
     return CommandResults(
         outputs_prefix="PrismaCloudCompute.DefenderDetails",
@@ -1162,7 +1163,7 @@ def get_collections(client: PrismaCloudComputeClient, args: dict) -> CommandResu
             headerTransform=lambda word: word[0].upper() + word[1:]
         )
     else:
-        collections, table = [], "No results found"
+        collections, table = [], "No results found."
 
     return CommandResults(
         outputs_prefix="PrismaCloudCompute.Collection",
@@ -1193,7 +1194,7 @@ def get_namespaces(client: PrismaCloudComputeClient, args: dict) -> CommandResul
     if namespaces := filter_api_response(api_response=client.get_namespaces(params=params), limit=limit):
         # when the api returns [""] (a list with empty string), it means that the system does not have any namespaces
         if len(namespaces) == 1 and namespaces[0] == "":
-            namespaces, table = [], "No results found"
+            namespaces, table = [], "No results found."
         else:
             table = tableToMarkdown(
                 name="Namespaces",
@@ -1201,7 +1202,7 @@ def get_namespaces(client: PrismaCloudComputeClient, args: dict) -> CommandResul
                 headers=["Namespace"]
             )
     else:
-        namespaces, table = [], "No results found"
+        namespaces, table = [], "No results found."
 
     return CommandResults(
         outputs_prefix="PrismaCloudCompute.RadarContainerNamespace",
@@ -1311,7 +1312,7 @@ def get_images_scan_list(client: PrismaCloudComputeClient, args: dict) -> Comman
             else:
                 # handle the case where there is an image scan without vulnerabilities
                 vulnerabilities = images_scans[0].get("vulnerabilities")
-                if vulnerabilities is None:
+                if not vulnerabilities:
                     vulnerabilities = []
 
                 vulnerabilities_table = tableToMarkdown(
@@ -1323,7 +1324,7 @@ def get_images_scan_list(client: PrismaCloudComputeClient, args: dict) -> Comman
                 )
                 # handle the case where there is an image scan without compliances
                 compliances = images_scans[0].get("complianceIssues")
-                if compliances is None:
+                if not compliances:
                     compliances = []
 
                 compliances_table = tableToMarkdown(
@@ -1338,7 +1339,7 @@ def get_images_scan_list(client: PrismaCloudComputeClient, args: dict) -> Comman
         else:
             table = image_description_table
     else:
-        table = "No results found"
+        table = "No results found."
 
     return CommandResults(
         outputs_prefix="PrismaCloudCompute.ReportsImagesScan",
@@ -1447,7 +1448,7 @@ def get_hosts_scan_list(client: PrismaCloudComputeClient, args: dict) -> Command
             else:
                 # handle the case where there is an host scan without vulnerabilities
                 vulnerabilities = hosts_scans[0].get("vulnerabilities")
-                if vulnerabilities is None:
+                if not vulnerabilities:
                     vulnerabilities = []
 
                 vulnerabilities_table = tableToMarkdown(
@@ -1459,7 +1460,7 @@ def get_hosts_scan_list(client: PrismaCloudComputeClient, args: dict) -> Command
                 )
                 # handle the case where there is an host scan without compliances
                 compliances = hosts_scans[0].get("complianceIssues")
-                if compliances is None:
+                if not compliances:
                     compliances = []
 
                 compliances_table = tableToMarkdown(
@@ -1474,7 +1475,7 @@ def get_hosts_scan_list(client: PrismaCloudComputeClient, args: dict) -> Command
         else:
             table = host_description_table
     else:
-        table = "No results found"
+        table = "No results found."
 
     return CommandResults(
         outputs_prefix="PrismaCloudCompute.ReportHostScan",
@@ -1506,7 +1507,7 @@ def get_impacted_resources(client: PrismaCloudComputeClient, args: dict) -> Comm
             if "riskTree" in cve_impacted_resources and cve_impacted_resources.get("riskTree") is not None:
                 cve_impacted_resources["riskTree"] = dict(
                     filter_api_response(
-                        api_response=list(cve_impacted_resources.get("riskTree", {}).items()),  # type: ignore
+                        api_response=list(cve_impacted_resources.get("riskTree", {}).items()),  # type: ignore[arg-type]
                         limit=limit,
                         offset=offset
                     )
@@ -1551,7 +1552,7 @@ def get_impacted_resources(client: PrismaCloudComputeClient, args: dict) -> Comm
         )
         table = impacted_images_table + impacted_hosts_table
     else:
-        context_output, table = [], "No results found"
+        context_output, table = [], "No results found."
 
     return CommandResults(
         outputs_prefix="PrismaCloudCompute.VulnerabilitiesImpactedResource",

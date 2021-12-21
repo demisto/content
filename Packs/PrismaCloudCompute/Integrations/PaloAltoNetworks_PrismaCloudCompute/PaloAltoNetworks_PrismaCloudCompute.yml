@@ -896,6 +896,9 @@ script:
       required: false
       isArray: false
       defaultValue: ""
+      predefined:
+      - "true"
+      - "false"
     - name: limit
       description: The maximum of defender records to return
       required: false
@@ -1049,14 +1052,14 @@ script:
     deprecated: false
     arguments:
     - name: cluster
-      description: Clusters is the cluster name to filter by
+      description: Comma-seperated list of cluster names to filter by
       required: false
-      isArray: false
+      isArray: true
       defaultValue: ""
     - name: collections
-      description: Collections are collections to filter by
+      description: Comma-seperated list of collections filter by, can be retrieved from !prisma-cloud-compute-collections-list
       required: false
-      isArray: false
+      isArray: true
       defaultValue: ""
     - name: limit
       description: The maximum number of namespace names records to return
@@ -1073,7 +1076,7 @@ script:
     deprecated: false
     arguments:
     - name: clusters
-      description: Filters results by cluster name.
+      description: Comma-seperated list of cluster names filter by.
       required: false
       isArray: true
       defaultValue: ""
@@ -1085,35 +1088,35 @@ script:
       isArray: false
       defaultValue: "true"
       predefined:
-        - "true"
-        - "false"
+      - "true"
+      - "false"
     - name: fields
-      description: List of fields to retrieve.
+      description: Comma-seperated list of fields to retrieve.
       required: false
       isArray: true
       defaultValue: ""
     - name: hostname
-      description: Filters results by hostnames.
+      description: Comma-seperated list of hostnames to filter by.
       required: false
       isArray: true
       defaultValue: ""
     - name: id
-      description: Filters the results by image ID.
+      description: Comma-seperated list of image IDs to filter by.
       required: false
       isArray: true
       defaultValue: ""
     - name: name
-      description: Filters results by image name.
+      description: Comma-seperated list of image names to filter by.
       required: false
       isArray: true
       defaultValue: ""
     - name: registry
-      description: Filters results by image registry.
+      description: Comma-seperated list of image registries to filter by.
       required: false
       isArray: true
       defaultValue: ""
     - name: repository
-      description: Filters results by image repository.
+      description: Comma-seperated list of image repositories to filter by.
       required: false
       isArray: true
       defaultValue: ""
@@ -1343,22 +1346,22 @@ script:
         - "true"
         - "false"
     - name: distro
-      description: Filters results by OS distro.
+      description: Comma-seprated list OS distros to filter by.
       required: false
       isArray: true
       defaultValue: ""
     - name: fields
-      description: List of fields to retrieve.
+      description: Comma-seperated list of fields to retrieve.
       required: false
       isArray: true
       defaultValue: ""
     - name: hostname
-      description: Filters results by hostnames.
+      description: Comma-seprated list of hostnames to filter by.
       required: false
       isArray: true
       defaultValue: ""
     - name: provider
-      description: Filters results by cloud provider.
+      description: Comma-seprated list of cloud providers to filter by.
       required: false
       isArray: true
       defaultValue: ""
