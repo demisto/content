@@ -201,6 +201,12 @@ def test_build_similar_keys_list():
     list_res = build_incident_fields_query({u'test': [u'name1', u'name2']})
     assert list_res == [u'test="name1"', u'test="name2"']
 
+    list_res = build_incident_fields_query({u'test': []})
+    assert list_res == [u'test="[]"']
+
+    escape_res = build_incident_fields_query({u'test': u'"C:\\test\\escape\\sequence" test'})
+    assert escape_res == [u'test="\\"C:\\test\\escape\\sequence\\" test"']
+
 
 def test_similar_incidents_fields(mocker):
     args = dict(default_args)
