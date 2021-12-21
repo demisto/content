@@ -207,14 +207,14 @@ tasks:
     scriptarguments:
       message-id:
         complex:
-          root: Gmail
+          root: GmailSearchResults
           accessor: ID
       permanent:
         complex:
           root: inputs.DeleteType
       user-id:
         complex:
-          root: Gmail
+          root: GmailSearchResults
           accessor: Mailbox
     separatecontext: false
     view: |-
