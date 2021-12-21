@@ -6,7 +6,7 @@ import pytest
 import demistomock as demisto
 from CommonServerPython import entryTypes
 from ParseEmailFiles import MsOxMessage, main, convert_to_unicode, unfold, handle_msg, get_msg_mail_format, \
-    data_to_md, create_headers_map, DataModel
+    data_to_md, create_headers_map, DataModel, handle_msg
 
 
 def exec_command_for_file(
@@ -812,6 +812,21 @@ def test_get_msg_mail_format():
         'Headers': None
     })
     assert msg_mail_format == ''
+
+
+def test_handle_msg_with_attachments():
+    """
+    Given:
+     - A msg file with attachments
+
+    When:
+     - The handle_msg
+
+    Then:
+     - Ensure that the attachment name is in the results
+    """
+    result = handle_msg('test_data/html_attachment.msg', 'html_attachment.msg')
+    assert result[0]['Attachments'] == 'dummy-attachment.txt'
 
 
 def test_no_content_file(mocker):
