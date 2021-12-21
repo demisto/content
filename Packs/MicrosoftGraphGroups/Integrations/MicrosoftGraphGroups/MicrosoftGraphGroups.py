@@ -411,12 +411,19 @@ def main():
     """
     params: dict = demisto.params()
     base_url = params.get('url', '').rstrip('/') + '/v1.0/'
-    tenant = params.get('tenant_id')
-    auth_and_token_url = params.get('auth_id')
-    enc_key = params.get('enc_key')
+    tenant = params.get('tenant_id') or params.get('_tenant_id')
+    auth_and_token_url = params.get('auth_id') or params.get('_auth_id')
+    enc_key = params.get('enc_key') or (params.get('credentials') or {}).get('password')
     verify = not params.get('insecure', False)
     proxy = params.get('proxy')
     self_deployed: bool = params.get('self_deployed', False)
+
+    if not enc_key:
+        raise Exception('Key must be provided.')
+    if not auth_and_token_url:
+        raise Exception('Authentication ID must be provided.')
+    if not tenant:
+        raise Exception('Token must be provided.')
 
     commands = {
         'test-module': test_function_command,
