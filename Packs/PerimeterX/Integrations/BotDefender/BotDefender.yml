@@ -9,8 +9,7 @@ configuration:
   name: url
   required: true
   type: 0
-- defaultvalue: ebfb7ff0-b2f6-41c8-bef3-4fba17be410c
-  display: API Key
+- display: API Key
   name: apikey
   required: true
   type: 9
