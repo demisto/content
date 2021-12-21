@@ -535,7 +535,7 @@ def main() -> None:
 
     tenant_id = params.get('tenant_id') or params.get('_tenant_id')
     client_credentials = params.get('client_credentials', False)
-    enc_key = params.get('enc_key') or (demisto.getParam('credentials') or {}).get('password')
+    enc_key = params.get('enc_key') or (params.get('credentials') or {}).get('password')
 
     if not app_id:
         raise Exception('Aplication ID must be provided.')
