@@ -93,8 +93,8 @@ configuration:
   name: create_relationships
   required: false
   type: 8
-description: Unit42 feed of published IOCs, which contains known malicious indicators.
-display: Unit42 ATOMs Feed
+description: Unit 42 feed of published IOCs, which contains known malicious indicators.
+display: Unit 42 ATOMs Feed
 name: Unit42v2 Feed
 script:
   commands:

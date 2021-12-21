@@ -955,7 +955,7 @@ script:
       type: string
     description: Retrieve analytical features for specified entity value and model
       name.
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   isfetch: true
   runonce: false
   subtype: python3

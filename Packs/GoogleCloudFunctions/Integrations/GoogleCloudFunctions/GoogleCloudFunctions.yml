@@ -165,7 +165,7 @@ script:
       description: Either a system or user-function generated error. Set if the execution
         was not successful.
       type: String
-  dockerimage: demisto/google-api-py3:1.0.0.24037
+  dockerimage: demisto/google-api-py3:1.0.0.25342
   isfetch: false
   runonce: false
   script: '-'

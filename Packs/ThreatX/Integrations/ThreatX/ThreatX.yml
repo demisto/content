@@ -76,8 +76,8 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: 'IP address or CIDR, for example: "10.1.1.1" or "10.1.1.0/24".'
-      isArray: false
+      description: 'IP address or CIDR in CSV format, for example: "10.1.1.1,10.1.1.0/24".'
+      isArray: true
       name: ip
       required: true
       secret: false
@@ -257,6 +257,8 @@ script:
   subtype: python2
   dockerimage: demisto/python:2.7.18.24398
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
 marketplaces:
 - xsoar
 - marketplacev2

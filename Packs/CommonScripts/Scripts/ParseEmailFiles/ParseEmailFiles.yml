@@ -93,6 +93,18 @@ outputs:
   description: A unique string assigned by the mail system when the message is first
     created. These can easily be forged. (e.g. 5c530c1b.1c69fb81.bd826.0eff@mx.google.com)
   type: String
+- contextPath: Email.AttachmentsData.Name
+  description: The name of the attachment
+  type: String
+- contextPath: Email.AttachmentsData.Content-ID
+  description: The content-id of the attachment
+  type: String
+- contextPath: Email.AttachmentsData.Content-Disposition
+  description: The content-disposition of the attachment
+  type: String
+- contextPath: Email.AttachmentsData.FilePath
+  description: The location of the attachment, on the XSOAR server
+  type: String
 - contextPath: Email.AttachmentNames
   description: The list of attachment names in the email
   type: string

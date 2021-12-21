@@ -12,7 +12,8 @@ configuration:
   name: auth_id
   required: true
   type: 4
-- display: Token (received from the admin consent - see Detailed Instructions (?) section)
+- display: Token (received from the admin consent - see Detailed Instructions (?)
+    section)
   name: tenant_id
   required: true
   type: 4
@@ -462,7 +463,8 @@ script:
       description: The display name of the policy.
       type: string
     - contextPath: AzureSecurityCenter.JITPolicy.Rules
-      description: 'A CSV list of access rules for Microsoft.Compute/virtualMachines resource, in the format (VMName: allowPort1,...)'
+      description: 'A CSV list of access rules for Microsoft.Compute/virtualMachines
+        resource, in the format (VMName: allowPort1,...)'
       type: string
     - contextPath: AzureSecurityCenter.JITPolicy.Location
       description: The location where the resource is stored.
@@ -519,6 +521,42 @@ script:
       For each subscription there is only one responsible location.
     execution: false
     name: azure-sc-list-location
+  - name: azure-get-secure-score
+    description: Retrieve the Secure Score for the provided subscription and score
+      name
+    deprecated: false
+    arguments:
+    - name: secure_score_name
+      description: description
+      required: false
+      isArray: false
+      defaultValue: ascScore
+      predefined:
+      - ""
+    - name: subscription_id
+      description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
+        command. If not specified, the default subscription ID is used.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    outputs:
+    - contextPath: Azure.Securescore.displayName
+      description: The initiative’s name.
+      type: String
+    - contextPath: Azure.Securescore.score.max
+      description: The max score of the Securescore.
+      type: String
+    - contextPath: Azure.Securescore.score.current
+      description: The current score of the Securescore.
+      type: String
+    - contextPath: Azure.Securescore.score.percentage
+      description: The Ratio of the current score divided by the maximum.
+      type: String
+    - contextPath: Azure.Securescore.weight
+      description: The relative weight for each subscription.
+      type: String
   dockerimage: demisto/crypto:1.0.0.24380
   isfetch: false
   longRunning: false

@@ -13,8 +13,7 @@ args:
   secret: false
   deprecated: true
 - default: false
-  description: The column number that contains IP Addresses. (First column is column
-    0)
+  description: The column number that contains IP Addresses. (First column is column 0)
   isArray: false
   name: ips
   required: false
@@ -26,8 +25,7 @@ args:
   required: false
   secret: false
 - default: false
-  description: The column number that contains file hashes. (First column is column
-    0)
+  description: The column number that contains file hashes. (First column is column 0)
   isArray: false
   name: hashes
   required: false
@@ -92,7 +90,7 @@ runonce: false
 tests:
 - No tests
 fromversion: 5.0.0
-dockerimage: demisto/python:2.7.18.24066
+dockerimage: demisto/python:2.7.18.24398
 marketplaces:
 - xsoar
 - marketplacev2
