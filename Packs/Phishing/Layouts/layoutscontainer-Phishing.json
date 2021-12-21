@@ -445,7 +445,7 @@
                                 "endCol": 2,
                                 "fieldId": "reportedemailorigin",
                                 "height": 22,
-                                "id": "aef00a60-4c34-11ec-b64a-e32273790ae7",
+                                "id": "b8f3e800-6279-11ec-8fa2-217b8b611613",
                                 "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -454,7 +454,7 @@
                                 "endCol": 2,
                                 "fieldId": "reportedemailfrom",
                                 "height": 22,
-                                "id": "18bb4fa0-4838-11ec-a479-cbb268e453fc",
+                                "id": "be942ef0-6279-11ec-8fa2-217b8b611613",
                                 "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -463,27 +463,25 @@
                                 "endCol": 2,
                                 "fieldId": "reportedemailto",
                                 "height": 22,
-                                "id": "1b065110-4838-11ec-a479-cbb268e453fc",
+                                "id": "c2ce0810-6279-11ec-8fa2-217b8b611613",
                                 "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "reportedemailsubject",
-                                "height": 22,
-                                "id": "1d057c70-4838-11ec-a479-cbb268e453fc",
-                                "index": 3,
-                                "listId": "1vduzkpmlh-swtuqptgvs-d431b9b0-97ee-11e9-b8bd-0b00be54d2d3",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
+								"endCol": 2,
+								"fieldId": "reportedemailsubject",
+								"height": 22,
+								"id": "c69a5250-6279-11ec-8fa2-217b8b611613",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
                             {
                                 "endCol": 2,
                                 "fieldId": "reportedemailcc",
                                 "height": 22,
-                                "id": "c8889f50-4c34-11ec-b64a-e32273790ae7",
+                                "id": "cabab000-6279-11ec-8fa2-217b8b611613",
                                 "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -529,16 +527,14 @@
                                 "startCol": 0
                             },
                             {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "emailrecipientscount",
-                                "height": 22,
-                                "id": "8d6c3e50-97ef-11e9-b8bd-0b00be54d2d3",
-                                "index": 9,
-                                "listId": "d431b9b0-97ee-11e9-b8bd-0b00be54d2d3",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
+								"endCol": 2,
+								"fieldId": "emailrecipientscount",
+								"height": 22,
+								"id": "77a63970-6279-11ec-8fa2-217b8b611613",
+								"index": 9,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
