@@ -54,7 +54,7 @@ configuration:
   required: false
   type: 0
 - defaultvalue: 3 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
+  display: First fetch timestamp (<number> <time unit>, for example, 12 hours, 7 days, 3
     months, 1 year)
   hidden: false
   name: fetch_time
@@ -370,7 +370,7 @@ script:
     name: archer-upload-file
   - arguments:
     - default: false
-      description: The file attachment ID.
+      description: The file ID.
       isArray: false
       name: fileId
       required: true
