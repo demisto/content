@@ -1,16 +1,16 @@
 commonfields:
   id: 5daec73b-3413-4c8a-82c0-4d43c825cf52
   version: 4
-vcShouldKeepItemLegacyProdMachine: false
 name: CollectPacksData
+comment: This script collects the data of packs with updates.
 script: ''
 type: python
 tags: []
 enabled: true
 scripttarget: 0
 subtype: python3
-pswd: ""
 runonce: false
 dockerimage: demisto/python3:3.9.5.22665
 runas: DBotWeakRole
-engineinfo: {}
+tests:
+- No tests (auto formatted)

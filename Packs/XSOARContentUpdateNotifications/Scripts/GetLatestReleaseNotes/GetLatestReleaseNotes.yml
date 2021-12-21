@@ -6,6 +6,7 @@ script: ''
 type: python
 tags: []
 enabled: true
+comment: This script retrieves the latest release notes for selected packs.
 args:
 - name: content_data
   required: true

@@ -13,5 +13,15 @@
     "keywords": [],
     "githubUser": [
         "aburt-demisto"
-    ]
+    ],
+    "dependencies": {
+        "ContentInstallation": {
+            "mandatory": false,
+            "display_name": "Content Installation"
+        },
+        "GetServerURL": {
+            "mandatory": true,
+            "display_name": "GetServerURL"
+        }
+    }
 }

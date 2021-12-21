@@ -52,3 +52,4 @@ The content update flow can be triggered in one of the following ways.
 There are no outputs for this playbook.
 
 ## Playbook Image
+![image](https://github.com/demisto/content/raw/ec6fdf6bc123841f8ba688e6d7e21072327f0d9c/Packs/XSOARContentUpdateNotifications/doc_files/Content_Update_Manager.png?raw=true)

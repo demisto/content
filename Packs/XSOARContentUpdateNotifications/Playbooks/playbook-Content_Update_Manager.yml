@@ -1292,6 +1292,7 @@ tasks:
       id: a3990875-4597-4329-8134-d07e1c45d8a3
       version: -1
       name: Collect packs data
+      description: "Collect packs data for packs with updates."
       scriptName: CollectPacksData
       type: regular
       iscommand: false
@@ -1322,6 +1323,7 @@ tasks:
       id: ca8ed114-bbba-4a75-89a9-2dd311713a70
       version: -1
       name: Should the playbook perform auto-update?
+      description: "Should the playbook perform auto-update?"
       type: condition
       iscommand: false
       brand: ""
@@ -1368,6 +1370,7 @@ tasks:
       id: 8253e175-498b-42e5-8635-052c4e7bd37c
       version: -1
       name: Manual - Do you allow the playbook to perform auto-update?
+      description: "Manual - Do you allow the playbook to perform auto-update?"
       type: condition
       iscommand: false
       brand: ""
@@ -1964,6 +1967,7 @@ tasks:
       id: 8c2bdd42-9681-4249-89c7-9b43a2d88413
       version: -1
       name: Is the auto-update input set to "Yes"?
+      description: "Is the auto-update input set to yes?"
       type: condition
       iscommand: false
       brand: ""
@@ -2071,6 +2075,7 @@ tasks:
       id: 332fce7b-8aa9-4a22-85b7-876955f850cb
       version: -1
       name: Manually update content packs
+      description: "Manually update content packs."
       type: regular
       iscommand: false
       brand: ""
