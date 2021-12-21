@@ -116,11 +116,9 @@ def prepare_value_to_query_with(value):
         value_list = [value]
 
     for value in value_list:
-        demisto.log("value in list: %s" % value)
         str_value = str(value) if isinstance(value, int) else value
         str_value = str_value.replace('"', r'\"').replace("\n", "\\n").replace("\r", "\\r").replace(r'\\"', r'\\\"')
         str_value = str_value.encode('utf-8') if not isinstance(value, int) else str_value
-        demisto.log("value after replace: %s" % str_value)
         str_value_list.append(str_value)
 
     return str_value_list
@@ -144,7 +142,6 @@ def get_incidents_by_keys(similar_incident_keys, time_field, incident_time, inci
     condition_string = ' %s ' % applied_condition.lower()
 
     incident_fields_query = build_incident_fields_query(similar_incident_keys)
-    demisto.log("the  query is: %s" % incident_fields_query)
 
     similar_keys_query = condition_string.join(incident_fields_query)
     incident_time = parse_datetime(incident_time)
@@ -311,9 +308,7 @@ def main():
 
     # set the incident
     incident = merge_incident_fields(demisto.incidents()[0])  # type: ignore  # pylint: disable=no-value-for-parameter
-    # demisto.log(len(demisto.incidents()))
-    # for incident in demisto.incidents():
-    #     demisto.log("the incident: %s" % incident)
+
     # validate fields
     exact_match_incident_fields = get_map_from_nested_dict(incident,
                                                            {k: v for k, v in SIMILAR_INCIDENTS_FIELDS_MAP.items() if
