@@ -180,7 +180,7 @@ def test_rasterize_image_to_pdf(mocker):
 TEST_DATA = [
     (
         'test_data/many_pages.pdf',
-        30,
+        21,
         2,
     ),
     (
@@ -196,4 +196,5 @@ def test_convert_pdf_to_jpeg(file_path, max_pages, expected_length):
     from rasterize import convert_pdf_to_jpeg
     res = convert_pdf_to_jpeg(file_path, max_pages, "pass")
 
+    assert type(res) == list
     assert len(res) == expected_length
