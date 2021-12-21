@@ -34,7 +34,6 @@ inputs:
     Possible values:
     - Gmail
     - EWS v2
-    - EWSO365
     - MicrosoftGraphMail
     - EmailSecurityGateway
 
@@ -297,6 +296,26 @@ tasks:
               simple: Gmail
       label: Gmail
     - condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.EmailBrand
+            iscontext: true
+          right:
+            value:
+              simple: EWS v2
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.EmailBrand
+            iscontext: true
+          right:
+            value:
+              simple: EWSO365
+      label: EWS
+    - condition:
       - - left:
             iscontext: true
             value:
@@ -305,27 +324,7 @@ tasks:
           operator: isEqualString
           right:
             value:
-              simple: EWS v2
-      label: EWS v2
-    - condition:
-        - - operator: isEqualString
-            left:
-              value:
-                complex:
-                  root: inputs.EmailBrand
-              iscontext: true
-            right:
-              value:
-                simple: EWS v2
-          - operator: isEqualString
-            left:
-              value:
-                complex:
-                  root: inputs.EmailBrand
-              iscontext: true
-            right:
-              value:
-                simple: EWSO365
+              simple: MicrosoftGraphMail
       label: MSGraph
     - condition:
       - - ignorecase: true
