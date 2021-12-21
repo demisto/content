@@ -489,6 +489,50 @@ def test_main(mocker):
                     ]
                 }
             ]
+        },
+        {
+            "value": """
+                <html>
+                    <h1>table1</h1>
+                    <table>
+                        <tr>
+                            <th rowspan="2">item-x</th>
+                            <th>head1-1</th>
+                            <th>head1-2</th>
+                        </tr>
+                        <tr>
+                            <th>head2-1</th>
+                            <th>head2-2</th>
+                        </tr>
+                        <tr>
+                            <td>item1-1</td>
+                            <td>item1-2</td>
+                            <td>item1-3</td>
+                        </tr>
+                        <tr>
+                            <td>item2-1</td>
+                            <td>item2-2</td>
+                            <td>item2-3</td>
+                        </tr>
+                    </table>
+                </html>
+                    """,
+            "results": [
+                {
+                    'table1': [
+                        {
+                            'item-x': 'item1-1',
+                            'head1-1': 'item1-2',
+                            'head1-2': 'item1-3'
+                        },
+                        {
+                            'item-x': 'item2-1',
+                            'head1-1': 'item2-2',
+                            'head1-2': 'item2-3'
+                        }
+                    ]
+                }
+            ]
         }
     ]
 
