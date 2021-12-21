@@ -15,5 +15,9 @@
     "keywords": [
         "d2",
         "agent tools"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

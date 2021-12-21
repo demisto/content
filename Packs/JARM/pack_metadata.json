@@ -10,7 +10,20 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": ["Threat Intelligence", "Network"],
-    "useCases": ["Hunting", "Network Security"],
-    "keywords": ["JARM", "Fingerprint"]
+    "tags": [
+        "Threat Intelligence",
+        "Network"
+    ],
+    "useCases": [
+        "Hunting",
+        "Network Security"
+    ],
+    "keywords": [
+        "JARM",
+        "Fingerprint"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }
