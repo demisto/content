@@ -10,16 +10,21 @@ from AzureSentinel import AzureSentinelClient, list_incidents_command, list_inci
     list_incident_alerts_command, list_watchlists_command, \
     delete_watchlist_command, list_watchlist_items_command, \
     create_update_watchlist_command, create_update_watchlist_item_command, delete_watchlist_item_command, \
-    delete_incident_command, XSOAR_USER_AGENT, incident_delete_comment_command
+    delete_incident_command, XSOAR_USER_AGENT, incident_delete_comment_command, \
+    query_threat_indicators_command, create_threat_indicator_command, delete_threat_indicator_command, \
+    append_tags_threat_indicator_command, replace_tags_threat_indicator_command, update_threat_indicator_command, \
+    list_threat_indicator_command, NEXTLINK_DESCRIPTION
 
 TEST_ITEM_ID = 'test_watchlist_item_id_1'
 
 NEXT_LINK_CONTEXT_KEY = 'AzureSentinel.NextLink(val.Description == "NextLink for listing commands")'
 
+API_VERSION = '2021-04-01'
+
 
 def mock_client():
     client = AzureSentinelClient(
-        server_url='server_url',
+        server_url='http://server_url',
         tenant_id='tenant_id',
         client_id='client_id',
         client_secret='client_secret',
@@ -36,7 +41,8 @@ def mock_client():
 def mock_404_response(resource_id: str):
     res = requests.Response()
     res.status_code = 404
-    res._content = json.dumps({'error': {'code': 'NotFound', 'message': f"Resource '{resource_id}' does not exist"}}).encode()
+    res._content = json.dumps(
+        {'error': {'code': 'NotFound', 'message': f"Resource '{resource_id}' does not exist"}}).encode()
     return res
 
 
@@ -326,6 +332,178 @@ MOCKED_UPDATE_INCIDENT = {
                    'relatedAnalyticRuleIds': [],
                    'incidentUrl': 'https://example.com',
                    'providerName': 'Azure Sentinel', 'providerIncidentId': '2'}}
+
+MOCKED_THREAT_INDICATOR_OUTPUT = {
+    "value": [
+        {
+            "id": "ind_id",
+            "name": "ind_name",
+            "etag": "\"1200b4fe-0000-0800-0000-6194cfae0000\"",
+            "type": "Microsoft.SecurityInsights/threatIntelligence",
+            "kind": "indicator",
+            "properties": {
+                "confidence": 100,
+                "created": "2021-11-17T09:43:15.9576155Z",
+                "externalId": "indicator--0a1a583a-d801-4b64-9c5b-f595f77aa53d",
+                "lastUpdatedTimeUtc": "2021-11-17T09:43:15.9579245Z",
+                "source": "Azure Sentinel",
+                "threatIntelligenceTags": [
+                    "wereplacedthetag"
+                ],
+                "displayName": "displayfortestmay",
+                "threatTypes": [
+                    "malicious-activity"
+                ],
+                "parsedPattern": [
+                    {
+                        "patternTypeKey": "url",
+                        "patternTypeValues": [
+                            {
+                                "valueType": "url",
+                                "value": "‘twitter.com’"
+                            }
+                        ]
+                    }
+                ],
+                "pattern": "[url:value = ‘twitter.com’]",
+                "patternType": "twitter.com",
+                "validFrom": "0001-01-01T00:00:00"
+            }
+        }]
+}
+
+MOCKED_CREATE_THREAT_INDICATOR_OUTPUT = {
+    "id": "ind_id",
+    "name": "ind_name",
+    "etag": "\"1f002899-0000-0800-0000-619a3dd40000\"",
+    "type": "Microsoft.SecurityInsights/threatIntelligence",
+    "kind": "indicator",
+    "properties": {
+        "confidence": 80,
+        "created": "2021-11-21T12:38:43.9928873Z",
+        "createdByRef": "",
+        "externalId": "indicator--9f973088-3ac8-4391-9eb3-97fa90d3e1b5",
+        "lastUpdatedTimeUtc": "2021-11-21T12:38:43.9976961Z",
+        "revoked": True,
+        "source": "Azure Sentinel",
+        "threatIntelligenceTags": [
+            "wereplacedthetag"
+        ],
+        "displayName": 'displayfortestmay',
+        "description": "blabla",
+        "threatTypes": [
+            "compromised"
+        ],
+        "killChainPhases": [
+            {
+                "killChainName": "rrr",
+                "phaseName": "rrr"
+            }
+        ],
+        "parsedPattern": [
+            {
+                "patternTypeKey": "file",
+                "patternTypeValues": [
+                    {
+                        "valueType": "hashes.'SHA-1'",
+                        "value": "935DA64F08574E820565497C6918C8A17D4567FE"
+                    }
+                ]
+            }
+        ],
+        "pattern": "[file:hashes.'SHA-1' = '935DA64F08574E820565497C6918C8A17D4567FE']",
+        "patternType": "935DA64F08574E820565497C6918C8A17D4567FE",
+        "validFrom": "2020-04-15T17:44:00.114052Z"
+    }
+}
+
+MOCKED_UPDATE_THREAT_INDICATOR = {
+    "id": "ind_id",
+    "name": "ind_name",
+    "etag": "\"1f002899-0000-0800-0000-619a3dd40000\"",
+    "type": "Microsoft.SecurityInsights/threatIntelligence",
+    "kind": "indicator",
+    "properties": {
+        "confidence": 80,
+        "created": "2021-11-21T12:38:43.9928873Z",
+        "createdByRef": "",
+        "externalId": "indicator--9f973088-3ac8-4391-9eb3-97fa90d3e1b5",
+        "lastUpdatedTimeUtc": "2021-11-21T12:38:43.9976961Z",
+        "revoked": True,
+        "source": "Azure Sentinel",
+        "threatIntelligenceTags": [
+            "newTag"
+        ],
+        "displayName": 'newDisplayName',
+        "description": "blabla",
+        "threatTypes": [
+            "compromised"
+        ],
+        "killChainPhases": [
+            {
+                "killChainName": "rrr",
+                "phaseName": "rrr"
+            }
+        ],
+        "parsedPattern": [
+            {
+                "patternTypeKey": "file",
+                "patternTypeValues": [
+                    {
+                        "valueType": "hashes.'SHA-1'",
+                        "value": "newValue"
+                    }
+                ]
+            }
+        ],
+        "pattern": "[domain-name:value = newValue]",
+        "patternType": "newValue",
+        "validFrom": "2020-04-15T17:44:00.114052Z"
+    }
+}
+
+MOCKED_ORIGINAL_THREAT_INDICATOR_OUTPUT = {
+    "id": "ind_id",
+    "name": "ind_name",
+    "etag": "\"1200b4fe-0000-0800-0000-6194cfae0000\"",
+    "type": "Microsoft.SecurityInsights/threatIntelligence",
+    "kind": "indicator",
+    "properties": {
+        "confidence": 100,
+        "created": "2021-11-17T09:43:15.9576155Z",
+        "externalId": "indicator--0a1a583a-d801-4b64-9c5b-f595f77aa53d",
+        "lastUpdatedTimeUtc": "2021-11-17T09:43:15.9579245Z",
+        "source": "Azure Sentinel",
+        "threatIntelligenceTags": [
+            "wereplacedthetag"
+        ],
+        "displayName": "displayfortestmay",
+        "threatTypes": [
+            "malicious-activity"
+        ],
+        "parsedPattern": [
+            {
+                "patternTypeKey": "url",
+                "patternTypeValues": [
+                    {
+                        "valueType": "url",
+                        "value": "‘twitter.com’"
+                    }
+                ]
+            }
+        ],
+        "pattern": "[url:value = ‘twitter.com’]",
+        "patternType": "twitter.com",
+        "validFrom": "0001-01-01T00:00:00"
+    }
+}
+
+ARGS_TO_UPDATE = {
+    "indicator_name": "ind_name",
+    "displayName": 'newDisplayName',
+    "value": 'newValue',
+    "indicator_type": 'domain'
+}
 
 
 class TestHappyPath:
@@ -769,6 +947,244 @@ class TestHappyPath:
         # validate
         user_agent = requests.Session.request.call_args[1]['headers']['User-Agent']
         assert user_agent == XSOAR_USER_AGENT
+
+    @pytest.mark.parametrize('args, expected_next_link, client', [  # disable-secrets-detection
+        ({'limit': '50'}, 'https://test.com', mock_client()),
+        ({'next_link': 'https://test.com'}, None, mock_client())
+    ])
+    def test_threat_indicator_list_command(self, args, expected_next_link, client, requests_mock):
+        """
+                Given:
+                    - Args with and various limit parameter for the tested command
+                    - Expected value for next link if exist
+                    - An app client object
+                When:
+                    - Calling function list_threat_indicators_command
+                Then:
+                    - Ensure the results holds the expected incidents list data
+                    - Ensure next link returned as expected
+                """
+
+        # prepare
+        mocked_indicators = MOCKED_THREAT_INDICATOR_OUTPUT.copy()
+        if expected_next_link:
+            mocked_indicators['nextLink'] = expected_next_link
+            requests_mock.get(
+                'http://server_url/subscriptions/subscriptionID/resourceGroups/resourceGroupName/providers/Microsoft'
+                '.OperationalInsights/workspaces/workspaceName/providers/Microsoft.SecurityInsights/threatIntelligence'
+                '/main/indicators', json=mocked_indicators)
+        else:
+            requests_mock.get('https://test.com', json=mocked_indicators)
+
+        requests_mock.post('https://login.microsoftonline.com/tenant_id/oauth2/v2.0/token', json={})
+
+        # execute
+        command_res = list_threat_indicator_command(client, args=args)
+        readable_output, outputs, raw_response = command_res.readable_output, command_res.outputs, command_res.raw_response
+        context = outputs['AzureSentinel.ThreatIndicator'][0]
+
+        # validate
+        assert 'Threat Indicators (1 results)' in readable_output
+
+        assert context['Name'] == 'ind_name', 'Incident name in Azure Sentinel API is Incident ID in Cortex XSOAR'
+        assert context['DisplayName'] == 'displayfortestmay'
+
+        assert len(raw_response['value']) == 1
+        next_link = outputs.get(f'AzureSentinel.NextLink(val.Description == "{NEXTLINK_DESCRIPTION}")', {}).get('URL')
+        assert next_link == expected_next_link
+
+    @pytest.mark.parametrize('args, expected_next_link, client', [  # disable-secrets-detection
+        ({'limit': '1', 'min_confidence': 0, 'indicator_types': ['url', 'domain']}, 'https://test.com', mock_client()),
+        ({'next_link': 'https://test.com'}, None, mock_client())])
+    def test_query_threat_indicators_command(self, args, expected_next_link, client, requests_mock):
+        """
+                Given:
+                    - Args with and various limit parameter for the tested command
+                    - Expected value for next link if exist
+                    - An app client object
+                When:
+                    - Calling function query_threat_indicators_command
+                Then:
+                    - Ensure the results holds the expected incidents list data
+                    - Ensure next link returned as expected
+        """
+        # prepare
+        mocked_indicators = MOCKED_THREAT_INDICATOR_OUTPUT.copy()
+        if expected_next_link:
+            mocked_indicators['nextLink'] = expected_next_link
+            requests_mock.post(
+                'http://server_url/subscriptions/subscriptionID/resourceGroups/resourceGroupName/providers/Microsoft'
+                '.OperationalInsights/workspaces/workspaceName/providers/Microsoft.SecurityInsights/threatIntelligence'
+                '/main/queryIndicators', json=mocked_indicators)
+        else:
+            requests_mock.post('https://test.com', json=mocked_indicators)
+
+        requests_mock.post('https://login.microsoftonline.com/tenant_id/oauth2/v2.0/token', json={})
+
+        # execute
+        command_res = query_threat_indicators_command(client, args=args)
+        readable_output, outputs, raw_response = command_res.readable_output, command_res.outputs, command_res.raw_response
+        context = outputs['AzureSentinel.ThreatIndicator'][0]
+
+        assert 'Threat Indicators (1 results)' in readable_output
+
+        assert context['Name'] == 'ind_name', 'Incident name in Azure Sentinel API is Incident ID in Cortex XSOAR'
+        assert context['DisplayName'] == 'displayfortestmay'
+
+        assert len(raw_response['value']) == 1
+        next_link = outputs.get(f'AzureSentinel.NextLink(val.Description == "{NEXTLINK_DESCRIPTION}")', {}).get('URL')
+        assert next_link == expected_next_link
+
+    @pytest.mark.parametrize('args, client', [  # disable-secrets-detection
+        ({'value': 'twitter.com', 'display_name': 'displaytestformay', 'indicator_types': 'url',
+          'threat_types': ["malicious-activity"]}, mock_client())])
+    def test_create_threat_indicator_command(self, args, client, mocker):
+        """
+                Given:
+                    - Args with and various limit parameter for the tested command
+                    - An app client object
+                When:
+                    - Calling function create_threat_indicator_command
+                Then:
+                    - Ensure the results holds the expected incidents list data
+                """
+
+        # prepare
+        mocked_indicators = MOCKED_CREATE_THREAT_INDICATOR_OUTPUT
+        mocker.patch.object(client, 'http_request', return_value=mocked_indicators)
+
+        # execute
+        command_res = create_threat_indicator_command(client, args=args)
+        readable_output, outputs = command_res.readable_output, command_res.outputs
+        context = outputs[0]
+
+        # validate
+        assert 'New threat Indicator was created' in readable_output
+
+        assert context['Name'] == 'ind_name', 'Incident name in Azure Sentinel API is Incident ID in Cortex XSOAR'
+        assert context['DisplayName'] == 'displayfortestmay'
+
+        assert context['Tags'][0] == 'wereplacedthetag'
+
+    @pytest.mark.parametrize('args, client', [  # disable-secrets-detection
+        ({'indicator_names': ['ind_name', 'ind2_name']}, mock_client())])
+    def test_delete_threat_indicator_command(self, args, client, mocker):
+        """
+                Given:
+                    - Args with and various limit parameter for the tested command
+                    - An app client object
+                When:
+                    - Calling function delete_threat_indicator_command
+                Then:
+                    - Ensure the results holds the expected readable output
+                """
+        # prepare
+        mocker.patch.object(client, 'http_request', return_value={})
+
+        # execute
+        command_res = delete_threat_indicator_command(client, args=args)
+        readable_output = command_res.readable_output
+
+        # validate
+        assert "Threat Intelligence Indicators ind_name, ind2_name were deleted successfully" in readable_output
+
+    @pytest.mark.parametrize('args, client', [  # disable-secrets-detection
+        ({'indicator_name': 'ind_name', 'tags': 'wereplacedthetag'}, mock_client())])
+    def test_append_tags_threat_indicator_command(self, args, client, mocker):
+        """
+                Given:
+                    - Args with and various limit parameter for the tested command
+                    - An app client object
+                When:
+                    - Calling function pend_tags_threat_indicator_command
+                Then:
+                    - Ensure the results holds the expected incidents list data
+                """
+        # prepare
+        mocked_indicators = MOCKED_CREATE_THREAT_INDICATOR_OUTPUT
+        mocker.patch.object(client, 'http_request', return_value=mocked_indicators)
+
+        # execute
+        command_res = append_tags_threat_indicator_command(client, args=args)
+        readable_output, outputs = command_res.readable_output, command_res.outputs
+        context = outputs[0]
+
+        # validate
+        assert 'Tags were appended to ind_name Threat Indicator' in readable_output
+
+        assert context['Name'] == 'ind_name'
+        assert context['DisplayName'] == 'displayfortestmay'
+
+        assert context['Tags'][0] == 'wereplacedthetag'
+
+    @pytest.mark.parametrize('args, client', [  # disable-secrets-detection
+        ({'indicator_name': 'ind_name', 'tags': 'wereplacedthetag'}, mock_client())])
+    def test_replace_tags_threat_indicator_command(self, args, client, mocker):
+        """
+                Given:
+                    - Args with and various limit parameter for the tested command
+                    - An app client object
+                When:
+                    - Calling function replace_tags_threat_indicator_command
+                Then:
+                    - Ensure the results holds the expected incidents list data
+                """
+        # prepare
+        mocked_indicators = MOCKED_CREATE_THREAT_INDICATOR_OUTPUT
+        mocker.patch.object(client, 'http_request', return_value=mocked_indicators)
+
+        # execute
+        command_res = replace_tags_threat_indicator_command(client, args=args)
+        readable_output, outputs = command_res.readable_output, command_res.outputs
+        context = outputs[0]
+
+        # validate
+        assert 'Tags were replaced to ind_name Threat Indicator.' in readable_output
+
+        assert context['Name'] == 'ind_name'
+        assert context['DisplayName'] == 'displayfortestmay'
+
+        assert context['Tags'][0] == 'wereplacedthetag'
+
+    @pytest.mark.parametrize('args, client', [  # disable-secrets-detection
+        (ARGS_TO_UPDATE, mock_client())])
+    def test_update_threat_indicator_command(self, args, client, requests_mock):
+        """
+                Given:
+                    - Args with and various limit parameter for the tested command
+                    - An app client object
+                When:
+                    - Calling function update_incident_command
+                Then:
+                    - Ensure the results holds the expected threat indicator data
+                """
+
+        # prepare
+        mocked_indicators = MOCKED_ORIGINAL_THREAT_INDICATOR_OUTPUT
+        mocked_updated_indicators = MOCKED_UPDATE_THREAT_INDICATOR
+
+        requests_mock.get(
+            'http://server_url/subscriptions/subscriptionID/resourceGroups/resourceGroupName/providers/Microsoft'
+            '.OperationalInsights/workspaces/workspaceName/providers/Microsoft.SecurityInsights/threatIntelligence'
+            '/main/indicators/ind_name', json=mocked_indicators)
+        requests_mock.put(
+            'http://server_url/subscriptions/subscriptionID/resourceGroups/resourceGroupName/providers/Microsoft'
+            '.OperationalInsights/workspaces/workspaceName/providers/Microsoft.SecurityInsights/threatIntelligence'
+            '/main/indicators/ind_name', json=mocked_updated_indicators)
+
+        requests_mock.post('https://login.microsoftonline.com/tenant_id/oauth2/v2.0/token', json={})
+
+        # execute
+
+        command_res = update_threat_indicator_command(client, args=args)
+        readable_output, outputs = command_res.readable_output, command_res.outputs
+        context = outputs[0]
+
+        # validate
+        assert 'Threat Indicator ind_name was updated' in readable_output
+
+        assert context['Name'] == 'ind_name', 'Incident name in Azure Sentinel API is Incident ID in Cortex XSOAR'
+        assert context['DisplayName'] == 'newDisplayName'
 
 
 class TestEdgeCases:

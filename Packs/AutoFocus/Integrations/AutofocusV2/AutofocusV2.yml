@@ -1115,7 +1115,7 @@ script:
       type: String
   - arguments:
     - default: true
-      description: The SHA256 hash of the file.
+      description: Hash of the file to query. Supports MD5, SHA1, and SHA256.
       isArray: true
       name: file
       required: true
