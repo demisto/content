@@ -178,7 +178,7 @@ def main() -> None:
             return_results(complete_auth(client))
         elif command == 'azure-ks-auth-test':
             return_results(test_connection(client))
-        elif command == 'azure-ks-reset':
+        elif command == 'azure-ks-auth-reset':
             return_results(reset_auth())
         elif command == 'azure-ks-clusters-list':
             return_results(clusters_list(client))
