@@ -107,5 +107,18 @@
       "2021",
       "0003"
     ]
+  },
+  {
+    "value": [],
+    "regex": ".*",
+    "text": 1,
+    "template": "\\0",
+    "template_type": "text",
+    "value_takes": "text",
+    "flags": "i",
+    "search_limit": 0,
+    "result": [
+      "1"
+    ]
   }
 ]
