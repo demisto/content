@@ -21,9 +21,5 @@
     },
     "displayedImages": [
         "CommonTypes"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
     ]
 }

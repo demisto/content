@@ -17,9 +17,5 @@
     "keywords": [
         "Cofense",
         "Feed"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
     ]
 }

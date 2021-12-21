@@ -14,9 +14,5 @@
     "useCases": [],
     "keywords": [
         "Traps"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
     ]
 }

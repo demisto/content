@@ -22,9 +22,5 @@
             "mandatory": true,
             "display_name": "Common Playbooks"
         }
-    },
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
-    ]
+    }
 }

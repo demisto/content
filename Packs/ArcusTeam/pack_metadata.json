@@ -24,9 +24,5 @@
         "IOT",
         "Network Devices"
     ],
-    "githubUser": [],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
-    ]
+    "githubUser": []
 }

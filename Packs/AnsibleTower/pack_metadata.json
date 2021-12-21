@@ -10,15 +10,7 @@
     "categories": [
         "IT Services"
     ],
-    "tags": [
-        "IT"
-    ],
+    "tags": ["IT"],
     "useCases": [],
-    "keywords": [
-        "Asset Management"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
-    ]
+    "keywords": ["Asset Management"]
 }

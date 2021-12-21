@@ -25,9 +25,5 @@
     "keywords": [
         "Static Analysis",
         "File Analysis"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
     ]
 }

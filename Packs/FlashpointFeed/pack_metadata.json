@@ -14,19 +14,8 @@
         "Relationship",
         "TIM"
     ],
-    "useCases": [
-        "Threat Intelligence Management"
-    ],
-    "keywords": [
-        "Flashpoint",
-        "Indicators",
-        "IoC",
-        "Feed"
-    ],
+    "useCases": ["Threat Intelligence Management"],
+    "keywords": ["Flashpoint", "Indicators", "IoC", "Feed"],
     "githubUser": [],
-    "certification": "certified",
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
-    ]
+    "certification": "certified"
 }

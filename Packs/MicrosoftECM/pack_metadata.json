@@ -17,9 +17,5 @@
         "ms ecm",
         "sccm",
         "ms sccm"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
     ]
 }

@@ -16,9 +16,5 @@
     "useCases": [
         "Case Management"
     ],
-    "keywords": [],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
-    ]
+    "keywords": []
 }

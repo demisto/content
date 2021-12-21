@@ -44,9 +44,5 @@
             "mandatory": false,
             "display_name": "Microsoft Graph User"
         }
-    },
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
-    ]
+    }
 }

@@ -13,9 +13,5 @@
     "useCases": [
         "Identity and Access Management"
     ],
-    "keywords": [],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
-    ]
+    "keywords": []
 }

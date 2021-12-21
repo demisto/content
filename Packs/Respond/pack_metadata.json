@@ -13,11 +13,5 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
-    "githubUser": [
-        "dannomayernotabot"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
-    ]
+    "githubUser": ["dannomayernotabot"]
 }

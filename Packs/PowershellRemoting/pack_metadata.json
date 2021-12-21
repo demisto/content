@@ -21,9 +21,5 @@
         "psremoteing"
     ],
     "dependencies": {},
-    "displayedImages": [],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
-    ]
+    "displayedImages": []
 }

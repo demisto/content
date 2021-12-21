@@ -41,9 +41,5 @@
         "CommonScripts",
         "CommonPlaybooks",
         "CommonTypes"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
     ]
 }

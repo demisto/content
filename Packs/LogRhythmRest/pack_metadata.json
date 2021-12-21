@@ -15,9 +15,5 @@
     "keywords": [],
     "itemPrefix": [
         "LogRhythm"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
     ]
 }

@@ -360,9 +360,5 @@
         "Spamcop",
         "Pulsedive",
         "PAN-OS"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
     ]
 }

@@ -39,9 +39,5 @@
     ],
     "itemPrefix": [
         "Cyren"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
     ]
 }

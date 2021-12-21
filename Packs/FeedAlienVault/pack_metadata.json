@@ -15,9 +15,5 @@
     "keywords": [
         "AlienVault",
         "Feed"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
     ]
 }

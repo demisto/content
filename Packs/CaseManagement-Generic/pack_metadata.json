@@ -17,9 +17,5 @@
         "siem",
         "SIEM"
     ],
-    "beta": true,
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
-    ]
+    "beta": true
 }

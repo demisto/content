@@ -35,9 +35,5 @@
             "mandatory": true,
             "display_name": "Syslog Sender"
         }
-    },
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
-    ]
+    }
 }

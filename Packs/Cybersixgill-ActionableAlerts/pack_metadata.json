@@ -59,9 +59,5 @@
     "itemPrefix": [
         "Cybersixgill",
         ""
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
     ]
 }

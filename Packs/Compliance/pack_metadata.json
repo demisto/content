@@ -24,9 +24,5 @@
         "Notification",
         "Breach notification",
         "Data breach"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
     ]
 }

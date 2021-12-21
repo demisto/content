@@ -23,9 +23,5 @@
         "message",
         "policy"
     ],
-    "githubUser": "",
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
-    ]
+    "githubUser": ""
 }

@@ -17,9 +17,5 @@
     "keywords": [
         "FeodoTracker",
         "Feed"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
     ]
 }

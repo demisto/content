@@ -11,15 +11,9 @@
         "Forensics & Malware Analysis",
         "Threat Intelligence Management"
     ],
-    "tags": [
-        "Relationship"
-    ],
+    "tags": ["Relationship"],
     "useCases": [],
     "keywords": [
         "ThreatGrid"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
     ]
 }

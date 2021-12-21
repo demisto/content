@@ -17,9 +17,5 @@
         "Feed",
         "Intel",
         "STIX"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
     ]
 }

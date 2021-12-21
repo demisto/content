@@ -16,9 +16,5 @@
         "tools",
         "developer"
     ],
-    "dependencies": {},
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
-    ]
+    "dependencies": {}
 }

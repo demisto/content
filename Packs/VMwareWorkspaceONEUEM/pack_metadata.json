@@ -21,9 +21,5 @@
         "AirWatch",
         "Workspace One",
         "UEM"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
     ]
 }

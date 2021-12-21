@@ -16,9 +16,5 @@
     "dependencies": {},
     "githubUser": [
         "matslofva"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
     ]
 }

@@ -39,9 +39,5 @@
         "PcapAnalysis",
         "CommonTypes",
         "CommonScripts"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
     ]
 }

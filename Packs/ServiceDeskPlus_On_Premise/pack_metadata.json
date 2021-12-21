@@ -24,9 +24,5 @@
         "ServiceDesk",
         "ServiceDeskPlus",
         "ManageEngine"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
     ]
 }

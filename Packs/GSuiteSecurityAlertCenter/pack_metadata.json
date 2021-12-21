@@ -26,9 +26,5 @@
         "GSuite",
         "Workspace"
     ],
-    "githubUser": [],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
-    ]
+    "githubUser": []
 }

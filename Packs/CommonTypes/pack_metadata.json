@@ -44,9 +44,5 @@
         "CommonScripts",
         "Malware",
         "CVESearch"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
     ]
 }

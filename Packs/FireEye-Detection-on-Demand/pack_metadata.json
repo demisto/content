@@ -29,9 +29,5 @@
         "hash",
         "file",
         "url"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
     ]
 }

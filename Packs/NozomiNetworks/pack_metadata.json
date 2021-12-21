@@ -19,9 +19,5 @@
     "useCases": [],
     "keywords": [],
     "dependencies": {},
-    "certification": "certified",
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
-    ]
+    "certification": "certified"
 }

@@ -21,9 +21,5 @@
     "keywords": [
         "X509",
         "Certificate"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
     ]
 }

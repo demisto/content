@@ -28,9 +28,5 @@
     },
     "displayedImages": [
         "PowershellRemoting"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
     ]
 }

@@ -15,9 +15,5 @@
     "keywords": [
         "winrm",
         "powershell"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
     ]
 }

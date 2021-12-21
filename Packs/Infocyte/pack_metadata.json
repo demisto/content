@@ -16,9 +16,5 @@
     "githubUser": [
         "singlethreaded"
     ],
-    "certification": "certified",
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
-    ]
+    "certification": "certified"
 }

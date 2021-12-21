@@ -16,9 +16,5 @@
     "useCases": [],
     "keywords": [],
     "dependencies": {},
-    "displayedImages": [],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
-    ]
+    "displayedImages": []
 }

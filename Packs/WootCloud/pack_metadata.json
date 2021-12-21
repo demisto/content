@@ -17,9 +17,5 @@
         "mayalaso",
         "lm-t"
     ],
-    "certification": "certified",
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
-    ]
+    "certification": "certified"
 }

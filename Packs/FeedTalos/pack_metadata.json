@@ -15,9 +15,5 @@
     "keywords": [
         "Talos",
         "Feed"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
     ]
 }

@@ -17,9 +17,5 @@
     "keywords": [
         "Asset Management",
         "Network Security"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
     ]
 }

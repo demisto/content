@@ -15,9 +15,5 @@
     "keywords": [
         "BruteForceBlocker",
         "Feed"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
     ]
 }

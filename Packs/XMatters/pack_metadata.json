@@ -34,12 +34,6 @@
         "on-call",
         "schedule"
     ],
-    "githubUser": [
-        "xmtinkerer"
-    ],
-    "certification": "certified",
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
-    ]
+    "githubUser": [ "xmtinkerer" ],
+    "certification": "certified"
 }

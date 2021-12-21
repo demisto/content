@@ -10,20 +10,12 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [
-        "Threat Intelligence"
-    ],
-    "useCases": [
-        "Threat Intelligence Management"
-    ],
+    "tags": ["Threat Intelligence"],
+    "useCases": ["Threat Intelligence Management"],
     "keywords": [
         "ip",
         "enrichment",
         "reputation"
     ],
-    "githubUser": [],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
-    ]
+    "githubUser": []
 }

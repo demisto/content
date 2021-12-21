@@ -26,9 +26,5 @@
             "mandatory": false,
             "display_name": "ArcSight ESM"
         }
-    },
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
-    ]
+    }
 }

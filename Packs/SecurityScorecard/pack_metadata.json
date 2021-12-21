@@ -13,16 +13,6 @@
         "Alerts",
         "Security Analytics"
     ],
-    "useCases": [
-        "Vulnerability Management"
-    ],
-    "keywords": [
-        "securityscorecard",
-        "scorecard",
-        "domain"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
-    ]
+    "useCases": ["Vulnerability Management"],
+    "keywords": ["securityscorecard", "scorecard", "domain"]
 }

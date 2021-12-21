@@ -16,9 +16,5 @@
     "dependencies": {},
     "itemPrefix": [
         "STIX"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
     ]
 }

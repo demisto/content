@@ -16,9 +16,5 @@
     "githubUser": [
         "thomasp11"
     ],
-    "certification": "certified",
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
-    ]
+    "certification": "certified"
 }

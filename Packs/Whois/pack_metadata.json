@@ -28,9 +28,5 @@
             "mandatory": false,
             "display_name": "JsonWhoIs"
         }
-    },
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
-    ]
+    }
 }

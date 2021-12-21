@@ -23,9 +23,5 @@
             "display_name": "MITRE ATT&CK"
         }
     },
-    "displayedImages": [],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
-    ]
+    "displayedImages": []
 }

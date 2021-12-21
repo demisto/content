@@ -12,12 +12,8 @@
     "tags": [],
     "useCases": [],
     "keywords": [
-        "AlphaVantage",
-        "stocks"
+        "AlphaVantage", "stocks"
     ],
-    "githubUser": [],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
-    ]
+    "githubUser": []
 }
+

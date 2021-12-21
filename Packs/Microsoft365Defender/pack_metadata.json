@@ -17,9 +17,5 @@
             "mandatory": false,
             "display_name": "EWS"
         }
-    },
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
-    ]
+    }
 }

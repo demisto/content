@@ -17,9 +17,5 @@
     "keywords": [
         "Elasticsearch",
         "OpenSearch"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
     ]
 }

@@ -16,9 +16,5 @@
         "cbrake1"
     ],
     "useCases": [],
-    "keywords": [],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
-    ]
+    "keywords": []
 }

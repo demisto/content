@@ -15,9 +15,5 @@
     "keywords": [
         "Intune",
         "Feed"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
     ]
 }

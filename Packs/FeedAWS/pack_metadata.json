@@ -17,9 +17,5 @@
     "keywords": [
         "AWS",
         "Feed"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
     ]
 }

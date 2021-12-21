@@ -20,9 +20,5 @@
         "zero day",
         "Microsoft",
         "Microsoft Office"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
     ]
 }

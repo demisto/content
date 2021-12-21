@@ -14,9 +14,5 @@
     "useCases": [
         "Phishing"
     ],
-    "keywords": [],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
-    ]
+    "keywords": []
 }

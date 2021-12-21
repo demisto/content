@@ -14,9 +14,5 @@
     "useCases": [],
     "keywords": [
         "Zabbix"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
     ]
 }

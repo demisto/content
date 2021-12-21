@@ -15,9 +15,5 @@
     "keywords": [
         "Fastly",
         "Feed"
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
     ]
 }
