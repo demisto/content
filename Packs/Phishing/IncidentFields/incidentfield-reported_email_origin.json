@@ -3,6 +3,7 @@
     "version": -1,
     "modified": "2021-11-23T08:05:34.371483687Z",
     "name": "Reported Email Origin",
+    "placeholder": "",
     "ownerOnly": false,
     "description": "The origin of the reported (phishing) email. \"Attached\" - The email was attached originally, \"Retrieved\" - The email was retrieved during the playbook run\", \"None\" - The email wasn't attached or retrieved.",
     "cliName": "reportedemailorigin",
