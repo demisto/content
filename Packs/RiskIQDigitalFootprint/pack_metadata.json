@@ -48,5 +48,9 @@
         "GetServerURL",
         "NIST",
         "CommonTypes"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }
