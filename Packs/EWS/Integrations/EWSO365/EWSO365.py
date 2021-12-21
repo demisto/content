@@ -154,9 +154,6 @@ class EWSClient:
     def __init__(
             self,
             default_target_mailbox,
-            client_id,
-            client_secret,
-            tenant_id,
             folder="Inbox",
             is_public_folder=False,
             request_timeout="120",
@@ -177,12 +174,22 @@ class EWSClient:
         :param max_fetch: Max incidents per fetch
         :param insecure: Trust any certificate (not secure)
         """
+        curr_tenant_id = kwargs.get('tenant_id') or kwargs.get("_tenant_id")
+        curr_client_id = kwargs.get("client_id") or kwargs.get("_client_id")
+        curr_client_secret = kwargs.get("client_secret") or (kwargs.get("credentials") or {}).get("password")
+
+        if not curr_client_secret:
+            raise Exception('Key / Application Secret must be provided.')
+        elif not curr_client_id:
+            raise Exception('ID / Application ID ID must be provided.')
+        elif not curr_tenant_id:
+            raise Exception('Token / Tenant ID must be provided.')
         BaseProtocol.TIMEOUT = int(request_timeout)
         self.ews_server = "https://outlook.office365.com/EWS/Exchange.asmx/"
         self.ms_client = MicrosoftClient(
-            tenant_id=tenant_id,
-            auth_id=client_id,
-            enc_key=client_secret,
+            tenant_id=curr_tenant_id,
+            auth_id=curr_client_id,
+            enc_key=curr_client_secret,
             app_name=APP_NAME,
             base_url=self.ews_server,
             verify=not insecure,
@@ -195,8 +202,8 @@ class EWSClient:
         self.access_type = (kwargs.get('access_type', IMPERSONATION) or IMPERSONATION).lower()
         self.max_fetch = min(MAX_INCIDENTS_PER_FETCH, int(max_fetch))
         self.last_run_ids_queue_size = 500
-        self.client_id = client_id
-        self.client_secret = client_secret
+        self.client_id = curr_client_id
+        self.client_secret = curr_client_secret
         self.account_email = default_target_mailbox
         self.config = self.__prepare(insecure)
         self.protocol = BaseProtocol(self.config)
@@ -2298,22 +2305,7 @@ def sub_main():
     params['default_target_mailbox'] = args.get('target_mailbox',
                                                 args.get('source_mailbox', params['default_target_mailbox']))
 
-    tenant_id = params.get('tenant_id') or params.get("_tenant_id")
-    client_id = params.get("client_id") or params.get("_client_id")
-    client_secret = params.get("client_secret") or (params.get("credentials") or {}).get("password")
-
-    if not client_secret:
-        raise Exception('Key / Application Secret must be provided.')
-    elif not client_id:
-        raise Exception('ID / Application ID ID must be provided.')
-    elif not tenant_id:
-        raise Exception('Token / Tenant ID must be provided.')
-
-    del params["tenant_id"]
-    del params["client_id"]
-    del params["client_secret"]
-
-    client = EWSClient(tenant_id=tenant_id, client_id=client_id, client_secret=client_secret, **params)
+    client = EWSClient(**params)
     start_logging()
     try:
         command = demisto.command()

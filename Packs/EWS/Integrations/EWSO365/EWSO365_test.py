@@ -508,8 +508,9 @@ def test_parse_incident_from_item_with_attachments():
 
 
 @pytest.mark.parametrize('params, expected_result', [
-    ({'_tenant_id': '_tenant_id', '_client_id': '_client_id', 'default_target_mailbox': 'default_target_mailbox'}, 'Key / Application Secret must be provided.'),
-    ({'_tenant_id': '_tenant_id', 'credentials': {'password': '1234'},
+    ({'tenant_id': 'tenant_id', 'client_id': 'client_id', '_tenant_id': '_tenant_id', '_client_id': '_client_id',
+      'default_target_mailbox': 'default_target_mailbox'}, 'Key / Application Secret must be provided.'),
+    ({'tenant_id': 'tenant_id', '_tenant_id': '_tenant_id', 'credentials': {'password': '1234'},
       'default_target_mailbox': 'default_target_mailbox'}, 'ID / Application ID ID must be provided.'),
     ({'credentials': {'password': '1234'}, '_client_id': '_auth_id',
       'default_target_mailbox': 'default_target_mailbox'}, 'Token / Tenant ID must be provided.')
