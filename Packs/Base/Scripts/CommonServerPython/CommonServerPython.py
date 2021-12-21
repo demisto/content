@@ -95,11 +95,8 @@ def fix_traceback_line_numbers(trace_str):
         module = _find_relevant_module(line_num)
         if module:
             actual_number = line_num - _MODULES_LINE_MAPPING.get(module, {'pre':0})['pre']
-            actual_number_str = '{}<{}>'.format(actual_number, module)
-        else:
-            actual_number_str = '{}'.format(line_num)
-
-        trace_str = trace_str.replace(number, actual_number_str)
+            # a traceback line is of the form: File "<string>", line 8853, in func5
+            trace_str = trace_str.replace('File "<string> line {},'.format(number), 'File "<{}> line {},'.format(module, actual_number))
 
     return trace_str
 
@@ -8606,3 +8603,8 @@ def register_signal_handler_profiling_dump(signal_type=None, profiling_dump_rows
         signal.signal(requested_signal, signal_handler_profiling_dump)
     else:
         demisto.info('Not a Linux or Mac OS, profiling using a signal is not supported.')
+
+###########################################
+#     DO NOT ADD LINES AFTER THIS ONE     #
+###########################################
+register_module_line('CommonServerPython', 'post', __line__())
