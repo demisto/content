@@ -4,5 +4,5 @@ ignore=RM104
 [file:Anomali_ThreatStream_v2.yml]
 ignore=BA108,BA109,IN145
 
-[file:integration-AnomaliThreatStream.yml]
+[file:AnomaliThreatStream.yml]
 ignore=IN144,IN145
