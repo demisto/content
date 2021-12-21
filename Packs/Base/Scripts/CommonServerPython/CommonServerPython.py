@@ -23,9 +23,61 @@ from datetime import datetime, timedelta
 from abc import abstractmethod
 from distutils.version import LooseVersion
 from threading import Lock
+from inspect import currentframe
 
 import demistomock as demisto
 import warnings
+
+def __line__():
+    cf = currentframe()
+    return cf.f_back.f_lineno
+
+_MODULES_LINE_MAPPING = {
+    'CommonServerPython': {'pre': __line__() - 36, 'post': 0},
+}
+
+def register_module_line(module_name, pre_post, line):
+    global _MODULES_LINE_MAPPING
+    try:
+        if pre_post not in ('pre', 'post'):
+            raise ValueError('Invalid pre_post argument. Acceptable values are: pre, post.')
+        if not isinstance(line, int):
+            raise ValueError('Invalid line argument. Expected int got {}'.format(type(line)))
+
+        _MODULES_LINE_MAPPING.setdefault(module_name, {'pre': 0, 'post': 0}).update({pre_post: line})
+    except Exception as exc:
+
+        demisto.debug('failed to register module line. '
+            'module: "{}" pre_post: "{}" line: "{}".\nError: {}'.format(module_name, pre_post, line, exc))
+
+
+def find_relevant_module(line):
+    global _MODULES_LINE_MAPPING
+
+    relevant_module = ''
+    for module, info in _MODULES_LINE_MAPPING.items():
+        if info['pre'] <= line <= info['post']:
+            if not relevant_module:
+                relevant_module = module
+            elif info['pre'] > _MODULES_LINE_MAPPING[relevant_module]['pre']:
+                relevant_module = module
+
+    return relevant_module
+
+
+def fix_traceback_line_numbers(trace_str):
+    for number in re.findall('line (\d+)', trace_str):
+        line_num = int(number)
+        module = find_relevant_module(line_num)
+        if module:
+            actual_number = line_num - _MODULES_LINE_MAPPING.get(module, {'pre':0})['pre']
+            actual_number_str = '{}<{}>'.format(actual_number, module)
+        else:
+            actual_number_str = '{}'.format(line_num)
+
+        trace_str = trace_str.replace(number, actual_number_str)
+
+    return trace_str
 
 OS_LINUX = False
 OS_MAC = False
@@ -6178,7 +6230,7 @@ def return_error(message, error='', outputs=None):
                                                              'long-running-execution',
                                                              'fetch-indicators')
     if is_debug_mode() and not is_server_handled and any(sys.exc_info()):  # Checking that an exception occurred
-        message = "{}\n\n{}".format(message, traceback.format_exc())
+        message = "{}\n\n{}".format(message, fix_traceback_line_numbers(traceback.format_exc()))
 
     message = LOG(message)
     if error:
