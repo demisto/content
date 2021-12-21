@@ -1,0 +1,890 @@
+id: PICUS - Attack Validation Automation
+version: -1
+name: PICUS - Attack Validation Automation
+description: Picus Attack Validation Automation
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 65247078-5623-4948-8f51-94ae2aff6e49
+    type: start
+    task:
+      id: 65247078-5623-4948-8f51-94ae2aff6e49
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 65
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: ce40185d-ad2d-46e5-8d54-363004aef37a
+    type: regular
+    task:
+      id: ce40185d-ad2d-46e5-8d54-363004aef37a
+      version: -1
+      name: Get Vector List
+      description: Get Vector List
+      script: '|||picus-get-vector-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 1c23029c-c98e-435e-8a5e-c3e3a1a430db
+    type: regular
+    task:
+      id: 1c23029c-c98e-435e-8a5e-c3e3a1a430db
+      version: -1
+      name: Set Parameter
+      description: Set Parameter for running playbook
+      script: '|||picus-set-paramPB'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 35fd0482-f416-45fe-889f-7402a63b1764
+    type: regular
+    task:
+      id: 35fd0482-f416-45fe-889f-7402a63b1764
+      version: -1
+      name: Get Secure Attacks
+      description: Get secure attack results
+      script: '|||picus-get-attack-results'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      attacker_peer:
+        simple: ${Picus.param.attacker_peer}
+      days:
+        simple: ${Picus.param.days}
+      result:
+        simple: secure
+      victim_peer:
+        simple: ${Picus.param.victim_peer}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -330,
+          "y": 1620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: ed6d3b73-e847-4815-893b-520cb0a228e3
+    type: regular
+    task:
+      id: ed6d3b73-e847-4815-893b-520cb0a228e3
+      version: -1
+      name: Run Attacks
+      description: Run attacks on Picus based on previous task results
+      script: '|||picus-run-attacks'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      attacker_peer:
+        simple: ${Picus.param.attacker_peer}
+      threat_ids:
+        simple: ${Picus.attackresults.results.threat_ids}
+      variant:
+        simple: ${Picus.param.variant}
+      victim_peer:
+        simple: ${Picus.param.victim_peer}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: fac30ccd-3e8d-44bc-8349-470007a1e6a3
+    type: regular
+    task:
+      id: fac30ccd-3e8d-44bc-8349-470007a1e6a3
+      version: -1
+      name: Get Threat Results
+      description: Get threat results of played attacks
+      script: '|||picus-get-threat-results'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      attacker_peer:
+        simple: ${Picus.param.attacker_peer}
+      threat_ids:
+        simple: ${Picus.runattacks}
+      variant:
+        simple: ${Picus.param.variant}
+      victim_peer:
+        simple: ${Picus.param.victim_peer}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: a1afc992-9e65-49dc-8219-57ae2025c0b1
+    type: regular
+    task:
+      id: a1afc992-9e65-49dc-8219-57ae2025c0b1
+      version: -1
+      name: Filter Insecure Attacks
+      description: Filter insecure attacks
+      script: '|||picus-filter-insecure-attacks'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      threatinfo:
+        simple: ${Picus.threatresults.results.threat_results}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 4f712abf-b411-49c2-82f3-05c5f74d8f80
+    type: regular
+    task:
+      id: 4f712abf-b411-49c2-82f3-05c5f74d8f80
+      version: -1
+      name: Get Mitigations
+      description: Get mitigation list for insecure results
+      script: '|||picus-get-mitigation-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      product:
+        simple: ${Picus.param.mitigation_product}
+      threat_ids:
+        simple: ${Picus.filterinsecure}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 0c3da2c5-a7a6-4f99-8db0-3ad11ed9865b
+    type: title
+    task:
+      id: 0c3da2c5-a7a6-4f99-8db0-3ad11ed9865b
+      version: -1
+      name: Preparation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 6d7a7519-61fc-4ca6-8ad7-cde60699e710
+    type: regular
+    task:
+      id: 6d7a7519-61fc-4ca6-8ad7-cde60699e710
+      version: -1
+      name: Get Peer List
+      description: Get Peer List
+      script: '|||picus-get-peer-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -330,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 74523434-73ce-4588-86a9-59b57615a2ce
+    type: title
+    task:
+      id: 74523434-73ce-4588-86a9-59b57615a2ce
+      version: -1
+      name: Preparation Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 3203bfda-d4b4-401c-84c0-00d379ea6cfe
+    type: regular
+    task:
+      id: 3203bfda-d4b4-401c-84c0-00d379ea6cfe
+      version: -1
+      name: Paremeter Config
+      description: Parameter Config
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 3bdeffcf-bad2-49d4-8ccd-8b03a020fc0b
+    type: title
+    task:
+      id: 3bdeffcf-bad2-49d4-8ccd-8b03a020fc0b
+      version: -1
+      name: Attack Detail
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: e686bd24-43d2-4367-8b00-39f646546847
+    type: condition
+    task:
+      id: e686bd24-43d2-4367-8b00-39f646546847
+      version: -1
+      name: Get Secure or Insecure Attacks ?
+      description: Decide attack result type for fetching result
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Insecure:
+      - "14"
+      Secure:
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: dd6ecd6e-2fe2-4de0-86c0-a98328d46d9f
+    type: regular
+    task:
+      id: dd6ecd6e-2fe2-4de0-86c0-a98328d46d9f
+      version: -1
+      name: Get Insecure Attacks
+      description: Get insecure attack results
+      script: '|||picus-get-attack-results'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      attacker_peer:
+        simple: ${Picus.param.attacker_peer}
+      days:
+        simple: ${Picus.param.days}
+      result:
+        simple: insecure
+      victim_peer:
+        simple: ${Picus.param.victim_peer}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 1620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: ead7a0cd-7d20-44de-8d41-a6911ddf630f
+    type: title
+    task:
+      id: ead7a0cd-7d20-44de-8d41-a6911ddf630f
+      version: -1
+      name: Attack Detail Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 79781d4f-2394-42a7-8efe-c1ae65699d8a
+    type: title
+    task:
+      id: 79781d4f-2394-42a7-8efe-c1ae65699d8a
+      version: -1
+      name: Run Attack
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 7af2cc4f-b4d9-4a23-89fa-96f840065a06
+    type: regular
+    task:
+      id: 7af2cc4f-b4d9-4a23-89fa-96f840065a06
+      version: -1
+      name: Wait 15 Minutes
+      description: wait for the assessment to finish
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 3004de2f-741a-4ed7-8ec1-fb3f75d5d4b4
+    type: title
+    task:
+      id: 3004de2f-741a-4ed7-8ec1-fb3f75d5d4b4
+      version: -1
+      name: Run Attack Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 9a4ee827-fa57-42c2-8c93-af38c1cd27b9
+    type: title
+    task:
+      id: 9a4ee827-fa57-42c2-8c93-af38c1cd27b9
+      version: -1
+      name: Threat Detail
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: a0660843-6906-44ea-81ba-ff35983f9cac
+    type: title
+    task:
+      id: a0660843-6906-44ea-81ba-ff35983f9cac
+      version: -1
+      name: Threat Detail Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 4e55a771-c5ee-433c-8b32-357bbad20845
+    type: title
+    task:
+      id: 4e55a771-c5ee-433c-8b32-357bbad20845
+      version: -1
+      name: Mitigation Results
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: a6c24731-110e-4c53-87c5-9c92bfbbd9b9
+    type: title
+    task:
+      id: a6c24731-110e-4c53-87c5-9c92bfbbd9b9
+      version: -1
+      name: Mitigation Results Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "25"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3955
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: a5fdc68b-d660-413b-8f76-bdb1f147789f
+    type: title
+    task:
+      id: a5fdc68b-d660-413b-8f76-bdb1f147789f
+      version: -1
+      name: Response Action
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "26"
+      - "27"
+      - "28"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: b1256471-6084-474c-8c13-6afcaf8a8291
+    type: regular
+    task:
+      id: b1256471-6084-474c-8c13-6afcaf8a8291
+      version: -1
+      name: Create an Incident on SIEM
+      description: Create incident for investigation on SIEM.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -540,
+          "y": 4350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 53bb1202-9692-4437-8b78-7c8b9eb650aa
+    type: regular
+    task:
+      id: 53bb1202-9692-4437-8b78-7c8b9eb650aa
+      version: -1
+      name: Create a Task for Security Team to Review and Enable Signatures
+      description: Create a Task for Security Team to Review and Enable Signatures.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: cc229e98-4cba-4d51-8845-840dce26cdb4
+    type: regular
+    task:
+      id: cc229e98-4cba-4d51-8845-840dce26cdb4
+      version: -1
+      name: Run Playbook Again After Actions
+      description: After all necessary actions are completed, the playbook can be
+        run again for validation.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 580,
+          "y": 4350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: f1cb51e3-d218-4f2e-82aa-822d6800096d
+    type: title
+    task:
+      id: f1cb51e3-d218-4f2e-82aa-822d6800096d
+      version: -1
+      name: Response Action Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: ffff2500-7906-4690-8609-e87b8429faf7
+    type: title
+    task:
+      id: ffff2500-7906-4690-8609-e87b8429faf7
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 4840,
+        "width": 1500,
+        "x": -540,
+        "y": 65
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.0.0
+tests:
+- No tests
