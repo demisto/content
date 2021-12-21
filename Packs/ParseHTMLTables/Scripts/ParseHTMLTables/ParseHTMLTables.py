@@ -1,6 +1,5 @@
 import copy
-from typing import Any, Dict, Generator, List, Optional, Tuple
-
+from typing import Any, Dict, Generator, List, Optional, Tuple, Union
 from bs4 import BeautifulSoup, NavigableString, Tag
 
 import demistomock as demisto  # noqa: F401
@@ -15,18 +14,77 @@ class Table:
         self.__title = title
         self.__headers: List[str] = []
         self.__rows: List[Tuple[List[str], List[str]]] = []
+        self.__rowspan_labels: List[Tuple[int, str]] = []
+
+    def __set_rowspan_labels(self, columns: Optional[List[Tag]]):
+        if not columns or not any(col.attrs.get('rowspan') for col in columns):
+            return
+
+        rowspan_labels: List[Tuple[int, str]] = []
+        for col in columns:
+            try:
+                rowspan = int(col.attrs.get('rowspan') or 1)
+            except Exception:
+                rowspan = 1
+            rowspan = max(1, rowspan)
+
+            try:
+                colspan = int(col.attrs.get('colspan') or 1)
+            except Exception:
+                colspan = 1
+            colspan = max(1, colspan)
+
+            rowspan_labels += [(rowspan, col.text.strip())] * colspan
+
+        self.__rowspan_labels = rowspan_labels
 
     def get_title(self) -> str:
         return self.__title
 
-    def set_header_labels(self, headers: List[str]):
-        self.__headers = headers
+    def set_header_labels(self, headers: List[Tag]):
+        self.__headers = [header.text.strip() for header in headers]
 
     def get_header_labels(self) -> List[str]:
         return self.__headers
 
-    def add_row(self, columns: List[str], labels: Optional[List[str]] = None):
-        self.__rows.append((labels or [], columns))
+    def add_row(self, columns: List[Tag], labels: Optional[List[Tag]] = None):
+        rowspan_labels = self.__rowspan_labels
+
+        # Normalize labels
+        if labels and any(label.attrs.get('rowspan') for label in labels):
+            self.__set_rowspan_labels(labels)
+
+        normalized_labels = []
+        if labels:
+            for i, (count, label) in enumerate(rowspan_labels):
+                if count >= 2:
+                    normalized_labels.append(label)
+
+            for label in labels:
+                try:
+                    colspan = int(label.attrs.get('colspan') or 1)
+                except Exception:
+                    colspan = 1
+                normalized_labels += [label.text.strip()] * max(1, colspan)
+
+        # Normalize columns
+        if any(col.attrs.get('rowspan') for col in columns):
+            self.__set_rowspan_labels(columns)
+
+        normalized_columns = []
+        for i, (count, label) in enumerate(rowspan_labels):
+            if count >= 2:
+                normalized_columns.append(label)
+                rowspan_labels[i] = count - 1, label
+
+        for col in columns:
+            try:
+                colspan = int(col.attrs.get('colspan') or 1)
+            except Exception:
+                colspan = 1
+            normalized_columns += [col.text.strip()] * max(1, colspan)
+
+        self.__rows.append((normalized_labels, normalized_columns))
 
     def get_rows(self) -> List[Tuple[List[str], List[str]]]:
         return self.__rows
@@ -119,7 +177,7 @@ def find_table_title(base: Optional[Union[BeautifulSoup, Tag, NavigableString]],
     return title
 
 
-def list_text(node: Union[BeautifulSoup, Tag, NavigableString], name: str) -> List[str]:
+def list_columns(node: Union[BeautifulSoup, Tag, NavigableString], name: str) -> List[Tag]:
     vals = []
     ancestor = node
     name_list = ['table', 'td', 'th', name]
@@ -130,7 +188,7 @@ def list_text(node: Union[BeautifulSoup, Tag, NavigableString], name: str) -> Li
                 tnode = copy.copy(node)
                 for t in tnode.find_all('table'):
                     t.decompose()
-                vals.append(tnode.text)
+                vals.append(tnode)
             node = node.find_next_sibling(True)
         else:
             node = node.find_next(name_list)
@@ -150,8 +208,8 @@ def parse_table(base: Optional[Union[BeautifulSoup, Tag, NavigableString]],
     node = table_node.find(['table', 'tr'])
     while node and is_descendant(table_node, node):
         if node.name == 'tr':
-            ths = [col.strip() for col in list_text(node, 'th')]
-            tds = [col.strip() for col in list_text(node, 'td')]
+            ths = list_columns(node, 'th')
+            tds = list_columns(node, 'td')
             if tds:
                 table.add_row(columns=tds, labels=ths)
             if ths and not table.get_header_labels():

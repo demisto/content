@@ -354,8 +354,144 @@ def test_main(mocker):
                     ]
                 }
             ]
+        },
+        {
+            "value": """
+                <html>
+                    <h1>table1</h1>
+                    <table>
+                        <tr>
+                            <td colspan="2" rowspan="3">item-x</td>
+                            <td>item1-3</td>
+                        </tr>
+                        <tr>
+                            <td>item2-3</td>
+                        </tr>
+                        <tr>
+                            <td>item3-3</td>
+                        </tr>
+                        <tr>
+                            <td>item4-1</td>
+                            <td>item4-2</td>
+                            <td>item4-3</td>
+                        </tr>
+                    </table>
+                </html>
+                    """,
+            "results": [
+                {
+                    'table1': [
+                        {
+                            'cell0': 'item-x',
+                            'cell1': 'item-x',
+                            'cell2': 'item1-3'
+                        },
+                        {
+                            'cell0': 'item-x',
+                            'cell1': 'item-x',
+                            'cell2': 'item2-3'
+                        },
+                        {
+                            'cell0': 'item-x',
+                            'cell1': 'item-x',
+                            'cell2': 'item3-3'
+                        },
+                        {
+                            'cell0': 'item4-1',
+                            'cell1': 'item4-2',
+                            'cell2': 'item4-3'
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "value": """
+                <html>
+                    <h1>table1</h1>
+                    <table>
+                        <tr>
+                            <td rowspan="3">item-x</td>
+                            <td>item1-1</td>
+                            <td>item1-2</td>
+                        </tr>
+                        <tr>
+                            <td>item2-1</td>
+                            <td>item2-2</td>
+                        </tr>
+                        <tr>
+                            <td>item3-1</td>
+                            <td>item3-2</td>
+                        </tr>
+                    </table>
+                </html>
+                    """,
+            "results": [
+                {
+                    'table1': [
+                        {
+                            'cell0': 'item-x',
+                            'cell1': 'item1-1',
+                            'cell2': 'item1-2'
+                        },
+                        {
+                            'cell0': 'item-x',
+                            'cell1': 'item2-1',
+                            'cell2': 'item2-2'
+                        },
+                        {
+                            'cell0': 'item-x',
+                            'cell1': 'item3-1',
+                            'cell2': 'item3-2'
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "value": """
+                <html>
+                    <h1>table1</h1>
+                    <table>
+                        <tr>
+                            <td rowspan="3">item-x</td>
+                            <td>item1-1</td>
+                            <td>item1-2</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">item2-1</td>
+                        </tr>
+                        <tr>
+                            <td>item3-1</td>
+                            <td>item3-2</td>
+                        </tr>
+                    </table>
+                </html>
+                    """,
+            "results": [
+                {
+                    'table1': [
+                        {
+                            'cell0': 'item-x',
+                            'cell1': 'item1-1',
+                            'cell2': 'item1-2'
+                        },
+                        {
+                            'cell0': 'item-x',
+                            'cell1': 'item2-1',
+                            'cell2': 'item2-1'
+                        },
+                        {
+                            'cell0': 'item-x',
+                            'cell1': 'item3-1',
+                            'cell2': 'item3-2'
+                        }
+                    ]
+                }
+            ]
         }
     ]
+
     for t in test_data:
         mocker.patch.object(demisto, 'args', return_value={
             'value': t['value']
