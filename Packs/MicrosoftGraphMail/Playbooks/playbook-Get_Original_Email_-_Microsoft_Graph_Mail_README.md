@@ -36,4 +36,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![Get Original Email - Microsoft Graph Mail](Insert the link to your image here)
+![Get Original Email - Microsoft Graph Mail](../doc_files/Get_Original_Email_-_Microsoft_Graph_Mail.png)
