@@ -23,7 +23,7 @@ args:
   predefined:
   - "true"
   - "false"
-  description: Set to true to remove empty properties from objects, false otherwise.
+  description: Set to true to remove keys with empty values from objects, false otherwise.
   defaultValue: "false"
 - name: empty_values
   description: The list of particular tokens to be considerd as empty

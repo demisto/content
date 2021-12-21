@@ -14,7 +14,7 @@ Remove empty items, entries or nodes from the array.
 | **Argument Name** | **Description** |
 | --- | --- |
 | value | The value to be filtered |
-| remove_keys | Set to true to remove empty properties from objects, false otherwise. |
+| remove_keys | Set to true to remove keys with empty values from objects, false otherwise. |
 | empty_values | The list of particular tokens to be considerd as empty. |
 
 ## Outputs
