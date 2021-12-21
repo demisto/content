@@ -4332,7 +4332,10 @@
                 "Rasterize",
                 "VirusTotal (API v3)"
             ],
-            "instance_names": "ews_mail_sender_srtest02"
+            "instance_names": [
+                "ews_mail_sender_srtest02",
+                "ewsv2_testbox"
+            ]
         },
         {
             "playbookID": "PCAP Search test",
