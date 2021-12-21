@@ -4330,7 +4330,8 @@
                 "EWS v2",
                 "Demisto REST API",
                 "Rasterize",
-                "VirusTotal (API v3)"
+                "VirusTotal (API v3)",
+                "SecurityAndCompliance"
             ],
             "instance_names": [
                 "ews_mail_sender_srtest02",
