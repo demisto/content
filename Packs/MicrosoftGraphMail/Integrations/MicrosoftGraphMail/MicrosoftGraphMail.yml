@@ -16,7 +16,7 @@ configuration:
   name: _tenant_id
   required: false
   type: 0
-- displaypassword: Key or Client Secret - see Detailed Instructions (?) (Recommended)
+- displaypassword: Key or Client Secret - see Detailed Instructions (?)
   name: credentials
   required: false
   type: 9
