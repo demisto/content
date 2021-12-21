@@ -83,9 +83,9 @@ def main():
     results: List[Any] = []
     for regex_pattern in regex_list:
         if isinstance(regex_pattern, (str, int)):
-            regex = re.compile(str(regex_pattern))
+            regex = re.compile(str(regex_pattern), flags=regex_flags)
             for text in text_list:
-                for i, match in enumerate(re.finditer(regex, text, flags=regex_flags), start=1):
+                for i, match in enumerate(re.finditer(regex, text), start=1):
                     results = concat_values(results, expand_template(match, template))
                     if search_limit != 0 and search_limit <= i:
                         break

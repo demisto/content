@@ -1,64 +1,55 @@
-args:
-- description: List of regex or text for the pattern match.
-  isArray: true
-  name: value
-- description: A regex pattern to search (in Python).
-  name: regex
-- description: A match target text.
-  name: text
-- description: The template text that will be returned for the output by doing backslash
-    substitution to the patterns matched.
-  name: template
-- auto: PREDEFINED
-  defaultValue: text
-  description: The data type of the template.
-  name: template_type
-  predefined:
-  - text
-  - json
-  - list
-- auto: PREDEFINED
-  defaultValue: text
-  description: Which type of value takes from the value argument, 'text' (match target)
-    or 'regex'.
-  name: value_takes
-  predefined:
-  - text
-  - regex
-- description: The comma separated flags for pattern matching in regex. "dotall" (s),
-    "multiline" (m), "ignorecase" (i) and "unicode" (u) are supported.
-  name: flags
-- defaultValue: "0"
-  description: The maximum limit for scanning patterns. (0 means unlimited)
-  name: search_limit
-comment: |-
-  Extract the strings matched to the patterns by doing backslash substitution on the template string.
-  This transformer allow to specify multiple regex patterns and multiple match targets, and those can be given in the input value and the argument parameters.
 commonfields:
   id: RegexExpand
   version: -1
-contentitemexportablefields:
-  contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 82caa572-b2a9-45cb-8391-1c0198d2f048
-    propagationLabels:
-    - all
-    toServerVersion: ""
-dockerimage: demisto/python3:3.9.8.24399
-enabled: true
-engineinfo: {}
-mainengineinfo: {}
 name: RegexExpand
-pswd: ""
-runas: DBotWeakRole
-runonce: false
 script: ''
-scripttarget: 0
-subtype: python3
+type: python
 tags:
 - transformer
 - string
 - entirelist
-type: python
+comment: |-
+  Extract the strings matched to the patterns by doing backslash substitution on the template string.
+  This transformer allow to input multiple regex patterns and multiple match targets, and those can be given in the input value and the argument parameters.
+enabled: true
+args:
+- name: value
+  description: List of regex or text for the pattern match.
+  isArray: true
+- name: regex
+  description: A regex pattern to search (in Python).
+- name: text
+  description: A match target text.
+- name: template
+  description: The template text that will be returned for the output by doing backslash
+    substitution to the patterns matched.
+- name: template_type
+  auto: PREDEFINED
+  predefined:
+  - text
+  - json
+  - list
+  description: The data type of the template.
+  defaultValue: text
+- name: value_takes
+  auto: PREDEFINED
+  predefined:
+  - text
+  - regex
+  description: Which type of value takes from the value argument, 'text' (match target)
+    or 'regex'.
+  defaultValue: text
+- name: flags
+  description: The comma separated flags for pattern matching in regex. "dotall" (s),
+    "multiline" (m), "ignorecase" (i) and "unicode" (u) are supported.
+- name: search_limit
+  description: The maximum limit for scanning patterns. (0 means unlimited)
+  defaultValue: "0"
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.9.8.24399
+runas: DBotWeakRole
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
