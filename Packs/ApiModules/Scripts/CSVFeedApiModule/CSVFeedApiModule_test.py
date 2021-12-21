@@ -308,7 +308,7 @@ def test_get_indicators_with_relations():
                          {'name': 'resolved-from', 'reverseName': 'resolves-to', 'type': 'IndicatorToIndicator',
                           'entityA': 'test.com', 'entityAFamily': 'Indicator', 'entityAType': 'IP',
                           'entityB': 'Test', 'entityBFamily': 'Indicator', 'entityBType': 'IP',
-                          'fields': {}}]}], False)
+                          'fields': {}}]}], True)
 
     ip_ranges = 'test.com,Domain used by Test c&c,2021-04-22 06:03,https://test.com/manual/test-iplist.txt'
 
@@ -355,7 +355,7 @@ def test_get_indicators_without_relations():
                                         'https://test.com/manual/test-iplist.txt'],
                                  'type': 'IP'},
                       'fields': {'AAA': 'Domain used by Test c&c', 'relationship_entity_b': 'Test',
-                                 'tags': []}, 'relationships': []}], False)
+                                 'tags': []}, 'relationships': []}], True)
 
     ip_ranges = 'test.com,Domain used by Test c&c,2021-04-22 06:03,https://test.com/manual/test-iplist.txt'
 
@@ -406,6 +406,7 @@ def test_build_iterator_not_modified_header(mocker):
     - Ensure that the results are empty and No_update value is True.
     """
     mocker.patch.object(demisto, 'debug')
+    mocker.patch('CommonServerPython.is_demisto_version_ge', return_value=True)
     with requests_mock.Mocker() as m:
         m.get('https://api.github.com/meta', status_code=304)
 
