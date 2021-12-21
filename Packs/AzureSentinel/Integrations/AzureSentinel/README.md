@@ -1342,7 +1342,7 @@ Returns a list of threat indicators.
 
 #### Human Readable Output
 
-### Azure Sentinel - Threat Indicators (2 results)
+### Threat Indicators (2 results)
 |Name|Display Name|Values|Types|Source|Tags|
 |---|---|---|---|---|---|
 | a31f2257-1af5-5eb9-bc82-acb8cc10becd | Name | test.value | malicious-activity | Azure Sentinel | Tag |
@@ -1411,7 +1411,7 @@ Returns a list of threat indicators with specific entities.
 
 #### Human Readable Output
 
-### Azure Sentinel - Threat Indicators (2 results)
+### Threat Indicators (2 results)
 |Name|Display Name|Values|Types|Source|Confidence|Tags|
 |---|---|---|---|---|---|---|
 | a31f2257-1af5-5eb9-bc82-acb8cc10becd | DisplayName | domain.dot | compromised | Azure Sentinel | 50 | newTag |
@@ -1482,7 +1482,7 @@ Creates a new threat indicator.
 
 #### Human Readable Output
 
-### Azure Sentinel - New threat Indicator was created
+### New threat Indicator was created
 |Name|Display Name|Values|Types|Source|Confidence|Tags|
 |---|---|---|---|---|---|---|
 |a31f2257-1af5-5eb9-bc82-acb8cc10becd| name | good.test | benign | Azure Sentinel | 77 | No Tags |
@@ -1553,7 +1553,7 @@ Updates an existing threat indicator.
 
 #### Human Readable Output
 
-### Azure Sentinel - Threat Indicator a31f2257-1af5-5eb9-bc82-acb8cc10becd was updated
+### Threat Indicator a31f2257-1af5-5eb9-bc82-acb8cc10becd was updated
 |Name|Display Name|Values|Types|Source|Tags|
 |---|---|---|---|---|---|
 | a31f2257-1af5-5eb9-bc82-acb8cc10becd | WeChangedTheDisplayName | verynew.value | malicious-activity | Azure Sentinel | ReplaceTheTag |
@@ -1583,7 +1583,7 @@ There is no context output for this command.
 
 #### Human Readable Output
 
-Azure Sentinel - Threat Intelligence Indicators 1286115b-3b65-5537-e831-969045792910 were deleted successfully.
+Threat Intelligence Indicators 1286115b-3b65-5537-e831-969045792910 were deleted successfully.
 
 
 ### azure-sentinel-threat-indicator-tags-append
@@ -1640,7 +1640,7 @@ Appends new tags to an existing indicator.
 
 #### Human Readable Output
 
-Azure Sentinel - Tags were appended to 1286115b-3b65-5537-e831-969045792910 Threat Indicator.
+Tags were appended to 1286115b-3b65-5537-e831-969045792910 Threat Indicator.
 
 ### azure-sentinel-threat-indicator-tags-replace
 ***
@@ -1696,5 +1696,5 @@ Replaces the tags of a given indicator.
 
 #### Human Readable Output
 
-Azure Sentinel - Tags were replaced to 1286115b-3b65-5537-e831-969045792910 Threat Indicator.
+Tags were replaced to 1286115b-3b65-5537-e831-969045792910 Threat Indicator.
 

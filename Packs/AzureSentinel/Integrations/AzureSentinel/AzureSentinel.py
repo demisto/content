@@ -1079,7 +1079,7 @@ def list_threat_indicator_command(client, args):
     update_next_link_in_context(result, outputs)
 
     readable_output = tableToMarkdown(
-        f'Azure Sentinel - Threat Indicators ({num_of_threat_indicators} results)',
+        f'Threat Indicators ({num_of_threat_indicators} results)',
         threat_indicators,
         headers=THREAT_INDICATORS_HEADERS,
         headerTransform=pascalToSpace,
@@ -1117,7 +1117,7 @@ def query_threat_indicators_command(client, args):
     update_next_link_in_context(result, outputs)
 
     readable_output = tableToMarkdown(
-        f'Azure Sentinel - Threat Indicators ({num_of_threat_indicators} results)',
+        f'Threat Indicators ({num_of_threat_indicators} results)',
         threat_indicators,
         headers=THREAT_INDICATORS_HEADERS,
         headerTransform=pascalToSpace,
@@ -1141,7 +1141,7 @@ def create_threat_indicator_command(client, args):
 
     threat_indicators = [threat_indicators_data_to_xsoar_format(result)]
 
-    readable_output = tableToMarkdown('Azure Sentinel - New threat Indicator was created', threat_indicators,
+    readable_output = tableToMarkdown('New threat Indicator was created', threat_indicators,
                                       headers=THREAT_INDICATORS_HEADERS,
                                       headerTransform=pascalToSpace,
                                       removeNull=True)
@@ -1173,7 +1173,7 @@ def update_threat_indicator_command(client, args):
     result = client.http_request('PUT', update_indicator_url_suffix, data=data)
     threat_indicators = [threat_indicators_data_to_xsoar_format(result)]
 
-    readable_output = tableToMarkdown(f'Azure Sentinel - Threat Indicator {indicator_name} was updated',
+    readable_output = tableToMarkdown(f'Threat Indicator {indicator_name} was updated',
                                       threat_indicators,
                                       headers=THREAT_INDICATORS_HEADERS,
                                       headerTransform=pascalToSpace,
@@ -1201,7 +1201,7 @@ def delete_threat_indicator_command(client, args):
         })
 
     return CommandResults(
-        readable_output='Azure Sentinel - Threat Intelligence Indicators ' + str(indicator_names).strip("[]")
+        readable_output='Threat Intelligence Indicators ' + ', '.join(indicator_names)
                         + ' were deleted successfully',
         outputs_prefix='AzureSentinel.ThreatIndicator',
         outputs_key_field='Name',
@@ -1222,7 +1222,7 @@ def append_tags_threat_indicator_command(client, args):
     threat_indicators = [threat_indicators_data_to_xsoar_format(result)]
 
     return CommandResults(
-        readable_output=f'Azure Sentinel - Tags were appended to {indicator_name} Threat Indicator.',
+        readable_output=f'Tags were appended to {indicator_name} Threat Indicator.',
         outputs_prefix='AzureSentinel.ThreatIndicator',
         outputs=threat_indicators,
         outputs_key_field='ID',
@@ -1246,7 +1246,7 @@ def replace_tags_threat_indicator_command(client, args):
     threat_indicators = [threat_indicators_data_to_xsoar_format(result)]
 
     return CommandResults(
-        readable_output=f'Azure Sentinel - Tags were replaced to {indicator_name} Threat Indicator.',
+        readable_output=f'Tags were replaced to {indicator_name} Threat Indicator.',
         outputs_prefix='AzureSentinel.ThreatIndicator',
         outputs=threat_indicators,
         outputs_key_field='ID',
