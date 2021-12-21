@@ -16,6 +16,7 @@ configuration:
   required: true
   type: 0
 - display: Public Key
+  displaypassword: Secret Key
   name: auth
   required: true
   type: 9
