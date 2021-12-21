@@ -150,7 +150,8 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximum number of incidents to return. The maximum value is 200.
+      description: The maximum number of incidents to return. The maximum value is
+        200.
       isArray: false
       name: limit
       required: false
@@ -602,8 +603,8 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of incident comments to return. The 
-        maximum value is 50.
+      description: The maximum number of incident comments to return. The maximum
+        value is 50.
       isArray: false
       name: limit
       required: false
@@ -950,7 +951,7 @@ script:
       description: |-
         A link that specifies a starting point to use for subsequent calls.
         This argument overrides all of the other command arguments.
-        There may be no support for pagination.
+        Important note: This argument is currently not supported due to an issue in Azure Sentinel API.
       isArray: false
       name: next_link
       required: false
@@ -976,7 +977,8 @@ script:
       description: The kind of the indicator.
       type: String
     - contextPath: AzureSentinel.ThreatIndicators.Confidence
-      description: The confidence of the threat indicator. This is a number between 0-100.
+      description: The confidence of the threat indicator. This is a number between
+        0-100.
       type: Number
     - contextPath: AzureSentinel.ThreatIndicator.Created
       description: When the threat indicator was created.
@@ -1053,7 +1055,7 @@ script:
       description: |-
         A link that specifies a starting point to use for subsequent calls.
         This argument overrides all of the other command arguments.
-        There may be no support for pagination.
+        Important note: This argument is currently not supported due to an issue in Azure Sentinel API.
       isArray: false
       name: next_link
       required: false
@@ -1154,7 +1156,8 @@ script:
       description: The kind of the indicator.
       type: String
     - contextPath: AzureSentinel.ThreatIndicators.Confidence
-      description: The confidence of the threat indicator. This is a number between 0-100.
+      description: The confidence of the threat indicator. This is a number between
+        0-100.
       type: Number
     - contextPath: AzureSentinel.ThreatIndicator.Created
       description: When the threat indicator was created.
@@ -1348,7 +1351,8 @@ script:
       description: The kind of the indicator.
       type: String
     - contextPath: AzureSentinel.ThreatIndicators.Confidence
-      description: The confidence of the threat indicator. This is a number between 0-100.
+      description: The confidence of the threat indicator. This is a number between
+        0-100.
       type: Number
     - contextPath: AzureSentinel.ThreatIndicator.Created
       description: When the threat indicator was created.
@@ -1464,14 +1468,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: The confidence of the threat indicator. This is a number between 0-100.
+      description: The confidence of the threat indicator. This is a number between
+        0-100.
       isArray: false
       name: confidence
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description:  A comma-separated list of threat types of the threat indicator.
+      description: A comma-separated list of threat types of the threat indicator.
       isArray: true
       name: threat_types
       predefined:
@@ -1535,7 +1540,8 @@ script:
       description: The kind of the indicator.
       type: String
     - contextPath: AzureSentinel.ThreatIndicators.Confidence
-      description: The confidence of the threat indicator. This is a number between 0-100.
+      description: The confidence of the threat indicator. This is a number between
+        0-100.
       type: Number
     - contextPath: AzureSentinel.ThreatIndicator.Created
       description: When the threat indicator was created.
@@ -1645,7 +1651,8 @@ script:
       description: The kind of the indicator.
       type: String
     - contextPath: AzureSentinel.ThreatIndicators.Confidence
-      description: The confidence of the threat indicator. THis is a number between 0-100.
+      description: The confidence of the threat indicator. THis is a number between
+        0-100.
       type: Number
     - contextPath: AzureSentinel.ThreatIndicator.Created
       description: When the threat indicator was created.
@@ -1744,7 +1751,8 @@ script:
       description: The kind of the indicator.
       type: String
     - contextPath: AzureSentinel.ThreatIndicators.Confidence
-      description: The confidence of the threat indicator. This is a number between 0-100.
+      description: The confidence of the threat indicator. This is a number between
+        0-100.
       type: Number
     - contextPath: AzureSentinel.ThreatIndicator.Created
       description: When the threat indicator was created.
