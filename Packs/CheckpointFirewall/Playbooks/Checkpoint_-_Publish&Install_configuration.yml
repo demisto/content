@@ -304,7 +304,7 @@ tasks:
       version: -1
       name: Checkpoint logout
       description: Log out from a given session.
-      script: CheckPointFirewall_v2|||checkpoint-logout
+      script: '|||checkpoint-logout'
       type: regular
       iscommand: true
       brand: CheckPointFirewall_v2
