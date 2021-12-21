@@ -276,6 +276,9 @@ def convert_pdf_to_jpeg(path: str, max_pages: int, password: str, horizontal: bo
             if os.path.isfile(os.path.join(output_folder, page)) and 'converted_pdf_' in page:
                 images.append(Image.open(os.path.join(output_folder, page)))
         min_shape = min([(np.sum(page_.size), page_.size) for page_ in images])[1]  # get the minimal width
+
+        # Divide the list of images into separate lists with constant length (20) due to image combination limitation
+        # Create a list of lists (length == 20) of images to combine each list (20 images) to one image
         images_matrix = [images[i:i + PAGES_LIMITATION] for i in range(0, len(images), PAGES_LIMITATION)]
 
         outputs = []
