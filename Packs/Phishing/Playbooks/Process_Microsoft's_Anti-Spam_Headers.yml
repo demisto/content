@@ -155,6 +155,8 @@ tasks:
                 value:
                   simple: X-MS-Exchange-Organization-PCL
           accessor: headervalue
+          transformers:
+          - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -537,6 +539,8 @@ tasks:
                 value:
                   simple: X-MS-Exchange-Organization-SCL
           accessor: headervalue
+          transformers:
+          - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -603,6 +607,7 @@ tasks:
               regex:
                 value:
                   simple: '[5-9]'
+          - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -1191,6 +1196,7 @@ tasks:
               regex:
                 value:
                   simple: '[5-9]'
+          - operator: uniq
     separatecontext: false
     view: |-
       {
