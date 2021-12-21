@@ -522,3 +522,32 @@ There is no context output for this command.
 #### Human Readable Output
 
 
+
+
+### proofpoint-tr-close-incident
+***
+Close an incident
+
+#### Base Command
+
+`proofpoint-tr-close-incident`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | The ID value of the incident to close | Required | 
+| details | The details for the closure notes | Required | 
+| summary | The summary for the closure notes | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+``` ```
+
+#### Human Readable Output 
+
+
+
