@@ -1013,6 +1013,7 @@ tasks:
       id: f156ebf6-3038-440c-8729-db4d984b8c69
       version: -1
       name: No communication input configured?
+      description: "No communication input configured?"
       type: condition
       iscommand: false
       brand: ""

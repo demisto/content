@@ -392,13 +392,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-      message:
+    message:
       to:
         complex:
           root: inputs.email_address
       subject:
-        simple: PAN-OS Policy Optimizer has discovered rules with unused applications
-          in your environment.
+        simple: PAN-OS Policy Optimizer has discovered rules with unused applications in your environment.
       body: null
       methods:
       - email
@@ -1023,6 +1022,7 @@ tasks:
       id: 7a6c3b11-3c90-4062-81d8-47284a147f55
       version: -1
       name: No communication input configured?
+      description: "No communication input configured?"
       type: condition
       iscommand: false
       brand: ""
