@@ -174,9 +174,9 @@ class EWSClient:
         :param max_fetch: Max incidents per fetch
         :param insecure: Trust any certificate (not secure)
         """
-        curr_tenant_id = kwargs.get('tenant_id') or kwargs.get("_tenant_id")
+        curr_tenant_id = kwargs.get("tenant_id") or kwargs.get("_tenant_id")
         curr_client_id = kwargs.get("client_id") or kwargs.get("_client_id")
-        curr_client_secret = kwargs.get("client_secret") or (kwargs.get("credentials") or {}).get("password")
+        curr_client_secret = kwargs.get("client_secret") or (kwargs.get("credentials") or {}).get("password") or kwargs.get("_client_secret")
 
         if not curr_client_secret:
             raise Exception('Key / Application Secret must be provided.')
@@ -184,6 +184,7 @@ class EWSClient:
             raise Exception('ID / Application ID ID must be provided.')
         elif not curr_tenant_id:
             raise Exception('Token / Tenant ID must be provided.')
+
         BaseProtocol.TIMEOUT = int(request_timeout)
         self.ews_server = "https://outlook.office365.com/EWS/Exchange.asmx/"
         self.ms_client = MicrosoftClient(
@@ -2305,9 +2306,9 @@ def sub_main():
     params['default_target_mailbox'] = args.get('target_mailbox',
                                                 args.get('source_mailbox', params['default_target_mailbox']))
 
-    client = EWSClient(**params)
-    start_logging()
     try:
+        client = EWSClient(**params)
+        start_logging()
         command = demisto.command()
         # commands that return a single note result
         normal_commands = {
