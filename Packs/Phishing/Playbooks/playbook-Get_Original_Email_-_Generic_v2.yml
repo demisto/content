@@ -34,6 +34,7 @@ inputs:
     Possible values:
     - Gmail
     - EWS v2
+    - EWSO365
     - MicrosoftGraphMail
     - EmailSecurityGateway
 
@@ -345,7 +346,7 @@ tasks:
     nexttasks:
       '#default#':
       - "14"
-      EWS v2:
+      EWS:
       - "11"
       Email Security:
       - "15"
@@ -456,7 +457,7 @@ view: |-
   {
     "linkLabelsPosition": {
       "13_10_MSGraph": 0.9,
-      "13_11_EWS v2": 0.9,
+      "13_11_EWS": 0.9,
       "13_12_Gmail": 0.85,
       "13_15_Email Security": 0.9
     },
