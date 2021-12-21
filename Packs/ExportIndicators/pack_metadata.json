@@ -14,5 +14,9 @@
     "useCases": [],
     "keywords": [
         "Export Indicators"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

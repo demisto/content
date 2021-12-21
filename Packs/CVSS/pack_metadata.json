@@ -15,5 +15,9 @@
     "keywords": [
         "cvss",
         "score"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

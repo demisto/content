@@ -15,5 +15,9 @@
     "keywords": [
         "Cloudflare",
         "Feed"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

@@ -46,5 +46,9 @@
             "mandatory": true,
             "display_name": "Demisto REST API"
         }
-    }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }
