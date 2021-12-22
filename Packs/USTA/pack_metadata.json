@@ -7,11 +7,17 @@
     "url": "",
     "email": "",
     "created": "2021-03-08T11:28:34Z",
-    "categories": [],
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],
     "githubUser": [
         "muratozfidan"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

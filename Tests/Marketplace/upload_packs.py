@@ -7,12 +7,14 @@ import uuid
 import prettytable
 import glob
 import requests
-import logging
 from datetime import datetime
 from google.cloud.storage import Bucket
 
 from zipfile import ZipFile
 from typing import Any, Tuple, Union, Optional
+
+from requests import Response
+
 from Tests.Marketplace.marketplace_services import init_storage_client, Pack, \
     load_json, get_content_git_client, get_recent_commits_data, store_successful_and_failed_packs_in_ci_artifacts, \
     json_write
@@ -22,6 +24,7 @@ from Tests.Marketplace.marketplace_constants import PackStatus, Metadata, GCPCon
 from demisto_sdk.commands.common.tools import run_command, str2bool
 
 from Tests.scripts.utils.log_util import install_logging
+from Tests.scripts.utils import logging_wrapper as logging
 
 
 def get_packs_names(target_packs: str, previous_commit_hash: str = "HEAD^") -> set:
@@ -297,7 +300,7 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
             'modified': datetime.utcnow().strftime(Metadata.DATE_FORMAT),
             'packs': private_packs,
             'commit': commit,
-            'landingPage': {'sections': landing_page_sections.get('sections', [])}
+            'landingPage': {'sections': landing_page_sections.get('sections', [])}  # type: ignore[union-attr]
         }
         json.dump(index, index_file, indent=4)
 
@@ -333,7 +336,7 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
 
 
 def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder_path: str,
-                            artifacts_dir: Optional[str], storage_base_path: str):
+                            artifacts_dir: str, storage_base_path: str):
     """Create corepacks.json file and stores it in the artifacts dir. This files contains all of the server's core packs, under
     the key corepacks, and specifies which core packs should be upgraded upon XSOAR upgrade, under the key upgradeCorePacks.
 
@@ -342,7 +345,7 @@ def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder
         storage_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where core packs config is uploaded.
         build_number (str): circleCI build number.
         index_folder_path (str): The index folder path.
-        artifacts_dir: The CI artifacts directory to upload the corepacks.json to.
+        artifacts_dir (str): The CI artifacts directory to upload the corepacks.json to.
         storage_base_path (str): the source path of the core packs in the target bucket.
 
     """
@@ -518,7 +521,7 @@ def get_updated_private_packs(private_packs, index_folder_path):
     return updated_private_packs
 
 
-def get_private_packs(private_index_path: str, pack_names: set = set(),
+def get_private_packs(private_index_path: str, pack_names: set = None,
                       extract_destination_path: str = '') -> list:
     """
     Gets a list of private packs.
@@ -539,6 +542,7 @@ def get_private_packs(private_index_path: str, pack_names: set = set(),
         logging.warning(f'No metadata files found in [{private_index_path}]')
 
     private_packs = []
+    pack_names = pack_names or set()
     logging.info(f'all metadata files found: {metadata_files}')
     for metadata_file_path in metadata_files:
         try:
@@ -798,9 +802,9 @@ def add_pr_comment(comment: str):
     headers = {'Authorization': 'Bearer ' + token}
     try:
         res = requests.get(url + query, headers=headers, verify=False)
-        res = handle_github_response(res)
-        if res and res.get('total_count', 0) == 1:
-            issue_url = res['items'][0].get('comments_url') if res.get('items', []) else None
+        res_json = handle_github_response(res)
+        if res_json and res_json.get('total_count', 0) == 1:
+            issue_url = res_json['items'][0].get('comments_url') if res_json.get('items', []) else None
             if issue_url:
                 res = requests.post(issue_url, json={'body': comment}, headers=headers, verify=False)
                 handle_github_response(res)
@@ -811,7 +815,7 @@ def add_pr_comment(comment: str):
         logging.exception('Add pull request comment failed.')
 
 
-def handle_github_response(response: json) -> dict:
+def handle_github_response(response: Response) -> dict:
     """
     Handles the response from the GitHub server after making a request.
     :param response: Response from the server.
@@ -895,7 +899,7 @@ def get_images_data(packs_list: list):
     images_data = {}
 
     for pack in packs_list:
-        pack_image_data = {pack.name: {}}
+        pack_image_data: dict = {pack.name: {}}
         if pack.uploaded_author_image:
             pack_image_data[pack.name][BucketUploadFlow.AUTHOR] = True
         if pack.uploaded_integration_images:
@@ -907,7 +911,7 @@ def get_images_data(packs_list: list):
 
 
 def main():
-    install_logging('Prepare_Content_Packs_For_Testing.log')
+    install_logging('Prepare_Content_Packs_For_Testing.log', logger=logging)
     option = option_handler()
     packs_artifacts_path = option.artifacts_path
     extract_destination_path = option.extract_path

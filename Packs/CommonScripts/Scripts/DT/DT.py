@@ -1,8 +1,9 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-value = demisto.args()["value"]
-dt = demisto.args()["dt"]
+args = demisto.args()
+value = args["value"]
+dt = args["dt"]
 
 res = demisto.dt(value, dt)
-demisto.results(res)
+return_results(encode_string_results(res))

@@ -15,7 +15,7 @@
             "mandatory": true,
             "display_name": "Demisto REST API"
         }
-       },
+    },
     "created": "2021-09-30T11:08:39Z",
     "categories": [],
     "tags": [],
@@ -23,5 +23,9 @@
     "keywords": [],
     "githubUser": [
         "Hruuttila"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

@@ -1,0 +1,31 @@
+{
+    "id": "incident_titanwatcher",
+    "version": -1,
+    "modified": "2021-10-08T09:57:25.507855855Z",
+    "name": "Titan Watcher",
+    "ownerOnly": true,
+    "description": "Name of the Titan watcher that triggered the alert",
+    "cliName": "titanwatcher",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Intel 471 Watcher Alert"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

@@ -166,4 +166,4 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->test6.com domain was removed from blacklist
+>test6.com domain was removed from block list

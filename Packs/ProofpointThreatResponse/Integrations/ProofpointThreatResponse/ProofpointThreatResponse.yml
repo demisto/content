@@ -118,48 +118,48 @@ script:
     name: proofpoint-tr-add-to-list
   - arguments:
     - default: false
-      description: A comma-separated list of IP addresses to blacklist.
+      description: A comma-separated list of IP addresses to add to block list.
       isArray: true
       name: ip
       required: true
       secret: false
     - default: false
-      description: 'Date and time when the supplied IP addresses should be removed from the blacklist, in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z'
+      description: 'Date and time when the supplied IP addresses should be removed from the block list, in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z'
       isArray: false
       name: expiration
       required: false
       secret: false
     - default: false
-      description: The ID of the IP blacklist.
+      description: The ID of the IP block list.
       isArray: false
       name: blacklist_ip
       required: true
       secret: false
     deprecated: false
-    description: Adds the supplied IP addresses to the specified IP blacklist.
+    description: Adds the supplied IP addresses to the specified IP block list.
     execution: true
     name: proofpoint-tr-block-ip
   - arguments:
     - default: false
-      description: A comma-separated list of domains to add to the blacklist.
+      description: A comma-separated list of domains to add to the block list.
       isArray: true
       name: domain
       required: true
       secret: false
     - default: false
-      description: 'Date and time when the supplied IP addresses should be removed from the blacklist, in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z'
+      description: 'Date and time when the supplied IP addresses should be removed from the block list, in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z'
       isArray: false
       name: expiration
       required: false
       secret: false
     - default: false
-      description: The ID of the domain blacklist.
+      description: The ID of the domain block list.
       isArray: false
       name: blacklist_domain
       required: true
       secret: false
     deprecated: false
-    description: Adds the supplied domains to the specified blacklist.
+    description: Adds the supplied domains to the specified block list.
     execution: false
     name: proofpoint-tr-block-domain
   - arguments:
@@ -198,48 +198,48 @@ script:
     name: proofpoint-tr-delete-indicator
   - arguments:
     - default: false
-      description: A comma-separated list of URLs to add to the URL blacklist.
+      description: A comma-separated list of URLs to add to the URL block list.
       isArray: true
       name: url
       required: true
       secret: false
     - default: false
-      description: 'Date and time when the supplied URLs should be removed from the blacklist, in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z'
+      description: 'Date and time when the supplied URLs should be removed from the block list, in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z'
       isArray: false
       name: expiration
       required: false
       secret: false
     - default: false
-      description: The ID of the URL blacklist.
+      description: The ID of the URL block list.
       isArray: false
       name: blacklist_url
       required: true
       secret: false
     deprecated: false
-    description: Adds the supplied URLs to the specified URL blacklist.
+    description: Adds the supplied URLs to the specified URL block list.
     execution: false
     name: proofpoint-tr-block-url
   - arguments:
     - default: false
-      description: A comma-separated list of file hashes to add to the file hash blacklist.
+      description: A comma-separated list of file hashes to add to the file hash block list.
       isArray: true
       name: hash
       required: true
       secret: false
     - default: false
-      description: 'Date and time when the supplied file hashes should be removed from the blacklist, in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z'
+      description: 'Date and time when the supplied file hashes should be removed from the block list, in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z'
       isArray: false
       name: expiration
       required: false
       secret: false
     - default: false
-      description: The ID of the hash blacklist
+      description: The ID of the hash block list
       isArray: false
       name: blacklist_hash
       required: true
       secret: false
     deprecated: false
-    description: Adds the supplied file hashes to the specified file hash blacklist.
+    description: Adds the supplied file hashes to the specified file hash block list.
     execution: false
     name: proofpoint-tr-block-hash
   - arguments:
@@ -719,6 +719,15 @@ script:
     execution: false
     name: proofpoint-tr-add-user-to-incident
   - arguments:
+    - description: The incident id to close
+      name: incident_id
+    - description: The incident closure details
+      name: details
+    - description: The incident closure summary
+      name: summary
+    description: Close a specified incident
+    name: proofpoint-tr-close-incident
+  - arguments:
     - default: false
       description: POST URL of the JSON alert source. You can find it by navigating to Sources -> JSON event source -> POST URL.
       isArray: false
@@ -865,7 +874,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
 tests:
 - No test - beta_integration
 beta: true

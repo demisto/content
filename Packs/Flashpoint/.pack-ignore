@@ -1,2 +1,5 @@
 [file:README.md]
 ignore=RM102,RM104
+
+[file:Flashpoint.yml]
+ignore=IN145

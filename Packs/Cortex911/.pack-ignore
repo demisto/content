@@ -1,2 +1,4 @@
 [file:Author_image.png]
 ignore=IM101
+[file:pack_metadata.json]
+ignore=PA129

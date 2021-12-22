@@ -1,0 +1,99 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: QintelQWatch
+  version: -1
+configuration:
+- display: QWatch API URL (optional)
+  name: remote
+  required: false
+  type: 0
+- display: Qintel Credentials
+  name: credentials
+  required: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Fetch plaintext passwords
+  name: fetch_passwords
+  type: 8
+  required: false
+  defaultvalue: true
+- display: Limit number of records per fetch
+  name: max_fetch
+  type: 0
+  required: false
+  defaultvalue: 10000
+- display: First fetch time
+  name: first_fetch
+  defaultvalue: 3 days
+  type: 0
+  required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: "360"
+  type: 19
+  required: false
+- display: Default Incident Severity
+  name: fetch_severity
+  defaultvalue: Medium
+  type: 15
+  required: true
+  options:
+  - Unknown
+  - Info
+  - Low
+  - Medium
+  - High
+  - Critical
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+description: "Qintel's QWatch system contains credentials obtained from dump sites,\
+  \ hacker collaboratives, and command and control infrastructures of eCrime- and\
+  \ APT-related malware. With this integration, users can fetch exposure alerts as\
+  \ incidents and discover exposed credentials associated with their organization."
+display: Qintel QWatch
+name: QintelQWatch
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Email to search
+      isArray: false
+      name: email
+      required: false
+      secret: false
+    - default: false
+      description: Domain to search
+      isArray: false
+      name: domain
+      required: false
+      secret: false
+    deprecated: false
+    description: Search QWatch for exposed credentials
+    execution: false
+    name: qintel-qwatch-exposures
+    outputs:
+    - contextPath: Qintel.QWatch.Exposures
+      description: QWatch Exposure Records
+      type: String
+  isfetch: true
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.9.8.24399
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

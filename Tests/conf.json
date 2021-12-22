@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "LogRhythmRest V2",
+            "playbookID": "LogRhythmRestV2-test"
+        },
+        {
             "playbookID": "Base64Decode - Test"
         },
         {
@@ -17,6 +21,12 @@
             "playbookID": "Detonate File - WildFire - Test"
         },
         {
+            "integrations": [
+                "Microsoft Management Activity API (O365 Azure Events)"
+            ],
+            "playbookID": "MicrosoftManagementActivity - Test"
+        },
+        {
             "integrations": "Microsoft Teams Management",
             "playbookID": "Microsoft Teams Management - Test",
             "is_mockable": false,
@@ -29,6 +39,11 @@
             "integrations": "Tripwire",
             "playbookID": "TestplaybookTripwire",
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "CensysV2",
+            "playbookID": "CensysV2-Test",
+            "fromversion": "6.1.0"
         },
         {
             "playbookID": "Generic Polling Test",
@@ -128,7 +143,6 @@
             "integrations": "EwsExtension",
             "playbookID": "O365 - EWS - Extension - Test",
             "fromversion": "6.0.0",
-            "toversion": "6.0.9",
             "timeout": 500
         },
         {
@@ -224,11 +238,6 @@
         {
             "integrations": "ThreatConnect Feed",
             "playbookID": "FeedThreatConnect-Test",
-            "fromversion": "5.5.0"
-        },
-        {
-            "integrations": "MITRE ATT&CK",
-            "playbookID": "Mitre Attack List 10 Indicators Feed Test",
             "fromversion": "5.5.0"
         },
         {
@@ -429,6 +438,17 @@
             "playbookID": "Azure Compute - Test",
             "instance_names": "ms_azure_compute_prod",
             "is_mockable": false
+        },
+        {
+            "integrations": "Azure Compute v2",
+            "playbookID": "Azure Compute - Login Test",
+            "instance_names": "ms_azure_compute_prod",
+            "is_mockable": false
+        },
+        {
+            "integrations": "Azure Compute v2",
+            "playbookID": "Azure Compute - Login Test",
+            "instance_names": "ms_azure_compute_self_deployed"
         },
         {
             "integrations": "Symantec Data Loss Prevention",
@@ -853,13 +873,6 @@
             "timeout": 2400
         },
         {
-            "integrations": "QRadar_v2",
-            "playbookID": "test playbook - QRadarCorrelations For V2",
-            "timeout": 2600,
-            "fromversion": "6.0.0",
-            "is_mockable": false
-        },
-        {
             "integrations": "Awake Security",
             "playbookID": "awake_security_test_pb"
         },
@@ -1056,25 +1069,28 @@
         {
             "playbookID": "PAN-OS - Block IP - Custom Block Rule Test",
             "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama",
+            "instance_names": "panorama_instance_security_team",
             "fromversion": "6.1.0"
         },
         {
             "playbookID": "PAN-OS - Block IP - Static Address Group Test",
             "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama",
+            "instance_names": "panorama_instance_security_team",
             "fromversion": "6.1.0"
+        },
+        {
+            "playbookID": "Block IP - Generic V3_Test",
+            "fromversion": "6.0.0"
         },
         {
             "playbookID": "PAN-OS - Block URL - Custom URL Category Test",
             "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama",
+            "instance_names": "panorama_instance_security_team",
             "fromversion": "6.1.0"
         },
         {
             "playbookID": "Endpoint Malware Investigation - Generic - Test",
             "integrations": [
-                "Traps",
                 "Cylance Protect v2",
                 "Demisto REST API"
             ],
@@ -1083,6 +1099,9 @@
         },
         {
             "playbookID": "ParseExcel-test"
+        },
+        {
+            "playbookID": "ParseHTMLIndicators-Test"
         },
         {
             "playbookID": "Detonate File - No Files test"
@@ -1161,7 +1180,7 @@
             "playbookID": "TestEditServerConfig"
         },
         {
-            "playbookID": "MarketplacePackInstaller_Test",
+            "playbookID": "ContentPackInstaller_Test",
             "integrations": "Demisto REST API",
             "fromversion": "6.0.0"
         },
@@ -1949,10 +1968,6 @@
             "playbookID": "VMWare Test"
         },
         {
-            "integrations": "Anomali ThreatStream",
-            "playbookID": "Anomali_ThreatStream_Test"
-        },
-        {
             "integrations": "carbonblack-v2",
             "playbookID": "Carbon Black Response Test",
             "fromversion": "5.0.0"
@@ -2179,11 +2194,7 @@
             "timeout": 500
         },
         {
-            "playbookID": "DemistoUploadFileToIncident Test",
-            "integrations": "Demisto REST API"
-        },
-        {
-            "playbookID": "DemistoUploadFile Test",
+            "playbookID": "DemistoUploadFileV2 Test",
             "integrations": "Demisto REST API"
         },
         {
@@ -2443,11 +2454,6 @@
             "fromversion": "5.5.0"
         },
         {
-            "integrations": "Traps",
-            "playbookID": "Traps test",
-            "timeout": 600
-        },
-        {
             "playbookID": "TestShowScheduledEntries"
         },
         {
@@ -2565,6 +2571,12 @@
             "integrations": "MITRE ATT&CK v2",
             "playbookID": "FeedMitreAttackv2_test",
             "memory_threshold": 150
+        },
+        {
+            "integrations": "MITRE ATT&CK v2",
+            "playbookID": "ExtractAttackPattern-Test",
+            "memory_threshold": 150,
+            "fromversion": "6.2.0"
         },
         {
             "integrations": "ANYRUN",
@@ -2736,10 +2748,6 @@
             "memory_threshold": 100
         },
         {
-            "integrations": "Anomali ThreatStream v2",
-            "playbookID": "ThreatStream-Test"
-        },
-        {
             "integrations": "Flashpoint",
             "playbookID": "Flashpoint_event-Test"
         },
@@ -2884,6 +2892,12 @@
             "fromversion": "6.0.0"
         },
         {
+            "integrations": "QRadar v3",
+            "playbookID": "QRadar - Get Offense Logs Test",
+            "timeout": 600,
+            "fromversion": "6.0.0"
+        },
+        {
             "playbookID": "SetAndHandleEmpty test",
             "fromversion": "4.5.0"
         },
@@ -2947,7 +2961,8 @@
         },
         {
             "integrations": "PaloAltoNetworks_PrismaCloudCompute",
-            "playbookID": "PaloAltoNetworks_PrismaCloudCompute-Test"
+            "playbookID": "PaloAltoNetworks_PrismaCloudCompute-Test",
+            "instance_names": "prisma_cloud_compute_21_04"
         },
         {
             "integrations": "SaasSecurity",
@@ -2956,6 +2971,15 @@
         {
             "integrations": "Recorded Future Feed",
             "playbookID": "RecordedFutureFeed - Test",
+            "instance_names": "recorded_future_feed",
+            "timeout": 1000,
+            "fromversion": "5.5.0",
+            "memory_threshold": 86
+        },
+        {
+            "integrations": "Recorded Future Feed",
+            "playbookID": "RecordedFutureFeed - Test",
+            "instance_names": "recorded_future_feed_with_risk_rules",
             "timeout": 1000,
             "fromversion": "5.5.0",
             "memory_threshold": 86
@@ -3177,9 +3201,9 @@
             "fromversion": "5.5.0"
         },
         {
-            "integrations": "GCP Whitelist Feed",
-            "playbookID": "GCPWhitelist_Feed_Test",
-            "fromversion": "5.5.0"
+            "integrations": "Google IP Ranges Feed",
+            "playbookID": "Fetch Indicators Test",
+            "fromversion": "6.0.0"
         },
         {
             "integrations": "Azure AD Connect Health Feed",
@@ -3575,6 +3599,10 @@
             "playbookID": "SOCRadarThreatFusion-Test"
         },
         {
+            "integrations": "FeedSOCRadarThreatFeed",
+            "playbookID": "FeedSOCRadarThreatFeed-Test"
+        },
+        {
             "integrations": "TheHive Project",
             "playbookID": "Playbook_TheHiveProject_Test",
             "fromversion": "6.0.0"
@@ -3588,6 +3616,17 @@
             "instance_names": "snow_basic_auth",
             "fromversion": "6.0.0",
             "is_mockable": false,
+            "timeout": 2400
+        },
+        {
+            "integrations": [
+                "MalwareBazaar Feed",
+                "Demisto REST API"
+            ],
+            "playbookID": "Fetch Indicators Test",
+            "fromversion": "6.0.0",
+            "is_mockable": false,
+            "instance_names": "malwarebazzar_auto",
             "timeout": 2400
         },
         {
@@ -4265,6 +4304,18 @@
             "fromversion": "6.0.0"
         },
         {
+            "playbookID": "Phishing Investigation - Generic v2 - Campaign Test",
+            "fromversion": "6.0.0",
+            "timeout": 7000,
+            "integrations": [
+                "EWS Mail Sender",
+                "Demisto REST API",
+                "Rasterize",
+                "Demisto Lock"
+            ],
+            "instance_names": "no_sync_long_timeout"
+        },
+        {
             "playbookID": "PCAP Search test",
             "fromversion": "5.0.0"
         },
@@ -4339,6 +4390,13 @@
             "fromversion": "5.0.0",
             "integrations": [
                 "Google Cloud Storage"
+            ]
+        },
+        {
+            "playbookID": "GetStringsDistance - Test",
+            "fromversion": "5.0.0",
+            "scripts": [
+                "GetStringsDistance"
             ]
         },
         {
@@ -4577,10 +4635,88 @@
             "playbookID": "TestAzureSentinelPlaybookV2"
         },
         {
+            "integrations": "AnsibleAlibabaCloud",
+            "playbookID": "Test-AlibabaCloud"
+        },
+        {
+            "integrations": "AnsibleAzure",
+            "playbookID": "Test-AnsibleAzure"
+        },
+        {
+            "integrations": "AnsibleCiscoIOS",
+            "playbookID": "Test-AnsibleCiscoIOS"
+        },
+        {
+            "integrations": "AnsibleCiscoNXOS",
+            "playbookID": "Test-AnsibleCiscoNXOS"
+        },
+        {
+            "integrations": "AnsibleHCloud",
+            "playbookID": "Test-AnsibleHCloud"
+        },
+        {
+            "integrations": "AnsibleKubernetes",
+            "playbookID": "Test-AnsibleKubernetes"
+        },
+        {
+            "integrations": "AnsibleLinux",
+            "playbookID": "Test-AnsibleLinux"
+        },
+        {
+            "integrations": "AnsibleMicrosoftWindows",
+            "playbookID": "Test-AnsibleWindows"
+        },
+        {
+            "integrations": "AnsibleVMware",
+            "playbookID": "Test-AnsibleVMware"
+        },
+        {
+            "integrations": "Anomali ThreatStream",
+            "playbookID": "Anomali_ThreatStream_Test"
+        },
+        {
+            "integrations": "Anomali ThreatStream v2",
+            "playbookID": "ThreatStream-Test"
+        },
+        {
+            "integrations": "Anomali ThreatStream v3",
+            "fromversion": "6.0.0",
+            "playbookID": "ThreatStream-Test"
+        },
+        {
+            "integrations": [
+                "AutoFocusTagsFeed",
+                "Demisto REST API"
+            ],
+            "playbookID": "AutoFocusTagsFeed-test",
+            "timeout": 300
+        },
+        {
+            "integrations": [
+                "Unit42IntelObjectsFeed",
+                "Demisto REST API"
+            ],
+            "playbookID": "Unit42 Intel Objects Feed - Test",
+            "timeout": 300
+        },
+        {
             "playbookID": "Tanium Threat Response V2 Test",
-            "integrations": ["Tanium Threat Response v2", "Demisto REST API"],
+            "integrations": [
+                "Tanium Threat Response v2",
+                "Demisto REST API"
+            ],
             "fromversion": "6.0.0",
             "timeout": 3000
+        },
+        {
+            "playbookID": "Tanium Threat Response - Create Connection v2 - Test",
+            "integrations": "Tanium Threat Response v2",
+            "fromversion": "6.0.0"
+        },
+        {
+            "playbookID": "Tanium Threat Response - Request File Download v2 - Test",
+            "integrations": "Tanium Threat Response v2",
+            "fromversion": "6.0.0"
         },
         {
             "playbookID": "IndicatorMaliciousRatioCalculation_test",
@@ -4603,13 +4739,83 @@
             "is_mockable": false,
             "instance_names": "MISP_feed_instance",
             "timeout": 2400
+        },
+        {
+            "integrations": [
+                "CrowdStrike Indicator Feed",
+                "Demisto REST API"
+            ],
+            "playbookID": "Fetch Indicators Test",
+            "fromversion": "6.0.0",
+            "is_mockable": false,
+            "instance_names": "CrowdStrike_feed_instance",
+            "timeout": 2400
+        },
+        {
+            "playbookID": "Get Original Email - Microsoft Graph Mail - test",
+            "fromversion": "6.1.0",
+            "integrations": [
+                "MicrosoftGraphMail"
+            ],
+            "instance_names": "ms_graph_mail_dev_no_oproxy"
+        },
+        {
+            "playbookID": "Get Original Email - Gmail v2 - test",
+            "fromversion": "6.1.0",
+            "integrations": [
+                "Gmail"
+            ]
+        },
+        {
+            "playbookID": "Get Original Email - EWS v2 - test",
+            "fromversion": "6.1.0",
+            "integrations": [
+                "EWS v2"
+            ],
+            "instance_names": "ewv2_regular"
+        },
+        {
+            "integrations": [
+                "Demisto REST API"
+            ],
+            "playbookID": "GetTasksWithSections SetIRProcedures end to end test",
+            "fromversion": "6.0.0"
+        },
+        {
+            "scripts": [
+                "SplunkShowAsset",
+                "SplunkShowDrilldown",
+                "SplunkShowIdentity"
+            ],
+            "playbookID": "SplunkShowEnrichment"
+        },
+        {
+            "integrations": "MalwareBazaar",
+            "playbookID": "MalwareBazaar_Test",
+            "fromversion": "6.0.0"
+        },
+        {
+            "integrations": "OpsGenieV3",
+            "playbookID": "OpsGenieV3TestPlaybook",
+            "fromversion": "6.2.0"
+        },
+        {
+            "playbookID": "test_AssignToNextShiftOOO",
+            "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "JsonToTable - Test Playbook",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "KafkaV3",
+            "playbookID": "KafkaV3 Test"
         }
     ],
     "skipped_tests": {
         "MISP V2 Test": "The integration is deprecated as we released MISP V3",
-        "Zscaler Test": "We won't get license (Issues 40157,17784)",
         "Github IAM - Test Playbook": "Issue 32383",
-        "O365-SecurityAndCompliance-ContextResults-Test":  "Issue 38900",
+        "O365-SecurityAndCompliance-ContextResults-Test": "Issue 38900",
         "Calculate Severity - Standard - Test": "Issue 32715",
         "Calculate Severity - Generic v2 - Test": "Issue 32716",
         "Workday - Test": "No credentials Issue 29595",
@@ -4670,10 +4876,6 @@
         "VirusTotal (API v3) Detonate Test": "Issue 36004",
         "FailedInstances - Test": "Issue 33218",
         "PAN-OS DAG Configuration Test": "Issue 19205",
-        "PAN-OS - Block IP - Static Address Group Test": "Issue 37021",
-        "PAN-OS - Block IP - Custom Block Rule Test": "Issue 37023",
-        "Centreon-Test-Playbook": "Issue 37022",
-        "PAN-OS - Block URL - Custom URL Category Test": "Issue 37024",
         "Service Desk Plus - Generic Polling Test": "Issue 30798",
         "get_original_email_-_ews-_test": "Issue 27571",
         "Trend Micro Deep Security - Test": "outsourced",
@@ -4686,12 +4888,11 @@
         "EWS Mail Sender Test": "Issue 27944",
         "McAfee ESM v2 - Test v10.3.0": "Issue 35616",
         "Feed iDefense Test": "Issue 34035",
-        "FireEyeNX-Test": "Issue 33216",
         "McAfee ESM v2 - Test v10.2.0": "Issue 35670",
         "McAfee ESM Watchlists - Test v10.3.0": "Issue 37130",
         "McAfee ESM Watchlists - Test v10.2.0": "Issue 39389",
+        "McAfee ESM v2 - Test v11.1.3": "Issue 43825",
         "Microsoft Teams Management - Test": "Issue 33410",
-        "RedLockTest": "Issue 24600",
         "MicrosoftGraphMail-Test_prod": "Issue 40125",
         "Detonate URL - WildFire v2.1 - Test": "Issue 40834",
         "Domain Enrichment - Generic v2 - Test": "Issue 40862",
@@ -4700,15 +4901,35 @@
         "VerifyOOBV2Predictions-Test": "Issue 37947",
         "HybridAnalysis-Test": "Issue 26599",
         "Infoblox Test": "Issue 25651",
-        "Carbon Black Edr - Test": "Issue 40132",
+        "AutoFocusTagsFeed-test": "shares API quota with the other test",
+        "Carbon Black Edr - Test": "Jira ticket XDR-43185",
         "Phishing v2 - Test - Actual Incident": "Issue 41322",
-        "AutoFocus V2 test": "Issue 26464",
         "Kaspersky Security Center - Test": "Issue 36487",
         "carbonBlackEndpointStandardTestPlaybook": "Issue 36936",
-        "LogRhythm REST test": "Issue 40654"
+        "test_Qradar_v2": "the integration is deprecated as we released Qradar V3",
+        "XsoarPowershellTesting-Test": "Issue 32689",
+        "Unit42 Intel Objects Feed - Test": "Issue 44100",
+        "RedCanaryTest": "Issue 43818",
+        "MailListener-POP3 - Test": "Issue 44199",
+        "MicrosoftManagementActivity - Test": "Issue 43922",
+        "VMWare Test": "Issue 43823",
+        "Google-Vault-Generic-Test": "Issue 24347",
+        "Google_Vault-Search_And_Display_Results_test": "Issue 24348",
+        "Tenable.io Scan Test": "Issue 26728",
+        "Zscaler Test": "Issue 40157, API subscription currently Expired",
+        "Cisco Firepower - Test": "Issue 32412",
+        "cisco-ise-test-playbook": "Issue 44351",
+        "GuardiCoreV2-Test": "Issue 43822",
+        "ExtractAttackPattern-Test": "Issue 44095",
+        "test_MsGraphFiles prod": "Issue 44214",
+        "EWS_O365_test": "Issue 25605",
+        "Cherwell - test": "Issue 26780",
+        "Cherwell Example Scripts - test": "Issue 27107",
+        "Cofense Intelligence v2 test": "Issue 44499",
+        "Endpoint Malware Investigation - Generic - Test": "Issue 44779",
+        "Mimecast test": "Issue 26906"
     },
     "skipped_integrations": {
-
         "_comment1": "~~~ NO INSTANCE ~~~",
         "Ipstack": "Usage limit reached (Issue 38063)",
         "AnsibleAlibabaCloud": "No instance - issue 40447",
@@ -4732,7 +4953,6 @@
         "Forcepoint": "instance issues. Issue 28043",
         "ZeroFox": "Issue 29284",
         "Symantec Management Center": "Issue 23960",
-        "Traps": "Issue 24122",
         "Fidelis Elevate Network": "Issue 26453",
         "CrowdStrike Falcon X": "Issue 26209",
         "ArcSight Logger": "Issue 19117",
@@ -4767,8 +4987,6 @@
         "Preempt": "Issue 20268",
         "Jask": "Issue 18879",
         "vmray": "Issue 18752",
-        "Anomali ThreatStream v2": "Issue 19182",
-        "Anomali ThreatStream": "Issue 19182",
         "SCADAfence CNM": "Issue 18376",
         "ArcSight ESM v2": "Issue #18328",
         "AlienVault USM Anywhere": "Issue #18273",
@@ -4780,17 +4998,16 @@
         "Freshdesk": "Trial account expired",
         "Threat Grid": "Issue 16197",
         "Kafka V2": "Can not connect to instance from remote",
+        "KafkaV3": "Can not connect to instance from remote",
         "Check Point Sandblast": "Issue 15948",
         "Remedy AR": "getting 'Not Found' in test button",
         "Salesforce": "Issue 15901",
-        "RedCanary": "License expired",
         "ANYRUN": "No instance",
         "Snowflake": "Looks like account expired, needs looking into",
         "Cisco Spark": "Issue 18940",
         "Phish.AI": "Issue 17291",
         "MaxMind GeoIP2": "Issue 18932.",
         "Exabeam": "Issue 19371",
-        "PaloAltoNetworks_PrismaCloudCompute": "Issue 27112",
         "Ivanti Heat": "Issue 26259",
         "AWS - Athena - Beta": "Issue 19834",
         "SNDBOX": "Issue 28826",
@@ -4811,6 +5028,8 @@
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
 
         "_comment4": "~~~ OTHER ~~~",
+        "Anomali ThreatStream v2": "Will be deprecated soon.",
+        "Anomali ThreatStream": "Will be deprecated soon.",
         "AlienVault OTX TAXII Feed": "Issue 29197",
         "EclecticIQ Platform": "Issue 8821",
         "Forescout": "Can only be run from within PANW network. Look in keeper for - Demisto in the LAB",
@@ -4828,6 +5047,7 @@
     ],
     "unmockable_integrations": {
         "NetscoutArborSightline": "Uses timestamp",
+        "Cylance Protect v2": "uses time-based JWT token",
         "EwsExtension": "Powershell does not support proxy",
         "EWS Extension Online Powershell v2": "Powershell does not support proxy/ssl",
         "Office 365 Feed": "Client sends a unique uuid as first request of every run",
@@ -4928,7 +5148,9 @@
         "GitHub": "Cannot use proxy",
         "LogRhythm": "Cannot use proxy",
         "Create-Mock-Feed-Relationships": "recording is redundant for this integration",
-        "RSA Archer v2": "cannot connect to proxy"
+        "RSA Archer v2": "cannot connect to proxy",
+        "Anomali ThreatStream v3": "recording is not working",
+        "LogRhythmRest V2": "Submits a file - tests that send files shouldn't be mocked."
     },
     "parallel_integrations": [
         "AWS - EC2",
@@ -4977,7 +5199,6 @@
         "Prisma Access Egress IP feed",
         "Lastline v2",
         "McAfee DXL",
-        "GCP Whitelist Feed",
         "Cortex Data Lake",
         "Mail Listener v2",
         "EDL",

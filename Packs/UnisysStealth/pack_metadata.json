@@ -7,11 +7,17 @@
     "url": "",
     "email": "",
     "created": "2021-07-06T19:01:59Z",
-    "categories": [],
+    "categories": [
+        "Endpoint"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],
     "githubUser": [
         "sowelljo"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

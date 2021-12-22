@@ -1819,13 +1819,13 @@ script:
       description: The ID of the sequence.
       type: String
     - contextPath: Exabeam.Sequence.isWhitelisted
-      description: Whether or not the sequence is white listed.
+      description: Whether or not the sequence is on allow list.
       type: Boolean
     - contextPath: Exabeam.Sequence.areAllTriggeredRulesWhiteListed
-      description: Whether or not the sequence are all triggered rules white listed.
+      description: Whether or not the sequence are all triggered rules allow listed.
       type: Boolean
     - contextPath: Exabeam.Sequence.hasBeenPartiallyWhiteListed
-      description: Whether or not the sequence has been partially white listed.
+      description: Whether or not the sequence has been partially allow listed.
       type: Boolean
     - contextPath: Exabeam.Sequence.riskScore
       description: The sequence risk score.
@@ -1902,7 +1902,7 @@ script:
     - contextPath: Exabeam.SequenceEventTypes.sequenceId
       description: The sequence ID.
       type: String
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   feed: false
   isfetch: false
   longRunning: false

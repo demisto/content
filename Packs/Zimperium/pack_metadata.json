@@ -2,7 +2,7 @@
     "name": "Zimperium",
     "description": "Streamline investigation and remediation of mobile alerts, generated alerts based on anomalous or unauthorized activities using the Zimperium pack.",
     "support": "xsoar",
-    "currentVersion": "1.1.0",
+    "currentVersion": "1.1.1",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -14,5 +14,9 @@
     "useCases": [],
     "keywords": [
         "Mobile"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

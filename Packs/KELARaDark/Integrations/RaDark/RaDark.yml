@@ -47,13 +47,17 @@ configuration:
   required: false
   type: 0
 - additionalinfo: Set which incident types to fetch from RaDark.
-  defaultvalue: Leaked Credentials,Compromised Accounts,Intelligence Reports
+  defaultvalue: Leaked Credentials,Compromised Accounts,Intelligence Reports,Network
+    Vulnerabilities,Credit Cards,Hacking Discussions
   display: Incident types to fetch
   name: incident_types
   options:
   - Leaked Credentials
   - Compromised Accounts
   - Intelligence Reports
+  - Network Vulnerabilities
+  - Credit Cards
+  - Hacking Discussions
   required: true
   type: 16
 description: This integration enables you to fetch incidents and manage your RaDark
@@ -126,6 +130,48 @@ script:
     - contextPath: Radark.itemDetails.items.isp
       description: The ISP of the item.
       type: string
+    - contextPath: Radark.itemDetails.items.ip
+      description: The IP of the item.
+      type: string
+    - contextPath: Radark.itemDetails.items.hostname
+      description: The hostname of the item.
+      type: string
+    - contextPath: Radark.itemDetails.items.port
+      description: The port of the item.
+      type: string
+    - contextPath: Radark.itemDetails.items.technology
+      description: The technology of the item.
+      type: string
+    - contextPath: Radark.itemDetails.items.cve_details
+      description: The CVE details of the item.
+      type: string
+    - contextPath: Radark.itemDetails.items.details
+      description: The details of the item.
+      type: string
+    - contextPath: Radark.itemDetails.items.type
+      description: The type of the item.
+      type: string
+    - contextPath: Radark.itemDetails.items.description
+      description: The description of the item.
+      type: string
+    - contextPath: Radark.itemDetails.items.date
+      description: The date of the item.
+      type: string
+    - contextPath: Radark.itemDetails.items.bin
+      description: The bin of the item.
+      type: string
+    - contextPath: Radark.itemDetails.items.number
+      description: The number of the item.
+      type: string
+    - contextPath: Radark.itemDetails.items.tags
+      description: The tags of the item.
+      type: string
+    - contextPath: Radark.itemDetails.items.link
+      description: The link of the item.
+      type: string
+    - contextPath: Radark.itemDetails.items.context
+      description: The context of the item.
+      type: string
     - contextPath: Radark.itemDetails.details
       description: General details of the incident.
       type: string
@@ -170,7 +216,7 @@ script:
       required: true
     description: Request to purchase an item offered for sale on an automated store.
     name: radark-item-purchase
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   isfetch: true
   runonce: false
   script: ''

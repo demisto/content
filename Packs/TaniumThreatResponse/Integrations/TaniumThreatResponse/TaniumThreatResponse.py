@@ -1,19 +1,21 @@
-
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
-import os
+
 import ast
 import json
-import urllib3
+import os
 import urllib.parse
+from typing import Any, Tuple
+
+import urllib3
 from dateutil.parser import parse
-from typing import Any
+
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 ''' GLOBALS/PARAMS '''
+
 FETCH_TIME = demisto.params().get('fetch_time')
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 
@@ -49,17 +51,23 @@ class Client(BaseClient):
         self.session = ''
         super(Client, self).__init__(base_url, **kwargs)
 
-    def do_request(self, method, url_suffix, data=None, params=None, resp_type='json'):
+    def do_request(self, method, url_suffix, json_data=None, params=None, data=None, resp_type='json', headers=None):
         if not self.session:
             self.update_session()
-        res = self._http_request(method, url_suffix, headers={'session': self.session}, json_data=data,
-                                 params=params, resp_type='response', ok_codes=(200, 201, 202, 204, 400, 403, 404))
+
+        if headers:
+            headers['session'] = self.session
+        else:
+            headers = {'session': self.session}
+
+        res = self._http_request(method, url_suffix, headers=headers, json_data=json_data,
+                                 params=params, data=data, resp_type='response', ok_codes=(200, 201, 202, 204, 400, 403, 404))
 
         # if session expired
         if res.status_code == 403:
             self.update_session()
-            res = self._http_request(method, url_suffix, headers={'session': self.session}, json_data=data,
-                                     params=params, ok_codes=(200, 400, 404))
+            res = self._http_request(method, url_suffix, headers=headers, json_data=json_data,
+                                     params=params, data=data, ok_codes=(200, 400, 404))
             return res
 
         if res.status_code == 404 or res.status_code == 400:
@@ -87,7 +95,7 @@ class Client(BaseClient):
             'password': self.password
         }
 
-        res = self._http_request('GET', '/api/v2/session/login', json_data=body, ok_codes=(200,))
+        res = self._http_request('POST', '/api/v2/session/login', json_data=body, ok_codes=(200,))
 
         self.session = res.get('data').get('session')
         return self.session
@@ -423,6 +431,7 @@ def get_intel_doc_item(intel_doc):
     return {
         'ID': intel_doc.get('id'),
         'Name': intel_doc.get('name'),
+        'Type': intel_doc.get('type'),
         'Description': intel_doc.get('description'),
         'AlertCount': intel_doc.get('alertCount'),
         'UnresolvedAlertCount': intel_doc.get('unresolvedAlertCount'),
@@ -445,6 +454,17 @@ def get_alert_item(alert):
         'State': alert.get('state').title(),
         'Type': alert.get('type'),
         'UpdatedAt': alert.get('updatedAt')}
+
+
+def get_quick_scan_item(quick_scan):
+    return {
+        'IntelDocId': quick_scan.get('intelDocId'),
+        'ComputerGroupId': quick_scan.get('computerGroupId'),
+        'ID': quick_scan.get('id'),
+        'AlertCount': quick_scan.get('alertCount'),
+        'CreatedAt': quick_scan.get('createdAt'),
+        'UserId': quick_scan.get('userId'),
+        'QuestionId': quick_scan.get('questionId')}
 
 
 def alarm_to_incident(client, alarm):
@@ -609,7 +629,7 @@ def alert_update_state(client, data_args):
     state = data_args.get('state')
 
     body = {"state": state.lower()}
-    raw_response = client.do_request('PUT', f'/plugin/products/detect3/api/v1/alerts/{alert_id}', data=body)
+    raw_response = client.do_request('PUT', f'/plugin/products/detect3/api/v1/alerts/{alert_id}', json_data=body)
     alert = get_alert_item(raw_response)
 
     context = createContext(alert, removeNull=True)
@@ -742,7 +762,7 @@ def create_connection(client, data_args):
     if conn_timeout:
         body['connTimeout'] = int(data_args.get('connection-timeout'))
 
-    client.do_request('POST', '/plugin/products/trace/conns/', data=body, resp_type='content')
+    client.do_request('POST', '/plugin/products/trace/conns/', json_data=body, resp_type='content')
     return f"Initiated connection request to {dst}.", {}, {}
 
 
@@ -1086,7 +1106,7 @@ def create_evidence(client, data_args):
         'sId': ptid
     }
 
-    client.do_request('POST', '/plugin/products/trace/evidence', data=data, resp_type='content')
+    client.do_request('POST', '/plugin/products/trace/evidence', json_data=data, resp_type='content')
     return "Evidence have been created.", {}, {}
 
 
@@ -1117,7 +1137,7 @@ def request_file_download(client, data_args):
         'path': path,
         'connId': con_name
     }
-    client.do_request('POST', '/plugin/products/trace/filedownloads', data=data, resp_type='text')
+    client.do_request('POST', '/plugin/products/trace/filedownloads', json_data=data, resp_type='text')
     filename = os.path.basename(path)
     return f"Download request of file {filename} has been sent successfully.", outputs, {}
 
@@ -1242,6 +1262,75 @@ def get_process_timeline(client, data_args):
     return human_readable, outputs, raw_response
 
 
+def get_file_data(entry_id: str) -> Tuple[str, str, str]:
+    """ Gets a file name and content from the file's entry ID.
+
+        :type entry_id: ``str``
+        :param entry_id:
+            the file's entry ID.
+
+        :return: file name, path and content
+        :rtype: ``tuple``
+
+    """
+    file = demisto.getFilePath(entry_id)
+    file_path = file.get('path')
+    file_name = file.get('name')
+    with open(file_path, 'r') as f:
+        file_content = f.read()
+    return file_name, file_path, file_content
+
+
+def intel_doc_create(client, data_args):
+    entry_id = data_args.get('entry_id')
+    file_extension = data_args.get('file_extension')
+
+    try:
+        file_name, _, file_content = get_file_data(str(entry_id))
+    except Exception as e:
+        raise DemistoException(f'Check your file entry ID.\n{str(e)}')
+
+    raw_response = client.do_request('POST', '/plugin/products/detect3/api/v1/intels/',
+                                     headers={'Content-Disposition': f'filename=file.{file_extension}',
+                                              'Content-Type': 'application/xml'}, data=file_content)
+    intel_doc = get_intel_doc_item(raw_response)
+
+    context = createContext(intel_doc, removeNull=True)
+    outputs = {'Tanium.IntelDoc(val.ID && val.ID === obj.ID)': context}
+
+    if intel_doc:
+        intel_doc['LabelIds'] = str(intel_doc['LabelIds']).strip('[]')
+
+    human_readable = tableToMarkdown('Intel Doc information', intel_doc, headerTransform=pascalToSpace, removeNull=True)
+
+    return human_readable, outputs, raw_response
+
+
+def start_quick_scan(client, data_args):
+    # get computer group ID from computer group name
+    computer_group_name = data_args.get('computer_group_name')
+    raw_response = client.do_request('GET', f"/api/v2/groups/by-name/{computer_group_name}")
+    raw_response_data = raw_response.get('data')
+    if not raw_response_data:
+        msg = f'No group exists with name {computer_group_name} or' \
+              f' your account does not have sufficient permissions to access the groups'
+        raise DemistoException(msg)
+
+    data = {
+        'intelDocId': int(data_args.get('intel_doc_id')),
+        'computerGroupId': int(raw_response_data.get('id'))
+    }
+    raw_response = client.do_request('POST', '/plugin/products/detect3/api/v1/quick-scans/', json_data=data)
+    quick_scan = get_quick_scan_item(raw_response)
+
+    context = createContext(quick_scan, removeNull=True)
+    outputs = {'Tanium.QuickScan(val.ID && val.ID === obj.ID)': context}
+
+    human_readable = tableToMarkdown('Quick Scan started', quick_scan, headerTransform=pascalToSpace, removeNull=True)
+
+    return human_readable, outputs, raw_response
+
+
 def fetch_incidents(client, alerts_states_to_retrieve):
     """
     Fetch events from this integration and return them as Demisto incidents
@@ -1339,7 +1428,9 @@ def main():
         'tanium-tr-list-files-in-directory': list_files_in_dir,
         'tanium-tr-get-file-info': get_file_info,
         'tanium-tr-delete-file-from-endpoint': delete_file_from_endpoint,
-        'tanium-tr-get-process-timeline': get_process_timeline
+        'tanium-tr-get-process-timeline': get_process_timeline,
+        'tanium-tr-intel-doc-create': intel_doc_create,
+        'tanium-tr-start-quick-scan': start_quick_scan
     }
 
     try:

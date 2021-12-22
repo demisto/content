@@ -7,11 +7,17 @@
     "url": "",
     "email": "",
     "created": "2021-03-22T14:54:08Z",
-    "categories": [],
+    "categories": [
+        "Utilities"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],
     "githubUser": [
         "djmasters"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

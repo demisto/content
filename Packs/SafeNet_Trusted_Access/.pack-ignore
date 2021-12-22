@@ -1,2 +1,4 @@
-[file:SafeNet_Trusted_Access_–_Add_to_Unusual_Activity_Group.yml]
+[file:playbook-SafeNet_Trusted_Access_-_Add_to_Unusual_Activity_Group.yml]
+ignore=PB106
+[file:playbook-SafeNet_Trusted_Access_-_Terminate_User_SSO_Sessions.yml]
 ignore=PB106
