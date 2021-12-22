@@ -23,5 +23,9 @@
         "Alerts",
         "Logsign",
         "SIEM"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

@@ -1,6 +1,6 @@
 <!-- HTML_DOC -->
 <h2>Overview</h2>
-<p>This integration was integrated and tested with Cuckoo Sandbox v2.0.6.</p>
+<p>This integration was integrated and tested with Cuckoo Sandbox v2.0.7.</p>
 <h2>Cuckoo Sandbox Playbook</h2>
 <ul>
 <li>
@@ -25,6 +25,7 @@
 <strong>Name</strong>: a textual name for the integration instance.</li>
 <li><strong>Server URL (e.g. <a href="https://192.168.0.1/" rel="nofollow">https://192.168.0.1</a>)</strong></li>
 <li><strong>Username (Only if your Cuckoo service requires HTTP auth)</strong></li>
+<li>In order to authenticate with an API token, insert '__token' in the "Username" textbox, and the token itself in the "Password" textbox.</li>
 <li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy settings</strong></li>
 </ul>
