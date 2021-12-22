@@ -1,0 +1,17 @@
+{
+    "name": "Contribution Testing",
+    "description": "Testing contributions",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "darkushin",
+    "url": "",
+    "email": "",
+    "created": "2021-12-22T10:50:09Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "darkushin"
+    ]
+}
