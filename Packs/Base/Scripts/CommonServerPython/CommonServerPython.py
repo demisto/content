@@ -16,7 +16,6 @@ import sys
 import time
 import traceback
 import urllib
-import math
 from random import randint
 import xml.etree.cElementTree as ET
 from collections import OrderedDict
@@ -34,7 +33,7 @@ def __line__():
     return cf.f_back.f_lineno
 
 _MODULES_LINE_MAPPING = {
-    'CommonServerPython': {'pre': __line__() - 36, 'post': math.inf},
+    'CommonServerPython': {'pre': __line__() - 36, 'post': float('inf')},
 }
 
 def register_module_line(module_name, pre_post, line):
@@ -60,7 +59,7 @@ def register_module_line(module_name, pre_post, line):
         if not isinstance(line, int):
             raise ValueError('Invalid line argument. Expected int got {}'.format(type(line)))
 
-        _MODULES_LINE_MAPPING.setdefault(module_name, {'pre': 0, 'post': math.inf}).update({pre_post: line})
+        _MODULES_LINE_MAPPING.setdefault(module_name, {'pre': 0, 'post': float('inf')}).update({pre_post: line})
     except Exception as exc:
 
         demisto.debug('failed to register module line. '
