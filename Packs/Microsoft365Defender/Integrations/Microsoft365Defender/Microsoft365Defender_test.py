@@ -10,7 +10,6 @@ you are implementing with your integration
 
 import json
 import io
-import sys
 
 import pytest
 
@@ -136,9 +135,9 @@ def test_params(mocker):
     """
 
     mocker.patch.object(demisto, 'params', return_value={'_tenant_id': '_tenant_id', 'credentials': {'password': '1234'}})
-    return_error_mocker = mocker.patch('Microsoft365Defender.return_error', side_effect=sys.exit)
+    mocker.patch.object(demisto, 'error')
+    return_error_mock = mocker.patch('Microsoft365Defender.return_error')
 
-    with pytest.raises(SystemExit):
-        main()
+    main()
 
-    assert 'Aplication ID must be provided.' in return_error_mocker.call_args[0][0]
+    assert 'Aplication ID must be provided.' in return_error_mock.call_args[0][0]
