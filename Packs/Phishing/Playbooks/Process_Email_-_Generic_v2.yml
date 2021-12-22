@@ -1,5 +1,7 @@
 id: Process Email - Generic v2
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Process Email - Generic v2
 description: |
   This playbook adds email details to the relevant context entities and handles original email attachments.
@@ -117,8 +119,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -130,
-          "y": 2760
+          "x": -140,
+          "y": 2950
         }
       }
     note: false
@@ -156,8 +158,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 830,
-          "y": 1815
+          "x": 820,
+          "y": 2005
         }
       }
     note: false
@@ -227,8 +229,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 320,
-          "y": 3250
+          "x": 310,
+          "y": 3440
         }
       }
     note: false
@@ -268,8 +270,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 80,
-          "y": 3470
+          "x": 70,
+          "y": 3660
         }
       }
     note: false
@@ -295,8 +297,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 320,
-          "y": 3700
+          "x": 310,
+          "y": 3890
         }
       }
     note: false
@@ -325,8 +327,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 320,
-          "y": 3120
+          "x": 310,
+          "y": 3310
         }
       }
     note: false
@@ -350,11 +352,11 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "45"
+      - "50"
       Yes-Alerts:
-      - "34"
+      - "49"
       Yes-Forwarded:
-      - "33"
+      - "48"
     separatecontext: false
     conditions:
     - label: Yes-Forwarded
@@ -390,7 +392,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -40,
+          "x": -50,
           "y": 190
         }
       }
@@ -431,8 +433,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 10,
-          "y": 1815
+          "x": 0,
+          "y": 2005
         }
       }
     note: false
@@ -629,8 +631,7 @@ tasks:
           - operator: split
             args:
               delimiter:
-                value:
-                  simp`le: ','
+                value: {}
           - operator: count
       emailurlclicked:
         complex:
@@ -674,8 +675,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1260,
-          "y": 2950
+          "x": 1250,
+          "y": 3140
         }
       }
     note: false
@@ -721,8 +722,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 320,
-          "y": 2760
+          "x": 310,
+          "y": 2950
         }
       }
     note: false
@@ -773,8 +774,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 640,
-          "y": 2400
+          "x": 630,
+          "y": 2590
         }
       }
     note: false
@@ -804,8 +805,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1040,
-          "y": 2230
+          "x": 1030,
+          "y": 2420
         }
       }
     note: false
@@ -920,8 +921,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2350,
-          "y": 2400
+          "x": 2340,
+          "y": 2590
         }
       }
     note: false
@@ -970,8 +971,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1740,
-          "y": 2600
+          "x": 1730,
+          "y": 2790
         }
       }
     note: false
@@ -1025,8 +1026,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 2600
+          "x": 1330,
+          "y": 2790
         }
       }
     note: false
@@ -1080,8 +1081,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2147.5,
-          "y": 2600
+          "x": 2137.5,
+          "y": 2790
         }
       }
     note: false
@@ -1135,8 +1136,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2960,
-          "y": 2600
+          "x": 2950,
+          "y": 2790
         }
       }
     note: false
@@ -1190,8 +1191,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2560,
-          "y": 2600
+          "x": 2550,
+          "y": 2790
         }
       }
     note: false
@@ -1245,8 +1246,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3370,
-          "y": 2600
+          "x": 3360,
+          "y": 2790
         }
       }
     note: false
@@ -1292,8 +1293,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 380,
-          "y": 530
+          "x": 367.5,
+          "y": 720
         }
       }
     note: false
@@ -1331,8 +1332,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 380,
-          "y": 365
+          "x": 367.5,
+          "y": 555
         }
       }
     note: false
@@ -1392,8 +1393,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -40,
-          "y": 695
+          "x": -50,
+          "y": 885
         }
       }
     note: false
@@ -1435,8 +1436,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 180,
-          "y": 885
+          "x": 170,
+          "y": 1075
         }
       }
     note: false
@@ -1482,8 +1483,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 770,
-          "y": 2760
+          "x": 760,
+          "y": 2950
         }
       }
     note: false
@@ -1564,8 +1565,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 380,
-          "y": 695
+          "x": 367.5,
+          "y": 885
         }
       }
     note: false
@@ -1607,8 +1608,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 830,
-          "y": 1980
+          "x": 820,
+          "y": 2170
         }
       }
     note: false
@@ -1650,8 +1651,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 770,
-          "y": 2600
+          "x": 760,
+          "y": 2790
         }
       }
     note: false
@@ -1718,8 +1719,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 410,
-          "y": 1260
+          "x": 400,
+          "y": 1450
         }
       }
     note: false
@@ -1748,8 +1749,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 410,
-          "y": 1460
+          "x": 400,
+          "y": 1650
         }
       }
     note: false
@@ -1768,8 +1769,6 @@ tasks:
         retriescount: 2
         retriesinterval: 360
         completeafterreplies: 1
-        completeafterv2: false
-        completeaftersla: false
     form:
       questions:
       - id: "0"
@@ -1848,8 +1847,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 410,
-          "y": 1630
+          "x": 400,
+          "y": 1820
         }
       }
     note: false
@@ -1884,7 +1883,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 830,
+          "x": 820,
           "y": 190
         }
       }
@@ -1920,7 +1919,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -320,
+          "x": -470,
           "y": 885
         }
       }
@@ -1956,8 +1955,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 410,
-          "y": 1070
+          "x": 400,
+          "y": 1260
         }
       }
     note: false
@@ -1992,8 +1991,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 270,
-          "y": 2060
+          "x": 260,
+          "y": 2250
         }
       }
     note: false
@@ -2003,10 +2002,100 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: c455a74c-0b75-4448-8f83-9b26622f9da0
+    type: title
+    task:
+      id: c455a74c-0b75-4448-8f83-9b26622f9da0
+      version: -1
+      name: Phishing - Forwarded Email
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "33"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: bb94119b-622f-4098-873c-9a52e65b8540
+    type: title
+    task:
+      id: bb94119b-622f-4098-873c-9a52e65b8540
+      version: -1
+      name: Phishing Alerts
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "34"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -50,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 6a08d29d-324b-4451-85c6-d1711c01a651
+    type: title
+    task:
+      id: 6a08d29d-324b-4451-85c6-d1711c01a651
+      version: -1
+      name: Do Not Retrieve Email
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "45"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -470,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
-      "16_34_Yes-Alerts": 0.45,
       "23_24_yes": 0.49,
       "39_22_yes": 0.31,
       "41_3_#default#": 0.35,
@@ -2015,9 +2104,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 4275,
-        "width": 4070,
-        "x": -320,
+        "height": 4465,
+        "width": 4210,
+        "x": -470,
         "y": -510
       }
     }
