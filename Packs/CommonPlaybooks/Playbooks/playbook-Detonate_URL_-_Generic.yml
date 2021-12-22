@@ -72,7 +72,7 @@ tasks:
       id: 754e447b-20d7-4ab6-8713-97409910d090
       version: -1
       name: Detonate URL - ThreatGrid
-      description: Detonate one or more URLs using the Threat Grid integration. This
+      description: Detonates one or more URLs using the Threat Grid integration. This
         playbook returns relevant reports to the War Room and URL reputations to the
         context data.
       playbookName: Detonate URL - ThreatGrid
@@ -113,7 +113,7 @@ tasks:
       id: 237ce1af-7984-4df7-8eea-e6577bf59c4a
       version: -1
       name: Detonate URL - McAfee ATD
-      description: Detonates a URL using the McAfee Advanced Threat Defense sandbox
+      description: Detonates a URL using the McAfee Advanced Threat Defense sandbox.
         integration.
       playbookName: Detonate URL - McAfee ATD
       type: playbook
@@ -155,7 +155,7 @@ tasks:
       name: Detonate URL - JoeSecurity
       description: |-
         Detonates one or more URLs using the Joe Security sandbox integration.
-        Returns relevant reports to the War Room and url reputations to the context data.
+        Returns relevant reports to the War Room and URL reputations to the context data.
       playbookName: Detonate URL - JoeSecurity
       type: playbook
       iscommand: false
@@ -194,7 +194,7 @@ tasks:
       id: a6e1e56f-f5da-4648-8b0c-a7e8d6122535
       version: -1
       name: Detonate URL - CrowdStrike
-      description: Detonate one or more files using the Wildfire integration. This
+      description: Detonates one or more files using the Wildfire integration. This
         playbook returns relevant reports to the War Room and file reputations to
         the context data.
       playbookName: Detonate URL - CrowdStrike
@@ -274,7 +274,7 @@ tasks:
       id: 72dc0cac-36d3-49eb-8fb8-3e583202df61
       version: -1
       name: Detonate URL - Cuckoo
-      description: Detonates a file using Cuckoo sandbox
+      description: Detonates a file using the Cuckoo sandbox.
       playbookName: Detonate URL - Cuckoo
       type: playbook
       iscommand: false
@@ -313,7 +313,7 @@ tasks:
       id: 527c7883-aab3-4641-87a1-296c5bc10806
       version: -1
       name: Detonate URL - ANYRUN
-      description: Detonates a URL using ANYRUN sandbox
+      description: Detonates a URL using the ANYRUN sandbox.
       playbookName: Detonate URL - ANYRUN
       type: playbook
       iscommand: false
@@ -400,7 +400,7 @@ tasks:
       iscommand: false
       brand: ""
       description: |-
-        'Detonate one or more URLs using the CrowdStrike Falcon Sandbox integration.'
+        'Detonates one or more URLs using the CrowdStrike Falcon sandbox integration.'
     nexttasks:
       '#none#':
       - "3"
@@ -452,265 +452,265 @@ inputs:
     complex:
       root: URL
   required: false
-  description: URL object of url to be detonated.
+  description: The URL object of the URL to be detonated.
   playbookInputQuery:
 outputs:
 - contextPath: File
-  description: The File's object
+  description: The file's object.
   type: unknown
 - contextPath: File.Name
-  description: Filename
+  description: The file name.
   type: string
 - contextPath: File.Size
-  description: File size
+  description: The file size.
   type: number
 - contextPath: File.Type
-  description: File type e.g. "PE" (only in case of report type=json)
+  description: The file type, for example "PE" (only for report type=json).
   type: string
 - contextPath: File.SHA256
-  description: SHA256 of the file
+  description: The SHA256 hash of the file.
   type: string
 - contextPath: File.SHA1
-  description: SHA1 of the file
+  description: The SHA1 hash of the file.
   type: string
 - contextPath: File.MD5
-  description: MD5 of the file
+  description: The MD5 hash of the file.
   type: string
 - contextPath: File.Malicious.Vendor
-  description: For malicious files, the vendor that made the decision
+  description: The vendor that decides the file is malicious.
   type: string
 - contextPath: File.Malicious.Description
-  description: For malicious files, the reason for the vendor to make the decision
+  description: The reason the vendor decides the file is malicious.
   type: string
 - contextPath: DBotScore
-  description: The Indicator's object
+  description: The indicator's object.
   type: unknown
 - contextPath: DBotScore.Type
-  description: The type of the indicator
+  description: The indicator type.
   type: string
 - contextPath: DBotScore.Indicator
-  description: The indicator we tested
+  description: The indicator we tested.
   type: string
 - contextPath: DBotScore.Vendor
-  description: Vendor used to calculate the score
+  description: The vendor used to calculate the score.
   type: string
 - contextPath: DBotScore.Score
-  description: The actual score
+  description: The actual score.
   type: number
 - contextPath: Joe.Analysis.WebID
-  description: Web ID
+  description: The Web ID.
   type: string
 - contextPath: Joe.Analysis.Status
-  description: Analysis Status
+  description: The analysis status.
   type: string
 - contextPath: Joe.Analysis.Comments
-  description: Analysis Comments
+  description: The analysis comments.
   type: string
 - contextPath: Joe.Analysis.Time
-  description: Submitted Time
+  description: The analysis submitted time.
   type: date
 - contextPath: Joe.Analysis.Runs
-  description: Sub-Analysis Information
+  description: The sub-analysis information.
   type: unknown
 - contextPath: Joe.Analysis.Result
-  description: Analysis Results
+  description: The analysis results.
   type: string
 - contextPath: Joe.Analysis.Errors
-  description: Raised errors during sampling
+  description: The errors raised during sampling.
   type: unknown
 - contextPath: Joe.Analysis.Systems
-  description: Analysis OS
+  description: The analysis OS.
   type: unknown
 - contextPath: Joe.Analysis.MD5
-  description: MD5 of analysis sample
+  description: The MD5 hash of the analysis sample.
   type: string
 - contextPath: Joe.Analysis.SHA1
-  description: SHA1 of analysis sample
+  description: The SHA1 hash of the analysis sample.
   type: string
 - contextPath: Joe.Analysis.SHA256
-  description: SHA256 of analysis sample
+  description: The SHA256 hash of the analysis sample.
   type: string
 - contextPath: Joe.Analysis.SampleName
-  description: Sample Data, could be a file name or URL
+  description: The sample data name, can be a file name or a URL.
   type: string
 - contextPath: InfoFile.Name
-  description: FileName
+  description: The file name.
   type: string
 - contextPath: InfoFile.EntryID
-  description: The EntryID of the sample
+  description: The EntryID of the sample.
   type: string
 - contextPath: InfoFile.Size
-  description: File Size
+  description: The file size.
   type: number
 - contextPath: InfoFile.Type
-  description: File type e.g. "PE"
+  description: The file type, for example "PE".
   type: string
 - contextPath: InfoFile.Info
-  description: Basic information of the file
+  description: The file basic information.
   type: string
 - contextPath: Sample.State
-  description: The sample state
+  description: The sample state.
   type: string
 - contextPath: Sample.ID
-  description: The sample ID
+  description: The sample ID.
   type: string
 - contextPath: IP.Address
-  description: IP's relevant to the sample
+  description: The IPs relevant to the sample.
   type: string
 - contextPath: InfoFile
-  description: The report file's object
+  description: The report file's object.
   type: unknown
 - contextPath: Cuckoo.Task.Category
-  description: Category of task
+  description: The task category.
 - contextPath: Cuckoo.Task.Machine
-  description: Machine of task
+  description: The task machine.
 - contextPath: Cuckoo.Task.Errors
-  description: Errors of task
+  description: The task errors.
 - contextPath: Cuckoo.Task.Target
-  description: Target of task
+  description: The task target.
 - contextPath: Cuckoo.Task.Package
-  description: Package of task
+  description: The task package.
 - contextPath: Cuckoo.Task.SampleID
-  description: Sample ID of task
+  description: The task sample ID.
 - contextPath: Cuckoo.Task.Guest
-  description: Task guest
+  description: The task guest.
 - contextPath: Cuckoo.Task.Custom
-  description: Custom values of task
+  description: The task custom values.
 - contextPath: Cuckoo.Task.Owner
-  description: Task owner
+  description: The task owner.
 - contextPath: Cuckoo.Task.Priority
-  description: Priority of task
+  description: The task priority.
 - contextPath: Cuckoo.Task.Platform
-  description: Platform of task
+  description: The task platform.
 - contextPath: Cuckoo.Task.Options
-  description: Task options
+  description: The task options.
 - contextPath: Cuckoo.Task.Status
-  description: Task status
+  description: The task status.
 - contextPath: Cuckoo.Task.EnforceTimeout
-  description: Is timeout of task enforced
+  description: Whether task timeout is enforced.
 - contextPath: Cuckoo.Task.Timeout
-  description: Task timeout
+  description: The task timeout.
 - contextPath: Cuckoo.Task.Memory
-  description: Task memory
+  description: The task memory.
 - contextPath: Cuckoo.Task.Tags
-  description: Task tags
+  description: The task tags.
 - contextPath: Cuckoo.Task.ID
-  description: ID of task
+  description: The task ID.
 - contextPath: Cuckoo.Task.AddedOn
-  description: Date on which the task was added
+  description: The date the task was added.
 - contextPath: Cuckoo.Task.CompletedOn
-  description: Date on which the task was completed
+  description: The date the task was completed.
 - contextPath: Cuckoo.Task.Score
-  description: Reported score of the the task
+  description: The reported task score.
 - contextPath: Cuckoo.Task.Monitor
-  description: Monitor of the reported task
+  description: The reported task monitor.
 - contextPath: ANYRUN.Task.AnalysisDate
-  description: Date and time the analysis was executed.
+  description: The date and time the analysis was executed.
   type: String
 - contextPath: ANYRUN.Task.Behavior.Category
-  description: Category of a process behavior.
+  description: The process behavior category.
   type: String
 - contextPath: ANYRUN.Task.Behavior.Action
-  description: Actions performed by a process.
+  description: The actions performed by a process.
   type: String
 - contextPath: ANYRUN.Task.Behavior.ThreatLevel
-  description: Threat score associated with a process behavior.
+  description: The threat score associated with a process behavior.
   type: Number
 - contextPath: ANYRUN.Task.Behavior.ProcessUUID
-  description: Unique ID of the process whose behaviors are being profiled.
+  description: The unique ID of the process whose behaviors are profiled.
   type: String
 - contextPath: ANYRUN.Task.Connection.Reputation
-  description: Connection reputation.
+  description: The connection reputation.
   type: String
 - contextPath: ANYRUN.Task.Connection.ProcessUUID
-  description: ID of the process that created the connection.
+  description: The ID of the process that created the connection.
   type: String
 - contextPath: ANYRUN.Task.Connection.ASN
-  description: Connection autonomous system network.
+  description: The connection autonomous system network.
   type: String
 - contextPath: ANYRUN.Task.Connection.Country
-  description: Connection country.
+  description: The connection country.
   type: String
 - contextPath: ANYRUN.Task.Connection.Protocol
-  description: Connection protocol.
+  description: The connection protocol.
   type: String
 - contextPath: ANYRUN.Task.Connection.Port
-  description: Connection port number.
+  description: The connection port number.
   type: Number
 - contextPath: ANYRUN.Task.Connection.IP
-  description: Connection IP number.
+  description: The connection IP number.
   type: String
 - contextPath: ANYRUN.Task.DnsRequest.Reputation
-  description: Reputation of the DNS request.
+  description: The reputation of the DNS request.
   type: String
 - contextPath: ANYRUN.Task.DnsRequest.IP
-  description: IP addresses associated with a DNS request.
+  description: The IP addresses associated with a DNS request.
   type: Unknown
 - contextPath: ANYRUN.Task.DnsRequest.Domain
-  description: Domain resolution of a DNS request.
+  description: The domain resolution of a DNS request.
   type: String
 - contextPath: ANYRUN.Task.Threat.ProcessUUID
-  description: Unique process ID from where the threat originated.
+  description: The unique UUID of the process that originated the threat.
   type: String
 - contextPath: ANYRUN.Task.Threat.Msg
-  description: Threat message.
+  description: The threat message.
   type: String
 - contextPath: ANYRUN.Task.Threat.Class
-  description: Class of the threat.
+  description: The threat class.
   type: String
 - contextPath: ANYRUN.Task.Threat.SrcPort
-  description: Port on which the threat originated.
+  description: The port on which the threat originated.
   type: Number
 - contextPath: ANYRUN.Task.Threat.DstPort
-  description: Destination port of the threat.
+  description: The threat destination port.
   type: Number
 - contextPath: ANYRUN.Task.Threat.SrcIP
-  description: Source IP address where the threat originated.
+  description: The source IP address where the threat originated.
   type: String
 - contextPath: ANYRUN.Task.Threat.DstIP
-  description: Destination IP address of the threat.
+  description: The threat destination IP address.
   type: String
 - contextPath: ANYRUN.Task.HttpRequest.Reputation
-  description: Reputation of the HTTP request.
+  description: The reputation of the HTTP request.
   type: String
 - contextPath: ANYRUN.Task.HttpRequest.Country
-  description: HTTP request country.
+  description: The HTTP request country.
   type: String
 - contextPath: ANYRUN.Task.HttpRequest.ProcessUUID
-  description: ID of the process making the HTTP request.
+  description: The ID of the process making the HTTP request.
   type: String
 - contextPath: ANYRUN.Task.HttpRequest.Body
-  description: HTTP request body parameters and details.
+  description: The HTTP request body parameters and details.
   type: Unknown
 - contextPath: ANYRUN.Task.HttpRequest.HttpCode
-  description: HTTP request response code.
+  description: The HTTP request response code.
   type: Number
 - contextPath: ANYRUN.Task.HttpRequest.Status
-  description: Status of the HTTP request.
+  description: The status of the HTTP request.
   type: String
 - contextPath: ANYRUN.Task.HttpRequest.ProxyDetected
   description: Whether the HTTP request was made through a proxy.
   type: Boolean
 - contextPath: ANYRUN.Task.HttpRequest.Port
-  description: HTTP request port.
+  description: The HTTP request port.
   type: Number
 - contextPath: ANYRUN.Task.HttpRequest.IP
-  description: HTTP request IP address.
+  description: The HTTP request IP address.
   type: String
 - contextPath: ANYRUN.Task.HttpRequest.URL
-  description: HTTP request URL.
+  description: The HTTP request URL.
   type: String
 - contextPath: ANYRUN.Task.HttpRequest.Host
-  description: HTTP request host.
+  description: The HTTP request host.
   type: String
 - contextPath: ANYRUN.Task.HttpRequest.Method
-  description: HTTP request method type.
+  description: The HTTP request method type.
   type: String
 - contextPath: ANYRUN.Task.FileInfo
-  description: Details of the submitted file.
+  description: The submitted file details.
   type: String
 - contextPath: ANYRUN.Task.OS
-  description: OS of the sandbox in which the file was analyzed.
+  description: The OS of the sandbox in which the file was analyzed.
   type: String
 - contextPath: ANYRUN.Task.ID
   description: The unique ID of the task.
@@ -719,58 +719,58 @@ outputs:
   description: The MIME of the file submitted for analysis.
   type: String
 - contextPath: ANYRUN.Task.Verdict
-  description: ANY.RUN verdict for the maliciousness of the submitted file or URL.
+  description: The ANY.RUN verdict for the maliciousness of the submitted file or URL.
   type: String
 - contextPath: ANYRUN.Task.Process.FileName
-  description: File name of the process.
+  description: The process file name.
   type: String
 - contextPath: ANYRUN.Task.Process.PID
-  description: Process identification number.
+  description: The process identification number.
   type: Number
 - contextPath: ANYRUN.Task.Process.PPID
-  description: Parent process identification number.
+  description: The parent process identification number.
   type: Number
 - contextPath: ANYRUN.Task.Process.ProcessUUID
-  description: Unique process ID (used by ANY.RUN).
+  description: The Unique process ID (used by ANY.RUN).
   type: String
 - contextPath: ANYRUN.Task.Process.CMD
-  description: Process command.
+  description: The process command.
   type: String
 - contextPath: ANYRUN.Task.Process.Path
-  description: Path of the executed command.
+  description: The path of the executed command.
   type: String
 - contextPath: ANYRUN.Task.Process.User
-  description: User who executed the command.
+  description: The user who executed the command.
   type: String
 - contextPath: ANYRUN.Task.Process.IntegrityLevel
   description: The process integrity level.
   type: String
 - contextPath: ANYRUN.Task.Process.ExitCode
-  description: Process exit code.
+  description: The process exit code.
   type: Number
 - contextPath: ANYRUN.Task.Process.MainProcess
   description: Whether the process is the main process.
   type: Boolean
 - contextPath: ANYRUN.Task.Process.Version.Company
-  description: Company responsible for the program executed.
+  description: The company responsible for the executed program.
   type: String
 - contextPath: ANYRUN.Task.Process.Version.Description
-  description: Description of the type of program.
+  description: The description of the program type.
   type: String
 - contextPath: ANYRUN.Task.Process.Version.Version
-  description: Version of the program executed.
+  description: The version of the executed program.
   type: String
 - contextPath: URL.Data
-  description: URL data.
+  description: The URL data.
   type: String
 - contextPath: URL.Malicious.Vendor
-  description: For malicious URLs, the vendor that made the decision.
+  description: The vendor that decides the URL is malicious.
   type: String
 - contextPath: URL.Malicious.Description
-  description: For malicious URLs, the reason for the vendor to make the decision.
+  description: The reason the vendor decides the URL is malicious.
   type: String
 - contextPath: ANYRUN.Task.Status
-  description: Task analysis status.
+  description: The task analysis status.
   type: String
 fromversion: 5.0.0
 tests:
