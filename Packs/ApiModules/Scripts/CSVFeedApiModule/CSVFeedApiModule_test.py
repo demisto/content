@@ -407,7 +407,6 @@ def test_build_iterator_not_modified_header(mocker):
     """
     mocker.patch.object(demisto, 'debug')
     mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.5.0"})
-    # mocker.patch('CommonServerPython.is_demisto_version_ge', return_value=True)
     with requests_mock.Mocker() as m:
         m.get('https://api.github.com/meta', status_code=304)
 
@@ -435,7 +434,6 @@ def test_build_iterator_with_version_6_2_0(mocker):
     - Ensure that the no_update value is True
     - Request is called without headers "If-None-Match" and "If-Modified-Since"
     """
-    feed_name = 'mock_feed_name'
     mocker.patch.object(demisto, 'debug')
     mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
 
@@ -446,9 +444,8 @@ def test_build_iterator_with_version_6_2_0(mocker):
             url='https://api.github.com/meta',
             headers={}
         )
-        result, no_update = client.build_iterator(feed={'url': 'https://api.github.com/meta'}, feed_name=feed_name)
-        assert not result
-        assert no_update
+        result = client.build_iterator()
+        assert result[0]['https://api.github.com/meta']['no_update']
         assert 'If-None-Match' not in client.headers
         assert 'If-Modified-Since' not in client.headers
 
