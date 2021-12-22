@@ -2,7 +2,7 @@
     "name": "Analyst1",
     "description": "This integration utilizes Analyst1's system to enrich Demisto indicators with data provided by the illuminate REST API, such as actor and malware information, activity and reported dates, evidence and hit counts, and more.",
     "support": "partner",
-    "currentVersion": "1.0.11",
+    "currentVersion": "1.0.12",
     "author": "Analyst1",
     "url": "",
     "email": "support@analystplatform.com",
