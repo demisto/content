@@ -16,7 +16,7 @@
     "name": "[Inventa] Report Reason",
     "neverSetAsRequired": false,
     "ownerOnly": true,
-    "required": false,
+    "required": true,
     "sla": 0,
     "system": false,
     "threshold": 72,

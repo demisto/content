@@ -111,12 +111,11 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: be72e00b-06f0-44bf-8657-ea64d31982be
+      id: ffdd9b7e-31a2-4da4-840f-ee2274fdc15c
       iscommand: false
       name: ""
-      description: ""
       version: -1
-    taskid: be72e00b-06f0-44bf-8657-ea64d31982be
+    taskid: ffdd9b7e-31a2-4da4-840f-ee2274fdc15c
     timertriggers: []
     type: start
     view: |-
@@ -178,13 +177,13 @@ tasks:
     task:
       brand: ""
       description: get datasubject id
-      id: b4a403a1-d627-4f33-839a-271a9117daee
+      id: 1b321453-cc5e-4f5b-8e12-446e8045d7fe
       iscommand: true
       name: get datasubject id
       script: '|||inventa-get-datasubject-id'
       type: regular
       version: -1
-    taskid: b4a403a1-d627-4f33-839a-271a9117daee
+    taskid: 1b321453-cc5e-4f5b-8e12-446e8045d7fe
     timertriggers: []
     type: regular
     view: |-
@@ -224,13 +223,13 @@ tasks:
     task:
       brand: ""
       description: create ticket
-      id: 3048a6cf-d71f-435c-8027-a87afc70e4dc
+      id: 4aeddcb7-3fbc-416f-888a-51b752e8dd57
       iscommand: true
       name: create ticket
       script: '|||inventa-create-ticket'
       type: regular
       version: -1
-    taskid: 3048a6cf-d71f-435c-8027-a87afc70e4dc
+    taskid: 4aeddcb7-3fbc-416f-888a-51b752e8dd57
     timertriggers: []
     type: regular
     view: |-
@@ -266,13 +265,13 @@ tasks:
     task:
       brand: ""
       description: Get DSAR files
-      id: 36aa0440-17b4-4004-879c-6e73e84146cc
+      id: 2bc4f68d-0ebe-4366-8391-53f37dfdde96
       iscommand: true
       name: get files
       script: '|||inventa-get-dsar-files'
       type: regular
       version: -1
-    taskid: 36aa0440-17b4-4004-879c-6e73e84146cc
+    taskid: 2bc4f68d-0ebe-4366-8391-53f37dfdde96
     timertriggers: []
     type: regular
     view: |-
@@ -287,9 +286,6 @@ tasks:
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
-    nexttasks:
-      '#none#':
-      - "26"
     note: false
     quietmode: 0
     scriptarguments:
@@ -306,13 +302,13 @@ tasks:
     task:
       brand: ""
       description: Get DSAR transactions
-      id: 21d74220-ff90-4a9b-83f7-6a363ddc40c3
+      id: 7e7791d3-6cc6-4987-8575-c3b4e5244017
       iscommand: true
       name: get transactions
       script: '|||inventa-get-dsar-transactions'
       type: regular
       version: -1
-    taskid: 21d74220-ff90-4a9b-83f7-6a363ddc40c3
+    taskid: 7e7791d3-6cc6-4987-8575-c3b4e5244017
     timertriggers: []
     type: regular
     view: |-
@@ -346,13 +342,13 @@ tasks:
     task:
       brand: ""
       description: Get DSAR databases
-      id: b8ecc03f-f2f0-4b9e-80ef-6c36a6074126
+      id: b6eb06d4-b339-4b1d-858b-08b3845d640e
       iscommand: true
       name: get databases
       script: '|||inventa-get-dsar-databases'
       type: regular
       version: -1
-    taskid: b8ecc03f-f2f0-4b9e-80ef-6c36a6074126
+    taskid: b6eb06d4-b339-4b1d-858b-08b3845d640e
     timertriggers: []
     type: regular
     view: |-
@@ -386,13 +382,13 @@ tasks:
     task:
       brand: ""
       description: Get DSAR dataassets
-      id: af35fe66-3fc2-4b6f-8fb8-d5b2c615d86c
+      id: 49ffb989-ee75-4d79-8d87-d96a13890f5a
       iscommand: true
       name: get dataassets
       script: '|||inventa-get-dsar-dataassets'
       type: regular
       version: -1
-    taskid: af35fe66-3fc2-4b6f-8fb8-d5b2c615d86c
+    taskid: 49ffb989-ee75-4d79-8d87-d96a13890f5a
     timertriggers: []
     type: regular
     view: |-
@@ -430,13 +426,13 @@ tasks:
     task:
       brand: ""
       description: Get DSAR piis
-      id: 7606c5de-0b7c-4995-8315-8433a70c95fa
+      id: cb9d7394-c20b-42bb-8a74-9982488d4f35
       iscommand: true
       name: get piis
       script: '|||inventa-get-dsar-piis'
       type: regular
       version: -1
-    taskid: 7606c5de-0b7c-4995-8315-8433a70c95fa
+    taskid: cb9d7394-c20b-42bb-8a74-9982488d4f35
     timertriggers: []
     type: regular
     view: |-
@@ -473,13 +469,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 05c62b09-979a-4b3a-8091-43432dcc7428
+      id: 3c53f41a-b75c-4ea4-8bf8-0f5eb37462dc
       iscommand: false
       name: No DSAR ticket in Inventa
       type: condition
-      description: ""
       version: -1
-    taskid: 05c62b09-979a-4b3a-8091-43432dcc7428
+    taskid: 3c53f41a-b75c-4ea4-8bf8-0f5eb37462dc
     timertriggers: []
     type: condition
     view: |-
@@ -504,12 +499,12 @@ tasks:
     task:
       brand: ""
       description: commands.local.cmd.extract.indicators
-      id: fdd0d6cf-d2f5-4e56-8d6f-047e9b60439f
+      id: cd85764e-b1a3-4a04-8724-ac3ed8849be1
       iscommand: false
       name: Ticket Id
       type: title
       version: -1
-    taskid: fdd0d6cf-d2f5-4e56-8d6f-047e9b60439f
+    taskid: cd85764e-b1a3-4a04-8724-ac3ed8849be1
     timertriggers: []
     type: title
     view: |-
@@ -539,13 +534,13 @@ tasks:
     task:
       brand: ""
       description: Set a value in context under the key you entered.
-      id: 8a66e448-345f-4b1d-8259-fd2c4109c9ae
+      id: 8dbab6e8-6181-44aa-8a55-897e1a6ab9a1
       iscommand: false
       name: set ticket id
       script: Set
       type: regular
       version: -1
-    taskid: 8a66e448-345f-4b1d-8259-fd2c4109c9ae
+    taskid: 8dbab6e8-6181-44aa-8a55-897e1a6ab9a1
     timertriggers: []
     type: regular
     view: |-
@@ -581,13 +576,13 @@ tasks:
     task:
       brand: ""
       description: Set a value in context under the key you entered.
-      id: 8c739bb9-d425-4e1d-86e2-784f0132f289
+      id: 79ea785b-aaeb-4048-8990-2fe6574819ac
       iscommand: false
       name: set datasubject id
       script: Set
       type: regular
       version: -1
-    taskid: 8c739bb9-d425-4e1d-86e2-784f0132f289
+    taskid: 79ea785b-aaeb-4048-8990-2fe6574819ac
     timertriggers: []
     type: regular
     view: |-
@@ -608,13 +603,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: e434e258-3897-4819-8ee1-8188b70e7524
+      id: 4f3ef145-5adf-4de8-88b1-ac00a8c5450f
       iscommand: false
       name: Done
       type: title
-      description: ""
       version: -1
-    taskid: e434e258-3897-4819-8ee1-8188b70e7524
+    taskid: 4f3ef145-5adf-4de8-88b1-ac00a8c5450f
     timertriggers: []
     type: title
     view: |-
@@ -648,13 +642,13 @@ tasks:
     task:
       brand: ""
       description: Get PII id from ticket
-      id: c0926bf3-46b9-4370-84ca-3b88ac80cec9
+      id: 7f6a8287-dc7d-44a8-8234-59d92a6b32a8
       iscommand: true
       name: Datasubject Id
       script: '|||inventa-get-datasubject-id-from-ticket'
       type: regular
       version: -1
-    taskid: c0926bf3-46b9-4370-84ca-3b88ac80cec9
+    taskid: 7f6a8287-dc7d-44a8-8234-59d92a6b32a8
     timertriggers: []
     type: regular
     view: |-
@@ -688,13 +682,13 @@ tasks:
     task:
       brand: ""
       description: Set a value in context under the key you entered.
-      id: 1b36e534-d75a-4b12-8d9d-38610fd6efad
+      id: 8e3de579-2105-4603-8feb-b96d0ed60bce
       iscommand: false
       name: Set Datasubject Id
       script: Set
       type: regular
       version: -1
-    taskid: 1b36e534-d75a-4b12-8d9d-38610fd6efad
+    taskid: 8e3de579-2105-4603-8feb-b96d0ed60bce
     timertriggers: []
     type: regular
     view: |-
@@ -731,13 +725,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: c8072ef5-c6ca-44a5-82f3-9fd19d5470fd
+      id: 13d7d489-fbeb-4a6c-82b7-73aed7a7110a
       iscommand: false
-      description: ""
       name: No DataSubject Id in incident
       type: condition
       version: -1
-    taskid: c8072ef5-c6ca-44a5-82f3-9fd19d5470fd
+    taskid: 13d7d489-fbeb-4a6c-82b7-73aed7a7110a
     timertriggers: []
     type: condition
     view: |-
@@ -752,9 +745,6 @@ tasks:
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
-#    nexttasks:
-#      '#none#':
-#      - "29"
     note: false
     quietmode: 0
     scriptarguments:
@@ -777,20 +767,20 @@ tasks:
     task:
       brand: Builtin
       description: commands.local.cmd.linkIncidents
-      id: a8aedff8-731b-4fee-8b74-9703adb302ea
+      id: f5bcd7fc-ec5b-4061-8597-025e4fc396e5
       iscommand: true
       name: Link
       script: Builtin|||linkIncidents
       type: regular
       version: -1
-    taskid: a8aedff8-731b-4fee-8b74-9703adb302ea
+    taskid: f5bcd7fc-ec5b-4061-8597-025e4fc396e5
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 870,
-          "y": 670
+          "x": 940,
+          "y": 660
         }
       }
   "21":
@@ -800,8 +790,8 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - "20"
       - "29"
+      - "30"
     note: false
     quietmode: 0
     scriptarguments:
@@ -812,13 +802,13 @@ tasks:
     task:
       brand: ""
       description: Searches Demisto incidents
-      id: 5886cec1-2ed5-4ccc-88ea-ddfe1ba47c3f
+      id: 66aaab80-dd87-4501-8368-e302ba6f75b6
       iscommand: false
       name: Find related incidents
       script: SearchIncidentsV2
       type: regular
       version: -1
-    taskid: 5886cec1-2ed5-4ccc-88ea-ddfe1ba47c3f
+    taskid: 66aaab80-dd87-4501-8368-e302ba6f75b6
     timertriggers: []
     type: regular
     view: |-
@@ -854,13 +844,13 @@ tasks:
     task:
       brand: ""
       description: Creates a Grid table from items or key-value pairs.
-      id: afcd95e6-dd93-4466-8632-b40c3570a51a
+      id: 37d0382c-c719-43f2-8287-2e3db031cd8c
       iscommand: false
       name: Files to Grid
       script: SetGridField
       type: regular
       version: -1
-    taskid: afcd95e6-dd93-4466-8632-b40c3570a51a
+    taskid: 37d0382c-c719-43f2-8287-2e3db031cd8c
     timertriggers: []
     type: regular
     view: |-
@@ -896,13 +886,13 @@ tasks:
     task:
       brand: ""
       description: Creates a Grid table from items or key-value pairs.
-      id: 215c81ca-596e-43ab-8a09-7b54984a4000
+      id: 931c9420-3c19-4525-8b23-d07d5c0c1a8a
       iscommand: false
       name: Databases to Grid
       script: SetGridField
       type: regular
       version: -1
-    taskid: 215c81ca-596e-43ab-8a09-7b54984a4000
+    taskid: 931c9420-3c19-4525-8b23-d07d5c0c1a8a
     timertriggers: []
     type: regular
     view: |-
@@ -938,54 +928,19 @@ tasks:
     task:
       brand: ""
       description: Creates a Grid table from items or key-value pairs.
-      id: a29e241f-c4e6-4360-8480-328a2cc1a5ca
+      id: 8b766fc6-ccb9-4da7-819d-023f2426e782
       iscommand: false
       name: Data Assets to Grid
       script: SetGridField
       type: regular
       version: -1
-    taskid: a29e241f-c4e6-4360-8480-328a2cc1a5ca
+    taskid: 8b766fc6-ccb9-4da7-819d-023f2426e782
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
           "x": 870,
-          "y": 1090
-        }
-      }
-  "26":
-    id: "26"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    note: false
-    quietmode: 0
-    scriptarguments:
-      context_path:
-        simple: Inventa.Dsar.Transactions.transactions
-      grid_id:
-        simple: inventadsartransactions
-      sort_by:
-        simple: id
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Creates a Grid table from items or key-value pairs.
-      id: 5085c344-9248-49ee-8540-07218894bebe
-      iscommand: false
-      name: '[TODO] Transactions to Grid'
-      script: SetGridField
-      type: regular
-      version: -1
-    taskid: 5085c344-9248-49ee-8540-07218894bebe
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 70,
           "y": 1090
         }
       }
@@ -1015,13 +970,13 @@ tasks:
     task:
       brand: ""
       description: Creates a Grid table from items or key-value pairs.
-      id: 07553884-d2b1-4179-89d3-458837ac2976
+      id: 5bc0dd7e-4be9-4f39-8e2a-d0d880bf09ba
       iscommand: false
       name: PIIs to Grid
       script: SetGridField
       type: regular
       version: -1
-    taskid: 07553884-d2b1-4179-89d3-458837ac2976
+    taskid: 5bc0dd7e-4be9-4f39-8e2a-d0d880bf09ba
     timertriggers: []
     type: regular
     view: |-
@@ -1061,13 +1016,13 @@ tasks:
     task:
       brand: ""
       description: Get datasubject details
-      id: 129dd128-ece3-4d4c-820a-b95feb22f895
+      id: d1ed7946-fa0f-4b34-86ed-db5969c70789
       iscommand: true
       name: DataSubject Details
       script: '|||inventa-get-datasubject-details'
       type: regular
       version: -1
-    taskid: 129dd128-ece3-4d4c-820a-b95feb22f895
+    taskid: d1ed7946-fa0f-4b34-86ed-db5969c70789
     timertriggers: []
     type: regular
     view: |-
@@ -1095,13 +1050,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: fbc10be3-d41f-4fc9-8fcf-4a74d0d4d731
+      id: a92bbedf-6d3c-4b92-8a37-1c0b9b406c68
       iscommand: false
       name: Handle Context
       type: title
-      description: ""
       version: -1
-    taskid: fbc10be3-d41f-4fc9-8fcf-4a74d0d4d731
+    taskid: a92bbedf-6d3c-4b92-8a37-1c0b9b406c68
     timertriggers: []
     type: title
     view: |-
@@ -1111,8 +1065,54 @@ tasks:
           "y": 790
         }
       }
+  "30":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: foundIncidents.id
+                    operator: isNotEqualString
+                    right:
+                      value:
+                        simple: ${incident.id}
+                root: foundIncidents.id
+          operator: isNotEmpty
+      label: "yes"
+    id: "30"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "yes":
+      - "20"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5601ee49-3aea-41df-8d8d-cf5a2990b012
+      iscommand: false
+      name: Check if related incidents found
+      type: condition
+      version: -1
+    taskid: 5601ee49-3aea-41df-8d8d-cf5a2990b012
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 480
+        }
+      }
 version: -1
-fromversion: 6.0.0
 view: |-
   {
     "linkLabelsPosition": {},
@@ -1125,5 +1125,6 @@ view: |-
       }
     }
   }
+fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
