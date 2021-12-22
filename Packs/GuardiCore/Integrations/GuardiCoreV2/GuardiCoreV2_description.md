@@ -12,3 +12,7 @@ To configure the integration, enter your credentials in the following fields:
    - *Incident severity*
    - *Maximum alerts to fetch*
    - *First fetch time*
+
+
+---
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/guardi-core-v2)

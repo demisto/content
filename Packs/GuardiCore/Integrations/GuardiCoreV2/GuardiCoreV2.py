@@ -1,12 +1,11 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-
-import requests
-import traceback
-from typing import Dict, Any, Tuple
 import base64
 import json
+import traceback
+from typing import Any, Dict, Tuple
+
+import demistomock as demisto  # noqa: F401
+import requests
+from CommonServerPython import *  # noqa: F401
 from dateparser import parse
 from pytz import utc
 
@@ -14,6 +13,7 @@ from pytz import utc
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
+# contrib test
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 INCIDENT_COLUMNS = ['id', 'incident_type', 'severity', 'start_time', 'end_time',
                     'ended', 'affected_assets']
