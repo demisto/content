@@ -12,10 +12,10 @@ system: true
 args:
 - name: searchText
   required: true
-  description: Free text to search on. could be the hostname, agent guid etc.
+  description: Free text on which to search. Could be a hostname, agent guid, etc.
 outputs:
 - contextPath: Endpoint.Hostname
-  description: Hostname
+  description: Hostname.
 scripttarget: 0
 timeout: 0s
 dependson:
