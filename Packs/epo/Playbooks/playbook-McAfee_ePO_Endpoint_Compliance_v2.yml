@@ -1,7 +1,7 @@
 id: McAfee ePO Endpoint Compliance Playbook v2
 version: -1
 name: McAfee ePO Endpoint Compliance Playbook v2
-description: Discover endpoints that are not using the latest McAfee AV Signatures
+description: Discover endpoints that are not using the latest McAfee AV signatures.
 starttaskid: "0"
 tasks:
   "0":
@@ -77,7 +77,7 @@ tasks:
       id: e2011131-7697-4654-8f6e-1f18bdd71264
       version: -1
       name: Are any endpoints outdated and using an older DAT version?
-      description: A list of comma-separated systems on which an out-of-date DAT file
+      description: A comma-separated list of systems on which an out-of-date DAT file
         is in use.
       type: condition
       iscommand: false
@@ -115,7 +115,7 @@ tasks:
       id: d7153b32-ce01-4a70-862c-0dfdbb451f22
       version: -1
       name: Are any endpoints faulty and dangerously outdated?
-      description: A list of comma-separated systems on which an out-of-date DAT file
+      description: A comma-separated list of systems on which an out-of-date DAT file
         is in use.
       type: condition
       iscommand: false
@@ -183,7 +183,7 @@ tasks:
       name: Open ServiceNow ticket for outdated Endpoints
       description: |-
         This script is used to wrap the generic create-record command in ServiceNow.
-        You can add fields that you want to create the record with as script arguments or in the
+        You can add fields that you want to create the record with, as script arguments or in the
         code and work with the records easily.
       scriptName: ServiceNowCreateIncident
       type: regular
@@ -315,7 +315,7 @@ tasks:
       version: -1
       name: Store system names to context key outdatedEndpoints
       description: Takes the comments of a given entry ID and stores them in the incident
-        context, under a provided context key. For accessing the last executed task's
+        context under a provided context key. For accessing the last executed task's
         comments, provide ${lastCompletedTaskEntries.[0]} as the value for the entryId
         input parameter.
       scriptName: commentsToContext
