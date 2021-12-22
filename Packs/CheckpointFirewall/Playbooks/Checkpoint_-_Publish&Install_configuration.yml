@@ -307,7 +307,7 @@ tasks:
       script: '|||checkpoint-logout'
       type: regular
       iscommand: true
-      brand: CheckPointFirewall_v2
+      brand: ""
     nexttasks:
       '#none#':
       - "3"
