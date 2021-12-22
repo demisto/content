@@ -100,7 +100,7 @@ tasks:
       name: Open ServiceNow ticket for admin to install agents
       description: |-
         This script is used to wrap the generic create-record command in ServiceNow.
-        You can add fields that you want to create the record with as script arguments or in the
+        You can add fields that you want to create the record with, as script arguments or in the
         code and work with the records easily.
       scriptName: ServiceNowCreateIncident
       type: regular
@@ -258,7 +258,7 @@ tasks:
         ePO.
       iscommand: false
       brand: ""
-      description: force communication with ePO
+      description: Force communication with ePO.
     nexttasks:
       '#none#':
       - "9"
