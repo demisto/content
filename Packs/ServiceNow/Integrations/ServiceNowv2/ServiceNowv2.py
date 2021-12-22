@@ -1504,7 +1504,7 @@ def query_table_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bo
     if fields:
         fields = argToList(fields)
         # Filter the records according to the given fields
-        records = [dict([kv_pair for kv_pair in iter(r.items()) if kv_pair[0] in fields]) for r in table_entries]
+        records = [{k.replace('.', '_'): v for k, v in r.items() if k in fields} for r in table_entries]
         for record in records:
             record['ID'] = record.pop('sys_id')
             for k, v in record.items():
