@@ -19,7 +19,7 @@ configuration:
 - defaultvalue: search `notable` | eval rule_name=if(isnull(rule_name),source,rule_name)
     | eval rule_title=if(isnull(rule_title),rule_name,rule_title) | `get_urgency`
     | `risk_correlation` | eval rule_description=if(isnull(rule_description),source,rule_description)
-    | eval security_domain=if(isnull(security_domain),source,security_domain) | expandtoken
+    | eval security_domain=if(isnull(security_domain),source,security_domain)
   display: Fetch events query
   name: fetchQuery
   required: false
@@ -70,6 +70,18 @@ configuration:
     months, 1 year)
   hidden: false
   name: fetch_time
+  required: false
+  type: 0
+- defaultvalue: earliest_time
+  display: Earliest time to fetch (The name of the Splunk field whose value defines
+    the query's earliest time to fetch.)
+  name: earliest_fetch_time_fieldname
+  required: false
+  type: 0
+- defaultvalue: latest_time
+  display: Latest time to fetch (The name of the Splunk field whose value defines
+    the query's latest time to fetch.)
+  name: latest_fetch_time_fieldname
   required: false
   type: 0
 - display: Extract Fields - CSV fields that will be parsed out of _raw notable events
@@ -174,6 +186,25 @@ configuration:
   additionalinfo: The limit of how many events to retrieve per each one of the enrichment
     types (Drilldown, Asset, and Identity). To retrieve all events, enter "0" (not
     recommended).
+- display: 'Advanced: Extensive logging (for debugging purposes) - Please use this option unless advised otherwise.'
+  name: extensive_logs
+  type: 8
+  required: false
+- display: 'Advanced: Fetch backwards window for the events occurrence time (minutes)'
+  name: occurrence_look_behind
+  defaultvalue: "15"
+  type: 0
+  required: false
+  additionalinfo: The fetch time range will be at least of the size specified here.
+    This will support events that have a gap between their occurrence time and their
+    index time in Splunk. To decide how long the backwards window should be, you need to analyze what is the average
+    time between them both on your splunk envorinment.
+- display: 'Advanced: Unique ID fields'
+  name: unique_id_fields
+  type: 0
+  required: false
+  additionalinfo: Use this parameter to specify a list of comma separated fields, which
+    together are a unique identifier for the events you with to fetch.
 description: Runs queries on Splunk servers.
 display: SplunkPy
 name: SplunkPy

@@ -5,9 +5,44 @@ Use the SplunkPy integration to fetch incidents from Splunk ES, and query result
 To use Splunk token authentication, enter the text: *_token* in the **Username** field and your token value in the **Password** field.
 To create an authentication token, go to [Splunk create authentication tokens](https://docs.splunk.com/Documentation/SplunkCloud/8.1.2101/Security/CreateAuthTokens).
 ***
+# Splunk Enterprise Security Users
 
-### Fetching notable events.
+## Fetching notable events.
 The integration allows for fetching Splunk notable events using a default query. The query can be changed and modified to support different Splunk use cases. (See [Existing users](#existing-users)).
+We highly recommend reading the [Ingest Incidents from a SIEM Using Splunk article](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-tutorials/tutorials/splunk-use-case.html) before starting using this integration.
+This article will help you configure your Splunk integration, set up a basic flow and start ingesting incidents from the Splunk to Cortex XSOAR.
+
+### How to configure
+1. Select __Settings__>__Integrations__>__Servers & Services__>__SplunkPy PreRelease__.
+2. Click Add Instance.
+3. Select Fetches incidents.
+4. Under Classifier, select N/A.
+5. Under Incident Type, select Splunk Notable Generic.
+6. You do not need to specify the classifier as all Splunk incidents are ingested as Splunk Notable Generic. As you become more familiar with Cortex XSOAR, you can create custom incident types as needed instead of using the Splunk Notable Generic incident type.
+7. Under Mapper (incoming), select Splunk - Notable Generic Incoming Mapper.
+8. Under Mapper (outgoing), select Splunk - Notable Generic Outgoing Mapper.
+
+9. Type the Host -ip, username, password, and Port.
+10. Keep the Get notable events EQ query as is, as we use the Notable macro when ingesting events. You can create a more granular search by specifying specific conditions such as specific security domain, event ID, etc.
+11. Keep the defaults for fetch limit, first fetch timestamp, earliest time to fetch and latest time to fetch.
+12. To add mirroring in both environments, in the Incident Mirroring Direction field, select Incoming and Outgoing.
+Outgoing miroriring is recommended for Cortex XSOAR version 6.2 and above. If you enable mirroring, you need to add the timezone of the splunk server (in minutes). For example, if using GMT and the timezone is GMT +3 hours, set the timezone to +180. For UTC, set the timezone to 0. Set this only if the Splunk server is different than the Cortex XSOAR server. This is relevant only for fetching notable events.
+13. Select Close Mirrored XSOAR Incident and Close Mirrored Splunk Notable Event, so when closing in one environment, it closes in the other.
+14. In the Enrichment Types field, select Asset, Drilldown and Identity.
+This enrichment provides additional information about Assets, drilldown, and identities that are related to the notable events you ingest.
+15. Fetch backwards window - this backward window is for cases there is a gap between the event occurrence time and the event index time on the server.
+In Splunk, there is often a delay between the time an incident is created (the event's "occurrence time") and the time it is actually searchable in Splunk and visible in the index (the event's "index time").
+This delay can be caused by an inefficient Splunk architecture, causing higher event indexing latency. However, it can also be "by design", e.g. if some endpoints / machines that generate Splunk events are usually offline.
+Another point to note is that Splunk's searches are based on the occurrence time behind the scenes. Meaning, Splunk itself uses occurrence time as its determining factor for bucket division and search.
+Therefore - we can't use index time as our primary search key without making the searches inefficient.
+The backwards window is a way for you to configure the longest delay you would like to support.
+This parameter determines the size of the occurrence time "sliding window" we will support in our queries. For example, if set for 2 hours, we will always search for events that occurred up to 2 hours ago (and will of course ignore duplicates).
+However, there is obviously a price - the larger the window, the longer it will take for fetch queries to complete.
+The best value to set depends on the delays that you see in your system (consult with your Splunk expert / master), the number of events in your system and other network properties.
+Please use this parameter with careful consideration.
+16. Click Test and then Save & exit.
+
+**Note: If you are using custom incident type, you also need to create custom corresponding incoming and outgoing mappers. Pay attention, if you want to use mirror mechanism, incoming mapper must contain the following fields: dbotMirrorDirection, dbotMirrorId, dbotMirrorInstance**
 
 ### Enriching notable events
 This integration allows 3 types of enrichments for fetched notables: Drilldown, Asset, and Identity.
