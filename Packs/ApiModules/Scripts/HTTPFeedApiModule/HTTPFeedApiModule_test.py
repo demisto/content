@@ -478,6 +478,7 @@ def test_build_iterator_not_modified_header(mocker):
     - Ensure that the results are empty and No_update value is True.
     """
     mocker.patch.object(demisto, 'debug')
+    mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.5.0"})
     with requests_mock.Mocker() as m:
         m.get('https://api.github.com/meta', status_code=304)
 

@@ -214,6 +214,8 @@ def test_build_iterator_not_modified_header(mocker):
     feed_name = 'mock_feed_name'
     mocker.patch.object(demisto, 'debug')
     mocker.patch.object(demisto, 'getLastRun', return_value={feed_name: {'etag': '0', 'last_modified': 'now'}})
+    mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.5.0"})
+
     with requests_mock.Mocker() as m:
         m.get('https://api.github.com/meta', status_code=304)
 
