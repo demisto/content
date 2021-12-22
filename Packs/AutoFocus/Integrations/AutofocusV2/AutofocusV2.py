@@ -1434,7 +1434,7 @@ def search_ip_command(ip, reliability, create_relationships):
             )
             ip = Common.IP(
                 ip=ip_address,
-                dbot_score=dbot_score
+                dbot_score=dbot_score,
             )
             md = f'### The IP indicator: {ip_address} was not found in AutoFocus'
             autofocus_ip_output = {'IndicatorValue': ip_address}
