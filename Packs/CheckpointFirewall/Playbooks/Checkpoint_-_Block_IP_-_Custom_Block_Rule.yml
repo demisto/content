@@ -127,12 +127,12 @@ tasks:
             value:
               complex:
                 root: ${CheckPoint
-                accessor: Objects.ipv4}
+                accessor: Objects.ipv4-address}
             iscontext: true
       - - operator: isEqualString
           left:
             value:
-              simple: ${CheckPoint.Objects.[1].ipv4}
+              simple: ${CheckPoint.Objects.ipv4-address}
             iscontext: true
           right:
             value:
