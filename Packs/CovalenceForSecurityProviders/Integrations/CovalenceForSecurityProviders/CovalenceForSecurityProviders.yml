@@ -64,6 +64,12 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- defaultvalue: '50'
+  display: Fetch limit
+  name: max_fetch
+  required: false
+  type: 0
+  hidden: true
 description: Triggers by any alert from endpoint, cloud, and network security monitoring,
   with mitigation steps where applicable. Query Covalence for more detail.
 display: Covalence For Security Providers
