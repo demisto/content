@@ -86,7 +86,6 @@ Following combinations are treated as constraints:
 !inventa-get-datasubjects full_name="john smith" city=vancouver street_address="main square 1"
  ```
 
-#### Human Readable Output
 
 
 
@@ -115,7 +114,6 @@ Retrieves data transactions' details containing info about data subject
 #### Command Example
 ```!inventa-get-dsar-transactions ticket_id=3```
 
-#### Human Readable Output
 
 
 
@@ -144,7 +142,6 @@ Retrieves details of files contatining info about data subject
 #### Command Example
 ```!inventa-get-dsar-files ticket_id=3```
 
-#### Human Readable Output
 
 
 
@@ -173,7 +170,6 @@ Retrieves list of databases and tables containing info about data subject
 #### Command Example
 ```!inventa-get-dsar-databases ticket_id=3```
 
-#### Human Readable Output
 
 
 
@@ -203,7 +199,6 @@ Get datasubject name and email
 #### Command Example
 ```!inventa-get-datasubject-details ticket_id = 3```
 
-#### Human Readable Output
 
 
 
@@ -232,7 +227,6 @@ Retrieves list of data assets containing info about data subject
 #### Command Example
 ```inventa-get-dsar-dataassets ticket_id=3```
 
-#### Human Readable Output
 
 
 
@@ -261,7 +255,6 @@ Get list of PII categories related to the data subject
 #### Command Example
 ```!inventa-get-dsar-piis ticket_id=3```
 
-#### Human Readable Output
 
 
 
@@ -289,7 +282,6 @@ Retrieves list of PII entities described in Inventa
 #### Command Example
 ```!inventa-get-entities```
 
-#### Human Readable Output
 
 
 
@@ -318,7 +310,6 @@ Retrieves ID of a data subject from Inventa's DSAR ticket
 #### Command Example
 ```!inventa-get-datasubject-id-from-ticket ticket_id=3```
 
-#### Human Readable Output
 
 
 
@@ -383,7 +374,6 @@ Following combinations are treated as constraints:
 !inventa-get-datasubjects full_name="john smith" city=vancouver street_address="main square 1"
 ```
 
-#### Human Readable Output
 
 
 
@@ -413,6 +403,5 @@ Creates Inventa ticket
 #### Command Example
 ```!inventa-create-ticket reason="test reason" datasubject_id=123asd456789```
 
-#### Human Readable Output
 
 
