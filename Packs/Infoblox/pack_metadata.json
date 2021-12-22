@@ -1,5 +1,5 @@
 {
-    "name": "Infoblox",
+    "name": "Infoblox NIOS",
     "description": "Infoblox enables you to receive metadata about IPs in your network and manages the DNS Firewall by configuring RPZs. It defines RPZ rules to block DNS resolution for malicious or unauthorized hostnames, or redirect clients to a walled garden by substituting responses.",
     "support": "xsoar",
     "currentVersion": "1.0.8",
@@ -12,5 +12,9 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

@@ -2,9 +2,10 @@ commonfields:
   id: Anomali ThreatStream
   version: -1
 name: Anomali ThreatStream
-display: Anomali ThreatStream
+display: Anomali ThreatStream (Deprecated)
 category: Data Enrichment & Threat Intelligence
-description: Use Anomali ThreatStream to query and submit threats
+description: Deprecated. Use Anomali ThreatStream v3 instead. Use Anomali ThreatStream to query and submit threats
+deprecated: true
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: server

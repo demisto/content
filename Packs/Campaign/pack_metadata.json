@@ -47,5 +47,9 @@
         "DemistoLocking",
         "CommonTypes",
         "CommonScripts"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }
