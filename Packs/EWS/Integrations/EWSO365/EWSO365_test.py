@@ -379,6 +379,7 @@ def test_fetch_last_emails(mocker, since_datetime, filter_arg, expected_result):
         - Verify last_modified_time__gte is ten minutes earlier
         - Verify datetime_received__gte according to the datetime received
     """
+
     class MockObject:
         def filter(self, last_modified_time__gte='', datetime_received__gte=''):
             return MockObject2()
@@ -424,6 +425,7 @@ def test_fetch_last_emails_max_fetch(max_fetch, expected_result):
         - Return 2 emails
         - Return 5 emails
     """
+
     class MockObject:
         def filter(self, last_modified_time__gte='', datetime_received__gte=''):
             return MockObject2()
@@ -508,14 +510,10 @@ def test_parse_incident_from_item_with_attachments():
 
 
 @pytest.mark.parametrize('params, expected_result', [
-    ({'tenant_id': 'tenant_id', 'client_id': 'client_id', '_tenant_id': '_tenant_id', '_client_id': '_client_id',
-      'default_target_mailbox': 'default_target_mailbox'}, 'Key / Application Secret must be provided.'),
-    ({'tenant_id': 'tenant_id', '_tenant_id': '_tenant_id', 'credentials': {'password': '1234'},
-      'default_target_mailbox': 'default_target_mailbox'}, 'ID / Application ID ID must be provided.'),
-    ({'credentials': {'password': '1234'}, '_client_id': '_auth_id',
-      'default_target_mailbox': 'default_target_mailbox'}, 'Token / Tenant ID must be provided.')
+    ({'_tenant_id': '_tenant_id', '_client_id': '_client_id', 'default_target_mailbox': 'default_target_mailbox'},
+     'Key / Application Secret must be provided.')
 ])
-def test_params(mocker, params, expected_result):
+def test_key_params(mocker, params, expected_result):
     """
     Given:
       - Configuration parameters
@@ -526,8 +524,58 @@ def test_params(mocker, params, expected_result):
     """
 
     mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'error')
+    mocker.patch.object(demisto, 'results')
+    sub_main()
 
-    with pytest.raises(Exception) as e:
-        sub_main()
+    print(demisto.results.call_args[0][0])
 
-    assert expected_result in str(e.value)
+    assert demisto.results.call_args[0][0].get('Contents') == expected_result
+
+
+@pytest.mark.parametrize('params, expected_result', [
+    ({'_tenant_id': '_tenant_id', 'credentials': {'password': '1234'},
+      'default_target_mailbox': 'default_target_mailbox'}, 'ID / Application ID must be provided.')
+])
+def test_id_params(mocker, params, expected_result):
+    """
+    Given:
+      - Configuration parameters
+    When:
+      - One of the required parameters are missed.
+    Then:
+      - Ensure the exception message as expected.
+    """
+
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'error')
+    mocker.patch.object(demisto, 'results')
+    sub_main()
+
+    print(demisto.results.call_args[0][0])
+
+    assert demisto.results.call_args[0][0].get('Contents') == expected_result
+
+
+@pytest.mark.parametrize('params, expected_result', [
+    ({'credentials': {'password': '1234'}, '_client_id': '_client_id',
+      'default_target_mailbox': 'default_target_mailbox'}, 'Token / Tenant ID must be provided.')
+])
+def test_token_params(mocker, params, expected_result):
+    """
+    Given:
+      - Configuration parameters
+    When:
+      - One of the required parameters are missed.
+    Then:
+      - Ensure the exception message as expected.
+    """
+
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'error')
+    mocker.patch.object(demisto, 'results')
+    sub_main()
+
+    print(demisto.results.call_args[0][0])
+
+    assert demisto.results.call_args[0][0].get('Contents') == expected_result
