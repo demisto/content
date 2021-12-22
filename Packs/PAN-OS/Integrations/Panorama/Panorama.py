@@ -16,6 +16,7 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS '''
 # first comment
+# second comment
 URL = ''
 API_KEY = None
 USE_SSL = None
