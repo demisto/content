@@ -241,6 +241,7 @@ def test_get_no_update_value_without_headers(mocker):
     - Ensure that the response is False.
     """
     mocker.patch.object(demisto, 'debug')
+    mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.5.0"})
 
     class MockResponse:
         headers = {}
