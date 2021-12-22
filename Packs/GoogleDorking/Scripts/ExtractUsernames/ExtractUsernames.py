@@ -11,31 +11,40 @@ def extract_users_from_file(entry_id: str, pattern: str) -> list:
     res = demisto.getFilePath(entry_id)
     if not res:
         raise DemistoException(f"Entry {entry_id} was not found")
-
+    if pattern:
+        regex = re.compile(pattern)
     file_path = res['path']
     with open(file_path, mode='r') as file:
         for line in file.readlines():
-            regex_res = re.search(pattern, line)
-            if regex_res and (user := regex_res.groups()[1]):
-                users.append(user.lstrip())
+            if pattern:
+                regex_res = regex.search(line)
+                if regex_res and (user := regex_res.groups()[1]):
+                    users.append(user.lstrip())
+            else:
+                users.append(line)
     return users
 
 
 def extract_users_from_text(text: str, pattern: str) -> list:
     users = []
+    if pattern:
+        regex = re.compile(pattern)
     for line in text.split('\n'):
-        regex_res = re.search(pattern, line)
-        if regex_res and (user := regex_res.groups()[1]):
-            users.append(user.lstrip())
+        if pattern:
+            regex_res = regex.search(line)
+            if regex_res and (user := regex_res.groups()[1]):
+                users.append(user.lstrip())
+        else:
+            users.append(line)
     return users
 
 
 ''' COMMAND FUNCTION '''
 
 
-def extract_user(user_regex: str, entry_id: Optional[str] = None, text: Optional[str] = None) -> CommandResults:
+def extract_user(user_regex: Optional[str] = None, entry_id: Optional[str] = None, text: Optional[str] = None) -> CommandResults:
     users = []
-    pattern = f"({user_regex})(.*)"
+    pattern = f"({user_regex})(.*)" if user_regex else None
     if entry_id:
         users.extend(extract_users_from_file(entry_id, pattern))
     if text:

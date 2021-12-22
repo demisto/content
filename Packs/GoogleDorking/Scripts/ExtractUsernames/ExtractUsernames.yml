@@ -14,7 +14,6 @@ args:
 - name: text
   description: If provided will look for the user within the given text.
 - name: user_regex
-  required: true
   description: Regex format to detect user names.
 outputs:
 - contextPath: DetectedUserName.User
