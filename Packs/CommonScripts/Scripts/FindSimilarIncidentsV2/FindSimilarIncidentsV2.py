@@ -107,32 +107,39 @@ def get_incident_labels_map(labels):
     return labels_map
 
 
-def prepare_value_to_query_with(value):
-    str_value_list = []
-    value_list = value
-    if isinstance(value, list) and not value:
-        value_list = [str(value)]
-    elif not isinstance(value, list):
-        value_list = [value]
+def handle_str_field(key, value):
+    value = value.replace('"', r'\"').replace("\n", "\\n").replace("\r", "\\r").replace(r'\\"', r'\\\"')
+    query = '{}="{}"'.format(key, value.encode('utf-8'))
+    return query.decode('utf-8')
 
-    for value in value_list:
-        str_value = str(value) if isinstance(value, int) else value
-        str_value = str_value.replace('"', r'\"').replace("\n", "\\n").replace("\r", "\\r").replace(r'\\"', r'\\\"')
-        str_value = str_value.encode('utf-8') if not isinstance(value, int) else str_value
-        str_value_list.append(str_value)
 
-    return str_value_list
+def handle_int_field(key, value):
+    query_template = '{}:={}'
+    return query_template.format(key, str(value))
+
+
+def handle_list_field(key, value):
+    if not value:  # empty list
+        return '{}={}'.format(key, str(value))
+    queries_list = []
+    for item in value:
+        queries_list.append(handle_field[type(item)](key, item))
+    return queries_list
+
+
+handle_field = {
+    int: handle_int_field,
+    unicode: handle_str_field,
+    list: handle_list_field
+}
 
 
 def build_incident_fields_query(incident_data):
     similar_keys_list = []
     for key, value in incident_data.items():
-        str_value_list = prepare_value_to_query_with(value)
-        for str_value in str_value_list:
-            query_template = '{}:="{}"' if isinstance(value, int) else '{}="{}"'
-            similar_key = query_template.format(key, str_value)
-            similar_keys_list.append(similar_key) if isinstance(value, int) else\
-                similar_keys_list.append(str(similar_key).decode('utf-8'))   # type: ignore
+        result = handle_field[type(value)](key, value)
+        similar_keys_list.extend(result) if isinstance(result, list) else\
+            similar_keys_list.append(result)  # type: ignore
 
     return similar_keys_list
 
@@ -142,7 +149,6 @@ def get_incidents_by_keys(similar_incident_keys, time_field, incident_time, inci
     condition_string = ' %s ' % applied_condition.lower()
 
     incident_fields_query = build_incident_fields_query(similar_incident_keys)
-
     similar_keys_query = condition_string.join(incident_fields_query)
     incident_time = parse_datetime(incident_time)
     max_date = incident_time
