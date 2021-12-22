@@ -1024,14 +1024,23 @@ def test_query_table_with_fields(mocker):
                     'sysparm_query', 'sysparm_limit', 'timestamp_field', 'ticket_type', 'get_attachments',
                     'incident_name')
 
-    mocker.patch.object(client, 'send_request', return_value={})
-    fields = "asset_tag,sys_updated_by,display_name"
+    mocker.patch.object(client, 'send_request', return_value={
+        "result": [
+            {
+                "sys_id": "test_id",
+                "sys_updated_by": "test_updated_name",
+                "opened_by.name": "test_opened_name"
+            }
+        ]})
+    fields = "sys_updated_by,opened_by.name"
     fields_with_sys_id = f'{fields},sys_id'
     args = {'table_name': "alm_asset", 'fields': fields,
             'query': "display_nameCONTAINSMacBook", 'limit': 3}
 
     # run
-    query_table_command(client, args)
+    result = query_table_command(client, args)
 
     # validate
     assert client.send_request.call_args[1]['params']['sysparm_fields'] == fields_with_sys_id
+    # validate that the '.' in the key was replaced to '_'
+    assert result[1]['ServiceNow.Record(val.ID===obj.ID)'][0]['opened_by_name'] == 'test_opened_name'
