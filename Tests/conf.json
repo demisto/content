@@ -4639,6 +4639,10 @@
             "playbookID": "Test-AlibabaCloud"
         },
         {
+            "playbookID": "Traps test",
+            "integrations": "Traps"
+        },
+        {
             "integrations": "AnsibleAzure",
             "playbookID": "Test-AnsibleAzure"
         },
