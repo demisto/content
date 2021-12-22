@@ -743,7 +743,7 @@ def unregister_vm(si, args):
 
 def test_module(si):
     get_vms(si, {})
-    return_results('ok')
+    return 'ok'
 
 
 def main():  # pragma: no cover
@@ -755,7 +755,7 @@ def main():  # pragma: no cover
         si, vsphere_client = login(demisto.params())
 
         if demisto.command() == 'test-module':
-            test_module(si)
+            result = test_module(si)
         if demisto.command() == 'vmware-get-vms':
             result = get_vms(si, demisto.args())
         if demisto.command() == 'vmware-poweron':
