@@ -1430,7 +1430,7 @@ def search_ip_command(ip, reliability, create_relationships):
                 indicator_type=DBotScoreType.IP,
                 integration_name=VENDOR_NAME,
                 score=0,
-                reliability=reliability
+                reliability=reliability,
             )
             ip = Common.IP(
                 ip=ip_address,
