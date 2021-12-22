@@ -51,14 +51,18 @@ def unescape_url(escaped_url):
 
 def get_fqdn(the_input):
     fqdn = ''
-    domain = get_tld(the_input, fail_silently=True, as_object=True, fix_protocol=True)
+    domain = get_tld(the_input, fail_silently=True, as_object=True, fix_protocol=True) or \
+             get_tld(the_input, fail_silently=True, as_object=True)
+
 
     # handle fqdn if needed
-    if domain and domain != 'zip':
+    if domain and domain.tld != 'zip':
         # get the subdomain using tld.subdomain
         subdomain = domain.subdomain
         if (subdomain):
             fqdn = "{}.{}".format(subdomain, domain.fld)
+        else:
+            fqdn = domain.fld
 
     return fqdn
 
