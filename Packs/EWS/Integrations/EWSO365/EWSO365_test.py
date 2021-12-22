@@ -11,7 +11,7 @@ from freezegun import freeze_time
 from EWSO365 import (ExpandGroup, GetSearchableMailboxes, fetch_emails_as_incidents,
                      add_additional_headers, fetch_last_emails, find_folders,
                      get_expanded_group, get_searchable_mailboxes, handle_html,
-                     handle_transient_files, parse_incident_from_item, main, sub_main)
+                     handle_transient_files, parse_incident_from_item, sub_main)
 
 with open("test_data/commands_outputs.json", "r") as f:
     COMMAND_OUTPUTS = json.load(f)
@@ -524,11 +524,8 @@ def test_key_params(mocker, params, expected_result):
     """
 
     mocker.patch.object(demisto, 'params', return_value=params)
-    mocker.patch.object(demisto, 'error')
     mocker.patch.object(demisto, 'results')
     sub_main()
-
-    print(demisto.results.call_args[0][0])
 
     assert demisto.results.call_args[0][0].get('Contents') == expected_result
 
@@ -548,11 +545,8 @@ def test_id_params(mocker, params, expected_result):
     """
 
     mocker.patch.object(demisto, 'params', return_value=params)
-    mocker.patch.object(demisto, 'error')
     mocker.patch.object(demisto, 'results')
     sub_main()
-
-    print(demisto.results.call_args[0][0])
 
     assert demisto.results.call_args[0][0].get('Contents') == expected_result
 
@@ -572,10 +566,7 @@ def test_token_params(mocker, params, expected_result):
     """
 
     mocker.patch.object(demisto, 'params', return_value=params)
-    mocker.patch.object(demisto, 'error')
     mocker.patch.object(demisto, 'results')
     sub_main()
-
-    print(demisto.results.call_args[0][0])
 
     assert demisto.results.call_args[0][0].get('Contents') == expected_result
