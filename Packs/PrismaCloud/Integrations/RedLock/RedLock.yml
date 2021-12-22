@@ -3,7 +3,7 @@ commonfields:
   id: RedLock
   version: -1
 configuration:
-- defaultvalue: https://api.redlock.io/
+- defaultvalue: https://api.prismacloud.io/
   display: Server URL
   name: url
   required: true
@@ -1212,7 +1212,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The scan ID. Scan Id can be retrieved by the redlock-list-scans command.
+      description: The scan ID. Scan Id can be retrieved by the redlock-list-scans
+        command.
       isArray: false
       name: scan_id
       required: true

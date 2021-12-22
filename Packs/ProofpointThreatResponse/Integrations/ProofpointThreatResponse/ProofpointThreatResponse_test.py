@@ -8,7 +8,8 @@ from ProofpointThreatResponse import (create_incident_field_context,
                                       get_new_incidents, get_time_delta,
                                       pass_abuse_disposition_filter,
                                       pass_sources_list_filter,
-                                      prepare_ingest_alert_request_body)
+                                      prepare_ingest_alert_request_body,
+                                      close_incident_command)
 
 MOCK_INCIDENT = {
     "id": 1,
@@ -390,3 +391,28 @@ def test_get_incident_command_expand_events_false(mocker, requests_mock):
     incident_result = results['EntryContext']['ProofPointTRAP.Incident(val.id === obj.id)'][0]
     assert not incident_result['events']
     assert incident_result['event_ids']
+
+
+def test_close_incident_command(mocker, requests_mock):
+    """
+    Given:
+    - Incident ID 3064 to close
+
+    When:
+    - Running close-incident command
+
+    Then:
+    - Ensure output is success message
+    """
+    base_url = 'https://server_url/'
+    requests_mock.post(f'{base_url}api/incidents/3064/close.json')
+    mocker.patch.object(demisto, 'results')
+    mocker.patch('ProofpointThreatResponse.BASE_URL', base_url)
+    mocker.patch.object(demisto, 'args', return_value={
+        'incident_id': '3064',
+        "summary": "summary",
+        "details": "details"
+    })
+    close_incident_command()
+    results = demisto.results.call_args[0][0]
+    assert 'success' in results['HumanReadable']

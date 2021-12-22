@@ -153,7 +153,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: integer <int32> The number of records retrieve.
+      defaultValue: '10'
+      description: The number of records to retrieve.
       isArray: false
       name: limit
       required: false
@@ -216,7 +217,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: integer <int32> The number of records retrieve.
+      defaultValue: '10'
+      description: The number of records to retrieve.
       isArray: false
       name: limit
       required: false
@@ -515,7 +517,8 @@ script:
     name: nexpose-delete-site
   - arguments:
     - default: false
-      description: integer <int32> The number of records retrieve.
+      defaultValue: '10'
+      description: The number of records to retrieve.
       isArray: false
       name: limit
       required: false
@@ -1008,6 +1011,7 @@ script:
       - xml
       - html
       - text
+      - nexpose-simple-xml
       description: The report format, default is pdf.
       defaultValue: pdf
     outputs:
