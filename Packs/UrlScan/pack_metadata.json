@@ -27,5 +27,9 @@
         "web",
         "brand impersonation"
     ],
-    "dependencies": {}
+    "dependencies": {},
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }
