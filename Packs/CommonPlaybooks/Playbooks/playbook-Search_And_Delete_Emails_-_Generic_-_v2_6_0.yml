@@ -319,6 +319,15 @@ tasks:
                       value:
                         simple: active
             iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.SearchAndDeleteIntegration
+            iscontext: true
+          right:
+            value:
+              simple: O365
     - label: Both Enabled, input is EWS
       condition:
       - - operator: isNotEmpty
@@ -424,6 +433,15 @@ tasks:
                       value:
                         simple: active
             iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.SearchAndDeleteIntegration
+            iscontext: true
+          right:
+            value:
+              simple: EWS v2
     - label: Gmail
       condition:
       - - operator: isExists
