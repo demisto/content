@@ -24,5 +24,9 @@
         "matan-xmcyber",
         "MarkRachmanXMCyber"
     ],
-    "certification": "certified"
+    "certification": "certified",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

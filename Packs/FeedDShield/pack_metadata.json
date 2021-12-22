@@ -15,5 +15,9 @@
     "keywords": [
         "DShield",
         "Feed"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }
