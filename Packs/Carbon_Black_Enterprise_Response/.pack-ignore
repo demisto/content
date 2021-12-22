@@ -10,7 +10,7 @@ ignore=BA101
 [file:playbook-Block_File_-_Carbon_Black_Response.yml]
 ignore=BA101
 
-[file:integration-Carbon_Black_Enterprise_Response.yml]
+[file:CarbonblackV2.yml]
 ignore=IN126
 
 [file:README.md]
