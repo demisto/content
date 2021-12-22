@@ -16,6 +16,7 @@ import requests
 ''' Module Level Declarations '''
 
 requests.packages.urllib3.disable_warnings()
+CadoResponseCombinedOutput = Union[Dict[str, Any], List[Dict[str, Any]]]
 
 DATE_FORMAT: str = '%Y-%m-%dT%H:%M:%SZ'
 
@@ -75,6 +76,7 @@ class Client(BaseClient):
             :return JSON response from /projects endpoint
             :rtype Dict[str, Any]
         '''
+
         if not project_id:
             project_id = demisto.params().get('CadoResponse_DefaultProject', 1)
 
@@ -83,7 +85,7 @@ class Client(BaseClient):
             url_suffix=f'/projects/{project_id}'
         )
 
-    def list_projects(self) -> Dict[str, Any]:
+    def list_projects(self, limit: int) -> List[Dict[str, Any]]:
         ''' Calls the GET /api/v2/projects endpoint to retrieve a list
             of created projects
 
@@ -91,10 +93,12 @@ class Client(BaseClient):
             :rtype Dict[str, Any]
         '''
 
-        return self._http_request(
+        data: List[Dict[str, Any]] = self._http_request(
             method='GET',
             url_suffix='/projects'
         )
+
+        return data[:limit]
 
     def get_pipeline(self, pipeline_id: Optional[int], project_id: Optional[int]) -> Dict[str, Any]:
         ''' Calls the GET /api/v2/tasks/pipelines endpoint to
@@ -122,7 +126,7 @@ class Client(BaseClient):
             }
         )
 
-    def list_pipelines(self, project_id: Optional[int]) -> Dict[str, Any]:
+    def list_pipelines(self, project_id: Optional[int], limit: int) -> List[Dict[str, Any]]:
         ''' Calls the GET /api/v2/tasks/pipelines endpoint to
             retrieve details about all of a projects pipelines
 
@@ -135,7 +139,7 @@ class Client(BaseClient):
         if not project_id:
             project_id = demisto.params().get('CadoResponse_DefaultProject', 1)
 
-        return self._http_request(
+        data: Dict[str, Any] = self._http_request(
             method='GET',
             url_suffix='/tasks/pipelines',
             params={
@@ -143,7 +147,11 @@ class Client(BaseClient):
             }
         )
 
-    def list_instances(self, project_id: Optional[int], region: Optional[str]) -> Dict[str, Any]:
+        pipelines: List[Dict[str, Any]] = data['pipelines']
+
+        return pipelines[:limit]
+
+    def list_instances(self, project_id: Optional[int], region: Optional[str], limit: int) -> List[Dict[str, Any]]:
         ''' Calls the GET /api/v2/projects/{id}/imports/ec2 endpoint to
             retrieve details about a regions EC2 instances
 
@@ -160,7 +168,7 @@ class Client(BaseClient):
         if not region:
             region = demisto.params().get('CadoResponse_DefaultRegion', 'us-east-1')
 
-        return self._http_request(
+        data: Dict[str, Any] = self._http_request(
             method='GET',
             url_suffix=f'/projects/{project_id}/imports/ec2',
             params={
@@ -168,7 +176,11 @@ class Client(BaseClient):
             }
         )
 
-    def list_buckets(self, project_id: Optional[int]) -> Dict[str, Any]:
+        instances: List[Dict[str, Any]] = data['instances']
+
+        return instances[:limit]
+
+    def list_buckets(self, project_id: Optional[int], limit: int) -> Dict[str, Any]:
         ''' Calls the GET /api/v2/projects/{id}/imports/s3 endpoint to
             retrieve details about all the available S3 buckets
 
@@ -181,10 +193,14 @@ class Client(BaseClient):
         if not project_id:
             project_id = demisto.params().get('CadoResponse_DefaultProject', 1)
 
-        return self._http_request(
+        data: Dict[str, Any] = self._http_request(
             method='GET',
             url_suffix=f'/projects/{project_id}/imports/s3'
         )
+
+        data['buckets'] = data['buckets'][:limit]
+
+        return data
 
     def trigger_instance_acquisition(self, project_id: Optional[int], instance_id: Optional[str], region: Optional[str],
                                      bucket: Optional[str], compress: bool = True, include_disks: bool = True,
@@ -245,6 +261,7 @@ class Client(BaseClient):
             :return JSON response from /projects/{id}/imports/ec2 endpoint
             :rtype Dict[str, Any]
         '''
+
         if not project_id:
             project_id = demisto.params().get('CadoResponse_DefaultProject', 1)
 
@@ -268,21 +285,22 @@ class Client(BaseClient):
 
 def test_module(client: Client) -> str:
     ''' Command handler for !test-module '''
-    result: Dict[str, Any] = client.heartbeat()
 
-    if result['status']:
-        if result['status'] == 'Running':
-            return 'ok'
+    result: Dict[str, Any] = client.heartbeat()
+    status: Optional[str] = result['status']
+
+    if status is not None and status == 'Running':
+        return 'ok'
 
     return 'Cado Response is not running'
 
 
 def create_project_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     ''' Command handler for cado-create-project '''
+
     unix_timestamp: str = str(int(time.time()))
     project_name: str = args.get('project_name', unix_timestamp)
     project_description: Optional[str] = args.get('project_description', None)
-
     result: Dict[str, Any] = client.create_project(project_name, project_description)
 
     return CommandResults(
@@ -292,22 +310,16 @@ def create_project_command(client: Client, args: Dict[str, Any]) -> CommandResul
     )
 
 
-def get_project_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    ''' Command handler for cado-get-project '''
-    project_id: Optional[int] = args.get('project_id', None)
-
-    result: Dict[str, Any] = client.get_project(project_id)
-
-    return CommandResults(
-        outputs_prefix='CadoResponse.Project',
-        outputs_key_field='id',
-        outputs=result
-    )
-
-
-def list_projects_command(client: Client) -> CommandResults:
+def list_project_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     ''' Command handler for cado-list-project '''
-    result: Dict[str, Any] = client.list_projects()
+
+    project_id: Optional[int] = args.get('project_id', None)
+    limit: int = int(args.get('limit', 50))
+
+    if project_id:
+        result: Any = client.get_project(project_id)
+    else:
+        result = client.list_projects(limit)
 
     return CommandResults(
         outputs_prefix='CadoResponse.Projects',
@@ -318,53 +330,44 @@ def list_projects_command(client: Client) -> CommandResults:
 
 def get_pipeline_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     ''' Command handler for cado-get-pipeline '''
-    pipeline_id: Optional[int] = args.get('pipeline_id', None)
+
     project_id: Optional[int] = args.get('project_id', None)
+    limit: int = int(args.get('limit', 50))
+    pipeline_id: Optional[int] = args.get('pipeline_id', None)
 
-    if not pipeline_id:
-        raise DemistoException('pipeline_id is a required parameter!')
-
-    result: Dict[str, Any] = client.get_pipeline(pipeline_id, project_id)
+    if pipeline_id:
+        result: CadoResponseCombinedOutput = client.get_pipeline(pipeline_id, project_id)
+    else:
+        result = client.list_pipelines(project_id, limit)
 
     return CommandResults(
-        outputs_prefix='CadoResponse.Pipeline',
+        outputs_prefix='CadoResponse.Pipelines',
         outputs_key_field='pipeline_id',
         outputs=result
     )
 
 
-def get_pipelines_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    ''' Command handler for cado-get-pipelines '''
-    project_id: Optional[int] = args.get('project_id', None)
-
-    result: Dict[str, Any] = client.list_pipelines(project_id)
-
-    return CommandResults(
-        outputs_prefix='CadoResponse.Pipelines',
-        outputs_key_field='pipeline_id',
-        outputs=result.get('pipelines', {})
-    )
-
-
 def list_ec2_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     ''' Command handler for cado-list-ec2 '''
+
     project_id: Optional[int] = args.get('project_id', None)
     region: Optional[str] = args.get('region', None)
-
-    result: Dict[str, Any] = client.list_instances(project_id, region)
+    limit: int = int(args.get('limit', 100))
+    result: List[Dict[str, Any]] = client.list_instances(project_id, region, limit)
 
     return CommandResults(
         outputs_prefix='CadoResponse.EC2Instances',
         outputs_key_field='id',
-        outputs=result.get('instances', {})
+        outputs=result
     )
 
 
 def list_s3_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     ''' Command handler for cado-list-s3 '''
-    project_id: Optional[int] = args.get('project_id', None)
 
-    result: Dict[str, Any] = client.list_buckets(project_id)
+    project_id: Optional[int] = args.get('project_id', None)
+    limit: int = int(args.get('limit', 100))
+    result: Dict[str, Any] = client.list_buckets(project_id, limit)
 
     return CommandResults(
         outputs_prefix='CadoResponse.S3Buckets',
@@ -434,6 +437,7 @@ def enrich_errors(message: str, command: str) -> str:
         :return: A better error message
         :rtype str
     '''
+
     if command == 'cado-create-project' and 'Project name already exists' in message:
         return f'Project name {demisto.args().get("project_name")} already exists!'
     else:
@@ -466,14 +470,10 @@ def main() -> None:
             return_results(test_module(client))
         elif command == 'cado-create-project':
             return_results(create_project_command(client, args))
-        elif command == 'cado-get-project':
-            return_results(get_project_command(client, args))
-        elif command == 'cado-list-projects':
-            return_results(list_projects_command(client))
+        elif command == 'cado-list-project':
+            return_results(list_project_command(client, args))
         elif command == 'cado-get-pipeline':
             return_results(get_pipeline_command(client, args))
-        elif command == 'cado-get-pipelines':
-            return_results(get_pipelines_command(client, args))
         elif command == 'cado-list-ec2':
             return_results(list_ec2_command(client, args))
         elif command == 'cado-list-s3':

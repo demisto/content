@@ -65,37 +65,23 @@ script:
     - contextPath: CadoResponse.Project.id
       description: The Project ID of the newly created project
       type: Number
-  - name: cado-get-project
-    arguments:
-    - name: project_id
-      default: true
-      description: ID of the project to retrieve
-      isArray: false
-      required: false
-      secret: false
-    deprecated: false
-    description: Get project details from Cado Response
-    execution: false
-    outputs:
-    - contextPath: CadoResponse.Project.id
-      description: ID of the retrieved project
-      type: Number
-    - contextPath: CadoResponse.Project.caseName
-      description: Name of the retrieved project
-      type: String
-    - contextPath: CadoResponse.Project.description
-      description: Description of the retrieved project
-      type: String
-    - contextPath: CadoResponse.Project.users
-      description: Array of users assigned to the retrieved project
-      type: Array
-    - contextPath: CadoResponse.Project.created
-      description: Creation date of the project
-      type: Date
-  - name: cado-list-projects
+  - name: cado-list-project
     deprecated: false
     description: Get a list of projects from Cado Response
     execution: false
+    arguments:
+    - name: project_id
+      default: true
+      description: ID of the project to retrive
+      isArray: false
+      required: false
+      secret: false
+    - name: limit
+      default: false
+      description: Limit results to retrieve
+      isArray: false
+      required: false
+      secret: false
     outputs:
     - contextPath: CadoResponse.Projects.id
       description: ID of the retrieved project
@@ -117,11 +103,17 @@ script:
     - name: pipeline_id
       description: The id of the pipeline to retrieve
       isArray: false
-      required: true
+      required: false
       secret: false
     - name: project_id
       default: false
       description: The id of the project the pipeline belongs to
+      isArray: false
+      required: false
+      secret: false
+    - name: limit
+      default: false
+      description: Limit results to retrieve
       isArray: false
       required: false
       secret: false
@@ -154,43 +146,6 @@ script:
     - contextPath: CadoResponse.Pipeline.subtask
       description: An array of tasks in the retrieved pipeline
       type: Array
-  - name: cado-get-pipelines
-    arguments:
-    - name: project_id
-      default: true
-      description: The id of the project the pipelines belongs to
-      isArray: false
-      required: false
-      secret: false
-    deprecated: false
-    description: Get a list of pipelines from Cado Response
-    execution: false
-    outputs:
-    - contextPath: CadoResponse.Pipelines.pipeline_id
-      description: The ID of the retrieved pipeline
-      type: Number
-    - contextPath: CadoResponse.Pipelines.pipeline_type
-      description: The type of pipeline that was retrieved
-      type: String
-    - contextPath: CadoResponse.Pipelines.created
-      description: The date at which the retrieved pipeline was started
-      type: Date
-    - contextPath: CadoResponse.Pipelines.evidence_id
-      description: The evidence ID linked to the retrieved pipeline
-      type: Number
-    - contextPath: CadoResponse.Pipelines.project_id
-      description: The ID of the project the pipeline belongs to
-      type: Number
-    - contextPath: CadoResponse.Pipelines.is_terminated
-      description: A boolean which says if the retrieved pipeline has been finished/terminated
-      type: Boolean
-    - contextPath: CadoResponse.Pipelines.summary
-      description: An array of values containing the cancelled, failed, pending, running
-        and successful pipeline subtasks
-      type: Array
-    - contextPath: CadoResponse.Pipelines.subtask
-      description: An array of tasks in the retrieved pipeline
-      type: Array
   - name: cado-list-ec2
     arguments:
     - name: region
@@ -202,6 +157,12 @@ script:
     - name: project_id
       default: false
       description: The ID of the project you wish to attach the acquisition to
+      isArray: false
+      required: false
+      secret: false
+    - name: limit
+      default: false
+      description: Limit results to retrieve
       isArray: false
       required: false
       secret: false
@@ -226,6 +187,12 @@ script:
     - name: project_id
       default: true
       description: The ID of the project you wish to attach the acquisition to
+      isArray: false
+      required: false
+      secret: false
+    - name: limit
+      default: false
+      description: Limit results to retrieve
       isArray: false
       required: false
       secret: false
@@ -334,7 +301,7 @@ script:
   script: "-"
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
 fromversion: "6.0.0"
 tests:
 - No tests (auto formatted)
