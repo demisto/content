@@ -2,7 +2,7 @@
     "name": "RemoveEmpty",
     "description": "Remove empty items from the array.",
     "support": "community",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Masahiko Inoue",
     "url": "",
     "email": "",
@@ -13,5 +13,9 @@
     "keywords": [],
     "githubUser": [
         "spearmin10"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

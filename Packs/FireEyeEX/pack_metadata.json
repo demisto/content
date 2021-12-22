@@ -18,5 +18,9 @@
             "mandatory": true,
             "display_name": "FireEye Common Fields"
         }
-    }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

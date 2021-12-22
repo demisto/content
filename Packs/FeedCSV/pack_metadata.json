@@ -15,5 +15,9 @@
     "keywords": [
         "CSV",
         "Feed"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

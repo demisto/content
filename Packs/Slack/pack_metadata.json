@@ -32,5 +32,9 @@
             "mandatory": false,
             "display_name": "Active Directory Query"
         }
-    }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }
