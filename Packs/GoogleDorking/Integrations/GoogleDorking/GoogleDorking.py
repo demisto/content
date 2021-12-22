@@ -3,8 +3,9 @@ from CommonServerPython import *  # noqa: F401
 import urllib3
 import dateparser
 import traceback
+import json
 from os import path
-from typing import Any, Dict, Tuple, List, Optional, Union, cast
+from typing import Optional, Union, Callable
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -12,6 +13,7 @@ urllib3.disable_warnings()
 ''' CONSTANTS '''
 
 MAX_INCIDENTS_TO_FETCH = 100
+MAX_RESULTS_PER_PAGE = 10
 LAST_RUN_TIME_KEY = 'last_date'
 GOOGLE_TIME_FORMAT = '%Y-%m-%d'
 
@@ -19,14 +21,23 @@ GOOGLE_TIME_FORMAT = '%Y-%m-%d'
 
 
 class Client(BaseClient):
-    def __init__(self, urls, api_key, search_engine_id, search_file_types, keywords, **kwargs):
+    def __init__(self, urls, api_key, search_engine_id, search_file_types, keywords, max_results, **kwargs):
         super().__init__(**kwargs)
         self._urls = urls
         self._cx = search_engine_id
         self._api_key = api_key
         self._search_file_types = search_file_types
         self._keywords = keywords
+        self._max_results = max_results
         self._after = None
+
+    @property
+    def max_results(self):
+        return self._max_results
+
+    @max_results.setter
+    def max_results(self, value):
+        self._max_results = value
 
     @property
     def after(self):
@@ -36,83 +47,162 @@ class Client(BaseClient):
     def after(self, value):
         self._after = value
 
-    def search(self, q, start=0) -> Union[dict, list]:
+    @property
+    def urls(self):
+        return self._urls
+
+    @urls.setter
+    def urls(self, value):
+        self._urls = value
+
+    @property
+    def file_types(self):
+        return self._search_file_types
+
+    @file_types.setter
+    def file_types(self, value):
+        self._search_file_types = value
+
+    @property
+    def keywords(self):
+        return self._keywords
+
+    @keywords.setter
+    def keywords(self, value):
+        self._keywords = value
+
+    def search(self, q, start=0, num=10) -> Union[dict, list]:
         params = assign_params(
             cx=self._cx,
             key=self._api_key,
             q=q,
             filter=1,
-            start=start
+            start=start,
+            num=num
         )
         response = self._http_request('GET', params=params)
-        demisto.info('Requests was successful')
         return response
 
     def build_query(self) -> str:
+        """ Builds a google query in the format of "filetype:...allintext:...site:... after:... " """
         query = ' OR '.join(list(map(lambda x: f'filetype:{x}', self._search_file_types)))
         if self._keywords:
-            query += ' '
-            query += ' OR '.join(list(map(lambda x: f'allintext:{x}', self._keywords)))
+            query += ' ' + ' OR '.join(list(map(lambda x: f'allintext:{x}', self._keywords)))
         if self._urls:
-            query += ' '
-            query += ' OR '.join(list(map(lambda x: f'site:{x}', self._urls)))
+            query += ' ' + ' OR '.join(list(map(lambda x: f'site:{x}', self._urls)))
         if self.after:
-            query += f' {self.after}'
+            query += f' after:{self.after}'
         return query
 
 
-def test_module(client) -> str:
-    return 'ok'
+def calculate_pages(max_results: int) -> int:
+    max_pages = max_results // MAX_RESULTS_PER_PAGE
+    if max_results % MAX_RESULTS_PER_PAGE:
+        max_pages += 1
+    return max_pages
 
 
-def google_search_command(client: Client, query) -> CommandResults:
-    res = client.search(query)
-    return CommandResults(
-        outputs=res
-    )
+def calculate_page_size(current_page: int, max_results: int) -> Union[int, str]:
+    results_so_far = current_page * MAX_RESULTS_PER_PAGE
+    if (results_diff := max_results - results_so_far) < MAX_RESULTS_PER_PAGE:
+        return results_diff
+    return MAX_RESULTS_PER_PAGE
 
 
-def item_to_incident(client: Client, item: dict) -> dict:
-    file = None
-    if 'link' in item:
-        link = item['link']
-        demisto.info(f'accessing {link}')
-        file = fileResult(path.basename(link), client._http_request('GET', full_url=link, resp_type='content'))
-    demisto.info(f'Creating incident: {item.get("title")}')
-    return assign_params(
-        name=item.get('title', ''),
-        attachment=file,
-        rawJSON=item
-    )
-
-
-def fetch_incidents(client: Client, last_run: Optional[dict]) -> list:
-    incidents = []
-    now = datetime.now()
-    last_run_date = last_run.get(LAST_RUN_TIME_KEY) if last_run else None
-    if last_run_date:
-        if (now - dateparser.parse(last_run_date)).days > 0:
-            client.after = f'after:{last_run_date}'
+def get_search_results(client: Client, parser: Callable) -> Union[list, str]:
+    """ Searches google and returns a result using the parser"""
+    results = []
     query = client.build_query()
     all_pages_found = False
-    i = 0
+    pages = calculate_pages(client.max_results)
+    current_page = 0
     start = 0
-    while not all_pages_found and i < 10:
-        demisto.info(f'started fetching page {i}')
-        page = client.search(query, start)
+    while not all_pages_found and current_page < pages:
+        results_in_page = calculate_page_size(current_page, client.max_results)
+        page = client.search(query, start, results_in_page)
         items = page.get('items')
         if not items:
             break
 
         for item in items:
-            incidents.append(item_to_incident(client, item))
+            results.extend(parser(client, item))
 
         # prepare next run
-        i += 1
+        current_page += 1
         start += 10  # page size == 10
         total = int(demisto.get(page, 'searchInformation.totalResults',
                                 demisto.get(page, 'queries.request.totalResults', 0)))
         all_pages_found = total < start
+    if not results:
+        return "No results found"
+    return results
+
+
+def item_to_incident(client: Client, item: dict) -> list:
+    files = []
+    if 'link' in item:
+        link = item['link']
+        try:
+            file_result = fileResult(path.basename(link),
+                                     client._http_request('GET', full_url=link, resp_type='content'))
+            files.append({
+                'path': file_result['FileID'],
+                'name': file_result['File']
+            })
+        except Exception as e:
+            demisto.debug(f"Failed fetching file from {link}. {str(e)}")
+    return [assign_params(
+        name=item.get('title', ''),
+        attachment=files,
+        rawJSON=json.dumps(item)
+    )]
+
+
+def item_to_result(client: Client, item: dict) -> list:
+    results = []
+    if 'link' in item:
+        link = item['link']
+        file_result = fileResult(path.basename(link), client._http_request('GET', full_url=link, resp_type='content'))
+        results.append(file_result)
+    results.append(
+        CommandResults(
+            outputs_prefix='GoogleDorking',
+            outputs=item
+        )
+    )
+    return results
+
+
+def test_module(client: Client) -> str:
+    client.search('hello world')
+    return 'ok'
+
+
+def google_search_command(
+        client: Client,
+        after: str = None,
+        file_types: str = None,
+        keywords: str = None,
+        urls: str = None,
+) -> list:
+    if after:
+        client.after = after
+    if file_types:
+        client.file_types = argToList(file_types)
+    if keywords:
+        client.keywords = argToList(keywords)
+    if urls:
+        client.urls = argToList(urls)
+    return get_search_results(client, item_to_result)
+
+
+def fetch_incidents(client: Client, last_run: Optional[dict]) -> list:
+    now = datetime.now()
+    last_run_date = last_run.get(LAST_RUN_TIME_KEY) if last_run else None
+    if last_run_date:
+        if (now - dateparser.parse(last_run_date)).days > 0:
+            client.after = last_run_date
+    incidents = get_search_results(client, item_to_incident)
 
     demisto.setLastRun({
         LAST_RUN_TIME_KEY: (now - timedelta(days=1)).strftime(GOOGLE_TIME_FORMAT)
@@ -134,13 +224,13 @@ def main() -> None:
     search_urls = argToList(params.get('urls'))
     search_file_types = argToList(params.get('file_types'))
     keywords = argToList(params.get('keywords'))
-    # first_fetch_time = arg_to_datetime(
-    #     arg=demisto.params().get('first_fetch', '3 days'),
-    #     arg_name='First fetch time',
-    #     required=True
-    # )
-    # first_fetch_timestamp = int(first_fetch_time.timestamp()) if first_fetch_time else None
-    # Using assert as a type guard (since first_fetch_time is always an int when required=True)
+    first_fetch_time = arg_to_datetime(
+        arg=params.get('first_fetch'),
+        arg_name='First fetch time',
+        required=False
+    )
+    max_fetch = max(arg_to_number(params.get('max_fetch'), 'Max Fetch') or MAX_INCIDENTS_TO_FETCH,
+                    MAX_INCIDENTS_TO_FETCH)
     command = demisto.command()
     args = demisto.args()
     demisto.info(f'Command being called is {command}')
@@ -154,7 +244,10 @@ def main() -> None:
             search_engine_id=search_engine_id,
             search_file_types=search_file_types,
             keywords=keywords,
+            max_results=max_fetch
         )
+        if first_fetch_time:
+            client.after = first_fetch_time.strftime(GOOGLE_TIME_FORMAT)
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
