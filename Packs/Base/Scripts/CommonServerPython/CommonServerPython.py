@@ -94,7 +94,14 @@ def fix_traceback_line_numbers(trace_str):
         line_num = int(number)
         module = _find_relevant_module(line_num)
         if module:
-            actual_number = line_num - _MODULES_LINE_MAPPING.get(module, {'pre':0})['pre']
+            module_start_line = _MODULES_LINE_MAPPING.get(module, {'pre':0})['pre']
+            actual_number = line_num - module_start_line
+
+            # in case of ApiModule injections, adjust the line numbers of the code after the injection.
+            for module_info in _MODULES_LINE_MAPPING.values():
+                if module_info['pre'] > module_start_line and module_info['post'] < line_num:
+                    actual_number -= module_info['post'] - module_info['pre']
+
             # a traceback line is of the form: File "<string>", line 8853, in func5
             trace_str = trace_str.replace('File "<string> line {},'.format(number), 'File "<{}> line {},'.format(module, actual_number))
 
