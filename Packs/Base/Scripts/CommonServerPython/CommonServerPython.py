@@ -103,7 +103,7 @@ def fix_traceback_line_numbers(trace_str):
                     actual_number -= module_info['post'] - module_info['pre']
 
             # a traceback line is of the form: File "<string>", line 8853, in func5
-            trace_str = trace_str.replace('File "<string> line {},'.format(number), 'File "<{}> line {},'.format(module, actual_number))
+            trace_str = trace_str.replace('File "<string>", line {},'.format(number), 'File "<{}>", line {},'.format(module, actual_number))
 
     return trace_str
 
