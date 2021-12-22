@@ -292,7 +292,7 @@ def main() -> None:
 
         headers = {
             "X-RFToken": demisto_params["token"],
-            "X-RF-User-Agent": f"xsoar-identity/{__version__} (Cortex_XSOAR_"
+            "X-RF-User-Agent": f"xsoar-identity/{__version__} rfclient (Cortex_XSOAR_"
             f'{demisto.demistoVersion()["version"]})',
         }
         client = Client(
