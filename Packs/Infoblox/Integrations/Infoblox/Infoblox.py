@@ -310,6 +310,30 @@ class Client(BaseClient):
         suffix = reference_id
         return self._http_request('DELETE', suffix)
 
+    def list_records(self, zone):
+        params = {
+            "zone": zone,
+            "_return_as_object": 1
+        }
+        res = self._http_request('GET', 'allrecords', params=params)
+        return res
+
+    def list_hosts(self):
+        params = {
+            "_return_fields": "ipv4addrs",
+            "_return_as_object": 1
+        }
+        res = self._http_request('GET', "record:host", params=params)
+        return res
+
+    def search_host_record(self, name):
+        params = {
+            "name": name,
+            "_return_as_object": 1
+        }
+        res = self._http_request('GET', "record:host", params=params)
+        return res
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -425,7 +449,7 @@ def list_response_policy_zone_rules_command(client: Client, args: Dict) -> Tuple
     }
     if new_next_page_id:
         context.update({
-            f'{INTEGRATION_CONTEXT_NAME}.RulesNextPage(val.NextPageID !== obj.NextPageID)': {   # type: ignore
+            f'{INTEGRATION_CONTEXT_NAME}.RulesNextPage(val.NextPageID !== obj.NextPageID)': {  # type: ignore
                 'NextPageID': new_next_page_id}
         })
     human_readable = tableToMarkdown(title, fixed_keys_rule_list,
@@ -500,7 +524,7 @@ def delete_response_policy_zone_command(client: Client, args: Dict) -> Tuple[str
     raw_response = client.delete_response_policy_zone(ref_id)
     deleted_rule_ref_id = raw_response.get('result', {})
     human_readable = f'{INTEGRATION_NAME} - Response Policy Zone with the following id was deleted: \n ' \
-        f'{deleted_rule_ref_id}'
+                     f'{deleted_rule_ref_id}'
     return human_readable, {}, raw_response
 
 
@@ -910,6 +934,31 @@ def delete_rpz_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict
     return title, {}, raw_response
 
 
+def list_hosts_command(client: Client, args: Dict):
+    raw_response = client.list_hosts()
+
+    return tableToMarkdown("Hosts", raw_response["result"]), {"Infoblox": raw_response["result"]}, raw_response
+
+
+def list_records_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """
+    Args:
+        client: Client object
+        args: usually demisto.args()
+    """
+    zone = args.get('zone')
+    raw_response = client.list_records(zone)
+
+    return None, None, raw_response
+
+
+def search_host_record_command(client: Client, args: Dict):
+    name = args.get("name")
+    raw_response = client.search_host_record(name)
+
+    return tableToMarkdown("Host", raw_response["result"]), {"Infoblox": raw_response["result"]}, raw_response
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -951,6 +1000,9 @@ def main():  # pragma: no cover
         f'{INTEGRATION_COMMAND_NAME}-get-object-fields': get_object_fields_command,
         f'{INTEGRATION_COMMAND_NAME}-search-rule': search_rule_command,
         f'{INTEGRATION_COMMAND_NAME}-delete-rpz-rule': delete_rpz_rule_command,
+        f'{INTEGRATION_COMMAND_NAME}-list-hosts': list_hosts_command,
+        f'{INTEGRATION_COMMAND_NAME}-list-records': list_records_command,
+        f'{INTEGRATION_COMMAND_NAME}-search-host-record': search_host_record_command
     }
     try:
         if command in commands:

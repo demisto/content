@@ -1140,12 +1140,16 @@ def main():  # pragma: no cover
         f'{INTEGRATION_COMMAND_NAME}-get-object-fields': get_object_fields_command,
         f'{INTEGRATION_COMMAND_NAME}-search-rule': search_rule_command,
         f'{INTEGRATION_COMMAND_NAME}-delete-rpz-rule': delete_rpz_rule_command,
+        # Added by Contribution
+        # POST & PUT
         f'{INTEGRATION_COMMAND_NAME}-create-a-record': create_a_record_command,
-        f'{INTEGRATION_COMMAND_NAME}-list-records': list_records_command,
         f'{INTEGRATION_COMMAND_NAME}-add-host-record': add_host_record_command,
-        f'{INTEGRATION_COMMAND_NAME}-delete-host-record': delete_host_record_command,
         f'{INTEGRATION_COMMAND_NAME}-update-host-ip': update_host_ip_command,
+        # DELETE
+        f'{INTEGRATION_COMMAND_NAME}-delete-host-record': delete_host_record_command,
+        # GET
         f'{INTEGRATION_COMMAND_NAME}-list-hosts': list_hosts_command,
+        f'{INTEGRATION_COMMAND_NAME}-list-records': list_records_command,
         f'{INTEGRATION_COMMAND_NAME}-search-host-record': search_host_record_command
     }
     try:
