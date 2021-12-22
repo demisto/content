@@ -1,10 +1,10 @@
 import copy
 from typing import Any, Dict, Generator, List, Optional, Tuple, Union
+
 from bs4 import BeautifulSoup, NavigableString, Tag
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
 
 TITLE_THRESHOLD = 4
 
@@ -89,13 +89,32 @@ class Table:
     def get_rows(self) -> List[Tuple[List[str], List[str]]]:
         return self.__rows
 
-    def make_pretty_table_rows(self) -> Any:
+    def make_pretty_table_rows(self, default_header_line: Optional[str] = None) -> Any:
         rows: List[Union[str, Dict[str, Any]]] = []
         temp_row: Dict[str, Any] = {}
 
-        for labels, cols in self.__rows:
+        tbl_rows = self.__rows
+        headers = self.__headers
+
+        if default_header_line and default_header_line != 'none':
+            if not headers and not any(labels for labels, cols in tbl_rows):
+                if default_header_line == 'first_column':
+                    # The first column is considered as header
+                    tbl_rows = [([], list(cols)) for cols in zip(*[cols for labels, cols in tbl_rows])]  # transpose
+                    if tbl_rows and tbl_rows[0][1]:
+                        headers = tbl_rows[0][1]
+                        tbl_rows = tbl_rows[1:]
+                elif default_header_line == 'first_row':
+                    # The first row is considered as header
+                    if tbl_rows and tbl_rows[0][1]:
+                        headers = tbl_rows[0][1]
+                        tbl_rows = tbl_rows[1:]
+                else:
+                    raise ValueError(f'Unknown default header line: {default_header_line}')
+
+        for labels, cols in tbl_rows:
             labels = labels[-1:]
-            headers = labels + self.__headers[len(labels):len(self.__headers) - len(labels)]
+            headers = labels + headers[len(labels):len(headers) - len(labels)]
 
             if not cols:
                 continue
@@ -265,13 +284,14 @@ def main():
     overwriting_title = args.get('title')
     filter_indexes = argToList(args.get('filter_indexes'))
     filter_titles = argToList(args.get('filter_titles'))
+    default_header_line = args.get('default_header_line') or 'none'
 
     tables = []
     try:
         soup = BeautifulSoup(html, 'html.parser')
         index = -1
         for table in parse_tables(soup):
-            rows = table.make_pretty_table_rows()
+            rows = table.make_pretty_table_rows(default_header_line)
             if not rows:
                 continue
 
