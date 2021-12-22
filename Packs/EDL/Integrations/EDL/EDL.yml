@@ -10,6 +10,11 @@ configuration:
   name: indicators_query
   required: false
   type: 0
+- additionalinfo: Enabling this will prevent automatic EDL refresh
+  display: Update EDL On Demand Only
+  name: on_demand
+  required: false
+  type: 8
 - defaultvalue: text
   display: Outbound Format
   name: format
@@ -24,29 +29,25 @@ configuration:
   - Symantec ProxySG
   required: false
   type: 15
-- additionalinfo: Only applies on the jsons and csv formats.
-  display: Fields to output
-  name: fields_filter
-  isArray: true
+- additionalinfo: If selected, csv format will create a textual web page instead of
+    downloading a CSV file.
+  display: Show CSV Formats as Text
+  hidden: false
+  name: csv_text
   required: false
+  type: 8
+- additionalinfo: Only applies on the jsons and csv formats.
+  display: Fields To Export
+  name: fields_filter
+  required: false
+  type: 0
 - additionalinfo: If selected, add to an empty EDL the comment "# Empty EDL".
+  defaultvalue: 'true'
   display: Add Comment To Empty EDL
   hidden: false
   name: add_comment_if_empty
   required: false
-  defaultvalue: true
   type: 8
-- additionalinfo: Only applies to IPs in text format.
-  defaultvalue: Don't Collapse
-  display: Should Collapse IPs
-  hidden: false
-  name: collapse_ips
-  options:
-  - Don't Collapse
-  - To CIDRS
-  - To Ranges
-  required: false
-  type: 15
 - additionalinfo: Maximum number of items in the EDL
   defaultvalue: '2500'
   display: EDL Size
@@ -54,28 +55,17 @@ configuration:
   name: edl_size
   required: true
   type: 0
-- additionalinfo: Internal page size used when querying Cortex XSOAR for the EDL. By default,
-    this value shouldn't be changed.
+- additionalinfo: Internal page size used when querying Cortex XSOAR for the EDL.
+    By default, this value shouldn't be changed.
   defaultvalue: '2000'
   display: XSOAR Indicator Page Size
   hidden: false
   name: page_size
   required: false
   type: 0
-- additionalinfo: If selected, csv format will create a textual web
-    page instead of downloading a CSV file.
-  display: Show CSV Formats as Text
-  hidden: false
-  name: csv_text
-  required: false
-  type: 8
-- additionalinfo: Enabling this will prevent automatic EDL refresh
-  display: Update EDL On Demand Only
-  name: on_demand
-  required: false
-  type: 8
-- additionalinfo: How often to refresh the EDL (e.g., 5 minutes, 12 hours, 7 days, 3 months,
-    1 year). For performance reasons, we do not recommend setting this value to less than 1 minute.
+- additionalinfo: How often to refresh the EDL (e.g., 5 minutes, 12 hours, 7 days,
+    3 months, 1 year). For performance reasons, we do not recommend setting this value
+    to less than 1 minute.
   defaultvalue: 5 minutes
   display: Refresh Rate
   name: cache_refresh_rate
@@ -83,13 +73,13 @@ configuration:
   type: 0
 - defaultvalue: 'true'
   display: Long Running Instance
+  hidden: true
   name: longRunning
   required: false
   type: 8
-  hidden: true
-- additionalinfo: Will run the EDL service on this port from within Cortex XSOAR. Requires
-    a unique port for each long-running integration instance. Do not use the same
-    port for multiple instances.
+- additionalinfo: Will run the EDL service on this port from within Cortex XSOAR.
+    Requires a unique port for each long-running integration instance. Do not use
+    the same port for multiple instances.
   display: Listen Port
   name: longRunningPort
   required: true
@@ -108,6 +98,41 @@ configuration:
   name: credentials
   required: false
   type: 9
+- additionalinfo: Only applies to IPs in text format.
+  defaultvalue: Don't Collapse
+  display: Should Collapse IPs
+  hidden: false
+  name: collapse_ips
+  options:
+  - Don't Collapse
+  - To CIDRS
+  - To Ranges
+  required: false
+  type: 15
+- additionalinfo: For use with TEXT format - If selected, a URL that includes a port
+    number will be reformatted to remove the port. For example, 'www.example.com:9999/path'
+    would become 'www.example.com/path'.
+  defaultvalue: 'true'
+  display: Strip Ports from URLs
+  hidden: false
+  name: url_port_stripping
+  required: false
+  type: 8
+- additionalinfo: For use with TEXT format - if selected will strip the protocol from
+    URLs.
+  defaultvalue: 'true'
+  display: Strip Protocols from URLs
+  hidden: false
+  name: url_protocol_stripping
+  required: false
+  type: 8
+- additionalinfo: For use with TEXT format, If selected, any URL entry that is not
+    compliant with PAN-OS EDL URL format is dropped instead of being rewritten.
+  display: PAN-OS URL Drop Invalid Entries
+  hidden: false
+  name: drop_invalids
+  required: false
+  type: 8
 - additionalinfo: For use with McAfee Web Gateway format to indicate the list type.
   defaultvalue: string
   display: Mcafee Gateway Indicator List Type
@@ -124,29 +149,6 @@ configuration:
   - regex
   required: false
   type: 15
-- additionalinfo: For use with TEXT format - If selected, a URL that includes a port number will be reformatted
-    to remove the port. For example, 'www.example.com:9999/path' would become 'www.example.com/path'.
-  defaultvalue: 'true'
-  display: Strip Ports from URLs
-  hidden: false
-  name: url_port_stripping
-  required: false
-  type: 8
-- additionalinfo: For use with TEXT format - if selected will strip the protocol
-    from URLs.
-  display: Strip Protocols from URLs
-  hidden: false
-  name: url_protocol_stripping
-  required: false
-  type: 8
-  defaultvalue: true
-- additionalinfo: For use with TEXT format, If selected, any URL entry that is not compliant with PAN-OS EDL
-    URL format is dropped instead of being rewritten.
-  display: PAN-OS URL Drop Invalid Entries
-  hidden: false
-  name: drop_invalids
-  required: false
-  type: 8
 - additionalinfo: For use with Symantec ProxySG format - set the default category
     for the output.
   defaultvalue: bc_category
@@ -162,24 +164,44 @@ configuration:
   name: category_attribute
   required: false
   type: 0
-- additionalinfo: "NGINX global directives to be passed on the command line using the -g option. Each directive should end with `;`.
-    For example: `worker_processes 4; timer_resolution 100ms;`.
-    Advanced configuration to be used only if instructed by XSOAR Support."
+- display: Append String To EDL
+  name: append_string
+  required: false
+  type: 12
+  additionalinfo: String to add to end of published EDL, if type is Text. Supports
+    Newline characters (\n).
+- display: Prepend String To EDL
+  name: prepend_string
+  required: false
+  type: 12
+  additionalinfo: String to add to beginning of published EDL, if type is Text. Supports
+    Newline characters (\n).
+- additionalinfo: 'NGINX global directives to be passed on the command line using
+    the -g option. Each directive should end with `;`. For example: `worker_processes
+    4; timer_resolution 100ms;`. Advanced configuration to be used only if instructed
+    by XSOAR Support.'
   display: NGINX Global Directives
   hidden: false
   name: nginx_global_directives
   required: false
   type: 0
-- additionalinfo: "NGINX server configuration. To be used instead of the default NGINX_SERVER_CONF used in the integration code.
-    Advanced configuration to be used only if instructed by XSOAR Support."
+- additionalinfo: NGINX server configuration. To be used instead of the default NGINX_SERVER_CONF
+    used in the integration code. Advanced configuration to be used only if instructed
+    by XSOAR Support.
   display: NGINX Server Conf
   hidden: false
   name: nginx_server_conf
   required: false
   type: 12
-- additionalinfo: "Legacy Queries: When enabled, the integration will query the Server
-    using full queries. Enable this query mode, if you've been instructed by Support,
-    or you've encountered in the log errors of the form: msgpack: invalid code."
+- additionalinfo: Use to set the timeout in seconds (the default time is 300s)
+  display: NGINX Read Timeout
+  hidden: false
+  name: time_out
+  required: false
+  type: 0
+- additionalinfo: 'Legacy Queries: When enabled, the integration will query the Server
+    using full queries. Enable this query mode, if you''ve been instructed by Support,
+    or you''ve encountered in the log errors of the form: msgpack: invalid code.'
   display: 'Advanced: Use Legacy Queries'
   hidden: false
   name: use_legacy_query
@@ -193,8 +215,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: 'The query used to retrieve indicators from the system. Leave empty
-        to use the query from the integration parameters. '
+      description: The query used to retrieve indicators from the system.
       isArray: false
       name: query
       required: false
@@ -215,7 +236,7 @@ script:
       - XSOAR json-seq
       - McAfee Web Gateway
       - Symantec ProxySG
-      required: false
+      required: true
       secret: false
     - default: false
       description: The maximum number of entries in the output. If no value is provided,
@@ -252,8 +273,9 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: For use with TEXT format - If set to True, a URL that includes a port number will be reformatted
-        to remove the port. For example, 'www.example.com:9999/path' would become 'www.example.com/path'.
+      description: For use with TEXT format - If set to True, a URL that includes
+        a port number will be reformatted to remove the port. For example, 'www.example.com:9999/path'
+        would become 'www.example.com/path'.
       isArray: false
       name: url_port_stripping
       predefined:
@@ -264,8 +286,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'True'
-      description: For use with TEXT format - If set to True, a URL that includes a protocol will be reformatted
-        to remove the protocol
+      description: For use with TEXT format - If set to True, a URL that includes
+        a protocol will be reformatted to remove the protocol
       isArray: false
       name: url_protocol_stripping
       predefined:
@@ -276,7 +298,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: For use with PAN-OS URL format - if True, any URL entry that is
+      description: For use with TEXT format - if True, any URL entry that is
         not compliant with PAN-OS EDL URL format is dropped instead of being rewritten.
       isArray: false
       name: drop_invalids
@@ -342,7 +364,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: false
+      defaultValue: 'false'
       description: If selected, add to an empty EDL the comment "# Empty EDL".
       isArray: false
       name: add_comment_if_empty

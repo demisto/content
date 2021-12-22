@@ -726,8 +726,7 @@ def get_request_args(request_args: dict, params: dict) -> RequestArguments:
     sort_field = request.args.get('sf', params.get('sort_field'))
     sort_order = request.args.get('so', params.get('sort_order'))
     add_comment_if_empty = request_args.get('ce', params.get('add_comment_if_empty', True))
-
-    fields_to_present = request.args.get('f', params.get('fields_filter', ''))
+    fields_to_present = request.args.get('fi', params.get('fields_filter', ''))
 
     # handle flags
     if drop_invalids == '':
