@@ -13,6 +13,7 @@ pytest-xdist = "*"
 pytest-datadir-ng = "*"
 freezegun = "*"
 pytest-json = "*"
+dateparser = "*"
 
 [packages]
 
