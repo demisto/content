@@ -2558,7 +2558,7 @@ class Common(object):
                                 For scripts - The class will use the given integration name.
 
         :type score: ``DBotScore``
-        :param score: DBotScore.NONE, DBotScore.GOOD, DBotScore.SUSPICIOUS, DBotScore.BAD
+        :param score: DBotScore.NONE, DBotScore.GOOD, DBtScore.SUSPICIOUS, DBotScore.BAD
 
         :type malicious_description: ``str``
         :param malicious_description: if the indicator is malicious and have explanation for it then set it to this field
