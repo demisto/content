@@ -14,9 +14,9 @@
     ]
   },
   {
-    "value": ["(CVE-2021-0001)"],
+    "value": ["(CVE-2021-0001)", "(CVE-2021-0002)"],
     "regex": "(CVE-2021-0003)",
-    "text": "xxx CVE-2021-0001 yyy CVE-2021-0003 zzz",
+    "text": "xxx CVE-2021-0001 yyy CVE-2021-0003 zzz CVE-2021-0002",
     "template": "\\1",
     "template_type": "text",
     "value_takes": "regex",
@@ -24,6 +24,7 @@
     "search_limit": 0,
     "result": [
       "CVE-2021-0001",
+      "CVE-2021-0002",
       "CVE-2021-0003"
     ]
   },

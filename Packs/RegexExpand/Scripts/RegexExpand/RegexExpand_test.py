@@ -24,6 +24,6 @@ def test_main(mocker):
         assert demisto.results.call_count == 1
         results = demisto.results.call_args[0][0]
 
-        lhs = [json.dumps(r) for r in results]
-        rhs = [json.dumps(r) for r in t['result']]
-        assert json.dumps(sorted(lhs)) == json.dumps(sorted(rhs))
+        lhs = results
+        rhs = t['result']
+        assert json.dumps(lhs) == json.dumps(rhs)

@@ -66,29 +66,40 @@ def main():
         else:
             raise ValueError(f'Unknown flag: {flag}')
 
-    value_takes = args.get('value_takes') or 'text'
-    if value_takes == 'text':
-        regex_list = concat_values(args.get('regex'), [])
-        text_list = concat_values(args.get('value'), args.get('text'))
-    elif value_takes == 'regex':
-        regex_list = concat_values(args.get('value'), args.get('regex'))
-        text_list = concat_values(args.get('text'), [])
-    else:
-        raise ValueError(f'Unknown value_takes: {value_takes}')
-
     search_limit = int(args.get('search_limit') or 0)
     if search_limit < 0:
         raise ValueError(f'Bad search limit: {search_limit}')
 
     results: List[Any] = []
-    for regex_pattern in regex_list:
-        if isinstance(regex_pattern, (str, int)):
-            regex = re.compile(str(regex_pattern), flags=regex_flags)
-            for text in text_list:
+    value_takes = args.get('value_takes') or 'text'
+    if value_takes == 'text':
+        # Pattern matching for each text in the input order
+        regex_list = concat_values(args.get('regex'), [])
+        text_list = concat_values(args.get('value'), args.get('text'))
+
+        regexes = [re.compile(str(r), flags=regex_flags) for r in regex_list if isinstance(r, (str, int))]
+        for text in text_list:
+            for regex in regexes:
                 for i, match in enumerate(re.finditer(regex, str(text)), start=1):
                     results = concat_values(results, expand_template(match, template))
                     if search_limit != 0 and search_limit <= i:
                         break
+
+    elif value_takes == 'regex':
+        # Pattern matching for each regex in the input order
+        regex_list = concat_values(args.get('value'), args.get('regex'))
+        text_list = concat_values(args.get('text'), [])
+
+        for regex_pattern in regex_list:
+            if isinstance(regex_pattern, (str, int)):
+                regex = re.compile(str(regex_pattern), flags=regex_flags)
+                for text in text_list:
+                    for i, match in enumerate(re.finditer(regex, str(text)), start=1):
+                        results = concat_values(results, expand_template(match, template))
+                        if search_limit != 0 and search_limit <= i:
+                            break
+    else:
+        raise ValueError(f'Unknown value_takes: {value_takes}')
 
     demisto.results(results)
 
