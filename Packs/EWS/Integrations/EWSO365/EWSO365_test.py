@@ -524,10 +524,11 @@ def test_key_params(mocker, params, expected_result):
     """
 
     mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'error')
     mocker.patch.object(demisto, 'results')
     sub_main()
 
-    assert demisto.results.call_args[0][0].get('Contents') == expected_result
+    assert demisto.error.call_args[0][0] == "Exception: " + expected_result
 
 
 @pytest.mark.parametrize('params, expected_result', [
@@ -545,10 +546,11 @@ def test_id_params(mocker, params, expected_result):
     """
 
     mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'error')
     mocker.patch.object(demisto, 'results')
     sub_main()
 
-    assert demisto.results.call_args[0][0].get('Contents') == expected_result
+    assert demisto.error.call_args[0][0] == "Exception: " + expected_result
 
 
 @pytest.mark.parametrize('params, expected_result', [
@@ -566,7 +568,8 @@ def test_token_params(mocker, params, expected_result):
     """
 
     mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'error')
     mocker.patch.object(demisto, 'results')
     sub_main()
 
-    assert demisto.results.call_args[0][0].get('Contents') == expected_result
+    assert demisto.error.call_args[0][0] == "Exception: " + expected_result

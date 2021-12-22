@@ -2306,10 +2306,22 @@ def sub_main():
     # client's default_target_mailbox is the authorization source for the instance
     params['default_target_mailbox'] = args.get('target_mailbox',
                                                 args.get('source_mailbox', params['default_target_mailbox']))
-
     try:
         client = EWSClient(**params)
-        start_logging()
+    except Exception as e:
+        demisto.results(
+            {
+                "Type": entryTypes["error"],
+                "ContentsFormat": formats["text"],
+                "Contents": str(e),
+            }
+        )
+        demisto.error(f"{e.__class__.__name__}: {e}")
+        return
+
+    start_logging()
+
+    try:
         command = demisto.command()
         # commands that return a single note result
         normal_commands = {
