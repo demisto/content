@@ -2,7 +2,7 @@
     "name": "ThycoticDSV",
     "description": "This integration pack helps you retrieve the data stored in the Thycotic DevOps Storage Vault and use it in other integrations.",
     "support": "partner",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.2",
     "author": "Thycotic Inc",
     "url": "https://thycotic.force.com/support/s/login",
     "email": "support@thycotic.com",
@@ -15,5 +15,9 @@
     "keywords": [],
     "githubUser": [
         "AndyNikolaev"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

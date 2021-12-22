@@ -18,5 +18,9 @@
     "githubUser": [
         "asaf96"
     ],
-    "certification": "certified"
+    "certification": "certified",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }
