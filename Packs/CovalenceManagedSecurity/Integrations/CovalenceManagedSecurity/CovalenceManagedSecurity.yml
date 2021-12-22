@@ -177,7 +177,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-beta: false
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0
