@@ -28,7 +28,7 @@ tasks:
       {
         "position": {
           "x": 67.5,
-          "y": -510
+          "y": -520
         }
       }
     note: false
@@ -40,10 +40,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: b8fe1f1e-c1ae-499e-83d7-f466009b5790
+    taskid: 469675b6-c693-42e3-891c-100ee64f3dd6
     type: regular
     task:
-      id: b8fe1f1e-c1ae-499e-83d7-f466009b5790
+      id: 469675b6-c693-42e3-891c-100ee64f3dd6
       version: -1
       name: Assign to analyst
       description: Assign the incident to an analyst based on the analyst's organizational
@@ -59,6 +59,8 @@ tasks:
       onCall:
         complex:
           root: inputs.OnCall
+          transformers:
+          - operator: toLowerCase
       roles:
         complex:
           root: inputs.Role
@@ -131,7 +133,7 @@ tasks:
       {
         "position": {
           "x": -897.5,
-          "y": 4590
+          "y": 4960
         }
       }
     note: false
@@ -496,8 +498,6 @@ tasks:
         complex:
           root: incident
           accessor: emailto
-      EmailBrand:
-        simple:
       EmailCC:
         complex:
           root: incident
@@ -604,14 +604,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 6838736c-c177-4b2a-883e-43e36cc896bb
+    taskid: 6ad41556-9fe2-467c-8610-fc701343246b
     type: playbook
     task:
-      id: 6838736c-c177-4b2a-883e-43e36cc896bb
+      id: 6ad41556-9fe2-467c-8610-fc701343246b
       version: -1
       name: Search And Delete Emails - Generic v2
-      description: This playbook searches and delete emails with similar attributes
-        of a malicious email using EWS or Office 365.
+      description: 'This playbook searches and deletes emails with similar attributes
+        of a malicious email using one of the following integrations: * EWS * Office
+        365. * Gmail * Agari Phishing Defense'
       playbookName: Search And Delete Emails - Generic v2
       type: playbook
       iscommand: false
@@ -632,6 +633,8 @@ tasks:
         O365AllowNotFoundExchangeLocations
       : complex:
           root: inputs.O365AllowNotFoundSearchLocations
+          transformers:
+          - operator: toLowerCase
       O365DeleteType:
         complex:
           root: inputs.O365DeleteType
@@ -647,6 +650,8 @@ tasks:
       SearchAndDeleteIntegration:
         complex:
           root: inputs.SearchAndDeleteIntegration
+      SearchThisWeek:
+        simple: "true"
       Subject:
         complex:
           root: incident
@@ -665,7 +670,7 @@ tasks:
       {
         "position": {
           "x": 352.5,
-          "y": 4175
+          "y": 4545
         }
       }
     note: false
@@ -692,7 +697,7 @@ tasks:
       {
         "position": {
           "x": -897.5,
-          "y": 4775
+          "y": 5145
         }
       }
     note: false
@@ -843,7 +848,7 @@ tasks:
       '#default#':
       - "43"
       "Yes":
-      - "28"
+      - "138"
     separatecontext: false
     conditions:
     - label: "Yes"
@@ -974,7 +979,7 @@ tasks:
       {
         "position": {
           "x": 690,
-          "y": 4440
+          "y": 4810
         }
       }
     note: false
@@ -1018,10 +1023,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: cd829524-6ca2-4eba-8bac-d85ae6ce369b
+    taskid: 0a30e249-1e0e-4ec0-8e94-2adda6128b22
     type: playbook
     task:
-      id: cd829524-6ca2-4eba-8bac-d85ae6ce369b
+      id: 0a30e249-1e0e-4ec0-8e94-2adda6128b22
       version: -1
       name: Email Address Enrichment - Generic v2.1
       description: |-
@@ -1809,7 +1814,7 @@ tasks:
       {
         "position": {
           "x": 1000,
-          "y": 4175
+          "y": 4545
         }
       }
     note: false
@@ -1821,10 +1826,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "92":
     id: "92"
-    taskid: 93c79a23-70e3-4eb2-87b4-fb3609ebb4e4
+    taskid: 823dff2d-a49d-4b44-849d-8fdb23f8156b
     type: playbook
     task:
-      id: 93c79a23-70e3-4eb2-87b4-fb3609ebb4e4
+      id: 823dff2d-a49d-4b44-849d-8fdb23f8156b
       version: -1
       name: Entity Enrichment - Phishing v2
       description: Enrich entities using one or more integrations
@@ -1836,6 +1841,12 @@ tasks:
       '#none#':
       - "56"
     scriptarguments:
+      Domain:
+        complex:
+          root: Domain
+          accessor: Name
+          transformers:
+          - operator: uniq
       Email:
         complex:
           root: Account.Email.Address
@@ -1851,7 +1862,75 @@ tasks:
                 iscontext: true
           transformers:
           - operator: uniq
+      Hostname:
+        complex:
+          root: Endpoint
+          accessor: Hostname
+          transformers:
+          - operator: uniq
+      IP:
+        complex:
+          root: IP
+          accessor: Address
+          transformers:
+          - operator: uniq
+      InternalDomains:
+        complex:
+          root: inputs.InternalDomains
+      MD5:
+        complex:
+          root: File
+          accessor: MD5
+          transformers:
+          - operator: uniq
+      ResolveIP:
+        simple: "False"
+      SHA1:
+        complex:
+          root: File
+          accessor: SHA1
+          transformers:
+          - operator: uniq
+      SHA256:
+        complex:
+          root: File
+          accessor: SHA256
+          transformers:
+          - operator: uniq
+      URL:
+        complex:
+          root: URL
+          accessor: Data
+          transformers:
+          - operator: uniq
+      Username:
+        complex:
+          root: Account
+          accessor: Username
+          transformers:
+          - operator: uniq
     separatecontext: false
+    loop:
+      iscommand: false
+      scriptArguments:
+        Email:
+          complex:
+            root: Account.Email.Address
+            filters:
+            - - operator: isNotEqualString
+                left:
+                  value:
+                    simple: Account.Email.Address
+                  iscontext: true
+                right:
+                  value:
+                    simple: ReporterAddress
+                  iscontext: true
+            transformers:
+            - operator: uniq
+      exitCondition: ""
+      wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -2359,6 +2438,81 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "138":
+    id: "138"
+    taskid: 46c7cd4b-d0ae-4760-8cfe-4513ac096ca4
+    type: regular
+    task:
+      id: 46c7cd4b-d0ae-4760-8cfe-4513ac096ca4
+      version: -1
+      name: Extract the original email sender address
+      description: commands.local.cmd.extract.indicators
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "139"
+    scriptarguments:
+      text:
+        complex:
+          root: incident
+          accessor: emailfrom
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 352.5,
+          "y": 4170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "139":
+    id: "139"
+    taskid: 95bdf590-35fa-4d5c-8d22-f12a356b3cfc
+    type: regular
+    task:
+      id: 95bdf590-35fa-4d5c-8d22-f12a356b3cfc
+      version: -1
+      name: Store the email address of the reporting user
+      description: Store the email address of the user that reported the incident.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      key:
+        simple: PhishingSender
+      value:
+        complex:
+          root: ExtractedIndicators.Email
+          accessor: '[1]'
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 352.5,
+          "y": 4360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
@@ -2366,7 +2520,6 @@ view: |-
       "137_135_yes": 0.54,
       "15_31_#default#": 0.6,
       "33_16_No": 0.64,
-      "36_28_Yes": 0.5,
       "36_43_#default#": 0.57,
       "37_43_#default#": 0.5,
       "37_91_yes": 0.57,
@@ -2376,10 +2529,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 5350,
+        "height": 5730,
         "width": 2752.5,
         "x": -1222.5,
-        "y": -510
+        "y": -520
       }
     }
   }
@@ -2415,16 +2568,20 @@ inputs:
   playbookInputQuery:
 - key: OnCall
   value:
-    simple: "false"
+    simple: "False"
   required: false
-  description: Set to true to assign only user that is currently on shift. Requires
-    Cortex XSOAR v5.5 or later.
+  description: Set to true to assign only user that is currently on shift.
   playbookInputQuery:
 - key: SearchAndDeleteIntegration
   value:
     simple: EWS
   required: false
   description: |-
+    Possible Values:
+    - EWS
+    - O365
+    - Gmail
+
     Determines which product and playbook will be used to search and delete the phishing email from users' inboxes.
     Set this to "O365" to use the "O365 - Security And Compliance - Search And Delete" playbook.
     Set this to "EWS" to use the "Search And Delete Emails - EWS" playbook.
@@ -2453,7 +2610,7 @@ inputs:
   playbookInputQuery:
 - key: O365AllowNotFoundSearchLocations
   value:
-    simple: "false"
+    simple: "False"
   required: false
   description: Used only when searching and deleting emails in O365. Whether to include
     mailboxes other than regular user mailboxes in the compliance search. Default
@@ -2485,6 +2642,13 @@ inputs:
   required: false
   description: Whether to use URL Detonation playbook or not. When detonating a URL
     it's possible that it will take a few minutes. False is default.
+  playbookInputQuery:
+- key: InternalRange
+  value: {}
+  required: false
+  description: |-
+    This input will be used in the task "Entity Enrichment - Phishing v2".
+    A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided, will use default list provided in the IsIPInRanges script (the known IPv4 private address ranges).
   playbookInputQuery:
 outputs: []
 tests:
