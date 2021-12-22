@@ -5878,3 +5878,8 @@ def test_get_message_memory_dump():
     assert ' End Top ' in result
     assert ' End Variables Dump ' in result
     assert '<class \'' in result
+
+
+def test_module_line_number_mapping():
+    from CommonServerPython import _MODULES_LINE_MAPPING
+    assert _MODULES_LINE_MAPPING['CommonServerPython']['pre'] == 0
