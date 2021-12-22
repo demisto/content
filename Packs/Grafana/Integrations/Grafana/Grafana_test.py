@@ -544,7 +544,7 @@ def test_annotation_create_command(mocker, grafana_client):
     annotation_create_command(grafana_client, args)
     http_request.assert_called_with('POST', 'api/annotations',
                                     json_data={'dashboardId': 3, 'panelId': 2, 'tags': ['tag1'], 'text': 'Text',
-                                               'time': 1571690700000, 'timeEnd': 1571690701000}, headers=None)
+                                               'time': 1571701500000, 'timeEnd': 1571701501000}, headers=None)
 
 
 def test_teams_search_command(mocker, grafana_client):
