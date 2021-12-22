@@ -115,6 +115,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: Entry point
     taskid: ffdd9b7e-31a2-4da4-840f-ee2274fdc15c
     timertriggers: []
     type: start
@@ -140,31 +141,31 @@ tasks:
     note: true
     quietmode: 0
     scriptarguments:
-      BIRTHDAY:
+      birthday:
         simple: ${inputs.Birthday}
-      CC_NUMBER:
+      cc_number:
         simple: ${inputs.Credit Card Number}
-      CITY:
+      city:
         simple: ${inputs.City}
-      DRIVER_LICENSE:
+      driver_license:
         simple: ${inputs.Driver License}
-      FULL_NAME:
+      full_name:
         simple: ${inputs.Full Name}
-      GIVEN_NAME:
+      given_name:
         simple: ${inputs.First Name}
-      NATIONAL_ID:
+      national_id:
         simple: ${inputs.National ID}
-      PASSPORT_NUMBER:
+      passport_number:
         simple: ${inputs.Passport Number}
-      PHONE_NUMBER:
+      phone_number:
         simple: ${inputs.Phone Number}
-      STREET_ADDRESS:
+      street_address:
         simple: ${inputs.Street Address}
-      SURNAME:
+      surname:
         simple: ${inputs.Surname}
-      TAX_ID:
+      tax_id:
         simple: ${inputs.Tax ID}
-      VEHICLE_NUMBER:
+      vehicle_number:
         simple: ${inputs.Vehicle Number}
       execution-timeout:
         simple: "10"
@@ -472,6 +473,7 @@ tasks:
       id: 3c53f41a-b75c-4ea4-8bf8-0f5eb37462dc
       iscommand: false
       name: No DSAR ticket in Inventa
+      description: No DSAR ticket in Inventa
       type: condition
       version: -1
     taskid: 3c53f41a-b75c-4ea4-8bf8-0f5eb37462dc
@@ -606,6 +608,7 @@ tasks:
       id: 4f3ef145-5adf-4de8-88b1-ac00a8c5450f
       iscommand: false
       name: Done
+      description: Done
       type: title
       version: -1
     taskid: 4f3ef145-5adf-4de8-88b1-ac00a8c5450f
@@ -728,6 +731,7 @@ tasks:
       id: 13d7d489-fbeb-4a6c-82b7-73aed7a7110a
       iscommand: false
       name: No DataSubject Id in incident
+      description: No DataSubject Id in incident
       type: condition
       version: -1
     taskid: 13d7d489-fbeb-4a6c-82b7-73aed7a7110a
@@ -1053,6 +1057,7 @@ tasks:
       id: a92bbedf-6d3c-4b92-8a37-1c0b9b406c68
       iscommand: false
       name: Handle Context
+      description: Handle Context
       type: title
       version: -1
     taskid: a92bbedf-6d3c-4b92-8a37-1c0b9b406c68
@@ -1100,6 +1105,7 @@ tasks:
       id: 5601ee49-3aea-41df-8d8d-cf5a2990b012
       iscommand: false
       name: Check if related incidents found
+      description: Check if related incidents found
       type: condition
       version: -1
     taskid: 5601ee49-3aea-41df-8d8d-cf5a2990b012
