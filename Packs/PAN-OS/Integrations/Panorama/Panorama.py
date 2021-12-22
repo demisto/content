@@ -15,6 +15,7 @@ import requests
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS '''
+# first comment
 URL = ''
 API_KEY = None
 USE_SSL = None
@@ -7171,7 +7172,6 @@ def main():
 
         # Remove proxy if not set to true in params
         handle_proxy()
-
 
         if demisto.command() == 'test-module':
             panorama_test()
