@@ -1,18 +1,24 @@
+import json
+
 import dateparser
 import pytest
-import json
+from freezegun import freeze_time
 from pytz import utc
 
-from Grafana import Client, change_key, keys_to_lowercase, decapitalize, calculate_fetch_start_time, parse_alerts, \
-    alert_to_incident, filter_alerts_by_time, filter_alerts_by_id, reduce_incidents_to_limit, set_state, \
-    set_time_to_epoch_millisecond, paging_heading
-from freezegun import freeze_time
-from CommonServerPython import urljoin
+from Grafana import Client, alert_get_by_id_command, alert_pause_command, alert_to_incident, alert_unpause_command, \
+    alerts_list_command, annotation_create_command, calculate_fetch_start_time, change_key, dashboards_search_command, \
+    decapitalize, filter_alerts_by_id, filter_alerts_by_time, keys_to_lowercase, org_create_command, org_get_by_id_command, \
+    org_get_by_name_command, org_list_command, paging_heading, parse_alerts, reduce_incidents_to_limit, set_state, \
+    set_time_to_epoch_millisecond, team_add_command, team_delete_command, team_get_by_id_command, team_members_command, \
+    teams_search_command, user_add_to_team_command, user_get_by_id_command, user_remove_from_team_command, user_update_command, \
+    users_organization_command, users_search_command, users_teams_command
 
 
 def create_client(url: str = 'url', verify_certificate: bool = True, proxy: bool = False):
-    return Client(urljoin(url, ''), verify_certificate, proxy)
+    return Client(url, verify_certificate, proxy)
 
+
+''' HELPER FUNCTIONS TESTS '''
 
 with open("TestData/change_key_values.json") as change_key_values_file:
     change_key_values_data = json.load(change_key_values_file)
@@ -461,3 +467,184 @@ def test_paging_heading(page_number, page_size, expected_output):
 
     """
     assert paging_heading(page_number, page_size) == expected_output
+
+
+''' COMMAND FUNCTIONS TESTS '''
+
+
+@pytest.fixture
+def grafana_client():
+    return Client('url')
+
+
+def test_alerts_list_command(mocker, grafana_client):
+    http_request = mocker.patch.object(grafana_client, '_http_request')
+    args = {'dashboard_id': "1",
+            'panel_id': "2",
+            'name': "ADash",
+            'state': "no_data,paused",
+            'limit': "50",
+            'folder_id': "1",
+            'dashboard_name': "Dash",
+            'dashboard_tag': "tag"}
+    alerts_list_command(grafana_client, args)
+    http_request.assert_called_with('GET', 'api/alerts', params={'dashboardId': ['1'], 'panelId': '2', 'query': 'ADash',
+                                                                 'state': ['no_data', 'paused'], 'limit': '50', 'folderId': ['1'],
+                                                                 'dashboardQuery': 'Dash', 'dashboardTag': ['tag']}, headers=None)
+
+
+def test_alert_pause_command(mocker, grafana_client):
+    http_request = mocker.patch.object(grafana_client, '_http_request')
+    args = {'alert_id': "4"}
+    alert_pause_command(grafana_client, args)
+    http_request.assert_called_with('POST', 'api/alerts/4/pause', json_data={'paused': True}, headers=None)
+
+
+def test_alert_unpause_command(mocker, grafana_client):
+    http_request = mocker.patch.object(grafana_client, '_http_request')
+    args = {'alert_id': "4"}
+    alert_unpause_command(grafana_client, args)
+    http_request.assert_called_with('POST', 'api/alerts/4/pause', json_data={'paused': False}, headers=None)
+
+
+def test_users_search_command(mocker, grafana_client):
+    http_request = mocker.patch.object(grafana_client, '_http_request')
+    args = {'page_size': "1000", 'page_number': "1", 'query': "admin"}
+    users_search_command(grafana_client, args)
+    http_request.assert_called_with('GET', 'api/users', params={'perpage': '1000', 'page': '1', 'query': 'admin'}, headers=None)
+
+
+def test_users_teams_command(mocker, grafana_client):
+    http_request = mocker.patch.object(grafana_client, '_http_request')
+    args = {'user_id': "4"}
+    users_teams_command(grafana_client, args)
+    http_request.assert_called_with('GET', 'api/users/4/teams', headers=None)
+
+
+def test_users_organization_command(mocker, grafana_client):
+    http_request = mocker.patch.object(grafana_client, '_http_request')
+    args = {'user_id': "4"}
+    users_organization_command(grafana_client, args)
+    http_request.assert_called_with('GET', 'api/users/4/orgs', headers=None)
+
+
+def test_user_update_command(mocker, grafana_client):
+    http_request = mocker.patch.object(grafana_client, '_http_request')
+    args = {'email': "e@mail", 'name': "Name", 'login': "login", 'theme': "dark", 'user_id': "2"}
+    user_update_command(grafana_client, args)
+    http_request.assert_called_with('PUT', 'api/users/2',
+                                    json_data={'email': 'e@mail', 'login': 'login', 'name': 'Name', 'theme': 'dark'},
+                                    headers=None)
+
+
+def test_annotation_create_command(mocker, grafana_client):
+    http_request = mocker.patch.object(grafana_client, '_http_request')
+    args = {'dashboard_id': "3", 'panel_id': "2", 'time': "2019-10-21T23:45:00", 'time_end': "2019-10-21T23:45:01",
+            'tags': "tag1", 'text': "Text"}
+    annotation_create_command(grafana_client, args)
+    http_request.assert_called_with('POST', 'api/annotations',
+                                    json_data={'dashboardId': 3, 'panelId': 2, 'tags': ['tag1'], 'text': 'Text',
+                                               'time': 1571690700000, 'timeEnd': 1571690701000}, headers=None)
+
+
+def test_teams_search_command(mocker, grafana_client):
+    http_request = mocker.patch.object(grafana_client, '_http_request')
+    args = {'page_size': "60", 'page_number': "2", 'query': "team", 'name': "team_name"}
+    teams_search_command(grafana_client, args)
+    http_request.assert_called_with('GET', 'api/teams/search',
+                                    params={'perpage': '60', 'page': '2', 'query': 'team', 'name': 'team_name'}, headers=None)
+
+
+def test_team_members_command(mocker, grafana_client):
+    http_request = mocker.patch.object(grafana_client, '_http_request')
+    args = {'team_id': "16"}
+    team_members_command(grafana_client, args)
+    http_request.assert_called_with('GET', 'api/teams/16/members', headers=None)
+
+
+def test_user_add_to_team_command(mocker, grafana_client):
+    http_request = mocker.patch.object(grafana_client, '_http_request')
+    args = {'user_id': "2", 'team_id': "15"}
+    user_add_to_team_command(grafana_client, args)
+    http_request.assert_called_with('POST', 'api/teams/15/members', json_data={'userId': 2}, headers=None, ok_codes=(200, 400))
+
+
+def test_user_remove_from_team_command(mocker, grafana_client):
+    http_request = mocker.patch.object(grafana_client, '_http_request')
+    args = {'user_id': "3", 'team_id': "17"}
+    user_remove_from_team_command(grafana_client, args)
+    http_request.assert_called_with('DELETE', 'api/teams/17/members/3', headers=None)
+
+
+def test_team_add_command(mocker, grafana_client):
+    http_request = mocker.patch.object(grafana_client, '_http_request')
+    args = {'name': "New Team", 'email': "new@email", 'org_id': "2"}
+    team_add_command(grafana_client, args)
+    http_request.assert_called_with('POST', 'api/teams', json_data={'email': 'new@email', 'name': 'New Team', 'orgId': '2'},
+                                    headers=None)
+
+
+def test_team_delete_command(mocker, grafana_client):
+    http_request = mocker.patch.object(grafana_client, '_http_request')
+    args = {'team_id': "4"}
+    team_delete_command(grafana_client, args)
+    http_request.assert_called_with('DELETE', 'api/teams/4', headers=None)
+
+
+def test_org_create_command(mocker, grafana_client):
+    http_request = mocker.patch.object(grafana_client, '_http_request')
+    args = {'name': 'NewOrg'}
+    org_create_command(grafana_client, args)
+    http_request.assert_called_with('POST', 'api/orgs', json_data={'name': 'NewOrg'}, headers=None)
+
+
+def test_dashboards_search_command(mocker, grafana_client):
+    http_request = mocker.patch.object(grafana_client, '_http_request')
+    args = {'query': "dash", 'tag': "tag1,tag2", 'type': "dash-db", 'dashboard_ids': "2,1", 'folder_ids': "1,3",
+            'starred': "false", 'limit': "30", 'page_number': "2"}
+    dashboards_search_command(grafana_client, args)
+    http_request.assert_called_with('GET', 'api/search', params={'query': 'dash', 'tag': ['tag1', 'tag2'], 'type': 'dash-db',
+                                                                 'dashboardIds': ['2', '1'], 'folderIds': ['1', '3'],
+                                                                 'starred': 'false', 'limit': '30', 'page': '2'}, headers=None)
+
+
+def test_user_get_by_id_command(mocker, grafana_client):
+    http_request = mocker.patch.object(grafana_client, '_http_request')
+    args = {'user_id': "6"}
+    user_get_by_id_command(grafana_client, args)
+    http_request.assert_called_with('GET', 'api/users/6', headers=None)
+
+
+def test_team_get_by_id_command(mocker, grafana_client):
+    http_request = mocker.patch.object(grafana_client, '_http_request')
+    args = {'team_id': "7"}
+    team_get_by_id_command(grafana_client, args)
+    http_request.assert_called_with('GET', 'api/teams/7', headers=None)
+
+
+def test_alert_get_by_id_command(mocker, grafana_client):
+    http_request = mocker.patch.object(grafana_client, '_http_request')
+    args = {'alert_id': "4"}
+    alert_get_by_id_command(grafana_client, args)
+    http_request.assert_called_with('GET', 'api/alerts/4', headers=None)
+
+
+def test_org_list_command(mocker, grafana_client):
+    http_request = mocker.patch.object(grafana_client, '_http_request')
+    args = {'page_size': "40", 'page_number': "0"}
+    org_list_command(grafana_client, args)
+    http_request.assert_called_with('GET', 'api/orgs', params={'perpage': '40', 'page': '0'}, headers=None)
+
+
+def test_org_get_by_name_command(mocker, grafana_client):
+    http_request = mocker.patch.object(grafana_client, '_http_request')
+    args = {'name': "OrgName"}
+    org_get_by_name_command(grafana_client, args)
+    http_request.assert_called_with('GET', 'api/orgs/name/OrgName', headers=None)
+
+
+def test_org_get_by_id_command(mocker, grafana_client):
+    http_request = mocker.patch.object(grafana_client, '_http_request')
+    args = {'org_id': "114"}
+    org_get_by_id_command(grafana_client, args)
+    http_request.assert_called_with('GET', 'api/orgs/114', headers=None)
