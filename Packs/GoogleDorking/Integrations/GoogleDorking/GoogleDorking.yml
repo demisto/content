@@ -15,9 +15,49 @@ configuration:
   required: true
 - display: File Types to Search
   name: file_types
-  type: 12
+  type: 16
   required: true
-  additionalinfo: Comma separated file types that'll be searched and downloaded.
+  options:
+  - pdf
+  - ps
+  - dwf
+  - kml
+  - kmz
+  - gpx
+  - hwp
+  - htm
+  - html
+  - xls
+  - xlsx
+  - ppt
+  - pptx
+  - doc
+  - docx
+  - odp
+  - ods
+  - odt
+  - rtf
+  - svg
+  - tex
+  - txt
+  - text
+  - log
+  - md
+  - bas
+  - c
+  - cc
+  - cpp
+  - cxx
+  - h
+  - hpp
+  - cs
+  - java
+  - pl
+  - py
+  - wml
+  - wap
+  - xml
+  additionalinfo: File types that'll be searched and downloaded.
 - display: Search Keywords
   name: keywords
   type: 12
@@ -68,6 +108,47 @@ script:
     - name: after
       description: 'Search after this date. Expected format: YYYY-MM-DD.'
     - name: file_types
+      auto: PREDEFINED
+      predefined:
+      - pdf
+      - ps
+      - dwf
+      - kml
+      - kmz
+      - gpx
+      - hwp
+      - htm
+      - html
+      - xls
+      - xlsx
+      - ppt
+      - pptx
+      - doc
+      - docx
+      - odp
+      - ods
+      - odt
+      - rtf
+      - svg
+      - tex
+      - txt
+      - text
+      - log
+      - md
+      - bas
+      - c
+      - cc
+      - cpp
+      - cxx
+      - h
+      - hpp
+      - cs
+      - java
+      - pl
+      - py
+      - wml
+      - wap
+      - xml
       description: Comma separated file types that'll be searched and downloaded.
       isArray: true
     - name: keywords
