@@ -421,7 +421,7 @@ def params():
       dict: Integrations parameters object
 
     """
-    return {}
+    return {'first_fetch': '3 days', 'apiKey': {'credential': '', 'credentials': {'id': '', 'locked': False, 'modified': '0001-01-01T00:00:00Z', 'name': '', 'password': '', 'sortValues': None, 'sshkey': '', 'sshkeyPass': '', 'user': '', 'vaultInstanceId': '', 'version': 0, 'workgroup': ''}, 'identifier': '9c22006387f4e1a0b', 'password': 'AIzaSyASul0pWpGjFo9M00o67KMI982TikhpBf4', 'passwordChanged': False}, 'file_types': 'log', 'incidentFetchInterval': '60', 'incidentType': None, 'insecure': True, 'isFetch': False, 'keywords': None, 'max_fetch': '10', 'proxy': False, 'urls': 'remikaing.free.fr'}
 
 
 def args():
@@ -442,7 +442,7 @@ def command():
       str: Integrations command name
 
     """
-    return ""
+    return "fetch-incidents"
 
 
 def log(msg):

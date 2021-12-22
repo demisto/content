@@ -11,12 +11,11 @@ def extract_users_from_file(entry_id: str, pattern: str) -> list:
     res = demisto.getFilePath(entry_id)
     if not res:
         raise DemistoException(f"Entry {entry_id} was not found")
-    if pattern:
-        regex = re.compile(pattern)
+    regex = re.compile(pattern) if pattern else None
     file_path = res['path']
     with open(file_path, mode='r') as file:
         for line in file.readlines():
-            if pattern:
+            if regex:
                 regex_res = regex.search(line)
                 if regex_res and (user := regex_res.groups()[1]):
                     users.append(user.lstrip())
@@ -27,10 +26,9 @@ def extract_users_from_file(entry_id: str, pattern: str) -> list:
 
 def extract_users_from_text(text: str, pattern: str) -> list:
     users = []
-    if pattern:
-        regex = re.compile(pattern)
+    regex = re.compile(pattern) if pattern else None
     for line in text.split('\n'):
-        if pattern:
+        if regex:
             regex_res = regex.search(line)
             if regex_res and (user := regex_res.groups()[1]):
                 users.append(user.lstrip())
