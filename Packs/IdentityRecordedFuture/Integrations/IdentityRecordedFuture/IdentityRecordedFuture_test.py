@@ -3,14 +3,12 @@ import os
 import unittest
 import json
 from pathlib import Path
-from unittest.mock import call, patch, Mock
+from unittest.mock import patch, Mock
 from IdentityRecordedFuture import (
     Actions,
-    Client,
-    period_to_date,
+    Client
 )
 
-from CommonServerPython import CommandResults
 import vcr as vcrpy
 
 CASSETTES = Path(__file__).parent / 'cassettes'
@@ -42,6 +40,7 @@ def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
+
 def create_client() -> Client:
     base_url = "https://api.recordedfuture.com/gw/xsoar/"
     verify_ssl = True
@@ -60,7 +59,7 @@ def create_client() -> Client:
 def test_client_whoami() -> None:
     client = create_client()
     resp = client.whoami()
-    assert isinstance(resp, dict)==True
+    assert isinstance(resp, dict) is True
 
 
 class RFTestIdentity(unittest.TestCase):
@@ -93,7 +92,7 @@ class RFTestIdentity(unittest.TestCase):
     @patch('IdentityRecordedFuture.period_to_date', return_value=DATETIME_STR_VALUE)
     def test_identity_lookup(self, period_to_date_mock):
         email_identities = ['realname@fake.com']
-        username_identities = [{'login': 'notreal', 'domain':'fake1.com'}]
+        username_identities = [{'login': 'notreal', 'domain': 'fake1.com'}]
         identities = 'realname@fake.com; notreal'
 
         lookup_response = util_load_json('./cassettes/identity_lookup_response.json')

@@ -1,4 +1,4 @@
-Workforce use case for Identity search and lookup using Recorded Future Identity
+External use case for Identity search and lookup using Recorded Future Identity
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -21,10 +21,10 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| latest-downloaded | Time frame for the leaked identities          | Last Year     | Required |
-| domain_type       | Type of the domain(Email, Authorization, All) | Email | Optional |
+| latest-downloaded | Time frame for the leaked identities          | Last Year | Optional |
+| domain_type       | Type of the domain(Email, Authorization, All) | Authorization | Optional |
 | identities        | String of identities separated by semicolon   | RecordedFuture.Credentials.SearchIdentities | Required |
-| first-downloaded  | Time frame for the leaked identities          | Last Year     | Required |
+| first-downloaded  | Time frame for the leaked identities          | Last Year | Oprional |
 
 ## Playbook Outputs
 ---
@@ -58,4 +58,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Recorded Future Workforce Usecase Playbook](https://github.com/demisto/content/raw/master/Packs/RecordedFuture/doc_files/workforce_playbook.png)
+![Recorded Future External Usecase Playbook](https://github.com/demisto/content/raw/master/Packs/IdentityRecordedFuture/doc_files/external_playbook.png)

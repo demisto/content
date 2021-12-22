@@ -10,21 +10,15 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [],
-    "created": "2021-10-27T13:09:02Z",
-    "updated": "2021-10-27T13:09:02Z",
-    "certification": "certified",
+    "created": "2021-11-27T13:09:02Z",
+    "updated": "2021-11-27T13:09:02Z",
     "useCases": [],
     "keywords": [
         "recorded future",
         "recordedfuture",
         "rf",
-        "threat intelligence",
-        "ti",
-        "tip",
-        "enrichment",
-        "enrich",
-        "intelligence",
-        "data enrichment"
+        "identity",
+        "identities"
     ],
     "dependencies": {},
     "githubUser": [

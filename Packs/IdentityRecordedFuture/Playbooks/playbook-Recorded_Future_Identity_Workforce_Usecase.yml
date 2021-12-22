@@ -1,28 +1,30 @@
-id: 54951a2e-b658-4438-89ef-26899d866665
-version: 3
-vcShouldKeepItemLegacyProdMachine: false
-name: Recorded Future Workforce Usecase Playbook
+id: Recorded Future Workforce Usecase
+version: -1
+name: Recorded Future Workforce Usecase
+description: Implements an workforce usecase for Recorded Future
+  Identity Data
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 40099a99-0040-4d3e-81b7-e534517d4678
+    taskid: 7c940bb5-e8bb-48b4-8b73-a6fb25ad22b3
     type: start
     task:
-      id: 40099a99-0040-4d3e-81b7-e534517d4678
+      id: 7c940bb5-e8bb-48b4-8b73-a6fb25ad22b3
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "6"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 50
+          "y": -90
         }
       }
     note: false
@@ -30,14 +32,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: c9378d40-8512-4898-89c0-aa2fbc5d5e9f
+    taskid: 12da25b0-208e-4704-87dc-5236266a19b2
     type: regular
     task:
-      id: c9378d40-8512-4898-89c0-aa2fbc5d5e9f
+      id: 12da25b0-208e-4704-87dc-5236266a19b2
       version: -1
       name: recordedfuture-identity-search
       description: Get email values that were leaked.
@@ -66,19 +66,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 7b888f0e-5215-4527-835c-b5b8d98e88bc
+    taskid: ad7e52de-c1a3-4906-8a31-550daec4b780
     type: title
     task:
-      id: 7b888f0e-5215-4527-835c-b5b8d98e88bc
+      id: ad7e52de-c1a3-4906-8a31-550daec4b780
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -92,16 +91,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: bb1c7d0c-7341-412c-81f5-319ace5f0dcf
+    taskid: 958c6c83-fbfe-4ee0-8836-ba58224b0a9e
     type: condition
     task:
-      id: bb1c7d0c-7341-412c-81f5-319ace5f0dcf
+      id: 958c6c83-fbfe-4ee0-8836-ba58224b0a9e
       version: -1
       name: Check If any creds were found
+      description: Check if any creds were found
       type: condition
       iscommand: false
       brand: ""
@@ -133,16 +131,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: e4885b7d-7d4e-4789-8a41-a69ecff86e77
+    taskid: d503b9f1-6bfa-4ef2-8643-feca1b579313
     type: regular
     task:
-      id: e4885b7d-7d4e-4789-8a41-a69ecff86e77
+      id: d503b9f1-6bfa-4ef2-8643-feca1b579313
       version: -1
       name: recordedfuture-identity-lookup
+      description: Perform a lookup command using data from context
       script: Recorded Future Identity|||recordedfuture-identity-lookup
       type: regular
       iscommand: true
@@ -168,16 +165,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 16877dca-6d27-4232-89e7-03afaabafb3f
+    taskid: e4ea7208-7062-4341-81cf-bc4fdc4ef6f4
     type: regular
     task:
-      id: 16877dca-6d27-4232-89e7-03afaabafb3f
+      id: e4ea7208-7062-4341-81cf-bc4fdc4ef6f4
       version: -1
       name: Please check the credentials in WarRoom and make action.
+      description: Manual task for user to perform some action according to output
       type: regular
       iscommand: false
       brand: ""
@@ -197,20 +193,52 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 14eda657-70f8-4c9b-871b-c587a590c1f2
+    type: regular
+    task:
+      id: 14eda657-70f8-4c9b-871b-c587a590c1f2
+      version: -1
+      name: Delete Identity Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      key:
+        simple: RecordedFuture.Credentials
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 45
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1165,
+        "height": 1305,
         "width": 970,
         "x": 50,
-        "y": 50
+        "y": -90
       }
     }
   }
 inputs: []
 outputs: []
-sourceplaybookid: ce98bf76-2b6a-4e82-81a0-b09e2e615d9c
+fromversion: 6.0.0
+tests:
+- TestIdentityRecordedFuture.yml

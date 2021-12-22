@@ -5,7 +5,8 @@ name: Recorded Future Identity
 display: Recorded Future Identity
 category: Data Enrichment & Threat Intelligence
 image:
-description: Recorded Future Identity Integration that provides access to Recorded Future Identity module data.
+description: Recorded Future Identity Integration that provides access to Recorded
+  Future Identity module data.
 configuration:
 - display: Server URL (e.g., https://api.recordedfuture.com/gw/xsoar-identity)
   name: server_url
@@ -57,15 +58,16 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   commands:
   - name: recordedfuture-identity-search
+    description: Search for identities in Recorded Future Identity Dataset
     arguments:
     - name: latest-downloaded
-      required: true
+      required: false
       auto: PREDEFINED
-      defaultValue: "Last Year"
-      description: time period for last downloaded time
+      defaultValue: "All time"
+      description: Time period for last downloaded time.
       predefined:
       - "Last 24 Hours"
       - "Last 7 Days"
@@ -74,8 +76,9 @@ script:
       - "Last 6 Months"
       - "Last Year"
       - "All time"
-    - display: Type of identities to search for. If not specified use All.
-      name: domain_type
+    - name: domain_type
+      description: Type of identities to search for (Authorization or Email). If not
+        specified use All.
       required: false
       auto: PREDEFINED
       defaultValue: "All"
@@ -83,36 +86,99 @@ script:
       - "Email"
       - "Authorization"
       - "All"
-      additionalinfo: Identity type to search for (username or email);
     outputs:
     - contextPath: RecordedFuture.Credentials.SearchIdentities
-      description: Recorded Future identity email values
+      description: Recorded Future identity email values.
       type: string
-    description: Get email values that were leaked.
   - name: recordedfuture-identity-lookup
+    description: Lookup for identities in Recorded Future Identity Dataset
     arguments:
-      - name: identities
-        required: true
-        description: Identities for the lookup separated by semicolon.(e.g. "test@test.com; test1@google.com")
-      - name: first-downloaded
-        required: true
-        auto: PREDEFINED
-        defaultValue: "Last Year"
-        description: time period for last downloaded time
-        predefined:
-        - "Last 24 Hours"
-        - "Last 7 Days"
-        - "Last Month"
-        - "Last 3 Months"
-        - "Last 6 Months"
-        - "Last Year"
-        - "All time"
+    - name: identities
+      required: true
+      description: Identities for the lookup separated by semicolon.(e.g. "test@test.com;
+        test1@google.com").
+    - name: first-downloaded
+      required: false
+      auto: PREDEFINED
+      defaultValue: "All time"
+      description: Time period for last downloaded time.
+      predefined:
+      - "Last 24 Hours"
+      - "Last 7 Days"
+      - "Last Month"
+      - "Last 3 Months"
+      - "Last 6 Months"
+      - "Last Year"
+      - "All time"
     outputs:
-    - contextPath: RecordedFuture.Credentials.Identities
-      description: Recorded Future identity email value
+    - contextPath: RecordedFuture.Credentials.Identities.identity.subjects
+      description: Identity value.
+      type: String
+    - contextPath: RecordedFuture.Credentials.Identities.count
+      description: Leaked credentials count number.
+      type: Number
+    - contextPath: RecordedFuture.Credentials.Identities.credentials.subject
+      description: Identity value.
+      type: String
+    - contextPath: RecordedFuture.Credentials.Identities.credentials.dumps.name
+      description: Dump name.
+      type: String
+    - contextPath: RecordedFuture.Credentials.Identities.credentials.dumps.description
+      description: Dump description.
+      type: String
+    - contextPath: RecordedFuture.Credentials.Identities.credentials.dumps.downloaded
+      description: Datetime string that show the day when dump was downloaded.
+      type: String
+    - contextPath: RecordedFuture.Credentials.Identities.credentials.type
+      description: Dump type.
+      type: String
+    - contextPath: RecordedFuture.Credentials.Identities.credentials.breaches.name
+      description: Breach name.
+      type: String
+    - contextPath: RecordedFuture.Credentials.Identities.credentials.breaches.domain
+      description: Breach domain.
+      type: String
+    - contextPath: RecordedFuture.Credentials.Identities.credentials.breaches.type
+      description: Breach type.
+      type: String
+    - contextPath: RecordedFuture.Credentials.Identities.credentials.breaches.breached
+      description: Datetime string that show the day when breach happened.
+      type: String
+    - contextPath: RecordedFuture.Credentials.Identities.credentials.breaches.description
+      description: Breach description.
+      type: String
+    - contextPath: RecordedFuture.Credentials.Identities.credentials.breaches.site_description
+      description: Breach site description.
+      type: String
+    - contextPath: RecordedFuture.Credentials.Identities.credentials.first_downloaded
+      description: Datetime string representing firs time downloaded.
+      type: String
+    - contextPath: RecordedFuture.Credentials.Identities.credentials.latest_downloaded
+      description: Datetime string representing last time downloaded.
+      type: String
+    - contextPath: RecordedFuture.Credentials.Identities.credentials.exposed_secret.type
+      description: Exposed secret type.
+      type: String
+    - contextPath: RecordedFuture.Credentials.Identities.credentials.exposed_secret.hashes.algorithm
+      description: Exposed secret hash algorithm.
+      type: String
+    - contextPath: RecordedFuture.Credentials.Identities.credentials.exposed_secret.hashes.hash
+      description: Exposed secret hash value.
+      type: String
+    - contextPath: RecordedFuture.Credentials.Identities.credentials.exposed_secret.effectively_clear
+      description: Exposed secret clear or not
+      type: Boolean
+    - contextPath: RecordedFuture.Credentials.Identities.credentials.exposed_secret.details.properties
+      description: Exposed secret properties.
+      type: String
+    - contextPath: RecordedFuture.Credentials.Identities.credentials.exposed_secret.details.clear_text_hint
+      description: Exposed secret text hint.
+      type: String
+    - contextPath: RecordedFuture.Credentials.Identities.credentials.exposed_secret.details.rank
+      description: Rank for the exposed password.
       type: String
   isfetch: false
   runonce: false
 tests:
 - No tests
-fromversion: 5.0.0
+fromversion: 6.0.0

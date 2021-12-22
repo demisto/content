@@ -44,7 +44,7 @@ Get a list of identities for the specified period of time.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| latest-downloaded | Time frame for the leaked identities          | Required |
+| latest-downloaded | Time frame for the leaked identities          | Optional |
 | domain_type       | Type of the domain(Email, Authorization, All) | Optional |
 
 
@@ -103,7 +103,7 @@ Get a detailed info regarding identities.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | identities        | String of identities separated by semicolon   | Required |
-| first-downloaded  | Time frame for the leaked identities          | Required |
+| first-downloaded  | Time frame for the leaked identities          | Optional |
 
 
 
@@ -112,11 +112,11 @@ Get a detailed info regarding identities.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | RecordedFuture.Credentials.Identities.identity.subjects | string | Identity value |
-| RecordedFuture.Credentials.Identities.count | number | Leaked credentials count number  |
+| RecordedFuture.Credentials.Identities.count | number | Leaked credentials count number |
 | RecordedFuture.Credentials.Identities.credentials.subject | string | Identity value |
 | RecordedFuture.Credentials.Identities.credentials.dumps.name | string | Dump name |
-| RecordedFuture.Credentials.Identities.credentials.dumps.description | string | Dump description|
-| RecordedFuture.Credentials.Identities.credentials.dumps.downloaded | string | Datetime string that show the day when dump was downloaded|
+| RecordedFuture.Credentials.Identities.credentials.dumps.description | string | Dump description |
+| RecordedFuture.Credentials.Identities.credentials.dumps.downloaded | string | Datetime string that show the day when dump was downloaded |
 | RecordedFuture.Credentials.Identities.credentials.type | string | Dump type |
 | RecordedFuture.Credentials.Identities.credentials.breaches.name | string | Breach name |
 | RecordedFuture.Credentials.Identities.credentials.breaches.domain | string | Breach domain |
@@ -132,7 +132,7 @@ Get a detailed info regarding identities.
 | RecordedFuture.Credentials.Identities.credentials.exposed_secret.effectively_clear | boolean | Exposed secret clear or not |
 | RecordedFuture.Credentials.Identities.credentials.exposed_secret.details.properties | string | Exposed secret properties |
 | RecordedFuture.Credentials.Identities.credentials.exposed_secret.details.clear_text_hint | string | Exposed secret text hint |
-| RecordedFuture.Credentials.Identities.credentials.exposed_secret.details.clear_text_hint | string | Exposed secret |
+| RecordedFuture.Credentials.Identities.credentials.exposed_secret.details.rank | string | Rank for the exposed password |
 
 
 #### Command Example
