@@ -29,5 +29,9 @@
         "PI",
         "SDS",
         "ARIA"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

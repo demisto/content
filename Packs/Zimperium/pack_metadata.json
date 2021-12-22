@@ -14,5 +14,9 @@
     "useCases": [],
     "keywords": [
         "Mobile"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

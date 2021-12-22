@@ -344,5 +344,9 @@
         "IllusiveNetworks",
         "McAfee-TIE",
         "EWS"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

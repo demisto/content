@@ -18,5 +18,9 @@
         "ESM"
     ],
     "dependencies": {},
-    "displayedImages": []
+    "displayedImages": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }
