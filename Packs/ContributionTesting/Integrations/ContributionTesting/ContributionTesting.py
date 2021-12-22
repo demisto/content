@@ -258,6 +258,7 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 # comment for contrib
+# second comment
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 MAX_INCIDENTS_TO_FETCH = 50
