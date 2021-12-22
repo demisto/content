@@ -1,0 +1,489 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "DSAR Inventa Mapper",
+    "mapping": {
+        "DSAR": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Birthday": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "BIRTHDAY",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "City": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "CITY",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Credit Card Number": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "CC_NUMBER",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "DSAR DataAssets": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "dataAssets",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "DSAR DataBases": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "databases",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "DSAR DataSubject Email": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "datasubject_email",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "DSAR DataSubject ID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "datasubject_id",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "DSAR DataSubject Name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "datasubject_name",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "DSAR Files": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "files",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "DSAR Files JSON": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "filesJSON",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "DSAR Inventa Ticket": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "ticket_id",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "DSAR PII Entities": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "piis",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "DSAR Report Reason": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "reason",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Driver License": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "DRIVER_LICENSE",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "First Name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "GIVEN_NAME",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Full Name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "FULL_NAME",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Inventa DSAR Ticket": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "ticket_id",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "National ID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "NATIONAL_ID",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Passport Number": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "PASSPORT_NUMBER",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Phone Number": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "PHONE_NUMBER",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Related Incidents URLs": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "related_incidents_urls",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Street Address": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "STREET_ADDRESS",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Surname": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "SURNAME",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Tax ID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "TAX_ID",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Vehicle Number": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "VEHICLE_NUMBER",
+                        "transformers": []
+                    },
+                    "simple": ""
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "City": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "CITY",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "DSAR Files": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "files",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "title": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "files"
+                                        }
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Phone Number": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "PHONE_NUMBER",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Street Address": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "STREET_ADDRESS",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Surname": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "SURNAME",
+                        "transformers": []
+                    },
+                    "simple": ""
+                }
+            }
+        },
+        "iDSAR": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "First Name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "GIVEN_NAME",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "[Inventa] Birthday": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "BIRTHDAY",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "[Inventa] Credit Card Number": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "CC_NUMBER",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "[Inventa] DSAR DataAssets": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "dataAssets",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "[Inventa] DSAR DataBases": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "databases",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "[Inventa] DSAR DataSubject Email": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "datasubject_email",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "[Inventa] DSAR DataSubject ID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "datasubject_id",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "[Inventa] DSAR DataSubject Name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "datasubject_name",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "[Inventa] DSAR Files": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "files",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "[Inventa] DSAR Inventa Ticket": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "ticket_id",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "[Inventa] DSAR PII Entities": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "piis",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "[Inventa] DSAR Report Reason": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "reason",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "[Inventa] DSAR Transactions": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "transactions",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "[Inventa] Driver License": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "DRIVER_LICENSE",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "[Inventa] Full Name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "FULL_NAME",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "[Inventa] National ID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "NATIONAL_ID",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "[Inventa] PII Entities": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "piis",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "[Inventa] Passport Number": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "PASSPORT_NUMBER",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "[Inventa] Report Reason": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "reason",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "[Inventa] Tax ID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "TAX_ID",
+                        "transformers": []
+                    },
+                    "simple": ""
+                }
+            }
+        }
+    },
+    "name": "DSAR Inventa Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
