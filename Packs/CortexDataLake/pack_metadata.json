@@ -21,5 +21,9 @@
             "mandatory": true,
             "name": "Get License ID"
         }
-    }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

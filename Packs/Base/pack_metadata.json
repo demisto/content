@@ -17,5 +17,9 @@
         "base",
         "common"
     ],
-    "dependencies": {}
+    "dependencies": {},
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

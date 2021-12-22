@@ -4948,11 +4948,6 @@
         "Mimecast test": "Issue 26906"
     },
     "skipped_integrations": {
-        "AutoFocus V2": "Issue 26464",
-        "AutoFocus Daily Feed": "Issue 26464",
-        "AutoFocus Feed": "Issue 26464",
-        "Palo Alto Networks Threat Vault": "Issue 26464",
-
         "_comment1": "~~~ NO INSTANCE ~~~",
         "Ipstack": "Usage limit reached (Issue 38063)",
         "AnsibleAlibabaCloud": "No instance - issue 40447",
