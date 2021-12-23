@@ -33,7 +33,8 @@ configuration:
     name as the key and the query as the value.
   defaultvalue: |-
     {
-       "AWS": "type:CIDR and sourceBrands:\"AWS Feed\""
+       "Collection1": "type:CIDR and sourceBrands:\"AWS Feed\"",
+        "Collection2": {"query": "type:IP", "description": "IP from XSOAR Threat Intel" }
     }
   display: Collection JSON
   hidden: false
@@ -47,10 +48,15 @@ configuration:
   name: service_address
   required: false
   type: 0
+- additionalinfo: Only applies on the jsons and csv formats.
+  display: Additional Fields
+  name: fields_filter
+  required: false
+  type: 0
 - display: TAXII 2 Server version
   hidden: false
   name: version
-  defaultvalue: "2.0"
+  defaultvalue: "2.1"
   options:
   - "2.0"
   - "2.1"

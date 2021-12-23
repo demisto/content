@@ -112,7 +112,8 @@ server {
 
 class TAXII2Server:
     def __init__(self, url_scheme: str, host: str, port: int, collections: dict, certificate: str, private_key: str,
-                 http_server: bool, credentials: dict, version: str, service_address: Optional[str] = None):
+                 http_server: bool, credentials: dict, version: str, service_address: Optional[str] = None,
+                 fields_to_present: Optional[str] = None):
         """
         Class for a TAXII2 Server configuration.
         Args:
@@ -125,6 +126,7 @@ class TAXII2Server:
             http_server: Whether to use HTTP server (not SSL).
             credentials: The user credentials.
             version: API version.
+            fields_to_present: indicator fields to return in the request.
         """
         self._url_scheme = url_scheme
         self._host = host
@@ -133,6 +135,7 @@ class TAXII2Server:
         self._private_key = private_key
         self._http_server = http_server
         self._service_address = service_address
+        self.fields_to_present = fields_to_present
         self._auth = None
         if credentials and (identifier := credentials.get('identifier')) and (password := credentials.get('password')):
             self._auth = (identifier, password)
@@ -421,6 +424,22 @@ def taxii_validate_url_param(f):
     return validate_url_param
 
 
+def create_fields_list(fields: str):
+    if not fields:
+        return None
+    elif 'all' in fields.lower():
+        return None
+    fields_list = argToList(fields)
+    new_list = []
+    for field in fields_list:
+        if field == 'name':
+            field = 'value'
+        elif field == 'type':
+            field = 'indicator_type'
+        new_list.append(field)
+    return ','.join(new_list)
+
+
 def handle_long_running_error(error: str):
     """
     Handle errors in the long running process.
@@ -497,6 +516,7 @@ def find_indicators(query: str, added_after, limit: int, is_manifest: bool = Fal
     iocs = []
     extensions = []
     indicator_searcher = IndicatorsSearcher(
+        filter_fields=SERVER.fields_to_present,
         query=query,
         limit=limit,
         from_date=added_after
@@ -602,14 +622,16 @@ def create_stix_object(xsoar_indicator, xsoar_type):
 
     Returns:
         Stix object entry for given indicator, and extension. Format described here:
-        (https://docs.google.com/document/d/12alMmfpJn5sQO18h_qzbRa_Yxvj_0P1R9bOEhtk_u8A/edit)
+        (https://docs.google.com/document/d/1wE2JibMyPap9Lm5-ABjAZ02g098KIxlNQ7lMMFkQq44/edit#heading=h.naoy41lsrgt0)
     """
+    is_sdo = False
     if stix_type := XSOAR_TYPES_TO_STIX_SCO.get(xsoar_type):
         stix_id = create_sco_stix_uuid(xsoar_indicator, stix_type)
         object_type = stix_type
     elif stix_type := XSOAR_TYPES_TO_STIX_SDO.get(xsoar_type):
         stix_id = create_sdo_stix_uuid(xsoar_indicator, stix_type)
         object_type = stix_type
+        is_sdo = True
     else:
         demisto.debug(f'No such indicator type: {xsoar_type} in stix format.')
         return {}
@@ -630,16 +652,32 @@ def create_stix_object(xsoar_indicator, xsoar_type):
         'version': '1.0',
         'extension_types': ['property-extension']
     }
-    sco_object = {
+
+    xsoar_indicator_to_return = dict()
+
+    # filter only requested fields
+    if SERVER.fields_to_present:
+        list_fields = argToList(SERVER.fields_to_present)
+        for field in list_fields:
+            value = xsoar_indicator.get(field)
+            if not value:
+                value = xsoar_indicator.get('CustomFields', {}).get(field)
+            xsoar_indicator_to_return[field] = value
+    else:
+        xsoar_indicator_to_return = xsoar_indicator
+
+    stix_object = {
         'id': stix_id,
         'value': xsoar_indicator.get('value'),
         'type': object_type,
         'spec_version': SERVER.version,
         'extensions': {
-            extention_id: xsoar_indicator,
+            extention_id: xsoar_indicator_to_return,
         },
     }
-    return sco_object, extension_definition
+    if is_sdo:
+        stix_object['description'] = xsoar_indicator.get('CustomFields', {}).get('description')
+    return stix_object, extension_definition
 
 
 def parse_content_range(content_range):
@@ -942,6 +980,8 @@ def main():
     params = demisto.params()
     command = demisto.command()
 
+    fields_to_present = create_fields_list(params.get('fields_filter', ''))
+
     try:
         port = int(params.get('longRunningPort'))
     except ValueError as e:
@@ -973,8 +1013,8 @@ def main():
     demisto.debug(f'Command being called is {command}')
 
     try:
-        SERVER = TAXII2Server(scheme, str(host_name), port, collections,
-                              certificate, private_key, http_server, credentials, version, service_address)
+        SERVER = TAXII2Server(scheme, str(host_name), port, collections, certificate,
+                              private_key, http_server, credentials, version, service_address, fields_to_present)
 
         if command == 'long-running-execution':
             run_long_running(params)
