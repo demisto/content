@@ -188,7 +188,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: The content record ID.
+      description: The record ID.
       isArray: false
       name: contentId
       required: true
@@ -205,7 +205,7 @@ script:
     name: archer-get-record
     outputs:
     - contextPath: Archer.Record.Id
-      description: The unique ID of the content record.
+      description: The unique ID of the record.
       type: Number
   - arguments:
     - default: false
@@ -222,7 +222,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The Level ID to use to create the content record. If empty, the command 
+      description: The Level ID to use to create the record. If empty, the command 
         by default takes the first level ID.
       isArray: false
       name: levelId
@@ -234,11 +234,11 @@ script:
     name: archer-create-record
     outputs:
     - contextPath: Archer.Record.Id
-      description: The unique ID of the content record.
+      description: The unique ID of the record.
       type: Number
   - arguments:
     - default: false
-      description: The ID of the content record to delete.
+      description: The ID of the record to delete.
       isArray: false
       name: contentId
       required: true
@@ -262,7 +262,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The ID of the content record to update.
+      description: The ID of the record to update.
       isArray: false
       name: contentId
       required: true
@@ -352,7 +352,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The content record ID to update.
+      description: The content (record) ID to update.
       isArray: false
       name: contentId
       required: false
@@ -548,7 +548,7 @@ script:
       description: The content object.
       type: Unknown
     - contextPath: Archer.Record.Id
-      description: The content record ID.
+      description: The content ID.
       type: Number
   - arguments:
     - default: false
