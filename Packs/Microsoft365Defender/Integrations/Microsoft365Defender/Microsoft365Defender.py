@@ -547,7 +547,7 @@ def main() -> None:
 
     try:
         if not app_id:
-            raise Exception('Aplication ID must be provided.')
+            raise Exception('Application ID must be provided.')
 
         client = Client(
             app_id=app_id,
