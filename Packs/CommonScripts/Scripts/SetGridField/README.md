@@ -82,7 +82,7 @@ Grid after update: \
 
 The first time you run `SetGridField` on a newly created grid field, you may see an error similar to the following:
 
-![Screen Shot 2021-12-21 at 10 36 03 PM](https://user-images.githubusercontent.com/91506078/147041267-2cb02f82-3bae-42ba-a15f-d8fceb44f44c.png)
+![Screen Shot 2021-12-21 at 10 36 03 PM](doc_files/troubleshoot.png)
 
 To resolve the error:
 1. Make sure the grid field is associated with the incident type the field is being used in.
