@@ -2316,7 +2316,7 @@ def sub_main():
                 "Contents": str(e),
             }
         )
-        demisto.error(f"{e.__class__.__name__}: {e}")
+        demisto.error(f"{e.__class__.__name__}: {str(e)}")
         return
 
     start_logging()
