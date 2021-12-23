@@ -397,12 +397,12 @@ tasks:
       - "11"
     separatecontext: false
     view: |-
-    {
-      "position": {
-        "x": 760,
-        "y": 720
+      {
+        "position": {
+          "x": 760,
+          "y": 720
+          }
       }
-    }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -410,7 +410,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-"11":
+  "11":
     id: "11"
     taskid: 30fad76e-d825-432c-87b7-4b39a065d50c
     type: title
@@ -418,6 +418,7 @@ tasks:
       id: 30fad76e-d825-432c-87b7-4b39a065d50c
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
