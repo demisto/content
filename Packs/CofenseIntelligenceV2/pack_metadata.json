@@ -4,8 +4,8 @@
     "support": "partner",
     "currentVersion": "1.1.0",
     "author": "Cofense",
-     "url": "https://cofense.com/contact-support/",
-     "email": "support@cofense.com",
+    "url": "https://cofense.com/contact-support/",
+    "email": "support@cofense.com",
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
@@ -14,5 +14,9 @@
     "keywords": ["Cofense", "Phishing", "Intelligence"],
     "githubUser": [
         "elebow"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

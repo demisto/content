@@ -1307,7 +1307,10 @@
                 "EWS Mail Sender"
             ],
             "playbookID": "EWS search-mailbox test",
-            "instance_names": "ewv2_regular",
+            "instance_names": [
+                "ewv2_regular",
+                "ews_mail_sender_labdemisto"
+            ],
             "timeout": 300
         },
         {
@@ -1398,12 +1401,18 @@
         },
         {
             "integrations": "EWS Mail Sender",
-            "playbookID": "EWS Mail Sender Test"
+            "playbookID": "EWS Mail Sender Test",
+            "instance_names": [
+                "ews_mail_sender_labdemisto"
+            ]
         },
         {
             "integrations": [
                 "EWS Mail Sender",
                 "Rasterize"
+            ],
+            "instance_names": [
+                "ews_mail_sender_labdemisto"
             ],
             "playbookID": "EWS Mail Sender Test 2"
         },
@@ -2225,6 +2234,9 @@
                 "Demisto REST API",
                 "Rasterize"
             ],
+            "instance_names": [
+                "ews_mail_sender_labdemisto"
+            ],
             "memory_threshold": 150,
             "pid_threshold": 80
         },
@@ -2237,6 +2249,9 @@
                 "EWS Mail Sender",
                 "Demisto REST API",
                 "Rasterize"
+            ],
+            "instance_names": [
+                "ews_mail_sender_labdemisto"
             ],
             "memory_threshold": 160,
             "pid_threshold": 80
@@ -2744,6 +2759,9 @@
         {
             "playbookID": "Send Investigation Summary Reports - Test",
             "integrations": "EWS Mail Sender",
+            "instance_names": [
+                "ews_mail_sender_labdemisto"
+            ],
             "fromversion": "4.5.0",
             "memory_threshold": 100
         },
@@ -2961,7 +2979,8 @@
         },
         {
             "integrations": "PaloAltoNetworks_PrismaCloudCompute",
-            "playbookID": "PaloAltoNetworks_PrismaCloudCompute-Test"
+            "playbookID": "PaloAltoNetworks_PrismaCloudCompute-Test",
+            "instance_names": "prisma_cloud_compute_21_04"
         },
         {
             "integrations": "SaasSecurity",
@@ -3596,6 +3615,10 @@
         {
             "integrations": "SOCRadarThreatFusion",
             "playbookID": "SOCRadarThreatFusion-Test"
+        },
+        {
+            "integrations": "FeedSOCRadarThreatFeed",
+            "playbookID": "FeedSOCRadarThreatFeed-Test"
         },
         {
             "integrations": "TheHive Project",
@@ -4284,31 +4307,19 @@
             ]
         },
         {
-            "playbookID": "Phishing - Core - Test - Actual Incident",
-            "fromversion": "6.0.0",
-            "timeout": 4600,
-            "integrations": [
-                "EWS Mail Sender",
-                "Demisto REST API",
-                "Rasterize"
-            ],
-            "memory_threshold": 200
-        },
-        {
-            "playbookID": "Phishing v2 - Test - Actual Incident",
-            "fromversion": "6.0.0"
-        },
-        {
             "playbookID": "Phishing Investigation - Generic v2 - Campaign Test",
             "fromversion": "6.0.0",
-            "timeout": 4600,
+            "timeout": 7000,
             "integrations": [
                 "EWS Mail Sender",
                 "Demisto REST API",
                 "Rasterize",
                 "Demisto Lock"
             ],
-            "instance_names": "sync"
+            "instance_names": [
+                "no_sync_long_timeout",
+                "ews_mail_sender_labdemisto"
+            ]
         },
         {
             "playbookID": "PCAP Search test",
@@ -4469,6 +4480,9 @@
             "fromversion": "5.0.0",
             "integrations": [
                 "EWS Mail Sender"
+            ],
+            "instance_names": [
+                "ews_mail_sender_labdemisto"
             ]
         },
         {
@@ -4545,15 +4559,6 @@
         {
             "playbookID": "DeleteContext-auto-subplaybook-test",
             "fromversion": "5.0.0"
-        },
-        {
-            "playbookID": "Process Email - Generic - Test - Actual Incident",
-            "fromversion": "6.0.0",
-            "integrations": [
-                "XsoarPowershellTesting",
-                "Create-Mock-Feed-Relationships"
-            ],
-            "memory_threshold": 160
         },
         {
             "playbookID": "Analyst1 Integration Demonstration - Test",
@@ -4855,7 +4860,7 @@
         "JoeSecurityTestDetonation": "Issue 25650",
         "JoeSecurityTestPlaybook": "Issue 25649",
         "Cortex Data Lake Test": "Issue 24346",
-        "Phishing - Cre - Test - Incident Starter": "Issue 26784",
+        "Phishing - Core - Test - Incident Starter": "Issue 26784",
         "Test Playbook McAfee ATD": "Issue 33409",
         "Detonate Remote File From URL -McAfee-ATD - Test": "Issue 33407",
         "Test Playbook McAfee ATD Upload File": "Issue 33408",
@@ -4888,7 +4893,6 @@
         "McAfee ESM Watchlists - Test v10.2.0": "Issue 39389",
         "McAfee ESM v2 - Test v11.1.3": "Issue 43825",
         "Microsoft Teams Management - Test": "Issue 33410",
-        "RedLockTest": "Issue 24600",
         "MicrosoftGraphMail-Test_prod": "Issue 40125",
         "Detonate URL - WildFire v2.1 - Test": "Issue 40834",
         "Domain Enrichment - Generic v2 - Test": "Issue 40862",
@@ -4916,14 +4920,16 @@
         "Cisco Firepower - Test": "Issue 32412",
         "cisco-ise-test-playbook": "Issue 44351",
         "GuardiCoreV2-Test": "Issue 43822",
-        "LogRhythm REST test": "Issue 40654",
-        "ExtractAttackPattern-Test": "Issue 44095"
+        "ExtractAttackPattern-Test": "Issue 44095",
+        "test_MsGraphFiles prod": "Issue 44214",
+        "EWS_O365_test": "Issue 25605",
+        "Cherwell - test": "Issue 26780",
+        "Cherwell Example Scripts - test": "Issue 27107",
+        "Cofense Intelligence v2 test": "Issue 44499",
+        "Endpoint Malware Investigation - Generic - Test": "Issue 44779",
+        "Mimecast test": "Issue 26906"
     },
     "skipped_integrations": {
-        "AutoFocus V2": "Issue 26464",
-        "AutoFocus Daily Feed": "Issue 26464",
-        "AutoFocus Feed": "Issue 26464",
-        "Palo Alto Networks Threat Vault": "Issue 26464",
         "_comment1": "~~~ NO INSTANCE ~~~",
         "Ipstack": "Usage limit reached (Issue 38063)",
         "AnsibleAlibabaCloud": "No instance - issue 40447",
@@ -5002,7 +5008,6 @@
         "Phish.AI": "Issue 17291",
         "MaxMind GeoIP2": "Issue 18932.",
         "Exabeam": "Issue 19371",
-        "PaloAltoNetworks_PrismaCloudCompute": "Issue 27112",
         "Ivanti Heat": "Issue 26259",
         "AWS - Athena - Beta": "Issue 19834",
         "SNDBOX": "Issue 28826",
@@ -5012,13 +5017,16 @@
         "FraudWatch": "Issue 34299",
         "Cisco Stealthwatch": "No instance - developed by Qmasters",
         "Armis": "No instance - developed by SOAR Experts",
+
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
+
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
+
         "_comment4": "~~~ OTHER ~~~",
         "Anomali ThreatStream v2": "Will be deprecated soon.",
         "Anomali ThreatStream": "Will be deprecated soon.",
@@ -5039,6 +5047,7 @@
     ],
     "unmockable_integrations": {
         "NetscoutArborSightline": "Uses timestamp",
+        "Cylance Protect v2": "uses time-based JWT token",
         "EwsExtension": "Powershell does not support proxy",
         "EWS Extension Online Powershell v2": "Powershell does not support proxy/ssl",
         "Office 365 Feed": "Client sends a unique uuid as first request of every run",
@@ -5200,6 +5209,7 @@
         "HelloWorldPremium-Test"
     ],
     "docker_thresholds": {
+
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {
