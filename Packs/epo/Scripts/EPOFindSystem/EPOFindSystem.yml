@@ -23,5 +23,6 @@ dependson:
   - epo-command
 fromversion: 5.0.0
 dockerimage: demisto/python:2.7.18.24398
+deprecated: true
 tests:
-- McAfee_EPO_Find_System_Script
+- No test
