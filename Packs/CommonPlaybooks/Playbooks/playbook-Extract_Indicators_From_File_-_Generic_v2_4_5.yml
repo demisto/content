@@ -4,7 +4,7 @@ contentitemexportablefields:
   contentitemfields: {}
 name: Extract Indicators From File - Generic v2
 description: |-
-  Extracts indicators from a file.
+  This playbook extracts indicators from a file.
   Supported file types:
   - CSV
   - PDF
@@ -99,7 +99,7 @@ tasks:
       id: 5ba31bc7-84ab-4d1b-8c1a-501b04cfe9c6
       version: -1
       name: Set file to local context
-      description: Set the input file into local context.
+      description: Sets the input file into local context.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1039,7 +1039,7 @@ tasks:
       id: 92e92794-63db-4875-88c3-89bd5a4ec179
       version: -1
       name: Is Image OCR enabled?
-      description: Checks whether there is an active instance of the Image OCR integration
+      description: Checks whether there is an active instance of the Image OCR integration.
         enabled.
       type: condition
       iscommand: false
@@ -1455,7 +1455,7 @@ tasks:
       id: 68c81da0-f91d-4ea4-8616-82a0e333eb6f
       version: -1
       name: Preview PDF files
-      description: Get a preview (image) of the PDF files.
+      description: Gets a preview (image) of the PDF files.
       tags:
       - PDF_Images
       script: '|||rasterize-pdf'
@@ -1516,7 +1516,7 @@ tasks:
       id: d3466327-cfe5-4364-8b19-187f67320432
       version: -1
       name: Is Rasterize enabled?
-      description: Check if Rasterize integration is enabled
+      description: Checks if the Rasterize integration is enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -1608,17 +1608,17 @@ inputs:
   playbookInputQuery:
 outputs:
 - contextPath: Domain.Name
-  description: Extracted domains.
+  description: The extracted domains.
 - contextPath: Account.Email.Address
-  description: Extracted emails addresses.
+  description: The extracted email addresses.
 - contextPath: File.MD5
-  description: Extracted MD5 hash.
+  description: The extracted MD5 hash.
 - contextPath: File.SHA1
-  description: Extracted SHA1 hash.
+  description: The extracted SHA1 hash.
 - contextPath: File.SHA256
-  description: Extracted SHA256 hash.
+  description: The extracted SHA256 hash.
 - contextPath: IP.Address
-  description: Extracted IP addresses.
+  description: The extracted IP addresses.
 - contextPath: File.Text
   description: The text or images extracted from the PDF file.
 - contextPath: File.Producer
@@ -1626,21 +1626,21 @@ outputs:
 - contextPath: File.Title
   description: The title of the PDF file.
 - contextPath: File.xap
-  description: The xap of the PDF file.
+  description: The XAP of the PDF file.
 - contextPath: File.Author
   description: The author of the file.
 - contextPath: File.dc
-  description: The dc of the file.
+  description: The DC of the file.
 - contextPath: File.xapmm
-  description: The xapmm of the file.
+  description: The XAPMM of the file.
 - contextPath: File.ModDate
-  description: The ModDate of the file.
+  description: The mod date of the file.
 - contextPath: File.CreationDate
-  description: The CreationDate of the file.
+  description: The creation date of the file.
 - contextPath: File.Pages
-  description: Number of pages in file.
+  description: The number of pages in the file.
 - contextPath: URL.Data
-  description: List of URLs that were extracted from the file.
+  description: A list of URLs that were extracted from the file.
   type: unknown
 tests:
 - Field polling test
