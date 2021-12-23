@@ -2310,9 +2310,5 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- Phishing v2 - Test - Actual Incident
-- playbook-checkEmailAuthenticity-test
-- Phishing - Core - Test - Actual Incident
 - Phishing v2 - Test - Incident Starter
-- Phishing - Core - Test - Incident Starter
 fromversion: 6.0.0
