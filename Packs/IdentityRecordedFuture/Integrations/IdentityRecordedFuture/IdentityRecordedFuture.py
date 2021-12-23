@@ -279,7 +279,8 @@ def main() -> None:
         base_url = demisto_params.get("server_url", "").rstrip("/")
         verify_ssl = not demisto_params.get("unsecure", False)
         proxy = demisto_params.get("proxy", False)
-        domains = demisto_params.get("domains", "").replace(' ', '').split(';')
+        # Clean the input from the user and split string
+        domains = demisto_params.get("domains", "").rstrip(';').replace(' ', '').split(';')
         # If user has not set password properties we will get empty string but client require empty list
         password_properties = demisto_params.get("password_properties") or []
         try:
