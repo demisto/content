@@ -63,7 +63,7 @@ def register_module_line(module_name, start_end, line, wrapper=0):
         if not isinstance(line, int):
             raise ValueError('Invalid line argument. Expected int got {}'.format(type(line)))
 
-        _MODULES_LINE_MAPPING.setdefault(module_name, {'start': 0, 'post': float('inf')}).update(
+        _MODULES_LINE_MAPPING.setdefault(module_name, {'start': 0, 'end': float('inf')}).update(
             {start_end: line, '{}_wrapper'.format(start_end): line + wrapper}
         )
     except Exception as exc:
@@ -8630,4 +8630,4 @@ def register_signal_handler_profiling_dump(signal_type=None, profiling_dump_rows
 ###########################################
 #     DO NOT ADD LINES AFTER THIS ONE     #
 ###########################################
-register_module_line('CommonServerPython', 'post', __line__())
+register_module_line('CommonServerPython', 'end', __line__())
