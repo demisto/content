@@ -36,8 +36,8 @@ def perform_copy_command(ssh_client: SSHClient, file_path: str, destination_path
         (Exception):  if unexpected behaviour occurred.
     """
     try:
-        socket_timeout = float(socket_timeout) if socket_timeout else 10.0
-        with SCPClient(ssh_client.get_transport(), socket_timeout=socket_timeout) as scp_client:
+        timeout = float(socket_timeout) if socket_timeout else 10.0
+        with SCPClient(ssh_client.get_transport(), socket_timeout=timeout) as scp_client:
             if copy_to_remote:
                 scp_client.put(file_path, destination_path)
                 return ''
@@ -189,9 +189,11 @@ def copy_from_command(ssh_client: SSHClient, args: Dict[str, Any]) -> Dict:
     Returns:
         (Dict): FileResult data.
     """
+    timeout: Optional[int] = arg_to_number(args.get('timeout'))
     file_path: str = args.get('file_path', '')
     file_name: str = args.get('file_name', os.path.basename(file_path))
-    remote_file_data = perform_copy_command(ssh_client, file_path, file_name, copy_to_remote=False)
+    remote_file_data = perform_copy_command(ssh_client, file_path, file_name, copy_to_remote=False,
+                                            socket_timeout=timeout)
 
     return fileResult(file_name, remote_file_data)
 

@@ -196,7 +196,7 @@ def test_invalid_password_for_command(mocker, args):
     - Ensure DemistoException is thrown with the expected error message.
     """
     from RemoteAccessv2 import main
-    mocker.patch.object(demisto, 'params', return_value={'additional_password': '1234'})
+    mocker.patch.object(demisto, 'params', return_value={'additional_password': {'password': '1234'}})
     mocker.patch.object(demisto, 'args', return_value=args)
     with pytest.raises(DemistoException, match='Additional password to use the module have been supplied.\n'
                                                'Please supply "additional_password" argument that matches '
