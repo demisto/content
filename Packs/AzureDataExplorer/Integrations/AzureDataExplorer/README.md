@@ -1,5 +1,5 @@
 Use the Azure Data Explorer integration to collect and analyze data inside Azure Data Explorer clusters, and to manage search queries.
-This integration was integrated and tested with version xx of AzureDataExplorer
+This integration was integrated and tested with version V1 of AzureDataExplorer.
 
 ## Configure Azure Data Explorer on Cortex XSOAR
 
