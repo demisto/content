@@ -1817,7 +1817,7 @@ tasks:
     task:
       id: 2899a81f-5247-49c7-84f0-10573812abaa
       version: -1
-      name: Send Slack notification - Success
+      name: Send Slack notification
       type: title
       iscommand: false
       brand: ""
