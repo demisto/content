@@ -34,8 +34,9 @@ def __line__():
     return cf.f_back.f_lineno
 
 
+# 39 - the line offset from the beggining of the file.
 _MODULES_LINE_MAPPING = {
-    'CommonServerPython': {'start': __line__() - 38, 'end': float('inf')},
+    'CommonServerPython': {'start': __line__() - 39, 'end': float('inf')},
 }
 
 
@@ -75,6 +76,12 @@ def register_module_line(module_name, start_end, line, wrapper=0):
 def _find_relevant_module(line):
     """
     Find which module contains the given line number.
+
+    :type line: ``int``
+    :param trace_str: Line number to search. (required)
+
+    :return: The name of the module.
+    :rtype: ``str``
     """
     global _MODULES_LINE_MAPPING
 
