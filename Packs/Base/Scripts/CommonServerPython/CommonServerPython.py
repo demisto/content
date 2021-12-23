@@ -28,13 +28,16 @@ from inspect import currentframe
 import demistomock as demisto
 import warnings
 
+
 def __line__():
     cf = currentframe()
     return cf.f_back.f_lineno
 
+
 _MODULES_LINE_MAPPING = {
-    'CommonServerPython': {'pre': __line__() - 36, 'post': float('inf')},
+    'CommonServerPython': {'pre': __line__() - 38, 'post': float('inf')},
 }
+
 
 def register_module_line(module_name, pre_post, line):
     """
@@ -61,8 +64,8 @@ def register_module_line(module_name, pre_post, line):
 
         _MODULES_LINE_MAPPING.setdefault(module_name, {'pre': 0, 'post': float('inf')}).update({pre_post: line})
     except Exception as exc:
-
-        demisto.debug('failed to register module line. '
+        demisto.debug(
+            'failed to register module line. '
             'module: "{}" pre_post: "{}" line: "{}".\nError: {}'.format(module_name, pre_post, line, exc))
 
 
@@ -94,7 +97,7 @@ def fix_traceback_line_numbers(trace_str):
         line_num = int(number)
         module = _find_relevant_module(line_num)
         if module:
-            module_start_line = _MODULES_LINE_MAPPING.get(module, {'pre':0})['pre']
+            module_start_line = _MODULES_LINE_MAPPING.get(module, {'pre': 0})['pre']
             actual_number = line_num - module_start_line
 
             # in case of ApiModule injections, adjust the line numbers of the code after the injection.
@@ -103,9 +106,13 @@ def fix_traceback_line_numbers(trace_str):
                     actual_number -= module_info['post'] - module_info['pre']
 
             # a traceback line is of the form: File "<string>", line 8853, in func5
-            trace_str = trace_str.replace('File "<string>", line {},'.format(number), 'File "<{}>", line {},'.format(module, actual_number))
+            trace_str = trace_str.replace(
+                'File "<string>", line {},'.format(number),
+                'File "<{}>", line {},'.format(module, actual_number)
+            )
 
     return trace_str
+
 
 OS_LINUX = False
 OS_MAC = False
@@ -8610,6 +8617,7 @@ def register_signal_handler_profiling_dump(signal_type=None, profiling_dump_rows
         signal.signal(requested_signal, signal_handler_profiling_dump)
     else:
         demisto.info('Not a Linux or Mac OS, profiling using a signal is not supported.')
+
 
 ###########################################
 #     DO NOT ADD LINES AFTER THIS ONE     #
