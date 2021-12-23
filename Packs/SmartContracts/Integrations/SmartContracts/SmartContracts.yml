@@ -1,0 +1,58 @@
+commonfields:
+  id: Smart Contracts
+  version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: Smart Contracts
+display: Smart Contracts
+category: Analytics & SIEM
+description: Monitor and analyze blockchain transactions in real time for information
+  or events of interest.
+configuration:
+- display: RPC Endpoint URI
+  name: rpc_endpoint
+  type: 0
+  required: true
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- display: ABI
+  name: abi
+  type: 12
+  required: true
+- display: Event type to fetch
+  name: event_type
+  type: 15
+  required: true
+  options:
+  - Approval
+  - Transfer
+- display: Block number to start fetching from
+  name: block
+  type: 0
+  required: true
+- display: Filter arguments
+  name: arg_filter
+  type: 12
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- display: Long running instance
+  name: longRunning
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  dockerimage: devdemisto/web3:1.0.0.25465
+  runonce: false
+  longRunning: true
+  subtype: python3
+  isFetchSamples: true
+sourcemoduleid: Web3

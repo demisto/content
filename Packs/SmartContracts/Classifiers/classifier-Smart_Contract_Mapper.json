@@ -1,0 +1,69 @@
+{
+	"brands": null,
+	"defaultIncidentType": "",
+	"definitionId": "",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "0de54ef4-d3c2-4697-893c-42479cd60313",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 1,
+	"mapping": {
+		"Smart Contract Incident": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Smart Contract Address": {
+					"simple": "address"
+				},
+				"Smart Contract Block Hash": {
+					"simple": "blockHash"
+				},
+				"Smart Contract Block Number": {
+					"simple": "blockNumber"
+				},
+				"Smart Contract Event": {
+					"simple": "event"
+				},
+				"Smart Contract Gas": {
+					"simple": "gas"
+				},
+				"Smart Contract Owner": {
+					"simple": "args.owner"
+				},
+				"Smart Contract Spender": {
+					"simple": "args.spender"
+				},
+				"Smart Contract Transaction Hash": {
+					"simple": "transactionHash"
+				},
+				"Smart Contract Transaction Index": {
+					"simple": "transactionIndex"
+				},
+				"Smart Contract log index": {
+					"simple": "logIndex"
+				},
+				"Smart Contract value": {
+					"simple": "args.value"
+				}
+			}
+		}
+	},
+	"name": "Smart Contract Mapper",
+	"nameRaw": "Smart Contract Mapper",
+	"packID": "",
+	"propagationLabels": [
+		"all"
+	],
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {},
+	"type": "mapping-incoming",
+	"unclassifiedCases": null,
+	"version": -1
+}
