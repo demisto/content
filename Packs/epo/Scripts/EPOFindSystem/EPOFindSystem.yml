@@ -7,7 +7,10 @@ type: python
 subtype: python2
 tags:
 - epo
-comment: Return system info
+comment: |-
+  Deprecated. Use the "McAfe ePO v2 integration command epo-find-system" instead.
+  
+  Return system info
 system: true
 args:
 - name: searchText
