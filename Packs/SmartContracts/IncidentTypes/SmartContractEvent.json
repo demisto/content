@@ -1,0 +1,65 @@
+{
+	"id": "Smart Contract Incident",
+	"version": 8,
+	"modified": "2021-12-22T18:22:46.472873976Z",
+	"packID": "",
+	"itemVersion": "",
+	"fromServerVersion": "",
+	"toServerVersion": "",
+	"definitionId": "",
+	"vcShouldIgnore": false,
+	"vcShouldKeepItemLegacyProdMachine": false,
+	"commitMessage": "",
+	"shouldCommit": false,
+	"locked": false,
+	"name": "Smart Contract Incident",
+	"prevName": "Smart Contract Incident",
+	"color": "#F8E7A5",
+	"playbookId": "1f4d3192-b7c3-45c7-8b1c-04c7ab0cf11a",
+	"hours": 0,
+	"days": 0,
+	"weeks": 0,
+	"hoursR": 0,
+	"daysR": 0,
+	"weeksR": 0,
+	"system": false,
+	"readonly": false,
+	"default": false,
+	"autorun": false,
+	"preProcessingScript": "",
+	"closureScript": "",
+	"disabled": false,
+	"reputationCalc": 0,
+	"onChangeRepAlg": 0,
+	"layout": "bda18b16-4af9-468f-86b1-adec91ebb951",
+	"detached": false,
+	"extractSettings": {
+		"mode": "Specific",
+		"fieldCliNameToExtractSettings": {
+			"smartcontractaddress": {
+				"extractAsIsIndicatorTypeId": "Cryptocurrency Address",
+				"isExtractingAllIndicatorTypes": false,
+				"extractIndicatorTypesIDs": []
+			},
+			"smartcontractowner": {
+				"extractAsIsIndicatorTypeId": "",
+				"isExtractingAllIndicatorTypes": false,
+				"extractIndicatorTypesIDs": [
+					"Cryptocurrency Address"
+				]
+			},
+			"smartcontractspender": {
+				"extractAsIsIndicatorTypeId": "",
+				"isExtractingAllIndicatorTypes": false,
+				"extractIndicatorTypesIDs": [
+					"Cryptocurrency Address"
+				]
+			},
+			"smartcontracttransactionhash": {
+				"extractAsIsIndicatorTypeId": "",
+				"isExtractingAllIndicatorTypes": false,
+				"extractIndicatorTypesIDs": []
+			}
+		}
+	}
+}
