@@ -101,7 +101,7 @@ def test_execute_shell_command(mocker, command, mock_std_output, mock_std_error,
 
         with open(f'{temp_dir}/std_out', 'rb') as f_output, open(f'{temp_dir}/std_err', 'rb') as f_err:
             mocker.patch.object(mock_client, 'exec_command', return_value=(None, f_output, f_err))
-            results: CommandResults = execute_shell_command(mock_client, {'command': command})
+            results: CommandResults = execute_shell_command(mock_client, {'cmd': command})
     assert results.outputs_prefix == 'RemoteAccess.Command'
     assert results.outputs == [{
         'output': mock_std_output,

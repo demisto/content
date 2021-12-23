@@ -12,24 +12,29 @@ configuration:
   name: credentials
   type: 9
   required: false
-- display: Additional Password
+- displaypassword: Additional Password
   name: additional_password
+  hiddenusername: true
   required: false
-  type: 4
-  additionalinfo: Will require an additional password as an argument to run any command of this module.
+  type: 9
+  additionalinfo: Will require an additional password as an argument to run any command
+    of this module.
 - display: Ciphers
-  additionalinfo: A comma-separated list of ciphers to use. If none of the specified ciphers are agreed to by the server,
-    an error message specifying the supported ciphers is returned.
+  additionalinfo: A comma-separated list of ciphers to use. If none of the specified
+    ciphers are agreed to by the server, an error message specifying the supported
+    ciphers is returned.
   name: ciphers
   required: false
   type: 0
 - display: Key Algorithms
-  additionalinfo: A comma-separated list of key algorithms to use. If none of the specified key algorithms
-    are agreed to by the server, an error message specifying the supported key algorithms is returned.
+  additionalinfo: A comma-separated list of key algorithms to use. If none of the
+    specified key algorithms are agreed to by the server, an error message specifying
+    the supported key algorithms is returned.
   name: key_algorithms
   required: false
   type: 0
-description: File transfer between Cortex XSOAR and a remote machine, and execution of commands on the remote machine.
+description: File transfer between Cortex XSOAR and a remote machine, and execution
+  of commands on the remote machine.
 display: RemoteAccess v2
 name: RemoteAccess v2
 script:
@@ -42,7 +47,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Password. Required to match the Additional Password parameter if it was supplied in order to run the command.
+      description: Password. Required to match the Additional Password parameter if
+        it was supplied in order to run the command.
       isArray: false
       name: additional_password
       required: false
@@ -72,7 +78,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Entry ID of the file to be copied from Cortex XSOAR to the remote machine.
+      description: Entry ID of the file to be copied from Cortex XSOAR to the remote
+        machine.
       isArray: false
       name: entry_id
       required: true
@@ -85,14 +92,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: Password. Required to match the Additional Password parameter if it was supplied in order to run the command.
+      description: Password. Required to match the Additional Password parameter if
+        it was supplied in order to run the command.
       isArray: false
       name: additional_password
       required: false
       secret: false
     - default: false
       description: Timeout for command, in seconds.
-      defaultvalue: 10.0
       isArray: false
       name: timeout
       required: false
@@ -110,22 +117,22 @@ script:
       required: true
       secret: false
     - default: false
-      description: Name of the file to be copied to Cortex XSOAR. Defaults to the file
-        name in `file_path` if not specified. For example, if `file_path` is "a/b/c.txt", the
-        file name will be c.txt.
+      description: Name of the file to be copied to Cortex XSOAR. Defaults to the
+        file name in `file_path` if not specified. For example, if `file_path` is
+        "a/b/c.txt", the file name will be c.txt.
       isArray: false
       name: file_name
       required: false
       secret: false
     - default: false
-      description: Password. Required to match the Additional Password parameter if it was supplied in order to run the command.
+      description: Password. Required to match the Additional Password parameter if
+        it was supplied in order to run the command.
       isArray: false
       name: additional_password
       required: false
       secret: false
     - default: false
       description: Timeout for command, in seconds.
-      defaultvalue: 10.0
       isArray: false
       name: timeout
       required: false

@@ -214,7 +214,7 @@ def main() -> None:
     key_algorithms: Set[str] = set(argToList(params.get('key_algorithms')))
 
     demisto.debug(f'Command being called is {demisto.command()}')
-    if password_param := params.get('additional_password'):
+    if password_param := params.get('additional_password', {}).get('password'):
         if password_param != args.get('additional_password'):
             raise DemistoException('Additional password to use the module have been supplied.\n'
                                    'Please supply "additional_password" argument that matches the "Additional Password"'
