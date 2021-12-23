@@ -1,9 +1,10 @@
 import argparse
 import sys
 
+from demisto_sdk.commands.common.tools import get_json
+
 from Tests.configure_and_test_integration_instances import set_marketplace_url, MARKET_PLACE_CONFIGURATION, \
     Build, Server
-from Tests.test_content import get_json_file
 from Tests.Marketplace.search_and_install_packs import install_all_content_packs_from_build_bucket
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
@@ -37,7 +38,7 @@ def main():
     server_to_port_mapping, server_version = Build.get_servers(ami_env=options.ami_env)
 
     logging.info('Retrieving the credentials for Cortex XSOAR server')
-    secret_conf_file = get_json_file(path=options.secret)
+    secret_conf_file = get_json(file_path=options.secret)
     username: str = secret_conf_file.get('username')
     password: str = secret_conf_file.get('userPassword')
     branch_name: str = options.branch

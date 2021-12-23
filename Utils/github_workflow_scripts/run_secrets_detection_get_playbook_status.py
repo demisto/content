@@ -53,7 +53,7 @@ def wait_for_playbook_to_complete(investigation_id, client):
             break
 
         if playbook_state == PB_Status.FAILED:
-            print(f'Secrets playbook was failed as secrets were found. To investigate go to: {investigation_url}.')
+            print(f'Secrets playbook was failed as secrets were found. To investigate go to: {investigation_url}')
             sys.exit(1)
 
         if time.time() > timeout:

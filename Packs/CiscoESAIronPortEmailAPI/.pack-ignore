@@ -1,4 +1,4 @@
 [file:CiscoIronPortEMailAPI.yml]
 ignore=IN145
-[file:CiscoESAIronPortEmailAPI]
+[file:pack_metadata.json]
 ignore=PA129

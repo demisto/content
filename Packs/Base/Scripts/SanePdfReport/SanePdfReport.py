@@ -170,7 +170,7 @@ def main():
             f' disableHeaders="{disableHeaders}"'
 
         if isMDImagesSupported:
-            params += f', mdServerAddress="{mdServerAddress}"'
+            params += f', markdownArtifactsServerAddress="{mdServerAddress}"'
 
         LOG(f"Sane-pdf parameters: {params}]")
         cmd_string = " ".join(cmd)

@@ -23,7 +23,7 @@ script:
     description: Send message/notification to LINE Group
     execution: false
     name: line-send-message
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   feed: false
   isfetch: false
   longRunning: false

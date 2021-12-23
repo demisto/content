@@ -4300,7 +4300,7 @@ Retrieve a specified cloud resource from Expanse.
 
 ### expanse-get-risky-flows
 ***
-Retrieve risky flows detected by Expanse Behavior.
+(Deprecated) Retrieve risky flows detected by Expanse Behavior.
 
 
 #### Base Command
@@ -4405,7 +4405,7 @@ Retrieve risky flows detected by Expanse Behavior.
 
 ### expanse-list-risk-rules
 ***
-List risk rules from Expanse Behavior.
+(Deprecated) List risk rules from Expanse Behavior
 
 
 #### Base Command
@@ -4472,10 +4472,10 @@ List risk rules from Expanse Behavior.
         }
       ],
       "dataFields": "[]",
-      "description": "Connections to and from Blacklisted Countries (Belarus, Côte d'Ivoire, Cuba, Democratic Republic of the Congo, Iran, Iraq, Liberia, North Korea, South Sudan, Sudan, Syria, Zimbabwe)",
+      "description": "Connections to and from countries on block list (Belarus, Côte d'Ivoire, Cuba, Democratic Republic of the Congo, Iran, Iraq, Liberia, North Korea, South Sudan, Sudan, Syria, Zimbabwe)",
       "direction": "EITHER",
       "id": "392d03de-ea20-4637-bf17-d419aaaeec19",
-      "name": "Connections to and from Blacklisted Countries"
+      "name": "Connections to and from countries on block list"
     }
   ]
 }
@@ -4488,7 +4488,7 @@ List risk rules from Expanse Behavior.
 >|---|---|---|---|---|---|---|
 >| Connections to Kaspersky | {'id': 'a823144b-ef1a-4c34-8c02-d080cb4fc4e8'} | [] | Connections to Kaspersky | OUTBOUND | 81b9f50f-2eab-4101-b8c8-c902842887c5 | Connections to Kaspersky |
 >| Outbound Flows from Serve | {'id': 'a823144b-ef1a-4c34-8c02-d080cb4fc4e8'} | [] | Outbound Flows from Servers (eg, File Downloads and Web Browsing) | OUTBOUND | feae9144-bbfe-4681-8a1e-c426d1de0e54 | Outbound Flows from Servers |
->| Connections to and from B | {'id': 'a823144b-ef1a-4c34-8c02-d080cb4fc4e8'} | [] | Connections to and from Blacklisted Countries (Belarus, Côte d'Ivoire, Cuba, Democratic Republic of the Congo, Iran, Iraq, Liberia, North Korea, South Sudan, Sudan, Syria, Zimbabwe) | EITHER | 392d03de-ea20-4637-bf17-d419aaaeec19 | Connections to and from Blacklisted Countries |
+>| Connections to and from B | {'id': 'a823144b-ef1a-4c34-8c02-d080cb4fc4e8'} | [] | Connections to and from countries on block list (Belarus, Côte d'Ivoire, Cuba, Democratic Republic of the Congo, Iran, Iraq, Liberia, North Korea, South Sudan, Sudan, Syria, Zimbabwe) | EITHER | 392d03de-ea20-4637-bf17-d419aaaeec19 | Connections to and from countries on block list |
 
 
 ### domain
