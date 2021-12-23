@@ -6,6 +6,7 @@ The Policy Optimizer integration in this content pack enables you to gain visibi
 
 The playbooks in this pack also help you automate the following procedures to reduce the attack surface and safely enable applications on your network.
 
+- Identify unused rules.
 - Identify port-based rules so you can convert them to application-based rules that allow traffic or add applications to existing rules without compromising application availability.
 - Identify rules configured with unused applications.
 - Analyze rule characteristics and prioritize which rules to migrate or clean up.

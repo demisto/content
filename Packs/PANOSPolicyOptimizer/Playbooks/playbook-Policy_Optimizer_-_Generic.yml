@@ -176,16 +176,21 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 58fab9b8-f436-4b0d-81e6-b0598bba5cfe
-    type: title
+    taskid: c2218b78-eefa-4c61-8b29-e976cf47eafb
+    type: condition
     task:
-      id: 58fab9b8-f436-4b0d-81e6-b0598bba5cfe
+      id: c2218b78-eefa-4c61-8b29-e976cf47eafb
       version: -1
-      name: Done
-      type: title
+      name: Close the investigation?
+      description: "Close the investigation?"
+      type: condition
       iscommand: false
       brand: ""
-      description: ''
+    nexttasks:
+      '#default#':
+      - "11"
+      "Yes":
+      - "10"
     separatecontext: false
     view: |-
       {
@@ -374,12 +379,71 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 6551b126-9098-4340-8b34-23067b38e568
+    type: regular
+    task:
+      id: 6551b126-9098-4340-8b34-23067b38e568
+      version: -1
+      name: Close investigation
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+    {
+      "position": {
+        "x": 760,
+        "y": 720
+      }
+    }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+"11":
+    id: "11"
+    taskid: 30fad76e-d825-432c-87b7-4b39a065d50c
+    type: title
+    task:
+      id: 30fad76e-d825-432c-87b7-4b39a065d50c
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "5_11_#default#": 0.44
+    },
     "paper": {
       "dimensions": {
-        "height": 730,
+        "height": 1075,
         "width": 1250,
         "x": 40,
         "y": -120

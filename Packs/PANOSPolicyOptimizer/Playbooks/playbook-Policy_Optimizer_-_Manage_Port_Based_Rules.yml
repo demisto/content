@@ -89,7 +89,7 @@ tasks:
       {
         "position": {
           "x": 370,
-          "y": 2980
+          "y": 2630
         }
       }
     note: false
@@ -628,7 +628,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+      - "2"
     separatecontext: false
     view: |-
       {
@@ -673,69 +673,6 @@ tasks:
         "position": {
           "x": 1190,
           "y": 1430
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "19":
-    id: "19"
-    taskid: 746cd6cf-5d0e-4cc7-8e71-10c2626c3772
-    type: condition
-    task:
-      id: 746cd6cf-5d0e-4cc7-8e71-10c2626c3772
-      version: -1
-      name: Close the investigation?
-      description: "Choose whether to close the investigation."
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "2"
-      "Yes":
-      - "21"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 690,
-          "y": 2635
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "21":
-    id: "21"
-    taskid: 014fb411-be57-4dcf-86ba-9280a46a7699
-    type: regular
-    task:
-      id: 014fb411-be57-4dcf-86ba-9280a46a7699
-      version: -1
-      name: Close investigation
-      description: Close the investigation.
-      script: Builtin|||closeInvestigation
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "2"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 970,
-          "y": 2810
         }
       }
     note: false
@@ -806,7 +743,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "19"
+      - "2"
     separatecontext: true
     view: |-
       {
@@ -868,7 +805,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+      - "2"
     separatecontext: false
     view: |-
       {
@@ -1143,7 +1080,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 3025,
+        "height": 2675,
         "width": 2190,
         "x": 370,
         "y": 20
