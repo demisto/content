@@ -327,9 +327,6 @@ def uuid_command(client: Client, args: dict, reliability: DBotScoreReliability, 
                           readable_output=tableToMarkdown('Results', analysis_info))
 
 
-
-
-
 def _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client, indicatorTypeHash: bool = False):
     """
 
