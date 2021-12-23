@@ -402,9 +402,9 @@ def get_rql_response(args):
     payload = {"query": rql, "filter": {}}
 
     handle_filters(payload['filter'])
-    handle_time_filter(payload['filter'], {'type': 'to_now', 'value': 'epoch'})
+    handle_time_filter(payload, {'type': 'to_now', 'value': 'epoch'})
 
-    response = req('POST', 'search/config', payload, None)
+    response = req('POST', 'search', payload, None)
 
     human_readable = []
 
