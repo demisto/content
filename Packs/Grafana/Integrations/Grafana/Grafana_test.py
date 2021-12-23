@@ -442,6 +442,7 @@ def test_set_time_for_annotation(time_input, time_output):
         - Returns the right epoch time in millisecond resolution
 
     """
+    # works only with lint due to freeze_time
     assert set_time_to_epoch_millisecond(time_input) == time_output
 
 
@@ -478,15 +479,19 @@ def grafana_client():
 
 
 def test_alerts_list_command(mocker, grafana_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+
+    When:
+        - alerts-list command is executed
+
+    Then:
+        - The http request is called with the right arguments
+    """
     http_request = mocker.patch.object(grafana_client, '_http_request')
-    args = {'dashboard_id': "1",
-            'panel_id': "2",
-            'name': "ADash",
-            'state': "no_data,paused",
-            'limit': "50",
-            'folder_id': "1",
-            'dashboard_name': "Dash",
-            'dashboard_tag': "tag"}
+    args = {'dashboard_id': "1", 'panel_id': "2", 'name': "ADash", 'state': "no_data,paused", 'limit': "50", 'folder_id': "1",
+            'dashboard_name': "Dash", 'dashboard_tag': "tag"}
     alerts_list_command(grafana_client, args)
     http_request.assert_called_with('GET', 'api/alerts', params={'dashboardId': ['1'], 'panelId': '2', 'query': 'ADash',
                                                                  'state': ['no_data', 'paused'], 'limit': '50', 'folderId': ['1'],
@@ -494,6 +499,16 @@ def test_alerts_list_command(mocker, grafana_client):
 
 
 def test_alert_pause_command(mocker, grafana_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+
+    When:
+        - alert-pause command is executed
+
+    Then:
+        - The http request is called with the right arguments
+    """
     http_request = mocker.patch.object(grafana_client, '_http_request')
     args = {'alert_id': "4"}
     alert_pause_command(grafana_client, args)
@@ -501,6 +516,16 @@ def test_alert_pause_command(mocker, grafana_client):
 
 
 def test_alert_unpause_command(mocker, grafana_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+
+    When:
+        - alert-unpause command is executed
+
+    Then:
+        - The http request is called with the right arguments
+    """
     http_request = mocker.patch.object(grafana_client, '_http_request')
     args = {'alert_id': "4"}
     alert_unpause_command(grafana_client, args)
@@ -508,6 +533,16 @@ def test_alert_unpause_command(mocker, grafana_client):
 
 
 def test_users_search_command(mocker, grafana_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+
+    When:
+        - users-search command is executed
+
+    Then:
+        - The http request is called with the right arguments
+    """
     http_request = mocker.patch.object(grafana_client, '_http_request')
     args = {'page_size': "1000", 'page_number': "1", 'query': "admin"}
     users_search_command(grafana_client, args)
@@ -515,6 +550,16 @@ def test_users_search_command(mocker, grafana_client):
 
 
 def test_users_teams_command(mocker, grafana_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+
+    When:
+        - user-teams-get command is executed
+
+    Then:
+        - The http request is called with the right arguments
+    """
     http_request = mocker.patch.object(grafana_client, '_http_request')
     args = {'user_id': "4"}
     users_teams_command(grafana_client, args)
@@ -522,6 +567,16 @@ def test_users_teams_command(mocker, grafana_client):
 
 
 def test_users_organization_command(mocker, grafana_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+
+    When:
+        - user-orgs-get command is executed
+
+    Then:
+        - The http request is called with the right arguments
+    """
     http_request = mocker.patch.object(grafana_client, '_http_request')
     args = {'user_id': "4"}
     users_organization_command(grafana_client, args)
@@ -529,6 +584,16 @@ def test_users_organization_command(mocker, grafana_client):
 
 
 def test_user_update_command(mocker, grafana_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+
+    When:
+        - user-update command is executed
+
+    Then:
+        - The http request is called with the right arguments
+    """
     http_request = mocker.patch.object(grafana_client, '_http_request')
     args = {'email': "e@mail", 'name': "Name", 'login': "login", 'theme': "dark", 'user_id': "2"}
     user_update_command(grafana_client, args)
@@ -538,6 +603,17 @@ def test_user_update_command(mocker, grafana_client):
 
 
 def test_annotation_create_command(mocker, grafana_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+
+    When:
+        - annotation-create command is executed
+
+    Then:
+        - The http request is called with the right arguments
+    """
+    # to pass this test you must run it using lint due to time conflicts
     http_request = mocker.patch.object(grafana_client, '_http_request')
     args = {'dashboard_id': "3", 'panel_id': "2", 'time': "2019-10-21T23:45:00", 'time_end': "2019-10-21T23:45:01",
             'tags': "tag1", 'text': "Text"}
@@ -548,6 +624,16 @@ def test_annotation_create_command(mocker, grafana_client):
 
 
 def test_teams_search_command(mocker, grafana_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+
+    When:
+        - teams-search command is executed
+
+    Then:
+        - The http request is called with the right arguments
+    """
     http_request = mocker.patch.object(grafana_client, '_http_request')
     args = {'page_size': "60", 'page_number': "2", 'query': "team", 'name': "team_name"}
     teams_search_command(grafana_client, args)
@@ -556,6 +642,16 @@ def test_teams_search_command(mocker, grafana_client):
 
 
 def test_team_members_command(mocker, grafana_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+
+    When:
+        - team-members-list command is executed
+
+    Then:
+        - The http request is called with the right arguments
+    """
     http_request = mocker.patch.object(grafana_client, '_http_request')
     args = {'team_id': "16"}
     team_members_command(grafana_client, args)
@@ -563,6 +659,16 @@ def test_team_members_command(mocker, grafana_client):
 
 
 def test_user_add_to_team_command(mocker, grafana_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+
+    When:
+        - user-add-to-team command is executed
+
+    Then:
+        - The http request is called with the right arguments
+    """
     http_request = mocker.patch.object(grafana_client, '_http_request')
     args = {'user_id': "2", 'team_id': "15"}
     user_add_to_team_command(grafana_client, args)
@@ -570,6 +676,16 @@ def test_user_add_to_team_command(mocker, grafana_client):
 
 
 def test_user_remove_from_team_command(mocker, grafana_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+
+    When:
+        - user-remove-from-team command is executed
+
+    Then:
+        - The http request is called with the right arguments
+    """
     http_request = mocker.patch.object(grafana_client, '_http_request')
     args = {'user_id': "3", 'team_id': "17"}
     user_remove_from_team_command(grafana_client, args)
@@ -577,6 +693,16 @@ def test_user_remove_from_team_command(mocker, grafana_client):
 
 
 def test_team_add_command(mocker, grafana_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+
+    When:
+        - team-add command is executed
+
+    Then:
+        - The http request is called with the right arguments
+    """
     http_request = mocker.patch.object(grafana_client, '_http_request')
     args = {'name': "New Team", 'email': "new@email", 'org_id': "2"}
     team_add_command(grafana_client, args)
@@ -585,6 +711,16 @@ def test_team_add_command(mocker, grafana_client):
 
 
 def test_team_delete_command(mocker, grafana_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+
+    When:
+        - team-delete command is executed
+
+    Then:
+        - The http request is called with the right arguments
+    """
     http_request = mocker.patch.object(grafana_client, '_http_request')
     args = {'team_id': "4"}
     team_delete_command(grafana_client, args)
@@ -592,6 +728,16 @@ def test_team_delete_command(mocker, grafana_client):
 
 
 def test_org_create_command(mocker, grafana_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+
+    When:
+        - org-create command is executed
+
+    Then:
+        - The http request is called with the right arguments
+    """
     http_request = mocker.patch.object(grafana_client, '_http_request')
     args = {'name': 'NewOrg'}
     org_create_command(grafana_client, args)
@@ -599,6 +745,16 @@ def test_org_create_command(mocker, grafana_client):
 
 
 def test_dashboards_search_command(mocker, grafana_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+
+    When:
+        - dashboards-search command is executed
+
+    Then:
+        - The http request is called with the right arguments
+    """
     http_request = mocker.patch.object(grafana_client, '_http_request')
     args = {'query': "dash", 'tag': "tag1,tag2", 'type': "dash-db", 'dashboard_ids': "2,1", 'folder_ids': "1,3",
             'starred': "false", 'limit': "30", 'page_number': "2"}
@@ -609,6 +765,16 @@ def test_dashboards_search_command(mocker, grafana_client):
 
 
 def test_user_get_by_id_command(mocker, grafana_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+
+    When:
+        - user-get-by-id command is executed
+
+    Then:
+        - The http request is called with the right arguments
+    """
     http_request = mocker.patch.object(grafana_client, '_http_request')
     args = {'user_id': "6"}
     user_get_by_id_command(grafana_client, args)
@@ -616,6 +782,16 @@ def test_user_get_by_id_command(mocker, grafana_client):
 
 
 def test_team_get_by_id_command(mocker, grafana_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+
+    When:
+        - team-get-by-id command is executed
+
+    Then:
+        - The http request is called with the right arguments
+    """
     http_request = mocker.patch.object(grafana_client, '_http_request')
     args = {'team_id': "7"}
     team_get_by_id_command(grafana_client, args)
@@ -623,6 +799,16 @@ def test_team_get_by_id_command(mocker, grafana_client):
 
 
 def test_alert_get_by_id_command(mocker, grafana_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+
+    When:
+        - alert-get-by-id command is executed
+
+    Then:
+        - The http request is called with the right arguments
+    """
     http_request = mocker.patch.object(grafana_client, '_http_request')
     args = {'alert_id': "4"}
     alert_get_by_id_command(grafana_client, args)
@@ -630,6 +816,16 @@ def test_alert_get_by_id_command(mocker, grafana_client):
 
 
 def test_org_list_command(mocker, grafana_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+
+    When:
+        - org-list command is executed
+
+    Then:
+        - The http request is called with the right arguments
+    """
     http_request = mocker.patch.object(grafana_client, '_http_request')
     args = {'page_size': "40", 'page_number': "0"}
     org_list_command(grafana_client, args)
@@ -637,6 +833,16 @@ def test_org_list_command(mocker, grafana_client):
 
 
 def test_org_get_by_name_command(mocker, grafana_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+
+    When:
+        - org-get-by-name command is executed
+
+    Then:
+        - The http request is called with the right arguments
+    """
     http_request = mocker.patch.object(grafana_client, '_http_request')
     args = {'name': "OrgName"}
     org_get_by_name_command(grafana_client, args)
@@ -644,6 +850,16 @@ def test_org_get_by_name_command(mocker, grafana_client):
 
 
 def test_org_get_by_id_command(mocker, grafana_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+
+    When:
+        - org-get-by-id command is executed
+
+    Then:
+        - The http request is called with the right arguments
+    """
     http_request = mocker.patch.object(grafana_client, '_http_request')
     args = {'org_id': "114"}
     org_get_by_id_command(grafana_client, args)
