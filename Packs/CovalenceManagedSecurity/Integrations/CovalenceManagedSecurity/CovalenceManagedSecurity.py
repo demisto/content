@@ -255,7 +255,7 @@ def get_aros():
     q = demisto.args().get('query', None)
 
     if q:
-        query = {}
+        query = {}  # pragma: no cover
         for param in q.split('&'):
             key = param.split('=')[0]
             value = param.split('=')[1]
