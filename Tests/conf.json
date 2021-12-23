@@ -3,6 +3,9 @@
     "testInterval": 20,
     "tests": [
         {
+            "external_playbook_config": {"input1": "1"}
+        },
+        {
             "integrations": "LogRhythmRest V2",
             "playbookID": "LogRhythmRestV2-test"
         },
