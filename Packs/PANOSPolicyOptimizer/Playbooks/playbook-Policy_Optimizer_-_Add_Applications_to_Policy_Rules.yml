@@ -155,8 +155,8 @@ tasks:
         optionsarg: []
         fieldassociated: ""
         placeholder: ""
-        tooltip: Choose an application to add to the rule.
-        The new application replaces the current application in the rule configuration.
+        tooltip: "Choose an application to add to the rule.
+        The new application replaces the current application in the rule configuration."
         readonly: false
       title: Add applications to policy rules
       description: "Choose an application to add to the rule."
