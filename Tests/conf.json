@@ -4815,11 +4815,10 @@
             "integrations": "McAfee ePO v2",
             "playbookID": "McAfee ePO v2 Test"
         },
-	    {
-            "integrations": "epo",
-	        "scripts": "EPOFindSystem",
+	{
+	    "scripts": "EPOFindSystem",
             "playbookID": "McAfee_EPO_Find_System_Script"
-	    }
+	}
     ],
     "skipped_tests": {
         "MISP V2 Test": "The integration is deprecated as we released MISP V3",
