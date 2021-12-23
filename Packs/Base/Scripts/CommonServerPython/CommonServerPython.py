@@ -35,19 +35,20 @@ def __line__():
 
 
 _MODULES_LINE_MAPPING = {
-    'CommonServerPython': {'pre': __line__() - 38, 'post': float('inf')},
+    'CommonServerPython': {'start': __line__() - 38, 'end': float('inf')},
 }
 
 
-def register_module_line(module_name, pre_post, line):
+def register_module_line(module_name, start_end, line, wrapper=0):
     """
         Register a module in the line mapping for traceback line correction algorithm.
 
         :type module_name: ``str``
         :param module_name: the name of the module. (required)
 
-        :type pre_post: ``str``
-        :param pre_post: Whether to register the line as the start or the end of the module. (required)
+        :type start_end: ``str``
+        :param start_end: Whether to register the line as the start or the end of the module.
+            Possible values: start, end. (required)
 
         :type line: ``int``
         :param line: the line number to record. (required)
@@ -57,27 +58,32 @@ def register_module_line(module_name, pre_post, line):
     """
     global _MODULES_LINE_MAPPING
     try:
-        if pre_post not in ('pre', 'post'):
-            raise ValueError('Invalid pre_post argument. Acceptable values are: pre, post.')
+        if start_end not in ('start', 'end'):
+            raise ValueError('Invalid start_end argument. Acceptable values are: start, end.')
         if not isinstance(line, int):
             raise ValueError('Invalid line argument. Expected int got {}'.format(type(line)))
 
-        _MODULES_LINE_MAPPING.setdefault(module_name, {'pre': 0, 'post': float('inf')}).update({pre_post: line})
+        _MODULES_LINE_MAPPING.setdefault(module_name, {'start': 0, 'post': float('inf')}).update(
+            {start_end: line, '{}_wrapper'.format(start_end): line + wrapper}
+        )
     except Exception as exc:
-        demisto.debug(
+        demisto.info(
             'failed to register module line. '
-            'module: "{}" pre_post: "{}" line: "{}".\nError: {}'.format(module_name, pre_post, line, exc))
+            'module: "{}" start_end: "{}" line: "{}".\nError: {}'.format(module_name, start_end, line, exc))
 
 
 def _find_relevant_module(line):
+    """
+    Find which module contains the given line number.
+    """
     global _MODULES_LINE_MAPPING
 
     relevant_module = ''
     for module, info in _MODULES_LINE_MAPPING.items():
-        if info['pre'] <= line <= info['post']:
+        if info['start'] <= line <= info['end']:
             if not relevant_module:
                 relevant_module = module
-            elif info['pre'] > _MODULES_LINE_MAPPING[relevant_module]['pre']:
+            elif info['start'] > _MODULES_LINE_MAPPING[relevant_module]['start']:
                 relevant_module = module
 
     return relevant_module
@@ -97,13 +103,15 @@ def fix_traceback_line_numbers(trace_str):
         line_num = int(number)
         module = _find_relevant_module(line_num)
         if module:
-            module_start_line = _MODULES_LINE_MAPPING.get(module, {'pre': 0})['pre']
+            module_start_line = _MODULES_LINE_MAPPING.get(module, {'start': 0})['start']
             actual_number = line_num - module_start_line
 
             # in case of ApiModule injections, adjust the line numbers of the code after the injection.
             for module_info in _MODULES_LINE_MAPPING.values():
-                if module_info['pre'] > module_start_line and module_info['post'] < line_num:
-                    actual_number -= module_info['post'] - module_info['pre']
+                block_start = module_info.get('start_wrapper', module_info['start'])
+                block_end = module_info.get('end_wrapper', module_info['end'])
+                if block_start > module_start_line and block_end < line_num:
+                    actual_number -= block_end - block_start
 
             # a traceback line is of the form: File "<string>", line 8853, in func5
             trace_str = trace_str.replace(
