@@ -129,6 +129,7 @@ def handle_list_field(key, value):
 
 handle_field = {
     int: handle_int_field,
+    str: handle_str_field,
     unicode: handle_str_field,
     list: handle_list_field
 }
