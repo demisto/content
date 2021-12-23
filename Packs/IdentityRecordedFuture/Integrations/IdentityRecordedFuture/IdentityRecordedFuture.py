@@ -19,19 +19,29 @@ ISO_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint:disable=no-member
 
-__version__ = '1.0'
+__version__ = "1.0"
 
 
 def period_to_date(period):
     current_time = datetime.now()
     periods_to_date = {
-        'Last 24 Hours': (current_time - timedelta(days=1)).strftime(ISO_DATE_FORMAT),
-        'Last 7 Days': (current_time - timedelta(weeks=1)).strftime(ISO_DATE_FORMAT),
-        'Last Month': (current_time - timedelta(days=31)).strftime(ISO_DATE_FORMAT),
-        'Last 3 Months': (current_time - timedelta(3 * 30)).strftime(ISO_DATE_FORMAT),
-        'Last 6 Months': (current_time - timedelta(6 * 30)).strftime(ISO_DATE_FORMAT),
-        'Last Year': (current_time - timedelta(365)).strftime(ISO_DATE_FORMAT),
-        'All time': None,
+        "Last 24 Hours": (current_time - timedelta(days=1)).strftime(
+            ISO_DATE_FORMAT
+        ),
+        "Last 7 Days": (current_time - timedelta(weeks=1)).strftime(
+            ISO_DATE_FORMAT
+        ),
+        "Last Month": (current_time - timedelta(days=31)).strftime(
+            ISO_DATE_FORMAT
+        ),
+        "Last 3 Months": (current_time - timedelta(3 * 30)).strftime(
+            ISO_DATE_FORMAT
+        ),
+        "Last 6 Months": (current_time - timedelta(6 * 30)).strftime(
+            ISO_DATE_FORMAT
+        ),
+        "Last Year": (current_time - timedelta(365)).strftime(ISO_DATE_FORMAT),
+        "All time": None,
     }
     return periods_to_date[period]
 
@@ -51,7 +61,7 @@ class Client(BaseClient):
         date_period: str,
         domain_type: List[str],
         password_properties: List[str],
-        limit: int
+        limit: int,
     ) -> Dict[str, Any]:
         """Identity search."""
         return self._http_request(
@@ -64,11 +74,11 @@ class Client(BaseClient):
                     "properties": password_properties,
                     "latest_downloaded_gte": date_period,
                 },
-                "limit": limit
+                "limit": limit,
             },
             timeout=120,
             retries=3,
-            status_list_to_retry=STATUS_TO_RETRY
+            status_list_to_retry=STATUS_TO_RETRY,
         )
 
     def identity_lookup(
@@ -77,7 +87,7 @@ class Client(BaseClient):
         authorization_identities: List[dict],
         sha1_identities: List[str],
         date_period: str,
-        password_properties: List[str]
+        password_properties: List[str],
     ) -> Dict[str, Any]:
         """Identity Lookup."""
         return self._http_request(
@@ -90,11 +100,11 @@ class Client(BaseClient):
                 "filter": {
                     "first_downloaded_gte": date_period,
                     "properties": password_properties,
-                }
+                },
             },
             timeout=120,
             retries=3,
-            status_list_to_retry=STATUS_TO_RETRY
+            status_list_to_retry=STATUS_TO_RETRY,
         )
 
 
@@ -103,8 +113,7 @@ class Client(BaseClient):
 #####################
 
 
-class Actions():
-
+class Actions:
     def __init__(self, rf_client: Client):
         self.client = rf_client
 
@@ -114,7 +123,7 @@ class Actions():
         latest_downloaded: str,
         domain_type: Union[list, str],
         password_properties: List[str],
-        limit_identities: int
+        limit_identities: int,
     ):
         """Search command for identities"""
         if domain_type == "All" or not domain_type:
@@ -123,26 +132,38 @@ class Actions():
         else:
             domain_type = [domain_type]
         date_period = period_to_date(latest_downloaded)
-        response = self.client.identity_search(domains, date_period, domain_type, password_properties, limit_identities)
+        response = self.client.identity_search(
+            domains,
+            date_period,
+            domain_type,
+            password_properties,
+            limit_identities,
+        )
         command_results = self.__build_search_context(response, domains)
         return command_results
 
     def __build_search_markdown(self, search_data, domains):
         if search_data:
-            markdown = [f'## This is search results for {", ".join(domains)} :']
+            markdown = [
+                f'## This is search results for {", ".join(domains)} :'
+            ]
             for identity in search_data:
                 if isinstance(identity, dict):
-                    markdown.append(f"- **{identity['login']}**  in domain  {identity['domain']}")
+                    markdown.append(
+                        f"- **{identity['login']}**  in domain  {identity['domain']}"
+                    )
                 else:
-                    markdown.append(f'- **{identity}**')
+                    markdown.append(f"- **{identity}**")
         else:
-            markdown = [f'## There is no data for {", ".join(domains)} in selected period']
+            markdown = [
+                f'## There is no data for {", ".join(domains)} in selected period'
+            ]
         return "\n".join(markdown)
 
     def __build_search_context(self, search_data, domains):
         result = CommandResults(
             readable_output=self.__build_search_markdown(search_data, domains),
-            outputs_prefix='RecordedFuture.Credentials.SearchIdentities',
+            outputs_prefix="RecordedFuture.Credentials.SearchIdentities",
             outputs=search_data,
         )
         return result
@@ -163,7 +184,7 @@ class Actions():
         # From playbook we can get a dict that represents authorization identity.
 
         if isinstance(identities, str):
-            identities = identities.replace(' ', '').split(';')
+            identities = identities.replace(" ", "").split(";")
             for identity in identities:
                 if re.fullmatch(emailRegex, identity):
                     email_identities.append(identity)
@@ -171,37 +192,51 @@ class Actions():
                 elif re.fullmatch(sha1Regex, identity):
                     sha1_identities.append(identity)
                     for domain in domains:
-                        authorization_identities.append({
-                            "login_sha1": identity,
-                            "domain": domain,
-                        })
+                        authorization_identities.append(
+                            {
+                                "login_sha1": identity,
+                                "domain": domain,
+                            }
+                        )
                 else:
                     for domain in domains:
-                        authorization_identities.append({
-                            "login": identity,
-                            "domain": domain,
-                        })
+                        authorization_identities.append(
+                            {
+                                "login": identity,
+                                "domain": domain,
+                            }
+                        )
         elif isinstance(identities, dict):
             authorization_identities.append(identities)
         else:
-            raise DemistoException(f"Failed due to - Received unexpected data in Lookup command: {identities}")
+            raise DemistoException(
+                f"Failed due to - Received unexpected data in Lookup command: {identities}"
+            )
 
         date_period = period_to_date(first_downloaded)
         response = self.client.identity_lookup(
-            email_identities, authorization_identities, sha1_identities, date_period, password_properties
+            email_identities,
+            authorization_identities,
+            sha1_identities,
+            date_period,
+            password_properties,
         )
-        identities_data = response.get('identities', [])
-        command_results = self.__build_lookup_context(identities_data, identities)
+        identities_data = response.get("identities", [])
+        command_results = self.__build_lookup_context(
+            identities_data, identities
+        )
         return command_results
 
     def __build_lookup_markdown(self, lookup_data, identities):
         if lookup_data:
-            markdown = ['## Credentials Lookup']
+            markdown = ["## Credentials Lookup"]
             markdown.append("*****")
             for identity in lookup_data:
-                markdown.append(f'### Identity __{identity["identity"]["subjects"][0]}__:')
+                markdown.append(
+                    f'### Identity __{identity["identity"]["subjects"][0]}__:'
+                )
                 markdown.append("*****")
-                credentials = identity['credentials']
+                credentials = identity["credentials"]
                 passwords_section = []
                 dumps_section = []
                 breaches_section = []
@@ -209,51 +244,81 @@ class Actions():
                     exposed_secret = credential["exposed_secret"]
                     password_number_text = f"__Password {idx + 1}__"
                     passwords_section.append(f"{password_number_text}:")
-                    if exposed_secret.get('details', {}).get('rank'):
+                    if exposed_secret.get("details", {}).get("rank"):
                         passwords_section.append(
                             f"__Rank__: {exposed_secret['details']['rank']}"
                         )
-                    if exposed_secret["effectively_clear"] and exposed_secret.get('details', {}).get('clear_text_hint'):
+                    if exposed_secret[
+                        "effectively_clear"
+                    ] and exposed_secret.get("details", {}).get(
+                        "clear_text_hint"
+                    ):
                         passwords_section.append(
                             f"{exposed_secret['details']['clear_text_hint']} (__{exposed_secret['type']}__)"
                         )
-                    if exposed_secret['hashes']:
-                        for hash_password in exposed_secret['hashes']:
+                    if exposed_secret["hashes"]:
+                        for hash_password in exposed_secret["hashes"]:
                             # When user do not have permissions for domain
                             # we will receive hash_prefix instead of full hash.
-                            hash_value = hash_password.get('hash') or hash_password.get('hash_prefix')
-                            hash_algorithm = hash_password['algorithm']
+                            hash_value = hash_password.get(
+                                "hash"
+                            ) or hash_password.get("hash_prefix")
+                            hash_algorithm = hash_password["algorithm"]
                             passwords_section.append(
                                 f"{hash_value} (__{hash_algorithm}__)"
                             )
-                    if credential.get('authorization_service'):
-                        passwords_section.append(f"Authorization service url: {credential['authorization_service']['url']}\n")
-                    if credential.get('exfiltration_date'):
-                        exfiltration_date = datetime.strptime(credential['exfiltration_date'], ISO_DATE_FORMAT).strftime("%b %Y")
-                        passwords_section.append(f"Exfiltration date: {exfiltration_date}")
-                    for dump in credential['dumps']:
-                        dump_downloaded = dump.get('downloaded', '')
+                    if credential.get("authorization_service"):
+                        passwords_section.append(
+                            f"Authorization service url: {credential['authorization_service']['url']}\n"
+                        )
+                    if credential.get("exfiltration_date"):
+                        exfiltration_date = datetime.strptime(
+                            credential["exfiltration_date"], ISO_DATE_FORMAT
+                        ).strftime("%b %Y")
+                        passwords_section.append(
+                            f"Exfiltration date: {exfiltration_date}"
+                        )
+                    for dump in credential["dumps"]:
+                        dump_downloaded = dump.get("downloaded", "")
                         if dump_downloaded:
-                            dump_downloaded = datetime.strptime(dump_downloaded, ISO_DATE_FORMAT).strftime("%b %Y")
+                            dump_downloaded = datetime.strptime(
+                                dump_downloaded, ISO_DATE_FORMAT
+                            ).strftime("%b %Y")
                             dump_text = f"__{dump['name']}__, {dump_downloaded},  {password_number_text}"
                         else:
-                            dump_text = f"__{dump['name']}__, {password_number_text}"
+                            dump_text = (
+                                f"__{dump['name']}__, {password_number_text}"
+                            )
                         # There might be the same dumps in the response so we show only one.
                         if dump_text not in dumps_section:
                             dumps_section.append(dump_text)
-                            if dump.get('type'):
-                                dumps_section.append(f"__Dump type:__ {dump['type']}")
-                            dumps_section.append(f"{dump.get('description', '')}")
-                        for breach in dump.get('breaches', []):
-                            breach_date = breach.get('breached')
+                            if dump.get("type"):
+                                dumps_section.append(
+                                    f"__Dump type:__ {dump['type']}"
+                                )
+                            dumps_section.append(
+                                f"{dump.get('description', '')}"
+                            )
+                        for breach in dump.get("breaches", []):
+                            breach_date = breach.get("breached")
                             if breach_date:
-                                breach_date = datetime.strptime(breach_date, ISO_DATE_FORMAT).strftime("%b %Y")
-                                breaches_section.append(f"__{breach['name']}__, {breach_date}, {password_number_text}")
+                                breach_date = datetime.strptime(
+                                    breach_date, ISO_DATE_FORMAT
+                                ).strftime("%b %Y")
+                                breaches_section.append(
+                                    f"__{breach['name']}__, {breach_date}, {password_number_text}"
+                                )
                             else:
-                                breaches_section.append(f"__{breach['name']}__, {password_number_text}")
-                            if breach.get('type'):
-                                breaches_section.append(f"__Breach type:__ {breach['type']}")
-                            breaches_section.append(breach.get('description', ''))
+                                breaches_section.append(
+                                    f"__{breach['name']}__, {password_number_text}"
+                                )
+                            if breach.get("type"):
+                                breaches_section.append(
+                                    f"__Breach type:__ {breach['type']}"
+                                )
+                            breaches_section.append(
+                                breach.get("description", "")
+                            )
 
                 markdown.append("### Exposed Password Data")
                 markdown.extend(passwords_section)
@@ -267,15 +332,19 @@ class Actions():
                 markdown.extend(dumps_section)
         else:
             if isinstance(identities, dict):
-                identities = identities.get('login')
-            markdown = [f'## There is no data for {", ".join(identities)} in selected period']
+                identities = identities.get("login")
+            markdown = [
+                f'## There is no data for {", ".join(identities)} in selected period'
+            ]
 
         return "\n".join(markdown)
 
     def __build_lookup_context(self, lookup_data, identities):
         result = CommandResults(
-            readable_output=self.__build_lookup_markdown(lookup_data, identities),
-            outputs_prefix='RecordedFuture.Credentials.Identities',
+            readable_output=self.__build_lookup_markdown(
+                lookup_data, identities
+            ),
+            outputs_prefix="RecordedFuture.Credentials.Identities",
             outputs=lookup_data,
         )
         return result
@@ -290,11 +359,18 @@ def main() -> None:
         verify_ssl = not demisto_params.get("unsecure", False)
         proxy = demisto_params.get("proxy", False)
         # Clean the input from the user and split string
-        domains = demisto_params.get("domains", "").rstrip(';').replace(' ', '').split(';')
+        domains = (
+            demisto_params.get("domains", "")
+            .rstrip(";")
+            .replace(" ", "")
+            .split(";")
+        )
         # If user has not set password properties we will get empty string but client require empty list
         password_properties = demisto_params.get("password_properties") or []
         try:
-            limit_identities = int(demisto_params.get("limit_identities", LIMIT_IDENTITIES))
+            limit_identities = int(
+                demisto_params.get("limit_identities", LIMIT_IDENTITIES)
+            )
             # We can't do that on UI, so set the limit here.
             if limit_identities > LIMIT_IDENTITIES:
                 limit_identities = LIMIT_IDENTITIES
@@ -307,7 +383,10 @@ def main() -> None:
             f'{demisto.demistoVersion()["version"]})',
         }
         client = Client(
-            base_url=base_url, verify=verify_ssl, headers=headers, proxy=proxy,
+            base_url=base_url,
+            verify=verify_ssl,
+            headers=headers,
+            proxy=proxy,
         )
         command = demisto.command()
         actions = Actions(client)
@@ -332,7 +411,7 @@ def main() -> None:
             return_results(
                 actions.identity_search_command(
                     domains,
-                    demisto_args.get("latest-downloaded", 'All time'),
+                    demisto_args.get("latest-downloaded", "All time"),
                     demisto_args.get("domain_type"),
                     password_properties,
                     limit_identities,
@@ -342,7 +421,7 @@ def main() -> None:
             return_results(
                 actions.identity_lookup_command(
                     demisto_args.get("identities"),
-                    demisto_args.get("first-downloaded", 'All time'),
+                    demisto_args.get("first-downloaded", "All time"),
                     password_properties,
                     domains,
                 )
