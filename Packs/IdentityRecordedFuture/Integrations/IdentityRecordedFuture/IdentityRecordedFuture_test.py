@@ -92,8 +92,18 @@ class RFTestIdentity(unittest.TestCase):
     @patch('IdentityRecordedFuture.period_to_date', return_value=DATETIME_STR_VALUE)
     def test_identity_lookup(self, period_to_date_mock):
         email_identities = ['realname@fake.com']
-        username_identities = [{'login': 'notreal', 'domain': 'fake1.com'}]
-        identities = 'realname@fake.com; notreal'
+        username_identities = [
+            {
+                'login': 'notreal',
+                'domain': 'fake1.com'
+            },
+            {
+                'login_sha1': 'afafa12344afafa12344afafa12344afafa12344',
+                'domain': 'fake1.com'
+            },
+        ]
+        sha1_identities = ['afafa12344afafa12344afafa12344afafa12344']
+        identities = 'realname@fake.com; notreal; afafa12344afafa12344afafa12344afafa12344'
 
         lookup_response = util_load_json('./cassettes/identity_lookup_response.json')
         action_prefix = 'RecordedFuture.Credentials.Identities'
@@ -105,7 +115,7 @@ class RFTestIdentity(unittest.TestCase):
         )
         period_to_date_mock.assert_called_once_with(self.period)
         client.identity_lookup.assert_called_once_with(
-            email_identities, username_identities, DATETIME_STR_VALUE, self.password_properties,
+            email_identities, username_identities, sha1_identities, DATETIME_STR_VALUE, self.password_properties,
         )
         self.assertEqual(action_return.outputs_prefix, action_prefix)
         self.assertEqual(action_return.outputs, lookup_response['identities'])

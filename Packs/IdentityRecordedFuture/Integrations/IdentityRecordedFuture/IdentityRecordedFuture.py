@@ -13,7 +13,6 @@ from CommonServerPython import *
 STATUS_TO_RETRY = [500, 501, 502, 503, 504]
 LIMIT_IDENTITIES = 10_000
 
-EMAIL_REGEX = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
 ISO_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
 
@@ -76,6 +75,7 @@ class Client(BaseClient):
         self,
         email_identities: List[str],
         authorization_identities: List[dict],
+        sha1_identities: List[str],
         date_period: str,
         password_properties: List[str]
     ) -> Dict[str, Any]:
@@ -86,6 +86,7 @@ class Client(BaseClient):
             json_data={
                 "subjects": email_identities,
                 "subjects_login": authorization_identities,
+                "subjects_sha1": sha1_identities,
                 "filter": {
                     "first_downloaded_gte": date_period,
                     "properties": password_properties,
@@ -156,6 +157,7 @@ class Actions():
         """Lookup comand for identities"""
         email_identities = []
         authorization_identities = []
+        sha1_identities = []
         # We can get data from user input (command) or in playbook directly from Search.
         # We get a string of identities divided with semicolon from command.
         # From playbook we can get a dict that represents authorization identity.
@@ -163,8 +165,16 @@ class Actions():
         if isinstance(identities, str):
             identities = identities.replace(' ', '').split(';')
             for identity in identities:
-                if re.fullmatch(EMAIL_REGEX, identity):
+                if re.fullmatch(emailRegex, identity):
                     email_identities.append(identity)
+                # If user used sha1 value for lookup try to find it in authorization data and email data
+                elif re.fullmatch(sha1Regex, identity):
+                    sha1_identities.append(identity)
+                    for domain in domains:
+                        authorization_identities.append({
+                            "login_sha1": identity,
+                            "domain": domain,
+                        })
                 else:
                     for domain in domains:
                         authorization_identities.append({
@@ -178,7 +188,7 @@ class Actions():
 
         date_period = period_to_date(first_downloaded)
         response = self.client.identity_lookup(
-            email_identities, authorization_identities, date_period, password_properties
+            email_identities, authorization_identities, sha1_identities, date_period, password_properties
         )
         identities_data = response.get('identities', [])
         command_results = self.__build_lookup_context(identities_data, identities)
