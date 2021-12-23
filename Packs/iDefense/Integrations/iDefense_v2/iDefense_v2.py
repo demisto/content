@@ -287,9 +287,10 @@ def uuid_command(client: Client, args: dict, reliability: DBotScoreReliability, 
         res = client.threat_indicator_search(url_suffix=f'/v0/{uuid}')
     except Exception as e:
         if 'Failed to parse json object from response' in e.args[0]:
-            return_error(f"No results were found for uuid {uuid}\nError:  {str(e)}")
+            return_results(CommandResults(indicator=None, raw_response={},
+                                  readable_output=f"No results were found for uuid: {uuid}"))
         else:
-            return_error(f"Error Occured!\n Error details: {str(e)}")
+            raise e
 
     indicator: Optional[Union[Common.IP, Common.Domain, Common.URL]] = None
     analysis_info = {}
