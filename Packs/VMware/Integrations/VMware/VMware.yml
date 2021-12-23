@@ -747,24 +747,6 @@ script:
           predefined:
             - ""
       outputs: []
-    - name: vmware-list-vm-tags
-      description: List all tags associated to a VM.
-      deprecated: false
-      arguments:
-        - name: uuid
-          description: The UUID of the VM .
-          required: true
-          isArray: false
-          defaultValue: ""
-          predefined:
-            - ""
-      outputs:
-        - contextPath: VMWareTagById.UUID
-          description: VM's UUID
-          type: String
-        - contextPath: VMWareTagById.TagId
-          description: Tag id of the tag assocciated with the VM.
-          type: String
   dockerimage: devdemisto/vmware:1.0.0.25146
   runonce: false
   script: ""
