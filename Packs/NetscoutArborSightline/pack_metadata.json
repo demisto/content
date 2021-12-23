@@ -11,6 +11,12 @@
         "Network Security"
     ],
     "tags": [],
-    "useCases": ["Network Security"],
-    "keywords": []
+    "useCases": [
+        "Network Security"
+    ],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

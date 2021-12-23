@@ -1307,7 +1307,10 @@
                 "EWS Mail Sender"
             ],
             "playbookID": "EWS search-mailbox test",
-            "instance_names": "ewv2_regular",
+            "instance_names": [
+                "ewv2_regular",
+                "ews_mail_sender_labdemisto"
+            ],
             "timeout": 300
         },
         {
@@ -1398,12 +1401,18 @@
         },
         {
             "integrations": "EWS Mail Sender",
-            "playbookID": "EWS Mail Sender Test"
+            "playbookID": "EWS Mail Sender Test",
+            "instance_names": [
+                "ews_mail_sender_labdemisto"
+            ]
         },
         {
             "integrations": [
                 "EWS Mail Sender",
                 "Rasterize"
+            ],
+            "instance_names": [
+                "ews_mail_sender_labdemisto"
             ],
             "playbookID": "EWS Mail Sender Test 2"
         },
@@ -2225,6 +2234,9 @@
                 "Demisto REST API",
                 "Rasterize"
             ],
+            "instance_names": [
+                "ews_mail_sender_labdemisto"
+            ],
             "memory_threshold": 150,
             "pid_threshold": 80
         },
@@ -2237,6 +2249,9 @@
                 "EWS Mail Sender",
                 "Demisto REST API",
                 "Rasterize"
+            ],
+            "instance_names": [
+                "ews_mail_sender_labdemisto"
             ],
             "memory_threshold": 160,
             "pid_threshold": 80
@@ -2744,6 +2759,9 @@
         {
             "playbookID": "Send Investigation Summary Reports - Test",
             "integrations": "EWS Mail Sender",
+            "instance_names": [
+                "ews_mail_sender_labdemisto"
+            ],
             "fromversion": "4.5.0",
             "memory_threshold": 100
         },
@@ -4289,21 +4307,6 @@
             ]
         },
         {
-            "playbookID": "Phishing - Core - Test - Actual Incident",
-            "fromversion": "6.0.0",
-            "timeout": 4600,
-            "integrations": [
-                "EWS Mail Sender",
-                "Demisto REST API",
-                "Rasterize"
-            ],
-            "memory_threshold": 200
-        },
-        {
-            "playbookID": "Phishing v2 - Test - Actual Incident",
-            "fromversion": "6.0.0"
-        },
-        {
             "playbookID": "Phishing Investigation - Generic v2 - Campaign Test",
             "fromversion": "6.0.0",
             "timeout": 7000,
@@ -4313,7 +4316,10 @@
                 "Rasterize",
                 "Demisto Lock"
             ],
-            "instance_names": "no_sync_long_timeout"
+            "instance_names": [
+                "no_sync_long_timeout",
+                "ews_mail_sender_labdemisto"
+            ]
         },
         {
             "playbookID": "PCAP Search test",
@@ -4474,6 +4480,9 @@
             "fromversion": "5.0.0",
             "integrations": [
                 "EWS Mail Sender"
+            ],
+            "instance_names": [
+                "ews_mail_sender_labdemisto"
             ]
         },
         {
@@ -4550,15 +4559,6 @@
         {
             "playbookID": "DeleteContext-auto-subplaybook-test",
             "fromversion": "5.0.0"
-        },
-        {
-            "playbookID": "Process Email - Generic - Test - Actual Incident",
-            "fromversion": "6.0.0",
-            "integrations": [
-                "XsoarPowershellTesting",
-                "Create-Mock-Feed-Relationships"
-            ],
-            "memory_threshold": 160
         },
         {
             "playbookID": "Analyst1 Integration Demonstration - Test",
@@ -4860,7 +4860,7 @@
         "JoeSecurityTestDetonation": "Issue 25650",
         "JoeSecurityTestPlaybook": "Issue 25649",
         "Cortex Data Lake Test": "Issue 24346",
-        "Phishing - Cre - Test - Incident Starter": "Issue 26784",
+        "Phishing - Core - Test - Incident Starter": "Issue 26784",
         "Test Playbook McAfee ATD": "Issue 33409",
         "Detonate Remote File From URL -McAfee-ATD - Test": "Issue 33407",
         "Test Playbook McAfee ATD Upload File": "Issue 33408",
@@ -4930,11 +4930,6 @@
         "Mimecast test": "Issue 26906"
     },
     "skipped_integrations": {
-        "AutoFocus V2": "Issue 26464",
-        "AutoFocus Daily Feed": "Issue 26464",
-        "AutoFocus Feed": "Issue 26464",
-        "Palo Alto Networks Threat Vault": "Issue 26464",
-
         "_comment1": "~~~ NO INSTANCE ~~~",
         "Ipstack": "Usage limit reached (Issue 38063)",
         "AnsibleAlibabaCloud": "No instance - issue 40447",

@@ -1,0 +1,249 @@
+commonfields:
+  id: Cofense Intelligence
+  version: -1
+name: Cofense Intelligence
+display: Cofense Intelligence (Deprecated)
+category: Data Enrichment & Threat Intelligence
+description: Deprecated. Use Cofense Intelligence v2 instead. Use the Cofense Intelligence
+  integration to check the reputation of URLs, IP addresses, file hashes, and email
+  addresses.
+configuration:
+- display: Server URL (e.g., https://www.threathq.com/apiv1)
+  name: url
+  defaultvalue: https://www.threathq.com/apiv1
+  type: 0
+  required: true
+- display: API username
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: URL Threshold (None, Minor, Moderate, or Major). Minimum severity to consider
+    the URL malicious
+  name: urlThreshold
+  defaultvalue: Major
+  type: 0
+  required: false
+- display: File Threshold (None, Minor, Moderate, or Major). Minimum severity to consider
+    the file malicious
+  name: fileThreshold
+  defaultvalue: Major
+  type: 0
+  required: false
+- display: IP Threshold (None, Minor, Moderate, or Major). Minimum severity to consider
+    the IP malicious
+  name: ipThreshold
+  defaultvalue: Major
+  type: 0
+  required: false
+- display: Email Threshold (None, Minor, Moderate, or Major). Minimum severity to
+    consider the email malicious
+  name: emailThreshold
+  defaultvalue: Major
+  type: 0
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: url
+    arguments:
+    - name: url
+      required: true
+      default: true
+      description: URL to check.
+    outputs:
+    - contextPath: URL.Data
+      description: Bad URLs.
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision.
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason that the vendor made the decision.
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: Cofense.URL.Data
+      description: Bad URLs.
+    - contextPath: Cofense.URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision.
+    - contextPath: Cofense.URL.Malicious.Description
+      description: For malicious URLs, the reason that the vendor made the decision.
+    - contextPath: Cofense.URL.Cofense.ThreatIDs
+      description: The thread IDs retrieved by the vendor.
+    description: Checks the reputation of a URL.
+  - name: file
+    arguments:
+    - name: file
+      required: true
+      default: true
+      description: A CSV list of file hashes to check (MD5, SHA1, or SHA256).
+    outputs:
+    - contextPath: File.MD5
+      description: File MD5
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason that the vendor made the decision.
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: Cofense.File.MD5
+      description: MD5 hash of the file.
+    - contextPath: Cofense.File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+    - contextPath: Cofense.File.Malicious.Description
+      description: For malicious files, the reason that the vendor made the decision.
+    - contextPath: Cofense.File.ThreatIDs
+      description: The thread IDs retrieved by the vendor.
+    description: Checks the reputation of a file hash.
+  - name: ip
+    arguments:
+    - name: ip
+      required: true
+      default: true
+      description: IP address to check.
+    outputs:
+    - contextPath: IP.Data
+      description: Bad IP Address found
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the reason that the vendor made the decision
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: Cofense.IP.Data
+      description: Bad IP Address found
+    - contextPath: Cofense.IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+    - contextPath: Cofense.IP.Malicious.Description
+      description: For malicious IPs, the reason that the vendor made the decision
+    - contextPath: Cofense.IP.Cofense.ThreatIDs
+      description: The thread ids retrieved by the vendor.
+    - contextPath: IP.ASN
+      description: Autonomous System name for the IP.
+    - contextPath: IP.GEO.Location
+      description: Location in format latitude, longitude.
+    - contextPath: IP.GEO.Country
+      description: Country of the IP.
+    - contextPath: IP.Address
+      description: IP address.
+      type: string
+    description: Checks the reputation of an IP address.
+  - name: email
+    arguments:
+    - name: email
+      required: true
+      default: true
+      description: Sender email address to check.
+    outputs:
+    - contextPath: Email.Data
+      description: Sender address to check.
+    - contextPath: Account.Email.Address
+      description: Sender email address to check.
+    - contextPath: Account.Email.Malicious.Vendor
+      description: For malicious emails, the vendor that made the decision.
+    - contextPath: Account.Email.Malicious.Description
+      description: For malicious emails, the reason that the vendor made the decision.
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: Cofense.Email.Data
+      description: Sender address to check.
+    - contextPath: Cofense.Email.Malicious.Vendor
+      description: For malicious emails, the vendor that made the decision.
+    - contextPath: Cofense.Email.Malicious.Description
+      description: For malicious URLs, the reason that the vendor made the decision.
+    - contextPath: Cofense.Email.Cofense.ThreatIDs
+      description: The thread ids retrieved by the vendor.
+    description: Checks the reputation of an email address.
+  - name: cofense-search
+    arguments:
+    - name: str
+      required: true
+      default: true
+      description: String to search.
+    - name: limit
+      description: Maximum number of strings to search. Default is 10.
+      defaultValue: "10"
+    outputs:
+    - contextPath: Cofense.NumOfThreats
+      description: Number of threats.
+    - contextPath: Cofense.String
+      description: String that was searched.
+    description: Searches for extracted strings identified within malware campaigns.
+  runonce: false
+deprecated: true
+fromversion: 5.0.0
