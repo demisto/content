@@ -86,6 +86,10 @@ PARAMS_GET_PRIORITY = [
     ("defualt", vim.VirtualMachine.MovePriority().defaultPriority)
 ]
 
+ARG_LIST = [({'limit': '2', 'page_size': '3'}, 2, False, 3),
+            ({'page_size': '3', 'page': '4'}, 12, True, 3),
+            ({}, 50, False, None)]
+
 
 def create_children():
     return [Child(Summary(args.get('ip'), args.get('hostname'), args.get('name'), args.get('uuid'))) for args in
@@ -97,19 +101,68 @@ def create_events(events_list):
             events_list]
 
 
+@pytest.mark.parametrize('args, limit, is_manual, page_size', ARG_LIST)
+def test_get_limit(args, limit, is_manual, page_size):
+    """
+       Given:
+           - pagination arguments.
+
+       When:
+           - Running a list command.
+
+       Then:
+           - Make sure that the correct amount of results to display is returned.
+   """
+    res_limit, res_is_manual, res_page_size = VMware.get_limit(args)
+
+    assert res_limit == limit
+    assert res_is_manual == is_manual
+    assert res_page_size == page_size
+
+
 @pytest.mark.parametrize('input_val, output', PARAMS_GET_PRIORITY)
 def test_get_priority(input_val, output):
+    """
+       Given:
+           - Priority string.
+
+       When:
+           - Running a relocate command
+
+       Then:
+           - Make sure a correct vmware priority object is returned.
+       """
     assert VMware.get_priority(input_val) == output
 
 
 @pytest.mark.parametrize('args, params, res', PARAMS_GET_VM_FILTERS)
 def test_apply_get_vms_filters(args, params, res):
+    """
+       Given:
+           - Filter argumnets.
+
+       When:
+           - Running a get-vms command
+
+       Then:
+           - Make sure only vms containing filter values returned.
+   """
     summary = Summary(params.get('ipAddress'), params.get('hostname'), params.get('name'), params.get('uuid'))
     assert VMware.apply_get_vms_filters(args, summary) == res
 
 
 @pytest.mark.parametrize('args, res', PARAMS_GET_TAG)
 def test_get_tag(monkeypatch, args, res):
+    """
+       Given:
+           - Tag and Category name.
+
+       When:
+           - Running a tag related command.
+
+       Then:
+           - Make sure a correct tag is returned, or None if tag does not exist.
+   """
     client = VsphereClient()
     monkeypatch.setattr(client.tagging.Category, 'list', lambda: ['test1'])
     monkeypatch.setattr(client.tagging.Category, "get", lambda cat: category('test1', '1'))
@@ -120,6 +173,16 @@ def test_get_tag(monkeypatch, args, res):
 
 
 def test_create_vm_config_creator(monkeypatch):
+    """
+       Given:
+           - Create VM argumnets.
+
+       When:
+           - Running a create-vm command
+
+       Then:
+           - Make sure a correct vmware create_vm config object is returned.
+   """
     monkeypatch.setattr(vim.vm, 'ConfigSpec', lambda: ConfigSpec())
     monkeypatch.setattr(vim.vm, 'FileInfo', lambda: FileInfo())
     monkeypatch.setattr(vim, 'ResourceAllocationInfo', lambda: ResourceAllocationInfo())
@@ -144,6 +207,16 @@ def test_create_vm_config_creator(monkeypatch):
 
 
 def test_list_vms_by_tag(monkeypatch):
+    """
+       Given:
+           - Tag name and Category.
+
+       When:
+           - Running a list vms by tag.
+
+       Then:
+           - Make sure a correct vm list is returned.
+   """
     client = VsphereClient()
     objs = [obj('vm1', '1', 'VirtualMachine'),
             obj('vm2', '2', 'VirtualMachine'),
@@ -162,6 +235,16 @@ def test_list_vms_by_tag(monkeypatch):
 
 
 def test_create_vm(monkeypatch):
+    """
+       Given:
+           - Create vm arguments.
+
+       When:
+           - Running a create-vm command
+
+       Then:
+           - Make sure a vm is created and the correct arguments are returned.
+   """
     si = Si()
     monkeypatch.setattr(si, 'RetrieveContent', lambda: {})
     monkeypatch.setattr(VMware, 'wait_for_tasks', lambda si_obj, tasks: None)
@@ -178,6 +261,16 @@ def test_create_vm(monkeypatch):
 
 
 def test_get_vms(monkeypatch):
+    """
+       Given:
+           -
+
+       When:
+           - Running a get-vms command.
+
+       Then:
+           - Make sure a correct list of vms are returned .
+   """
     si = Si()
     monkeypatch.setattr(si, 'RetrieveContent', lambda: Content())
     monkeypatch.setattr(ViewManager, 'CreateContainerView',
@@ -198,6 +291,16 @@ def test_get_vms(monkeypatch):
 
 
 def test_clone_vm(monkeypatch):
+    """
+       Given:
+           - Clone vm arguments.
+
+       When:
+           - Running a clone-vm command
+
+       Then:
+           - Make sure the correct results are returned.
+   """
     si = Si()
     monkeypatch.setattr(si, 'RetrieveContent', lambda: {})
     monkeypatch.setattr(vim.vm, 'CloneSpec', lambda: CloneSpec())
@@ -216,6 +319,16 @@ def test_clone_vm(monkeypatch):
 
 
 def test_relocate_vm(monkeypatch):
+    """
+       Given:
+           - Relocate vm arguments.
+
+       When:
+           - Running a relocate-vm command
+
+       Then:
+           - Make sure the correct results are returned.
+   """
     si = Si()
     monkeypatch.setattr(si, 'RetrieveContent', lambda: {})
     monkeypatch.setattr(vim, 'VirtualMachineRelocateSpec', lambda: VirtualMachineRelocateSpec())
@@ -229,6 +342,16 @@ def test_relocate_vm(monkeypatch):
 
 
 def test_delete_vm(monkeypatch):
+    """
+       Given:
+           - Delete vm UUID.
+
+       When:
+           - Running a delete-vm command
+
+       Then:
+           - Make sure the correct results are returned.
+   """
     si = Si()
     monkeypatch.setattr(VMware, 'wait_for_tasks', lambda si_obj, tasks: None)
     monkeypatch.setattr(VMware, 'get_vm', lambda v_client, uuid: VM("poweredOff"))
@@ -240,6 +363,16 @@ def test_delete_vm(monkeypatch):
 
 
 def test_register_vm(monkeypatch):
+    """
+       Given:
+           - Register vm arguments.
+
+       When:
+           - Running a register-vm command
+
+       Then:
+           - Make sure the correct results are returned.
+   """
     si = Si()
     monkeypatch.setattr(si, 'RetrieveContent', lambda: {})
     monkeypatch.setattr(vim, 'VirtualMachineRelocateSpec', lambda: VirtualMachineRelocateSpec())
@@ -253,6 +386,16 @@ def test_register_vm(monkeypatch):
 
 
 def test_unregister_vm(monkeypatch):
+    """
+       Given:
+           - VM UUID to unregister.
+
+       When:
+           - Running a unregister-vm command
+
+       Then:
+           - Make sure the correct results are returned.
+   """
     si = Si()
     monkeypatch.setattr(VMware, 'get_vm', lambda v_client, uuid: VM())
     monkeypatch.setattr(VM, 'UnregisterVM', lambda this: None)
@@ -262,6 +405,16 @@ def test_unregister_vm(monkeypatch):
 
 
 def test_power_on(monkeypatch):
+    """
+       Given:
+           - VM UUID to power on.
+
+       When:
+           - Running a poweron-vm command
+
+       Then:
+           - Make sure the correct results are returned.
+   """
     si = Si()
     monkeypatch.setattr(VMware, 'get_vm', lambda v_client, uuid: VM('powerOff'))
     monkeypatch.setattr(VM, 'PowerOn', lambda this: Task())
@@ -273,6 +426,16 @@ def test_power_on(monkeypatch):
 
 
 def test_power_off(monkeypatch):
+    """
+       Given:
+           - VM UUID to power off.
+
+       When:
+           - Running a poweroff-vm command
+
+       Then:
+           - Make sure the correct results are returned.
+   """
     si = Si()
     monkeypatch.setattr(VMware, 'get_vm', lambda v_client, uuid: VM('powerOn'))
     monkeypatch.setattr(VM, 'PowerOff', lambda this: Task())
@@ -284,6 +447,16 @@ def test_power_off(monkeypatch):
 
 
 def test_suspend(monkeypatch):
+    """
+       Given:
+           - VM UUID to suspend.
+
+       When:
+           - Running a suspend-vm command
+
+       Then:
+           - Make sure the correct results are returned.
+   """
     si = Si()
     monkeypatch.setattr(VMware, 'get_vm', lambda v_client, uuid: VM('powerOn'))
     monkeypatch.setattr(VM, 'Suspend', lambda this: Task())
@@ -295,6 +468,16 @@ def test_suspend(monkeypatch):
 
 
 def test_hard_reboot(monkeypatch):
+    """
+       Given:
+           - VM UUID to hard reboot.
+
+       When:
+           - Running a hard-reboot-vm command
+
+       Then:
+           - Make sure the correct results are returned.
+   """
     si = Si()
     monkeypatch.setattr(VMware, 'get_vm', lambda v_client, uuid: VM())
     monkeypatch.setattr(VM, 'ResetVM_Task', lambda this: Task())
@@ -307,6 +490,16 @@ def test_hard_reboot(monkeypatch):
 
 
 def test_soft_reboot(monkeypatch):
+    """
+       Given:
+           - VM UUID to soft reboot.
+
+       When:
+           - Running a sot-reboot-vm command
+
+       Then:
+           - Make sure the correct results are returned.
+   """
     si = Si()
     monkeypatch.setattr(VMware, 'get_vm', lambda v_client, uuid: VM())
     monkeypatch.setattr(VM, 'RebootGuest', lambda this: None)
@@ -318,6 +511,16 @@ def test_soft_reboot(monkeypatch):
 
 @pytest.mark.parametrize('args', PARAMS_CREATE_SNAPSHOT)
 def test_create_snapshot(monkeypatch, args):
+    """
+       Given:
+           - VM UUID to create snapshot for.
+
+       When:
+           - Running a create-snapshot command
+
+       Then:
+           - Make sure the correct results are returned.
+   """
     si = Si()
     monkeypatch.setattr(VMware, 'get_vm', lambda v_client, uuid: VM())
     monkeypatch.setattr(VM, 'CreateSnapshot', lambda this, name, description, memory, quiesce: Task())
@@ -330,6 +533,16 @@ def test_create_snapshot(monkeypatch, args):
 
 @pytest.mark.parametrize('snapshots, snapname, res', PARAMS_GET_SNAPSHOTS)
 def test_get_snapshots(monkeypatch, snapshots, snapname, res):
+    """
+       Given:
+           - VM arguments to get snapshots for.
+
+       When:
+           - Running a get-snapshots-vm command
+
+       Then:
+           - Make sure the correct results are returned.
+   """
     result = VMware.get_snapshots(snapshots, snapname)
     if len(result) > 0:
         assert result[0].name == res[0].name
@@ -340,6 +553,16 @@ def test_get_snapshots(monkeypatch, snapshots, snapname, res):
 
 @pytest.mark.parametrize('args, event_list, res_len', PARAMS_GET_EVENTS)
 def test_get_events(monkeypatch, args, event_list, res_len):
+    """
+       Given:
+           - Get events arguments.
+
+       When:
+           - Running a get-events command
+
+       Then:
+           - Make sure the correct results are returned.
+   """
     si = Si()
     monkeypatch.setattr(si, 'RetrieveServiceContent', lambda: Content())
     monkeypatch.setattr(VMware, 'get_vm', lambda v_client, uuid: VM())
@@ -353,6 +576,16 @@ def test_get_events(monkeypatch, args, event_list, res_len):
 
 
 def test_change_nic_state(monkeypatch):
+    """
+       Given:
+           - VM UUID to change nic for.
+
+       When:
+           - Running a change-nic-vm command
+
+       Then:
+           - Make sure the correct results are returned.
+   """
     si = Si()
     monkeypatch.setattr(VMware, 'get_vm', lambda v_client, uuid: VM())
     # monkeypatch.setattr(builtins, 'isinstance', lambda dev, dev_type: True)

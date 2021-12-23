@@ -8,25 +8,27 @@ configuration:
     required: true
     defaultvalue: null
     type: 0
-    additionalinfo: "The server URL of the VCenter."
+    additionalinfo: The server URL of the VCenter.
   - name: credentials
     display: Credentials
     required: true
     defaultvalue: null
     type: 9
-    additionalinfo: "Username and password used to login into the system."
+    additionalinfo: Username and password used to login into the system.
     displaypassword: ""
     hiddenusername: false
   - name: insecure
     display: Trust any certificate (not secure)
     required: false
-    defaultvalue: ""
+    defaultvalue: "true"
     type: 8
+    additionalinfo: null
   - name: proxy
     display: Use system proxy settings
     required: false
     defaultvalue: "false"
     type: 8
+    additionalinfo: null
 description: VMware vCenter server is a centralized management application that
   lets you manage virtual machines and ESXi hosts centrally.
 display: VMware
@@ -62,6 +64,22 @@ script:
           defaultValue: ""
           predefined:
             - ""
+        - description: Number of results to display.
+          isArray: false
+          name: limit
+          required: false
+          secret: false
+        - description: Page number you would like to view. Each page contains page_size
+            values. Must be used along with page_size.
+          isArray: false
+          name: page
+          required: false
+          secret: false
+        - description: Number of results per page to display.
+          isArray: false
+          name: page_size
+          required: false
+          secret: false
       description: Returns all virtual machines on a system.
       important:
         - contextPath: VMWare.UUID
@@ -283,13 +301,22 @@ script:
           defaultValue: ""
           predefined:
             - ""
-        - name: limit
-          description: Number of events to return.
-          required: false
+        - description: Number of results to display.
           isArray: false
-          defaultValue: "50"
-          predefined:
-            - ""
+          name: limit
+          required: false
+          secret: false
+        - description: Page number you would like to view. Each page contains page_size
+            values. Must be used along with page_size.
+          isArray: false
+          name: page
+          required: false
+          secret: false
+        - description: Number of results per page to display.
+          isArray: false
+          name: page_size
+          required: false
+          secret: false
       description: Gets events of VM.
       name: vmware-get-events
       outputs:
@@ -720,6 +747,24 @@ script:
           predefined:
             - ""
       outputs: []
+    - name: vmware-list-vm-tags
+      description: List all tags associated to a VM.
+      deprecated: false
+      arguments:
+        - name: uuid
+          description: The UUID of the VM .
+          required: true
+          isArray: false
+          defaultValue: ""
+          predefined:
+            - ""
+      outputs:
+        - contextPath: VMWareTagById.UUID
+          description: VM's UUID
+          type: String
+        - contextPath: VMWareTagById.TagId
+          description: Tag id of the tag assocciated with the VM.
+          type: String
   dockerimage: devdemisto/vmware:1.0.0.25146
   runonce: false
   script: ""

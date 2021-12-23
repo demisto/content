@@ -7,40 +7,74 @@ import pyVim.task
 import dateparser
 from CommonServerPython import *  # noqa: F401
 from cStringIO import StringIO
-
 from pyVim.connect import Disconnect, SmartConnect
 from pyVmomi import vim, vmodl
 from vmware.vapi.vsphere.client import create_vsphere_client
 
 
-def login(params):  # pragma: no cover
+def parse_params(params):
     full_url = params['url']
-    url_arr = full_url.split(':')
+    url_arr = full_url.rsplit(':', 1)
     url = url_arr[0]
     port = str(url_arr[1])
-    user_name = params['credentials']['identifier']
-    passsword = params['credentials']['password']
+    user_name = params.get('credentials').get('identifier')
+    password = params.get('credentials').get('password')
+    return full_url, url, port, user_name, password
 
+
+def get_limit(args):
+    """
+    Args:
+        args: Args input for command, this function uses limit, page and page_size
+
+    Returns:
+        - limit - how many items to request from AWS - IAM API.
+        - is_manual - whether manual pagination is active (using page and page_size)
+        - page_size - used when manual pagination is active, to bring the relevant number of results from the data.
+
+    """
+    limit = arg_to_number(str(args.get("limit"))) if "limit" in args else None
+    page = arg_to_number(str(args.get("page"))) if "page" in args else None
+    page_size = arg_to_number(str(args.get("page_size"))) if "page_size" in args else None
+
+    if limit is None:
+        if page is not None and page_size is not None:
+            if page <= 0:
+                raise Exception('Chosen page number must be greater than 0')
+            limit = page_size * page
+            return limit, True, page_size
+        else:
+            limit = 50
+    return limit, False, page_size
+
+
+
+def login(params):  # pragma: no cover
+    full_url, url, port, user_name, password = parse_params(params)
+
+    # Preparations for SDKs connections
     s = ssl.SSLContext(ssl.PROTOCOL_TLS)
     s.verify_mode = ssl.CERT_NONE
     session = requests.session()
     session.verify = False
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
+    # Connect to Vsphere automation sdk using username and password
+    vsphere_client = create_vsphere_client(server=full_url, username=user_name, password=password, session=session)
+
     # Connect to a vCenter Server using username and password
-    vsphere_client = create_vsphere_client(server=full_url, username=user_name, password=passsword, session=session)
-    # vsphere_client = None
     try:
         si = SmartConnect(host=url,
                           user=user_name,
-                          pwd=passsword,
+                          pwd=password,
                           port=port)
     except Exception:
         si = SmartConnect(host=url,
                           user=user_name,
-                          pwd=passsword,
+                          pwd=password,
                           port=port,
                           sslContext=s)
+
     return si, vsphere_client
 
 
@@ -160,6 +194,7 @@ def get_vms(si, args):
     recursive = True
     container_view = content.viewManager.CreateContainerView(container, view_type, recursive)
     children = container_view.view
+    limit, is_manual, page_size = get_limit(args)
 
     for child in children:
         summary = child.summary
@@ -190,6 +225,13 @@ def get_vms(si, args):
                 'SnapshotUUID': snapshot_uuid,
                 'Deleted': False
             })
+            if len(data) == limit:
+                break
+
+    # Return the correct amount of data
+    if is_manual and page_size and len(data) > page_size:
+        data = data[-1 * page_size:]
+
     ec = {
         'VMWare(val.UUID && val.UUID === obj.UUID)': data
     }
@@ -412,6 +454,7 @@ def get_events(si, args):
     hr = []
     content = si.RetrieveServiceContent()  # type: ignore
     eventManager = content.eventManager
+    limit, is_manual, page_size = get_limit(args)
 
     time = vim.event.EventFilterSpec.ByTime()
     time.beginTime = dateparser.parse(args.get('start-date', ''))
@@ -426,7 +469,8 @@ def get_events(si, args):
     filterSpec.entity = filter  # type: ignore
     filterSpec.time = time
     filterSpec.userName = by_user_name
-    filterSpec.maxCount = arg_to_number(args.get('limit'))
+    filterSpec.maxCount = limit
+
     eventRes = eventManager.QueryEvents(filterSpec)
     for e in eventRes:
         hr.append({
@@ -435,6 +479,9 @@ def get_events(si, args):
             'CreatedTime': e.createdTime.strftime("%Y-%m-%d %H:%M:%S"),
             'UserName': e.userName,
         })
+    # Return the correct amount of data
+    if is_manual and page_size and len(hr) > page_size:
+        hr = hr[-1 * page_size:]
     ec = {'VMWareEvenet(val.UUID && val.UUID === obj.UUID)': hr}
     return {
         'ContentsFormat': formats['json'],
@@ -539,10 +586,11 @@ def create_vm(si, args):
     content = si.RetrieveContent()
     folder = search_for_obj(content, [vim.Folder], args.get('folder'))
     host = search_for_obj(content, [vim.HostSystem], args.get('host'))
-    pool = host.parent.resourcePool
-    spec = create_vm_config_creator(host, args)
     if not host:
         raise Exception('The host provided is not valid.')
+    pool = host.parent.resourcePool
+    spec = create_vm_config_creator(host, args)
+
     task = folder.CreateVM_Task(config=spec, pool=pool, host=host)
     wait_for_tasks(si, [task])
 
