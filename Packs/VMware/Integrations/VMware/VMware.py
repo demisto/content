@@ -790,7 +790,7 @@ def unregister_vm(si, args):
 
 
 def test_module(si):
-    get_vms(si, {})
+    get_vms(si, {'limit': '1'})
     return 'ok'
 
 
@@ -841,12 +841,12 @@ def main():  # pragma: no cover
         res.append(result)
     except Exception as ex:
         if hasattr(ex, 'msg') and ex.msg:
-            res.append(
-                {"Type": entryTypes["error"], "ContentsFormat": formats["text"],
-                 "Contents": str(ex.msg)})  # type: ignore
+            message = ex.msg
         else:
-            res.append(
-                {"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": str(ex)})  # type: ignore
+            message = ex
+        res.append(
+            {"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+             "Contents": str(message)})  # type: ignore
 
     try:
         logout(si)

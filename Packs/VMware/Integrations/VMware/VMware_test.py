@@ -74,6 +74,10 @@ PARAMS_GET_EVENTS = [
       'end-date': '2021-12-16T12:00:00', 'event-type': '', 'limit': '50'},
      EVENTS,
      3),
+    ({'vm-uuid': '123', 'user': 'test_user', 'start-date': '2019-10-23T00:00:00',
+      'end-date': '2021-12-16T12:00:00', 'event-type': '', 'limit': '50'},
+     [EVENTS[0], EVENTS[2]],
+     2),
     ({'vm-uuid': '123', 'user': 'test_user2', 'start-date': '2019-10-23T00:00:00',
       'end-date': '2021-12-16T12:00:00', 'event-type': 'reboot VM', 'limit': '50'},
      [EVENTS[1]],
@@ -90,6 +94,13 @@ ARG_LIST = [({'limit': '2', 'page_size': '3'}, 2, False, 3),
             ({'page_size': '3', 'page': '4'}, 12, True, 3),
             ({}, 50, False, None)]
 
+PARAMS_PARSE = [
+    ({'url': 'test.com:443', 'credentials': {'identifier': 'test', 'password': 'testpass'}}, 'test.com:443',
+     'test.com', '443', 'test', 'testpass'),
+    ({'url': 'https://test.com:443', 'credentials': {'identifier': 'test', 'password': 'testpass'}},
+     'https://test.com:443', 'https://test.com', '443', 'test', 'testpass')
+]
+
 
 def create_children():
     return [Child(Summary(args.get('ip'), args.get('hostname'), args.get('name'), args.get('uuid'))) for args in
@@ -99,6 +110,27 @@ def create_children():
 def create_events(events_list):
     return [Event(args.get('key'), args.get('message'), args.get('user_name'), args.get('created_time')) for args in
             events_list]
+
+
+@pytest.mark.parametrize('params, full_url, url, port, username, password', PARAMS_PARSE)
+def test_parse_params(params, full_url, url, port, username, password):
+    """
+       Given:
+           - Instance parameters.
+
+       When:
+           - Connecting to vcenter.
+
+       Then:
+           - Make sure that parameters parsed correctly.
+   """
+    full_url_from_func, url_from_func, port_from_func, user_name_from_func, password_from_func = VMware.parse_params(
+        params)
+    assert full_url_from_func == full_url
+    assert url_from_func == url
+    assert port_from_func == port
+    assert user_name_from_func == username
+    assert password_from_func == password
 
 
 @pytest.mark.parametrize('args, limit, is_manual, page_size', ARG_LIST)
