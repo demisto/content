@@ -135,7 +135,6 @@ Copies the given file from the remote machine to Cortex XSOAR.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File | Unknown | The file details command results. | 
 | File.Name | String | The full file name \(including the file extension\). | 
 | File.EntryID | String | The ID for locating the file in the War Room. | 
 | File.Size | Number | The size of the file in bytes. | 
