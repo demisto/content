@@ -117,7 +117,7 @@ def test_copy_to_command_valid(mocker):
     - Cortex XSOAR arguments
 
     When:
-    - Calling the remote-access-copy-to command.
+    - Calling the copy-to command.
 
     Then:
     - Ensure expected readable output is returned upon successful copy.
@@ -136,7 +136,7 @@ def test_copy_to_command_invalid_entry_id(mocker):
     - Cortex XSOAR arguments
 
     When:
-    - Calling the remote-access-copy-to command with invalid entry ID input.
+    - Calling the copy-to command with invalid entry ID input.
 
     Then:
     - Ensure DemistoException is thrown with expected error message.
@@ -158,7 +158,7 @@ def test_copy_from_command_valid(mocker, file_name, expected_file_name):
     - Cortex XSOAR arguments
 
     When:
-    - Calling the remote-access-copy-to command.
+    - Calling the copy-to command.
     Case a: Calling the command without specified file name.
     Case b: Calling the command with specified file name.
 

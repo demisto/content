@@ -14,7 +14,7 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 
 def perform_copy_command(ssh_client: SSHClient, file_path: str, destination_path: str, copy_to_remote: bool,
-                         socket_timeout: float) -> str:
+                         socket_timeout: Optional[int]) -> str:
     """
     Function to perform copy to or copy from remote machine.
     This helper function was separated from command functions mainly for easier mocking in tests.
@@ -27,7 +27,7 @@ def perform_copy_command(ssh_client: SSHClient, file_path: str, destination_path
         - Copy to remote machine from Cortex XSOAR - the remote machine file path to contain the copied data.
         - Copy to Cortex XSOAR from remote machine - Temp file name to save the file, before extracting its data.
         copy_to_remote (bool): Whether a request to copy to remote was made.
-        socket_timeout(float): Socket timeout.
+        socket_timeout(Optional[int]): Socket timeout.
 
     Returns:
         (str): Empty str if command requested was copy to.
@@ -36,7 +36,8 @@ def perform_copy_command(ssh_client: SSHClient, file_path: str, destination_path
         (Exception):  if unexpected behaviour occurred.
     """
     try:
-        with SCPClient(ssh_client.get_transport()) as scp_client:
+        socket_timeout = float(socket_timeout) if socket_timeout else 10.0
+        with SCPClient(ssh_client.get_transport(), socket_timeout=socket_timeout) as scp_client:
             if copy_to_remote:
                 scp_client.put(file_path, destination_path)
                 return ''
@@ -134,9 +135,10 @@ def execute_shell_command(ssh_client: SSHClient, args: Dict[str, Any]) -> Comman
     Returns:
         (CommandResults).
     """
-    command: str = args.get('command', '')
+    command: str = args.get('cmd', '')
+    timeout: Optional[int] = arg_to_number(args.get('timeout'))
     # exec_command returns a tuple of stdin, stdout, stderr. No need to parse stdin because it does not contain data.
-    _, stdout, std_err = ssh_client.exec_command(command)
+    _, stdout, std_err = ssh_client.exec_command(command, timeout=timeout)
     stdout_str: str = stdout.read().decode()
     std_error_str: str = std_err.read().decode()
     if stdout_str or std_error_str:
@@ -168,11 +170,11 @@ def copy_to_command(ssh_client: SSHClient, args: Dict[str, Any]) -> CommandResul
         (CommandResults).
     """
     entry_id: str = args.get('entry_id', '')
-    socket_timeout
+    timeout: Optional[int] = arg_to_number(args.get('timeout'))
     if not (file_path := demisto.getFilePath(entry_id).get('path', '')):
         raise DemistoException('Could not find given entry ID path. Please assure given entry ID is correct.')
     destination_path: str = args.get('destination_path', file_path)
-    perform_copy_command(ssh_client, file_path, destination_path, copy_to_remote=True)
+    perform_copy_command(ssh_client, file_path, destination_path, copy_to_remote=True, socket_timeout=timeout)
     return CommandResults(readable_output=f'### The file corresponding to entry ID: {entry_id} was copied to remote'
                                           ' host.')
 
@@ -222,11 +224,11 @@ def main() -> None:
         client = create_paramiko_ssh_client(host_name, user, password, ciphers, key_algorithms)
         if demisto.command() == 'test-module':
             return_results('ok')
-        elif command == 'remote-access-ssh':
+        elif command == 'ssh':
             return_results(execute_shell_command(client, args))
-        elif command == 'remote-access-copy-to':
+        elif command == 'copy-to':
             return_results(copy_to_command(client, args))
-        elif command == 'remote-access-copy-from':
+        elif command == 'copy-from':
             return_results(copy_from_command(client, args))
 
         else:

@@ -38,7 +38,7 @@ script:
     - default: false
       description: Command to run on the remote machine.
       isArray: false
-      name: command
+      name: cmd
       required: true
       secret: false
     - default: false
@@ -47,10 +47,16 @@ script:
       name: additional_password
       required: false
       secret: false
+    - default: false
+      description: Timeout for command, in seconds.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
     deprecated: false
     description: Run the specified command on the remote system with SSH.
-    execution: false
-    name: remote-access-ssh
+    execution: true
+    name: ssh
     outputs:
     - contextPath: RemoteAccess.Command.output
       description: Standard output of the specified command.
@@ -84,10 +90,17 @@ script:
       name: additional_password
       required: false
       secret: false
+    - default: false
+      description: Timeout for command, in seconds.
+      defaultvalue: 10.0
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
     deprecated: false
     description: Copies the given file from Cortex XSOAR to the remote machine.
     execution: false
-    name: remote-access-copy-to
+    name: copy-to
     outputs: []
   - arguments:
     - default: false
@@ -110,10 +123,17 @@ script:
       name: additional_password
       required: false
       secret: false
+    - default: false
+      description: Timeout for command, in seconds.
+      defaultvalue: 10.0
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
     deprecated: false
     description: Copies the given file from the remote machine to Cortex XSOAR.
     execution: false
-    name: remote-access-copy-from
+    name: copy-from
     outputs:
     - contextPath: File.Name
       description: The full file name (including the file extension).

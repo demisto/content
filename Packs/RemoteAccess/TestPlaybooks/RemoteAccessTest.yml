@@ -78,7 +78,7 @@ tasks:
       version: -1
       name: Copy File To Remote
       description: Run command on remote system with ssh
-      script: '|||remote-access-copy-to'
+      script: '|||copy-to'
       type: regular
       iscommand: true
       brand: ""
@@ -118,7 +118,7 @@ tasks:
       version: -1
       name: Create Empty Directory Remote
       description: Run command on remote system with ssh
-      script: '|||remote-access-ssh'
+      script: '|||ssh'
       type: regular
       iscommand: true
       brand: ""
@@ -152,7 +152,7 @@ tasks:
       version: -1
       name: Run ls Command Remote
       description: Run command on remote system with ssh
-      script: '|||remote-access-ssh'
+      script: '|||ssh'
       type: regular
       iscommand: true
       brand: ""
@@ -226,7 +226,7 @@ tasks:
       version: -1
       name: Copy File To Local
       description: Run command on remote system with ssh
-      script: '|||remote-access-copy-from'
+      script: '|||copy-from'
       type: regular
       iscommand: true
       brand: ""
