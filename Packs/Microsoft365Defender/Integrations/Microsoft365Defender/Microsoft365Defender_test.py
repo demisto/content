@@ -140,4 +140,4 @@ def test_params(mocker):
 
     main()
 
-    assert 'Aplication ID must be provided.' in return_error_mock.call_args[0][0]
+    assert 'Application ID must be provided.' in return_error_mock.call_args[0][0]
