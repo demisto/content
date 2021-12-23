@@ -129,7 +129,7 @@ def get_search_results(client: Client, parser: Callable) -> Union[list, str]:
 
         # prepare next run
         current_page += 1
-        start += 10  # page size == 10
+        start += results_in_page
         total = int(demisto.get(page, 'searchInformation.totalResults',
                                 demisto.get(page, 'queries.request.totalResults', 0)))
         all_pages_found = total < start
