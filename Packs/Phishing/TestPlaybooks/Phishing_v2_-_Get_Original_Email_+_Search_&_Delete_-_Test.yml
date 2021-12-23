@@ -6,8 +6,8 @@ description: |-
   Prerequisites:
   - The phishing playbook is configured with the correct inputs to allow getting the original email and searching & deleting emails
   - A mail sender with sr-test02 is configured. That user will supposedly attack sr-test01.
-  - sr-test01 has a rule which forwards the test email to Testbox (but does not forward the acknowledgement emails it receives from the phishing playbook!)
-  - EWS v2 is configured as the mail listener with Testbox as the user.
+  - sr-test01 has a rule which forwards the test email to Avishai (but does not forward the acknowledgement emails it receives from the phishing playbook!)
+  - EWS v2 is configured as the mail listener with Avishai as the user.
 starttaskid: "0"
 tasks:
   "0":
@@ -186,6 +186,7 @@ tasks:
       - "7"
       - "17"
       - "24"
+      - "32"
     scriptarguments:
       CompleteTask:
         simple: "False"
@@ -312,11 +313,12 @@ tasks:
     nexttasks:
       '#none#':
       - "12"
+      - "31"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 750,
+          "x": 1000,
           "y": 1960
         }
       }
@@ -583,7 +585,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1730,
+          "x": 2090,
           "y": 1780
         }
       }
@@ -639,7 +641,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1440,
+          "x": 1800,
           "y": 1920
         }
       }
@@ -912,7 +914,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2000,
+          "x": 2360,
           "y": 1920
         }
       }
@@ -976,7 +978,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2000,
+          "x": 2360,
           "y": 2050
         }
       }
@@ -989,10 +991,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 461a1834-39e8-4ff4-8a3f-8aa7dc0814f4
+    taskid: 3c67cd27-4144-40ba-8603-61fa1044d512
     type: regular
     task:
-      id: 461a1834-39e8-4ff4-8a3f-8aa7dc0814f4
+      id: 3c67cd27-4144-40ba-8603-61fa1044d512
       version: -1
       name: Error - email from is same as reporter, or reporter is empty
       description: Prints an error entry with a given message
@@ -1003,9 +1005,9 @@ tasks:
     scriptarguments:
       message:
         simple: Either the Reporter Email Address is empty (problem with the mapper),
-          or the Email From equals the Reporter Email Address (problem with Process
-          Email - Generic subplaybook). In case of the latter, need to see if the
-          original email was retrieved and parsed correctly using ParseEmailFiles.
+          or the Email From doesn't equal the Reporter Email Address (problem with
+          Process Email - Generic subplaybook). In case of the latter, need to see
+          if the original email was retrieved and parsed correctly using ParseEmailFiles.
     separatecontext: false
     view: |-
       {
@@ -1100,15 +1102,137 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 86b621db-0421-4676-8b91-1c97788b4f21
+    type: condition
+    task:
+      id: 86b621db-0421-4676-8b91-1c97788b4f21
+      version: -1
+      name: Were the URLs extracted successfully?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "33"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: URL.Data
+            iscontext: true
+          right:
+            value:
+              simple: http://157.230.37.22/banks/Scotia/
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: URL.Data
+            iscontext: true
+          right:
+            value:
+              simple: http://www.scotiabank.com
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 199a4d72-4f64-48db-80f8-fad95ae4368c
+    type: regular
+    task:
+      id: 199a4d72-4f64-48db-80f8-fad95ae4368c
+      version: -1
+      name: Get the URL context
+      description: Gets a value from the specified incident's context.
+      scriptName: GetByIncidentId
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      get_key:
+        simple: URL
+      incident_id:
+        complex:
+          root: FoundID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1230,
+          "y": 1780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: c58ceafc-0cd1-4150-8fd1-a2955b9dd2fe
+    type: regular
+    task:
+      id: c58ceafc-0cd1-4150-8fd1-a2955b9dd2fe
+      version: -1
+      name: The URLs were not extracted
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: The URLS were not extracted properly. The legitimate URL and the malicious
+          URL should have been extracted using incident auto-extract settings or field
+          extraction rules (in XSOAR 6.1+). If auto-extract is OK, it could be an
+          issue with the threat intelligence integration.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 2340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
-      "16_14_Yes": 0.12
+      "16_14_Yes": 0.12,
+      "31_33_#default#": 0.59
     },
     "paper": {
       "dimensions": {
         "height": 2945,
-        "width": 3500,
+        "width": 3860,
         "x": -1120,
         "y": 50
       }
