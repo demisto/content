@@ -1,2 +1,5 @@
 [file:README.md]
 ignore=RM104
+
+[file:IPQualityScore.yml]
+ignore=IN145

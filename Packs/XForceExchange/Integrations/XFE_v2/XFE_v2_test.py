@@ -12,6 +12,7 @@ MOCK_IP = '8.8.8.8'
 MOCK_URL = 'https://www.google.com'
 MOCK_CVE = 'CVE-2014-2601'
 MOCK_HASH = '474B9CCF5AB9D72CA8A333889BBB34F0'
+MOCK_HASH_NO_FAMILY = '55d2ad612f36aebf2184f138d37ba1a16b774627fbbafd737425731369efd010'
 MOCK_HOST = 'google.com'
 MOCK_CVE_QUERY = 'hello'
 
@@ -299,6 +300,24 @@ MOCK_HASH_RESP = {
     ]
 }
 
+HASH_RESP_NO_FAMILY = {
+    'malware': {
+        'origins': {
+            'external': {
+                'source': 'reversingLabs',
+                'firstSeen': '2021-08-02T21:59:46Z',
+                'lastSeen': '2021-08-16T04:35:50Z',
+                'detectionCoverage': 0,
+                'family': None
+            }
+        },
+        'type': 'sha256',
+        'sha256': '0x55D2AD612F36AEBF2184F138D37BA1A16B774627FBBAFD737425731369EFD010',
+        'hash': '0x55D2AD612F36AEBF2184F138D37BA1A16B774627FBBAFD737425731369EFD010',
+        'risk': 'low'
+    }
+}
+
 MOCK_HOST_RESP = {
     "createdDate": "1997-09-15T07:00:00.000Z",
     "updatedDate": "2019-09-09T15:39:04.000Z",
@@ -477,6 +496,24 @@ def test_file(requests_mock):
     assert outputs[dbot_score_key][0]['Indicator'] == MOCK_HASH, 'The indicator is not matched'
     assert outputs[dbot_score_key][0]['Type'] == 'file', 'The indicator type should be file'
     assert 1 <= outputs[dbot_score_key][0]['Score'] <= 3, 'Invalid indicator score range'
+
+
+def test_file__no_family(requests_mock):
+    """
+    Given:
+        - Hash with results that have family set to None
+
+    When:
+        - Running the file commandd
+
+    Then:
+        - Ensure the Relationships object is empty
+    """
+    requests_mock.get(f'{MOCK_BASE_URL}/malware/{MOCK_HASH_NO_FAMILY}', json=HASH_RESP_NO_FAMILY)
+
+    client = Client(MOCK_BASE_URL, MOCK_API_KEY, MOCK_PASSWORD, True, False)
+    outputs = file_command(client, {'file': MOCK_HASH_NO_FAMILY})[0].to_context()
+    assert not outputs['Relationships']
 
 
 def test_file_connections(requests_mock):

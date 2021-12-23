@@ -12,6 +12,13 @@ This integration was integrated and tested with the Orlando version of ServiceNo
 1. Get, update, create, and delete ServiceNow tickets, as well as add links and comments, or upload files to the tickets.
 2. Fetch newly created incidents.
 3. Get, update, create, delete records from any ServiceNow table.
+
+## Required Permissions
+To use ServiceNow on Cortex XSOAR, ensure your user account has the *rest_api_explorer* and *web_service_admin* roles.
+ These roles are required to make API calls.
+ Also add to your user account the specific tables that you want to have access to.
+ However, these permissions may not suffice for managing records in some tables. Make sure you have the correct role so you have permissions to work with the relevant table.
+ 
 ## Wrapper Scripts
 There are 3 scripts that serve as examples for wrapping the following generic commands:
 servicenow-query-table - ServiceNowQueryIncident
@@ -562,6 +569,7 @@ Updates the specified ticket.
 | approval | Ticket approval. | Optional | 
 | additional_fields | Additional fields in the format: fieldname1=value;fieldname2=value; | Optional | 
 | input_display_value | Flag that indicates whether to set field values using the display value or the actual value. True will treat the input value as the display value. False treats the input values as actual values. The default setting is false. | Optional |
+| clear_fields | A comma-separated list of fields to clear. | Optional | 
 
 For more information regarding the input_display_value Argument, please see: https://docs.servicenow.com/bundle/orlando-platform-administration/page/administer/exporting-data/concept/query-parameters-display-value.html
 
@@ -1096,6 +1104,7 @@ Updates a record in the specified ServiceNow table.
 | fields | Fields and their values to update in the record, in the format: fieldname1=value;fieldname2=value;... | Optional | 
 | custom_fields | Custom (user defined) fields and their values to update in the record, in the format: fieldname1=value;fieldname2=value;... | Optional |
 | input_display_value | Flag that indicates whether to set field values using the display value or the actual value. True will treat the input value as the display value. False treats the input values as actual values. The default setting is false. | Optional |
+| clear_fields | A comma-separated list of fields to clear. | Optional | 
 
 For more information regarding the input_display_value Argument, please see: https://docs.servicenow.com/bundle/orlando-platform-administration/page/administer/exporting-data/concept/query-parameters-display-value.html
 

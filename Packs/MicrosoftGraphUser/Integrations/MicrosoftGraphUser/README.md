@@ -61,7 +61,7 @@ For more details about the authentication used in this integration, see <a href=
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
-<p>Terminates a user’s session from all Office 365 applications, and prevents sign in. Can only work with a self-deployed application and the permission: Directory.AccessAsUser.All(Delegated)</p>
+<p>Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables user, but does not terminate an existing session. Supported only in a self deployed app flow with the Permission: Directory.AccessAsUser.All(Delegated)</p>
 </div>
 <div class="cl-preview-section">
 <h5 id="base-command">Base Command</h5>

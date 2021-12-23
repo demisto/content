@@ -13,6 +13,16 @@ testdata = [
     ('Xsoar@xsoar.xlsx', False),
     ('Xsoa r@ test.BmP', False),
     ('bt53h6htyj8j57k9k=organization.org@ozzy.qwer.de', True),
+    ('Xsoar[@]test.org.de', True),
+    ('xsoar[@]test.net.bla', True),
+    ('Xsoar[@]test.uk.Png', False),
+    ('Xsoar[@]test.eml', False),
+    ('Xsoar[@]test.new.Docx', False),
+    ('entry[@]id.com.gif', False),
+    ('randomName[@]randomDomain.com', True),
+    ('Xsoar[@]xsoar.xlsx', False),
+    ('Xsoa r[@] test.BmP', False),
+    ('bt53h6htyj8j57k9k=organization.org[@]ozzy.qwer.de', True),
 ]
 
 

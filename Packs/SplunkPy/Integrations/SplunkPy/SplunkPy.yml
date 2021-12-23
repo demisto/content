@@ -264,15 +264,40 @@ script:
       name: app
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Use XSOAR built-in polling to retrieve the result when it's ready.
+      isArray: false
+      name: polling
+      predefined:
+        - 'true'
+        - 'false'
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+      defaultValue: '30'
+    - default: false
+      description: The job sid.
+      isArray: false
+      name: sid
+      required: false
+      secret: false
     deprecated: false
     description: Searches Splunk for events.
     execution: false
     name: splunk-search
+    polling: true
     outputs:
     - contextPath: Splunk.Result
       description: The results of the Splunk search. The results are a JSON array,
         in which each item is a Splunk event.
       type: Unknown
+    - contextPath: Splunk.JobStatus
+      description: The search status.
+      type: String
   - arguments:
     - default: false
       description: Splunk index in which to push data. Run the splunk-get-indexes
@@ -763,7 +788,7 @@ script:
   - name: splunk-reset-enriching-fetch-mechanism
     arguments: []
     description: Resets the enrichment mechanism of fetched notables.
-  dockerimage: demisto/splunksdk:1.0.0.23135
+  dockerimage: demisto/splunksdk:1.0.0.24033
   feed: false
   isfetch: true
   longRunning: false
@@ -787,4 +812,5 @@ tests:
 - SplunkPy parse-raw - Test
 defaultclassifier: SplunkPy
 defaultmapperin: SplunkPy-mapper
+defaultmapperout: Splunk - Notable Generic Outgoing Mapper
 fromversion: 5.0.0

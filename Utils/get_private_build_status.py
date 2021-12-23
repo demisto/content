@@ -3,17 +3,19 @@ import sys
 import json
 import time
 import argparse
+from typing import Tuple
+
 import requests
-import logging
 from Tests.scripts.utils.log_util import install_logging
+from Tests.scripts.utils import logging_wrapper as logging
 from Utils.trigger_private_build import GET_WORKFLOW_URL, PRIVATE_REPO_WORKFLOW_ID_FILE, \
     GET_WORKFLOWS_TIMEOUT_THRESHOLD, WORKFLOW_HTML_URL
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 
-def get_workflow_status(github_token: str, workflow_id: str) -> (str, str, str):
+def get_workflow_status(github_token: str, workflow_id: str) -> Tuple[str, str, str]:
     """ Returns a set with the workflow job status, job conclusion and current step that running now in the job
         for the given workflow id.
 
@@ -69,7 +71,7 @@ def get_workflow_status(github_token: str, workflow_id: str) -> (str, str, str):
 
 
 def main():
-    install_logging("GetPrivateBuildStatus.log")
+    install_logging("GetPrivateBuildStatus.log", logger=logging)
 
     if not os.path.isfile(PRIVATE_REPO_WORKFLOW_ID_FILE):
         logging.info('Build private repo skipped')
@@ -90,12 +92,12 @@ def main():
 
     # initialize timer
     start = time.time()
-    elapsed = 0
+    elapsed: float = 0
 
     # polling the workflow status while is in progress
     while status in ['queued', 'in_progress'] and elapsed < GET_WORKFLOWS_TIMEOUT_THRESHOLD:
         logging.info(f'Workflow {workflow_id} status is {status}, current step: {step}')
-        time.sleep(10)
+        time.sleep(60)
         status, conclusion, step = get_workflow_status(github_token, workflow_id)
         elapsed = time.time() - start
 

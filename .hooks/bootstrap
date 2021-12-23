@@ -33,7 +33,7 @@ if [ "$1" == "-u" -o "$1" == "--update" ]; then
     fi
     if [ -f "venv/bin/pip3" ]; then
         echo "Updating python 3 dependencies ..."
-        venv/bin/pip3 install -r dev-requirements-py3.txt
+        venv/bin/pip3 install -r dev-requirements-py3.txt -U --upgrade-strategy only-if-needed
     fi
     if [ -d "node_modules" ]; then
         echo "Updating node modules"
@@ -118,7 +118,7 @@ else
                 exit 1
             fi
         fi
-        virtualenv -p $PY3CMD venv
+        virtualenv --system-site-packages -p $PY3CMD venv
         if [ "$SETUP_PY2" == "yes" ]; then
             virtualenv -p python2 venv
         fi
@@ -128,7 +128,7 @@ else
         if [ "$SETUP_PY2" == "yes" ]; then
             venv/bin/pip2 install -r dev-requirements-py2.txt
         fi
-        venv/bin/pip3 install -r dev-requirements-py3.txt
+        venv/bin/pip3 install -r dev-requirements-py3.txt -U --upgrade-strategy only-if-needed
         if [ "$INCLUDE_PY2_NOTE" == "yes" ]; then
             echo "=========================="
             echo "Note: python 2 is NOT setup. If you require python 2 for your scripts/integrations run this command again"

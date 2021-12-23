@@ -1,0 +1,32 @@
+{
+    "id": "incident_devicegroupid",
+    "version": -1,
+    "modified": "2021-08-20T07:48:31.773871744-04:00",
+    "name": "Device Group Id",
+    "ownerOnly": false,
+    "description": "Enter Device Group Id",
+    "cliName": "devicegroupid",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "FireMon Policy Planner",
+        "FireMon Pre Change Assessment"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

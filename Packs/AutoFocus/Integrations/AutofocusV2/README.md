@@ -40,6 +40,7 @@ For more information on activating the license see [Activating AutoFocus License
    | Override default credentials | Whether to override the default AutoFocus API key given by the Cortex XSOAR platform. | False |   
    | Trust any certificate (not secure) | When selected, certificates are not checked. | N/A |
    | Use System Proxy Settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. |  N/A | 
+   | handle_error | Suppress errors for non found indicators. | N/A |
 
 
 4. Click **Test** to validate the URLs, token, and connection.

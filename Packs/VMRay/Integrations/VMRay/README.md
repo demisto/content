@@ -570,6 +570,16 @@ Retrieves sample information by hash.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| File.Name | String | The full file name \(including file extension\). | 
+| File.MD5 | String | The MD5 hash of the file. | 
+| File.SHA1 | String | The SHA1 hash of the file. | 
+| File.SHA256 | String | The SHA256 hash of the file. | 
+| File.SSDeep | String | The SSDeep hash of the file. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
 | VMRay.Sample.SampleID | Number | ID of the sample. | 
 | VMRay.Sample.SampleURL | String | URL to sample page. | 
 | VMRay.Sample.FileName | String | File name of the sample. | 
@@ -781,6 +791,7 @@ Retrieves Indicators of Compromise for a specified sample.
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | DBotScore.Score | Number | The actual score. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
 | Domain.Name | String | The domain name | 
 | IP.Address | String | IP address | 
 | URL.Data | String | The URL | 

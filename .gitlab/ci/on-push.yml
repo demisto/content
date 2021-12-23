@@ -11,8 +11,6 @@ trigger-private-build:
   extends:
     - .default-job-settings
   rules:
-    - if: '$SKIP_PRIVATE_BUILD == "true"'
-      when: never
     - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
       when: never
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
@@ -20,9 +18,11 @@ trigger-private-build:
   script:
     - echo "====Trigger Private Build===="
     - python3 Utils/trigger_private_build.py --github-token $GITHUB_TOKEN
+    - sleep 60
     - python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
 
 
+# runs in circle for the on-push flow (because we need to run it there for contributors anyways)
 run-unittests-and-lint:
   extends:
     - .run-unittests-and-lint
@@ -30,6 +30,7 @@ run-unittests-and-lint:
     - if: '$NIGHTLY'
 
 
+# runs in circle for the on-push flow (because we need to run it there for contributors anyways)
 run-validations:
   extends:
     - .run-validations
@@ -67,7 +68,6 @@ create-instances:
     - python3 Utils/merge_content_new_zip.py -f $FEATURE_BRANCH_NAME -b $successful_feature_branch_build
     - zip -j $ARTIFACTS_FOLDER/uploadable_packs.zip $ARTIFACTS_FOLDER/uploadable_packs/* >> $ARTIFACTS_FOLDER/logs/zipping_uploadable_packs.log || ((($? > 0)) && echo "failed to zip the uploadable packs, ignoring the failure")
     - rm -rf $ARTIFACTS_FOLDER/uploadable_packs
-    - python3 ./Tests/scripts/update_conf_json.py
     - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
     - section_end "Create Content Artifacts and Update Conf"
     - section_start "Collect Tests and Content Packs"
@@ -83,7 +83,7 @@ create-instances:
     - python3 ./Tests/Marketplace/packs_dependencies.py -i ./Tests/id_set.json -o $ARTIFACTS_FOLDER/packs_dependencies.json
     - section_end "Calculate Packs Dependencies"
     - section_start "Prepare Content Packs for Testing"
-    - ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_BUCKET"
+    - ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_BUCKET" "$STORAGE_BASE_PATH"
     - section_end "Prepare Content Packs for Testing"
     - section_start "Create Instances"
     - |
@@ -121,32 +121,15 @@ create-instances:
     - sleep 60
     - ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
     - |
-      if [ -f ./Tests/failed_tests.txt ]; then
+      if [[ -f ./Tests/failed_tests.txt ]]; then
         cp ./Tests/failed_tests.txt $ARTIFACTS_FOLDER/failed_tests.txt
       fi
-    - python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE" || EXIT_CODE=$?
+    - |
+      if [ -z "${TIME_TO_LIVE}" -a "$CI_PIPELINE_SOURCE" = "contrib" ]; then
+        TIME_TO_LIVE=300
+      fi
+      python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE" || EXIT_CODE=$?
     - exit $EXIT_CODE
-
-
-server_5_0:
-  extends: .test_content_on_server_instances_base
-  variables:
-    INSTANCE_ROLE: "Server 5.0"
-
-
-server_5_5:
-  extends: .test_content_on_server_instances_base
-  variables:
-    INSTANCE_ROLE: "Server 5.5"
-
-
-server_6_0:
-  extends: .test_content_on_server_instances_base
-  #  No need to trigger in case of release branch
-  rules:
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
-  variables:
-    INSTANCE_ROLE: "Server 6.0"
 
 
 server_6_1:

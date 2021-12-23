@@ -1,0 +1,134 @@
+category: Utilities
+commonfields:
+  id: Nexthink
+  version: -1
+configuration:
+- defaultvalue: connector.nexthink.com
+  display: Engine Host (e.g. connector.nexthink.com)
+  name: url
+  required: true
+  type: 0
+- defaultvalue: '1671'
+  display: Nexthink Engine Port (e.g. 1671)
+  name: port
+  required: false
+  type: 0
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Nexthink helps IT teams deliver on the promise of the modern digital
+  workplace. Nexthink is the only solution to provide enterprises with a way to visualize,
+  act and engage across the entire IT ecosystem to lower IT cost and improve digital
+  employee experience.
+display: Nexthink
+name: Nexthink
+script:
+  commands:
+  - arguments:
+    - description: Endpoint IP Address.
+      name: ipaddress
+    - description: Endpoint Hostname.
+      name: hostname
+    description: Verify antivirus/antispyware status.
+    name: nt-compliance-check
+    outputs:
+    - contextPath: Nexthink.Compliance.DeviceName
+      description: Endpoint device host name.
+      type: string
+    - contextPath: Nexthink.Compliance.LastLoggedOnUser
+      description: Last logged on user.
+      type: string
+    - contextPath: Nexthink.Compliance.IPAddress
+      description: Endpoint IP address.
+      type: string
+    - contextPath: Nexthink.Compliance.MACAddress
+      description: Endpoint MAC address.
+      type: string
+    - contextPath: Nexthink.Compliance.DeviceAntivirus
+      description: Endpoint antivirus name.
+      type: string
+    - contextPath: Nexthink.Compliance.DeviceAntivirusRTP
+      description: Endpoint antivirus real time protection status.
+      type: string
+    - contextPath: Nexthink.Compliance.DeviceAntivirusUpdated
+      description: Endpoint antivirus update status.
+      type: string
+    - contextPath: Nexthink.Compliance.DeviceAntispyware
+      description: Endpoint Antispyware name.
+      type: string
+    - contextPath: Nexthink.Compliance.DeviceAntispywareRTP
+      description: Endpoint Antispyware real time protection status.
+      type: string
+    - contextPath: Nexthink.Compliance.DeviceAntispywareUpdated
+      description: Endpoint Antispyware update status.
+      type: string
+  - arguments:
+    - description: Endpoint Hostname.
+      name: hostname
+      required: true
+    - default: true
+      defaultValue: agent
+      description: Installed Software Name.
+      name: package
+      required: true
+    description: Query installed software in endpoint.
+    name: nt-installed-packages
+    outputs:
+    - contextPath: Nexthink.Package.PackageName
+      description: Package name.
+      type: string
+    - contextPath: Nexthink.Package.PackagePublisher
+      description: Packaged publisher.
+      type: string
+    - contextPath: Nexthink.Package.PackageVersion
+      description: Package version.
+      type: string
+    - contextPath: Nexthink.Package.DeviceName
+      description: Endpoint device host name.
+      type: string
+    - contextPath: Nexthink.Package.LastLoggedOnUser
+      description: Last logged on user.
+      type: string
+    - contextPath: Nexthink.Package.IPAddress
+      description: Endpoint IP address.
+      type: string
+    - contextPath: Nexthink.Package.MACAddress
+      description: Endpoint MAC address.
+      type: string
+  - arguments:
+    - description: Endpoint hostname.
+      name: hostname
+    - description: Endpoint IP Address.
+      name: ipaddress
+    description: Get endpoint details.
+    name: nt-endpoint-details
+    outputs:
+    - contextPath: Nexthink.Endpoint.EndpointName
+      description: Endpoint device host name.
+      type: string
+    - contextPath: Nexthink.Endpoint.LastLoggedOnUser
+      description: Last logged on user.
+      type: string
+    - contextPath: Nexthink.Endpoint.IPAddress
+      description: Endpoint IP address.
+      type: string
+    - contextPath: Nexthink.Endpoint.MACAddress
+      description: Endpoint MAC address.
+      type: string
+  dockerimage: demisto/python3:3.9.8.24399
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No test

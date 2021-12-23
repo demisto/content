@@ -1209,24 +1209,24 @@ Gets facts about NX-OS switches
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.NxosFacts.ansible_net_gather_subset | unknown | The list of fact subsets collected from the device | 
-| CiscoNXOS.NxosFacts.ansible_net_gather_network_resources | unknown | The list of fact for network resource subsets collected from the device | 
-| CiscoNXOS.NxosFacts.ansible_net_model | string | The model name returned from the device | 
-| CiscoNXOS.NxosFacts.ansible_net_serialnum | string | The serial number of the remote device | 
-| CiscoNXOS.NxosFacts.ansible_net_version | string | The operating system version running on the remote device | 
-| CiscoNXOS.NxosFacts.ansible_net_hostname | string | The configured hostname of the device | 
-| CiscoNXOS.NxosFacts.ansible_net_image | string | The image file the device is running | 
-| CiscoNXOS.NxosFacts.ansible_net_api | string | The name of the transport | 
-| CiscoNXOS.NxosFacts.ansible_net_license_hostid | string | The License host id of the device | 
-| CiscoNXOS.NxosFacts.ansible_net_python_version | string | The Python version Ansible controller is using | 
-| CiscoNXOS.NxosFacts.ansible_net_filesystems | unknown | All file system names available on the device | 
-| CiscoNXOS.NxosFacts.ansible_net_memfree_mb | number | The available free memory on the remote device in Mb | 
-| CiscoNXOS.NxosFacts.ansible_net_memtotal_mb | number | The total memory on the remote device in Mb | 
-| CiscoNXOS.NxosFacts.ansible_net_config | string | The current active config from the device | 
-| CiscoNXOS.NxosFacts.ansible_net_all_ipv4_addresses | unknown | All IPv4 addresses configured on the device | 
-| CiscoNXOS.NxosFacts.ansible_net_all_ipv6_addresses | unknown | All IPv6 addresses configured on the device | 
-| CiscoNXOS.NxosFacts.ansible_net_interfaces | unknown | A hash of all interfaces running on the system | 
-| CiscoNXOS.NxosFacts.ansible_net_neighbors | unknown | The list of LLDP and CDP neighbors from the device. If both, CDP and LLDP neighbor data is present on one port, CDP is preferred. | 
+| CiscoNXOS.NxosFacts.net_gather_subset | unknown | The list of fact subsets collected from the device | 
+| CiscoNXOS.NxosFacts.net_gather_network_resources | unknown | The list of fact for network resource subsets collected from the device | 
+| CiscoNXOS.NxosFacts.net_model | string | The model name returned from the device | 
+| CiscoNXOS.NxosFacts.net_serialnum | string | The serial number of the remote device | 
+| CiscoNXOS.NxosFacts.net_version | string | The operating system version running on the remote device | 
+| CiscoNXOS.NxosFacts.net_hostname | string | The configured hostname of the device | 
+| CiscoNXOS.NxosFacts.net_image | string | The image file the device is running | 
+| CiscoNXOS.NxosFacts.net_api | string | The name of the transport | 
+| CiscoNXOS.NxosFacts.net_license_hostid | string | The License host id of the device | 
+| CiscoNXOS.NxosFacts.net_python_version | string | The Python version Ansible controller is using | 
+| CiscoNXOS.NxosFacts.net_filesystems | unknown | All file system names available on the device | 
+| CiscoNXOS.NxosFacts.net_memfree_mb | number | The available free memory on the remote device in Mb | 
+| CiscoNXOS.NxosFacts.net_memtotal_mb | number | The total memory on the remote device in Mb | 
+| CiscoNXOS.NxosFacts.net_config | string | The current active config from the device | 
+| CiscoNXOS.NxosFacts.net_all_ipv4_addresses | unknown | All IPv4 addresses configured on the device | 
+| CiscoNXOS.NxosFacts.net_all_ipv6_addresses | unknown | All IPv6 addresses configured on the device | 
+| CiscoNXOS.NxosFacts.net_interfaces | unknown | A hash of all interfaces running on the system | 
+| CiscoNXOS.NxosFacts.net_neighbors | unknown | The list of LLDP and CDP neighbors from the device. If both, CDP and LLDP neighbor data is present on one port, CDP is preferred. | 
 | CiscoNXOS.NxosFacts.fan_info | unknown | A hash of facts about fans in the remote device | 
 | CiscoNXOS.NxosFacts.hostname | unknown | The configured hostname of the remote device | 
 | CiscoNXOS.NxosFacts.interfaces_list | unknown | The list of interface names on the remote device | 
@@ -2408,7 +2408,7 @@ Manage logging on network devices
 | file_size | Set logfile size. | Optional | 
 | facility_link_status | Set logging facility ethpm link status. Not idempotent with version 6.0 images. Possible values are: link-down-notif, link-down-error, link-up-notif, link-up-error. | Optional | 
 | timestamp | Set logging timestamp format. Possible values are: microseconds, milliseconds, seconds. | Optional | 
-| purge | Remove any switch logging configuration that does not match what has been configured Not supported for ansible_connection local. All nxos_logging tasks must use the same ansible_connection type. Possible values are: Yes, No. Default is No. | Optional | 
+| purge | Remove any switch logging configuration that does not match what has been configured Not supported for connection local. All nxos_logging tasks must use the same connection type. Possible values are: Yes, No. Default is No. | Optional | 
 
 
 #### Context Output

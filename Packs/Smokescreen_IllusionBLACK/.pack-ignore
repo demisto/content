@@ -14,7 +14,7 @@ ignore=,IF100,IF107
 ignore=IF107
 
 [file:Smokescreen_IllusionBLACK.yml]
-ignore=IN126,BA108,BA109
+ignore=IN126,BA108,BA109,IN145
 
 [file:layoutscontainer-IllusionBLACK.json]
 ignore=BA101

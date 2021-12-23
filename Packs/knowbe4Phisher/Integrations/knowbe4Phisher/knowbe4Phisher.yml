@@ -1,0 +1,248 @@
+category: Email Gateway
+commonfields:
+  id: Phisher
+  version: -1
+configuration:
+- display: Your server URL
+  name: url
+  required: true
+  type: 0
+  defaultvalue: 'https://eu.knowbe4.com'
+  additionalinfo: URL of the API endpoint, only FQDN is required, e.g. https://eu.knowbe4.com
+- name: apikey
+  required: false
+  displaypassword: API Key
+  hiddenusername: true
+  type: 9
+- additionalinfo: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days,
+    3 months, 1 year)
+  defaultvalue: 7 days
+  display: First Fetch Time
+  name: first_fetch
+  required: false
+  type: 0
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- additionalinfo: Maximum number of alerts per fetch. Default and recommended is 50
+  defaultvalue: '50'
+  display: Fetch Limit
+  name: max_fetch
+  required: false
+  type: 0
+- display: Incident type
+  defaultvalue: PhishER
+  name: incidentType
+  required: false
+  type: 13
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: KnowBE4 PhishER integration allows to pull events from PhishER system
+  and do mutations
+display: PhishER
+name: Phisher
+defaultmapperin: PhishER-mapper
+script:
+  commands:
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of messages to fetch
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: The Lucene query to search against
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: ID of specific message to retrieve. If ID is given
+        query will be ignored
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'False'
+      isArray: false
+      name: include_events
+      predefined:
+      - 'False'
+      - 'True'
+      required: false
+      description: Whether to include all message events in the result.
+      secret: false
+    deprecated: false
+    description: Command to get messages from PhishER
+    execution: false
+    name: phisher-message-list
+    outputs:
+    - contextPath: Phisher.Message.actionStatus
+      description: Action Status
+      type: String
+    - contextPath: Phisher.Message.attachments
+      description: A collection of attachments associated with this message
+      type: String
+    - contextPath: Phisher.Message.category
+      description: The message's category
+      type: String
+    - contextPath: Phisher.Message.comments
+      description: A collection of comments associated with this message.
+      type: String
+    - contextPath: Phisher.Message.events
+      description: A collection of events associated with this message.
+      type: String
+    - contextPath: Phisher.Message.from
+      description: Sender's email
+      type: String
+    - contextPath: Phisher.Message.id
+      description: Unique identifier for the message.
+      type: String
+    - contextPath: Phisher.Message.links
+      description: A collection of links that were found in the message.
+      type: String
+    - contextPath: Phisher.Message.phishmlReport
+      description: The PhishML report associated with this message
+      type: String
+    - contextPath: Phisher.Message.pipelineStatus
+      description: Pipeline Status
+      type: String
+    - contextPath: Phisher.Message.reportedBy
+      description: The person who reported the message.
+      type: String
+    - contextPath: Phisher.Message.rawUrl
+      description: URL where to download the raw message
+      type: String
+    - contextPath: Phisher.Message.rules
+      description: A collection of rules associated with this message.
+      type: String
+    - contextPath: Phisher.Message.severity
+      description: The message's severity
+      type: String
+    - contextPath: Phisher.Message.subject
+      description: Subject of the message.
+      type: String
+    - contextPath: Phisher.Message.tags
+      description: A collection of tags associated with this message.
+      type: String
+  - arguments:
+    - default: false
+      description: Message ID
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: The comment to add.
+      isArray: false
+      name: comment
+      required: true
+      secret: false
+    deprecated: false
+    description: Adds a comment to a PhishER message
+    execution: false
+    name: phisher-create-comment
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: "Message Category, can be: UNKNOWN,CLEAN,SPAM,THREAT\t\t"
+      isArray: false
+      name: category
+      predefined:
+      - UNKNOWN
+      - CLEAN
+      - SPAM
+      - THREAT
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Message Status, can be: RECEIVED,IN_REVIEW,RESOLVED'
+      isArray: false
+      name: status
+      predefined:
+      - RECEIVED
+      - IN_REVIEW
+      - RESOLVED
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Message Severity, can be: UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL'
+      isArray: false
+      name: severity
+      predefined:
+      - UNKNOWN
+      - LOW
+      - MEDIUM
+      - HIGH
+      - CRITICAL
+      required: false
+      secret: false
+    - default: false
+      description: Message ID
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Updates a PhishER message status. User must provide at least one argument.
+    execution: false
+    name: phisher-update-message
+  - arguments:
+    - default: false
+      description: Message ID
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: Comma separated list of tags to add.
+      isArray: false
+      name: tags
+      required: true
+      secret: false
+    deprecated: false
+    description: Add tags to a given message
+    execution: false
+    name: phisher-tags-create
+  - arguments:
+    - default: false
+      description: Message ID
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: Comma separated list of tags to remove.
+      isArray: false
+      name: tags
+      required: true
+      secret: false
+    deprecated: false
+    description: Removes tags from a given message.
+    execution: false
+    name: phisher-tags-delete
+  dockerimage: demisto/python3:3.9.8.24399
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 5.5.0

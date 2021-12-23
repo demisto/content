@@ -34,6 +34,7 @@ HR_MESSAGES: Dict[str, str] = {
     'LIST_COMMAND_SUCCESS': 'Total Retrieved {}: {}',
     'ALIAS_ADD_SUCCESS': 'Added alias "{}" to user key "{}".',
     'GROUP_CREATE_SUCCESS': 'A new group named "{}" created.',
+    'GROUP_GET_SUCCESS': 'Found group named "{}" .',
     'ROLE_ASSIGNMENT_CREATE': 'Role Assignment Details',
     'ROLE_CREATE_PRIVILEGES_INCORRECT_FORMAT': 'role_privileges argument missing or not in expected format. Please '
                                                'provide a comma separated string of form "PrivilegeName1:ServiceId1,'
@@ -47,7 +48,8 @@ HR_MESSAGES: Dict[str, str] = {
     'DATATRANSFER_REQUEST_CREATE_SUCCESS': 'Data Transfer Details',
     'NOT_FOUND': 'No {} found.',
     'USER_DELETE': 'User with user key {} deleted successfully.',
-    'USER_UPDATE': 'Updated User Details'
+    'USER_UPDATE': 'Updated User Details',
+    'USER_GET': 'Retrieved details for user {}'
 }
 
 URL_SUFFIX: Dict[str, str] = {
@@ -57,6 +59,7 @@ URL_SUFFIX: Dict[str, str] = {
     'MOBILE_DELETE': 'admin/directory/v1/customer/{}/devices/mobile/{}',
     'USER_ALIAS': 'admin/directory/v1/users/{}/aliases',
     'GROUP_CREATE': 'admin/directory/v1/groups',
+    'GROUP_GET': 'admin/directory/v1/groups/{}',
     'ROLE_ASSIGNMENT': 'admin/directory/v1/customer/{}/roleassignments',
     'ROLE_CREATE': 'admin/directory/v1/customer/{}/roles',
     'TOKEN_REVOKE': 'admin/directory/v1/users/{}/tokens/{}',
@@ -170,9 +173,9 @@ def prepare_args_for_user(args: Dict[str, str]) -> Dict[str, Any]:
     })
 
 
-def prepare_output_for_user_create(response: Dict[str, Any]) -> Dict[str, Any]:
+def prepare_output_for_user_command(response: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Prepares output for gsuite-user-create command.
+    Prepares output for gsuite-user commands.
 
     :param response: response from API.
 
@@ -208,9 +211,9 @@ def prepare_markdown_from_dictionary(data: Dict[str, Any], ignore_fields: List[s
     return '\n'.join(hr_cell_info)
 
 
-def prepare_readable_output_for_user_create(outputs):
+def prepare_readable_output_for_user_command(outputs):
     """
-    Prepares readable output for gsuite-user-create command.
+    Prepares readable output for gsuite-user commands.
 
     :param outputs: output context.
 
@@ -538,10 +541,10 @@ def user_create_command(client, args: Dict[str, str]) -> CommandResults:
     response = client.http_request(url_suffix=URL_SUFFIX['USER'], body=prepared_args, method='POST')
 
     # Context
-    outputs = prepare_output_for_user_create(copy.deepcopy(response))
+    outputs = prepare_output_for_user_command(copy.deepcopy(response))
 
     # Readable Output
-    readable_output_dict = prepare_readable_output_for_user_create(copy.deepcopy(outputs))
+    readable_output_dict = prepare_readable_output_for_user_command(copy.deepcopy(outputs))
     readable_output = tableToMarkdown(HR_MESSAGES['USER_CREATE'], readable_output_dict,
                                       ['id', 'customerId', 'primaryEmail', 'firstName', 'lastName', 'gender',
                                        'suspended', 'notesValue', 'notesContentType', 'isAdmin', 'creationTime',
@@ -681,6 +684,39 @@ def group_create_command(client, args: Dict[str, str]) -> CommandResults:
     hr_output_fields = ['id', 'email', 'description', 'adminCreated']
 
     readable_output = tableToMarkdown(HR_MESSAGES['GROUP_CREATE_SUCCESS'].format(response['name']),
+                                      response, headerTransform=pascalToSpace, removeNull=True,
+                                      headers=hr_output_fields)
+
+    return CommandResults(
+        outputs_prefix=OUTPUT_PREFIX['GROUP'],
+        outputs_key_field='id',
+        outputs=response,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+@logger
+def group_get_command(client, args: Dict[str, str]) -> CommandResults:
+    """
+    Get a group information with a group key
+
+    :param client: Client object.
+    :param args: Command arguments.
+
+    :return: CommandResults.
+    """
+    client.set_authorized_http(scopes=SCOPES['GROUP'], subject=ADMIN_EMAIL)
+    group_key_suffix = URL_SUFFIX['GROUP_GET'].format(args.pop('group', ''))
+
+    response = client.http_request(
+        url_suffix=group_key_suffix, method='GET')
+
+    response = GSuiteClient.remove_empty_entities(response)
+
+    hr_output_fields = ['id', 'email', 'description', 'adminCreated']
+
+    readable_output = tableToMarkdown(HR_MESSAGES['GROUP_GET_SUCCESS'].format(response['name']),
                                       response, headerTransform=pascalToSpace, removeNull=True,
                                       headers=hr_output_fields)
 
@@ -970,10 +1006,10 @@ def user_update_command(client, args: Dict[str, str]) -> CommandResults:
     response = client.http_request(url_suffix=url_suffix, body=prepared_args, method='PUT')
 
     # Context
-    outputs = prepare_output_for_user_create(copy.deepcopy(response))
+    outputs = prepare_output_for_user_command(copy.deepcopy(response))
 
     # Readable Output
-    readable_output_dict = prepare_readable_output_for_user_create(copy.deepcopy(outputs))
+    readable_output_dict = prepare_readable_output_for_user_command(copy.deepcopy(outputs))
     readable_output = tableToMarkdown(HR_MESSAGES['USER_UPDATE'], readable_output_dict,
                                       ['id', 'customerId', 'primaryEmail', 'firstName', 'lastName', 'gender',
                                        'archived', 'suspended',
@@ -989,6 +1025,42 @@ def user_update_command(client, args: Dict[str, str]) -> CommandResults:
                           readable_output=readable_output)
 
 
+@logger
+def user_get_command(client, args: Dict[str, str]) -> CommandResults:
+    """
+    get a user details based on user key.
+
+    :param client: Client object.
+    :param args: Command arguments.
+
+    :return: Command Result.
+    """
+    client.set_authorized_http(scopes=SCOPES['DIRECTORY_USER'], subject=ADMIN_EMAIL)
+    user_key = args.get('user', '')
+    url_suffix = urljoin(URL_SUFFIX['USER'], urllib.parse.quote(user_key))
+    response = client.http_request(url_suffix=url_suffix, method='GET')
+
+    # Context
+    outputs = prepare_output_for_user_command(copy.deepcopy(response))
+
+    # Readable Output
+    readable_output_dict = prepare_readable_output_for_user_command(copy.deepcopy(outputs))
+    readable_output = tableToMarkdown(HR_MESSAGES['USER_GET'].format(user_key), readable_output_dict,
+                                      ['id', 'customerId', 'primaryEmail', 'firstName', 'lastName', 'gender',
+                                       'archived', 'suspended',
+                                       'orgUnitPath', 'notesValue', 'notesContentType', 'isAdmin', 'creationTime',
+                                       'phoneDetails',
+                                       'addressDetails', 'secondaryEmailDetails', 'ipWhitelisted', 'recoveryEmail',
+                                       'recoveryPhone'],
+                                      headerTransform=pascalToSpace, removeNull=True)
+
+    return CommandResults(outputs_prefix=OUTPUT_PREFIX['CREATE_USER'],
+                          outputs_key_field=['id'],
+                          outputs=outputs,
+                          readable_output=readable_output,
+                          raw_response=response)
+
+
 def main() -> None:
     """
          PARSE AND VALIDATE INTEGRATION PARAMS
@@ -1002,10 +1074,12 @@ def main() -> None:
         'gsuite-role-assignment-create': role_assignment_create_command,
         'gsuite-role-assignment-list': role_assignment_list_command,
         'gsuite-user-create': user_create_command,
+        'gsuite-user-get': user_get_command,
         'gsuite-mobile-update': mobile_update_command,
         'gsuite-mobile-delete': mobile_delete_command,
         'gsuite-user-alias-add': user_alias_add_command,
         'gsuite-group-create': group_create_command,
+        'gsuite-group-get': group_get_command,
         'gsuite-role-create': role_create_command,
         'gsuite-token-revoke': token_revoke_command,
         'gsuite-datatransfer-request-create': datatransfer_request_create_command,

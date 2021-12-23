@@ -1,0 +1,68 @@
+{
+  "meta": {
+    "total": 1,
+    "version": "1.1.1"
+  },
+  "data": [
+    {
+      "type": "cves",
+      "id": "CVE-2021-0123",
+      "attributes": {
+        "identifier": "CVE-2021-0123",
+        "link": "https://nvd.nist.gov/vuln/detail/CVE-2021-0123",
+        "notes": "",
+        "affected_system": {
+          "name": "Example System",
+          "versions": ["1.0", "1.1"]
+        },
+        "patches": ["1.2"],
+        "last_observed": 1626211869,
+        "base_score_v3": 10.0,
+        "base_score_v2": 10.0
+      },
+      "relationships": {
+        "observations": {
+          "data": [
+            {
+              "type": "observations",
+              "id": "c309ec55-485c-4cce-afef-f543f7bbc925",
+              "attributes": {
+                "exploit_type": "cve",
+                "notes": "",
+                "timestamps": [
+                  {
+                    "context": "observed",
+                    "value": 1626211869,
+                    "iso": "2021-07-13T17:31:09"
+                  }
+                ]
+              },
+              "relationships": {
+                "tags": {
+                  "data": [
+                    {
+                      "type": "tags",
+                      "id": "a096cce5-5db5-4a62-87ca-a7cd3502a26e",
+                      "attributes": {
+                        "tag_type": "other",
+                        "label": "Unattributed Threat Actor",
+                        "value": "3b5d1d0d-41fb-4dfd-95b7-ec069d26f979",
+                        "timestamps": [
+                          {
+                            "context": "added",
+                            "value": 1626211869,
+                            "iso": "2021-07-13T17:31:09"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

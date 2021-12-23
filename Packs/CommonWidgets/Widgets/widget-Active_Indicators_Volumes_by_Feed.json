@@ -1,0 +1,32 @@
+{
+    "dataType": "indicators",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "fromDateLicense": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byFrom": "days",
+            "byTo": "",
+            "field": "",
+            "fromValue": 7,
+            "toValue": null
+        },
+        "toDate": "0001-01-01T00:00:00Z"
+    },
+    "id": "8166df3f-d62e-4f33-8930-ef665ab33d65",
+    "isPredefined": true,
+    "name": "Active Indicators Volumes by Feed",
+    "params": {
+        "groupBy": [
+            "firstSeen(d)",
+            "sourceBrands"
+        ],
+        "timeFrame": "days",
+        "valuesFormat": "abbreviated"
+    },
+    "query": "(expirationStatus:active or expirationStatus:\"\") and -sourceBrands:\"\"",
+    "version": -1,
+    "widgetType": "line",
+    "fromVersion": "6.2.0",
+    "description": ""
+}

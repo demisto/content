@@ -324,8 +324,31 @@ def unwhitelist_ip(ip):
     return 'Removed the following IP addresses from the whitelist successfully:\n' + list_of_ips
 
 
-def get_blacklist_command():
+def get_blacklist_command(args):
     blacklist = get_blacklist().get('blacklistUrls')
+    if blacklist:
+        filter_ = args.get('filter', '')
+        query = args.get('query', '')
+        if filter_ or query:
+            filtered_blacklist = []
+            for entity in blacklist:
+                # if filter / query were not provided, then there is a match on it vacuously
+                is_filter_match = not filter_
+                is_query_match = not query
+                if filter_:
+                    if re.match(ipv4Regex, entity):
+                        if filter_ == 'ip':
+                            is_filter_match = True
+                    elif filter_ == 'url':
+                        is_filter_match = True
+                if query:
+                    if re.search(query, entity):
+                        is_query_match = True
+                    else:
+                        is_query_match = False
+                if is_filter_match and is_query_match:
+                    filtered_blacklist.append(entity)
+            blacklist = filtered_blacklist
     if blacklist:
         hr = '### Zscaler blacklist\n'
         for url in blacklist:
@@ -389,8 +412,16 @@ def url_lookup(args):
     ec[outputPaths['url']] = []
     ec['DBotScore'] = []
     pre_table_data = []
+    urls_list = argToList(url)
     for data in raw_res:
         suspicious_categories = ['SUSPICIOUS_DESTINATION', 'SPYWARE_OR_ADWARE']
+        res_url = data.get('url')
+        for url in urls_list:
+            # since zscaler expects to recieve a URL without the protocol, we omit it in `lookup_request`
+            # in the response, the URL is returned as it was sent, so we add back the protocol by replacing
+            # the URL retruned with the one we got as an argument
+            if 'http://' + res_url in url or 'https://' + res_url in url:
+                data['url'] = url
         ioc_context = {'Address': data['url'], 'Data': data['url']}
         score = 1
         if len(data['urlClassifications']) == 0:
@@ -928,7 +959,7 @@ def main():
             elif command == 'zscaler-get-categories':
                 return_results(get_categories_command(args))
             elif command == 'zscaler-get-blacklist':
-                return_results(get_blacklist_command())
+                return_results(get_blacklist_command(args))
             elif command == 'zscaler-get-whitelist':
                 return_results(get_whitelist_command())
             elif command == 'zscaler-sandbox-report':

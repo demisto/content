@@ -22,6 +22,9 @@ class Client(BaseClient):
         super().__init__(base_url, verify=use_ssl, proxy=use_proxy, **kwargs)
         self.verify = use_ssl
         self.sid = sid if sid != "None" else None
+        self.has_performed_login = False  # set to True once username and password are used to login.
+        """ Note that Client is "disposable", and will not be the same object on the next command,
+        has_performed_login is used to decide whether to logout after running the command."""
 
     @property
     def headers(self):
@@ -41,8 +44,11 @@ class Client(BaseClient):
 
         if sid:
             self.sid = sid
+            self.has_performed_login = True
+            demisto.debug(f"login: success, saving sid={sid} to integrationContext")
             demisto.setIntegrationContext({'cp_sid': sid})
         else:
+            demisto.debug("login: failed, clearing integrationContext")
             demisto.setIntegrationContext({})
 
         printable_result = {'session-id': sid}
@@ -57,8 +63,10 @@ class Client(BaseClient):
     def restore_sid_from_context_or_login(self, username: str, password: str, session_timeout: int,
                                           domain_arg: str = None):
         if sid_from_context := demisto.getIntegrationContext().get('cp_sid'):
+            demisto.debug(f"restore sid: success, setting restored sid on Client (sid={sid_from_context})")
             self.sid = sid_from_context
         else:
+            demisto.debug("restore sid: failed to restore, logging in")
             self.login(username, password, session_timeout, domain_arg)
 
     def test_connection(self):
@@ -67,7 +75,7 @@ class Client(BaseClient):
         Otherwise, an exception should be raised by self._http_request()
         """
         response = self._http_request(method='POST', url_suffix='show-api-versions', headers=self.headers,
-                                      ok_codes=(200, 500), resp_type='response')  # returns requests.Response
+                                      ok_codes=(200, 500), resp_type='response', json_data={})
         if response.status_code == 500:
             return 'Server Error: make sure Server URL and Server Port are correctly set'
 
@@ -81,7 +89,11 @@ class Client(BaseClient):
         response = self._http_request(method='POST', url_suffix='logout', headers=self.headers, json_data={})
         self.sid = None
         demisto.setIntegrationContext({})
-        return response.get('message')
+        self.has_performed_login = False
+
+        message = response.get('message')
+        demisto.debug(f"logout: sid={self.sid}, message={message}")
+        return message
 
     def list_hosts(self, limit: int, offset: int):
         return self._http_request(method='POST', url_suffix='show-hosts',
@@ -1803,15 +1815,16 @@ def main():
     proxy = params.get('proxy', False)
     verify_certificate = not params.get('insecure', False)
 
-    if server[-1] == "/":
+    if server.startswith("https://"):
+        server = server[len("https://"):]
+
+    if server.endswith("/"):
         server = server[:-1]
 
     client = Client(base_url=f'https://{server}:{port}/web_api/',
                     use_ssl=verify_certificate,
                     use_proxy=proxy,
                     sid=sid_arg)
-
-    stay_logged_in = True
 
     try:
         # commands that perform login
@@ -1824,17 +1837,16 @@ def main():
 
         elif command == 'checkpoint-login-and-get-session-id':
             return_results(client.login(**login_args))
+            # note that the "if client.has_logged in: client.logout()" mechanism is NOT used here, to allow sid reuse
             return
 
         elif command == 'checkpoint-logout':
-            if sid_arg:
-                client.sid = sid_arg
-            return_results(client.logout())
+            return_results(checkpoint_logout_command(client, sid_arg))
+            return
 
         else:
-            if not client.sid:
+            if not client.sid:  # client.sid is None if `sid_arg in {None, "None"}`
                 client.restore_sid_from_context_or_login(**login_args)
-            stay_logged_in = False
 
         demisto.info(f'Command being called is {demisto.command()}')
 
@@ -1961,7 +1973,9 @@ def main():
         else:
             raise NotImplementedError(f"Unknown command {demisto.command()}.")
 
-        if not stay_logged_in:
+        if client.has_performed_login:
+            # this part is not reached when login() is explicitly called
+            demisto.debug("main: client.has_performed_login==True, logging out.")
             client.logout()
 
     except DemistoException as e:

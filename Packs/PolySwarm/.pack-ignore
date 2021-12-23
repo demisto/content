@@ -1,2 +1,5 @@
 [file:README.md]
 ignore=RM104
+
+[file:PolySwarmV2.yml]
+ignore=IN144,IN145

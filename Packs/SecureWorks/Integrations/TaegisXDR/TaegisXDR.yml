@@ -1,0 +1,117 @@
+commonfields:
+  id: TaegisXDR
+  version: -1
+name: TaegisXDR
+display: TaegisXDR
+category: Data Enrichment & Threat Intelligence
+description: For integration with the Secureworks Taegis XDR platform
+configuration:
+- display: Service URL
+  name: endpoint
+  defaultvalue: https://api.ctpx.secureworks.com
+  type: 0
+  required: true
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- display: Client ID
+  name: client_id
+  type: 4
+  required: true
+- display: Client Secret
+  name: client_secret
+  type: 4
+  required: true
+script:
+  script: ''
+  type: python
+  commands:
+  - name: taegis-fetch-alerts
+    arguments:
+    - name: ids
+      required: true
+      description: A list of alert IDs to return
+      isArray: true
+    outputs:
+    - contextPath: TaegisXDR.Result
+      description: List of Taegis alerts
+    description: List Taegis alerts by ID
+  - name: taegis-fetch-investigation
+    arguments:
+    - name: id
+      description: The investigation ID to lookup
+    - name: page
+      description: The page number for fetching investigations
+      defaultValue: "0"
+    - name: page_size
+      description: Number of investigations to return
+      defaultValue: "10"
+    outputs:
+    - contextPath: TaegisXDR.Result
+      description: Dictionary of the located Taegis investigation
+    description: Fetch all investigations or a specific investigation
+  - name: taegis-create-investigation
+    arguments:
+    - name: description
+      required: true
+      description: The description of the investigation
+    - name: priority
+      required: true
+      default: true
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      - "2"
+      - "3"
+      - "4"
+      - "5"
+      description: The priority of the investigation (1-5)
+      defaultValue: "2"
+    outputs:
+    - contextPath: TaegisXDR.Result
+      description: The investigation ID that was created
+    description: Create an Investigation within Taegis
+  - name: taegis-update-investigation
+    arguments:
+    - name: id
+      required: true
+      description: The investigation ID to update
+    - name: priority
+      description: The priority of the investigation (1-5)
+    - name: key_findings
+      description: The Key Findings field of the investigation
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - Open
+      - Active
+      - Suspended
+      - 'Closed: Authorized Activity'
+      - 'Closed: False Positive alert'
+      - 'Closed: Informational'
+      - 'Closed: Not Vulnerable'
+      description: New status for the investigation
+    - name: service_desk_id
+      description: An ticket or ID for to an external system for reference
+    - name: service_desk_type
+      description: The type of service desk id (e.g. XSOAR)
+    outputs:
+    - contextPath: TaegisXDR.Result
+      description: ID of the updated Taegis investigation
+    description: Update an existing investigation
+  - name: taegis-fetch-investigation-alerts
+    arguments:
+    - name: id
+      required: true
+      description: The investigation ID related to the alerts
+    outputs:
+    - contextPath: TaegisXDR.Result
+      description: List of alerts related to a Taegis investigation
+    description: Fetch Alert IDs related to a specific investigation
+  dockerimage: demisto/python3:3.9.8.24399
+  runonce: false
+  subtype: python3
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

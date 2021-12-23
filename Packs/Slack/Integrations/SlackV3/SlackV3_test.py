@@ -2072,7 +2072,8 @@ def test_send_request_with_severity(mocker):
     import SlackV3
 
     mocker.patch.object(demisto, 'params', return_value={'incidentNotificationChannel': 'general',
-                                                         'min_severity': 'High', 'notify_incidents': True})
+                                                         'min_severity': 'High',
+                                                         'permitted_notifications': ['incidentOpened']})
 
     SlackV3.init_globals()
 
@@ -2125,7 +2126,8 @@ def test_send_request_with_notification_channel(mocker):
     import SlackV3
 
     mocker.patch.object(demisto, 'params', return_value={'incidentNotificationChannel': 'general',
-                                                         'min_severity': 'High', 'notify_incidents': True})
+                                                         'min_severity': 'High', 'notify_incidents': True,
+                                                         'permitted_notifications': ['incidentOpened']})
 
     SlackV3.init_globals()
 
@@ -2483,7 +2485,8 @@ def test_send_request_with_severity_user_doesnt_exist(mocker, capfd):
     import SlackV3
 
     mocker.patch.object(demisto, 'params', return_value={'incidentNotificationChannel': 'general',
-                                                         'min_severity': 'High', 'notify_incidents': True})
+                                                         'min_severity': 'High', 'notify_incidents': True,
+                                                         'permitted_notifications': ['incidentOpened']})
 
     SlackV3.init_globals()
 
@@ -2578,7 +2581,8 @@ def test_send_request_no_severity(mocker):
     import SlackV3
 
     mocker.patch.object(demisto, 'params', return_value={'incidentNotificationChannel': 'general',
-                                                         'min_severity': 'High', 'notify_incidents': True})
+                                                         'min_severity': 'High', 'notify_incidents': True,
+                                                         'permitted_notifications': ['incidentOpened']})
 
     SlackV3.init_globals()
 
@@ -2623,7 +2627,8 @@ def test_send_request_zero_severity(mocker):
     import SlackV3
 
     mocker.patch.object(demisto, 'params', return_value={'incidentNotificationChannel': 'general',
-                                                         'min_severity': 'High', 'notify_incidents': True})
+                                                         'min_severity': 'High', 'notify_incidents': True,
+                                                         'permitted_notifications': ['incidentOpened']})
 
     SlackV3.init_globals()
 

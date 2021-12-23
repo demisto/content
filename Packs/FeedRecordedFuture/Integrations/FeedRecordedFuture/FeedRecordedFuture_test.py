@@ -1,7 +1,8 @@
 import pytest
 from collections import OrderedDict
-from FeedRecordedFuture import get_indicator_type, get_indicators_command, Client, fetch_indicators_command, \
-    remove_duplicate_indicators
+from FeedRecordedFuture import get_indicator_type, get_indicators_command, Client, fetch_indicators_command
+from csv import DictReader
+from CommonServerPython import argToList
 
 GET_INDICATOR_TYPE_INPUTS = [
     ('ip', OrderedDict([('Name', '192.168.1.1'), ('Risk', '89'), ('RiskString', '5/12'),
@@ -111,6 +112,50 @@ def test_get_indicators_command(mocker, indicator_type, build_iterator_answer, v
     assert entry_result[0]['Type'] == type
 
 
+GET_INDICATORS_BY_RISK_RULES_INPUTS = [
+    ('url', 'dhsAis', build_iterator_answer_url, 'www.securityadvisor.io', 'URL'),
+    ('url', 'dhsAis,phishingUrl', build_iterator_answer_url, 'www.securityadvisor.io', 'URL'),
+    ('ip', 'dhsAis,phishingUrl,defangedURL', build_iterator_answer_ip, '192.168.1.1', 'IP')
+]
+
+
+@pytest.mark.parametrize('indicator_type, risk_rules, build_iterator_answer, value, type',
+                         GET_INDICATORS_BY_RISK_RULES_INPUTS)
+def test_get_indicators_command_by_risk_rules(mocker, indicator_type, risk_rules, build_iterator_answer, value, type):
+    """
+    Given:
+     - Recorded Future Feed client initialized with a 'ConnectApi' service, and a:
+      1. URL indicator type, and a valid risk rule.
+      2. URL indicator type, and a comma separated list of two valid risk rules.
+      3. IP indicator type, and a comma separated list of three valid risk rules.
+
+     - Mock response of the fetched indicators
+
+    When:
+     - Running the 'get_indicators_command'
+
+    Then:
+     - Verify the raw response and the human readable output of the command are correct, and include fetched indicators
+      of all the defined risk rules.
+    """
+    client = Client(indicator_type=indicator_type, api_token='123', risk_rule=risk_rules, services='ConnectApi')
+    args = {
+        'indicator_type': indicator_type,
+        'limit': 1
+    }
+    mocker.patch('FeedRecordedFuture.Client.build_iterator')
+    mocker.patch('FeedRecordedFuture.Client.get_batches_from_file', return_value=build_iterator_answer)
+    hr, _, entry_results = get_indicators_command(client, args)
+
+    risk_rules_list = argToList(risk_rules)
+    for rule in risk_rules_list:
+        assert f'Indicators from RecordedFuture Feed for {rule} risk rule' in hr, \
+            f"human readable output doesn't contain indicators from risk rule {rule}"
+        for entry in entry_results:
+            assert entry.get('Value', '') == value
+            assert entry.get('Type', '') == type
+
+
 CALCULATE_DBOT_SCORE_INPUTS = [
     ('97', '65', 3),
     ('90', '91', 3),
@@ -140,12 +185,24 @@ def test_fetch_indicators_command(mocker):
      - Verify the fetch runs successfully.
     """
     indicator_type = 'ip'
-    client = Client(indicator_type=indicator_type, api_token='dummytoken', services='fusion')
+    client = Client(indicator_type=indicator_type, api_token='dummytoken', services=['fusion'])
+    mocker.patch('FeedRecordedFuture.Client.build_iterator')
     mocker.patch(
-        'FeedRecordedFuture.Client.build_iterator',
-        return_value=[{'Name': '192.168.1.1'}]
+        'FeedRecordedFuture.Client.get_batches_from_file',
+        return_value=DictReaderGenerator(DictReader(open('test_data/response.txt')))
     )
-    fetch_indicators_command(client, indicator_type)
+    client_outputs = []
+    for output in fetch_indicators_command(client, indicator_type):
+        client_outputs.extend(output)
+    assert {'fields': {'recordedfutureevidencedetails': [], 'tags': []},
+            'rawJSON': {'Name': '192.168.0.1',
+                        'a': '3',
+                        'type': 'IP',
+                        'value': '192.168.0.1'},
+            'score': 0,
+            'type': 'IP',
+            'value': '192.168.0.1'} == client_outputs[0]
+    assert len(client_outputs) == 1
 
 
 @pytest.mark.parametrize('tags', (['tag1', 'tag2'], []))
@@ -165,34 +222,53 @@ def test_feed_tags(mocker, tags):
     assert tags == indicators[0]['fields']['tags']
 
 
-def test_remove_duplicate_indicators():
-    """
-        Given:
-            - Indicators list with duplicate indicators values ("test" and "TEST" are considered duplicates)
-        When:
-            - Calling the remove_duplicate_indicators method
-        Then:
-            - Validate the list returned from the method does not contain indicators with the same value
-    """
-    indicators_list_with_duplicates = [
-        {
-            'value': 'test',
-            'type': 'test type 1',
-        },
-        {
-            'value': 'test',
-            'type': 'test type 2',
-        },
-        {
-            'value': 'TEST',
-            'type': 'test type 3',
-        },
-    ]
+class DictReaderGenerator:
+    def __init__(self, dict_reader):
+        self.dict_reader = dict_reader
+        self.has_returned_dict_reader = False
 
-    non_duplicates_list = remove_duplicate_indicators(indicators_list_with_duplicates)
-    assert non_duplicates_list == [
-        {
-            'value': 'test',
-            'type': 'test type 1',
-        }
-    ]
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.has_returned_dict_reader:
+            raise StopIteration()
+        self.has_returned_dict_reader = True
+        return self.dict_reader
+
+
+@pytest.mark.parametrize('indicator_type, risk_rules, service, expected_err_msg',
+                         [('url', 'dhsAis', 'fusion',
+                           "You entered a risk rule but the 'connectApi' service is not chosen."),
+                          ('url', 'dhsAi', 'connectApi', "The given risk rule: dhsAi does not exist"),
+                          ('url', 'dhsAis,phishinUrl', 'connectApi', "The given risk rule: phishinUrl does not exist")
+                          ])
+def test_risk_rule_validations(mocker, indicator_type, risk_rules, service, expected_err_msg):
+    """
+    Given:
+     - Recorded Future Feed client initialized with URL indicator type and:
+      1. 'fusion' service, and a valid risk rule.
+      2. 'connectApi' service, and an invalid risk rule.
+      3. 'connectApi' service, and a comma separated list of a valid risk rule (the first) and an invalid risk rule
+        (the second).
+
+     - Mock response of the 'FeedRecordedFuture.return_error function', and the
+      'FeedRecordedFuture.Client.get_risk_rules' command.
+
+    When:
+     - Running the 'Client.run_parameters_validations'.
+
+    Then:
+     - Verify the right error message appears for each case:
+     1. Error message for setting 'connectApi' service.
+     2. Error message for invalid risk rule.
+     3. Error message for invalid risk rule on the second risk rule in the risk rules list.
+    """
+    mocker.patch('FeedRecordedFuture.Client.get_risk_rules',
+                 return_value={'data': {'results': [{'name': 'dhsAis'}, {'name': 'phishingUrl'}]}})
+
+    client = Client(indicator_type=indicator_type, api_token='123', risk_rule=risk_rules, services=service)
+
+    return_error_result = mocker.patch('FeedRecordedFuture.return_error')
+    Client.run_parameters_validations(client)
+    assert expected_err_msg in return_error_result.call_args[0][0]

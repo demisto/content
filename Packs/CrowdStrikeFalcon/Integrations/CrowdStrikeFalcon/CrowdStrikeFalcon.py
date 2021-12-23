@@ -71,12 +71,17 @@ IOC_KEY_MAP = {
     'policy': 'Policy',
     'source': 'Source',
     'share_level': 'ShareLevel',
-    'expiration_timestamp': 'Expiration',
+    'expiration': 'Expiration',
     'description': 'Description',
-    'created_timestamp': 'CreatedTime',
+    'created_on': 'CreatedTime',
     'created_by': 'CreatedBy',
-    'modified_timestamp': 'ModifiedTime',
-    'modified_by': 'ModifiedBy'
+    'modified_on': 'ModifiedTime',
+    'modified_by': 'ModifiedBy',
+    'id': 'ID',
+    'platforms': 'Platforms',
+    'action': 'Action',
+    'severity': 'Severity',
+    'tags': 'Tags',
 }
 
 IOC_DEVICE_COUNT_MAP = {
@@ -138,6 +143,20 @@ DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP = [
     },
 ]
 
+HOST_GROUP_HEADERS = ['id', 'name', 'group_type', 'description', 'assignment_rule',
+                      'created_by', 'created_timestamp',
+                      'modified_by', 'modified_timestamp']
+
+STATUS_TEXT_TO_NUM = {'New': "20",
+                      'Reopened': "25",
+                      'In Progress': "30",
+                      'Closed': "40"}
+
+STATUS_NUM_TO_TEXT = {20: 'New',
+                      25: 'Reopened',
+                      30: 'In Progress',
+                      40: 'Closed'}
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -193,10 +212,11 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
             data=data,
             headers=headers,
             files=files,
-            json=json
+            json=json,
         )
-    except requests.exceptions.RequestException:
-        return_error('Error in connection to the server. Please make sure you entered the URL correctly.')
+    except requests.exceptions.RequestException as e:
+        return_error(f'Error in connection to the server. Please make sure you entered the URL correctly.'
+                     f' Exception is {str(e)}.')
     try:
         valid_status_codes = {200, 201, 202, 204}
         # Handling a case when we want to return an entry for 404 status code.
@@ -207,11 +227,14 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
             reason = res.reason
             resources = res_json.get('resources', {})
             if resources:
-                for host_id, resource in resources.items():
-                    errors = resource.get('errors', [])
-                    if errors:
-                        error_message = errors[0].get('message')
-                        reason += f'\nHost ID {host_id} - {error_message}'
+                if isinstance(resources, list):
+                    reason += f'\n{str(resources)}'
+                else:
+                    for host_id, resource in resources.items():
+                        errors = resource.get('errors', [])
+                        if errors:
+                            error_message = errors[0].get('message')
+                            reason += f'\nHost ID {host_id} - {error_message}'
             elif res_json.get('errors'):
                 errors = res_json.get('errors', [])
                 for error in errors:
@@ -1098,6 +1121,118 @@ def delete_ioc(ioc_type, value):
     return http_request('DELETE', '/indicators/entities/iocs/v1', payload)
 
 
+def search_custom_iocs(
+    types: Optional[Union[list, str]] = None,
+    values: Optional[Union[list, str]] = None,
+    sources: Optional[Union[list, str]] = None,
+    expiration: Optional[str] = None,
+    limit: str = '50',
+    sort: Optional[str] = None,
+    offset: Optional[str] = None,
+) -> dict:
+    """
+    :param types: A list of indicator types. Separate multiple types by comma.
+    :param values: Comma-separated list of indicator values
+    :param sources: Comma-separated list of IOC sources
+    :param expiration: The date on which the indicator will become inactive. (YYYY-MM-DD format).
+    :param limit: The maximum number of records to return. The minimum is 1 and the maximum is 500. Default is 100.
+    :param sort: The order of the results. Format
+    :param offset: The offset to begin the list from
+    """
+    filter_list = []
+    if types:
+        filter_list.append(f'type:{types}')
+    if values:
+        filter_list.append(f'value:{values}')
+    if sources:
+        filter_list.append(f'source:{sources}')
+    if expiration:
+        filter_list.append(f'expiration:"{expiration}"')
+
+    params = {
+        'filter': '+'.join(filter_list),
+        'sort': sort,
+        'offset': offset,
+        'limit': limit,
+    }
+
+    return http_request('GET', '/iocs/combined/indicator/v1', params=params)
+
+
+def get_custom_ioc(ioc_id: str) -> dict:
+    params = {'ids': ioc_id}
+    return http_request('GET', '/iocs/entities/indicators/v1', params=params)
+
+
+def upload_custom_ioc(
+    ioc_type: str,
+    value: str,
+    action: str,
+    platforms: str,
+    severity: Optional[str] = None,
+    source: Optional[str] = None,
+    description: Optional[str] = None,
+    expiration: Optional[str] = None,
+    applied_globally: Optional[bool] = None,
+    host_groups: Optional[List[str]] = None,
+) -> dict:
+    """
+    Create a new IOC (or replace an existing one)
+    """
+    payload = {
+        'indicators': [assign_params(
+            type=ioc_type,
+            value=value,
+            action=action,
+            platforms=platforms,
+            severity=severity,
+            source=source,
+            description=description,
+            expiration=expiration,
+            applied_globally=applied_globally,
+            host_groups=host_groups,
+        )]
+    }
+
+    return http_request('POST', '/iocs/entities/indicators/v1', json=payload)
+
+
+def update_custom_ioc(
+    ioc_id: str,
+    action: Optional[str] = None,
+    platforms: Optional[str] = None,
+    severity: Optional[str] = None,
+    source: Optional[str] = None,
+    description: Optional[str] = None,
+    expiration: Optional[str] = None,
+) -> dict:
+    """
+    Update an IOC
+    """
+    payload = {
+        'indicators': [{
+            'id': ioc_id,
+        } | assign_params(
+            action=action,
+            platforms=platforms,
+            severity=severity,
+            source=source,
+            description=description,
+            expiration=expiration,
+        )]
+    }
+
+    return http_request('PATCH', '/iocs/entities/indicators/v1', json=payload)
+
+
+def delete_custom_ioc(ids: str) -> dict:
+    """
+    Delete an IOC
+    """
+    params = {'ids': ids}
+    return http_request('DELETE', '/iocs/entities/indicators/v1', params=params)
+
+
 def get_ioc_device_count(ioc_type, value):
     """
     Gets the devices that encountered the IOC
@@ -1279,6 +1414,92 @@ def timestamp_length_equalization(timestamp1, timestamp2):
         timestamp1 = int(timestamp1) * ten_times
 
     return int(timestamp1), int(timestamp2)
+
+
+def change_host_group(is_post: bool,
+                      host_group_id: Optional[str] = None,
+                      name: Optional[str] = None,
+                      group_type: Optional[str] = None,
+                      description: Optional[str] = None,
+                      assignment_rule: Optional[str] = None) -> Dict:
+    method = 'POST' if is_post else 'PATCH'
+    data = {'resources': [{
+        'id': host_group_id,
+        "name": name,
+        "description": description,
+        "group_type": group_type,
+        "assignment_rule": assignment_rule
+    }]}
+    response = http_request(method=method,
+                            url_suffix='/devices/entities/host-groups/v1',
+                            json=data)
+    return response
+
+
+def change_host_group_members(action_name: str,
+                              host_group_id: str,
+                              host_ids: List[str]) -> Dict:
+    allowed_actions = {'add-hosts', 'remove-hosts'}
+    if action_name not in allowed_actions:
+        raise DemistoException(f'CrowdStrike Falcon error: action name should be in {allowed_actions}')
+    data = {'action_parameters': [{'name': 'filter',
+                                   'value': f"(device_id:{str(host_ids)})"}],
+            'ids': [host_group_id]}
+    response = http_request(method='POST',
+                            url_suffix='/devices/entities/host-group-actions/v1',
+                            params={'action_name': action_name},
+                            json=data)
+    return response
+
+
+def host_group_members(filter: Optional[str],
+                       host_group_id: Optional[str],
+                       limit: Optional[str],
+                       offset: Optional[str]):
+    params = {'id': host_group_id,
+              'filter': filter,
+              'offset': offset,
+              'limit': limit}
+    response = http_request(method='GET',
+                            url_suffix='/devices/combined/host-group-members/v1',
+                            params=params)
+    return response
+
+
+def resolve_incident(ids: List[str], status: str):
+    if status not in STATUS_TEXT_TO_NUM:
+        raise DemistoException(f'CrowdStrike Falcon Error: '
+                               f'Status given is {status} and it is not in {STATUS_TEXT_TO_NUM.keys()}')
+    data = {
+        "action_parameters": [
+            {
+                "name": "update_status",
+                "value": STATUS_TEXT_TO_NUM[status]
+            }
+        ],
+        "ids": ids
+    }
+    http_request(method='POST',
+                 url_suffix='/incidents/entities/incident-actions/v1',
+                 json=data)
+
+
+def list_host_groups(filter: Optional[str], limit: Optional[str], offset: Optional[str]) -> Dict:
+    params = {'filter': filter,
+              'offset': offset,
+              'limit': limit}
+    response = http_request(method='GET',
+                            url_suffix='/devices/combined/host-groups/v1',
+                            params=params)
+    return response
+
+
+def delete_host_groups(host_group_ids: List[str]) -> Dict:
+    params = {'ids': host_group_ids}
+    response = http_request(method='DELETE',
+                            url_suffix='/devices/entities/host-groups/v1',
+                            params=params)
+    return response
 
 
 ''' COMMANDS FUNCTIONS '''
@@ -1491,6 +1712,174 @@ def delete_ioc_command(ioc_type, value):
     return create_entry_object(contents=raw_res, hr=f"Custom IOC {ids} was successfully deleted.")
 
 
+def search_custom_iocs_command(
+    types: Optional[Union[list, str]] = None,
+    values: Optional[Union[list, str]] = None,
+    sources: Optional[Union[list, str]] = None,
+    expiration: Optional[str] = None,
+    limit: str = '50',
+    sort: Optional[str] = None,
+    offset: Optional[str] = None,
+) -> dict:
+    """
+    :param types: A list of indicator types. Separate multiple types by comma.
+    :param values: Comma-separated list of indicator values
+    :param sources: Comma-separated list of IOC sources
+    :param expiration: The date on which the indicator will become inactive. (YYYY-MM-DD format).
+    :param limit: The maximum number of records to return. The minimum is 1 and the maximum is 500. Default is 100.
+    :param sort: The order of the results. Format
+    :param offset: The offset to begin the list from
+    """
+    raw_res = search_custom_iocs(
+        types=argToList(types),
+        values=argToList(values),
+        sources=argToList(sources),
+        sort=sort,
+        offset=offset,
+        expiration=expiration,
+        limit=limit,
+    )
+    iocs = raw_res.get('resources')
+    if not iocs:
+        return create_entry_object(hr='Could not find any Indicators of Compromise.')
+    handle_response_errors(raw_res)
+    ec = [get_trasnformed_dict(ioc, IOC_KEY_MAP) for ioc in iocs]
+    return create_entry_object(
+        contents=raw_res,
+        ec={'CrowdStrike.IOC(val.ID === obj.ID)': ec},
+        hr=tableToMarkdown('Indicators of Compromise', ec),
+    )
+
+
+def get_custom_ioc_command(
+    ioc_type: Optional[str] = None,
+    value: Optional[str] = None,
+    ioc_id: Optional[str] = None,
+) -> dict:
+    """
+    :param ioc_type: IOC type
+    :param value: IOC value
+    :param ioc_id: IOC ID
+    """
+
+    if not ioc_id and not (ioc_type and value):
+        raise ValueError('Either ioc_id or ioc_type and value must be provided.')
+
+    if ioc_id:
+        raw_res = get_custom_ioc(ioc_id)
+    else:
+        raw_res = search_custom_iocs(
+            types=argToList(ioc_type),
+            values=argToList(value),
+        )
+
+    iocs = raw_res.get('resources')
+    handle_response_errors(raw_res)
+    if not iocs:
+        return create_entry_object(hr='Could not find any Indicators of Compromise.')
+    ec = [get_trasnformed_dict(ioc, IOC_KEY_MAP) for ioc in iocs]
+    return create_entry_object(
+        contents=raw_res,
+        ec={'CrowdStrike.IOC(val.ID === obj.ID)': ec},
+        hr=tableToMarkdown('Indicator of Compromise', ec),
+    )
+
+
+def upload_custom_ioc_command(
+    ioc_type: str,
+    value: str,
+    action: str,
+    platforms: str,
+    severity: Optional[str] = None,
+    source: Optional[str] = None,
+    description: Optional[str] = None,
+    expiration: Optional[str] = None,
+    applied_globally: Optional[bool] = None,
+    host_groups: Optional[List[str]] = None,
+) -> dict:
+    """
+    :param ioc_type: The type of the indicator.
+    :param value: The string representation of the indicator.
+    :param action: Action to take when a host observes the custom IOC.
+    :param platforms: The platforms that the indicator applies to.
+    :param severity: The severity level to apply to this indicator.
+    :param source: The source where this indicator originated.
+    :param description: A meaningful description of the indicator.
+    :param expiration: The date on which the indicator will become inactive.
+    :param applied_globally: Whether the indicator is applied globally.
+    :param host_groups: List of host group IDs that the indicator applies to.
+    """
+    if action in {'prevent', 'detect'} and not severity:
+        raise ValueError(f'Severity is required for action {action}.')
+    raw_res = upload_custom_ioc(
+        ioc_type,
+        value,
+        action,
+        argToList(platforms),
+        severity,
+        source,
+        description,
+        expiration,
+        argToBoolean(applied_globally) if applied_globally else None,
+        argToList(host_groups),
+    )
+    handle_response_errors(raw_res)
+    iocs = raw_res.get('resources', [])
+    ec = [get_trasnformed_dict(iocs[0], IOC_KEY_MAP)]
+    return create_entry_object(
+        contents=raw_res,
+        ec={'CrowdStrike.IOC(val.ID === obj.ID)': ec},
+        hr=tableToMarkdown('Custom IOC was created successfully', ec),
+    )
+
+
+def update_custom_ioc_command(
+    ioc_id: str,
+    action: Optional[str] = None,
+    platforms: Optional[str] = None,
+    severity: Optional[str] = None,
+    source: Optional[str] = None,
+    description: Optional[str] = None,
+    expiration: Optional[str] = None,
+) -> dict:
+    """
+    :param ioc_id: The ID of the indicator to update.
+    :param action: Action to take when a host observes the custom IOC.
+    :param platforms: The platforms that the indicator applies to.
+    :param severity: The severity level to apply to this indicator.
+    :param source: The source where this indicator originated.
+    :param description: A meaningful description of the indicator.
+    :param expiration: The date on which the indicator will become inactive.
+    """
+
+    raw_res = update_custom_ioc(
+        ioc_id,
+        action,
+        argToList(platforms),
+        severity,
+        source,
+        description,
+        expiration,
+    )
+    handle_response_errors(raw_res)
+    iocs = raw_res.get('resources', [])
+    ec = [get_trasnformed_dict(iocs[0], IOC_KEY_MAP)]
+    return create_entry_object(
+        contents=raw_res,
+        ec={'CrowdStrike.IOC(val.ID === obj.ID)': ec},
+        hr=tableToMarkdown('Custom IOC was updated successfully', ec),
+    )
+
+
+def delete_custom_ioc_command(ioc_id: str) -> dict:
+    """
+    :param ioc_id: The ID of indicator to delete.
+    """
+    raw_res = delete_custom_ioc(ioc_id)
+    handle_response_errors(raw_res, "The server has not confirmed deletion, please manually confirm deletion.")
+    return create_entry_object(contents=raw_res, hr=f"Custom IOC {ioc_id} was successfully deleted.")
+
+
 def get_ioc_device_count_command(ioc_type: str, value: str):
     """
     :param ioc_type: The type of the indicator
@@ -1600,7 +1989,7 @@ def generate_status_fields(endpoint_status):
     status = ''
     is_isolated = ''
 
-    if endpoint_status == 'normal':
+    if endpoint_status.lower() == 'normal':
         status = 'Online'
     elif endpoint_status == 'containment_pending':
         is_isolated = 'Pending isolation'
@@ -1608,7 +1997,8 @@ def generate_status_fields(endpoint_status):
         is_isolated = 'Yes'
     elif endpoint_status == 'lift_containment_pending':
         is_isolated = 'Pending unisolation'
-
+    else:
+        raise DemistoException(f'Error: Unknown endpoint status was given: {endpoint_status}')
     return status, is_isolated
 
 
@@ -1654,7 +2044,6 @@ def get_endpoint_command():
 
     command_results = []
     for endpoint in standard_endpoints:
-
         endpoint_context = endpoint.to_context().get(Common.Endpoint.CONTEXT_PATH)
         hr = tableToMarkdown('CrowdStrike Falcon Endpoint', endpoint_context)
 
@@ -1732,6 +2121,8 @@ def resolve_detection_command():
 
     status = args.get('status')
     show_in_ui = args.get('show_in_ui')
+    if not (username or assigned_to_uuid or comment or status or show_in_ui):
+        raise DemistoException("Please provide at least one argument to resolve the detection with.")
     raw_res = resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment)
     args.pop('ids')
     hr = "Detection {0} updated\n".format(str(ids)[1:-1])
@@ -2433,9 +2824,10 @@ def incidents_to_human_readable(incidents):
     for incident in incidents:
         readable_output = assign_params(description=incident.get('description'), state=incident.get('state'),
                                         name=incident.get('name'), tags=incident.get('tags'),
-                                        incident_id=incident.get('incident_id'), created_time=incident.get('created'))
+                                        incident_id=incident.get('incident_id'), created_time=incident.get('created'),
+                                        status=STATUS_NUM_TO_TEXT.get(incident.get('status')))
         incidents_readable_outputs.append(readable_output)
-    headers = ['incident_id', 'created_time', 'name', 'description', 'state', 'tags']
+    headers = ['incident_id', 'created_time', 'name', 'description', 'status', 'state', 'tags']
     human_readable = tableToMarkdown('CrowdStrike Incidents', incidents_readable_outputs, headers, removeNull=True)
     return human_readable
 
@@ -2463,6 +2855,110 @@ def list_incident_summaries_command():
     )
 
 
+def create_host_group_command(name: str,
+                              group_type: str = None,
+                              description: str = None,
+                              assignment_rule: str = None) -> CommandResults:
+    response = change_host_group(is_post=True,
+                                 name=name,
+                                 group_type=group_type,
+                                 description=description,
+                                 assignment_rule=assignment_rule)
+    host_groups = response.get('resources')
+    return CommandResults(outputs_prefix='CrowdStrike.HostGroup',
+                          outputs_key_field='id',
+                          outputs=host_groups,
+                          readable_output=tableToMarkdown('Host Groups', host_groups, headers=HOST_GROUP_HEADERS),
+                          raw_response=response)
+
+
+def update_host_group_command(host_group_id: str,
+                              name: Optional[str] = None,
+                              description: Optional[str] = None,
+                              assignment_rule: Optional[str] = None) -> CommandResults:
+    response = change_host_group(is_post=False,
+                                 host_group_id=host_group_id,
+                                 name=name,
+                                 description=description,
+                                 assignment_rule=assignment_rule)
+    host_groups = response.get('resources')
+    return CommandResults(outputs_prefix='CrowdStrike.HostGroup',
+                          outputs_key_field='id',
+                          outputs=host_groups,
+                          readable_output=tableToMarkdown('Host Groups', host_groups, headers=HOST_GROUP_HEADERS),
+                          raw_response=response)
+
+
+def list_host_group_members_command(host_group_id: Optional[str] = None,
+                                    filter: Optional[str] = None,
+                                    offset: Optional[str] = None,
+                                    limit: Optional[str] = None) -> CommandResults:
+    response = host_group_members(filter, host_group_id, limit, offset)
+    devices = response.get('resources')
+    if not devices:
+        return CommandResults(readable_output='No hosts are found',
+                              raw_response=response)
+    headers = list(SEARCH_DEVICE_KEY_MAP.values())
+    outputs = [get_trasnformed_dict(single_device, SEARCH_DEVICE_KEY_MAP) for single_device in devices]
+    return CommandResults(
+        outputs_prefix='CrowdStrike.Device',
+        outputs_key_field='ID',
+        outputs=outputs,
+        readable_output=tableToMarkdown('Devices', outputs, headers=headers, headerTransform=pascalToSpace),
+        raw_response=response
+    )
+
+
+def add_host_group_members_command(host_group_id: str, host_ids: List[str]) -> CommandResults:
+    response = change_host_group_members(action_name='add-hosts',
+                                         host_group_id=host_group_id,
+                                         host_ids=host_ids)
+    host_groups = response.get('resources')
+    return CommandResults(outputs_prefix='CrowdStrike.HostGroup',
+                          outputs_key_field='id',
+                          outputs=host_groups,
+                          readable_output=tableToMarkdown('Host Groups', host_groups, headers=HOST_GROUP_HEADERS),
+                          raw_response=response)
+
+
+def remove_host_group_members_command(host_group_id: str, host_ids: List[str]) -> CommandResults:
+    response = change_host_group_members(action_name='remove-hosts',
+                                         host_group_id=host_group_id,
+                                         host_ids=host_ids)
+    host_groups = response.get('resources')
+    return CommandResults(outputs_prefix='CrowdStrike.HostGroup',
+                          outputs_key_field='id',
+                          outputs=host_groups,
+                          readable_output=tableToMarkdown('Host Groups', host_groups, headers=HOST_GROUP_HEADERS),
+                          raw_response=response)
+
+
+def resolve_incident_command(ids: List[str], status: str):
+    resolve_incident(ids, status)
+    readable = '\n'.join([f'{incident_id} changed successfully to {status}' for incident_id in ids])
+    return CommandResults(readable_output=readable)
+
+
+def list_host_groups_command(filter: Optional[str] = None, offset: Optional[str] = None, limit: Optional[str] = None) \
+        -> CommandResults:
+    response = list_host_groups(filter, limit, offset)
+    host_groups = response.get('resources')
+    return CommandResults(outputs_prefix='CrowdStrike.HostGroup',
+                          outputs_key_field='id',
+                          outputs=host_groups,
+                          readable_output=tableToMarkdown('Host Groups', host_groups, headers=HOST_GROUP_HEADERS),
+                          raw_response=response)
+
+
+def delete_host_groups_command(host_group_ids: List[str]) -> CommandResults:
+    response = delete_host_groups(host_group_ids)
+    deleted_ids = response.get('resources')
+    readable = '\n'.join([f'Host groups {host_group_id} deleted successfully' for host_group_id in deleted_ids]) \
+        if deleted_ids else f'Host groups {host_group_ids} are not deleted'
+    return CommandResults(readable_output=readable,
+                          raw_response=response)
+
+
 def test_module():
     try:
         get_token(new_token=True)
@@ -2483,15 +2979,14 @@ LOG('Command being called is {}'.format(demisto.command()))
 
 def main():
     command = demisto.command()
-    # should raise error in case of issue
-    if command == 'fetch-incidents':
-        demisto.incidents(fetch_incidents())
-
     args = demisto.args()
     try:
         if command == 'test-module':
             result = test_module()
             return_results(result)
+        elif command == 'fetch-incidents':
+            demisto.incidents(fetch_incidents())
+
         elif command in ('cs-device-ran-on', 'cs-falcon-device-ran-on'):
             return_results(get_indicator_device_id())
         elif demisto.command() == 'cs-falcon-search-device':
@@ -2552,6 +3047,17 @@ def main():
             return_results(update_ioc_command(**args))
         elif command == 'cs-falcon-delete-ioc':
             return_results(delete_ioc_command(ioc_type=args.get('type'), value=args.get('value')))
+        elif command == 'cs-falcon-search-custom-iocs':
+            return_results(search_custom_iocs_command(**args))
+        elif command == 'cs-falcon-get-custom-ioc':
+            return_results(get_custom_ioc_command(
+                ioc_type=args.get('type'), value=args.get('value'), ioc_id=args.get('ioc_id')))
+        elif command == 'cs-falcon-upload-custom-ioc':
+            return_results(upload_custom_ioc_command(**args))
+        elif command == 'cs-falcon-update-custom-ioc':
+            return_results(update_custom_ioc_command(**args))
+        elif command == 'cs-falcon-delete-custom-ioc':
+            return_results(delete_custom_ioc_command(ioc_id=args.get('ioc_id')))
         elif command == 'cs-falcon-device-count-ioc':
             return_results(get_ioc_device_count_command(ioc_type=args.get('type'), value=args.get('value')))
         elif command == 'cs-falcon-process-details':
@@ -2566,7 +3072,28 @@ def main():
             )
         elif command == 'endpoint':
             return_results(get_endpoint_command())
-        # Log exceptions
+        elif command == 'cs-falcon-create-host-group':
+            return_results(create_host_group_command(**args))
+        elif command == 'cs-falcon-update-host-group':
+            return_results(update_host_group_command(**args))
+        elif command == 'cs-falcon-list-host-groups':
+            return_results(list_host_groups_command(**args))
+        elif command == 'cs-falcon-delete-host-groups':
+            return_results(delete_host_groups_command(host_group_ids=argToList(args.get('host_group_id'))))
+        elif command == 'cs-falcon-list-host-group-members':
+            return_results(list_host_group_members_command(**args))
+        elif command == 'cs-falcon-add-host-group-members':
+            return_results(add_host_group_members_command(host_group_id=args.get('host_group_id'),
+                                                          host_ids=argToList(args.get('host_ids'))))
+        elif command == 'cs-falcon-remove-host-group-members':
+            return_results(remove_host_group_members_command(host_group_id=args.get('host_group_id'),
+                                                             host_ids=argToList(args.get('host_ids'))))
+        elif command == 'cs-falcon-resolve-incident':
+            return_results(resolve_incident_command(status=args.get('status'),
+                                                    ids=argToList(args.get('ids'))))
+        else:
+            raise NotImplementedError(f'CrowdStrike Falcon error: '
+                                      f'command {command} is not implemented')
     except Exception as e:
         return_error(str(e))
 

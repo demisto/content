@@ -1,0 +1,17 @@
+{
+  "statusCode": 400,
+  "data": {
+    "authorized": true,
+    "valid": false,
+    "errors": [
+      {
+        "message": {
+          "key": "Title cannot be longer than 255 characters.",
+          "args": []
+        }
+      }
+    ],
+    "successful": false
+  },
+  "message": "com.atlassian.confluence.api.service.exceptions.BadRequestException: Could not create content with type page"
+}

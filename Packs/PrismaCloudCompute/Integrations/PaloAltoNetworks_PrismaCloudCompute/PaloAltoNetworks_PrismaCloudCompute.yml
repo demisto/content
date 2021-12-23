@@ -3,54 +3,796 @@ commonfields:
   id: PaloAltoNetworks_PrismaCloudCompute
   version: -1
 configuration:
-- display: Fetch incidents
-  name: isFetch
+- name: isFetch
+  display: Fetch incidents
   required: false
   type: 8
-- defaultvalue: https://example.net:1234
+- name: address
   display: |-
     Prisma Cloud Compute Console URL and Port
     (e.g., https://example.net:1234)
-  name: address
   required: true
   type: 0
-- display: Prisma Cloud Compute Project Name (if applicable)
-  hidden: false
-  name: project
+  additionalinfo:
+- name: project
+  display: Prisma Cloud Compute Project Name (if applicable)
   required: false
+  defaultvalue:
   type: 0
-- display: Trust any certificate (not secure)
-  name: insecure
+  additionalinfo:
+- name: insecure
+  display: Trust any certificate (not secure)
   required: false
+  defaultvalue: ""
   type: 8
-- display: Use system proxy settings
-  name: proxy
+  additionalinfo:
+- name: proxy
+  display: Use system proxy settings
   required: false
+  defaultvalue: ""
   type: 8
-- display: Credentials
-  name: credentials
+  additionalinfo:
+- name: credentials
+  display: Username
   required: true
+  defaultvalue:
   type: 9
-- display: Prisma Cloud Compute CA Certificate
-  name: certificate
+  additionalinfo:
+  displaypassword: ""
+  hiddenusername: false
+- name: certificate
+  display: Prisma Cloud Compute CA Certificate
   required: false
+  defaultvalue:
   type: 12
-- display: Incident type
-  name: incidentType
+  additionalinfo:
+- name: incidentType
+  display: Incident type
   required: false
   type: 13
-description: Use the Prisma Cloud Compute integration to fetch incidents from your Prisma Cloud Compute environment.
+description: Use the Prisma Cloud Compute integration to fetch incidents from your
+  Prisma Cloud Compute environment.
 display: Palo Alto Networks - Prisma Cloud Compute
 name: PaloAltoNetworks_PrismaCloudCompute
 script:
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.8.24399
   isfetch: true
   longRunning: false
   longRunningPort: false
   runonce: false
-  script: '-'
+  script: "-"
   subtype: python3
   type: python
+  commands:
+  - name: prisma-cloud-compute-profile-host-list
+    description: Get information about the hosts and their profile events. This command supports asterisks which allows you to get host profiles by filtering its fields according to a specific substring.
+    deprecated: false
+    arguments:
+    - name: hostname
+      description: A comma-separated list of profile (hostname) IDs. For example, !prisma-cloud-compute-profile-host-list hostname="*149*,*257*"
+      required: false
+      isArray: true
+      defaultValue: ""
+    - name: limit
+      description: The maximum number of hosts and their profile events to return. Must be between 1-50.
+      required: false
+      isArray: false
+      defaultValue: "15"
+    - name: offset
+      description: The offset by which to begin listing hosts and their profile events.
+      required: false
+      isArray: false
+      defaultValue: "0"
+    outputs:
+    - contextPath: PrismaCloudCompute.ProfileHost._id
+      description: The profile ID (hostname).
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileHost.accountID
+      description: The cloud account ID associated with the profile.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileHost.apps.listeningPorts.command
+      description: The command that triggered the connection.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileHost.apps.listeningPorts.modified
+      description: The timestamp of when the event occurred.
+      type: Date
+    - contextPath: PrismaCloudCompute.ProfileHost.apps.listeningPorts.port
+      description: The listening port number.
+      type: Number
+    - contextPath: PrismaCloudCompute.ProfileHost.apps.listeningPorts.processPath
+      description: The path to the process that uses the port.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileHost.apps.name
+      description: The app name.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileHost.apps.outgoingPorts.command
+      description: The command that triggered the connection.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileHost.apps.outgoingPorts.country
+      description: The country ISO code for the given IP address.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileHost.apps.outgoingPorts.ip
+      description: The IP address captured over this port.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileHost.apps.outgoingPorts.modified
+      description: The timestamp of when the event occurred.
+      type: Date
+    - contextPath: PrismaCloudCompute.ProfileHost.apps.outgoingPorts.port
+      description: The outgoing port number.
+      type: Number
+    - contextPath: PrismaCloudCompute.ProfileHost.apps.outgoingPorts.processPath
+      description: The path to the process that uses the port.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileHost.apps.processes.command
+      description: The executed command.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileHost.apps.processes.md5
+      description: The process binary MD5 sum.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileHost.apps.processes.modified
+      description: Whether the process binary was modified after the container started.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.ProfileHost.apps.processes.path
+      description: The process binary path.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileHost.apps.processes.ppath
+      description: The parent process path.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileHost.apps.processes.time
+      description: The time in which the process was added. If the process was modified, time is the modification time.
+      type: Date
+    - contextPath: PrismaCloudCompute.ProfileHost.apps.processes.user
+      description: The username of the user who started the process.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileHost.apps.startupProcess.command
+      description: The executed command.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileHost.apps.startupProcess.md5
+      description: The process binary MD5 sum.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileHost.apps.startupProcess.modified
+      description: Whether the process binary was modified after the container started.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.ProfileHost.apps.startupProcess.path
+      description: The process binary path.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileHost.apps.startupProcess.ppath
+      description: The parent process path.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileHost.apps.startupProcess.time
+      description: The time in which the process was added. If the process was modified, time is the modification time.
+      type: Date
+    - contextPath: PrismaCloudCompute.ProfileHost.apps.startupProcess.user
+      description: The username of the user who started the process.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileHost.collections
+      description: A list of collections to which this profile applies.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileHost.created
+      description: The profile creation time.
+      type: Date
+    - contextPath: PrismaCloudCompute.ProfileHost.hash
+      description: The uint32 hash associated with the profile.
+      type: Number
+    - contextPath: PrismaCloudCompute.ProfileHost.labels
+      description: The labels associated with the profile.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileHost.sshEvents.command
+      description: The executed command.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileHost.sshEvents.country
+      description: The SSH client's country of origin.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileHost.sshEvents.ip
+      description: The connection client IP address.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileHost.sshEvents.loginTime
+      description: The SSH login time.
+      type: Date
+    - contextPath: PrismaCloudCompute.ProfileHost.sshEvents.md5
+      description: The process binary MD5 sum.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileHost.sshEvents.modified
+      description: Whether the process binary was modified after the container started.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.ProfileHost.sshEvents.path
+      description: The process binary path.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileHost.sshEvents.ppath
+      description: The parent process path.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileHost.sshEvents.time
+      description: The time in which the process was added. If the process was modified, time is the modification time.
+      type: Date
+    - contextPath: PrismaCloudCompute.ProfileHost.sshEvents.user
+      description: The username of the user who started the process.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileHost.time
+      description: The last time this profile was modified.
+      type: Date
+    - contextPath: PrismaCloudCompute.ProfileHost.geoip.countries.code
+      description: The country code of the computer that accessed the host.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileHost.geoip.countries.ip
+      description: The IP address of the computer that accessed the host.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileHost.geoip.countries.modified
+      description: The last time the IP address associated with this country accessed the host console.
+      type: Date
+    - contextPath: PrismaCloudCompute.ProfileHost.geoip.modified
+      description: The last time any of the country IP addresses accessed the host console.
+      type: Date
+  - name: prisma-cloud-compute-profile-container-list
+    description: Get information about the containers and their profile events. This command supports asterisks which allows you to get container profiles by filtering its fields according to a specific substring.
+    deprecated: false
+    arguments:
+    - name: cluster
+      description: A comma-separated list of runtime profile Kubernetes clusters.
+      required: false
+      isArray: true
+      defaultValue: ""
+    - name: id
+      description: A comma-separated list of runtime profile (hostname) IDs. For example, !prisma-cloud-compute-profile-container-list id="*256*,*148*".
+      required: false
+      isArray: true
+      defaultValue: ""
+    - name: image
+      description: A comma-separated list of runtime profile images. For example, !prisma-cloud-compute-profile-container-list image="*console*,*defender*".
+      required: false
+      isArray: true
+      defaultValue: ""
+    - name: image_id
+      description: A comma-separated list of runtime profile image IDs. For example, !prisma-cloud-compute-profile-container-list image_id="*123*,*456*".
+      required: false
+      isArray: true
+      defaultValue: ""
+    - name: namespace
+      description: A comma-separated list of runtime profile Kubernetes namespaces. For example, !prisma-cloud-compute-profile-container-list namespace="*namespace1*,*namespace2*".
+      required: false
+      isArray: true
+      defaultValue: ""
+    - name: os
+      description: A comma-separated list of service runtime profile operating systems. For example, !prisma-cloud-compute-profile-container-list os="*Red Hat*,*Windows*".
+      required: false
+      isArray: true
+      defaultValue: ""
+    - name: state
+      description: A comma-separated list of runtime profile states. For example, !prisma-cloud-compute-profile-container-list state=*active*.
+      required: false
+      isArray: true
+      defaultValue: ""
+    - name: limit
+      description: The maximum number of containers and their profile events. Must be between 1-50.
+      required: false
+      isArray: false
+      defaultValue: "15"
+    - name: offset
+      description: The offset by which to begin listing containers and their profile
+        events.
+      required: false
+      isArray: false
+      defaultValue: "0"
+    outputs:
+    - contextPath: PrismaCloudCompute.ProfileContainer._id
+      description: The profile ID.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileContainer.accountsIDs
+      description: The cloud account IDs associated with the container
+        runtime profile.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileContainer.archived
+      description: Whether this profile is archived.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.ProfileContainer.capabilities.ci
+      description: Whether the container is allowed to write binaries to disk and run them
+        based on static analysis.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.ProfileContainer.capabilities.cloudMetadata
+      description: Whether the given container can query cloud metadata API
+        based on static analysis.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.ProfileContainer.capabilities.dnsCache
+      description: Whether the DNS services used by all the pods in the cluster were added to the profile based on static analysis.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.ProfileContainer.capabilities.dynamicDNSQuery
+      description: Whether capped behavioral DNS queries were added to the profile based on static analysis.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.ProfileContainer.capabilities.dynamicFileCreation
+      description: Whether capped behavioral file system paths were added to the profile based on static analysis.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.ProfileContainer.capabilities.dynamicProcessCreation
+      description: Whether capped behavioral processes were added to the profile based on static analysis.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.ProfileContainer.capabilities.k8s
+      description: Whether the given container can perform Kubernetes networking tasks (e.g., contact to API server).
+      type: Boolean
+    - contextPath: PrismaCloudCompute.ProfileContainer.capabilities.proxy
+      description: Whether the container can listen on any port and perform multiple outbound connections.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.ProfileContainer.capabilities.sshd
+      description: Whether the container can run sshd processes.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.ProfileContainer.capabilities.unpacker
+      description: Whether the container is allowed to write shared libraries to disk.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.ProfileContainer.cluster
+      description: The provided cluster name.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileContainer.collections
+      description: Collections to which this profile applies.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileContainer.created
+      description: The profile creation time.
+      type: Date
+    - contextPath: PrismaCloudCompute.ProfileContainer.entrypoint
+      description: The image entrypoint.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileContainer.events._id
+      description: The history event entity.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileContainer.events.command
+      description: The process that was executed.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileContainer.events.hostname
+      description: The hostname on which the command was invoked.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileContainer.events.time
+      description: The time of the event.
+      type: Date
+    - contextPath: PrismaCloudCompute.ProfileContainer.filesystem.behavioral.mount
+      description: Whether the given folder is mounted.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.ProfileContainer.filesystem.behavioral.path
+      description: The file path.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileContainer.filesystem.behavioral.process
+      description: The process that accessed the file.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileContainer.filesystem.behavioral.time
+      description: The time in which the file was added.
+      type: Date
+    - contextPath: PrismaCloudCompute.ProfileContainer.filesystem.static.mount
+      description: Whether the given folder is mounted.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.ProfileContainer.filesystem.static.path
+      description: The file path.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileContainer.filesystem.static.process
+      description: The process that accessed the file.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileContainer.filesystem.static.time
+      description: The time in which the file was added.
+      type: Date
+    - contextPath: PrismaCloudCompute.ProfileContainer.hash
+      description: The uint32 hash associated with the profile.
+      type: Number
+    - contextPath: PrismaCloudCompute.ProfileContainer.hostNetwork
+      description: Whether the instance shares the network namespace with
+        the host.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.ProfileContainer.hostPid
+      description: Whether the instance shares the PID namespace
+        with the host.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.ProfileContainer.image
+      description: The image the container runs with.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileContainer.imageID
+      description: The profile's image ID.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileContainer.infra
+      description: Whether this is an infrastructure container.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.ProfileContainer.istio
+      description: Whether it is an Istio-monitored profile.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.ProfileContainer.k8s.clusterRoles.labels.key
+      description: The key of the label.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileContainer.k8s.clusterRoles.labels.value
+      description: The value of the label.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileContainer.k8s.clusterRoles.name
+      description: The role name.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileContainer.k8s.clusterRoles.roleBinding
+      description: The name of the role binding used for display.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileContainer.k8s.clusterRoles.rules
+      description: The list of rules associated with the cluster role.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileContainer.k8s.roles.labels.key
+      description: The key of the label.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileContainer.k8s.roles.labels.value
+      description: The value of the label.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileContainer.k8s.roles.name
+      description: The Kubernetes role name.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileContainer.k8s.roles.namespace
+      description: The namespace associated with the role.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileContainer.k8s.roles.roleBinding
+      description: The name of the role binding used for display.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileContainer.k8s.roles.rules
+      description: The policy rules associated with the role.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileContainer.k8s.serviceAccount
+      description: The service account used to access the
+        Kubernetes API server. This field will be empty if the container is not running inside of a pod.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileContainer.label
+      description: The profile's label.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileContainer.lastUpdate
+      description: The last time this profile was modified.
+      type: Date
+    - contextPath: PrismaCloudCompute.ProfileContainer.learnedStartup
+      description: Whether the startup events were learned.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.ProfileContainer.namespace
+      description: The Kubernetes deployment namespace.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileContainer.network.behavioral.dnsQueries.domainName
+      description: The queried domain name.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileContainer.network.behavioral.dnsQueries.domainType
+      description: The queried domain type.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileContainer.network.listeningPorts.app
+      description: The name of the app.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileContainer.network.listeningPorts.portsData.all
+      description: Whether this port data represents any arbitrary ports.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.ProfileContainer.network.listeningPorts.portsData.ports.port
+      description: The port number.
+      type: Number
+    - contextPath: PrismaCloudCompute.ProfileContainer.network.listeningPorts.portsData.ports.time
+      description: The learning timestamp of this port.
+      type: Date
+    - contextPath: PrismaCloudCompute.ProfileContainer.network.outboundPorts.portsData.all
+      description: Whether this port data represents any arbitrary ports.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.ProfileContainer.network.outboundPorts.portsData.ports.port
+      description: The port number.
+      type: Number
+    - contextPath: PrismaCloudCompute.ProfileContainer.network.static.listeningPorts.ports.time
+      description: The learning timestamp of this port.
+      type: Date
+    - contextPath: PrismaCloudCompute.ProfileContainer.network.static.listeningPorts.app
+      description: The name of the app.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileContainer.network.static.listeningPorts.portsData.all
+      description: Whether this port data represents any arbitrary ports.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.ProfileContainer.network.static.listeningPorts.portsData.ports.port
+      description: The port number.
+      type: Number
+    - contextPath: PrismaCloudCompute.ProfileContainer.network.static.listeningPorts.portsData.ports.time
+      description: The learning timestamp of this port.
+      type: Date
+    - contextPath: PrismaCloudCompute.ProfileContainer.os
+      description: The profile image operating system.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileContainer.processes.behavioral.command
+      description: The executed command.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileContainer.processes.behavioral.md5
+      description: The process binary MD5 sum.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileContainer.processes.behavioral.modified
+      description: Whether the process binary was modified after the container started.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.ProfileContainer.processes.behavioral.path
+      description: The process binary path.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileContainer.processes.behavioral.ppath
+      description: The parent process path.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileContainer.processes.behavioral.time
+      description: The time in which the process was added. If the process was modified, time is the modification time.
+      type: Date
+    - contextPath: PrismaCloudCompute.ProfileContainer.processes.behavioral.user
+      description: The username of the user who started the process.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileContainer.processes.static.command
+      description: The executed command.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileContainer.processes.static.md5
+      description: The process binary MD5 sum.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileContainer.processes.static.modified
+      description: Whether the process binary was modified after the container started.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.ProfileContainer.processes.static.path
+      description: The process binary path.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileContainer.processes.static.ppath
+      description: The parent process path.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileContainer.processes.static.time
+      description: The time in which the process was added. If the process was modified, time is the modification time.
+      type: Date
+    - contextPath: PrismaCloudCompute.ProfileContainer.processes.static.user
+      description: The username of the user who started the process.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileContainer.relearningCause
+      description: The reason a
+        profile entered the learning mode after being activated.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileContainer.remainingLearningDurationSec
+      description: The total time left that
+        the system needs to finish learning this image.
+      type: Number
+    - contextPath: PrismaCloudCompute.ProfileContainer.state
+      description: The current state of the profile.
+      type: String
+  - name: prisma-cloud-compute-profile-container-hosts-list
+    description: Get the hosts where a specific container is running.
+    deprecated: false
+    arguments:
+    - name: id
+      description: Container profile ID. Can be retrieved from the prisma-cloud-compute-profile-container-list command.
+      required: true
+      isArray: false
+      defaultValue: ""
+    - name: limit
+      description: The maximum number of hosts to return. Must be between 1-50.
+      required: false
+      isArray: false
+      defaultValue: "50"
+    - name: offset
+      description: The offset by which to begin listing hosts of the container.
+      required: false
+      isArray: false
+      defaultValue: "0"
+    outputs:
+    - contextPath: PrismaCloudCompute.ProfileContainerHost.containerID
+      description: The container ID.
+      type: String
+    - contextPath: PrismaCloudCompute.ProfileContainerHost.hostsIDs
+      description: The list of hosts where this container is running.
+      type: String
+  - name: prisma-cloud-compute-profile-container-forensic-list
+    description: Get runtime forensics data for a specific container on a specific
+      host
+    deprecated: false
+    arguments:
+    - name: id
+      description: The container ID. Can be retrieved from the prisma-cloud-compute-profile-container-list command.
+      required: true
+      isArray: false
+      defaultValue: ""
+    - name: collections
+      description: The collections scoping the query.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: hostname
+      description: The hostname for which data should be fetched.
+      required: true
+      isArray: false
+      defaultValue: ""
+    - name: incident_id
+      description: The incident ID in case the request type is an incident.
+      required: false
+      isArray: true
+      defaultValue: ""
+    - name: limit
+      description: The maximum number of forensics data records to return. Must be between 1-50.
+      required: false
+      isArray: false
+      defaultValue: "20"
+    - name: offset
+      description: The offset by which to begin listing records from.
+      required: false
+      isArray: false
+      defaultValue: "0"
+    outputs:
+    - contextPath: PrismaCloudCompute.ContainerForensic.containerID
+      description: The container ID.
+      type: String
+    - contextPath: PrismaCloudCompute.ContainerForensic.hostname
+      description: The hostname.
+      type: String
+    - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.allPorts
+      description: Whether all listening ports are allowed.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.attack
+      description: The event attack type.
+      type: String
+    - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.category
+      description: The incident category.
+      type: String
+    - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.command
+      description: The event command.
+      type: String
+    - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.containerId
+      description: The event container ID.
+      type: String
+    - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.dstIP
+      description: The destination IP address of the connection.
+      type: String
+    - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.dstPort
+      description: The destination port.
+      type: String
+    - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.dstProfileID
+      description: The profile ID of the connection destination.
+      type: String
+    - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.effect
+      description: The runtime audit effect.
+      type: String
+    - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.listeningStartTime
+      description: The port listening start time.
+      type: Date
+    - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.message
+      description: The runtime audit message.
+      type: String
+    - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.networkCollectionType
+      description: The type of the network collection method.
+      type: String
+    - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.outbound
+      description: Whether the port is outbound.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.path
+      description: The event path.
+      type: String
+    - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.pid
+      description: The event process ID.
+      type: Number
+    - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.port
+      description: The listening port.
+      type: Number
+    - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.ppid
+      description: The event parent process ID.
+      type: Number
+    - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.process
+      description: The event process description.
+      type: String
+    - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.srcIP
+      description: The source IP address of the connection.
+      type: String
+    - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.srcProfileID
+      description: The profile ID of the connection source.
+      type: String
+    - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.static
+      description: Whether the event was added to the profile without behavioral
+        indications.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.type
+      description: The event type.
+      type: String
+    - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.timestamp
+      description: The event timestamp.
+      type: Date
+    - contextPath: PrismaCloudCompute.ContainerForensic.Forensics.user
+      description: The event user.
+      type: String
+  - name: prisma-cloud-compute-host-forensic-list
+    description: Get forensics on a specific host.
+    deprecated: false
+    arguments:
+    - name: id
+      description: The host ID. Can be retrieved from the prisma-cloud-compute-profile-host-list command.
+      required: true
+      isArray: false
+      defaultValue: ""
+    - name: collections
+      description: The collections scoping the query.
+      required: false
+      isArray: true
+      defaultValue: ""
+    - name: incident_id
+      description: The incident ID in case the request type is an incident.
+      required: false
+      isArray: true
+      defaultValue: ""
+    - name: limit
+      description: The maximum number of forensics data records to return. Must be between 1-50.
+      required: false
+      isArray: false
+      defaultValue: "20"
+    - name: offset
+      description: The offset by which to begin listing host forensics from.
+      required: false
+      isArray: false
+      defaultValue: "0"
+    outputs:
+    - contextPath: PrismaCloudCompute.HostForensic.Forensics.app
+      description: The application associated with the event.
+      type: String
+    - contextPath: PrismaCloudCompute.HostForensic.Forensics.attack
+      description: The event attack type.
+      type: String
+    - contextPath: PrismaCloudCompute.HostForensic.Forensics.category
+      description: The incident category.
+      type: String
+    - contextPath: PrismaCloudCompute.HostForensic.Forensics.command
+      description: The event command.
+      type: String
+    - contextPath: PrismaCloudCompute.HostForensic.Forensics.country
+      description: The country associated with the event.
+      type: String
+    - contextPath: PrismaCloudCompute.HostForensic.Forensics.effect
+      description: The runtime audit effect.
+      type: String
+    - contextPath: PrismaCloudCompute.HostForensic.Forensics.interactive
+      description: Whether the event is interactive.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.HostForensic.Forensics.ip
+      description: The IP address associated with the event.
+      type: String
+    - contextPath: PrismaCloudCompute.HostForensic.Forensics.listeningStartTime
+      description: The listening port start time.
+      type: Date
+    - contextPath: PrismaCloudCompute.HostForensic.Forensics.message
+      description: The runtime audit message.
+      type: String
+    - contextPath: PrismaCloudCompute.HostForensic.Forensics.path
+      description: The event path.
+      type: String
+    - contextPath: PrismaCloudCompute.HostForensic.Forensics.pid
+      description: The event process ID.
+      type: Number
+    - contextPath: PrismaCloudCompute.HostForensic.Forensics.port
+      description: The listening port.
+      type: Number
+    - contextPath: PrismaCloudCompute.HostForensic.Forensics.ppath
+      description: The event parent path.
+      type: String
+    - contextPath: PrismaCloudCompute.HostForensic.Forensics.ppid
+      description: The event parent process ID.
+      type: Number
+    - contextPath: PrismaCloudCompute.HostForensic.Forensics.process
+      description: The event process.
+      type: String
+    - contextPath: PrismaCloudCompute.HostForensic.Forensics.timestamp
+      description: The event timestamp.
+      type: Date
+    - contextPath: PrismaCloudCompute.HostForensic.Forensics.type
+      description: The event type.
+      type: String
+    - contextPath: PrismaCloudCompute.HostForensic.Forensics.user
+      description: The event user.
+      type: String
+    - contextPath: PrismaCloudCompute.HostForensic.hostID
+      description: The host ID that was analyzed.
+      type: String
+  - name: prisma-cloud-compute-console-version-info
+    description: Get the console version.
+    deprecated: false
+    arguments: []
+    outputs:
+    - contextPath: PrismaCloudCompute.Console.Version
+      description: The console version.
+      type: String
+  - name: prisma-cloud-compute-custom-feeds-ip-list
+    description: Get all the blacklisted IP addresses in the system.
+    deprecated: false
+    arguments: []
+    outputs:
+    - contextPath: PrismaCloudCompute.CustomFeedIP.digest
+      description: An internal digest of the custom IP feed.
+      type: String
+    - contextPath: PrismaCloudCompute.CustomFeedIP.feed
+      description: The list of blacklisted custom IP addresses.
+      type: String
+    - contextPath: PrismaCloudCompute.CustomFeedIP.modified
+      description: The last time the custom feed was modified.
+      type: Date
+  - name: prisma-cloud-compute-custom-feeds-ip-add
+    description: Add a list of banned IP addresses to be blocked by the system.
+    deprecated: false
+    arguments:
+    - name: ip
+      description: List of custom IP addresses to add to the banned IPs list that will be blocked. For example ip=1.1.1.1,2.2.2.2.
+      required: true
+      isArray: true
+      defaultValue: ""
+    outputs: []
 tests:
 - No test
 fromversion: 5.0.0

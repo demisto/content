@@ -111,7 +111,7 @@ def get_by_value(
         valid = []
 
         for x in dir(api_obj):
-            if not x.startswith("get_by_") or x.endswith("s") or x.endswith("_regex"):
+            if not x.startswith("get_by_") or x.endswith("s"):
                 continue
 
             valid.append(x.replace("get_by_", ""))
@@ -182,18 +182,33 @@ def main():
         elif command == "axonius-get-users-by-mail":
             results = get_by_value(api_obj=client.users, method_name="mail")
             return_results(results)  # noqa: F821, F405
+        elif command == "axonius-get-users-by-mail-regex":
+            results = get_by_value(api_obj=client.users, method_name="mail_regex")
+            return_results(results)
         elif command == "axonius-get-users-by-username":
             results = get_by_value(api_obj=client.users, method_name="username")
             return_results(results)  # noqa: F821, F405
+        elif command == "axonius-get-users-by-username-regex":
+            results = get_by_value(api_obj=client.users, method_name="username_regex")
+            return_results(results)
         elif command == "axonius-get-devices-by-hostname":
             results = get_by_value(api_obj=client.devices, method_name="hostname")
             return_results(results)  # noqa: F821, F405
+        elif command == "axonius-get-devices-by-hostname-regex":
+            results = get_by_value(api_obj=client.devices, method_name="hostname_regex")
+            return_results(results)
         elif command == "axonius-get-devices-by-ip":
             results = get_by_value(api_obj=client.devices, method_name="ip")
             return_results(results)  # noqa: F821, F405
+        elif command == "axonius-get-devices-by-ip-regex":
+            results = get_by_value(api_obj=client.devices, method_name="ip_regex")
+            return_results(results)
         elif command == "axonius-get-devices-by-mac":
             results = get_by_value(api_obj=client.devices, method_name="mac")
             return_results(results)  # noqa: F821, F405
+        elif command == "axonius-get-devices-by-mac-regex":
+            results = get_by_value(api_obj=client.devices, method_name="mac_regex")
+            return_results(results)
 
     except Exception as exc:
         demisto.error(traceback.format_exc())

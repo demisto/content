@@ -9,8 +9,10 @@ from pkg_resources import parse_version
 import shutil
 
 ryaml = YAML()
-ryaml.preserve_quotes = True
-ryaml.width = 50000  # make sure long lines will not break (relevant for code section)
+ryaml.preserve_quotes = True  # type: ignore[assignment]
+
+# make sure long lines will not break (relevant for code section)
+ryaml.width = 50000   # type: ignore[assignment]
 
 DOCKERIMAGE_45_TOP_VERSION = '4.5.9'
 

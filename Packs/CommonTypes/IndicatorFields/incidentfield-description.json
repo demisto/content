@@ -28,7 +28,11 @@
         "Attack Pattern",
         "IP",
         "File",
-        "URL"
+        "URL",
+        "Malware",
+        "Tool",
+        "Report",
+        "Threat Actor"
     ],
     "caseInsensitive": true,
     "columns": null,

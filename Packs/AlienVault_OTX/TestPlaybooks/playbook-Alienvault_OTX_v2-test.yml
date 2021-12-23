@@ -1022,7 +1022,7 @@ tasks:
       - "31"
     scriptarguments:
       indicator:
-        simple: 192.168.0.1
+        simple: 8.8.8.8
       indicator-type:
         simple: IPv4
       indicator_type:
@@ -1411,7 +1411,7 @@ tasks:
       submitWait: {}
       threshold: {}
       url:
-        simple: http://www.fotoidea.com/sport/4x4_san_ponso/slides/IMG_0068.html/url_list
+        simple: http://www.fotoidea.com/sport/4x4_san_ponso/slides/IMG_0068.html/url_list,HTTP://www.google.com
       wait: {}
     continueonerror: true
     separatecontext: false

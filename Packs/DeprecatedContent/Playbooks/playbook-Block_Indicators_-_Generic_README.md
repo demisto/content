@@ -33,8 +33,8 @@ This playbook does not use any commands.
 
 | **Name** | **Description** | **Default Value** | **Source** | **Required** |
 | --- | --- | --- | --- | --- |
-| IPBlacklistMiner | The name of the IP address blacklist Miner in Minemeld. | - | - | Optional |
-| URLBlacklistMiner | The name of the URL blacklist Miner in  Minemeld. | - | - | Optional |
+| IPBlacklistMiner | The name of the IP address block list Miner in Minemeld. | - | - | Optional |
+| URLBlacklistMiner | The name of the URL block list Miner in  Minemeld. | - | - | Optional |
 | IP | The array of malicious IP addresses to block. | Indicator | DBotScore | Optional |
 | URL | The array of malicious URLs to block. | Indicator | DBotScore | Optional |
 | Username | The array of malicious usernames to block. | Indicator | DBotScore | Optional |

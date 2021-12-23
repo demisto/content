@@ -2,7 +2,7 @@
     "name": "Ansible Microsoft Windows",
     "description": "Manage and control Windows hosts.",
     "support": "xsoar",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.2",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -12,9 +12,12 @@
     "tags": [
         "IT"
     ],
-    "useCases": [
-        "IT Services",
+    "useCases": [],
+    "keywords": [
         "Asset Management"
     ],
-    "keywords": []
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

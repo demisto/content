@@ -2,4 +2,4 @@
 ignore=BA110
 
 [file:ConcentricAI.yml]
-ignore=DS107
+ignore=DS107,IN145

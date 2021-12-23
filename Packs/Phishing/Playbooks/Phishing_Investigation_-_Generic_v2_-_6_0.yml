@@ -163,10 +163,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: dc2824f3-564e-4270-893b-80318ac5c5f6
+    taskid: eda53266-2df9-40a6-8f16-bc4bf3bb8e76
     type: regular
     task:
-      id: dc2824f3-564e-4270-893b-80318ac5c5f6
+      id: eda53266-2df9-40a6-8f16-bc4bf3bb8e76
       version: -1
       name: Store the email address of the reporting user
       description: Store the email address of the user that reported the incident.
@@ -179,19 +179,21 @@ tasks:
       - "53"
       - "85"
     scriptarguments:
+      append: {}
       key:
         simple: ReporterAddress
+      stringify: {}
       value:
         complex:
-          root: incident
-          accessor: labels.Email/from
+          root: ExtractedIndicators.Email
+          accessor: '[0]'
     reputationcalc: 1
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 1182.5,
-          "y": 350
+          "y": 515
         }
       }
     note: false
@@ -237,7 +239,7 @@ tasks:
       {
         "position": {
           "x": 1182.5,
-          "y": 710
+          "y": 880
         }
       }
     note: false
@@ -315,7 +317,7 @@ tasks:
       subject:
         simple: 'Re: Phishing Investigation - ${incident.name}'
       to:
-        simple: $ReporterAddress}
+        simple: ${ReporterAddress}
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -390,7 +392,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "12"
+      - "134"
     separatecontext: false
     view: |-
       {
@@ -907,10 +909,7 @@ tasks:
       - "13"
     scriptarguments:
       Domain:
-        complex:
-          root: Domain
-          transformers:
-          - operator: uniq
+        simple: ' '
       Email:
         complex:
           root: ReporterAddress
@@ -926,7 +925,7 @@ tasks:
       {
         "position": {
           "x": 1182.5,
-          "y": 530
+          "y": 700
         }
       }
     note: false
@@ -1239,7 +1238,7 @@ tasks:
       {
         "position": {
           "x": 1650,
-          "y": 530
+          "y": 700
         }
       }
     note: false
@@ -1691,6 +1690,7 @@ tasks:
                 iscontext: true
           transformers:
           - operator: uniq
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -1980,7 +1980,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     nexttasks:
       '#default#':
       - "84"
@@ -2047,6 +2047,43 @@ tasks:
         "position": {
           "x": -907.5,
           "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "134":
+    id: "134"
+    taskid: bfac256a-f19f-45b2-8982-9e36d827438d
+    type: regular
+    task:
+      id: bfac256a-f19f-45b2-8982-9e36d827438d
+      version: -1
+      name: Extract the email address of the reporting user
+      description: commands.local.cmd.extract.indicators
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      entryID: {}
+      filePath: {}
+      investigationID: {}
+      text:
+        complex:
+          root: incident.labels
+          accessor: Email/from
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1182.5,
+          "y": 350
         }
       }
     note: false

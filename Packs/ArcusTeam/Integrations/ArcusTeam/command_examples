@@ -1,0 +1,2 @@
+!arcusteam-get-devices vendor="Cisco" model="Nexus 6001" series="Nexus 6000"
+!arcusteam-get-vulnerabilities firmware_id=f5db998da08c1917bb76ea98b051bff6 device_id=e91e3216d1d0f6480a89acbd9536a1ca return_fields=risk,cve,cwe,description,exploit_published,exploit_used,modified_date

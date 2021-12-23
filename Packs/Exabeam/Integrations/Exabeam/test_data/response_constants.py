@@ -225,3 +225,11 @@ RESPONSE_NOTABLE_SEQUENCE_EVENTS = [{
      'displayName': 'dn9',
      'count': 1}
 ]
+
+DELETE_RECORD_RESPONSE = {'sessionId': '56a5b19a-4193-4616-9978-0bbabb1e2d60',
+                          'recordChanges': [{
+                              'changeType': 'removed',
+                              'changeId': '4aad5392-20e7-4423-abcb-a9680c566215',
+                              'record': {'key': '', 'id': 'test_key'}
+                          }],
+                          'metadata': {'createdSize': 0, 'updatedSize': 0, 'removedSize': 1, 'duplicates': []}}

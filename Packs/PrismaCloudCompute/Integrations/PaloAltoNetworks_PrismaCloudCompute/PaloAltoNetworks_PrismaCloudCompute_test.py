@@ -1,11 +1,26 @@
 import pytest
-from PaloAltoNetworks_PrismaCloudCompute import Client, camel_case_transformer, fetch_incidents, get_headers, \
-    HEADERS_BY_NAME
+from collections import OrderedDict
+from PaloAltoNetworks_PrismaCloudCompute import (
+    PrismaCloudComputeClient, camel_case_transformer, fetch_incidents, get_headers,
+    HEADERS_BY_NAME, get_profile_host_list, get_container_profile_list, get_container_hosts_list,
+    get_profile_container_forensic_list, get_profile_host_forensic_list, get_console_version, get_custom_feeds_ip_list,
+    add_custom_ip_feeds, filter_api_response, parse_date_string_format
+)
 
 from CommonServerPython import DemistoException
 
 
-def test_camel_case_transformer(requests_mock):
+BASE_URL = 'https://test.com'
+
+
+@pytest.fixture
+def client() -> PrismaCloudComputeClient:
+    return PrismaCloudComputeClient(
+        base_url=BASE_URL, verify='False', project='', auth=('test', 'test')
+    )
+
+
+def test_camel_case_transformer():
     test_strings = ['camelCase', 'camelCaSe', 'camelCaseString', 'camelcase', 'CAMELCASE', 'cve', 'id', 4]
     expected_results = ['Camel Case', 'Camel Ca Se', 'Camel Case String', 'Camelcase', 'Camelcase', 'CVE', 'ID', '4']
 
@@ -17,11 +32,10 @@ def test_camel_case_transformer(requests_mock):
 
 
 def test_api_fallback(requests_mock):
-    test_url = 'https://test.com'
-    xsoar_endpoint = test_url + '/xsoar-alerts'
-    demisto_endpoint = test_url + '/demisto-alerts'
+    xsoar_endpoint = BASE_URL + '/xsoar-alerts'
+    demisto_endpoint = BASE_URL + '/demisto-alerts'
     test_response = {'foo': 'bar'}
-    client = Client(base_url=test_url, verify='False', project='', auth=('test', 'test'))
+    client = PrismaCloudComputeClient(base_url=BASE_URL, verify='False', project='', auth=('test', 'test'))
 
     # Validate new API
     requests_mock.get(xsoar_endpoint, json=test_response)
@@ -365,7 +379,7 @@ def test_fetch_incidents(requests_mock):
                     '|\\n"}'}]
 
     requests_mock.get('https://test.com/xsoar-alerts', json=json_incidents_mock_response)
-    client = Client(base_url='https://test.com', verify='False', project='', auth=('test', 'test'))
+    client = PrismaCloudComputeClient(base_url=BASE_URL, verify='False', project='', auth=('test', 'test'))
     assert fetch_incidents(client) == expected_incidents
 
 
@@ -412,3 +426,455 @@ def test_get_headers():
             "status": ""
         }]
     assert get_headers('unknownType', data) == list(data[0].keys())
+
+
+HTTP_REQUEST_URL_WITH_QUERY_PARAMS = [
+    (
+        OrderedDict(cluster="cluster", hostname="hostname", limit="10", offset="0"),
+        get_profile_host_list,
+        "/profiles/host",
+        "https://test.com/profiles/host?cluster=cluster&limit=10&offset=0&hostname=hostname"
+    ),
+    (
+        OrderedDict(
+            cluster="cluster", id="1", image="image", image_id="1", namespace="namespace", os="os",
+            state="state", limit="10", offset="0"
+        ),
+        get_container_profile_list,
+        "/profiles/container",
+        "https://test.com/profiles/container?cluster=cluster&id=1&image=image"
+        "&namespace=namespace&os=os&state=state&limit=10&offset=0&imageid=1"
+    ),
+    (
+        OrderedDict(limit="10", offset="0", id="123"),
+        get_container_hosts_list,
+        "/profiles/container/123/hosts",
+        "https://test.com/profiles/container/123/hosts"
+    ),
+    (
+        OrderedDict(
+            collections="collections", hostname="hostname", limit="15", offset="2", id="123"
+        ),
+        get_profile_container_forensic_list,
+        "/profiles/container/123/forensic",
+        "https://test.com/profiles/container/123/forensic?collections=collections&hostname=hostname&limit=17"
+    ),
+    (
+        OrderedDict(
+            collections="collections", limit="10", offset="3", id="123"
+        ),
+        get_profile_host_forensic_list,
+        "/profiles/host/123/forensic",
+        "https://test.com/profiles/host/123/forensic?collections=collections&limit=13"
+    ),
+    (
+        OrderedDict(),
+        get_console_version,
+        "/version",
+        "https://test.com/version"
+    ),
+    (
+        OrderedDict(),
+        get_custom_feeds_ip_list,
+        "/feeds/custom/ips",
+        "https://test.com/feeds/custom/ips"
+    )
+]
+
+
+@pytest.mark.parametrize("args, func, url_suffix, expected_url", HTTP_REQUEST_URL_WITH_QUERY_PARAMS)
+def test_http_request_url_is_valid(requests_mock, args, func, url_suffix, expected_url, client):
+    """
+    Given:
+        - query command arguments.
+
+    When:
+        - Calling the http-request for the command endpoint.
+
+    Then:
+        - Verify that the full URL of the http request is sent with the correct query/uri params.
+    """
+    mocker = requests_mock.get(url=BASE_URL + url_suffix, json=[])
+    func(client=client, args=args) if args else func(client=client)
+
+    assert expected_url == mocker.last_request._url_parts.geturl()
+
+
+INVALID_LIMIT_OFFSET_ARGS = [
+    (
+        {"limit": "100", "offset": "0"},
+        get_profile_host_list,
+    ),
+    (
+        {"limit": "not_a_number", "offset": "0"},
+        get_profile_host_list,
+    ),
+    (
+        {"limit": "30", "offset": "not_a_number"},
+        get_container_profile_list,
+    ),
+    (
+        {"limit": "-2", "offset": "-5"},
+        get_container_profile_list,
+    ),
+    (
+        {"limit": "0", "offset": "-1", "id": "123"},
+        get_container_hosts_list,
+    ),
+    (
+        {"limit": "-50", "offset": "3", "id": "123"},
+        get_profile_host_forensic_list,
+    ),
+    (
+        {"limit": "-51", "offset": "0", "id": "123"},
+        get_profile_container_forensic_list,
+    ),
+    (
+        {"limit": "51", "offset": "0", "id": "123"},
+        get_profile_container_forensic_list,
+    ),
+    (
+        {"limit": "51", "offset": "100", "id": "123"},
+        get_profile_host_forensic_list,
+    ),
+    (
+        {"limit": "0", "offset": "0", "id": "123"},
+        get_container_hosts_list,
+    )
+]
+
+
+@pytest.mark.parametrize("args, func", INVALID_LIMIT_OFFSET_ARGS)
+def test_invalid_offset_and_limit(args, func, client):
+    """
+    Given:
+        - invalid offset/limit as command arguments.
+
+    When:
+        - executing a function for a specific api endpoint.
+
+    Then:
+        - Verify that ValueError is raised.
+    """
+    with pytest.raises((AssertionError, ValueError)):
+        func(client=client, args=args)
+
+
+HTTP_BODY_REQUEST_PARAMS = [
+    (
+        add_custom_ip_feeds,
+        "/feeds/custom/ips",
+        {
+            "ip": [
+                "1.1.1.1",
+            ]
+        }
+    )
+]
+
+
+@pytest.mark.parametrize("func, url_suffix, args", HTTP_BODY_REQUEST_PARAMS)
+def test_http_body_request_is_valid(requests_mock, func, url_suffix, args, client):
+    """
+    Given:
+        - http body request to an api endpoint.
+
+    When:
+        - Calling the http-request for the command endpoint.
+
+    Then:
+        - Verify that the http body request that was sent is correct.
+    """
+    full_url = BASE_URL + url_suffix
+
+    requests_mock.get(url=full_url, json={})
+    mocker = requests_mock.put(url=full_url, json={})
+
+    expected_body_request = {"feed": args.get("ip")}
+
+    func(client=client, args=args)
+
+    assert expected_body_request == mocker.last_request.json()
+
+
+HTTP_FILTERING_BODY_RESPONSE_PARAMS = [
+    (
+        4, 2, ["host1", "host2", "host3", "host4", "host5"], ["host3", "host4", "host5"]
+    ),
+    (
+        4, 2, ["host1"], []
+    ),
+    (
+        5, 1, ["host1", "host2"], ["host2"]
+    ),
+    (
+        3, 1, ["host1", "host2", "host3", "host4", "host5"], ["host2", "host3", "host4"]
+    ),
+    (
+        1, 4, ["host1", "host2", "host3"], []
+    ),
+    (
+        1, 4, ["host1", "host2", "host3", "host4", "host5", "host6", "host7"], ["host5"]
+    ),
+    (
+        5, 3, ["host1", "host2", "host3", "host4", "host5", "host6", "host7"], ["host4", "host5", "host6", "host7"]
+    ),
+    (
+        2, 8, ["host1", "host2", "host3", "host4", "host5", "host6", "host7"], []
+    ),
+    (
+        7, 4, ["host1", "host2", "host3", "host4", "host5", "host6", "host7"], ["host5", "host6", "host7"]
+    ),
+    (
+        4, 0, ["host1", "host2", "host3"], ["host1", "host2", "host3"]
+    ),
+    (
+        1, 1, ["host1", "host2", "host3"], ["host2"]
+    ),
+]
+
+
+@pytest.mark.parametrize("limit, offset, full_response, expected_response", HTTP_FILTERING_BODY_RESPONSE_PARAMS)
+def test_http_body_response_filtering_is_valid(limit, offset, full_response, expected_response, client):
+    """
+    Given:
+        - api response.
+
+    When:
+        - calling the function to filter the response
+
+    Then:
+        - Verify that the http body response is filtered correctly.
+    """
+
+    body_response = filter_api_response(api_response=full_response, limit=limit, offset=offset)
+
+    assert len(body_response) == len(expected_response)
+    assert body_response == expected_response
+
+
+def test_date_string_format_conversion_is_successful():
+    """
+    Given:
+        - a valid date string
+
+    When:
+        - trying to parse the date string into a different format
+
+    Then:
+        - verify that the format parsing was successful.
+    """
+    assert parse_date_string_format(date_string='2020-11-10T09:37:42.301Z') == 'November 10, 2020 09:37:42 AM'
+
+
+def test_date_string_conversion_is_failing():
+    """
+    Given:
+        - invalid date string format
+
+    When:
+        - trying to parse the date string into a different format
+
+    Then:
+        - verify that the format does not succeed.
+    """
+    assert parse_date_string_format(date_string='2020-11-10T09:37:42.301Z-341') == '2020-11-10T09:37:42.301Z-341'
+
+
+EXPECTED_CONTEXT_OUTPUT_DATA = [
+    (
+        {
+            "limit": "15",
+            "offset": "0"
+        },
+        get_profile_host_list,
+        "/profiles/host",
+        [
+            {
+                "_id": "1",
+                "hash": 1
+            },
+            {
+                "_id": "2",
+                "hash": 2
+            }
+        ],
+        ""
+    ),
+    (
+        {
+            "limit": "15",
+            "offset": "0"
+        },
+        get_container_profile_list,
+        "/profiles/container",
+        [
+            {
+                "state": "active",
+                "_id": "1",
+                "created": "2021-09-02T11:05:08.931Z"
+            },
+            {
+                "state": "down",
+                "_id": "2",
+                "created": "2020-09-02T11:05:08.931Z"
+            },
+            {
+                "state": "active",
+                "_id": "3",
+                "created": "2019-09-02T11:05:08.931Z"
+            }
+        ],
+        ""
+    ),
+    (
+        {
+            "limit": "10",
+            "offset": "0",
+            "id": "123"
+        },
+        get_container_hosts_list,
+        "/profiles/container/123/hosts",
+        ["host1", "host2"],
+        {
+            "containerID": "123",
+            "hostsIDs": ["host1", "host2"]
+        }
+    ),
+    (
+        {
+            "limit": "10",
+            "offset": "0",
+            "id": "123",
+            "hostname": "hostname"
+        },
+        get_profile_container_forensic_list,
+        "/profiles/container/123/forensic?hostname=hostname",
+        [
+            {
+                "type": "Runtime profile networking",
+                "containerId": "1234",
+                "port": 8000,
+                "outbound": True
+            },
+            {
+                "type": "Runtime profile networking",
+                "containerId": "1234",
+                "port": 6789,
+                "process": "some_process"
+            }
+        ],
+        {
+            "containerID": "123",
+            "hostname": "hostname",
+            "Forensics": [
+                {
+                    "type": "Runtime profile networking",
+                    "containerId": "1234",
+                    "port": 8000,
+                    "outbound": True
+                },
+                {
+                    "type": "Runtime profile networking",
+                    "containerId": "1234",
+                    "port": 6789,
+                    "process": "some_process"
+                }
+            ],
+        }
+    ),
+    (
+        {
+            "limit": "10",
+            "offset": "0",
+            "id": "123"
+        },
+        get_profile_host_forensic_list,
+        "/profiles/host/123/forensic",
+        [
+            {
+                "type": "Process spawned",
+                "command": "docker-runc --version",
+            },
+            {
+                "type": "Process spawned",
+                "command": "docker ps -a",
+            }
+        ],
+        {
+            "hostID": "123",
+            "Forensics": [
+                {
+                    "type": "Process spawned",
+                    "command": "docker-runc --version",
+                },
+                {
+                    "type": "Process spawned",
+                    "command": "docker ps -a",
+                }
+            ]
+        }
+    ),
+    (
+        {},
+        get_console_version,
+        "/version",
+        "21.04",
+        ""
+    ),
+    (
+        {},
+        get_custom_feeds_ip_list,
+        "/feeds/custom/ips",
+        {
+            "_id": "",
+            "modified": "2021-12-01T11:50:50.882Z",
+            "feed": [
+                "1.1.1.1",
+                "5.5.5.5",
+                "2.2.2.2",
+                "4.4.4.4",
+                "3.3.3.3"
+            ],
+            "digest": "1234"
+        },
+        {
+            "modified": "December 01, 2021 11:50:50 AM",
+            "feed": [
+                "1.1.1.1",
+                "5.5.5.5",
+                "2.2.2.2",
+                "4.4.4.4",
+                "3.3.3.3"
+            ],
+            "digest": "1234"
+        }
+    )
+]
+
+
+@pytest.mark.parametrize("args, func, url_suffix, json, expected_context_output", EXPECTED_CONTEXT_OUTPUT_DATA)
+def test_context_data_output_is_valid(requests_mock, args, func, url_suffix, json, expected_context_output, client):
+    """
+    Given:
+        - command arguments
+
+    When:
+        - building the context output
+
+    Then:
+        - verify that the context output is created as expected.
+
+    Note:
+        if expected_context_output is empty string,
+        it means we expect the context output to be the same as the raw response.
+    """
+    if not expected_context_output:
+        expected_context_output = json
+
+    full_url = BASE_URL + url_suffix
+
+    requests_mock.get(url=full_url, json=json)
+    command_results = func(client=client, args=args) if args else func(client=client)
+
+    assert command_results.outputs == expected_context_output

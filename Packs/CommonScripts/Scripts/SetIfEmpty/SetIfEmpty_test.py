@@ -92,7 +92,7 @@ def test_when_value_is_dict():
 
 def test_when_value_is_empty_and_default_value_is_unicode():
     s = u"בדיקה"
-    expectedOutput = s.encode('utf8')
+    expectedOutput = "בדיקה"
     result = get_value_to_set({'value': [""], 'defaultValue': s, 'applyIfEmpty': 'true'})
 
     assert expectedOutput == result

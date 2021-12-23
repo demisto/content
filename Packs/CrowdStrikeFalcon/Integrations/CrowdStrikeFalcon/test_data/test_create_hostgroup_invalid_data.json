@@ -1,0 +1,13 @@
+{
+    "meta": {
+        "query_time": 1.21e-7,
+        "trace_id": "4355b65a-bcec-4169-914f-200f469445dc"
+    },
+    "errors": [
+        {
+            "code": 400,
+            "message": "May not specify 'assignment_rule' if 'group_type' is 'static'",
+            "id": "dem test"
+        }
+    ]
+}

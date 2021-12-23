@@ -1,0 +1,642 @@
+id: Test-AnsibleAzure
+version: -1
+name: Test-AnsibleAzure
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 97eb5ad8-9230-4864-83b5-5f7d793a70ec
+    type: start
+    task:
+      id: 97eb5ad8-9230-4864-83b5-5f7d793a70ec
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 51b3d169-18d9-448a-8124-3cdeeba442c7
+    type: regular
+    task:
+      id: 51b3d169-18d9-448a-8124-3cdeeba442c7
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 07a45bef-aa4b-497a-818a-8f05d3303cfe
+    type: regular
+    task:
+      id: 07a45bef-aa4b-497a-818a-8f05d3303cfe
+      version: -1
+      name: azure-rm-resourcegroup
+      description: |-
+        Manage Azure resource groups
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_resourcegroup_module.html
+      script: '|||azure-rm-resourcegroup'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      append_tags: {}
+      force_delete_nonempty: {}
+      location:
+        simple: australiasoutheast
+      name:
+        simple: ${inputs.resourcegroup}
+      state: {}
+      subscription_id: {}
+      tags: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 8f59a3da-206f-4cbb-8300-6fee355ae44c
+    type: condition
+    task:
+      id: 8f59a3da-206f-4cbb-8300-6fee355ae44c
+      version: -1
+      name: check azure-rm-resourcegroup
+      description: "check azure-rm-resourcegroup output"
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Azure.AzureRmResourcegroup.[0].state.provisioning_state
+            iscontext: true
+          right:
+            value:
+              simple: Succeeded
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 20d9a67d-9910-4af7-8c97-14aeb6578d59
+    type: regular
+    task:
+      id: 20d9a67d-9910-4af7-8c97-14aeb6578d59
+      version: -1
+      name: azure-rm-virtualmachine
+      description: |-
+        Manage Azure virtual machines
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachine_module.html
+      script: '|||azure-rm-virtualmachine'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      accept_terms: {}
+      admin_password:
+        simple: ${RandomString}
+      admin_username:
+        simple: testadmin
+      allocated: {}
+      append_tags: {}
+      availability_set: {}
+      boot_diagnostics: {}
+      custom_data: {}
+      data_disks: {}
+      generalized: {}
+      image:
+        simple: '{{ {''offer'': ''debian-10'', ''publisher'': ''Debian'', ''sku'':
+          ''10'',''version'': ''latest''} }}'
+      license_type: {}
+      location: {}
+      managed_disk_type: {}
+      name:
+        simple: testvm
+      network_interface_names: {}
+      open_ports: {}
+      os_disk_caching: {}
+      os_disk_name: {}
+      os_disk_size_gb: {}
+      os_type: {}
+      plan: {}
+      public_ip_allocation_method: {}
+      remove_on_absent: {}
+      resource_group:
+        simple: ${inputs.resourcegroup}
+      restarted: {}
+      short_hostname: {}
+      ssh_password_enabled: {}
+      ssh_public_keys: {}
+      started:
+        simple: "No"
+      state: {}
+      storage_account_name: {}
+      storage_blob_name: {}
+      storage_container_name: {}
+      subnet_name: {}
+      subscription_id: {}
+      tags: {}
+      virtual_network_name: {}
+      virtual_network_resource_group: {}
+      vm_identity: {}
+      vm_size:
+        simple: Standard_B2ms
+      winrm: {}
+      zones: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 7e58666a-a5df-4810-8610-9698a5d69003
+    type: regular
+    task:
+      id: 7e58666a-a5df-4810-8610-9698a5d69003
+      version: -1
+      name: azure-rm-resourcegroup (absent)
+      description: |-
+        Manage Azure resource groups
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_resourcegroup_module.html
+      script: '|||azure-rm-resourcegroup'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      append_tags: {}
+      force_delete_nonempty:
+        simple: "yes"
+      location:
+        simple: australiasoutheast
+      name:
+        simple: ${inputs.resourcegroup}
+      state:
+        simple: absent
+      subscription_id: {}
+      tags: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: b86b5bc7-27bc-43bc-873a-6ea1daa432d4
+    type: regular
+    task:
+      id: b86b5bc7-27bc-43bc-873a-6ea1daa432d4
+      version: -1
+      name: azure-rm-virtualnetwork
+      description: |-
+        Manage Azure virtual networks
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualnetwork_module.html
+      script: '|||azure-rm-virtualnetwork'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      address_prefixes_cidr:
+        simple: 10.1.0.0/16
+      append_tags: {}
+      dns_servers: {}
+      location: {}
+      name:
+        simple: testplaybooknetwork
+      purge_address_prefixes: {}
+      purge_dns_servers: {}
+      resource_group:
+        simple: ${inputs.resourcegroup}
+      state: {}
+      subscription_id: {}
+      tags: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: bbbe5368-cf52-47e5-8d74-43c9cbc1e87c
+    type: condition
+    task:
+      id: bbbe5368-cf52-47e5-8d74-43c9cbc1e87c
+      version: -1
+      name: check azure-rm-virtualnetwork
+      description: "check azure-rm-virtualnetwork output"
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Azure.AzureRmVirtualnetwork.[0].state.provisioning_state
+            iscontext: true
+          right:
+            value:
+              simple: Succeeded
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: aa080efa-f333-400e-87ad-40c2227e1ec9
+    type: regular
+    task:
+      id: aa080efa-f333-400e-87ad-40c2227e1ec9
+      version: -1
+      name: azure-rm-subnet
+      description: |-
+        Manage Azure subnets
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_subnet_module.html
+      script: '|||azure-rm-subnet'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      address_prefix_cidr:
+        simple: 10.1.1.0/24
+      name:
+        simple: testplaybooksubnet
+      resource_group:
+        simple: ${inputs.resourcegroup}
+      route_table: {}
+      security_group: {}
+      service_endpoints: {}
+      state: {}
+      subscription_id: {}
+      virtual_network_name:
+        simple: testplaybooknetwork
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 7540dba5-316c-48d4-8c2c-538ba08f2639
+    type: condition
+    task:
+      id: 7540dba5-316c-48d4-8c2c-538ba08f2639
+      version: -1
+      name: check azure-rm-subnet
+      description: "check azure-rm-subnet output"
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Azure.AzureRmSubnet.[0].state.provisioning_state
+            iscontext: true
+          right:
+            value:
+              simple: Succeeded
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 49835e95-664b-4e73-8c2c-f05be7c4bfdc
+    type: regular
+    task:
+      id: 49835e95-664b-4e73-8c2c-f05be7c4bfdc
+      version: -1
+      name: azure-rm-resourcegroup (absent)
+      description: |-
+        Manage Azure resource groups
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_resourcegroup_module.html
+      script: '|||azure-rm-resourcegroup'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      append_tags: {}
+      force_delete_nonempty:
+        simple: "yes"
+      location:
+        simple: australiasoutheast
+      name:
+        simple: ${inputs.resourcegroup}
+      state:
+        simple: absent
+      subscription_id: {}
+      tags: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: bc3b8cf8-086d-4941-8dff-6456960292b4
+    type: regular
+    task:
+      id: bc3b8cf8-086d-4941-8dff-6456960292b4
+      version: -1
+      name: Generate Random String for Virtual Machine Password
+      description: Generates random string
+      scriptName: GenerateRandomString
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      Digits:
+        simple: "True"
+      Length:
+        simple: "72"
+      Lowercase:
+        simple: "True"
+      Punctuation:
+        simple: "True"
+      Uppercase:
+        simple: "True"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1885
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: dabc11c9-a850-4edb-8521-efd97c38515e
+    type: condition
+    task:
+      id: dabc11c9-a850-4edb-8521-efd97c38515e
+      version: -1
+      name: check azure-rm-virtualmachine
+      description: "check azure-rm-virtualmachine output"
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Azure.AzureRmVirtualmachine.[0].status
+            iscontext: true
+          right:
+            value:
+              simple: CHANGED
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 605a6bbf-9552-439d-8bb6-88a1fa76d560
+    type: title
+    task:
+      id: 605a6bbf-9552-439d-8bb6-88a1fa76d560
+      version: -1
+      name: Basic Network
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: e8e4ba80-43fd-44d2-866b-526c914622d5
+    type: title
+    task:
+      id: e8e4ba80-43fd-44d2-866b-526c914622d5
+      version: -1
+      name: Virtual Machine
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2455,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: resourcegroup
+  value:
+    simple: testplaybook
+  required: false
+  description: ""
+  playbookInputQuery:
+outputs: []
+fromversion: 6.0.0
+description: "Test playbook for Ansible Azure Integration"
+tests:
+- No tests (auto formatted)

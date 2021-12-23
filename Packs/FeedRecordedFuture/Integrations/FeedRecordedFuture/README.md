@@ -19,20 +19,29 @@ This integration was integrated and tested with Recorded Future Feed
     | Indicator Type | Type of the indicator in the feed. | True |
     | API token |  | True |
     | Services |  | True |
-    | Risk Rule | Limit the indicators list to a specific risk rule. To see available<br/>risk rules run the rf-feed-get-risk-rules command. This parameter will only be<br/>used for the 'connectApi' service. | False |
+    | Risk Rule | A comma-separated list of risk rules which limits the indicators list to a specific risk rule. For example: 'dhsAis,phishingUrl'. If more than one risk rule is set, the indicators fetching and the 'rf-feed-get-indicators' command will be executed for each risk rule. To see available risk rules run the rf-feed-get-risk-rules command. This parameter will only be used for the 'connectApi' service. Using the 'large' risk rule is not recommended. | False |
     | Fusion File Path | Load a custom risklist from a specified Recorded Future file path.<br/>If no file path is specified, the default risklist file is used. This parameter<br/>will only be used for the 'fusion' service. | False |
     | Tags | Supports CSV values. | False |
     | Request Timeout | Time in seconds before HTTP requests timeout. | True |
     | Malicious Threshold | The minimum score from the feed in order to to determine whether the indicator is malicious. Default is "65". For more information about Recorded Future scoring go to integration details. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
-
 ## Notes
-The feed size can be change according to the chosen indicator type:
-- IP - As of September 24, 2020, this risk list includes over 5.9k records.
-- Domain - Due to additional sources of malicious domains added recently, the number of high risk domains collected and analyzed in Recorded Future has dramatically increased.  As a result, now cap this risklist at 100,000 domains.
-- Hash - In the second half of 2018, improvements and enhancements to our hash collection and analysis processes led to a dramatic increase in risky hashes that meet the above criteria.  As a result, now cap this risklist at 100,000 hashes.
-- URL - This risk list includes 100,000 records.
+1. It is highly recommended to not create multiple instances of the same indicator type, even when fetching both from fusion and connectApi. Creating multiple instances with same indicator type will lead to duplicate indicators being fetched which can cause performance issues for the server.
+2. Recommended interval for fetching indicators according to Recorded Future documentation:
+
+    | **Indicator Type** | **Recommended Fetch Interval**
+    | --- | --- |
+    | IP | 1 Hour. |
+    | Domain | 2 Hours. |
+    | Hash | 1 Day. |
+    | URL | 2 Hours. |
+3. Per instance configuration, it is recommended to use either `connectApi` or `fusion` as a service for chosen indicator type, and not both, as most of the data between both services is duplicated.
+4. The feed size can be change according to the chosen indicator type:
+    - IP - As of September 24, 2020, this risk list includes over 5.9k records.
+    - Domain - Due to additional sources of malicious domains added recently, the number of high risk domains collected and analyzed in Recorded Future has dramatically increased.  As a result, now cap this risklist at 100,000 domains.
+    - Hash - In the second half of 2018, improvements and enhancements to our hash collection and analysis processes led to a dramatic increase in risky hashes that meet the above criteria.  As a result, now cap this risklist at 100,000 hashes.
+    - URL - This risk list includes 100,000 records.
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.

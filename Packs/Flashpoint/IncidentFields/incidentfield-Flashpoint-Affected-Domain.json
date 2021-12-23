@@ -1,0 +1,31 @@
+{
+    "id": "incident_flashpointaffecteddomain",
+    "version": -1,
+    "modified": "2021-07-17T08:33:46.491177771+05:30",
+    "name": "Flashpoint Affected Domain",
+    "description": "Affected domain of the IoC.",
+    "ownerOnly": false,
+    "cliName": "flashpointaffecteddomain",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Flashpoint Compromised Credentials"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.0.0"
+}

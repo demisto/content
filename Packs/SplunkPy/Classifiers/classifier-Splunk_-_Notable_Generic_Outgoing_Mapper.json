@@ -27,7 +27,7 @@
 										"isContext": false,
 										"value": {
 											"complex": null,
-											"simple": "New, In Progress, Pending, Resolved, Closed"
+											"simple": "New,In Progress,Pending,Resolved,Closed"
 										}
 									},
 									"mapped_values": {

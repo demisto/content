@@ -1,0 +1,124 @@
+commonfields:
+  id: CiscoWSA
+  version: -1
+name: CiscoWSA
+display: CiscoWSA
+category: Utilities
+description: Cisco WSA
+configuration:
+- display: ""
+  name: url
+  defaultvalue: http://192.168.1.1
+  type: 12
+  required: true
+- display: ""
+  name: apikey
+  type: 4
+  required: true
+- display: ""
+  name: port
+  type: 0
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: wsa-get-access-policies
+    arguments: []
+    outputs:
+    - contextPath: wsa.AccessPolicies
+      description: Retrieving all access policies
+      type: string
+    description: Retrieving all access policies
+  - name: wsa-get-domain-map
+    arguments: []
+    outputs:
+    - contextPath: wsa.DomainMaps
+      description: Retrieving the Domain Map Details
+      type: string
+    description: Retrieving the Domain Map Details
+  - name: wsa-get-url-categories
+    arguments: []
+    outputs:
+    - contextPath: wsa.UrlCategories
+      description: Retrieving URL Categories
+      type: string
+    description: Retrieving URL Categories
+  - name: wsa-get-identification-profiles
+    arguments: []
+    outputs:
+    - contextPath: wsa.Profiles
+      description: Retrieving Identification Profiles
+      type: string
+    description: Modifying identification profiles
+  - name: wsa-modify-access-policies
+    arguments:
+    - name: policyname
+      required: true
+      description: Name of the policy. Unique identifier of the policy
+    - name: profile_name
+      required: true
+      description: (profile_name, auth). Use "No Authentication" in case of no authentication
+        required for the specific profile. Empty strings represents "global identification
+        profile". _all_ represents "All identification profiles".  Please  all inputs
+        comma separated.
+    - name: auth
+      required: true
+      description: (profile_name,auth). Use "No Authentication" in case of no authentication
+        required for the specific profile. Empty strings represents "global identification
+        profile". _all_ represents "All identification profiles".  Please  all inputs
+        comma separated.
+    - name: policy_order
+      required: true
+      description: Index of this specific profile in the collection. Its starts from
+        1. Order of policy in collection of policies. Not applicable for global_policy.
+    - name: policy_status
+      required: true
+      description: 'Whether profile is enabled or disabled. Possible values: enable,
+        disable'
+    outputs:
+    - contextPath: wsa.response
+      description: whether the result indicates if request is success or failure
+      type: string
+    description: Modifying an Access Policy
+  - name: wsa-delete-access-policies
+    arguments:
+    - name: policyname
+      required: true
+      description: Name of the policy. Unique identifier of the policy
+    - name: policy_status
+      description: Enable/disable
+    - name: profile_name
+      description: (profile_name, auth). Use "No Authentication" in case of no authentication
+        required for the specific profile. Empty strings represents "global identification
+        profile". _all_ represents "All identification profiles".  Please  all inputs
+        comma separated.
+    - name: policy_order
+      description: Index of this specific profile in the collection. Its starts from
+        1. Index of this specific profile in the collection. Its starts from 1. Order
+        of policy in collection of policies. Not applicable for global_policy.
+    - name: auth
+      description: (profile_name,auth). Use "No Authentication" in case of no authentication
+        required for the specific profile. Empty strings represents "global identification
+        profile". _all_ represents "All identification profiles".  Please  all inputs
+        comma separated.
+    outputs:
+    - contextPath: wsa.response
+      description: whether the result indicates if request is success or failure
+    description: Deleting an Access Policy
+  dockerimage: demisto/python3:3.9.8.24399
+  runonce: false
+  subtype: python3
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

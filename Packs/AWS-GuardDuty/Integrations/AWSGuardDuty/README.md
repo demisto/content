@@ -4,6 +4,8 @@ bulit-in AWS policies:
 * _AmazonGuardDutyFullAccess_
 * _AmazonGuardDutyReadOnlyAccess_
 
+For detailed instructions about setting up authentication, see: [AWS Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/aws-integrations---authentication).
+
 ## Prerequisites
 
 It is important that you familiarize yourself with and complete all steps detailed in
@@ -183,7 +185,7 @@ There is no context output for this command.
 ### aws-gd-create-ip-set
 
 ***
-A list of trusted IP addresses that have been whitelisted for secure communication with AWS infrastructure and applications.
+A list of trusted IP addresses on allow list for secure communication with AWS infrastructure and applications.
 
 ##### AWS IAM Policy Permission
 

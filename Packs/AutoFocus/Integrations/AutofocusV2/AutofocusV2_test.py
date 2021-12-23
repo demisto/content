@@ -398,3 +398,86 @@ def test_create_relationships_list():
         assert relation.get('entityA') == 'Test'
         assert relation.get('entityB') == expected_name_entity_b[i]
         assert relation.get('entityBType') == expected_entity_b_types[i]
+
+
+URLS_LIST = [
+    ("www.München.com", "www.Mxn--tdanchen.com"),
+    ("www.example.com", "www.example.com"),
+    ("www.Mününchen.com", "www.Mxn--tdanxn--tdanchen.com"),
+    ("www.Müünchen.com", "www.Mxn--tdaanchen.com"),
+    ("www.MükÖnchen.com", "www.Mxn--tdakxn--ndanchen.com"),
+    ("www.こんにちは.com", 'www.xn--28j2a3ar1p.com'),
+]
+
+
+@pytest.mark.parametrize("url, result", URLS_LIST)
+def test_convert_url_to_ascii_character(url, result):
+    from AutofocusV2 import convert_url_to_ascii_character
+    converted = convert_url_to_ascii_character(url)
+    assert converted == result
+
+
+def test_search_url_command(requests_mock):
+    from AutofocusV2 import search_url_command
+
+    mock_response = {
+        'indicator': {
+            'indicatorValue': 'www.こんにちは.com',
+            'indicatorType': 'URL',
+            'latestPanVerdicts': {'PAN_DB': 'BENIGN'}
+        },
+        'tags': []
+    }
+
+    requests_mock.get('https://autofocus.paloaltonetworks.com/api/v1.0/tic?indicatorType=url&indicatorValue=www.xn'
+                      '--28j2a3ar1p.com&includeTags=true', json=mock_response)
+
+    result = search_url_command("www.こんにちは.com", 'B - Usually reliable', True)
+
+    assert result[0].indicator.url == "www.こんにちは.com"
+    assert result[0].raw_response["indicator"]["indicatorValue"] == mock_response["indicator"]["indicatorValue"]
+
+
+TEST_DATA = [
+    (
+        'autofocus_md5_response',
+        '123456789012345678901234567890ab',
+        ['123456789012345678901234567890ab', None, None]
+    ),
+    (
+        'autofocus_sha1_response',
+        '1234567890123456789012345678901234567890',
+        [None, '1234567890123456789012345678901234567890', None]
+    ),
+    (
+        'autofocus_sha256_response',
+        '123456789012345678901234567890123456789012345678901234567890abcd',
+        [None, None, '123456789012345678901234567890123456789012345678901234567890abcd']
+    ),
+]
+
+
+@pytest.mark.parametrize('mock_response, file_hash, expected_results', TEST_DATA)
+def test_search_file_command(mock_response, file_hash, expected_results):
+    """
+     Given:
+         - A file hash (md5, sha1, sha256).
+     When:
+         - When running search_file_command.
+     Then:
+         - Ensure the indicator contains the correct hash type.
+     """
+
+    from AutofocusV2 import search_file_command
+
+    with open(f'test_data/{mock_response}.json') as f:
+        response = json.load(f)
+
+    with requests_mock.Mocker() as m:
+        m.get('https://autofocus.paloaltonetworks.com/api/v1.0/tic', json=response)
+        results = search_file_command(file_hash, None, False)
+
+    assert results[0].indicator.md5 == expected_results[0]
+    assert results[0].indicator.sha1 == expected_results[1]
+    assert results[0].indicator.sha256 == expected_results[2]
+    assert results[0].outputs.get('IndicatorValue') in expected_results

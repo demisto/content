@@ -6785,7 +6785,7 @@ script:
     description: Release on demand dedicated host.
     execution: false
     name: aws-ec2-release-hosts
-  dockerimage: demisto/boto3:2.0.0.20379
+  dockerimage: demisto/boto3:2.0.0.24033
   feed: false
   isfetch: false
   longRunning: false

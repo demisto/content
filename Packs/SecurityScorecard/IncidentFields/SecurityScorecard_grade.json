@@ -1,0 +1,31 @@
+{
+    "id": "incident_securityscorecardgrade",
+    "version": -1,
+    "modified": "2021-07-04T08:29:57.065655956Z",
+    "name": "SecurityScorecard Grade",
+    "ownerOnly": false,
+    "description": "SecurityScorecard grade",
+    "cliName": "securityscorecardgrade",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "SecurityScorecard Alert"
+    ],
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

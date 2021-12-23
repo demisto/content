@@ -1,0 +1,347 @@
+[
+  {
+    "alert_id": "3957a5be-6995-40bc-82c7-8fee1aa3b585",
+    "fpid": "9031c82b-421a-581e-af4e-b0e495023b8f",
+    "keyword": {
+      "keyword_id": "88120cf3-c015-47c9-b8ed-70770ba9c273",
+      "keyword_text": "\"user manager\""
+    },
+    "highlights": [
+      "remote-address=\\\r        vpn-pool-\r    /snmp community\r    set [ find default=yes ] addresses=0.0.0.0/0 name=\r    add addresses=0.0.0.0/0 name=public\r    /system logging action\r    add email-start-tls=yes email-to= name=email \\\r        target=email\r    /tool <x-fp-highlight>user</x-fp-highlight>-<x-fp-highlight>manager</x-fp-highlight>",
+      "system script run BackupAndUpdate;\" policy=\\\r        ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon \\\r        start-date=aug/05/2021 start-time=03:10:00\r    /tool graphing interface\r    add\r    /tool graphing resource\r    add\r    /tool <x-fp-highlight>user</x-fp-highlight>-<x-fp-highlight>manager</x-fp-highlight>"
+    ],
+    "basetypes": [
+      "paste",
+      "post"
+    ],
+    "ts": 1628150920.761936,
+    "tags": {},
+    "source": {
+      "basetypes": [
+        "paste",
+        "post"
+      ],
+      "body": {
+        "text/plain": "# aug/05/2021 13:38:23 by RouterOS 6.48.3\r    # software id = 1CQ5-VK95\r    #\r    # model = 2011iL\r    # serial number = 419C02451A3C\r    /interface bridge\r    add comment=BRIDGE fast-forward=no mtu=1500 name=BRIDGE protocol-mode=none\r    /interface ethernet\r    set [ find default-name=ether1 ] comment=#####1 speed=100Mbps\r    set [ find default-name=ether2 ] comment=#####2\r        speed=100Mbps\r    set [ find default-name=ether3 ] comment=#####3 speed=100Mbps\r    set [ find default-name=ether4 ] comment=#####4\r        speed=100Mbps\r   cy,test,password,sniff,sensitive,romon \\\r        start-date=aug/05/2021 start-time=03:10:00\r    /tool graphing interface\r    add\r    /tool graphing resource\r    add\r    /tool user-manager database\r    set db-path=user-manager1"
+      },
+      "created_at": {
+        "date-time": "2021-08-05T07:47:37+00:00",
+        "raw": "2021-08-05 07:47:37+00:00",
+        "timestamp": 1628149657
+      },
+      "first_observed_at": {
+        "date-time": "2021-08-05T08:08:34+00:00",
+        "raw": "1628150914.060976",
+        "timestamp": 1628150914
+      },
+      "fpid": "kDHIK0IaWB6vTrDklQI7jw",
+      "last_observed_at": {
+        "date-time": "2021-08-05T08:08:34+00:00",
+        "raw": "1628150914.060976",
+        "timestamp": 1628150914
+      },
+      "native_id": "PVmLJSUQ",
+      "site": {
+        "title": "pastebin.com"
+      },
+      "site_actor": {
+        "names": {
+          "aliases": [
+            "a guest"
+          ],
+          "handle": "a guest"
+        }
+      },
+      "sort_date": "2021-08-05T07:47:37Z",
+      "title": "Untitled"
+    }
+  },
+  {
+    "alert_id": "01aa5231-92be-45cc-954b-0e254547e49f",
+    "fpid": "6dd793e9-c3d4-55d0-981b-c8b28541c4c3",
+    "keyword": {
+      "keyword_id": "88120cf3-c015-47c9-b8ed-70770ba9c273",
+      "keyword_text": "\"user manager\""
+    },
+    "highlights": [
+      "vpn-pool- name=l2tp remote-address=\\\r\n    vpn-pool-\r\n/snmp community\r\nset [ find default=yes ] addresses=0.0.0.0/0 name=\r\nadd addresses=0.0.0.0/0 name=public\r\n/system logging action\r\nadd email-start-tls=yes email-to= name=email \\\r\n    target=email\r\n/tool <x-fp-highlight>user</x-fp-highlight>-<x-fp-highlight>manager</x-fp-highlight>",
+      "on-event=\\\r\n    \"/system script run BackupAndUpdate;\" policy=\\\r\n    ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon \\\r\n    start-date=aug/05/2021 start-time=03:10:00\r\n/tool graphing interface\r\nadd\r\n/tool graphing resource\r\nadd\r\n/tool <x-fp-highlight>user</x-fp-highlight>-<x-fp-highlight>manager</x-fp-highlight>"
+    ],
+    "basetypes": [
+      "paste",
+      "post"
+    ],
+    "ts": 1628149975.046624,
+    "tags": {},
+    "source": {
+      "basetypes": [
+        "paste",
+        "post"
+      ],
+      "body": {
+        "text/plain": "# aug/05/2021 13:38:23 by RouterOS 6.48.3\r\n# software id = 1CQ5-VK95\r\n#\r\n# model = 2011iL\r\n# serial number = 419C02451A3C\r\n/interface bridge\r\nadd comment=BRIDGE fast-forward=no mtu=1500 name=BRIDGE protocol-mode=none\r\n/int\\r\n    ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon \\\r\n    start-date=aug/05/2021 start-time=03:10:00\r\n/tool graphing interface\r\nadd\r\n/tool graphing resource\r\nadd\r\n/tool user-manager database\r\nset db-path=user-manager1"
+      },
+      "created_at": {
+        "date-time": "2021-08-05T07:47:37+00:00",
+        "raw": "1628149657",
+        "timestamp": 1628149657
+      },
+      "first_observed_at": {
+        "date-time": "2021-08-05T07:52:49+00:00",
+        "raw": "1628149969.713591",
+        "timestamp": 1628149969
+      },
+      "fpid": "bdeT6cPUVdCYG8iyhUHEww",
+      "last_observed_at": {
+        "date-time": "2021-08-05T08:25:45+00:00",
+        "raw": "1628151945.002945",
+        "timestamp": 1628151945
+      },
+      "native_id": "PVmLJSUQ",
+      "site": {
+        "title": "pastebin.com"
+      },
+      "site_actor": {
+        "names": {
+          "handle": "anonymous"
+        }
+      },
+      "sort_date": "2021-08-05T07:47:37Z",
+      "title": "n/a"
+    }
+  },
+  {
+    "alert_id": "7bf94b59-9eb9-4827-9f1c-c0dbcdc4df9b",
+    "fpid": "9a9980b9-cfb4-5546-bd6e-8deac1d2a0ba",
+    "keyword": {
+      "keyword_id": "88120cf3-c015-47c9-b8ed-70770ba9c273",
+      "keyword_text": "\"user manager\""
+    },
+    "highlights": [
+      "New\nПроект  InitWare , развивающий экспериментальный форк системного менеджера  systemd ,  реализовал   поддержку  операционной системы OpenBSD на уровне возможности управления пользовательскими сервисами ( <x-fp-highlight>user</x-fp-highlight> <x-fp-highlight>manager</x-fp-highlight>  - режим \"iwctl --user\", позволяющий"
+    ],
+    "basetypes": [
+      "conversation",
+      "forum",
+      "message",
+      "post",
+      "web"
+    ],
+    "ts": 1628130155.984963,
+    "tags": {},
+    "source": {
+      "basetypes": [
+        "conversation",
+        "forum",
+        "web",
+        "message",
+        "post"
+      ],
+      "body": {
+        "text/plain": "New\nПроект  InitWare , развивающий экспериментальный форк системного менеджера  systemd ,  реализовал   поддержку  операционной системы OpenBSD на уровне возможности управления пользовательскими сервисами ( user manager  - режим \"iwctl --user\", позволяющий пользователям управлять собственными сервисами). PID1 и системные сервисы пока не поддерживаются. Ранее аналогичная поддержка была обеспечена для DragonFly BSD, а возможность управления системными сервисами и управления входом для NetBSD и FreeBSD. Следующим шагом  станет  реализация поддержки управления пользовательскими сервисами для Illumos. \n \n    \nПроект InitWare  нацелен  на создание переносимого и модульного системного менеджера, способного работать на системах, отличных от Linux. При этом в отличие от systemd проект не пытается охватить необъятное и сосредотачивается только на функциях управления сервисами, пользовательскими сеансами и управлением входом (login management). Из состава  исключены  компоненты для управления устройствами (udev), настройки сети (networkd), резолвинга в DNS (resolved) и ведения логов (journald). \n \nВ InitWare пытаются сохранить высокий уровень совместимости с ключевыми сущностями systemd, такими как unit-файлы, команды systemctl и loginctl (в InitWare - iwctl и iwloginctl), процесс systemd1, API sd_notify и D-Bus-интерфейс управления входом. Для интерфейсов, специфичных для Linux, которые невозможно воспроизвести в других ОС, по возможности реализуется поддержка аналогов, например, вместо пространства имён и cgroups во FreeBSD для изоляции применяется механизм jail, а для отслеживания состояния процессов KQueue (к каждому процессу прикрепляется фильтр событий PROC). Из-за системных различий полной совместимости добиться не получается, но в качестве одной из целей называется возможность запуска без изменений или с минимальными изменениями большинства unit-файлов systemd. \n \n 04.08.2021 \n https://www.opennet.ru/opennews/art.shtml?num=55588 ​"
+      },
+      "container": {
+        "basetypes": [
+          "conversation",
+          "web",
+          "forum",
+          "container",
+          "thread"
+        ],
+        "container": {
+          "title": "Мировые новости. Обсуждения."
+        },
+        "fpid": "sNaGOfgLVMWGhXmHNBbmcg",
+        "title": "Системный менеджер InitWare, форк systemd, портирован для OpenBSD"
+      },
+      "created_at": {
+        "date-time": "2021-08-04T11:40:00+00:00",
+        "raw": "4 Aug 2021 at 1:40 PM",
+        "timestamp": 1628077200
+      },
+      "first_observed_at": {
+        "date-time": "2021-08-05T02:19:19.259902+00:00",
+        "raw": "2021-08-05 02:19:19.259902+00:00",
+        "timestamp": 1628129959
+      },
+      "fpid": "mpmAuc-0VUa9bo3qwdKgug",
+      "last_observed_at": {
+        "date-time": "2021-08-05T02:19:19.259902+00:00",
+        "raw": "2021-08-05 02:19:19.259902+00:00",
+        "timestamp": 1628129959
+      },
+      "native_id": "4470071",
+      "site": {
+        "title": "Antichat"
+      },
+      "site_actor": {
+        "names": {
+          "handle": "Suicide"
+        }
+      },
+      "sort_date": "2021-08-04T11:40:00Z",
+      "title": "Системный менеджер InitWare, форк systemd, портирован для OpenBSD"
+    }
+  },
+  {
+    "alert_id": "3d376ab6-a1bd-4acc-84e6-2c385f51a3ea",
+    "fpid": "902c5e72-4876-5a3d-b620-5862737c618d",
+    "keyword": {
+      "keyword_id": "88120cf3-c015-47c9-b8ed-70770ba9c273",
+      "keyword_text": "\"user manager\""
+    },
+    "highlights": [
+      "ago 02 13:16:49 gustavo-aspiree1571 systemd[1]: Stopped <x-fp-highlight>User</x-fp-highlight> <x-fp-highlight>Manager</x-fp-highlight> for UID 120.     ░░ Subject: A unidade user@120.service concluiu o desligamento     ░░ Defined-By: systemd     ░░ Support: https://forum.manjaro.org/c/support     ░░      ░░ A unidade"
+    ],
+    "basetypes": [
+      "paste",
+      "post"
+    ],
+    "ts": 1628122247.495408,
+    "tags": {},
+    "source": {
+      "basetypes": [
+        "paste",
+        "post"
+      ],
+      "created_at": {
+        "date-time": "2021-08-03T00:09:30+00:00",
+        "raw": "2021-08-03 00:09:30+00:00",
+        "timestamp": 1627949370
+      },
+      "first_observed_at": {
+        "date-time": "2021-08-05T00:09:30+00:00",
+        "raw": "1628122170.562078",
+        "timestamp": 1628122170
+      },
+      "fpid": "kCxeckh2Wj22IFhic3xhjQ",
+      "last_observed_at": {
+        "date-time": "2021-08-05T00:09:30+00:00",
+        "raw": "1628122170.562078",
+        "timestamp": 1628122170
+      },
+      "native_id": "0ac6805e",
+      "site": {
+        "title": "Pastebin.pl"
+      },
+      "site_actor": {
+        "names": {
+          "aliases": [
+            "Gustavo"
+          ],
+          "handle": "Gustavo"
+        }
+      },
+      "sort_date": "2021-08-03T00:09:30Z",
+      "title": "journalctl -xb (02-08-2021)"
+    }
+  },
+  {
+    "alert_id": "86dfde39-a9f5-4ab8-a8f9-1890146034a0",
+    "fpid": "e1e0c488-ada3-5ae8-8575-ca7be3e2f791",
+    "keyword": {
+      "keyword_id": "88120cf3-c015-47c9-b8ed-70770ba9c273",
+      "keyword_text": "\"user manager\""
+    },
+    "highlights": [
+      "ago 02 13:16:21 gustavo-aspiree1571 audit[1]: SERVICE_START pid=1 uid=0 auid=4294967295 ses=4294967295 subj==unconfined msg='unit=user-runtime-dir@12&gt;     ago 02 13:16:21 gustavo-aspiree1571 systemd[1]: Starting <x-fp-highlight>User</x-fp-highlight> <x-fp-highlight>Manager</x-fp-highlight> for UID 120...     ░░ Subject",
+      "ago 02 13:16:21 gustavo-aspiree1571 audit[1]: SERVICE_START pid=1 uid=0 auid=4294967295 ses=4294967295 subj==unconfined msg='unit=user@120 comm=\"syst&gt;     ago 02 13:16:21 gustavo-aspiree1571 systemd[1]: Started <x-fp-highlight>User</x-fp-highlight> <x-fp-highlight>Manager</x-fp-highlight> for UID 120.     ░░ Subject",
+      "ago 02 13:16:21 gustavo-aspiree1571 systemd[16677]: Startup finished in 306ms.     ░░ Subject: <x-fp-highlight>User</x-fp-highlight> <x-fp-highlight>manager</x-fp-highlight> start-up is now complete     ░░ Defined-By: systemd     ░░ Support: https://forum.manjaro.org/c/support     ░░      ░░ The <x-fp-highlight>user</x-fp-highlight> <x-fp-highlight>manager</x-fp-highlight> instance"
+    ],
+    "basetypes": [
+      "paste",
+      "post"
+    ],
+    "ts": 1628082003.098451,
+    "tags": {},
+    "source": {
+      "basetypes": [
+        "paste",
+        "post"
+      ],
+      "created_at": {
+        "date-time": "2021-08-03T12:58:58+00:00",
+        "raw": "2021-08-03 12:58:58+00:00",
+        "timestamp": 1627995538
+      },
+      "first_observed_at": {
+        "date-time": "2021-08-04T12:58:58+00:00",
+        "raw": "1628081938.380261",
+        "timestamp": 1628081938
+      },
+      "fpid": "4eDEiK2jWuiFdcp74-L3kQ",
+      "last_observed_at": {
+        "date-time": "2021-08-04T12:58:58+00:00",
+        "raw": "1628081938.380261",
+        "timestamp": 1628081938
+      },
+      "native_id": "0ac6805e",
+      "site": {
+        "title": "Pastebin.pl"
+      },
+      "site_actor": {
+        "names": {
+          "aliases": [
+            "Gustavo"
+          ],
+          "handle": "Gustavo"
+        }
+      },
+      "sort_date": "2021-08-03T12:58:58Z",
+      "title": "journalctl -xb (02-08-2021)"
+    }
+  },
+  {
+    "alert_id": "ed707017-26c4-4551-b3a0-3856c54d699b",
+    "fpid": "c56a1da0-3634-5f8d-9d76-fa0ccdf2a0e3",
+    "keyword": {
+      "keyword_id": "88120cf3-c015-47c9-b8ed-70770ba9c273",
+      "keyword_text": "\"user manager\""
+    },
+    "highlights": [
+      "ago 02 13:16:31 gustavo-aspiree1571 systemd[1]: Stopping <x-fp-highlight>User</x-fp-highlight> <x-fp-highlight>Manager</x-fp-highlight> for UID 1000...     ░░ Subject: Unidade user@1000.service sendo desligado     ░░ Defined-By: systemd     ░░ Support: https://forum.manjaro.org/c/support     ░░      ░░ A unidade user"
+    ],
+    "basetypes": [
+      "paste",
+      "post"
+    ],
+    "ts": 1628076981.163512,
+    "tags": {},
+    "source": {
+      "basetypes": [
+        "paste",
+        "post"
+      ],
+      "created_at": {
+        "date-time": "2021-08-03T11:35:23+00:00",
+        "raw": "2021-08-03 11:35:23+00:00",
+        "timestamp": 1627990523
+      },
+      "first_observed_at": {
+        "date-time": "2021-08-04T11:35:23+00:00",
+        "raw": "1628076923.421445",
+        "timestamp": 1628076923
+      },
+      "fpid": "xWodoDY0X42ddvoMzfKg4w",
+      "last_observed_at": {
+        "date-time": "2021-08-04T11:35:23+00:00",
+        "raw": "1628076923.421445",
+        "timestamp": 1628076923
+      },
+      "native_id": "0ac6805e",
+      "site": {
+        "title": "Pastebin.pl"
+      },
+      "site_actor": {
+        "names": {
+          "aliases": [
+            "Gustavo"
+          ],
+          "handle": "Gustavo"
+        }
+      },
+      "sort_date": "2021-08-03T11:35:23Z",
+      "title": "journalctl -xb (02-08-2021)"
+    }
+  }
+]
