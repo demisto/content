@@ -1366,6 +1366,7 @@ view: |-
     }
   }
 hidden: true
+deprecated: true
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
