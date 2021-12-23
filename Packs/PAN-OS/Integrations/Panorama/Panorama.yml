@@ -134,7 +134,7 @@ script:
       name: job-id
     - description: Query string.
       name: query
-    - description: The name of the virtual system to be configured. If no vsys is mentioned, this command will not pass the vsys parameter to the http request.
+    - description: The name of the virtual system to be configured. If no vsys is mentioned, this command will not use the vsys parameter.
       name: vsys
     description: Run any command supported in the API.
     name: panorama
