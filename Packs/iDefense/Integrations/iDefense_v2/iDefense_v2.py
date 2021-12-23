@@ -327,111 +327,7 @@ def uuid_command(client: Client, args: dict, reliability: DBotScoreReliability, 
                           readable_output=tableToMarkdown('Results', analysis_info))
 
 
-def hash_command(client: Client, args: dict, reliability: DBotScoreReliability, doc_search_client: Client) -> CommandResults:
-    """
-    Takes the hash passed by user, determines the type of hash and does an API call.
 
-    Args:
-        client: iDefense client.
-        args: arguments obtained with the command representing the indicator value to search.
-        reliability: reliability of the source.
-
-    Returns:
-        CommandResults containing the indicator, the response and a readable output.
-    """
-    try:
-        hash: str = str(args.get('file'))
-        key_type: str = ""
-
-        # For MD5   --->
-        if len(hash) == 32:
-            key_type = 'key'
-            printKey = 'MD5'
-        # For SHA1  --->
-        elif len(hash) == 40:
-            key_type = 'sha1'
-            printKey = 'SHA1'
-        # For SHA256   --->
-        elif len(hash) == 64:
-            key_type = 'sha256'
-            printKey = 'SHA256'
-
-        if key_type == "":
-            return CommandResults(indicator=None, raw_response={},
-                                  readable_output=f"Invalid hash value: {hash}")
-        else:
-            Res = client.threat_indicator_search(url_suffix=f'/v0?files.{key_type}.query={hash}&page_size=1')
-            Res, analysis_info, context = _hash_extract(Res, reliability, key_type, hash, doc_search_client)
-            return CommandResults(raw_response=Res,
-                                  outputs=context,
-                                  readable_output=tableToMarkdown(f'ACTI results for {printKey} hash: {hash}', analysis_info))
-
-    except Exception as e:
-        return_error(f"No results were found for hash : {hash} \n Error: {str(e)}")
-        return CommandResults(indicator=None, raw_response={},
-                              readable_output=f"No results were found for hash : {hash} \n Error: {str(e)}")
-
-
-def _hash_extract(Res: dict, reliability: DBotScoreReliability, key_type: str, hash: str, doc_search_client: Client):
-    """
-    Helps to fetch contextual properties related to hash and create context fields thereby enabling to store data in context data-store.                       # noqa: E501
-
-    Args:
-        Res: Raw response received after API call.
-        reliability: reliability of the source.
-        key_type: key to search for in the raw response received.
-        hash: hash fetched through user input
-
-    Returns:
-        indicator: single indicator like Common.IP, Common.URL, Common.File, etc.
-        Res: Raw response received after API call.
-        analysis_info: Markdown string that will be presented in the warroom.
-        context: The data to be set to context
-    """
-    results = Res.get('results', [])
-    analysis_info = {}
-    if len(results):
-        for result in results:
-            file_array = result.get('files', [])
-            if len(file_array):
-                for file_content in file_array:
-                    if file_content.get(key_type) == hash:
-                        dbot_score = _calculate_dbot_score(result.get('severity', 0))
-                        indicator_value = file_content.get('key', '')
-
-                        analysis_info = {
-                            'Confidence': file_content.get('confidence', 0),
-                            'ThreatTypes': result.get('threat_types', ''),
-                            'MalwareFamily': file_content.get('malware_family', ''),
-                            'Type': file_content.get('type', ''),
-                            'SHA1': file_content.get('sha1', ''),
-                            'SHA256': file_content.get('sha256', ''),
-                            'MD5': file_content.get('key', '')
-                        }
-
-                        context = {
-                            "File": {
-                                "Confidence": file_content.get('confidence', 0),
-                                "ThreatTypes": result.get('threat_types', ''),
-                                "MalwareFamily": file_content.get('malware_family', ''),
-                                "Type": file_content.get('type', ''),
-                                "SHA1": file_content.get('sha1', ''),
-                                "SHA256": file_content.get('sha256', ''),
-                                "MD5": file_content.get('key', '')
-                            },
-                            "DBotScore": {
-                                "Indicator": indicator_value,
-                                "Reliability": reliability,
-                                "Score": dbot_score,
-                                "Type": "file",
-                                "Vendor": "ACTI"
-                            }
-                        }
-
-                        analysis_info = _enrich_analysis_result_with_intelligence(
-                            analysis_info, doc_search_client, indicatorTypeHash=True)
-
-                        return Res, analysis_info, context
 
 
 def _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client, indicatorTypeHash: bool = False):
@@ -514,8 +410,7 @@ def main():
         'url': url_command,
         'ip': ip_command,
         'domain': domain_command,
-        'idefense-get-ioc-by-uuid': uuid_command,
-        'file': hash_command
+        'idefense-get-ioc-by-uuid': uuid_command
     }
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('use_proxy', False)

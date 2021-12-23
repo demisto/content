@@ -1,5 +1,5 @@
 import requests_mock
-from iDefense_v2 import IDEFENSE_URL_TEMPLATE, Client, domain_command, url_command, ip_command, uuid_command, hash_command, _calculate_dbot_score                             # noqa: E501
+from iDefense_v2 import IDEFENSE_URL_TEMPLATE, Client, domain_command, url_command, ip_command, uuid_command, _calculate_dbot_score                             # noqa: E501
 from CommonServerPython import DemistoException, DBotScoreReliability
 from test_data.response_constants import *
 import demistomock as demisto
@@ -229,113 +229,7 @@ def _is_intelligence_data_present_in_command_result(context_result, test_intel_j
     return True
 
 
-def test_hash_command():
-    """
-    Given:
-        - hash
 
-    When:
-        - running hash command and validate whether the hash is malicious
-
-    Then:
-        - return command results containing indicator, dbotscore and associated intelligence alerts, reports
-
-    """
-
-    url = 'https://test.com/rest/threatindicator/v0?files.sha1.query=0a30b5b24196e503c4a21dcfd1447b28a39af314'
-    doc_url = 'https://test.com/rest/document/v0?links.display_text.query=bf0fea133818387cca7eaef5a52c0aed&type.values=intelligence_alert&type.values=intelligence_report'                                                                                # noqa: E501
-
-    status_code = 200
-    json_data = HASH_RES_JSON
-    intel_json_data = HASH_INTEL_JSON
-    expected_output = {
-        'FILE': {'SHA1': '0a30b5b24196e503c4a21dcfd1447b28a39af314'},
-        'DBOTSCORE': {'Indicator': 'bf0fea133818387cca7eaef5a52c0aed', 'Type': 'file', 'Vendor': 'ACTI',
-                      'Score': 2, 'Reliability': 'B - Usually reliable'}}
-    hash_to_check = {'file': '0a30b5b24196e503c4a21dcfd1447b28a39af314'}
-    with requests_mock.Mocker() as m:
-        m.get(url, status_code=status_code, json=json_data)
-        m.get(doc_url, status_code=status_code, json=intel_json_data)
-        client = Client(API_URL, 'api_token', True, False, ENDPOINTS['threatindicator'])
-        doc_search_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['document'])
-        results = hash_command(client, hash_to_check, DBotScoreReliability.B, doc_search_client)
-        context_result = results.to_context()
-        output = results.to_context().get('EntryContext', {})
-        assert output.get('File', []).get('SHA1', '') == expected_output.get('FILE').get('SHA1', '')
-        assert output.get('DBotScore', []) == expected_output.get('DBOTSCORE')
-        assert _is_intelligence_data_present_in_command_result(context_result, intel_json_data) is True
-
-
-def test_hash_command_when_api_key_not_authorized_for_document_search():
-    """
-    Given:
-        - a hash and api key not authorized for doc search
-
-    When:
-        - running hash command and validate whether the domain is malicious
-
-    Then:
-        - return command results containing indicator, dbotscore and NO associated intelligence alerts, reports
-
-    """
-
-    url = 'https://test.com/rest/threatindicator/v0?files.sha1.query=0a30b5b24196e503c4a21dcfd1447b28a39af314'
-    doc_url = 'https://test.com/rest/document/v0?links.display_text.query=bf0fea133818387cca7eaef5a52c0aed&type.values=intelligence_alert&type.values=intelligence_report'                                                           # noqa: E501
-
-    status_code = 200
-    error_status_code = 403
-    json_data = HASH_RES_JSON
-    doc_search_exception_response = {'timestamp': '2021-11-12T09:09:27.983Z', 'status': 403,
-                                     'error': 'Forbidden', 'message': 'Forbidden', 'path': '/rest/document/v0'}
-
-    expected_output = {
-        'FILE': {'SHA1': '0a30b5b24196e503c4a21dcfd1447b28a39af314'},
-        'DBOTSCORE': {'Indicator': 'bf0fea133818387cca7eaef5a52c0aed', 'Type': 'file', 'Vendor': 'ACTI',
-                      'Score': 2, 'Reliability': 'B - Usually reliable'}}
-
-    hash_to_check = {'file': '0a30b5b24196e503c4a21dcfd1447b28a39af314'}
-    with requests_mock.Mocker() as m:
-        m.get(url, status_code=status_code, json=json_data)
-        m.get(doc_url, status_code=error_status_code, json=doc_search_exception_response)
-        client = Client(API_URL, 'api_token', True, False, ENDPOINTS['threatindicator'])
-        doc_search_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['document'])
-        results = hash_command(client, hash_to_check, DBotScoreReliability.B, doc_search_client)
-
-        context_result = results.to_context()
-        content = context_result['HumanReadable']
-        output = context_result.get('EntryContext', {})
-
-        assert output.get('File', []).get('SHA1', '') == expected_output.get('FILE').get('SHA1', '')
-        assert output.get('DBotScore', []) == expected_output.get('DBOTSCORE')
-        assert 'Intelligence Alerts' not in content
-        assert 'Intelligence Reports' not in content
-
-
-def test_hash_not_found():
-    """
-    Given:
-        - hash
-
-    When:
-        - running hash command and validate whether the hash is malicious
-
-    Then:
-        - return command results with context indicate that no results were found
-
-    """
-
-    url = 'https://test.com/rest/threatindicator/v0?files.sha1.query=5857a7dd621c4c3ebb0b5&page_size=1'
-    status_code = 200
-    json_data = {'total_size': 0, 'page': 1, 'page_size': 1, 'more': False}
-    expected_output = "Invalid hash value: 5857a7dd621c4c3ebb0b5"
-    hash_to_check = {'file': '5857a7dd621c4c3ebb0b5'}
-    with requests_mock.Mocker() as m:
-        m.get(url, status_code=status_code, json=json_data)
-        client = Client(API_URL, 'api_token', True, False, ENDPOINTS['threatindicator'])
-        doc_search_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['document'])
-        results = hash_command(client, hash_to_check, DBotScoreReliability.B, doc_search_client)
-        output = results.to_context().get('HumanReadable')
-        assert expected_output in output
 
 
 def test_uuid_command():
