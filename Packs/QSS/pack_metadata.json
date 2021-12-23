@@ -8,11 +8,15 @@
     "email": "dev@qss.com.sa",
     "created": "2020-12-17T10:44:19Z",
     "categories": [
-    	"Case Management",
-    	"SOC Management",
-    	"Incident Response"
+        "Case Management",
+        "SOC Management",
+        "Incident Response"
     ],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

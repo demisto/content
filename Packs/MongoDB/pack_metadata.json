@@ -14,5 +14,9 @@
     "useCases": [],
     "keywords": [
         "MongoDB"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }
