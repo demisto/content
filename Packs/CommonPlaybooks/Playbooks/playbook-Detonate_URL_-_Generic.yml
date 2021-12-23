@@ -457,7 +457,7 @@ inputs:
 outputs:
 - contextPath: File
   description: The file's object.
-  type: unknown
+  type: string
 - contextPath: File.Name
   description: The file name.
   type: string
@@ -484,12 +484,12 @@ outputs:
   type: string
 - contextPath: DBotScore
   description: The indicator's object.
-  type: unknown
+  type: string
 - contextPath: DBotScore.Type
   description: The indicator type.
   type: string
 - contextPath: DBotScore.Indicator
-  description: The indicator we tested.
+  description: The indicator that was tested.
   type: string
 - contextPath: DBotScore.Vendor
   description: The vendor used to calculate the score.
@@ -498,40 +498,40 @@ outputs:
   description: The actual score.
   type: number
 - contextPath: Joe.Analysis.WebID
-  description: The Web ID.
+  description: The  Joe Analysis-related Web ID.
   type: string
 - contextPath: Joe.Analysis.Status
-  description: The analysis status.
+  description: The Joe Analysis-related status.
   type: string
 - contextPath: Joe.Analysis.Comments
-  description: The analysis comments.
+  description: The Joe Analysis-related comments.
   type: string
 - contextPath: Joe.Analysis.Time
-  description: The analysis submitted time.
+  description: The Joe Analysis-related submitted time.
   type: date
 - contextPath: Joe.Analysis.Runs
-  description: The sub-analysis information.
-  type: unknown
+  description: The Joe Analysis-related sub-analysis information.
+  type: string
 - contextPath: Joe.Analysis.Result
-  description: The analysis results.
+  description: The Joe Analysis-related results.
   type: string
 - contextPath: Joe.Analysis.Errors
-  description: The errors raised during sampling.
-  type: unknown
+  description: The Joe Analysis-related errors raised during sampling.
+  type: string
 - contextPath: Joe.Analysis.Systems
-  description: The analysis OS.
-  type: unknown
+  description: The Joe Analysis-related OS.
+  type: string
 - contextPath: Joe.Analysis.MD5
-  description: The MD5 hash of the analysis sample.
+  description: The MD5 hash of the Joe Analysis-related sample.
   type: string
 - contextPath: Joe.Analysis.SHA1
-  description: The SHA1 hash of the analysis sample.
+  description: The SHA1 hash of the Joe Analysis-related sample.
   type: string
 - contextPath: Joe.Analysis.SHA256
-  description: The SHA256 hash of the analysis sample.
+  description: The SHA256 hash of the Joe Analysis-related sample.
   type: string
 - contextPath: Joe.Analysis.SampleName
-  description: The sample data name, can be a file name or a URL.
+  description: The Joe Analysis-related sample data name, can be a file name or a URL.
   type: string
 - contextPath: InfoFile.Name
   description: The file name.
@@ -559,203 +559,203 @@ outputs:
   type: string
 - contextPath: InfoFile
   description: The report file's object.
-  type: unknown
+  type: string
 - contextPath: Cuckoo.Task.Category
-  description: The task category.
+  description: The Cuckoo-related task category.
 - contextPath: Cuckoo.Task.Machine
-  description: The task machine.
+  description: The Cuckoo-related task machine.
 - contextPath: Cuckoo.Task.Errors
-  description: The task errors.
+  description: The Cuckoo-related task errors.
 - contextPath: Cuckoo.Task.Target
-  description: The task target.
+  description: The Cuckoo-related task target.
 - contextPath: Cuckoo.Task.Package
-  description: The task package.
+  description: The Cuckoo-related task package.
 - contextPath: Cuckoo.Task.SampleID
-  description: The task sample ID.
+  description: The Cuckoo-related task sample ID.
 - contextPath: Cuckoo.Task.Guest
-  description: The task guest.
+  description: The Cuckoo-related task guest.
 - contextPath: Cuckoo.Task.Custom
-  description: The task custom values.
+  description: The Cuckoo-related task custom values.
 - contextPath: Cuckoo.Task.Owner
-  description: The task owner.
+  description: The Cuckoo-related task owner.
 - contextPath: Cuckoo.Task.Priority
-  description: The task priority.
+  description: The Cuckoo-related task priority.
 - contextPath: Cuckoo.Task.Platform
-  description: The task platform.
+  description: The Cuckoo-related task platform.
 - contextPath: Cuckoo.Task.Options
-  description: The task options.
+  description: The Cuckoo-related task options.
 - contextPath: Cuckoo.Task.Status
-  description: The task status.
+  description: The Cuckoo-related task status.
 - contextPath: Cuckoo.Task.EnforceTimeout
-  description: Whether task timeout is enforced.
+  description: Whether the Cuckoo-related task timeout is enforced.
 - contextPath: Cuckoo.Task.Timeout
-  description: The task timeout.
+  description: The Cuckoo-related task timeout.
 - contextPath: Cuckoo.Task.Memory
-  description: The task memory.
+  description: The Cuckoo-related task memory.
 - contextPath: Cuckoo.Task.Tags
-  description: The task tags.
+  description: The Cuckoo-related task tags.
 - contextPath: Cuckoo.Task.ID
-  description: The task ID.
+  description: The Cuckoo-related task ID.
 - contextPath: Cuckoo.Task.AddedOn
-  description: The date the task was added.
+  description: The date the Cuckoo-related task was added.
 - contextPath: Cuckoo.Task.CompletedOn
-  description: The date the task was completed.
+  description: The date the Cuckoo-related task was completed.
 - contextPath: Cuckoo.Task.Score
-  description: The reported task score.
+  description: The reported Cuckoo-related task score.
 - contextPath: Cuckoo.Task.Monitor
-  description: The reported task monitor.
+  description: The reported Cuckoo-related task monitor.
 - contextPath: ANYRUN.Task.AnalysisDate
-  description: The date and time the analysis was executed.
+  description: The date and time the ANY.RUN analysis was executed.
   type: String
 - contextPath: ANYRUN.Task.Behavior.Category
-  description: The process behavior category.
+  description: The ANY.RUN behavior category.
   type: String
 - contextPath: ANYRUN.Task.Behavior.Action
-  description: The actions performed by a process.
+  description: The actions performed by an ANY.RUN behavior.
   type: String
 - contextPath: ANYRUN.Task.Behavior.ThreatLevel
-  description: The threat score associated with a process behavior.
+  description: The threat score associated with an ANY.RUN behavior.
   type: Number
 - contextPath: ANYRUN.Task.Behavior.ProcessUUID
-  description: The unique ID of the process whose behaviors are profiled.
+  description: The ANY.RUN unique ID of the process whose behaviors are profiled.
   type: String
 - contextPath: ANYRUN.Task.Connection.Reputation
-  description: The connection reputation.
+  description: The ANY.RUN connection reputation.
   type: String
 - contextPath: ANYRUN.Task.Connection.ProcessUUID
-  description: The ID of the process that created the connection.
+  description: The ANY.RUN UUID of the process that created the connection.
   type: String
 - contextPath: ANYRUN.Task.Connection.ASN
-  description: The connection autonomous system network.
+  description: The ANY.RUN connection autonomous system network.
   type: String
 - contextPath: ANYRUN.Task.Connection.Country
-  description: The connection country.
+  description: The ANY.RUN connection country.
   type: String
 - contextPath: ANYRUN.Task.Connection.Protocol
-  description: The connection protocol.
+  description: The ANY.RUN connection protocol.
   type: String
 - contextPath: ANYRUN.Task.Connection.Port
-  description: The connection port number.
+  description: The ANY.RUN connection port number.
   type: Number
 - contextPath: ANYRUN.Task.Connection.IP
-  description: The connection IP number.
+  description: The ANY.RUN connection IP number.
   type: String
 - contextPath: ANYRUN.Task.DnsRequest.Reputation
-  description: The reputation of the DNS request.
+  description: The ANY.RUN process reputation of the DNS request.
   type: String
 - contextPath: ANYRUN.Task.DnsRequest.IP
-  description: The IP addresses associated with a DNS request.
-  type: Unknown
+  description: The ANY.RUN IP addresses associated with a DNS request.
+  type: string
 - contextPath: ANYRUN.Task.DnsRequest.Domain
-  description: The domain resolution of a DNS request.
+  description: The ANY.RUN domain resolution of a DNS request.
   type: String
 - contextPath: ANYRUN.Task.Threat.ProcessUUID
-  description: The unique UUID of the process that originated the threat.
+  description: The unique ANY.RUN UUID of the process that originated the threat.
   type: String
 - contextPath: ANYRUN.Task.Threat.Msg
-  description: The threat message.
+  description: The ANY.RUN threat message.
   type: String
 - contextPath: ANYRUN.Task.Threat.Class
-  description: The threat class.
+  description: The ANY.RUN threat class.
   type: String
 - contextPath: ANYRUN.Task.Threat.SrcPort
-  description: The port on which the threat originated.
+  description: The ANY.RUN port on which the threat originated.
   type: Number
 - contextPath: ANYRUN.Task.Threat.DstPort
-  description: The threat destination port.
+  description: The ANY.RUN threat destination port.
   type: Number
 - contextPath: ANYRUN.Task.Threat.SrcIP
-  description: The source IP address where the threat originated.
+  description: The ANY.RUN source IP address where the threat originated.
   type: String
 - contextPath: ANYRUN.Task.Threat.DstIP
-  description: The threat destination IP address.
+  description: The ANY.RUN threat destination IP address.
   type: String
 - contextPath: ANYRUN.Task.HttpRequest.Reputation
-  description: The reputation of the HTTP request.
+  description: The ANY.RUN HTTP request reputation.
   type: String
 - contextPath: ANYRUN.Task.HttpRequest.Country
-  description: The HTTP request country.
+  description: The ANY.RUN HTTP request country.
   type: String
 - contextPath: ANYRUN.Task.HttpRequest.ProcessUUID
-  description: The ID of the process making the HTTP request.
+  description: The ANY.RUN UUID of the process making the HTTP request.
   type: String
 - contextPath: ANYRUN.Task.HttpRequest.Body
-  description: The HTTP request body parameters and details.
-  type: Unknown
+  description: The ANY.RUN HTTP request body parameters and details.
+  type: string
 - contextPath: ANYRUN.Task.HttpRequest.HttpCode
-  description: The HTTP request response code.
+  description: The ANY.RUN HTTP request response code.
   type: Number
 - contextPath: ANYRUN.Task.HttpRequest.Status
-  description: The status of the HTTP request.
+  description: The ANY.RUN status of the HTTP request.
   type: String
 - contextPath: ANYRUN.Task.HttpRequest.ProxyDetected
-  description: Whether the HTTP request was made through a proxy.
+  description: Whether the ANY.RUN HTTP request was made through a proxy.
   type: Boolean
 - contextPath: ANYRUN.Task.HttpRequest.Port
-  description: The HTTP request port.
+  description: The ANY.RUN HTTP request port.
   type: Number
 - contextPath: ANYRUN.Task.HttpRequest.IP
-  description: The HTTP request IP address.
+  description: The ANY.RUN HTTP request IP address.
   type: String
 - contextPath: ANYRUN.Task.HttpRequest.URL
-  description: The HTTP request URL.
+  description: The ANY.RUN HTTP request URL.
   type: String
 - contextPath: ANYRUN.Task.HttpRequest.Host
-  description: The HTTP request host.
+  description: The ANY.RUN HTTP request host.
   type: String
 - contextPath: ANYRUN.Task.HttpRequest.Method
-  description: The HTTP request method type.
+  description: The ANY.RUN HTTP request method type.
   type: String
 - contextPath: ANYRUN.Task.FileInfo
-  description: The submitted file details.
+  description: The ANY.RUN submitted file details.
   type: String
 - contextPath: ANYRUN.Task.OS
-  description: The OS of the sandbox in which the file was analyzed.
+  description: The ANY.RUN OS of the sandbox in which the file was analyzed.
   type: String
 - contextPath: ANYRUN.Task.ID
-  description: The unique ID of the task.
+  description: The unique ANY.RUN task ID.
   type: String
 - contextPath: ANYRUN.Task.MIME
-  description: The MIME of the file submitted for analysis.
+  description: The ANY.RUN MIME of the file submitted for analysis.
   type: String
 - contextPath: ANYRUN.Task.Verdict
   description: The ANY.RUN verdict for the maliciousness of the submitted file or URL.
   type: String
 - contextPath: ANYRUN.Task.Process.FileName
-  description: The process file name.
+  description: The ANY.RUN process file name.
   type: String
 - contextPath: ANYRUN.Task.Process.PID
-  description: The process identification number.
+  description: The ANY.RUN process identification number.
   type: Number
 - contextPath: ANYRUN.Task.Process.PPID
-  description: The parent process identification number.
+  description: The ANY.RUN process parent process identification number.
   type: Number
 - contextPath: ANYRUN.Task.Process.ProcessUUID
-  description: The Unique process ID (used by ANY.RUN).
+  description: The Unique ANY.RUN process UUID.
   type: String
 - contextPath: ANYRUN.Task.Process.CMD
-  description: The process command.
+  description: The ANY.RUN process command.
   type: String
 - contextPath: ANYRUN.Task.Process.Path
-  description: The path of the executed command.
+  description: The path of the executed ANY.RUN process command.
   type: String
 - contextPath: ANYRUN.Task.Process.User
-  description: The user who executed the command.
+  description: The user who executed the ANY.RUN process command.
   type: String
 - contextPath: ANYRUN.Task.Process.IntegrityLevel
-  description: The process integrity level.
+  description: The ANY.RUN process integrity level.
   type: String
 - contextPath: ANYRUN.Task.Process.ExitCode
-  description: The process exit code.
+  description: The ANY.RUN process exit code.
   type: Number
 - contextPath: ANYRUN.Task.Process.MainProcess
-  description: Whether the process is the main process.
+  description: Whether the ANY.RUN process is the main process.
   type: Boolean
 - contextPath: ANYRUN.Task.Process.Version.Company
-  description: The company responsible for the executed program.
+  description: The company responsible for the executed ANY.RUN process program.
   type: String
 - contextPath: ANYRUN.Task.Process.Version.Description
-  description: The description of the program type.
+  description: The description of the ANY.RUN process program type.
   type: String
 - contextPath: ANYRUN.Task.Process.Version.Version
   description: The version of the executed program.
