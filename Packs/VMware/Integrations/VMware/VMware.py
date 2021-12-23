@@ -48,7 +48,6 @@ def get_limit(args):
     return limit, False, page_size
 
 
-
 def login(params):  # pragma: no cover
     full_url, url, port, user_name, password = parse_params(params)
 
