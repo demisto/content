@@ -14,5 +14,9 @@
     "useCases": [],
     "keywords": [
         "AzureSentinel"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

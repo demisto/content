@@ -10,30 +10,32 @@
     "categories": [
         "Network Security"
     ],
-    "itemPrefix": [
-        "PAN-OS",
-        "Policy Optimizer"
-    ],
     "tags": [],
     "useCases": [],
     "keywords": [],
     "dependencies": {
-        "PAN-OS": {
+        "Panorama": {
             "mandatory": true,
             "display_name": "PAN-OS"
-        },
-        "CommonTypes": {
-            "mandatory": true,
-            "display_name": "Common Types"
         },
         "CommonScripts": {
             "mandatory": true,
             "display_name": "Common Scripts"
         }
     },
+    "itemPrefix": [
+        "PAN-OS",
+        "Policy Optimizer"
+    ],
     "displayedImages": [
         "PAN-OS",
         "CommonTypes",
         "CommonScripts"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }
+
+
