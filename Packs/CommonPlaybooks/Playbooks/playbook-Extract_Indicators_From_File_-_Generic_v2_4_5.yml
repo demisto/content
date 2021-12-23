@@ -1609,39 +1609,55 @@ inputs:
 outputs:
 - contextPath: Domain.Name
   description: The extracted domains.
+  type: string
 - contextPath: Account.Email.Address
   description: The extracted email addresses.
+  type: string
 - contextPath: File.MD5
   description: The extracted MD5 hash.
+  type: string
 - contextPath: File.SHA1
   description: The extracted SHA1 hash.
+  type: string
 - contextPath: File.SHA256
   description: The extracted SHA256 hash.
+  type: string
 - contextPath: IP.Address
   description: The extracted IP addresses.
+  type: string
 - contextPath: File.Text
   description: The text or images extracted from the PDF file.
+  type: string
 - contextPath: File.Producer
   description: The PDF file producer.
+  type: string
 - contextPath: File.Title
   description: The title of the PDF file.
+  type: string
 - contextPath: File.xap
   description: The XAP of the PDF file.
+  type: string
 - contextPath: File.Author
   description: The author of the file.
+  type: string
 - contextPath: File.dc
   description: The DC of the file.
+  type: string
 - contextPath: File.xapmm
   description: The XAPMM of the file.
+  type: string
 - contextPath: File.ModDate
   description: The mod date of the file.
+  type: string
 - contextPath: File.CreationDate
   description: The creation date of the file.
+  type: string
 - contextPath: File.Pages
   description: The number of pages in the file.
+  type: string
 - contextPath: URL.Data
   description: A list of URLs that were extracted from the file.
-  type: unknown
+  type: string
 tests:
 - Field polling test
 - test-domain-indicator
