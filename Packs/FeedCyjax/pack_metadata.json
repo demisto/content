@@ -23,5 +23,9 @@
         "incident response",
         "incident report"
     ],
-    "githubUser": []
+    "githubUser": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }
