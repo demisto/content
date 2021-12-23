@@ -1,6 +1,6 @@
 {
-    "name": "DomainTools",
-    "description": "Domain name, DNS and Internet OSINT-based cyber threat intelligence and cybercrime forensics products and data",
+    "name": "DomainTools Enterprise",
+    "description": "Provides DomainTools market-leading Whois data including hosting history and parsed IP records within Cortex XSOAR. Requires a DomainTools Enterprise API key.",
     "support": "partner",
     "currentVersion": "1.1.0",
     "author": "DomainTools",
