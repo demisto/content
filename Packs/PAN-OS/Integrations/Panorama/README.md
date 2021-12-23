@@ -213,7 +213,7 @@ Run any command supported in the API.
 | target | Target number of the firewall. Use only on a Panorama instance. | Optional | 
 | job-id | Job ID. | Optional | 
 | query | Query string. | Optional | 
-| vsys | The name of the virtual system to be configured. If no vsys is mentioned, this command will not pass the vsys parameter to the http request. | Optional | 
+| vsys | The name of the virtual system to be configured. If no vsys is mentioned, this command will not use the vsys parameter. | Optional | 
 
 
 #### Context Output
