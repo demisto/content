@@ -11,7 +11,8 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": ["Alerts",
+    "tags": [
+        "Alerts",
         "COVID-19",
         "Compliance",
         "COVID-19",
@@ -26,9 +27,17 @@
         "Pandemic",
         "Security",
         "Security Analytics",
-        "Threat Intelligence"],
+        "Threat Intelligence"
+    ],
     "useCases": [],
     "keywords": [],
-    "githubUser": ["tal2", "VeredRozen"],
-    "dependencies": {}
+    "githubUser": [
+        "tal2",
+        "VeredRozen"
+    ],
+    "dependencies": {},
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

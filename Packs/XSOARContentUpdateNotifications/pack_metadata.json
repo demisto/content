@@ -7,12 +7,18 @@
     "url": "",
     "email": "",
     "created": "2021-06-15T14:34:33Z",
-    "categories": ["Utilities"],
+    "categories": [
+        "Utilities"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],
     "githubUser": [
         "aburt-demisto"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ],
     "dependencies": {
         "ContentInstallation": {

@@ -16,12 +16,20 @@
     ],
     "useCases": [],
     "keywords": [
-        "Siscale", "Arcanna", "RPA", "ML", "Alert Triage"
+        "Siscale",
+        "Arcanna",
+        "RPA",
+        "ML",
+        "Alert Triage"
     ],
     "devEmail": [
         "mcraciunescu@siscale.com"
     ],
     "githubUser": [
         "marian-craciunescu"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

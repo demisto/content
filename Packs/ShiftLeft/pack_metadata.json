@@ -13,9 +13,17 @@
     "tags": [],
     "created": "2021-09-21T09:39:30Z",
     "useCases": [],
-    "keywords": ["DevSecOps", "AppSec", "ShiftLeft"],
+    "keywords": [
+        "DevSecOps",
+        "AppSec",
+        "ShiftLeft"
+    ],
     "dependencies": {},
     "githubUser": [
         "prabhu"
-    ]    
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }
