@@ -9,7 +9,7 @@ Main additions to this version:
     - Better handling of forwarded emails.
     - Supporting the new "Phishing Alerts" pack.
 3) Adding "Detonate URL - Generic" playbook.
-4) 4 Playbook inputs were added (please see their descriptions in the table below): InternalDomains, DetonateURL, InternalRange, PhishingModelName. 
+4) Four new playbook inputs: `InternalDomains`, `DetonateURL`, `InternalRange`, `PhishingModelName`. You can find their descriptions in the table at the bottom of this page.
 
 ##### Triggers
 The investigation is triggered by an email sent or forwarded to a designated "phishing inbox". A mail listener integration that listens to that mailbox, will use every received email to create a phishing incident in Cortex XSOAR.
@@ -45,32 +45,32 @@ These tasks have the following names:
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Entity Enrichment - Phishing v2
-* Process Email - Generic v2
-* Email Address Enrichment - Generic v2.1
 * Process Microsoft's Anti-Spam Headers
-* Calculate Severity - Generic v2
-* Block Indicators - Generic v2
-* Detonate File - Generic
-* Detect & Manage Phishing Campaigns
-* Extract Indicators From File - Generic v2
 * Search And Delete Emails - Generic v2
+* Process Email - Generic v2
 * Detonate URL - Generic
+* Extract Indicators From File - Generic v2
+* Email Address Enrichment - Generic v2.1
+* Entity Enrichment - Phishing v2
+* Block Indicators - Generic v2
+* Detect & Manage Phishing Campaigns
+* Calculate Severity - Generic v2
+* Detonate File - Generic
 
 ### Integrations
 This playbook does not use any integrations.
 
 ### Scripts
-* DBotPredictPhishingWords
+* AssignAnalystToIncident
 * Set
 * CheckEmailAuthenticity
-* AssignAnalystToIncident
+* DBotPredictPhishingWords
 
 ### Commands
 * closeInvestigation
+* send-mail
 * extractIndicators
 * setIncident
-* send-mail
 
 ## Playbook Inputs
 ---
@@ -91,6 +91,7 @@ This playbook does not use any integrations.
 | InternalDomains | A CSV list of internal domains. The list will be used to determine whether an email address is internal or external. |  | Optional |
 | DetonateURL | Whether to use URL Detonation playbook or not. When detonating a URL it's possible that it will take a few minutes. False is default. | False | Optional |
 | InternalRange | This input will be used in the task "Entity Enrichment - Phishing v2".<br/>A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). If a list is not provided, will use default list provided in the IsIPInRanges script \(the known IPv4 private address ranges\). |  | Optional |
+| PhishingModelName | Optional - the name of a pre-trained phishing model to use for phishing type prediction using machine learning. | phishing_model | Optional |
 
 ## Playbook Outputs
 ---
@@ -98,4 +99,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Phishing - Generic v3](Insert the link to your image here)
+![Phishing - Generic v3](../doc_files/Phishing_-_Generic_v3.png)
