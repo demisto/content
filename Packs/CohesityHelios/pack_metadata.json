@@ -17,5 +17,9 @@
     ],
     "useCases": [],
     "keywords": [],
-    "githubUser": []
+    "githubUser": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

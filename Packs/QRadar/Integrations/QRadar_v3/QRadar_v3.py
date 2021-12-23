@@ -29,10 +29,11 @@ MAX_FETCH_EVENT_RETIRES = 3  # max iteration to try search the events of an offe
 SLEEP_FETCH_EVENT_RETIRES = 10  # sleep between iteration to try search the events of an offense
 MAX_NUMBER_OF_OFFENSES_TO_CHECK_SEARCH = 5  # Number of offenses to check during mirroring if search was completed.
 DEFAULT_EVENTS_TIMEOUT = 30  # default timeout for the events enrichment in minutes
+PROFILING_DUMP_ROWS_LIMIT = 20
 
 ADVANCED_PARAMETERS_STRING_NAMES = [
     'DOMAIN_ENRCH_FLG',
-    'RULES_ENRCH_FLG'
+    'RULES_ENRCH_FLG',
 ]
 ADVANCED_PARAMETER_INT_NAMES = [
     'EVENTS_INTERVAL_SECS',
@@ -44,7 +45,8 @@ ADVANCED_PARAMETER_INT_NAMES = [
     'MAX_WORKERS',
     'MAX_FETCH_EVENT_RETIRES',
     'SLEEP_FETCH_EVENT_RETIRES',
-    'DEFAULT_EVENTS_TIMEOUT'
+    'DEFAULT_EVENTS_TIMEOUT',
+    'PROFILING_DUMP_ROWS_LIMIT',
 ]
 
 ''' CONSTANTS '''
@@ -3627,4 +3629,5 @@ def main() -> None:
 ''' ENTRY POINT '''
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
+    register_signal_handler_profiling_dump(profiling_dump_rows_limit=PROFILING_DUMP_ROWS_LIMIT)
     main()
