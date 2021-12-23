@@ -110,17 +110,14 @@ class Table:
 
         if default_header_line and default_header_line != 'none':
             if not headers and not any(labels for labels, cols in tbl_rows):
-                if default_header_line == 'first_column':
-                    # The first column is considered as header
-                    tbl_rows = [([], list(cols)) for cols in zip(*[cols for labels, cols in tbl_rows])]  # transpose
-                    if tbl_rows and tbl_rows[0][1]:
-                        headers = tbl_rows[0][1]
-                        tbl_rows = tbl_rows[1:]
-                elif default_header_line == 'first_row':
-                    # The first row is considered as header
-                    if tbl_rows and tbl_rows[0][1]:
-                        headers = tbl_rows[0][1]
-                        tbl_rows = tbl_rows[1:]
+                if default_header_line in ('first_column', 'first_row'):
+                    # The first column or row is considered as header
+                    if default_header_line == 'first_column':
+                        # transpose
+                        tbl_rows = [([], list(cols)) for cols in zip(*[cols for labels, cols in tbl_rows])]
+
+                    labels, headers = tbl_rows[0]
+                    tbl_rows = tbl_rows[1:]
                 else:
                     raise ValueError(f'Unknown default header line: {default_header_line}')
 
