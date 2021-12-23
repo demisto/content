@@ -1,0 +1,26 @@
+comment: Common code that will be merged into each server script when it runs.
+commonfields:
+  id: CommonServerPython
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: Base
+    toServerVersion: ""
+dockerimage: demisto/python:2.7.18.24398
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: CommonServerPython
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python2
+tags:
+- infra
+- server
+type: python

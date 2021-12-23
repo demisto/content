@@ -1,0 +1,124 @@
+{
+    "brands": null,
+    "defaultIncidentType": "",
+    "definitionId": "",
+    "description": "",
+    "feed": false,
+    "fromServerVersion": "",
+    "id": "9357178c-b99a-4137-81b4-191c9ceef0c8",
+    "incidentSamples": null,
+    "indicatorSamples": null,
+    "instanceIds": null,
+    "itemVersion": "",
+    "keyTypeMap": {},
+    "locked": false,
+    "logicalVersion": 6,
+    "mapping": {
+        "PubSubTIRSharing": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                " Operating System": {
+                    "complex": {
+                        "filters": [],
+                        "root": "data",
+                        "transformers": [
+                            {
+                                "operator": "ParseJSON"
+                            },
+                            {
+                                "args": {
+                                    "field": {
+                                        "value": {
+                                            "simple": "operatingsystem"
+                                        }
+                                    }
+                                },
+                                "operator": "getField"
+                            }
+                        ]
+                    }
+                },
+                "Fuzzy Hash": {
+                    "complex": {
+                        "filters": [],
+                        "root": "data",
+                        "transformers": [
+                            {
+                                "operator": "ParseJSON"
+                            },
+                            {
+                                "args": {
+                                    "field": {
+                                        "value": {
+                                            "simple": "fuzzyhash"
+                                        }
+                                    }
+                                },
+                                "operator": "getField"
+                            }
+                        ]
+                    }
+                },
+                "Malware Type": {
+                    "complex": {
+                        "filters": [],
+                        "root": "data",
+                        "transformers": [
+                            {
+                                "operator": "ParseJSON"
+                            },
+                            {
+                                "args": {
+                                    "field": {
+                                        "value": {
+                                            "simple": "malwaretype"
+                                        }
+                                    }
+                                },
+                                "operator": "getField"
+                            }
+                        ]
+                    }
+                },
+                "TIR Source ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "data",
+                        "transformers": [
+                            {
+                                "operator": "ParseJSON"
+                            },
+                            {
+                                "args": {
+                                    "field": {
+                                        "value": {
+                                            "simple": "tirsourceid"
+                                        }
+                                    }
+                                },
+                                "operator": "getField"
+                            }
+                        ]
+                    }
+                },
+                "TIRData": {
+                    "complex": {
+                        "filters": [],
+                        "root": "data",
+                        "transformers": []
+                    }
+                }
+            }
+        }
+    },
+    "name": "PubSubTIRSharing_mapper",
+    "nameRaw": "PubSubTIRSharing_mapper",
+    "packID": "",
+    "sourceClassifierId": "",
+    "system": false,
+    "toServerVersion": "",
+    "transformer": {},
+    "type": "mapping-incoming",
+    "unclassifiedCases": null,
+    "version": -1
+}

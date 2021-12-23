@@ -1,0 +1,17 @@
+commonfields:
+  id: abfae80e-be09-4fa7-82bf-d5ad5bbde4be
+  version: -1
+dockerimage: demisto/python3:3.9.8.24399
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: ShareThreatIntelReportPubSub
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- threatIntelReport-action-button
+type: python

@@ -1,0 +1,290 @@
+id: 46ce9cc9-bd06-436c-8b3c-c03fc8c42cb7
+inputs: []
+name: CreateTIRFromPubSubTIRSharing
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 28c708c4-d12c-4509-8f07-069e3e3ab44d
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 28c708c4-d12c-4509-8f07-069e3e3ab44d
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      tir_data:
+        simple: ${incident.tirdata}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5ff5cf58-436d-4da0-87a3-d34a905303d0
+      iscommand: false
+      name: create TIR and relationships
+      script: 2a8aa805-7177-4582-87fb-b30cb789d818
+      type: regular
+      version: -1
+    taskid: 5ff5cf58-436d-4da0-87a3-d34a905303d0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1e84250b-9167-414f-8e6a-dd7764c578a7
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 1e84250b-9167-414f-8e6a-dd7764c578a7
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1070
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      id:
+        simple: ${incident.id}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: fa49b7f9-ef1c-453a-8aa6-4ff79d0191cd
+      iscommand: true
+      name: Close investigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: fa49b7f9-ef1c-453a-8aa6-4ff79d0191cd
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      id:
+        simple: ${incident.tirsourceid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 89d23227-49f7-46cf-8b16-92584688600e
+      iscommand: false
+      name: SearchTIR
+      script: 6bf18cc0-d3d7-4c1a-8dc5-b564fade30e0
+      type: regular
+      version: -1
+    taskid: 89d23227-49f7-46cf-8b16-92584688600e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+  "5":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: SearchTIR.tirexist
+          operator: isEqualString
+          right:
+            value:
+              simple: "true"
+      label: "yes"
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "1"
+      "yes":
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7799eec7-5af6-424d-82a7-c8dec5f432a9
+      iscommand: false
+      name: TIR Exists?
+      type: condition
+      version: -1
+    taskid: 7799eec7-5af6-424d-82a7-c8dec5f432a9
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      tir_data:
+        simple: ${incident.tirdata}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8287fb06-bf65-488e-8944-4ce2d5248451
+      iscommand: false
+      name: create TIR and relationships
+      script: 2a8aa805-7177-4582-87fb-b30cb789d818
+      type: regular
+      version: -1
+    taskid: 8287fb06-bf65-488e-8944-4ce2d5248451
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entity_a:
+        simple: ${CreateTIRFromPubSub.tir_id}
+      entity_a_type:
+        simple: ${CreateTIRFromPubSub.tir_type}
+      entity_b:
+        simple: ${incident.tirsourceid}
+      entity_b_type:
+        simple: ${CreateTIRFromPubSub.tir_type}
+      relationship:
+        simple: related-to
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This automation creates a relationship between indicator objects.
+      id: 06be4c9b-26a1-4906-8251-8f7ed7ce43db
+      iscommand: false
+      name: CreateTIRRelationshipWithTIR
+      script: 387ec7af-691e-4e82-8236-e9403869b389
+      type: regular
+      version: -1
+    taskid: 06be4c9b-26a1-4906-8251-8f7ed7ce43db
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

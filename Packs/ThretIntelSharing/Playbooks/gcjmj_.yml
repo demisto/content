@@ -1,0 +1,44 @@
+id: acb4dd33-4fc0-4448-8c5e-1a5c2fd89f37
+inputs: []
+name: gcjmj,
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5a6f5bae-4416-447b-8370-226b4b35a1bd
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 5a6f5bae-4416-447b-8370-226b4b35a1bd
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 65,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
