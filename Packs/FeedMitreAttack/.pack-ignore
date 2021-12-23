@@ -6,3 +6,6 @@ ignore=RM102
 
 [file:layoutscontainer-MITRE_ATT&CK.json]
 ignore=BA101
+
+[file:playbook-Mitre_Attack_List_2_Indicators_Feed_Test.yml]
+ignore=auto-test

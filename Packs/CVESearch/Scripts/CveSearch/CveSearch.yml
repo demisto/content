@@ -1,0 +1,26 @@
+commonfields:
+  id: c99e196b-e05e-41f2-82cb-6798f33cb653
+  version: -1
+name: cveSearch
+script: ''
+type: javascript
+tags:
+- cve
+- enhancement
+comment: Deprecated. No available replacement. Search vulnerability information based
+  on CVE ID.
+system: true
+deprecated: true
+args:
+- name: cveId
+  required: true
+  default: true
+  description: CVE ID to search
+scripttarget: 0
+dependson:
+  must:
+  - cve-search
+timeout: 0s
+tests:
+- No tests (auto formatted)
+fromversion: 5.0.0

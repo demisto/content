@@ -2,7 +2,7 @@
     "name": "Farsight DNSDB",
     "description": "Query Farsight DNSDB service",
     "support": "partner",
-    "currentVersion": "2.1.6",
+    "currentVersion": "2.1.7",
     "author": "Farsight Security, Inc.",
     "url": "https://www.farsightsecurity.com",
     "email": "support@farsightsecurity.com",
@@ -29,5 +29,9 @@
     "displayedImages": [
         "CommonScripts"
     ],
-    "certification": "certified"
+    "certification": "certified",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

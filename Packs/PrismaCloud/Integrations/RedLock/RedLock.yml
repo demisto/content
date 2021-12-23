@@ -3,7 +3,7 @@ commonfields:
   id: RedLock
   version: -1
 configuration:
-- defaultvalue: https://api.redlock.io/
+- defaultvalue: https://api.prismacloud.io/
   display: Server URL
   name: url
   required: true
@@ -1212,7 +1212,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The scan ID. Scan Id can be retrieved by the redlock-list-scans command.
+      description: The scan ID. Scan Id can be retrieved by the redlock-list-scans
+        command.
       isArray: false
       name: scan_id
       required: true
@@ -1262,7 +1263,7 @@ script:
     - contextPath: Redlock.Scans.results.id
       description: Scan results ID
       type: String
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   feed: false
   isfetch: true
   longRunning: false

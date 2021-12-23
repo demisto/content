@@ -1,4 +1,5 @@
 import pytest
+from CommonServerPython import DemistoException
 from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_readable, \
     generate_body, split_fields, Client, update_ticket_command, create_ticket_command, delete_ticket_command, \
     query_tickets_command, add_link_command, add_comment_command, upload_file_command, get_ticket_notes_command, \
@@ -6,7 +7,7 @@ from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_re
     list_table_fields_command, query_computers_command, get_table_name_command, add_tag_command, query_items_command, \
     get_item_details_command, create_order_item_command, document_route_to_table, fetch_incidents, main, \
     get_mapping_fields_command, get_remote_data_command, update_remote_system_command, build_query_for_request_params, \
-    ServiceNowClient, oauth_test_module, login_command, get_modified_remote_data_command, parse_build_query
+    ServiceNowClient, oauth_test_module, login_command, get_modified_remote_data_command, parse_build_query, get_ticket_fields
 from ServiceNowv2 import test_module as module
 from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICKET, RESPONSE_UPDATE_TICKET, \
     RESPONSE_UPDATE_TICKET_SC_REQ, RESPONSE_CREATE_TICKET, RESPONSE_CREATE_TICKET_WITH_OUT_JSON, RESPONSE_QUERY_TICKETS, \
@@ -88,8 +89,8 @@ def test_generate_body():
 
 
 def test_split_fields():
-    expected_dict_fields = {'a': 'b', 'c': 'd'}
-    assert expected_dict_fields == split_fields('a=b;c=d')
+    expected_dict_fields = {'a': 'b', 'c': 'd', 'e': ''}
+    assert expected_dict_fields == split_fields('a=b;c=d;e=')
 
     expected_custom_field = {'u_customfield': "<a href=\'https://google.com\'>Link text</a>"}
     assert expected_custom_field == split_fields("u_customfield=<a href=\'https://google.com\'>Link text</a>")
@@ -988,3 +989,58 @@ def test_get_ticket_attachments(mocker, sys_created_on, expected):
 
     client.get_ticket_attachments('id', sys_created_on)
     client.send_request.assert_called_with('attachment', 'GET', params={'sysparm_query': f'{expected}'})
+
+
+@pytest.mark.parametrize('args,expected_ticket_fields', [
+    ({'clear_fields': 'assigned_to,severity'}, {'assigned_to': '', 'severity': ''}),
+    ({'clear_fields': 'assigned_to,severity', 'assigned_to': 'assigned@to.com'}, {'assigned_to': '', 'severity': ''}),
+    ({}, {}),
+])
+def test_clear_fields_in_get_ticket_fields(args, expected_ticket_fields):
+    if 'assigned_to' in args:
+        with pytest.raises(DemistoException) as e:
+            res = get_ticket_fields(args)
+        assert str(e.value) == "Could not set a value for the argument 'assigned_to' and add it to the clear_fields. \
+                You can either set or clear the field value."
+    else:
+        res = get_ticket_fields(args)
+        assert res == expected_ticket_fields
+
+
+def test_query_table_with_fields(mocker):
+    """
+    Given:
+        - Fields for query table
+
+    When:
+        - Run query table command
+
+    Then:
+        - Validate the fields was sent as params in the request and sys_id appear in fields
+    """
+
+    # prepare
+    client = Client('server_url', 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
+                    'sysparm_query', 'sysparm_limit', 'timestamp_field', 'ticket_type', 'get_attachments',
+                    'incident_name')
+
+    mocker.patch.object(client, 'send_request', return_value={
+        "result": [
+            {
+                "sys_id": "test_id",
+                "sys_updated_by": "test_updated_name",
+                "opened_by.name": "test_opened_name"
+            }
+        ]})
+    fields = "sys_updated_by,opened_by.name"
+    fields_with_sys_id = f'{fields},sys_id'
+    args = {'table_name': "alm_asset", 'fields': fields,
+            'query': "display_nameCONTAINSMacBook", 'limit': 3}
+
+    # run
+    result = query_table_command(client, args)
+
+    # validate
+    assert client.send_request.call_args[1]['params']['sysparm_fields'] == fields_with_sys_id
+    # validate that the '.' in the key was replaced to '_'
+    assert result[1]['ServiceNow.Record(val.ID===obj.ID)'][0]['opened_by_name'] == 'test_opened_name'

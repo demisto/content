@@ -2,7 +2,7 @@
     "name": "FireEye Feed",
     "description": "FireEye indicators and reports feed for Cortex XSOAR TIM",
     "support": "xsoar",
-    "currentVersion": "2.0.3",
+    "currentVersion": "2.0.4",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -17,5 +17,9 @@
     "keywords": [
         "FireEye",
         "Feed"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

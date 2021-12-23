@@ -2,7 +2,7 @@
     "name": "FileOrbis",
     "description": "FileOrbis XSOAR integration.",
     "support": "partner",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.2",
     "author": "FileOrbis",
     "url": "https://www.fileorbis.com/",
     "email": "info@fileorbis.com",
@@ -19,5 +19,9 @@
         "IT Services"
     ],
     "keywords": [],
-    "githubUser": []
+    "githubUser": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

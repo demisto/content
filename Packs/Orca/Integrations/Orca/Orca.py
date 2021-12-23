@@ -5,10 +5,11 @@ from CommonServerPython import *  # noqa: F401
 
 from typing import Any, Dict, Union, Optional
 
-ORCA_API_DNS_NAME = "https://api.orcasecurity.io/api"
-
 DEMISTO_OCCURRED_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 DEMISTO_INFORMATIONAL = 0.5
+ORCA_API_TIMEOUT = 30  # Increase timeout for ORCA API
+ORCA_HTTP_QUERIES_LIMIT = 50  # Request limit during run
+ORCA_API_LIMIT = 500  # limit number of returned records from ORCA API
 
 
 class OrcaClient:
@@ -19,7 +20,7 @@ class OrcaClient:
         demisto.info("validate_api_key, enter")
         invalid_token_string = "Test failed becasue the Orca API key that was entered is invalid, please provide a valid API key"
         try:
-            response = self.client._http_request(method="GET", url_suffix="/user/action?")
+            response = self.client._http_request(method="GET", url_suffix="/user/action?", timeout=ORCA_API_TIMEOUT)
         except Exception:
             return invalid_token_string
 
@@ -28,7 +29,12 @@ class OrcaClient:
 
         return "ok"
 
-    def get_alerts_by_filter(self, alert_type: Optional[str] = None, asset_unique_id: Optional[str] = None) -> Union[  # pylint: disable=E1136 # noqa: E501
+    def get_alerts_by_filter(
+            self,
+            alert_type: Optional[str] = None,
+            asset_unique_id: Optional[str] = None,
+            limit: int = 1000
+    ) -> Union[  # pylint: disable=E1136 # noqa: E501
         List[Dict[str, Any]], str]:  # pylint: disable=E1136 # noqa: E125
         demisto.info("get_alerts_by_filter, enter")
 
@@ -38,23 +44,33 @@ class OrcaClient:
             demisto.info("must supply exactly one filter")
             return "must supply exactly one filter"
 
+        params = {}
         if alert_type:
             params = {"type": alert_type}
-
         elif asset_unique_id:
             params = {"asset_unique_id": asset_unique_id}
 
-        response = self.client._http_request(method="GET", url_suffix=url_suffix, params=params)
+        params["limit"] = str(limit)
 
-        if response['status'] != 'success':
-            demisto.info("bad response from Orca API")
-            return response['error']
+        try:
+            response = self.client._http_request(method="GET", url_suffix=url_suffix, params=params,
+                                                 timeout=ORCA_API_TIMEOUT)
+            if response['status'] != 'success':
+                demisto.info("bad response from Orca API")
+                return response['error']
 
-        alerts = response.get("data")
+            alerts = response.get("data")
+            return alerts
+        except requests.exceptions.ReadTimeout as e:
+            demisto.info(f"Alerts Request ReadTimeout error: {str(e)}")
+            return []
 
-        return alerts
-
-    def get_all_alerts(self, first_fetch: Optional[str], fetch_informational: bool = False) -> List[Dict[str, Any]]:  # pylint: disable=E1136 # noqa: E501
+    def get_all_alerts(
+            self,
+            first_fetch: Optional[str],
+            fetch_informational: bool = False,
+            limit: int = 1000
+    ) -> List[Dict[str, Any]]:  # pylint: disable=E1136 # noqa: E501
         demisto.info("get_all_alerts, enter")
 
         alerts: List[Dict[str, Any]] = []
@@ -68,13 +84,26 @@ class OrcaClient:
                     }
                 ]
             })
+
+        params["limit"] = limit
         next_page_token = None
 
+        queries_counter = 0
         while True:
+            if queries_counter >= ORCA_HTTP_QUERIES_LIMIT:
+                # Prevent API throttling error
+                break
+
             if next_page_token:
                 params["next_page_token"] = next_page_token
 
-            response = self.client._http_request(method="GET", url_suffix="/query/alerts", params=params)
+            try:
+                response = self.client._http_request(method="GET", url_suffix="/query/alerts", params=params,
+                                                     timeout=ORCA_API_TIMEOUT)
+            except requests.exceptions.ReadTimeout as e:
+                demisto.info(f"Alerts Request ReadTimeout error: {str(e)}")
+                break
+
             if response['status'] != 'success':
                 demisto.info(f"got bad response, {response['error']}")
                 return response['error']
@@ -87,6 +116,8 @@ class OrcaClient:
             else:
                 next_page_token = response.get("next_page_token")
 
+            queries_counter += 1
+
         demisto.info(f"done fetching orca alerts, fetched {len(alerts)} alerts")
 
         return alerts
@@ -94,9 +125,13 @@ class OrcaClient:
     def get_asset(self, asset_unique_id: str) -> Union[Dict[str, Any], str]:  # pylint: disable=E1136
         demisto.debug("get_asset, enter")
         try:
-            response = self.client._http_request(method="GET", url_suffix=f"/assets/{asset_unique_id}")
+            response = self.client._http_request(method="GET", url_suffix=f"/assets/{asset_unique_id}",
+                                                 timeout=ORCA_API_TIMEOUT)
         except DemistoException:
             demisto.debug(f"could not find {asset_unique_id}")
+            return {}
+        except requests.exceptions.ReadTimeout as e:
+            demisto.info(f"Assets Request ReadTimeout error: {str(e)}")
             return {}
 
         if 'error' in response or not response:
@@ -108,7 +143,8 @@ class OrcaClient:
         demisto.info("get_kafka_alerts, enter")
 
         try:
-            response = self.client._http_request(method="GET", url_suffix="/query/alerts/updates")
+            response = self.client._http_request(method="GET", url_suffix="/query/alerts/updates",
+                                                 timeout=ORCA_API_TIMEOUT)
             if response['status'] != 'success':
                 demisto.info(f"got bad response, {response['error']}")
                 return []
@@ -159,9 +195,15 @@ def get_incidents_from_alerts(alerts: List[Dict[str, Any]]) -> List[Dict[str, An
     return incidents
 
 
-def fetch_incidents(orca_client: OrcaClient, max_fetch: int, first_fetch_time: Optional[str],   # pylint: disable=E1136
-                    fetch_informational: bool = False,
-                    pull_existing_alerts: bool = False, fetch_type="XSOAR-Pull") -> List[Dict[str, Any]]:
+def fetch_incidents(
+        orca_client: OrcaClient,
+        max_fetch: int,
+        first_fetch_time: Optional[str],  # pylint: disable=E1136
+        fetch_informational: bool = False,
+        pull_existing_alerts: bool = False,
+        fetch_type="XSOAR-Pull",
+        limit: int = 1000
+) -> List[Dict[str, Any]]:
     demisto.info(f"fetch-incidents called {max_fetch=}")
 
     if not pull_existing_alerts:
@@ -204,7 +246,8 @@ def fetch_incidents(orca_client: OrcaClient, max_fetch: int, first_fetch_time: O
 
     else:
         # this is the first run
-        alerts = orca_client.get_all_alerts(fetch_informational=fetch_informational, first_fetch=first_fetch_time)
+        alerts = orca_client.get_all_alerts(fetch_informational=fetch_informational, first_fetch=first_fetch_time,
+                                            limit=limit)
         if not alerts:
             demisto.incidents([])
             return []
@@ -227,10 +270,13 @@ def main() -> None:
         command = demisto.command()
         demisto.debug(f'Orca Command being called is {command}')
         api_key = demisto.params().get('apikey')
+        api_host = demisto.params().get('api_host')
         fetch_informational = demisto.params().get('fetch_informational')
         max_fetch = int(demisto.params().get('max_fetch'))
         pull_existing_alerts = demisto.params().get('pull_existing_alerts')
         fetch_type = demisto.params().get('fetch_type')
+
+        api_url = f"https://{api_host}/api"
 
         # How much time before the first fetch to retrieve incidents
         first_fetch_time = None
@@ -240,7 +286,7 @@ def main() -> None:
                 first_fetch_time = first_fetch_time_stamp.isoformat()
 
         client = BaseClient(
-            base_url=ORCA_API_DNS_NAME,
+            base_url=api_url,
             verify=True,
             headers={
                 'Authorization': f'Bearer {api_key}'
@@ -252,7 +298,11 @@ def main() -> None:
             demisto_args = demisto.args()
             alert_type = demisto_args.get('alert_type')
             asset_unique_id = demisto_args.get('asset_unique_id')
-            alerts = orca_client.get_alerts_by_filter(alert_type=alert_type, asset_unique_id=asset_unique_id)
+            alerts = orca_client.get_alerts_by_filter(
+                alert_type=alert_type,
+                asset_unique_id=asset_unique_id,
+                limit=ORCA_API_LIMIT,
+            )
             if isinstance(alerts, str):
                 #  this means alert is an error
                 command_result = CommandResults(readable_output=alerts, raw_response=alerts)
@@ -268,9 +318,15 @@ def main() -> None:
             return_results(command_result)
 
         elif command == "fetch-incidents":
-            fetch_incidents(orca_client, max_fetch=max_fetch, fetch_informational=fetch_informational,
-                            pull_existing_alerts=pull_existing_alerts, fetch_type=fetch_type,
-                            first_fetch_time=first_fetch_time)
+            fetch_incidents(
+                orca_client,
+                max_fetch=max_fetch,
+                fetch_informational=fetch_informational,
+                pull_existing_alerts=pull_existing_alerts,
+                fetch_type=fetch_type,
+                first_fetch_time=first_fetch_time,
+                limit=ORCA_API_LIMIT
+            )
 
         elif command == "test-module":
             test_res = orca_client.validate_api_key()

@@ -2984,7 +2984,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
             description = raw_incident.get('description')
             occurred = timestamp_to_datestring(raw_incident['creation_time'], TIME_FORMAT + 'Z')
             incident = {
-                'name': f'#{incident_id} - {description}',
+                'name': f'XDR Incident {incident_id} - {description}',
                 'occurred': occurred,
                 'rawJSON': json.dumps(incident_data),
             }

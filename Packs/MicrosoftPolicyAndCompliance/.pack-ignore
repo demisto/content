@@ -1,4 +1,4 @@
 [file:playbook-Azure_Hunting_playbook.yml]
 ignore=BA110
-[file:MicrosoftPolicyAndCompliance]
+[file:pack_metadata.json]
 ignore=PA129

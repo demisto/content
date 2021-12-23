@@ -3,6 +3,7 @@ import secrets
 from enum import Enum
 from ipaddress import ip_address
 from typing import Tuple, Set, Dict, Callable
+from urllib import parse
 
 import pytz
 import urllib3
@@ -28,10 +29,11 @@ MAX_FETCH_EVENT_RETIRES = 3  # max iteration to try search the events of an offe
 SLEEP_FETCH_EVENT_RETIRES = 10  # sleep between iteration to try search the events of an offense
 MAX_NUMBER_OF_OFFENSES_TO_CHECK_SEARCH = 5  # Number of offenses to check during mirroring if search was completed.
 DEFAULT_EVENTS_TIMEOUT = 30  # default timeout for the events enrichment in minutes
+PROFILING_DUMP_ROWS_LIMIT = 20
 
 ADVANCED_PARAMETERS_STRING_NAMES = [
     'DOMAIN_ENRCH_FLG',
-    'RULES_ENRCH_FLG'
+    'RULES_ENRCH_FLG',
 ]
 ADVANCED_PARAMETER_INT_NAMES = [
     'EVENTS_INTERVAL_SECS',
@@ -43,7 +45,8 @@ ADVANCED_PARAMETER_INT_NAMES = [
     'MAX_WORKERS',
     'MAX_FETCH_EVENT_RETIRES',
     'SLEEP_FETCH_EVENT_RETIRES',
-    'DEFAULT_EVENTS_TIMEOUT'
+    'DEFAULT_EVENTS_TIMEOUT',
+    'PROFILING_DUMP_ROWS_LIMIT',
 ]
 
 ''' CONSTANTS '''
@@ -534,7 +537,7 @@ class Client(BaseClient):
 
     def reference_sets_list(self, range_: Optional[str] = None, ref_name: Optional[str] = None,
                             filter_: Optional[str] = None, fields: Optional[str] = None):
-        name_suffix = f'/{ref_name}' if ref_name else ''
+        name_suffix = f'/{parse.quote(ref_name, safe="")}' if ref_name else ''
         params = assign_params(fields=fields) if ref_name else assign_params(filter=filter_, fields=fields)
         additional_headers = {'Range': range_} if not ref_name else None
         return self.http_request(
@@ -561,7 +564,7 @@ class Client(BaseClient):
     def reference_set_delete(self, ref_name: str, purge_only: Optional[str] = None, fields: Optional[str] = None):
         return self.http_request(
             method='DELETE',
-            url_suffix=f'/reference_data/sets/{ref_name}',
+            url_suffix=f'/reference_data/sets/{parse.quote(ref_name, safe="")}',
             params=assign_params(purge_only=purge_only, fields=fields)
         )
 
@@ -569,14 +572,14 @@ class Client(BaseClient):
                                    fields: Optional[str] = None):
         return self.http_request(
             method='POST',
-            url_suffix=f'/reference_data/sets/{ref_name}',
+            url_suffix=f'/reference_data/sets/{parse.quote(ref_name, safe="")}',
             params=assign_params(value=value, source=source, fields=fields)
         )
 
     def reference_set_value_delete(self, ref_name: str, value: str):
         return self.http_request(
             method='DELETE',
-            url_suffix=f'/reference_data/sets/{ref_name}/{value}'
+            url_suffix=f'/reference_data/sets/{parse.quote(ref_name, safe="")}/{value}'
         )
 
     def domains_list(self, domain_id: Optional[int] = None, range_: Optional[str] = None, filter_: Optional[str] = None,
@@ -599,7 +602,7 @@ class Client(BaseClient):
             headers['fields'] = fields
         return self.http_request(
             method='POST',
-            url_suffix=f'/reference_data/sets/bulk_load/{ref_name}',
+            url_suffix=f'/reference_data/sets/bulk_load/{parse.quote(ref_name, safe="")}',
             json_data=indicators,
             additional_headers=headers
         )
@@ -1813,6 +1816,8 @@ def long_running_execution_command(client: Client, params: Dict):
             print_debug_msg(
                 f'Error while reseting mirroring variables, retring. Error details: {str(e)} \n'
                 f'{traceback.format_exc()}')
+            demisto.info('Exception when calling reset_mirroring_events_variables')
+            raise e
 
     while True:
         try:
@@ -3082,7 +3087,11 @@ def json_loads_inner(json_dumps_list: List[str]) -> list:
     """
     python_object_list = []
     for json_dump in json_dumps_list:
-        python_object_list.append(json.loads(json_dump))
+        try:
+            python_object_list.append(json.loads(json_dump))
+        except Exception as e:
+            demisto.info(f'Exception {e} when trying to json parse {json_dump}, as part of {json_dumps_list}')
+            raise e
 
     return python_object_list
 
@@ -3452,6 +3461,7 @@ def change_ctx_to_be_compatible_with_retry() -> None:
 
     if not extract_works:
         cleared_ctx = clear_integration_ctx(new_ctx)
+        print_debug_msg(f"Change ctx context data was cleared and changing to {cleared_ctx}")
         set_integration_context(cleared_ctx)
         print_debug_msg(f"Change ctx context data was cleared and changed to {cleared_ctx}")
 
@@ -3619,4 +3629,5 @@ def main() -> None:
 ''' ENTRY POINT '''
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
+    register_signal_handler_profiling_dump(profiling_dump_rows_limit=PROFILING_DUMP_ROWS_LIMIT)
     main()

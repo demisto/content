@@ -554,7 +554,7 @@ tasks:
       body:
         simple: |-
           Hi ${Account=val.DisplayName || val.Email.Address},
-          We've concluded that the email you forwarded to us is malicious. We've taken steps to blacklist the sender and quarantine the email. Good job on detecting and forwarding it to us!
+          We've concluded that the email you forwarded to us is malicious. We've taken steps to block list the sender and quarantine the email. Good job on detecting and forwarding it to us!
 
           All the best,
             Your security team
