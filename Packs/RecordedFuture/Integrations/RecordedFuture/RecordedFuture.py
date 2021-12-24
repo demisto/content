@@ -1494,8 +1494,8 @@ def main() -> None:
         proxy = demisto_params.get("proxy", False)
         headers = {
             "X-RFToken": demisto_params["token"],
-            "X-RF-User-Agent": f"xsoar/{__version__} (Cortex_XSOAR_"
-            f'{demisto.demistoVersion()["version"]})',
+            "X-RF-User-Agent": f"Cortex_XSOAR/{__version__} Cortex_XSOAR_"
+            f'{demisto.demistoVersion()["version"]}',
         }
         client = Client(
             base_url=base_url, verify=verify_ssl, headers=headers, proxy=proxy
