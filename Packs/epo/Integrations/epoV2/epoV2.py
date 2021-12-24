@@ -6,7 +6,6 @@ import json
 import urllib3
 import traceback
 from typing import Any, Tuple, Dict
-import time
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -1444,18 +1443,17 @@ def epo_query_table_command(client: Client, args: Dict[str, Any]) -> CommandResu
     else:
         headers = list(set().union(*(entry.keys() for entry in response_json)))
 
+    if query_name:
+        query_title = query_name
+    else:
+        query_title = target
+
     md = tableToMarkdown(
-        'ePO Table Query:',
+        f'ePO Table Query: {query_title}',
         response_json,
         headers
     )
-
-    if query_name:
-        prefix = f'McAfee.ePO.Query.{query_name}'
-    else:
-        ts = time.time()
-        prefix = f'McAfee.ePO.Query.{str(ts)}'
-
+    prefix = f'McAfee.ePO.Query.{query_title}'
     return CommandResults(
         raw_response=response,
         readable_output=md,
