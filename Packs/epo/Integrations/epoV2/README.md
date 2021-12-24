@@ -19,14 +19,14 @@ Example `!epo-help` outputs with permission information:
 2. Search for McAfee ePO v2.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | McAfee ePO Server URI |  | True |
-    | Username |  | True |
-    | Password |  | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | HTTP Timeout | The timeout of the HTTP requests sent to Cortex XDR API \(in seconds\). | False |
+    | **Parameter** | **Description**                                                         | **Required** |
+    |-------------------------------------------------------------------------| --- | --- |
+    | McAfee ePO Server URI |                                                                         | True |
+    | Username |                                                                         | True |
+    | Password |                                                                         | True |
+    | Trust any certificate (not secure) |                                                                         | False |
+    | Use system proxy settings |                                                                         | False |
+    | HTTP Timeout | The timeout of the HTTP requests sent to McAfee ePO API \(in seconds\). | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -881,7 +881,7 @@ Queries an ePO table.
 
 
 #### Command Example
-```!epo-query-table target="FW_Rule"```
+```!epo-query-table target="FW_Rule" query_name="Test Query"```
 
 #### Context Example
 ```json
@@ -889,8 +889,7 @@ Queries an ePO table.
     "McAfee": {
         "ePO": {
             "Query": {
-                "1639695731": {
-                    "6544666": [
+                "Test Query": [
                         {
                             "FW_Rule.action": "JUMP",
                             "FW_Rule.direction": "EITHER",

@@ -12,7 +12,7 @@
 !epo-clear-tag names="TIE" tagName="MARSERVER"
 !epo-list-tag searchText="server"
 !epo-get-tables table="Client Events"
-!epo-query-table target="FW_Rule"
+!epo-query-table target="FW_Rule" query_name="Test Query"
 !epo-get-version
 !epo-move-system names="TIE" parentGroupId="3"
 !epo-advanced-command command="clienttask.find" commandArgs="searchText:On-Demand"
