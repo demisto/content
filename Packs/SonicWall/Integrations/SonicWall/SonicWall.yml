@@ -1,0 +1,58 @@
+category: Network Security
+commonfields:
+  id: SonicWall
+  version: -1
+configuration:
+- defaultvalue: https://192.168.0.119
+  display: Server URL (e.g. https://example.net)
+  name: url
+  required: true
+  type: 0
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: e7d5b18a-05f4-4efb-8652-1b0a7c4020b2
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: Integration for SonicWall Firewalls using SonicOS API
+display: SonicWall
+name: SonicWall
+script:
+  commands:
+  - arguments:
+    - description: |-
+        A JSON Array of Objects containing attributes Value, Type, Name
+
+        {
+        "Value": <the_ip>,
+        "Type": "IP",
+        "Name":<object_name>
+        }
+      isArray: true
+      name: ObjectPairs
+      required: true
+    description: Creates IPV4 Address Objects on Sonic Wall
+    name: sonicwall-add-ipv4-objects
+  - arguments: []
+    description: Retrieve IPV4 Address Objects From Sonic Wall
+    name: sonicwall-get-ipv4-objects
+  dockerimage: demisto/python3:3.9.8.24399
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python

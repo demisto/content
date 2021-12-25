@@ -1,0 +1,17 @@
+{
+    "name": "SonicWall",
+    "description": "Integration for SonicWall Firewalls using SonicOS API",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Omar Salim Ahmed",
+    "url": "",
+    "email": "",
+    "created": "2021-12-25T22:50:14Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "os-groot"
+    ]
+}
