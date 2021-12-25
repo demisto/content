@@ -4900,7 +4900,6 @@
         "VirusTotal (API v3) Detonate Test": "Issue 36004",
         "FailedInstances - Test": "Issue 33218",
         "PAN-OS DAG Configuration Test": "Issue 19205",
-        "Service Desk Plus - Generic Polling Test": "Issue 30798",
         "get_original_email_-_ews-_test": "Issue 27571",
         "Trend Micro Deep Security - Test": "outsourced",
         "Microsoft Teams - Test": "Issue 38263",
