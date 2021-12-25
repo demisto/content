@@ -4927,7 +4927,9 @@
         "Cofense Intelligence v2 test": "Issue 44499",
         "Endpoint Malware Investigation - Generic - Test": "Issue 44779",
         "Mimecast test": "Issue 26906",
-        "RedLockTest": "Issue 24600"
+        "RedLockTest": "Issue 24600",
+        "AutoFocus V2 test": "Issue 26464",
+        "SplunkPy_KV_commands_default_handler": "Issue 41419"
     },
     "skipped_integrations": {
         
