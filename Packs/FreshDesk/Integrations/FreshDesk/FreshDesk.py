@@ -330,6 +330,9 @@ def additional_fields_to_context(context, already_in_context, additional_fields,
         The modified context
     """
     # Parse additional fields into context
+    demisto.debug("[FreshDesk] already_in_context is: {}".format(already_in_context))
+    demisto.debug("[FreshDesk] additional_fields is: {}".format(additional_fields))
+    demisto.debug("[FreshDesk] additional_values is: {}".format(additional_values))
     if additional_fields and additional_values:
         added_context = {}
         for field, value in zip(additional_fields, additional_values):
@@ -899,10 +902,15 @@ def create_ticket_command():
     include_in_context = DEFAULT_TICKET_CONTEXT_FIELDS[:]
 
     context = {string_to_context_key(key): val for key, val in ticket.iteritems() if val}
+    demisto.debug("[FreshDesk] #1 context is: {}".format(context))
     context = additional_fields_to_context(context, include_in_context, additional_fields, additional_values)
+    demisto.debug("[FreshDesk] #2 context is: {}".format(context))
     context, context_readable = attachments_into_context(ticket, context)
+    demisto.debug("[FreshDesk] #3 context is: {}".format(context))
     context = reformat_ticket_context(context)
+    demisto.debug("[FreshDesk] #4 context is: {}".format(context))
     context_readable = reformat_ticket_context(context_readable)
+    demisto.debug("[FreshDesk] context_readable is: {}".format(context_readable))
     title = 'Newly Created Ticket #{}'.format(context.get('ID'))
     human_readable = tableToMarkdown(title, context_readable, removeNull=True)
     demisto.results({
@@ -1348,10 +1356,24 @@ def ticket_reply_command():
     context, context_readable = attachments_into_context(reply, context)
     context = reformat_ticket_context(context)
     context_readable = reformat_ticket_context(context_readable)
+
+    def get_ticket_id(request_result):
+        try:
+            found_id = int(reply.get('ticket_id'))
+            demisto.debug('[FreshDesk] Success - got ticket ID. ID found: {}. Reply is: {}'.format(reply.get('ticket_id'), reply))
+        except Exception as e:
+            demisto.debug('[FreshDesk] Error getting ticket ID. ID found: {}. Reply is: {}'.format(reply.get('ticket_id'), reply))
+            found_id = None
+        return found_id
+
+    ticket_id = get_ticket_id(reply)
+
     complete_context = {
-        'ID': int(reply.get('ticket_id')),
         'Conversation': context
     }
+    if ticket_id is not None:
+        complete_context['ID'] = ticket_id
+
     title = 'Reply to Ticket #{}'.format(reply.get('ticket_id'))
     human_readable = tableToMarkdown(title, context_readable, removeNull=True)
     demisto.results({
