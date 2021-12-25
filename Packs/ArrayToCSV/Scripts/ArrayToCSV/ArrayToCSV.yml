@@ -1,0 +1,31 @@
+args:
+- default: true
+  isArray: true
+  name: value
+comment: Converts a simple Array into a textual comma separated string
+commonfields:
+  id: 746ec735-1bb9-40af-864e-d4e6cde0eb52
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 03a03681-82fb-4bc0-83d2-b21198923669
+    propagationLabels:
+    - all
+    toServerVersion: ""
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: ArrayToCSV
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- transformer
+- general
+type: python
