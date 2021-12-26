@@ -1861,7 +1861,7 @@ def checkpoint_logout_command(client: Client, sid: str = None) -> str:
     return client.logout()
 
 
-def main():
+def main():  # pragma: no cover
     """
         Client is created with a session id. if a session id was given as argument
         use it, else use the session id from the integration context.
