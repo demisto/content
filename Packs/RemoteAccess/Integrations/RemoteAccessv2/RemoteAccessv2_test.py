@@ -165,16 +165,20 @@ def test_copy_from_command_valid(mocker, file_name, expected_file_name):
     Then:
     - Ensure expected fileResult object is returned.
     """
-    from RemoteAccessv2 import copy_from_command
+    from RemoteAccessv2 import main
     from paramiko import SSHClient
     import RemoteAccessv2
     mock_client: SSHClient = SSHClient()
     mocker_results = mocker.patch.object(RemoteAccessv2, 'fileResult')
-    mocker.patch('RemoteAccessv2.perform_copy_command', return_value='RemoteFileData')
+    mocker.patch.object(demisto, 'command', return_value='copy-from')
+    mocker.patch.object(RemoteAccessv2, 'create_paramiko_ssh_client', return_value=mock_client)
+    mocker.patch.object(RemoteAccessv2, 'return_results')
     args = {'file_path': 'mock_path.txt'}
     if file_name:
         args['file_name'] = file_name
-    copy_from_command(mock_client, args)
+    mocker.patch.object(demisto, 'args', return_value=args)
+    mocker.patch('RemoteAccessv2.perform_copy_command', return_value='RemoteFileData')
+    main()
     assert mocker_results.call_args[0][0] == expected_file_name
     assert mocker_results.call_args[0][1] == 'RemoteFileData'
 
@@ -202,3 +206,23 @@ def test_invalid_password_for_command(mocker, args):
                                                'Please supply "additional_password" argument that matches '
                                                'the "Additional Password" parameter value.'):
         main()
+
+
+def test_failed_authentication(mocker):
+    """
+    Given:
+    - Cortex XSOAR arguments.
+    - Cortex XSOAR command for Remote Access integration.
+
+    When:
+    - No credentials are given.
+
+    Then:
+    - Ensure error is returned.
+    """
+    from RemoteAccessv2 import main
+    import RemoteAccessv2
+    mocker.patch.object(RemoteAccessv2, 'return_error')
+    mocker.patch.object(demisto, 'error')
+    main()
+    assert RemoteAccessv2.return_error.called
