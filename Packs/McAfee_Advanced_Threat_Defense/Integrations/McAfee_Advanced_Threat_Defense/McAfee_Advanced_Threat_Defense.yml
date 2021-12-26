@@ -1,6 +1,6 @@
 category: Forensics & Malware Analysis
 commonfields:
-  id: McAfee Advanced Threat Defense
+  id: Custom McAfee Advanced Threat Defense
   version: -1
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
@@ -25,8 +25,8 @@ configuration:
   required: false
   type: 8
 description: 'Integrated advanced threat detection: Enhancing protection from network edge to endpoint'
-display: McAfee Advanced Threat Defense
-name: McAfee Advanced Threat Defense
+display: Custom McAfee Advanced Threat Defense
+name: Custom McAfee Advanced Threat Defense
 script:
   commands:
   - arguments:

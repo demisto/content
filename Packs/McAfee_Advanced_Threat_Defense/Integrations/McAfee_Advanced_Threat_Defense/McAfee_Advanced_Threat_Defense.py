@@ -164,6 +164,10 @@ def prettify_task_status_by_task_id(task_status):
 
 
 def prettify_file_upload_res(file_upload_res):
+    returned_task_id = file_upload_res['results'][0]['taskId'] or 'empty'
+    demisto.info("pretify task_id=")
+    demisto.info(str(returned_task_id))
+
     pretty_file_upload = {
         'taskId': file_upload_res['results'][0]['taskId'],
         'jobId': file_upload_res['subId'],
@@ -538,9 +542,23 @@ def file_upload_command():
     dest_ip = args['dstIp'] if 'dstIp' in args else None
     file_name = args['fileName'] if 'fileName' in args else None
 
+    file_name_debug = file_name or 'empty'
+    demisto.info("file_name is: ")
+    demisto.info(file_name_debug)
+    demisto.info("skip_task_id is: ")
+    demisto.info(str(skip_task_id))
+
     result = file_upload(int(args['submitType']), sample, vm_profile_list,
                          skip_task_id, analyze_again, x_mode, message_id, file_priority_q,
                          src_ip, dest_ip, file_name, given_url)
+
+    debug_result = result or 'empty'
+    demisto.info("result dict is = ")
+    demisto.info(debug_result)
+    result_task_id = result['taskId'] or 'empty'
+    demisto.info("returned task_id= ")
+    demisto.info(str(result_task_id))
+
     human_readable = tableToMarkdown(
         'ATD sandbox sample submission', prettify_file_upload_res(result['resultObj']),
         ['taskId', 'jobId', 'messageId', 'url', 'dest_ip', 'src_ip', 'MD5', 'SHA1', 'SHA256'],
