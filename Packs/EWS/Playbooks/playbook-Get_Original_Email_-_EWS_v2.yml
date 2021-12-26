@@ -46,8 +46,7 @@ tasks:
       id: 43203523-8fe7-4403-8c1b-ba175d568d59
       version: -1
       name: Is EWS v2 enabled?
-      description: Returns 'yes' if an integration brand is available. Otherwise returns
-        'no'.
+      description: Returns 'yes' if an integration brand is available.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -112,7 +111,7 @@ tasks:
       id: 15ad973f-06c8-417d-8f63-9fcb9dfc7bef
       version: -1
       name: Verify required inputs
-      description: Verifies that the required input values exist for retrieving the
+      description: Verifies the required input values exist for retrieving the
         original email.
       type: condition
       iscommand: false
@@ -161,7 +160,7 @@ tasks:
       version: -1
       name: Search for messages by MessageID
       description: Searches for items in the specified mailbox. Specific permissions
-        are needed for this operation to search in a target mailbox other than the
+        are needed to search in a target mailbox other than the
         default.
       script: '|||ews-search-mailbox'
       type: regular
@@ -202,8 +201,8 @@ tasks:
       id: 2c433705-840b-4ad0-8214-ed8db8588d35
       version: -1
       name: Was a matching email found?
-      description: Verifies that an email object with a message ID that matches the
-        InReplayTo ID of the forwarded email was found.
+      description: Verifies that an email object with a message ID matching the
+        InReplyTo ID of the forwarded email was found.
       type: condition
       iscommand: false
       brand: ""
@@ -245,7 +244,7 @@ tasks:
       id: eaaa6c31-f4f3-4c0e-8b72-e5bb226c3c5b
       version: -1
       name: Get original email as eml
-      description: Retrieves items by item ID and uploads it's content as eml file.
+      description: Retrieves an item by item ID and uploads its content as an EML file.
       script: '|||ews-get-items-as-eml'
       type: regular
       iscommand: true
@@ -315,8 +314,7 @@ tasks:
       id: b3af9bc1-18c4-4022-8ac7-4f41e030b055
       version: -1
       name: Is EWSO365 enabled?
-      description: Returns 'yes' if an integration brand is available. Otherwise returns
-        'no'.
+      description: Returns 'yes' if an integration brand is available. 
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
