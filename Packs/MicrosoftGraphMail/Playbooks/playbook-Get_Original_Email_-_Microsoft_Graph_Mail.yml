@@ -72,8 +72,7 @@ tasks:
       id: 0db04b60-0358-4214-851a-42598fa48cd3
       version: -1
       name: Is Microsoft Graph Mail enabled?
-      description: Returns 'yes' if an integration brand is available. Otherwise returns
-        'no'.
+      description: Returns 'yes' if an integration brand is available.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
