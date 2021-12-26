@@ -1154,7 +1154,7 @@ def getLastMirrorRun():
     Retrieves the LastMirrorRun object
 
     Returns:
-      dict: LastRun object
+      dict: LastMirrorRun object
 
     """
     return {}
