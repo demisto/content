@@ -55,7 +55,6 @@ def get_fqdn(the_input):
              get_tld(the_input, fail_silently=True, as_object=True)
 
 
-    # handle fqdn if needed
     if domain and domain.tld != 'zip':
         # get the subdomain using tld.subdomain
         subdomain = domain.subdomain

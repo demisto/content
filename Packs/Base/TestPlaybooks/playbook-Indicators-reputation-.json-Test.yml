@@ -620,38 +620,6 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: demisto.com
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${Domain.Name}
-            iscontext: true
-          right:
-            value:
-              simple: google.com
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${Domain.Name}
-            iscontext: true
-          right:
-            value:
-              simple: wikipedia.org
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${Domain.Name}
-            iscontext: true
-          right:
-            value:
-              simple: golang.org
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${Domain.Name}
-            iscontext: true
-          right:
-            value:
               simple: www.demisto.com
       - - operator: containsGeneral
           left:
