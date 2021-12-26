@@ -1,13 +1,13 @@
 id: Phishing - Core v2
 version: -1
 name: Phishing - Core v2
-description: "Provides a basic response to phishing incidents. Playbook features:\n\
-  - Calculates reputation for all indicators\n- Extracts indicators from email attachments\n\
-  - Calculates severity for the incident based on indicator reputation\n- Updates\
-  \ reporting user about investigation status\n- Allows manual remediation of the\
-  \ incident\n\nThe differences between this playbook and the older version are:\n\
-  \  1) This playbook uses incident fields instead of labels\n  2) This playbook uses\
-  \ the \"Process Email - Core v2\" playbook "
+description: "This playbook provides a basic response to phishing incidents, including:\n\
+  - Calculating reputation for all indicators\n- Extracting indicators from email attachments\n\
+  - Calculating severity for the incident based on indicator reputation\n- Updating the\
+  \ reporting user about investigation status\n- Enabling manual incident remediation\
+  \ \n\nThis updated playbook uses:\n\
+  \  1) Incident fields instead of labels\n  2) The \"Process Email - Core v2\" playbook\
+   "
 starttaskid: "0"
 tasks:
   "0":
@@ -46,7 +46,7 @@ tasks:
       id: 5f36e515-65e9-429d-8301-d92fa6213b44
       version: -1
       name: Acknowledge email
-      description: Sends an email to the user who reported the phishing email, informing them that the email was received and is being investigated.
+      description: Sends an email to the user reporting the phishing email, informing them that the email was received and is being investigated.
       script: '|||send-mail'
       type: regular
       iscommand: true
@@ -142,7 +142,7 @@ tasks:
       id: 7035c9c1-4160-4192-8824-aa88c65b6f24
       version: -1
       name: Can URL screenshots be taken?
-      description: Checks whether URLs exist in context, whether the user opted to get screenshots of URLs in the playbook's "GetURLScreenshots" input, and whether the Rasterize integration is enabled.
+      description: Checks whether URLs exist in context, whether the user opted to get screenshots of URLs in the playbook's *GetURLScreenshots* input, and whether the Rasterize integration is enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -847,7 +847,7 @@ tasks:
       id: 7a672d8e-c040-4735-8885-b0bea150d5b6
       version: -1
       name: Manually investigate the incident
-      description: Pauses the playbook so the analyst can investigate the incident and manually resume the playbook when necessary.
+      description: Pauses the playbook so the analyst can investigate the incident and manually resume the playbook.
       type: regular
       iscommand: false
       brand: ""
@@ -905,7 +905,7 @@ tasks:
       id: 3d5a299b-7128-4113-8fd2-702db6b0b2f9
       version: -1
       name: Update user that the email is malicious
-      description: Sends an email to the user who reported the phishing email informing them that the email is malicious.
+      description: Sends an email to the user who reported the phishing email informing them the email is malicious.
       script: '|||send-mail'
       type: regular
       iscommand: true
@@ -956,7 +956,7 @@ tasks:
       id: 37203136-b3d7-4ede-831f-b71660e02078
       version: -1
       name: Update user that the email is benign
-      description: Sends an email to the user who reported the phishing email, informing them that the email is benign.
+      description: Sends an email to the user who reported the phishing email, informing them the email is benign.
       script: '|||send-mail'
       type: regular
       iscommand: true
@@ -1315,7 +1315,7 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: Whether the user wants the Rasterize integration to produce images of URLs that are involved in the incident. If "True", screenshots will be taken.
+  description: Whether the user wants the Rasterize integration to produce images of URLs involved in the incident. If "True", screenshots are taken.
   playbookInputQuery:
 outputs: []
 fromversion: 6.0.0
