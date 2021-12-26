@@ -49,11 +49,11 @@ def unescape_url(escaped_url):
         return 'http://' + url
     return url
 
-
 def get_fqdn(the_input):
     fqdn = ''
     domain = get_tld(the_input, fail_silently=True, as_object=True, fix_protocol=True) or \
              get_tld(the_input, fail_silently=True, as_object=True)
+
 
     if domain and domain.tld != 'zip':
         # get the subdomain using tld.subdomain
@@ -66,7 +66,7 @@ def get_fqdn(the_input):
     return fqdn
 
 
-def extract_fqdn(the_input):
+def extract_fqdn_or_domain(the_input):
     # Check if it is a Microsoft ATP Safe Link
     if re.match(ATP_LINK_REG, the_input):
         the_input = atp_get_original_url(the_input)
@@ -94,7 +94,7 @@ def main():
         input_entry = {
             "Type": entryTypes["note"],
             "ContentsFormat": formats["json"],
-            "Contents": [extract_fqdn(item)]
+            "Contents": [extract_fqdn_or_domain(item)]
         }
         entries_list.append(input_entry)
     if entries_list:
