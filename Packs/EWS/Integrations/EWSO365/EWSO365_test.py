@@ -411,7 +411,7 @@ def test_fetch_last_emails(mocker, since_datetime, filter_arg, expected_result, 
                          [(6, 5),
                           (2, 2),
                           (5, 5)])
-def test_fetch_last_emails_max_fetch(mocker,max_fetch, expected_result):
+def test_fetch_last_emails_max_fetch(mocker, max_fetch, expected_result):
     """
     Given:
         - Max fetch is 6
