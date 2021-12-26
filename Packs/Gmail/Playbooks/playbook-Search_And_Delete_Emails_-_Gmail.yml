@@ -44,7 +44,7 @@ tasks:
       id: 151131f2-0195-46a9-81cd-17c5a6edf387
       version: -1
       name: Is Gmail enabled?
-      description: Checks if Gmail integration is enabled.
+      description: Checks if the Gmail integration is enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -196,7 +196,7 @@ tasks:
       id: a9931d1e-df8a-45da-879b-d09f66d477c7
       version: -1
       name: Delete emails from Gmail
-      description: Deletes an email in the user's mailbox.
+      description: Deletes an email from the user's mailbox.
       script: '|||gmail-delete-mail'
       type: regular
       iscommand: true
@@ -489,7 +489,7 @@ tasks:
       version: -1
       name: Should the found emails be deleted from Gmail?
       description: |-
-        Review the Gmail search results and decide whether to delete all of the emails.
+        Reviews the Gmail search results and decides whether to delete all of the emails.
         Note: You cannot delete a subset of the emails.
 
         **Found emails details:**
