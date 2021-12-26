@@ -18,12 +18,12 @@ There are no inputs for this script.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| CortexXSOAR.AwayUsers.id | Away user ID. | String |
-| CortexXSOAR.AwayUsers.username | Away user username. | String |
-| CortexXSOAR.AwayUsers.name | Away user name. | String |
-| CortexXSOAR.AwayUsers.phone | Away user phone. | String |
-| CortexXSOAR.AwayUsers.roles | Away user roles. | Unknown |
-| CortexXSOAR.AwayUsers.email | Away user email. | Unknown |
+| AwayUsers.id | Away user ID. | String |
+| AwayUsers.username | Away user username. | String |
+| AwayUsers.name | Away user name. | String |
+| AwayUsers.phone | Away user phone. | String |
+| AwayUsers.roles | Away user roles. | Unknown |
+| AwayUsers.email | Away user email. | Unknown |
 
 
 ## Script Example
