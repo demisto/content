@@ -5,8 +5,8 @@
         {
             "integrations": "VMware Carbon Black EDR v2",
             "playbookID": "pb_test",
-            "external_playbook_config": {"playbookID": "Account Enrichment - Generic v2.1",
-                "input1": "1"}
+            "external_playbook_config": {"playbookID": "Isolate Endpoint - Generic V2",
+                "Endpoint_hostname": "test"}
         },
         {
             "integrations": "LogRhythmRest V2",
