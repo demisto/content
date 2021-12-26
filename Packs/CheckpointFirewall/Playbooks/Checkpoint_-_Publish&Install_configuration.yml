@@ -1,38 +1,27 @@
 id: Checkpoint - Publish&Install configuration
-version: 13
-contentitemexportablefields:
-  contentitemfields:
-    packID: CheckpointFirewall
-    itemVersion: 2.1.6
-    fromServerVersion: 5.0.0
-    toServerVersion: ""
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
+fromversion: 5.0.0
 name: Checkpoint - Publish&Install configuration
 description: Publish the Checkpoint Firewall configuration and install policy over
   all the gateways that are available.
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 354c2814-999f-4177-8206-adb0b43e98e1
     type: start
     task:
       id: 354c2814-999f-4177-8206-adb0b43e98e1
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 710,
-          "y": -850
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 710,\n    \"y\": -850\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -40,8 +29,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: 411552f6-ea1e-4b43-89db-9f07b8b3312e
     type: condition
     task:
@@ -51,15 +40,15 @@ tasks:
       description: Verify that there is a valid instance of Checkpoint firewall enabled.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "3"
-      "yes":
-      - "4"
+      - '3'
+      yes:
+      - '4'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -85,13 +74,7 @@ tasks:
                         simple: active
                 accessor: brand
             iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 710,
-          "y": -700
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 710,\n    \"y\": -700\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -99,8 +82,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     taskid: 5aaffaa5-cc8b-4af1-88c5-3088044cd7b6
     type: title
     task:
@@ -109,7 +92,8 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -125,8 +109,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     taskid: 3b8cb003-7a6e-44ad-80bf-cfdefa542db7
     type: regular
     task:
@@ -137,10 +121,10 @@ tasks:
       script: '|||checkpoint-publish'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "24"
+      - '24'
     scriptarguments:
       session_id:
         simple: ${inputs.sid}
@@ -160,8 +144,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     taskid: d211fef6-b869-4518-8788-66323f2512d7
     type: condition
     task:
@@ -172,15 +156,15 @@ tasks:
         of the arguments are missing, no is returned.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
       - "3"
-      "yes":
-      - "7"
+      yes:
+      - '7'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: containsString
           left:
@@ -200,7 +184,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "True"
+              simple: 'True'
     view: |-
       {
         "position": {
@@ -215,8 +199,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     taskid: eeeb629e-05e9-4c50-8963-bce68bf91046
     type: regular
     task:
@@ -227,10 +211,10 @@ tasks:
       script: '|||checkpoint-install-policy'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "23"
+      - '23'
     scriptarguments:
       policy_package:
         simple: ${inputs.policy_package}
@@ -256,8 +240,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
+  '7':
+    id: '7'
     taskid: 865a33dd-11cf-4391-88de-9dc111827f12
     type: regular
     task:
@@ -268,10 +252,10 @@ tasks:
       script: '|||checkpoint-packages-list'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
     scriptarguments:
       session_id:
         simple: ${inputs.sid}
@@ -290,8 +274,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
+  '8':
+    id: '8'
     taskid: 7775d6f5-83b4-46ba-83e2-562e496320cf
     type: regular
     task:
@@ -303,10 +287,10 @@ tasks:
       script: '|||checkpoint-gateways-list'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     scriptarguments:
       session_id:
         simple: ${inputs.sid}
@@ -326,48 +310,46 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "12":
-    id: "12"
+  '12':
+    id: '12'
     taskid: 5b935b74-d33d-4fd2-8484-845f2fa8a61f
     type: playbook
     task:
       id: 5b935b74-d33d-4fd2-8484-845f2fa8a61f
       version: -1
       name: GenericPolling
-      description: |-
-        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
-        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
-        The remote action should have the following structure:
-
-        1. Initiate the operation.
-        2. Poll to check if the operation completed.
-        3. (optional) Get the results of the operation.
+      description: "Use this playbook as a sub-playbook to block execution of the\
+        \ master playbook until a remote action is complete.\nThis playbook implements\
+        \ polling by continuously running the command in Step \\#2 until the operation\
+        \ completes.\nThe remote action should have the following structure:\n\n1.\
+        \ Initiate the operation.\n2. Poll to check if the operation completed.\n\
+        3. (optional) Get the results of the operation."
       playbookName: GenericPolling
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "19"
+      - '19'
     scriptarguments:
       Ids:
         complex:
           root: CheckPoint
           accessor: InstallPolicy.task-id
       Interval:
-        simple: "1"
+        simple: '1'
       PollingCommandArgName:
         simple: task_id
       PollingCommandName:
         simple: checkpoint-show-task
       Timeout:
-        simple: "10"
+        simple: '10'
       dt:
         simple: CheckPoint.ShowTask(val.progress-percentage != '100').task-id
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 0
     view: |-
@@ -384,48 +366,46 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "13":
-    id: "13"
+  '13':
+    id: '13'
     taskid: 2d49366e-ead7-4da0-8bde-9ba7c47e45ae
     type: playbook
     task:
       id: 2d49366e-ead7-4da0-8bde-9ba7c47e45ae
       version: -1
       name: GenericPolling
-      description: |-
-        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
-        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
-        The remote action should have the following structure:
-
-        1. Initiate the operation.
-        2. Poll to check if the operation completed.
-        3. (optional) Get the results of the operation.
+      description: "Use this playbook as a sub-playbook to block execution of the\
+        \ master playbook until a remote action is complete.\nThis playbook implements\
+        \ polling by continuously running the command in Step \\#2 until the operation\
+        \ completes.\nThe remote action should have the following structure:\n\n1.\
+        \ Initiate the operation.\n2. Poll to check if the operation completed.\n\
+        3. (optional) Get the results of the operation."
       playbookName: GenericPolling
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "14"
+      - '14'
     scriptarguments:
       Ids:
         complex:
           root: CheckPoint
           accessor: Publish.task-id
       Interval:
-        simple: "1"
+        simple: '1'
       PollingCommandArgName:
         simple: task_id
       PollingCommandName:
         simple: checkpoint-show-task
       Timeout:
-        simple: "10"
+        simple: '10'
       dt:
         simple: CheckPoint.ShowTask(val.progress-percentage != '100').task-id
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 0
     view: |-
@@ -442,8 +422,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "14":
-    id: "14"
+  '14':
+    id: '14'
     taskid: 369c8b3d-cd68-427f-820a-50f9ff0983b7
     type: regular
     task:
@@ -454,10 +434,10 @@ tasks:
       script: '|||checkpoint-show-task'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "15"
+      - '15'
     scriptarguments:
       session_id:
         simple: ${inputs.sid}
@@ -480,8 +460,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "15":
-    id: "15"
+  '15':
+    id: '15'
     taskid: 4e93f348-cadd-43e0-8c05-fd89ae1d1461
     type: condition
     task:
@@ -491,15 +471,15 @@ tasks:
       description: Filter if Checkpoint publish successful.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "16"
-      "yes":
-      - "8"
+      - '16'
+      yes:
+      - '8'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -525,8 +505,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "16":
-    id: "16"
+  '16':
+    id: '16'
     taskid: 50e628b5-bd7e-495f-8ddb-921ed7ac5f07
     type: regular
     task:
@@ -537,7 +517,7 @@ tasks:
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
       - "25"
@@ -559,8 +539,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "19":
-    id: "19"
+  '19':
+    id: '19'
     taskid: eb9fa156-bd82-47e9-88b5-95ad7fba8745
     type: regular
     task:
@@ -571,10 +551,10 @@ tasks:
       script: '|||checkpoint-show-task'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "22"
+      - '22'
     scriptarguments:
       session_id:
         simple: ${inputs.sid}
@@ -597,8 +577,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "20":
-    id: "20"
+  '20':
+    id: '20'
     taskid: af6bf869-c495-4e14-8a65-26f4122a1843
     type: regular
     task:
@@ -609,7 +589,7 @@ tasks:
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
       - "25"
@@ -631,8 +611,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "22":
-    id: "22"
+  '22':
+    id: '22'
     taskid: bc0da2d7-6e70-4591-8f34-8b0f09451afc
     type: condition
     task:
@@ -642,15 +622,15 @@ tasks:
       description: Filter if Checkpoint install policy successful.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "20"
-      "yes":
+      - '20'
+      yes:
       - "3"
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -676,8 +656,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "23":
-    id: "23"
+  '23':
+    id: '23'
     taskid: 96046025-a88e-41e4-8d5f-4b9b4fb4e175
     type: condition
     task:
@@ -687,15 +667,15 @@ tasks:
       description: Filter TaskID to validate only new push configuration TaskID.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
       - "29"
-      "yes":
-      - "12"
+      yes:
+      - '12'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -718,8 +698,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "24":
-    id: "24"
+  '24':
+    id: '24'
     taskid: d43932f9-a32a-454c-8183-0982b2b748cd
     type: condition
     task:
@@ -729,15 +709,15 @@ tasks:
       description: Filter TaskID to validate only new push configuration TaskID.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
       - "27"
-      "yes":
-      - "13"
+      yes:
+      - '13'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -760,8 +740,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "25":
-    id: "25"
+  '25':
+    id: '25'
     taskid: ff470de6-f208-4c38-8dea-a19b0319fdb6
     type: condition
     task:
@@ -772,15 +752,15 @@ tasks:
         of further manual handling.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
       - "3"
-      "yes":
+      yes:
       - "28"
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -790,7 +770,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "True"
+              simple: 'True'
     view: |-
       {
         "position": {
@@ -805,8 +785,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "27":
-    id: "27"
+  '27':
+    id: '27'
     taskid: 5a3871f0-1cab-4479-815b-96bb1b9af87b
     type: regular
     task:
@@ -817,7 +797,7 @@ tasks:
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
       - "25"
@@ -839,8 +819,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "28":
-    id: "28"
+  '28':
+    id: '28'
     taskid: 59866ff6-88f8-48ff-8f13-2ec742022e13
     type: regular
     task:
@@ -850,10 +830,10 @@ tasks:
       description: User manually add resolve.
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     separatecontext: false
     view: |-
       {
@@ -869,8 +849,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "29":
-    id: "29"
+  '29':
+    id: '29'
     taskid: 957e2e3b-7257-41a6-8f56-245df2f54797
     type: regular
     task:
@@ -881,7 +861,7 @@ tasks:
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
       - "25"
@@ -903,7 +883,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -925,26 +904,32 @@ inputs:
   description: SID - Session unique identifier as it returned by the login request
     required for publish /install changes. Change configuration  will be seen by all
     users only after publish is called and finish with the specific SID.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: install_policy
   value:
-    simple: "False"
+    simple: 'False'
   required: true
   description: Input True / False for playbook to continue install policy process
     for checkpoint Firewall.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: policy_package
   value:
     simple: Standard
   required: true
   description: The name of the policy package to be installed.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: action_manual_handling
   value:
-    simple: "True"
+    simple: 'True'
   required: true
   description: Input True / False. When one of the actions publish/install policy
     stops due to problem or error, the Playbook will stop in favor of further manual
     handling.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
+tests:
+- CheckpointFW-test
+- checkpoint-testplaybook
+contentitemexportablefields:
+  contentitemfields: {}
+system: true

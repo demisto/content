@@ -1,39 +1,28 @@
 id: Checkpoint - Block URL
-version: 15
-contentitemexportablefields:
-  contentitemfields:
-    packID: CheckpointFirewall
-    itemVersion: 2.1.6
-    fromServerVersion: 5.0.0
-    toServerVersion: ""
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Checkpoint - Block URL
-description: |-
-  This playbook blocks URLs using Checkpoint Firewall through Custom URL Categories.
-  The playbook checks whether the input URL category already exists, and if the URLs are a part of this category. Otherwise, it will create the category, block the URLs, and publish the configuration.
-starttaskid: "0"
+description: "This playbook blocks URLs using Checkpoint Firewall through Custom URL\
+  \ Categories.\nThe playbook checks whether the input URL category already exists,\
+  \ and if the URLs are a part of this category. Otherwise, it will create the category,\
+  \ block the URLs, and publish the configuration."
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 752c8366-9954-40bb-81f7-25944a795ef9
     type: start
     task:
       id: 752c8366-9954-40bb-81f7-25944a795ef9
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 540,
-          "y": -950
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 540,\n    \"y\": -950\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -41,26 +30,26 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: 637bf853-b339-434f-82f5-ad53762b2e89
     type: playbook
     task:
       id: 637bf853-b339-434f-82f5-ad53762b2e89
       version: -1
       name: Checkpoint - Publish&Install configuration
-      description: |
-        Publish the Checkpoint Firewall configuration, also, install policy over all the gateways are available  .
+      description: "Publish the Checkpoint Firewall configuration, also, install policy\
+        \ over all the gateways are available  .\n"
       playbookName: Checkpoint - Publish&Install configuration
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
       - "6"
     scriptarguments:
       auto_logout:
-        simple: "True"
+        simple: 'True'
       checkpoint_error_handling:
         simple: ${inputs.checkpoint_error_handling}
       discard_changes:
@@ -74,7 +63,7 @@ tasks:
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 0
     view: |-
@@ -91,8 +80,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: 15efb195-e8c1-4309-82f9-ac5b71f89872
     type: title
     task:
@@ -101,7 +90,8 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -117,8 +107,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     taskid: 0bd83706-906f-4bc5-87d5-c78e1e7f5f87
     type: regular
     task:
@@ -129,10 +119,10 @@ tasks:
       script: '|||checkpoint-application-site-add'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
     scriptarguments:
       identifier:
         simple: ${inputs.URL}
@@ -158,8 +148,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     taskid: a25d05d5-5d23-4d8b-856d-015b3bd5862d
     type: regular
     task:
@@ -170,10 +160,10 @@ tasks:
       script: '|||checkpoint-login-and-get-session-id'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "12"
+      - '12'
     separatecontext: false
     view: |-
       {
@@ -189,25 +179,26 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     taskid: f3c018de-8713-4953-8caa-f3081378a497
     type: condition
     task:
       id: f3c018de-8713-4953-8caa-f3081378a497
       version: -1
       name: Is Checkpoint firewall enabled?
+      description: Check if Checkpoint instance is availble
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "4"
+      - '2'
+      yes:
+      - '4'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -225,13 +216,7 @@ tasks:
                         simple: CheckPointFirewall,CheckPointFirewall_v2
                 accessor: brand
             iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 540,
-          "y": -825
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 540,\n    \"y\": -825\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -239,8 +224,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     taskid: 6284f556-ab72-4787-8586-a79422d3d4b1
     type: regular
     task:
@@ -251,10 +236,10 @@ tasks:
       script: '|||checkpoint-logout'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       session_id:
         simple: ${CheckPoint.Login.session-id}
@@ -273,8 +258,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
+  '7':
+    id: '7'
     taskid: c496f3a1-0302-4487-820e-b59488ba2ac1
     type: condition
     task:
@@ -284,15 +269,15 @@ tasks:
       description: Validate if URL was added to application site successfully.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
       - "8"
-      "yes":
-      - "1"
+      yes:
+      - '1'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -315,8 +300,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
+  '8':
+    id: '8'
     taskid: 0ee35904-5636-4247-84dd-788fcc94df9e
     type: regular
     task:
@@ -327,7 +312,7 @@ tasks:
       scriptName: Print
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
       - "15"
@@ -350,8 +335,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "9":
-    id: "9"
+  '9':
+    id: '9'
     taskid: 739a1d5a-d361-47a9-8869-2ac6e480eb64
     type: condition
     task:
@@ -361,15 +346,15 @@ tasks:
       description: Validate if URL application site category is exists.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "11"
-      "yes":
-      - "3"
+      - '11'
+      yes:
+      - '3'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -394,26 +379,26 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "10":
-    id: "10"
+  '10':
+    id: '10'
     taskid: aabcbca8-e6ab-4e1b-8dc9-55027b523d19
     type: playbook
     task:
       id: aabcbca8-e6ab-4e1b-8dc9-55027b523d19
       version: -1
       name: Checkpoint - Publish&Install configuration
-      description: |
-        Publish the Checkpoint Firewall configuration, also, install policy over all the gateways are available  .
+      description: "Publish the Checkpoint Firewall configuration, also, install policy\
+        \ over all the gateways are available  .\n"
       playbookName: Checkpoint - Publish&Install configuration
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     scriptarguments:
       auto_logout:
-        simple: "False"
+        simple: 'False'
       checkpoint_error_handling:
         simple: ${inputs.checkpoint_error_handling}
       discard_changes:
@@ -427,7 +412,7 @@ tasks:
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 0
     view: |-
@@ -444,8 +429,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "11":
-    id: "11"
+  '11':
+    id: '11'
     taskid: 03dc594c-c844-4fa4-8b0f-01788a808b3f
     type: regular
     task:
@@ -456,10 +441,10 @@ tasks:
       script: '|||checkpoint-application-site-category-add'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "14"
+      - '14'
     scriptarguments:
       identifier:
         simple: ${inputs.URL_application_site_category}
@@ -481,8 +466,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "12":
-    id: "12"
+  '12':
+    id: '12'
     taskid: cf5f8fb4-12b4-4940-8814-b787d76eb876
     type: regular
     task:
@@ -494,10 +479,10 @@ tasks:
       script: '|||checkpoint-application-site-category-get'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "9"
+      - '9'
     scriptarguments:
       identifier:
         simple: ${inputs.URL_application_site_category}
@@ -519,8 +504,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "13":
-    id: "13"
+  '13':
+    id: '13'
     taskid: fa43eea8-11cd-44d5-8929-326f1ca64434
     type: regular
     task:
@@ -531,7 +516,7 @@ tasks:
       scriptName: Print
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
       - "15"
@@ -554,8 +539,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "14":
-    id: "14"
+  '14':
+    id: '14'
     taskid: f08aa17b-4127-4aa2-8702-129292de3973
     type: condition
     task:
@@ -565,15 +550,15 @@ tasks:
       description: Validate if URL was added successfully in Checkpoint firewall.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
       - "13"
-      "yes":
-      - "10"
+      yes:
+      - '10'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -594,8 +579,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "15":
-    id: "15"
+  '15':
+    id: '15'
     taskid: 5a2510e1-95ab-46ce-8d66-19129a2849f6
     type: condition
     task:
@@ -606,15 +591,15 @@ tasks:
         of further manual handling.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "6"
-      "yes":
+      - '6'
+      yes:
       - "18"
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -638,8 +623,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "18":
-    id: "18"
+  '18':
+    id: '18'
     taskid: e56d12bd-27a4-4c85-8b16-f4096daa642e
     type: regular
     task:
@@ -649,7 +634,7 @@ tasks:
       description: User manually add resolve .
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
       - "6"
@@ -668,7 +653,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
 view: |-
   {
     "linkLabelsPosition": {},
@@ -684,44 +668,53 @@ view: |-
 inputs:
 - key: install_policy
   value:
-    simple: "True"
+    simple: 'True'
   required: true
   description: Input True / False for playbook to continue install policy process
     for checkpoint Firewall.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: URL
   value: {}
   required: true
   description: An array of URL to block.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: policy_package
   value:
     simple: Standard
   required: true
   description: The name of the policy package to be installed.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: URL_application_site_category
   value:
     simple: Suspicious
   required: true
   description: URL category object name.  The category to add URL into.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: checkpoint_error_handling
   value:
     simple: Stop
   required: true
-  description: |-
-    In case one of the actions for publish/install policy fails due to issues on the Checkpoint side, This input will determine whether the playbook will continue or stop for manual review. Also, in case of Continue the session id will logout and all changes will discard.
-    Values can be "Continue" or "Stop".
-    The default value will be "Stop".
-  playbookInputQuery: null
+  description: "In case one of the actions for publish/install policy fails due to\
+    \ issues on the Checkpoint side, This input will determine whether the playbook\
+    \ will continue or stop for manual review. Also, in case of Continue the session\
+    \ id will logout and all changes will discard.\nValues can be \"Continue\" or\
+    \ \"Stop\".\nThe default value will be \"Stop\"."
+  playbookInputQuery:
 - key: block_URL_error_handling
   value:
     simple: Stop
   required: true
-  description: |-
-    In case one of the actions for block URL playbook fails due to issues on the Checkpoint side, This input will determine whether the playbook will continue or stop for manual review. Also, in case of Continue the session id will logout and all changes will discard.
-    Values can be "Continue" or "Stop".
-    The default value will be "Stop".
-  playbookInputQuery: null
+  description: "In case one of the actions for block URL playbook fails due to issues\
+    \ on the Checkpoint side, This input will determine whether the playbook will\
+    \ continue or stop for manual review. Also, in case of Continue the session id\
+    \ will logout and all changes will discard.\nValues can be \"Continue\" or \"\
+    Stop\".\nThe default value will be \"Stop\"."
+  playbookInputQuery:
 outputs: []
+fromversion: 5.0.0
+tests:
+- CheckpointFW-test
+- checkpoint-testplaybook
+contentitemexportablefields:
+  contentitemfields: {}
+system: true
