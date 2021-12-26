@@ -17,23 +17,14 @@ args:
   - "false"
 comment: Retrieves fields from an object using dot notation
 commonfields:
-  id: 9ee1e610-6ced-4969-8eab-4681f52b0345
+  id: GetFields
   version: -1
 contentitemexportablefields:
   contentitemfields:
-    definitionid: ""
     fromServerVersion: ""
-    itemVersion: ""
-    packID: ca6dd84a-da65-4bf0-8265-c5c40a5ddb12
-    propagationLabels:
-    - all
-    toServerVersion: ""
 dockerimage: demisto/python3:3.9.8.24399
 enabled: true
-engineinfo: {}
-mainengineinfo: {}
 name: GetFields
-pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''
@@ -44,3 +35,6 @@ tags:
 - general
 - entirelist
 type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
