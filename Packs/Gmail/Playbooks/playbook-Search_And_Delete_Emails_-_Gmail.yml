@@ -530,7 +530,7 @@ tasks:
       id: cc9c4b4c-dbf5-4696-82f5-f19c331f90da
       version: -1
       name: Extract similar emails
-      description: Set a value in context under the key you entered.
+      description: From the retrieved emails, extracts only emails with a subject identical to the searched email's subject.
       scriptName: Set
       type: regular
       iscommand: false
@@ -577,7 +577,7 @@ tasks:
       id: e761048e-6e11-42ee-8591-dd470c72cd2b
       version: -1
       name: Extract "To" emails
-      description: commands.local.cmd.extract.indicators
+      description: Extracts email addresses from the "To" fields.
       script: Builtin|||extractIndicators
       type: regular
       iscommand: true
