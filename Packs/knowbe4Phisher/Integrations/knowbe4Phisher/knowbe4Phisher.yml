@@ -10,7 +10,7 @@ configuration:
   defaultvalue: 'https://eu.knowbe4.com'
   additionalinfo: URL of the API endpoint, only FQDN is required, e.g. https://eu.knowbe4.com
 - name: apikey
-  required: true
+  required: false
   displaypassword: API Key
   hiddenusername: true
   type: 9
@@ -234,7 +234,7 @@ script:
     description: Removes tags from a given message.
     execution: false
     name: phisher-tags-delete
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   feed: false
   isfetch: true
   longRunning: false

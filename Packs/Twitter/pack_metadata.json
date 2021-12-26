@@ -3,16 +3,22 @@
     "description": "A simple integration that uses Twitter's API to perform searches on twitter for tweets, users, and user information.",
     "support": "community",
     "certification": "verified",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.1.0",
     "author": "Christian Brake",
     "url": "",
     "email": "brakechr000@gmail.com",
     "created": "2021-08-03T18:14:27Z",
-    "categories": [],
+    "categories": [
+        "Utilities"
+    ],
     "tags": [],
     "githubUser": [
         "cbrake1"
     ],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

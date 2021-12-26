@@ -45,3 +45,22 @@ ignore=BA110
 
 [file:script-PCAPMiner_README.md]
 ignore=RM106
+
+[file:pack_metadata.json]
+ignore=PA129
+
+[file:script-ChangeRemediationSLAOnSevChange.yml]
+ignore=SC106
+
+[file:ExtractIndicatorsFromWordFile.yml]
+ignore=SC106
+
+[file:GetEnabledInstances.yml]
+ignore=SC106
+
+[file:ExtractIndicatorsFromTextFile.yml]
+ignore=SC106
+
+[file:script-DBotClosedIncidentsPercentage.yml]
+ignore=SC106
+

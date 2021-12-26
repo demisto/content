@@ -7,10 +7,16 @@
     "url": "",
     "email": "https://www.paloaltonetworks.com/cortex",
     "created": "2020-09-29T18:29:50Z",
-    "categories": [],
+    "categories": [
+        "IT Services"
+    ],
     "tags": [
         "IT"
     ],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

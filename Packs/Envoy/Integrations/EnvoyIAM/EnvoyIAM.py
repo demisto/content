@@ -26,17 +26,27 @@ class Client(BaseClient):
         uri = 'scim/v2/Users'
         self._http_request(method='GET', url_suffix=uri)
 
-    def get_user(self, email: str) -> Optional[IAMUserAppData]:
-        """ Queries the user in the application using REST API by its email, and returns an IAMUserAppData object
+    def get_user(self, filter_name: str, filter_value: str) -> Optional[IAMUserAppData]:
+        """ Queries the user in the application using REST API by its iam get attributes,
+        and returns an IAMUserAppData object
         that holds the user_id, username, is_active and app_data attributes given in the query response.
 
-        :type email: ``str``
-        :param email: Email address of the user
+        :type filter_name: ``str``
+        :param filter_name: Name of the filter to retrieve the user by.
+
+        :type filter_value: ``str``
+        :param filter_value: Value corresponding to given filter to retrieve user by.
 
         :return: An IAMUserAppData object if user exists, None otherwise.
         :rtype: ``Optional[IAMUserAppData]``
         """
-        uri = f'scim/v2/Users?filter=email eq {email}'
+        filter_value = encode_string_results(filter_value)
+        if filter_name == 'emails':
+            filter_name = 'email'
+        if filter_name == 'id':
+            uri = f'scim/v2/Users/{filter_value}'
+        else:
+            uri = f'scim/v2/Users?filter={filter_name} eq {filter_value}'
 
         res = self._http_request(
             method='GET',
@@ -46,14 +56,20 @@ class Client(BaseClient):
             res_json = res.json()
         except Exception:
             res_json = res
-
+        if filter_name == 'id':
+            return IAMUserAppData(user_id=res_json.get('id'),
+                                  username=res_json.get('userName'),
+                                  is_active=res_json.get('active', False),
+                                  app_data=res_json,
+                                  email=get_first_primary_email_by_scim_schema(res_json))
         if res_json and res_json.get('totalResults', 0) != 1:
             user_app_data = res_json.get('Resources')[0]
             user_id = user_app_data.get('id')
             is_active = user_app_data.get('active')
             username = user_app_data.get('userName')
 
-            return IAMUserAppData(user_id, username, is_active, user_app_data)
+            return IAMUserAppData(user_id, username, is_active, user_app_data,
+                                  email=get_first_primary_email_by_scim_schema(user_app_data))
         return None
 
     def create_user(self, user_data: Dict[str, Any]) -> IAMUserAppData:
@@ -76,7 +92,8 @@ class Client(BaseClient):
         is_active = True
         username = user_data.get('userName')
 
-        return IAMUserAppData(user_id, username, is_active, user_app_data)
+        return IAMUserAppData(user_id, username, is_active, user_app_data,
+                              email=get_first_primary_email_by_scim_schema(user_app_data))
 
     def update_user(self, user_id: str, user_data: Dict[str, Any]) -> IAMUserAppData:
         """ Updates a user in the application using REST API.
@@ -111,7 +128,8 @@ class Client(BaseClient):
         is_active = user_app_data.get('active', False)
         username = user_data.get('userName')
 
-        return IAMUserAppData(user_id, username, is_active, user_app_data)
+        return IAMUserAppData(user_id, username, is_active, user_app_data,
+                              email=get_first_primary_email_by_scim_schema(user_app_data))
 
     def enable_user(self, user_id: str) -> IAMUserAppData:
         """ Enables a user in the application using REST API.
@@ -380,7 +398,8 @@ def main():
     create_if_not_exists = params.get("create_if_not_exists")
 
     iam_command = IAMCommand(is_create_enabled, is_enable_enabled, is_disable_enabled, is_update_enabled,
-                             create_if_not_exists, mapper_in, mapper_out)
+                             create_if_not_exists, mapper_in, mapper_out,
+                             get_user_iam_attrs=['id', 'userName', 'emails'])
 
     headers = {
         'Content-Type': 'application/json',

@@ -6,6 +6,7 @@ Note that adding code to CommonServerUserPython can override functions in Common
 from __future__ import print_function
 
 import base64
+import gc
 import json
 import logging
 import os
@@ -14,6 +15,7 @@ import socket
 import sys
 import time
 import traceback
+import urllib
 from random import randint
 import xml.etree.cElementTree as ET
 from collections import OrderedDict
@@ -24,6 +26,16 @@ from threading import Lock
 
 import demistomock as demisto
 import warnings
+
+OS_LINUX = False
+OS_MAC = False
+OS_WINDOWS = False
+if sys.platform.startswith('linux'):
+    OS_LINUX = True
+elif sys.platform.startswith('darwin'):
+    OS_MAC = True
+elif sys.platform.startswith('win32'):
+    OS_WINDOWS = True
 
 
 class WarningsHandler(object):
@@ -73,6 +85,9 @@ STIX_PREFIX = "STIX "
 
 ZERO = timedelta(0)
 HOUR = timedelta(hours=1)
+
+# The max number of profiling related rows to print to the log on memory dump
+PROFILING_DUMP_ROWS_LIMIT = 20
 
 
 if IS_PY3:
@@ -1413,6 +1428,11 @@ class IntegrationLogger(object):
                 if js.endswith('"'):
                     js = js[:-1]
                 to_add.append(js)
+                if IS_PY3:
+                    to_add.append(urllib.parse.quote_plus(a))  # type: ignore[attr-defined]
+                else:
+                    to_add.append(urllib.quote_plus(a))
+
         self.replace_strs.extend(to_add)
 
     def set_buffering(self, state):
@@ -1566,25 +1586,27 @@ def logger(func):
     return func_wrapper
 
 
-def formatCell(data, is_pretty=True):
+def formatCell(data, is_pretty=True, json_transform=None):
     """
        Convert a given object to md while decending multiple levels
 
-       :type data: ``str`` or ``list``
+
+       :type data: ``str`` or ``list`` or ``dict``
        :param data: The cell content (required)
 
        :type is_pretty: ``bool``
        :param is_pretty: Should cell content be prettified (default is True)
 
+       :type json_transform: ``JsonTransformer``
+       :param json_transform: The Json transform object to transform the data
+
        :return: The formatted cell content as a string
        :rtype: ``str``
     """
-    if isinstance(data, STRING_TYPES):
-        return data
-    elif isinstance(data, dict):
-        return '\n'.join([u'{}: {}'.format(k, flattenCell(v, is_pretty)) for k, v in data.items()])
-    else:
-        return flattenCell(data, is_pretty)
+    if json_transform is None:
+        json_transform = JsonTransformer(flatten=True)
+
+    return json_transform.json_to_str(data, is_pretty)
 
 
 def flattenCell(data, is_pretty=True):
@@ -1774,8 +1796,107 @@ def create_clickable_url(url):
     return '[{}]({})'.format(url, url)
 
 
+class JsonTransformer:
+    """
+    A class to transform a json to
+
+    :type flatten: ``bool``
+    :param flatten: Should we flatten the json using `flattenCell` (for BC)
+
+    :type keys: ``Set[str]``
+    :param keys: Set of keys to keep
+
+    :type is_nested: ``bool``
+    :param is_nested: If look for nested
+
+    :type func: ``Callable``
+    :param func: A function to parse the json
+
+    :return: None
+    :rtype: ``None``
+    """
+    def __init__(self, flatten=False, keys=None, is_nested=False, func=None):
+        """
+        Constructor for JsonTransformer
+
+        :type flatten: ``bool``
+        :param flatten:  Should we flatten the json using `flattenCell` (for BC)
+
+        :type keys: ``Iterable[str]``
+        :param keys: an iterable of relevant keys list from the json. Notice we save it as a set in the class
+
+        :type is_nested: ``bool``
+        :param is_nested: Whether to search in nested keys or not
+
+        :type func: ``Callable``
+        :param func: A function to parse the json
+        """
+        if keys is None:
+            keys = []
+        self.keys = set(keys)
+        self.is_nested = is_nested
+        self.func = func
+        self.flatten = flatten
+
+    def json_to_str(self, json_input, is_pretty=True):
+        if self.func:
+            return self.func(json_input)
+        if isinstance(json_input, STRING_TYPES):
+            return json_input
+        if not isinstance(json_input, dict):
+            return flattenCell(json_input, is_pretty)
+        if self.flatten:
+            return '\n'.join(
+                [u'{key}: {val}'.format(key=k, val=flattenCell(v, is_pretty)) for k, v in json_input.items()])  # for BC
+
+        str_lst = []
+        prev_path = None
+        for path, key, val in self.json_to_path_generator(json_input):
+            if path != prev_path:  # need to construct tha `path` string only of it changed from the last one
+                str_path = '\n'.join(["{tabs}**{p}**:".format(p=p, tabs=i * '\t') for i, p in enumerate(path)])
+                str_lst.append(str_path)
+                prev_path = path
+
+            str_lst.append(
+                '{tabs}***{key}***: {val}'.format(tabs=len(path) * '\t', key=key, val=flattenCell(val, is_pretty)))
+
+        return '\n'.join(str_lst)
+
+    def json_to_path_generator(self, json_input, path=None):
+        """
+        :type json_input: ``list`` or ``dict``
+        :param json_input: The json input to transform
+ fca
+        :type path: ``List[str]``
+        :param path: The path of the key, value pair inside the json
+
+        :rtype ``Tuple[List[str], str, str]``
+        :return:  A tuple. the second and third elements are key, values, and the first is their path in the json
+        """
+        if path is None:
+            path = []
+        is_in_path = not self.keys or any(p for p in path if p in self.keys)
+        if isinstance(json_input, dict):
+            for k, v in json_input.items():
+
+                if is_in_path or k in self.keys:
+                    if isinstance(v, dict):
+                        for res in self.json_to_path_generator(v, path + [k]):  # this is yield from for python2 BC
+                            yield res
+                    else:
+                        yield path, k, v
+
+                if self.is_nested:
+                    for res in self.json_to_path_generator(v, path + [k]):  # this is yield from for python2 BC
+                        yield res
+        if isinstance(json_input, list):
+            for item in json_input:
+                for res in self.json_to_path_generator(item, path):  # this is yield from for python2 BC
+                    yield res
+
+
 def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None, url_keys=None,
-                    date_fields=None):
+                    date_fields=None, json_transform_mapping=None, is_auto_json_transform=False):
     """
        Converts a demisto table in JSON form to a Markdown table
 
@@ -1803,6 +1924,12 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
 
        :type date_fields: ``list``
        :param date_fields: A list of date fields to format the value to human-readable output.
+
+        :type json_transform_mapping: ``Dict[str, JsonTransformer]``
+        :param json_transform_mapping: A mapping between a header key to correspoding JsonTransformer
+
+        :type is_auto_json_transform: ``bool``
+        :param is_auto_json_transform: Boolean to try to auto transform complex json
 
        :return: A string representation of the markdown table
        :rtype: ``str``
@@ -1854,6 +1981,10 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
                 headers_aux.remove(header)
         headers = headers_aux
 
+    if not json_transform_mapping:
+        json_transform_mapping = {header: JsonTransformer(flatten=not is_auto_json_transform) for header in
+                                  headers}
+
     if t and len(headers) > 0:
         newHeaders = []
         if headerTransform is None:  # noqa
@@ -1877,7 +2008,8 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
                     except Exception:
                         pass
 
-            vals = [stringEscapeMD((formatCell(entry_copy.get(h, ''), False) if entry_copy.get(h) is not None else ''),
+            vals = [stringEscapeMD((formatCell(entry_copy.get(h, ''), False,
+                                               json_transform_mapping.get(h)) if entry_copy.get(h) is not None else ''),
                                    True, True) for h in headers]
 
             # this pipe is optional
@@ -2100,7 +2232,7 @@ def stringEscapeMD(st, minimal_escaping=False, escape_multiline=False):
         st = st.replace('\n', '<br>')  # Unix
 
     if minimal_escaping:
-        for c in '|':
+        for c in ('|', '`'):
             st = st.replace(c, '\\' + c)
     else:
         st = "".join(["\\" + str(c) if c in MARKDOWN_CHARS else str(c) for c in st])
@@ -2454,7 +2586,7 @@ class Common(object):
                 raise TypeError('indicator_type must be of type DBotScoreType enum')
 
             if not Common.DBotScore.is_valid_score(score):
-                raise TypeError('indicator_type must be of type DBotScore enum')
+                raise TypeError('indicator `score` must be of type DBotScore enum')
 
             if reliability and not DBotScoreReliability.is_valid_type(reliability):
                 raise TypeError('reliability must be of type DBotScoreReliability enum')
@@ -5274,6 +5406,9 @@ def arg_to_number(arg, arg_name=None, required=False):
                 raise ValueError('Missing required argument')
 
         return None
+
+    arg = encode_string_results(arg)
+
     if isinstance(arg, str):
         if arg.isdigit():
             return int(arg)
@@ -6242,7 +6377,7 @@ ipv4Regex = r'\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9
 ipv4cidrRegex = r'\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\[\.\]|\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\/([0-9]|[1-2][0-9]|3[0-2]))\b'  # noqa: E501
 ipv6Regex = r'\b(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:(?:(:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\b'  # noqa: E501
 ipv6cidrRegex = r'\b(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))(\/(12[0-8]|1[0-1][0-9]|[1-9][0-9]|[0-9]))\b'  # noqa: E501
-emailRegex = r'\b[^@]+@[^@]+\.[^@]+\b'
+emailRegex = r'\b[^@]{1,64}@[^@]{1,253}\.[^@]+\b'
 hashRegex = r'\b[0-9a-fA-F]+\b'
 urlRegex = r'(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+[-\w\d]+(?::\d+)?' \
            r'(?:(?:\/|\?)[-\w\d+&@#\/%=~_$?!\-:,.\(\);]*[\w\d+&@#\/%=~_$\(\);])?'
@@ -7187,7 +7322,7 @@ if 'requests' in sys.modules:
                     if resp_type == 'content':
                         return res.content
                     if resp_type == 'xml':
-                        ET.parse(res.text)
+                        ET.fromstring(res.text)
                     if resp_type == 'response':
                         return res
                     return res
@@ -7929,7 +8064,7 @@ class TableOrListWidget(BaseWidget):
 class IndicatorsSearcher:
     """Used in order to search indicators by the paging or serachAfter param
     :type page: ``int``
-    :param page: the number of page from which we start search indicators from. (will be updated via iter)
+    :param page: the number of page from which we start search indicators from.
 
     :type filter_fields: ``Optional[str]``
     :param filter_fields: comma separated fields to filter (e.g. "value,type")
@@ -7940,21 +8075,20 @@ class IndicatorsSearcher:
     :type query: ``Optional[str]``
     :param query: indicator search query
 
-    :type size: ``int``
-    :param size: limit the number of returned results.
-
     :type to_date: ``Optional[str]``
     :param to_date: the end date to search until to.
 
     :type value: ``str``
     :param value: the indicator value to search.
 
-    :type limit ``Optional[int]``
-    :param limit the upper limit of the search (will be updated via iter)
+    :type limit: ``Optional[int]``
+    :param limit: the current upper limit of the search (can be updated after init)
 
     :return: No data returned
     :rtype: ``None``
     """
+    SEARCH_AFTER_TITLE = 'searchAfter'
+
     def __init__(self,
                  page=0,
                  filter_fields=None,
@@ -7968,9 +8102,7 @@ class IndicatorsSearcher:
         self._can_use_search_after = is_demisto_version_ge('6.1.0')
         # populateFields merged in https://github.com/demisto/server/pull/18398
         self._can_use_filter_fields = is_demisto_version_ge('6.1.0', build_number='1095800')
-        self._search_after_title = 'searchAfter'
         self._search_after_param = None
-        self._original_page = page
         self._page = page
         self._filter_fields = filter_fields
         self._total = None
@@ -7979,16 +8111,10 @@ class IndicatorsSearcher:
         self._size = size
         self._to_date = to_date
         self._value = value
-        self._original_limit = limit
-        self._next_limit = limit
-        self._search_is_done = False
+        self._limit = limit
+        self._total_iocs_fetched = 0
 
     def __iter__(self):
-        self._total = None
-        self._search_after_param = None
-        self._page = self._original_page
-        self._next_limit = self._original_limit
-        self._search_is_done = False
         return self
 
     # python2
@@ -7996,20 +8122,17 @@ class IndicatorsSearcher:
         return self.__next__()
 
     def __next__(self):
-        if self._search_is_done:
+        if self.is_search_done():
             raise StopIteration
-        size = min(self._size, self._next_limit or self._size)
         res = self.search_indicators_by_version(from_date=self._from_date,
                                                 query=self._query,
-                                                size=size,
+                                                size=self._size,
                                                 to_date=self._to_date,
                                                 value=self._value)
         fetched_len = len(res.get('iocs') or [])
         if fetched_len == 0:
             raise StopIteration
-        if self._next_limit:
-            self._next_limit -= fetched_len
-        self._search_is_done = self._is_search_done()
+        self._total_iocs_fetched += fetched_len
         return res
 
     @property
@@ -8022,33 +8145,34 @@ class IndicatorsSearcher:
 
     @property
     def limit(self):
-        return self._next_limit
+        return self._limit
 
     @limit.setter
     def limit(self, value):
-        self._next_limit = self._original_limit = value
+        self._limit = value
 
-    def _is_search_done(self):
+    def is_search_done(self):
         """
-        Checks one of these conditions:
-        1. self.limit is set, and it's updated to be less or equal to zero
+        Return True if one of these conditions is met (else False):
+        1. self.limit is set, and it's updated to be less or equal to zero - return True
         2. for search_after if self.total was populated by a previous search, but no self._search_after_param
         3. for page if self.total was populated by a previous search, but page is too large
         """
-        if self._search_is_done:
-            return True
-
-        reached_limit = isinstance(self._next_limit, int) and self._next_limit <= 0
+        reached_limit = self.limit is not None and self.limit <= self._total_iocs_fetched
         if reached_limit:
+            demisto.debug("IndicatorsSearcher has reached its limit: {}".format(self.limit))
+            # update limit to match _total_iocs_fetched value
+            if self._total_iocs_fetched > self.limit:
+                self.limit = self._total_iocs_fetched
             return True
-
-        if self.total is None:
-            return False
         else:
-            if self._can_use_search_after:
-                return self._search_after_param is None
-            else:
-                return self.total == self.page * self._size
+            if self.total is None:
+                return False
+            no_more_indicators = (self.total and self._search_after_param is None) if self._can_use_search_after \
+                else self.total <= self.page * self._size
+            if no_more_indicators:
+                demisto.debug("IndicatorsSearcher can not fetch anymore indicators")
+            return no_more_indicators
 
     def search_indicators_by_version(self, from_date=None, query='', size=100, to_date=None, value=''):
         """There are 2 cases depends on the sever version:
@@ -8073,28 +8197,22 @@ class IndicatorsSearcher:
         :return: object contains the search results
         :rtype: ``dict``
         """
-        # use paging as fallback when cannot use search_after
-        use_paging = not (self._search_after_param and self._can_use_search_after)
-        search_iocs_params = assign_params(
+        search_args = assign_params(
             fromDate=from_date,
             toDate=to_date,
             query=query,
             size=size,
             value=value,
-            searchAfter=self._search_after_param if not use_paging else None,
+            searchAfter=self._search_after_param if self._can_use_search_after else None,
             populateFields=self._filter_fields if self._can_use_filter_fields else None,
-            page=self.page if use_paging else None
+            # use paging as fallback when cannot use search_after
+            page=self.page if not self._can_use_search_after else None
         )
-        res = demisto.searchIndicators(**search_iocs_params)
-        if len(res.get('iocs') or []) > 0:
-            self._page += 1  # advance pages for search_after, as fallback
-        else:
-            self._search_is_done = True
-        self._search_after_param = res.get(self._search_after_title)
+        res = demisto.searchIndicators(**search_args)
+        if isinstance(self._page, int):
+            self._page += 1  # advance pages
+        self._search_after_param = res.get(self.SEARCH_AFTER_TITLE)
         self._total = res.get('total')
-        if self._search_after_title in res and self._search_after_param is None:
-            demisto.info('Elastic search using searchAfter returned all indicators')
-            self._search_is_done = True
         return res
 
 
@@ -8166,12 +8284,249 @@ def support_multithreading():
     demisto.lock = Lock()  # type: ignore[attr-defined]
 
     def locked_do(cmd):
-        try:
-            if demisto.lock.acquire(timeout=60):  # type: ignore[call-arg,attr-defined]
+        if demisto.lock.acquire(timeout=60):  # type: ignore[call-arg,attr-defined]
+            try:
                 return prev_do(cmd)  # type: ignore[call-arg]
-            else:
-                raise RuntimeError('Failed acquiring lock')
-        finally:
-            demisto.lock.release()  # type: ignore[attr-defined]
+            finally:
+                demisto.lock.release()  # type: ignore[attr-defined]
+        else:
+            raise RuntimeError('Failed acquiring lock')
 
     demisto._Demisto__do = locked_do  # type: ignore[attr-defined]
+
+
+def get_tenant_account_name():
+    """Gets the tenant name from the server url.
+
+    :return: The account name.
+    :rtype: ``str``
+
+    """
+    urls = demisto.demistoUrls()
+    server_url = urls.get('server', '')
+    account_name = ''
+    if '/acc_' in server_url:
+        tenant_name = server_url.split('acc_')[-1]
+        account_name = "acc_{}".format(tenant_name) if tenant_name != "" else ""
+
+    return account_name
+
+
+def indicators_value_to_clickable(indicators):
+    """
+    Function to get the indicator url link for indicators
+
+    :type indicators: ``dict`` + List[dict]
+    :param indicators: An indicator or a list of indicators
+
+    :rtype: ``dict``
+    :return: Key is the indicator, and the value is it's url in the server
+
+    """
+    if not isinstance(indicators, (list, dict)):
+        return {}
+    if not isinstance(indicators, list):
+        indicators = [indicators]
+    res = {}
+    query = ' or '.join(['value:{indicator}'.format(indicator=indicator) for indicator in indicators])
+    indicator_searcher = IndicatorsSearcher(query=query)
+    for ioc_res in indicator_searcher:
+        for inidicator_data in ioc_res.get('iocs', []):
+            indicator = inidicator_data.get('value')
+            indicator_id = inidicator_data.get('id')
+            if not indicator or not indicator_id:
+                raise DemistoException('The response of indicator searcher is invalid')
+            indicator_url = os.path.join('#', 'indicator', indicator_id)
+            res[indicator] = '[{indicator}]({indicator_url})'.format(indicator=indicator, indicator_url=indicator_url)
+    return res
+
+
+def get_message_threads_dump(_sig, _frame):
+    """
+    Listener function to dump the threads to log info
+
+    :type _sig: ``int``
+    :param _sig: The signal number
+
+    :type _frame: ``Any``
+    :param _frame: The current stack frame
+
+    :return: Message to print.
+    :rtype: ``str``
+    """
+    code = []
+    for threadId, stack in sys._current_frames().items():
+        code.append("\n# ThreadID: %s" % threadId)
+        for filename, lineno, name, line in traceback.extract_stack(stack):
+            code.append('File: "%s", line %d, in %s' % (filename, lineno, name))
+            if line:
+                code.append("  %s" % (line.strip()))
+
+    ret_value = '\n\n--- Start Threads Dump ---\n'\
+        + '\n'.join(code)\
+        + '\n\n--- End Threads Dump ---\n'
+    return ret_value
+
+
+def get_message_memory_dump(_sig, _frame):
+    """
+    Listener function to dump the memory to log info
+
+    :type _sig: ``int``
+    :param _sig: The signal number
+
+    :type _frame: ``Any``
+    :param _frame: The current stack frame
+
+    :return: Message to print.
+    :rtype: ``str``
+    """
+    classes_dict = {}  # type: Dict[str, Dict]
+    for obj in gc.get_objects():
+        size = sys.getsizeof(obj, 0)
+        if hasattr(obj, '__class__'):
+            cls = str(obj.__class__)[8:-2]
+            if cls in classes_dict:
+                current_class = classes_dict.get(cls, {})  # type: Dict
+                current_class['count'] += 1  # type: ignore
+                current_class['size'] += size  # type: ignore
+                classes_dict[cls] = current_class
+            else:
+                current_class = {
+                    'name': cls,
+                    'count': 1,
+                    'size': size,
+                }
+                classes_dict[cls] = current_class
+
+    classes_as_list = list(classes_dict.values())
+    ret_value = '\n\n--- Start Variables Dump ---\n'
+    ret_value += get_message_classes_dump(classes_as_list)
+    ret_value += '\n--- End Variables Dump ---\n\n'
+
+    ret_value = '\n\n--- Start Variables Dump ---\n'
+    ret_value += get_message_local_vars()
+    ret_value += get_message_global_vars()
+    ret_value += '\n--- End Variables Dump ---\n\n'
+
+    return ret_value
+
+
+def get_message_classes_dump(classes_as_list):
+    """
+    A function that prints the memory dump to log info
+
+    :type classes_as_list: ``list``
+    :param classes_as_list: The classes to print to the log
+
+    :return: Message to print.
+    :rtype: ``str``
+    """
+
+    ret_value = '\n\n--- Start Memory Dump ---\n'
+
+    ret_value += '\n--- Start Top {} Classes by Count ---\n\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+    classes_sorted_by_count = sorted(classes_as_list, key=lambda d: d['count'], reverse=True)
+    ret_value += 'Count\t\tSize\t\tName\n'
+    for current_class in classes_sorted_by_count[:PROFILING_DUMP_ROWS_LIMIT]:
+        ret_value += '{}\t\t{}\t\t{}\n'.format(current_class["count"], current_class["size"], current_class["name"])
+    ret_value += '\n--- End Top {} Classes by Count ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+
+    ret_value += '\n--- Start Top {} Classes by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+    classes_sorted_by_size = sorted(classes_as_list, key=lambda d: d['size'], reverse=True)
+    ret_value += 'Size\t\tCount\t\tName\n'
+    for current_class in classes_sorted_by_size[:PROFILING_DUMP_ROWS_LIMIT]:
+        ret_value += '{}\t\t{}\t\t{}\n'.format(current_class["size"], current_class["count"], current_class["name"])
+    ret_value += '\n--- End Top {} Classes by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+
+    ret_value += '\n--- End Memory Dump ---\n\n'
+
+    return ret_value
+
+
+def get_message_local_vars():
+    """
+    A function that prints the local variables to log info
+
+    :return: Message to print.
+    :rtype: ``str``
+    """
+    local_vars = list(locals().items())
+    ret_value = '\n\n--- Start Local Vars ---\n\n'
+    for current_local_var in local_vars:
+        ret_value += str(current_local_var) + '\n'
+
+    ret_value += '\n--- End Local Vars ---\n\n'
+
+    return ret_value
+
+
+def get_message_global_vars():
+    """
+    A function that prints the global variables to log info
+
+    :return: Message to print.
+    :rtype: ``str``
+    """
+    globals_dict = dict(globals())
+    globals_dict_full = {}
+    for current_key in globals_dict.keys():
+        current_value = globals_dict[current_key]
+        globals_dict_full[current_key] = {
+            'name': current_key,
+            'value': current_value,
+            'size': sys.getsizeof(current_value)
+        }
+
+    ret_value = '\n\n--- Start Top {} Globals by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+    globals_sorted_by_size = sorted(globals_dict_full.values(), key=lambda d: d['size'], reverse=True)
+    ret_value += 'Size\t\tName\t\tValue\n'
+    for current_global in globals_sorted_by_size[:PROFILING_DUMP_ROWS_LIMIT]:
+        ret_value += '{}\t\t{}\t\t{}\n'.format(current_global["size"], current_global["name"], current_global["value"])
+    ret_value += '\n--- End Top {} Globals by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+
+    return ret_value
+
+
+def signal_handler_profiling_dump(_sig, _frame):
+    """
+    Listener function to dump the threads and memory to log info
+
+    :type _sig: ``int``
+    :param _sig: The signal number
+
+    :type _frame: ``Any``
+    :param _frame: The current stack frame
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    msg = '\n\n--- Start Profiling Dump ---\n'
+    msg += get_message_threads_dump(_sig, _frame)
+    msg += get_message_memory_dump(_sig, _frame)
+    msg += '\n--- End Profiling Dump ---\n\n'
+    LOG(msg)
+    LOG.print_log()
+
+
+def register_signal_handler_profiling_dump(signal_type=None, profiling_dump_rows_limit=PROFILING_DUMP_ROWS_LIMIT):
+    """
+    Function that registers the threads and memory dump signal listener
+
+    :type profiling_dump_rows_limit: ``int``
+    :param profiling_dump_rows_limit: The max number of profiling related rows to print to the log
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    if OS_LINUX or OS_MAC:
+
+        import signal
+
+        globals_ = globals()
+        globals_['PROFILING_DUMP_ROWS_LIMIT'] = profiling_dump_rows_limit
+
+        requested_signal = signal_type if signal_type else signal.SIGUSR1
+        signal.signal(requested_signal, signal_handler_profiling_dump)
+    else:
+        demisto.info('Not a Linux or Mac OS, profiling using a signal is not supported.')

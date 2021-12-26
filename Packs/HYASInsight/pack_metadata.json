@@ -1,8 +1,8 @@
 {
     "name": "HYAS Insight",
-    "description": "Use the HYAS Insight integration to interactively lookup PassiveDNS, DynamicDNS, WHOIS, Malware Information – either as playbook tasks or through API calls in the War Room.",
+    "description": "Use the HYAS Insight integration to interactively lookup PassiveDNS, DynamicDNS, WHOIS, Malware and C2 Attribution Information – either as playbook tasks or through API calls in the War Room.",
     "support": "partner",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.4",
     "author": "HYAS",
     "url": "https://www.hyas.com/contact",
     "email": "support@hyas.com",
@@ -13,5 +13,9 @@
     "useCases": [],
     "keywords": [],
     "devEmail": [],
-    "githubUser": []
+    "githubUser": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

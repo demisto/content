@@ -762,7 +762,11 @@
                         ]
                     },
                     "simple": ""
-                }
+                },
+                "ServiceNow Ticket ID": {
+					"complex": null,
+					"simple": "sys_id"
+				}
             }
         },
         "dbot_classification_incident_type_all": {

@@ -1,0 +1,90 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: QintelQSentry
+  version: -1
+configuration:
+- display: QSentry API URL (optional)
+  name: remote
+  required: false
+  type: 0
+- display: Qintel Token
+  name: token
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: 'QSentry queries help measure the likelihood that a user is masking their
+  identity using publicly or privately available proxy or VPN services.  The returns
+  also flag any known fraud associations.  QSentry aggregates data from Qintel’s proprietary
+  Deep and DarkWeb research, as well as from commercially available anonymization
+  services.'
+display: Qintel QSentry
+name: QintelQSentry
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: List of IPs.
+      isArray: true
+      name: ip
+      required: true
+      secret: false
+    deprecated: false
+    description: Queries Qintel for IP reputation data
+    execution: false
+    name: ip
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: Number
+    - contextPath: IP.Address
+      description: IP address
+      type: string
+    - contextPath: IP.ASN
+      description: The autonomous system number for the IP address
+      type: string
+    - contextPath: IP.ASOwner
+      description: The autonomous system name for the IP address
+      type: string
+    - contextPath: IP.Malicious.Vendor
+      description: The vendor reporting the IP address as malicious
+      type: string
+    - contextPath: IP.Malicious.Description
+      description: A description explaining why the IP address was reported as malicious
+      type: string
+    - contextPath: Qintel.IP.Address
+      description: IP address
+      type: string
+    - contextPath: Qintel.IP.Tags
+      description: Threat tags
+      type: string
+    - contextPath: Qintel.IP.Description
+      description: IP description
+      type: string
+    - contextPath: Qintel.IP.LastObserved
+      description: Last observed time
+      type: string
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.9.8.24399
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

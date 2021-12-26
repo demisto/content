@@ -166,9 +166,9 @@ def get_failed_unit_tests_attachment(build_url: str, is_sdk_build: bool = False)
         (List[Dict]) Dict wrapped inside a list containing failed unit tests attachment.
     """
     if artifact_data := get_artifact_data('failed_lint_report.txt'):
-        artifact_data = artifact_data.split('\n')
-        unittests_fields: Optional[List[Dict]] = get_entities_fields(f'Failed Unittests - ({len(artifact_data)})',
-                                                                     artifact_data)
+        artifacts = artifact_data.split('\n')
+        unittests_fields: Optional[List[Dict]] = get_entities_fields(f'Failed Unittests - ({len(artifacts)})',
+                                                                     artifacts)
     else:
         unittests_fields = []
     color: str = 'good' if not unittests_fields else 'danger'
@@ -209,7 +209,7 @@ def get_coverage_attachment(build_number: str) -> Optional[Dict]:
     Returns:
         (Dict): Attachment of the coverage if coverage report exists.
     """
-    xml_coverage_data: str = get_artifact_data('coverage_report/coverage.xml')
+    xml_coverage_data: Optional[str] = get_artifact_data('coverage_report/coverage.xml')
     if not xml_coverage_data:
         return None
     coverage_dict_data: OrderedDict = xmltodict.parse(xml_coverage_data)
@@ -418,7 +418,7 @@ def slack_notifier(build_url, slack_token, test_type, build_number, env_results_
                    job_name="", slack_channel=CONTENT_CHANNEL, gitlab_server=None):
     branches = run_command("git branch")
     branch_name_reg = re.search(r'\* (.*)', branches)
-    branch_name = branch_name_reg.group(1)
+    branch_name = branch_name_reg.group(1)  # type: ignore[union-attr]
 
     if branch_name == 'master' or slack_channel.lower() != CONTENT_CHANNEL:
         logging.info("Extracting build status")

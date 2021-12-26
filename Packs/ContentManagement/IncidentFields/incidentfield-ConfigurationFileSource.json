@@ -12,9 +12,9 @@
     "neverSetAsRequired": false,
     "isReadOnly": false,
     "selectValues": [
-        "",
         "Attachment",
-        "GitHub"
+        "GitHub",
+        "Gitlab"
     ],
     "useAsKpi": false,
     "locked": false,

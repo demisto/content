@@ -7,8 +7,14 @@
     "url": "",
     "email": "",
     "created": "2020-10-21T11:42:09Z",
-    "categories": [],
+    "categories": [
+        "Messaging"
+    ],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

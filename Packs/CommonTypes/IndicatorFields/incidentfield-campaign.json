@@ -42,10 +42,7 @@
     "required": false,
     "modified": "2019-07-25T23:48:06.811606449Z",
     "fieldCalcScript": "",
-    "selectValues": [
-        "",
-        ""
-    ],
+    "selectValues": [],
     "validationRegex": "",
     "sla": 0,
     "fromVersion": "5.0.0"

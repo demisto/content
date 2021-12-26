@@ -50,7 +50,12 @@ script: >-
 type: javascript
 tags:
 - Utility
-comment: Lookup incidents with specified indicator. Use currentIncidentId to omit the existing incident from output
+comment: |-
+  Lookup incidents with specified indicator. Use currentIncidentId to omit the existing incident from output.
+
+  This automation runs using the default Limited User role, unless you explicitly change the permissions.
+  For more information, see the section about permissions here:
+  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
 enabled: true
 args:
 - name: indicator
@@ -62,7 +67,6 @@ outputs:
   description: Indicator that was found in other incidents
 - contextPath: IncidentsWithIndicator.incidentIDs
   description: Incident IDs that the indicator was found in
-runas: DBotRole
 scripttarget: 0
 tests:
 - No test

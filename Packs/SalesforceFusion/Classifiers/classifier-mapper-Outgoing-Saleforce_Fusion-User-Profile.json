@@ -1,0 +1,169 @@
+{
+	"defaultIncidentType": "",
+	"description": "Maps a User Profile data to an Salesforce_Fusion user data.",
+	"id": "User Profile - Salesforce Fusion (Outgoing)",
+	"mapping": {
+		"User Profile - Create": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Facility_Location__c": {
+					"complex": null,
+					"simple": "city"
+				},
+				"Work_Email__c": {
+					"complex": null,
+					"simple": "email"
+				},
+				"FF__First_Name__c": {
+					"complex": null,
+					"simple": "givenname"
+				},
+				"FF__Last_Name__c": {
+					"complex": null,
+					"simple": "surname"
+				},
+				"FF__Mobile_Phone__c": {
+					"complex": null,
+					"simple": "mobilephone"
+				},
+				"Work_Mobile_SMS__c": {
+					"complex": null,
+					"simple": "workphone"
+				},
+				"FF__Title__c": {
+					"complex": null,
+					"simple": "title"
+				},
+				"Building__c": {
+					"complex": null,
+					"simple": "location"
+				},
+								"Name": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "${givenname}",
+						"transformers": [
+							{
+								"args": {
+									"prefix": {
+										"isContext": false,
+										"value": null
+									},
+									"suffix": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": " "
+										}
+									}
+								},
+								"operator": "concat"
+							},
+							{
+								"args": {
+									"prefix": {
+										"isContext": false,
+										"value": null
+									},
+									"suffix": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "${surname}"
+										}
+									}
+								},
+								"operator": "concat"
+							}
+						]
+					},
+					"simple": ""
+				}
+            }
+		},
+		"User Profile - Update": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Facility_Location__c": {
+					"complex": null,
+					"simple": "city"
+				},
+				"Work_Email__c": {
+					"complex": null,
+					"simple": "email"
+				},
+				"FF__First_Name__c": {
+					"complex": null,
+					"simple": "givenname"
+				},
+				"FF__Last_Name__c": {
+					"complex": null,
+					"simple": "surname"
+				},
+				"FF__Mobile_Phone__c": {
+					"complex": null,
+					"simple": "mobilephone"
+				},
+				"Work_Mobile_SMS__c": {
+					"complex": null,
+					"simple": "workphone"
+				},
+				"FF__Title__c": {
+					"complex": null,
+					"simple": "title"
+				},
+				"Building__c": {
+					"complex": null,
+					"simple": "location"
+				},
+								"Name": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "${givenname}",
+						"transformers": [
+							{
+								"args": {
+									"prefix": {
+										"isContext": false,
+										"value": null
+									},
+									"suffix": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": " "
+										}
+									}
+								},
+								"operator": "concat"
+							},
+							{
+								"args": {
+									"prefix": {
+										"isContext": false,
+										"value": null
+									},
+									"suffix": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "${surname}"
+										}
+									}
+								},
+								"operator": "concat"
+							}
+						]
+					},
+					"simple": ""
+				}
+            }
+		}
+	},
+	"name": "User Profile - Salesforce Fusion (Outgoing)",
+	"type": "mapping-outgoing",
+	"version": -1,
+	"fromVersion": "6.0.0"
+}

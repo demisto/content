@@ -142,7 +142,7 @@ tasks:
     task:
       id: f48ed3d7-c1ec-453f-847a-c680be0d04ca
       version: -1
-      name: Is there an ArcSight Black list Domain Active List and values?
+      name: Is there an ArcSight Block list Domain Active List and values?
       type: condition
       iscommand: false
       brand: ""
@@ -209,7 +209,7 @@ tasks:
     task:
       id: ab9d83d4-8938-4456-8b0c-5405dcf4d664
       version: -1
-      name: Add Domain to ArcSight Active list black list
+      name: Add Domain to ArcSight Active list block list
       description: Adds new entries to the Active List.
       script: ArcSight ESM v2|||as-add-entries
       type: regular
@@ -305,7 +305,7 @@ tasks:
     task:
       id: 63d6017f-ccef-4f11-8d41-0c5e8dbe4ad5
       version: -1
-      name: Is there an ArcSight White list Domain Active List and values?
+      name: Is there an ArcSight allow list Domain Active List and values?
       type: condition
       iscommand: false
       brand: ""
@@ -372,7 +372,7 @@ tasks:
     task:
       id: c7cb6db4-316e-4c60-8c8b-bb945635c0e3
       version: -1
-      name: Add Domain to ArcSight Active list white list
+      name: Add Domain to ArcSight Active list allow list
       description: Adds new entries to the Active List.
       script: ArcSight ESM v2|||as-add-entries
       type: regular
@@ -836,25 +836,25 @@ inputs:
 - key: ArcSightBlackListDomainActiveListID
   value: {}
   required: false
-  description: ID of the black list Domain Active List resource as it appears in
+  description: ID of the block list Domain Active List resource as it appears in
     ArcSight.
   playbookInputQuery: null
 - key: ArcsightBlackDomainValueFieldName
   value: {}
   required: false
-  description: The name of the black list Active List field to insert the Domain value
+  description: The name of the block list Active List field to insert the Domain value
     to.
   playbookInputQuery: null
 - key: ArcSightWhiteListDomainActiveListID
   value: {}
   required: false
-  description: ID of the white list Domain Active List resource as appears in
+  description: ID of the allow list Domain Active List resource as appears in
     ArcSight.
   playbookInputQuery: null
 - key: ArcsightWhiteListDomainValueFieldName
   value: {}
   required: false
-  description: The name of the white list Active List field to insert the Domain value
+  description: The name of the allow list Active List field to insert the Domain value
     to.
   playbookInputQuery: null
 - key: ArcSightWatchListDomainActiveListID

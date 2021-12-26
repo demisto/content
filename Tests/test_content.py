@@ -8,7 +8,7 @@ import re
 import sys
 from contextlib import contextmanager
 from queue import Queue
-from typing import Union, Any
+from typing import Union, Any, Generator
 
 import demisto_client.demisto_api
 import pytz
@@ -397,8 +397,8 @@ def get_json_file(path):
 
 
 def initialize_queue_and_executed_tests_set(tests):
-    tests_queue = Queue()
-    already_executed_test_playbooks = set()
+    tests_queue: Queue = Queue()
+    already_executed_test_playbooks: set = set()
     for t in tests:
         tests_queue.put(t)
     return already_executed_test_playbooks, tests_queue
@@ -440,10 +440,10 @@ def add_pr_comment(comment):
     headers = {'Authorization': 'Bearer ' + token}
     try:
         res = requests.get(url + query, headers=headers, verify=False)
-        res = handle_github_response(res)
+        res_dict = handle_github_response(res)
 
-        if res and res.get('total_count', 0) == 1:
-            issue_url = res['items'][0].get('comments_url') if res.get('items', []) else None
+        if res_dict and res_dict.get('total_count', 0) == 1:
+            issue_url = res_dict['items'][0].get('comments_url') if res_dict.get('items', []) else None
             if issue_url:
                 res = requests.post(issue_url, json={'body': comment}, headers=headers, verify=False)
                 handle_github_response(res)
@@ -464,7 +464,7 @@ def handle_github_response(response):
 @contextmanager
 def acquire_test_lock(integrations_details: list,
                       test_timeout: int,
-                      conf_json_path: str) -> None:
+                      conf_json_path: str) -> Generator:
     """
     This is a context manager that handles all the locking and unlocking of integrations.
     Execution is as following:

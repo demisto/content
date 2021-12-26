@@ -4,11 +4,13 @@ commonfields:
 name: RegexGroups
 script: ''
 type: python
-subtype: python3
 tags:
 - transformer
 - string
-comment: "Extraction of elements which are contained in all the subgroups of the match to the pattern.\nFor example, extracting from the string \"The quick brown fox\" the object `{\"article\":\"The\",\"noun\":quick\"}`\n(See arguments descriptions for more details) "
+comment: "Extraction of elements which are contained in all the subgroups of the match\
+  \ to the pattern.\nFor example, extracting from the string \"The quick brown fox\"\
+  \ the object `{\"article\":\"The\",\"noun\":quick\"}`\n(See arguments descriptions\
+  \ for more details) "
 enabled: true
 args:
 - name: value
@@ -18,12 +20,20 @@ args:
   required: true
   description: Regex pattern to search (in Python), e.g., (The)\s(quick).*(fox).
 - name: groups
-  description: A comma-separate list of capture groups to return, given in integers. If not provided, all capture groups will be returned.
+  description: A comma-separate list of capture groups to return, given in integers.
+    If not provided, all capture groups will be returned.
 - name: keys
-  description: Key names to map to capture group items, ordered by capture groups. Number of keys should be the same as number of groups (Comma-separated values supported) e.g., article,noun.
+  description: Key names to map to capture group items, ordered by capture groups.
+    Number of keys should be the same as number of groups (Comma-separated values
+    supported) e.g., article,noun.
+- name: flags
+  description: The comma separated flags for pattern matching in regex. "dotall" (s),
+    "multiline" (m), "ignorecase" (i) and "unicode" (u) are supported.
 scripttarget: 0
+subtype: python3
 runonce: false
 dockerimage: demisto/python3:3.9.7.24076
+runas: DBotWeakRole
+fromversion: 5.0.0
 tests:
 - RegexGroups Test
-fromversion: 5.0.0

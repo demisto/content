@@ -9,7 +9,6 @@ description: |-
   There are several phases:
   1. Enrichment: all the related information from the incident is extracted, and related indicators (IP, CIDR, Domain, DomainGlob, Certificate) are created and enriched.
   2. Validation: the found IP and FQDN are correlated with the information available in other products:
-    - Risky or non-compliant communications to and from the IP with external IPs as flagged in Expanse's Behavior.
     - Firewall logs from Cortex Data Lake, Panorama, and Splunk.
     - User information from Active Directory.
     - Public IP address from AWS/GCP/Azure public IP feeds to identify the Public Cloud region and service (i.e., us-west-1 on AWS EC2).
@@ -1001,7 +1000,6 @@ tasks:
       '#none#':
       - "167"
       - "141"
-      - "176"
     separatecontext: false
     view: |-
       {
@@ -1071,49 +1069,6 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "31":
-    id: "31"
-    taskid: d5d26b4b-4819-4def-8936-4fc2020e049e
-    type: regular
-    task:
-      id: d5d26b4b-4819-4def-8936-4fc2020e049e
-      version: -1
-      name: Extract Risky Flows from Behavior
-      description: Retrieve Expanse Behavior Risky Flows.
-      script: '|||expanse-get-risky-flows'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "29"
-    scriptarguments:
-      created_after: {}
-      created_before: {}
-      internal_ip_range:
-        complex:
-          root: incident
-          accessor: expanseip
-      limit: {}
-      risk-rule: {}
-      tagnames: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 490,
-          "y": -320
-        }
-      }
-    note: true
-    evidencedata:
-      description:
-        simple: Risky Flows from Expanse Behavior for this incident's IP
-      customfields: {}
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
@@ -4739,49 +4694,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "176":
-    id: "176"
-    taskid: 2ba3eaf8-b4b2-4efa-8283-aa6123b36325
-    type: condition
-    task:
-      id: 2ba3eaf8-b4b2-4efa-8283-aa6123b36325
-      version: -1
-      name: Collect Risky Flows from Behavior?
-      description: Collect Risky Flows for the IP address from Expanse Behavior?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "29"
-      "yes":
-      - "31"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.UseBehavior
-            iscontext: true
-          right:
-            value:
-              simple: "true"
-          ignorecase: true
-    view: |-
-      {
-        "position": {
-          "x": 917.5,
-          "y": -510
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "177":
     id: "177"
     taskid: d383a16d-3967-4a69-86db-5725d23cd386
@@ -6027,12 +5939,6 @@ inputs:
       remediation access.
   required: false
   description: Body of the email to send to the OU Owner.
-  playbookInputQuery:
-- key: UseBehavior
-  value:
-    simple: "True"
-  required: false
-  description: Enrich flows using Expanse Behavior.
   playbookInputQuery:
 - key: ShadowITIncidentType
   value:
