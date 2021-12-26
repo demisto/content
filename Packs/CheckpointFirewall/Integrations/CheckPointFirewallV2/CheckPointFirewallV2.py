@@ -1,13 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-# CheckPoint Firewall v2
-# 1.added newly checkpoint-add-objects-batch command. It will be able to add multiple hosts in once API call
-# 2.added newly remove-objects-batch command. It will be able to remove multiple hosts in once API call
-# 3.updated checkpoint-group-update, because it is capable of only replacing the members in a group. I added "add" option.
-# 4.fixed checkpoint-application-site-update there is a bug. I corrected the simple copied and wrongly paste JSON key
-
-
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
