@@ -4968,10 +4968,9 @@ class Common(object):
                 extension_context["Value"] = self.basic_constraints.to_context()
 
             elif (
-                    self.extension_type in [
-                Common.CertificateExtension.ExtensionType.SIGNEDCERTIFICATETIMESTAMPS,
-                Common.CertificateExtension.ExtensionType.PRESIGNEDCERTIFICATETIMESTAMPS
-            ]
+                    self.extension_type in [Common.CertificateExtension.ExtensionType.SIGNEDCERTIFICATETIMESTAMPS,
+                                            Common.CertificateExtension.ExtensionType.PRESIGNEDCERTIFICATETIMESTAMPS
+                                            ]
                     and self.signed_certificate_timestamps is not None
             ):
                 extension_context["Value"] = [sct.to_context() for sct in self.signed_certificate_timestamps]
@@ -5110,11 +5109,10 @@ class Common(object):
             if (
                     subject_alternative_name
                     and isinstance(subject_alternative_name, list)
-                    and not all(
-                isinstance(san, str)
-                or isinstance(san, dict)
-                or isinstance(san, Common.CertificateExtension.SubjectAlternativeName)
-                for san in subject_alternative_name)
+                    and not all(isinstance(san, str)
+                                or isinstance(san, dict)
+                                or isinstance(san, Common.CertificateExtension.SubjectAlternativeName)
+                                for san in subject_alternative_name)
             ):
                 raise TypeError(
                     'subject_alternative_name must be list of str or Common.CertificateExtension.SubjectAlternativeName'
@@ -5171,13 +5169,11 @@ class Common(object):
                 if san_list:
                     name = set([
                         sn['Value'] for sn in san_list
-                        if (
-                                'Value' in sn
-                                and (
-                                        'Type' not in sn
-                                        or sn['Type'] in (Common.GeneralName.DNSNAME, Common.GeneralName.IPADDRESS)
-                                )
-                        )
+                        if ('Value' in sn
+                            and ('Type' not in sn
+                                 or sn['Type'] in (Common.GeneralName.DNSNAME, Common.GeneralName.IPADDRESS)
+                                 )
+                            )
                     ])
 
                 # subject_dn is RFC4515 escaped
