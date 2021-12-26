@@ -67,7 +67,7 @@ For more information, visit [TAXII2 Documentation](http://docs.oasis-open.org/ct
 For more information, visit [TAXII2 Documentation](https://docs.oasis-open.org/cti/taxii/v2.1/taxii-v2.1.html).
 
 ## Known limitations
-- GET objects by id is not allowed.
-- Filtering objects by id or version not allowed.
+- GET objects by ID is not allowed.
+- Filtering objects by ID or version not allowed.
 - POST and DELETE objects is not allowed. Can not add or delete indicators using TAXII2 Server. 
 

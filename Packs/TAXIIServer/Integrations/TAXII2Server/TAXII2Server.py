@@ -15,7 +15,7 @@ HTTP_400_BAD_REQUEST = 400
 HTTP_401_UNAUTHORIZED = 401
 HTTP_404_NOT_FOUND = 404
 HTTP_406_NOT_ACCEPABLE = 406
-INTEGRATION_NAME: str = 'TAXII Server'
+INTEGRATION_NAME: str = 'TAXII2 Server'
 API_ROOT = 'threatintel'
 APP: Flask = Flask('demisto-taxii2Z')
 NAMESPACE_URI = 'https://www.paloaltonetworks.com/cortex'
@@ -235,7 +235,7 @@ class TAXII2Server:
         default = urljoin(service_address, API_ROOT)
         default = urljoin(default, '/')
         return {
-            'title': 'XSOAR TAXII2 Server',
+            'title': 'Cortex XSOAR TAXII2 Server',
             'description': 'This integration provides TAXII Services for system indicators (Outbound feed).',
             'default': default,
             'api_roots': [default]
@@ -249,7 +249,7 @@ class TAXII2Server:
             The API ROOT response.
         """
         return {
-            'title': 'XSOAR TAXII2 Server ThreatIntel',
+            'title': 'Cortex XSOAR TAXII2 Server ThreatIntel',
             'description': 'This API Root provides TAXII Services for system indicators.',
             'versions': [self.api_version],
             'max_content_length': 9765625 if self.version == TAXII_VER_2_0 else 104857600
@@ -620,7 +620,7 @@ def create_stix_object(xsoar_indicator, xsoar_type):
         'id': extention_id,
         'type': 'extension-definition',
         'spec_version': SERVER.version,
-        'name': f'XSOAR TIM {xsoar_type}',
+        'name': f'Cortex XSOAR TIM {xsoar_type}',
         'description': 'This schema adds TIM data to the object',
         'created': xsoar_indicator.get('timestamp'),
         'modified': xsoar_indicator.get('modified'),
@@ -819,7 +819,7 @@ def taxii2_manifest(api_root: str, collection_id: str):
         offset = 0
 
         if request.args.get('match[id]') or request.args.get('match[version]'):
-            raise Exception('Filtering by id or version is not supported.')
+            raise Exception('Filtering by ID or version is not supported.')
 
         try:
             if added_after:
