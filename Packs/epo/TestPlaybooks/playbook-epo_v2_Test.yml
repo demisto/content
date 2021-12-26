@@ -1,6 +1,6 @@
 id: McAfee ePO v2 Test
 version: -1
-name: McAfee ePO v2 Test 
+name: McAfee ePO v2 Test
 starttaskid: "0"
 tasks:
   "0":
@@ -103,7 +103,7 @@ tasks:
       id: 9f7e5454-67ea-41da-8313-6bd3b4679d8e
       version: -1
       name: epo-get-latest-dat
-      script: epo V2|||epo-get-latest-dat
+      script: McAfee ePO v2|||epo-get-latest-dat
       type: regular
       iscommand: true
       brand: ""
@@ -170,7 +170,7 @@ tasks:
       id: cf61bed3-6263-4682-8e30-595d5c3589b2
       version: -1
       name: epo-get-current-dat
-      script: epo V2|||epo-get-current-dat
+      script: McAfee ePO v2|||epo-get-current-dat
       type: regular
       iscommand: true
       brand: ""
@@ -237,7 +237,7 @@ tasks:
       id: a6c792f0-9885-4d8d-83ba-369c8056a891
       version: -1
       name: epo-command
-      script: epo V2|||epo-command
+      script: McAfee ePO v2|||epo-command
       type: regular
       iscommand: true
       brand: epo V2
@@ -270,7 +270,7 @@ tasks:
       id: 7c57e19f-a9c6-43c2-8870-45684f68cf3a
       version: -1
       name: epo-update-client-dat
-      script: epo V2|||epo-update-client-dat
+      script: McAfee ePO v2|||epo-update-client-dat
       type: regular
       iscommand: true
       brand: epo V2
@@ -303,7 +303,7 @@ tasks:
       id: 52dd59b5-7f33-41e1-826c-29fb16c84dd3
       version: -1
       name: epo-update-repository
-      script: epo V2|||epo-update-repository
+      script: McAfee ePO v2|||epo-update-repository
       type: regular
       iscommand: true
       brand: ""
@@ -333,7 +333,7 @@ tasks:
       id: cb0d50e0-c04d-455b-8a9e-ab49b6a2d94b
       version: -1
       name: epo-get-system-tree-group
-      script: epo V2|||epo-get-system-tree-group
+      script: McAfee ePO v2|||epo-get-system-tree-group
       type: regular
       iscommand: true
       brand: epo V2
@@ -405,7 +405,7 @@ tasks:
       id: ed8685fe-d5b4-4577-807c-66f0840db747
       version: -1
       name: epo-find-systems
-      script: epo V2|||epo-find-systems
+      script: McAfee ePO v2|||epo-find-systems
       type: regular
       iscommand: true
       brand: epo V2
@@ -519,7 +519,7 @@ tasks:
       id: 890cee9b-ff3c-4a8b-8b86-a91eac895801
       version: -1
       name: epo-find-system
-      script: epo V2|||epo-find-system
+      script: McAfee ePO v2|||epo-find-system
       type: regular
       iscommand: true
       brand: epo V2
@@ -629,7 +629,7 @@ tasks:
       id: 3d52dee9-690a-4e59-83d1-f09ac18563cf
       version: -1
       name: epo-wakeup-agent
-      script: epo V2|||epo-wakeup-agent
+      script: McAfee ePO v2|||epo-wakeup-agent
       type: regular
       iscommand: true
       brand: epo V2
@@ -662,7 +662,7 @@ tasks:
       id: 08df27e0-47b5-46de-8d67-8a8aff9715ac
       version: -1
       name: epo-apply-tag
-      script: epo V2|||epo-apply-tag
+      script: McAfee ePO v2|||epo-apply-tag
       type: regular
       iscommand: true
       brand: epo V2
@@ -697,7 +697,7 @@ tasks:
       id: b241022a-511a-44c8-8638-a6bf7338f5e9
       version: -1
       name: epo-clear-tag
-      script: epo V2|||epo-clear-tag
+      script: McAfee ePO v2|||epo-clear-tag
       type: regular
       iscommand: true
       brand: epo V2
@@ -732,7 +732,7 @@ tasks:
       id: 1a56f417-e0e9-4a86-831d-a13cda6f8772
       version: -1
       name: epo-list-tag
-      script: epo V2|||epo-list-tag
+      script: McAfee ePO v2|||epo-list-tag
       type: regular
       iscommand: true
       brand: ""
@@ -809,7 +809,7 @@ tasks:
       id: 9368ec44-3e91-416d-8ca9-bb95a23babd2
       version: -1
       name: epo-get-tables
-      script: epo V2|||epo-get-tables
+      script: McAfee ePO v2|||epo-get-tables
       type: regular
       iscommand: true
       brand: ""
@@ -839,7 +839,7 @@ tasks:
       id: 4d0d5151-1e93-4c2c-8967-22d30fbcb6d4
       version: -1
       name: epo-query-table
-      script: epo V2|||epo-query-table
+      script: McAfee ePO v2|||epo-query-table
       type: regular
       iscommand: true
       brand: epo V2
@@ -909,7 +909,7 @@ tasks:
       id: 60a0c470-6634-4c1e-8156-ccf281b86e33
       version: -1
       name: epo-get-version
-      script: epo V2|||epo-get-version
+      script: McAfee ePO v2|||epo-get-version
       type: regular
       iscommand: true
       brand: ""
@@ -976,7 +976,7 @@ tasks:
       id: afb5eba6-f1c4-4748-8a90-55e146903fd0
       version: -1
       name: epo-move-system
-      script: epo V2|||epo-move-system
+      script: McAfee ePO v2|||epo-move-system
       type: regular
       iscommand: true
       brand: epo V2
@@ -1011,7 +1011,7 @@ tasks:
       id: 57f68b23-a304-4af9-88a6-ca267505b9a1
       version: -1
       name: epo-advanced-command
-      script: epo V2|||epo-advanced-command
+      script: McAfee ePO v2|||epo-advanced-command
       type: regular
       iscommand: true
       brand: epo V2
@@ -1046,7 +1046,7 @@ tasks:
       id: a1358650-d543-4d82-85a3-f34fc08fc700
       version: -1
       name: epo-find-client-task
-      script: epo V2|||epo-find-client-task
+      script: McAfee ePO v2|||epo-find-client-task
       type: regular
       iscommand: true
       brand: ""
@@ -1138,7 +1138,7 @@ tasks:
       id: c81ad2e3-f963-468b-8655-27e5fa175f46
       version: -1
       name: epo-find-policy
-      script: epo V2|||epo-find-policy
+      script: McAfee ePO v2|||epo-find-policy
       type: regular
       iscommand: true
       brand: ""
@@ -1168,7 +1168,7 @@ tasks:
       id: 9b328ed6-71c9-42e8-8f49-30380cbacb34
       version: -1
       name: epo-assign-policy-to-group
-      script: epo V2|||epo-assign-policy-to-group
+      script: McAfee ePO v2|||epo-assign-policy-to-group
       type: regular
       iscommand: true
       brand: epo V2
@@ -1205,7 +1205,7 @@ tasks:
       id: 4d3ef53e-ed75-4fd1-88b1-f146bb492e36
       version: -1
       name: epo-assign-policy-to-system
-      script: epo V2|||epo-assign-policy-to-system
+      script: McAfee ePO v2|||epo-assign-policy-to-system
       type: regular
       iscommand: true
       brand: epo V2
@@ -1244,7 +1244,7 @@ tasks:
       id: 5e056d03-78fb-4825-8450-467fee13b9f0
       version: -1
       name: epo-list-issues
-      script: epo V2|||epo-list-issues
+      script: McAfee ePO v2|||epo-list-issues
       type: regular
       iscommand: true
       brand: epo V2
@@ -1391,7 +1391,7 @@ tasks:
       id: ba6215ce-8d63-4863-8465-3dcaaa695b8f
       version: -1
       name: epo-delete-issue
-      script: epo V2|||epo-delete-issue
+      script: McAfee ePO v2|||epo-delete-issue
       type: regular
       iscommand: true
       brand: epo V2
@@ -1424,7 +1424,7 @@ tasks:
       id: 78bc8972-5460-4c87-85ce-7caeac38d1a3
       version: -1
       name: epo-create-issue
-      script: epo V2|||epo-create-issue
+      script: McAfee ePO v2|||epo-create-issue
       type: regular
       iscommand: true
       brand: epo V2
@@ -1516,7 +1516,7 @@ tasks:
       id: 45c89f3a-1364-49d9-8c48-f0b397e61df4
       version: -1
       name: epo-update-issue
-      script: epo V2|||epo-update-issue
+      script: McAfee ePO v2|||epo-update-issue
       type: regular
       iscommand: true
       brand: epo V2
@@ -1580,7 +1580,7 @@ tasks:
       id: fed210be-5d37-439b-8ee3-c7857f2464dc
       version: -1
       name: epo-move-system (return back)
-      script: epo V2|||epo-move-system
+      script: McAfee ePO v2|||epo-move-system
       type: regular
       iscommand: true
       brand: epo V2
