@@ -126,8 +126,8 @@ tasks:
           left:
             value:
               complex:
-                root: ${CheckPoint
-                accessor: Objects.ipv4-address}
+                root: CheckPoint
+                accessor: Objects.ipv4-address
             iscontext: true
       - - operator: isEqualString
           left:
