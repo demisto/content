@@ -97,39 +97,44 @@ def replace_protocol(url_: str) -> str:
     return url_
 
 
-def format_url(non_formatted_url: str) -> CommandResults:
+def format_urls(non_formatted_urls: List[str]) -> CommandResults:
     """
     Formats a single URL.
     Args:
-        non_formatted_url (str): Non formatted URL.
+        non_formatted_urls (List[str]): Non formatted URLs.
 
     Returns:
         (Set[str]): Formatted URL, with its expanded URL if such exists.
     """
-    parse_results: ParseResult = urlparse(non_formatted_url)
-    if re.match(ATP_REGEX, non_formatted_url):
-        non_formatted_url = get_redirect_url_from_query(non_formatted_url, parse_results, 'url')
-    elif match := PROOF_POINT_URL_REG.search(non_formatted_url):
-        proof_point_ver: str = match.group(2)
-        if proof_point_ver == 'v3':
-            non_formatted_url = get_redirect_url_proof_point_v3(non_formatted_url)
-        elif proof_point_ver == 'v2':
-            non_formatted_url = get_redirect_url_proof_point_v2(non_formatted_url, parse_results)
-        else:
-            non_formatted_url = get_redirect_url_from_query(non_formatted_url, parse_results, 'u')
-    # Common handling for unescape and normalizing
-    non_formatted_url = unquote(unescape(non_formatted_url.replace('[.]', '.')))
-    formatted_url = replace_protocol(non_formatted_url)
+
+    def format_single_url(non_formatted_url):
+        parse_results: ParseResult = urlparse(non_formatted_url)
+        if re.match(ATP_REGEX, non_formatted_url):
+            non_formatted_url = get_redirect_url_from_query(non_formatted_url, parse_results, 'url')
+        elif match := PROOF_POINT_URL_REG.search(non_formatted_url):
+            proof_point_ver: str = match.group(2)
+            if proof_point_ver == 'v3':
+                non_formatted_url = get_redirect_url_proof_point_v3(non_formatted_url)
+            elif proof_point_ver == 'v2':
+                non_formatted_url = get_redirect_url_proof_point_v2(non_formatted_url, parse_results)
+            else:
+                non_formatted_url = get_redirect_url_from_query(non_formatted_url, parse_results, 'u')
+        # Common handling for unescape and normalizing
+        non_formatted_url = unquote(unescape(non_formatted_url.replace('[.]', '.')))
+        formatted_url = replace_protocol(non_formatted_url)
+        return formatted_url
+
+    formatted_urls = [format_single_url(url_) for url_ in non_formatted_urls]
     return CommandResults(
         outputs_prefix='URL',
-        outputs=[formatted_url],
-        readable_output=formatted_url
+        outputs=formatted_urls,
+        readable_output=f'Formatted the following URLs:\n' + '\n'.join(formatted_urls)
     )
 
 
 def main():
     try:
-        return_results(format_url(demisto.args().get('input')))
+        return_results(format_urls(argToList(demisto.args().get('input'))))
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute FormatURL. Error: {str(e)}')

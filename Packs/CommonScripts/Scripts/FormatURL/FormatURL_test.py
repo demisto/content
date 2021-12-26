@@ -102,190 +102,185 @@ FORMAT_URL_ADDITIONAL_TEST_CASES = [
 FORMAT_URL_TEST_DATA = NOT_FORMAT_TO_FORMAT + PROOF_POINT_REDIRECTS + FORMAT_URL_ADDITIONAL_TEST_CASES
 
 
-@pytest.mark.parametrize('non_formatted_url, expected', NOT_FORMAT_TO_FORMAT)
-def test_replace_protocol(non_formatted_url: str, expected: str):
-    """
-    Given:
-    - non_formatted_url: A URL.
+class TestFormatURL:
+    @pytest.mark.parametrize('non_formatted_url, expected', NOT_FORMAT_TO_FORMAT)
+    def test_replace_protocol(self, non_formatted_url: str, expected: str):
+        """
+        Given:
+        - non_formatted_url: A URL.
 
-    When:
-    - Replacing protocol to http:// or https://.
+        When:
+        - Replacing protocol to http:// or https://.
 
-    Then:
-    - Ensure for every expected protocol given, it is replaced with the expected value.
-    """
-    from FormatURL import replace_protocol
-    assert replace_protocol(non_formatted_url) == expected
+        Then:
+        - Ensure for every expected protocol given, it is replaced with the expected value.
+        """
+        from FormatURL import replace_protocol
+        assert replace_protocol(non_formatted_url) == expected
 
+    @pytest.mark.parametrize('url_, expected', FORMAT_URL_TEST_DATA)
+    def test_format_url(self, url_, expected):
+        """
+        Given:
+        - URL.
 
-@pytest.mark.parametrize('url_, expected', FORMAT_URL_TEST_DATA)
-def test_format_url(url_, expected):
-    """
-    Given:
-    - URL.
+        When:
+        - Given URL needs to be formatted.
 
-    When:
-    - Given URL needs to be formatted.
+        Then:
+        - Ensure URL is formatted as expected
+        """
+        from FormatURL import format_urls
+        assert format_urls([url_]).outputs == [expected]
 
-    Then:
-    - Ensure URL is formatted as expected
-    """
-    from FormatURL import format_url
-    assert format_url(url_).outputs == [expected]
+    @pytest.mark.parametrize('url_, expected', [
+        ('https://urldefense.proofpoint.com/v2/url?u=http-3A__links.mkt3337.com_ctt-3Fkn-3D3-26ms-3DMzQ3OTg3MDQS1-26r'
+         '-3DMzkxNzk3NDkwMDA0S0-26b-3D0-26j-3DMTMwMjA1ODYzNQS2-26mt-3D1-26rt-3D0&d=DwMFaQ&c'
+         '=Vxt5e0Osvvt2gflwSlsJ5DmPGcPvTRKLJyp031rXjhg&r=MujLDFBJstxoxZI_GKbsW7wxGM7nnIK__qZvVy6j9Wc&m'
+         '=QJGhloAyfD0UZ6n8r6y9dF-khNKqvRAIWDRU_K65xPI&s=ew-rOtBFjiX1Hgv71XQJ5BEgl9TPaoWRm_Xp9Nuo8bk&e=',
+         'http%3A//links.mkt3337.com/ctt%3Fkn%3D3%26ms%3DMzQ3OTg3MDQS1%26r%3DMzkxNzk3NDkwMDA0S0%26b%3D0%26j'
+         '%3DMTMwMjA1ODYzNQS2%26mt%3D1%26rt%3D0')
+    ])
+    def test_get_redirect_url_proof_point_v2(self, url_: str, expected: str):
+        """
+        Given:
+        - URL with redirect URL Proof Point v2.
 
+        When:
+        - Given URL with redirect URL is valid.
 
-@pytest.mark.parametrize('url_, expected', [
-    ('https://urldefense.proofpoint.com/v2/url?u=http-3A__links.mkt3337.com_ctt-3Fkn-3D3-26ms-3DMzQ3OTg3MDQS1-26r'
-     '-3DMzkxNzk3NDkwMDA0S0-26b-3D0-26j-3DMTMwMjA1ODYzNQS2-26mt-3D1-26rt-3D0&d=DwMFaQ&c'
-     '=Vxt5e0Osvvt2gflwSlsJ5DmPGcPvTRKLJyp031rXjhg&r=MujLDFBJstxoxZI_GKbsW7wxGM7nnIK__qZvVy6j9Wc&m'
-     '=QJGhloAyfD0UZ6n8r6y9dF-khNKqvRAIWDRU_K65xPI&s=ew-rOtBFjiX1Hgv71XQJ5BEgl9TPaoWRm_Xp9Nuo8bk&e=',
-     'http%3A//links.mkt3337.com/ctt%3Fkn%3D3%26ms%3DMzQ3OTg3MDQS1%26r%3DMzkxNzk3NDkwMDA0S0%26b%3D0%26j'
-     '%3DMTMwMjA1ODYzNQS2%26mt%3D1%26rt%3D0')
-])
-def test_get_redirect_url_proof_point_v2(url_: str, expected: str):
-    """
-    Given:
-    - URL with redirect URL Proof Point v2.
+        Then:
+        - Ensure redirected URL is returned.
+        """
+        from FormatURL import get_redirect_url_proof_point_v2
+        assert get_redirect_url_proof_point_v2(url_, urlparse(url_)) == expected
 
-    When:
-    - Given URL with redirect URL is valid.
+    @pytest.mark.parametrize('url_, expected', [
+        ('https://urldefense.com/v3/__https://google.com:443/search?q=a*test&gs=ps__;Kw!-612Flbf0JvQ3kNJkRi5Jg'
+         '!Ue6tQudNKaShHg93trcdjqDP8se2ySE65jyCIe2K1D_uNjZ1Lnf6YLQERujngZv9UWf66ujQIQ$',
+         'https://google.com:443/search?q=a*test&gs=ps'),
+        ('https://urldefense.us/v3/__https://google.com:443/search?q=a*test&gs=ps__;Kw!-612Flbf0JvQ3kNJkRi5Jg'
+         '!Ue6tQudNKaShHg93trcdjqDP8se2ySE65jyCIe2K1D_uNjZ1Lnf6YLQERujngZv9UWf66ujQIQ$',
+         'https://google.com:443/search?q=a*test&gs=ps')
+    ])
+    def test_get_redirect_url_proof_point_v3(self, url_: str, expected: str):
+        """
+        Given:
+        - URL with redirect URL Proof Point v3.
 
-    Then:
-    - Ensure redirected URL is returned.
-    """
-    from FormatURL import get_redirect_url_proof_point_v2
-    assert get_redirect_url_proof_point_v2(url_, urlparse(url_)) == expected
+        When:
+        - Given URL with redirect URL is valid.
 
+        Then:
+        - Ensure redirected URL is returned.
+        """
+        from FormatURL import get_redirect_url_proof_point_v3
+        assert get_redirect_url_proof_point_v3(url_) == expected
 
-@pytest.mark.parametrize('url_, expected', [
-    ('https://urldefense.com/v3/__https://google.com:443/search?q=a*test&gs=ps__;Kw!-612Flbf0JvQ3kNJkRi5Jg'
-     '!Ue6tQudNKaShHg93trcdjqDP8se2ySE65jyCIe2K1D_uNjZ1Lnf6YLQERujngZv9UWf66ujQIQ$',
-     'https://google.com:443/search?q=a*test&gs=ps'),
-    ('https://urldefense.us/v3/__https://google.com:443/search?q=a*test&gs=ps__;Kw!-612Flbf0JvQ3kNJkRi5Jg'
-     '!Ue6tQudNKaShHg93trcdjqDP8se2ySE65jyCIe2K1D_uNjZ1Lnf6YLQERujngZv9UWf66ujQIQ$',
-     'https://google.com:443/search?q=a*test&gs=ps')
-])
-def test_get_redirect_url_proof_point_v3(url_: str, expected: str):
-    """
-    Given:
-    - URL with redirect URL Proof Point v3.
+    @pytest.mark.parametrize('non_formatted_url, redirect_param_name, expected', [
+        ('https://urldefense.proofpoint.com/v1/url?u=http://www.bouncycastle.org/&amp;k=oIvRg1%2BdGAgOoM1BIlLLqw%3D%3D'
+         '%0A&amp;r=IKM5u8%2B%2F%2Fi8EBhWOS%2BqGbTqCC%2BrMqWI%2FVfEAEsQO%2F0Y%3D%0A&amp;m'
+         '=Ww6iaHO73mDQpPQwOwfLfN8WMapqHyvtu8jM8SjqmVQ%3D%0A&amp;s'
+         '=d3583cfa53dade97025bc6274c6c8951dc29fe0f38830cf8e5a447723b9f1c9a', 'u',
+         'http://www.bouncycastle.org/'),
+        ('https://na01.safelinks.protection.outlook.com/?url=https%3A%2F%2Foffice.memoriesflower.com'
+         '%2FPermission%2Foffice.php&data=01%7C01%7Cdavid.levin%40mheducation.com'
+         '%7C0ac9a3770fe64fbb21fb08d50764c401%7Cf919b1efc0c347358fca0928ec39d8d5%7C0&sdata=PEoDOerQnha'
+         '%2FACafNx8JAep8O9MdllcKCsHET2Ye%2B4%3D&reserved=0', 'url',
+         'https://office.memoriesflower.com/Permission/office.php')
+    ])
+    def test_get_redirect_url_from_query(self, non_formatted_url: str, redirect_param_name: str, expected: str):
+        """
+        Given:
+        - URL with redirect URL (Proof Point / ATP).
 
-    When:
-    - Given URL with redirect URL is valid.
+        When:
+        - Given URL with redirect URL is valid.
 
-    Then:
-    - Ensure redirected URL is returned.
-    """
-    from FormatURL import get_redirect_url_proof_point_v3
-    assert get_redirect_url_proof_point_v3(url_) == expected
+        Then:
+        - Ensure redirected URL is returned.
+        """
+        from FormatURL import get_redirect_url_from_query
+        assert get_redirect_url_from_query(non_formatted_url, urlparse(non_formatted_url),
+                                           redirect_param_name) == expected
 
+    #  Invalid cases
+    @pytest.mark.parametrize('url_', [
+        'https://urldefense.com/v3/__https://google.com:443/search?66ujQIQ$',
+        'https://urldefense.us/v3/__https://google.com:443/searchERujngZv9UWf66ujQIQ$'
+    ])
+    def test_get_redirect_url_proof_point_v3_invalid(self, mocker, url_):
+        """
+        Given:
+        - Proof Point v3 URL.
 
-@pytest.mark.parametrize('non_formatted_url, redirect_param_name, expected', [
-    ('https://urldefense.proofpoint.com/v1/url?u=http://www.bouncycastle.org/&amp;k=oIvRg1%2BdGAgOoM1BIlLLqw%3D%3D%0A'
-     '&amp;r=IKM5u8%2B%2F%2Fi8EBhWOS%2BqGbTqCC%2BrMqWI%2FVfEAEsQO%2F0Y%3D%0A&amp;m'
-     '=Ww6iaHO73mDQpPQwOwfLfN8WMapqHyvtu8jM8SjqmVQ%3D%0A&amp;s'
-     '=d3583cfa53dade97025bc6274c6c8951dc29fe0f38830cf8e5a447723b9f1c9a', 'u', 'http://www.bouncycastle.org/'),
-    ('https://na01.safelinks.protection.outlook.com/?url=https%3A%2F%2Foffice.memoriesflower.com'
-     '%2FPermission%2Foffice.php&data=01%7C01%7Cdavid.levin%40mheducation.com'
-     '%7C0ac9a3770fe64fbb21fb08d50764c401%7Cf919b1efc0c347358fca0928ec39d8d5%7C0&sdata=PEoDOerQnha'
-     '%2FACafNx8JAep8O9MdllcKCsHET2Ye%2B4%3D&reserved=0', 'url',
-     'https://office.memoriesflower.com/Permission/office.php')
-])
-def test_get_redirect_url_from_query(non_formatted_url: str, redirect_param_name: str, expected: str):
-    """
-    Given:
-    - URL with redirect URL (Proof Point / ATP).
+        When:
+        - Given URL is invalid and does not contain redirect URL.
 
-    When:
-    - Given URL with redirect URL is valid.
+        Then:
+        - Ensure the full URL is returned.
+        - Ensure a call to demisto.error is made.
+        """
+        import demistomock as demisto
+        mocker.patch.object(demisto, 'error')
+        from FormatURL import get_redirect_url_proof_point_v3
+        assert get_redirect_url_proof_point_v3(url_) == url_
+        assert demisto.error.called
 
-    Then:
-    - Ensure redirected URL is returned.
-    """
-    from FormatURL import get_redirect_url_from_query
-    assert get_redirect_url_from_query(non_formatted_url, urlparse(non_formatted_url), redirect_param_name) == expected
+    def test_get_redirect_url_from_query_no_url_query_param(self, mocker):
+        """
+        Given:
+        - Proof Point v1 URL.
 
+        When:
+        - Given URL is invalid and does not contain redirect URL query parameter.
 
-#  Invalid cases
-@pytest.mark.parametrize('url_', [
-    'https://urldefense.com/v3/__https://google.com:443/search?66ujQIQ$',
-    'https://urldefense.us/v3/__https://google.com:443/searchERujngZv9UWf66ujQIQ$'
-])
-def test_get_redirect_url_proof_point_v3_invalid(mocker, url_):
-    """
-    Given:
-    - Proof Point v3 URL.
+        Then:
+        - Ensure the full URL is returned.
+        - Ensure a call to demisto.error is made.
+        """
+        from FormatURL import get_redirect_url_from_query
+        import demistomock as demisto
+        url_ = 'https://urldefense.proofpoint.com/v1/url?x=bla'
+        mocker.patch.object(demisto, 'error')
+        assert get_redirect_url_from_query(url_, urlparse(url_), 'q') == url_
+        assert demisto.error.called
 
-    When:
-    - Given URL is invalid and does not contain redirect URL.
+    def test_get_redirect_url_from_query_duplicate_url_query_param(self, mocker):
+        """
+        Given:
+        - Proof Point v1 URL.
 
-    Then:
-    - Ensure the full URL is returned.
-    - Ensure a call to demisto.error is made.
-    """
-    import demistomock as demisto
-    mocker.patch.object(demisto, 'error')
-    from FormatURL import get_redirect_url_proof_point_v3
-    assert get_redirect_url_proof_point_v3(url_) == url_
-    assert demisto.error.called
+        When:
+        - Given URL is invalid and contains duplicate redirect URL parameters.
 
+        Then:
+        - Ensure the full URL is returned.
+        - Ensure a call to demisto.debug is made.
+        """
+        from FormatURL import get_redirect_url_from_query
+        import demistomock as demisto
+        url_ = 'https://urldefense.proofpoint.com/v1/url?u=url_1&u=url_2'
+        mocker.patch.object(demisto, 'debug')
+        assert get_redirect_url_from_query(url_, urlparse(url_), 'u') == 'url_1'
+        assert demisto.debug.called
 
-def test_get_redirect_url_from_query_no_url_query_param(mocker):
-    """
-    Given:
-    - Proof Point v1 URL.
+    def test_main_flow_valid(self, mocker):
+        """
+        Given:
+        - Cortex XSOAR arguments.
 
-    When:
-    - Given URL is invalid and does not contain redirect URL query parameter.
+        When:
+        - Formatting URLs
 
-    Then:
-    - Ensure the full URL is returned.
-    - Ensure a call to demisto.error is made.
-    """
-    from FormatURL import get_redirect_url_from_query
-    import demistomock as demisto
-    url_ = 'https://urldefense.proofpoint.com/v1/url?x=bla'
-    mocker.patch.object(demisto, 'error')
-    assert get_redirect_url_from_query(url_, urlparse(url_), 'q') == url_
-    assert demisto.error.called
-
-
-def test_get_redirect_url_from_query_duplicate_url_query_param(mocker):
-    """
-    Given:
-    - Proof Point v1 URL.
-
-    When:
-    - Given URL is invalid and contains duplicate redirect URL parameters.
-
-    Then:
-    - Ensure the full URL is returned.
-    - Ensure a call to demisto.debug is made.
-    """
-    from FormatURL import get_redirect_url_from_query
-    import demistomock as demisto
-    url_ = 'https://urldefense.proofpoint.com/v1/url?u=url_1&u=url_2'
-    mocker.patch.object(demisto, 'debug')
-    assert get_redirect_url_from_query(url_, urlparse(url_), 'u') == 'url_1'
-    assert demisto.debug.called
-
-
-def test_main_flow_valid(mocker):
-    """
-    Given:
-    - Cortex XSOAR arguments.
-
-    When:
-    - Formatting URLs
-
-    Then:
-    - Ensure URL are formatted as expected.
-    """
-    from FormatURL import main
-    import FormatURL
-    import demistomock as demisto
-    mocker.patch.object(demisto, 'args', return_value={'input': f'{TEST_URL_HTTP}'})
-    mock_results = mocker.patch.object(FormatURL, 'return_results')
-    main()
-    result_ = mock_results.call_args.args[0]
-    assert result_.outputs == [TEST_URL_HTTP]
+        Then:
+        - Ensure URL are formatted as expected.
+        """
+        from FormatURL import main
+        import FormatURL
+        import demistomock as demisto
+        mocker.patch.object(demisto, 'args', return_value={'input': f'{TEST_URL_HTTP}'})
+        mock_results = mocker.patch.object(FormatURL, 'return_results')
+        main()
+        result_ = mock_results.call_args.args[0]
+        assert result_.outputs == [TEST_URL_HTTP]
