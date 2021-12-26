@@ -1,6 +1,12 @@
 id: Checkpoint - Publish&Install configuration
-version: -1
-fromversion: 5.0.0
+version: 13
+contentitemexportablefields:
+  contentitemfields:
+    packID: CheckpointFirewall
+    itemVersion: 2.1.6
+    fromServerVersion: 5.0.0
+    toServerVersion: ""
+vcShouldKeepItemLegacyProdMachine: false
 name: Checkpoint - Publish&Install configuration
 description: Publish the Checkpoint Firewall configuration and install policy over
   all the gateways that are available.
@@ -14,7 +20,6 @@ tasks:
       id: 354c2814-999f-4177-8206-adb0b43e98e1
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -31,14 +36,18 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 513bda37-105c-4a79-875d-d83ba5c7fb99
+    taskid: 411552f6-ea1e-4b43-89db-9f07b8b3312e
     type: condition
     task:
-      id: 513bda37-105c-4a79-875d-d83ba5c7fb99
+      id: 411552f6-ea1e-4b43-89db-9f07b8b3312e
       version: -1
-      name: Is Checkpoint firewall enable ?
+      name: Is Checkpoint firewall enabled?
       description: Verify that there is a valid instance of Checkpoint firewall enabled.
       type: condition
       iscommand: false
@@ -86,6 +95,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
     taskid: 5aaffaa5-cc8b-4af1-88c5-3088044cd7b6
@@ -97,18 +110,21 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 710,
-          "y": 3790
+          "y": 2600
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
     taskid: 3b8cb003-7a6e-44ad-80bf-cfdefa542db7
@@ -133,13 +149,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -150,
-          "y": -190
+          "x": 480,
+          "y": -520
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: d211fef6-b869-4518-8788-66323f2512d7
@@ -155,7 +175,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "9"
+      - "3"
       "yes":
       - "7"
     separatecontext: false
@@ -184,13 +204,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -880,
-          "y": 1370
+          "x": -110,
+          "y": 650
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
     taskid: eeeb629e-05e9-4c50-8963-bce68bf91046
@@ -208,7 +232,6 @@ tasks:
       '#none#':
       - "23"
     scriptarguments:
-      access: {}
       policy_package:
         simple: ${inputs.policy_package}
       session_id:
@@ -222,13 +245,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1490,
-          "y": 1770
+          "x": -280,
+          "y": 1010
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
     taskid: 865a33dd-11cf-4391-88de-9dc111827f12
@@ -246,21 +273,23 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      limit: {}
-      offset: {}
       session_id:
         simple: ${inputs.sid}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -1490,
-          "y": 1600
+          "x": -280,
+          "y": 840
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
     taskid: 7775d6f5-83b4-46ba-83e2-562e496320cf
@@ -279,8 +308,6 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      limit: {}
-      offset: {}
       session_id:
         simple: ${inputs.sid}
     continueonerror: true
@@ -288,43 +315,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -880,
-          "y": 1200
+          "x": -110,
+          "y": 390
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "9":
-    id: "9"
-    taskid: 06a002d2-c789-4425-8af0-f292e226df7c
-    type: regular
-    task:
-      id: 06a002d2-c789-4425-8af0-f292e226df7c
-      version: -1
-      name: Checkpoint logout
-      description: Log out from a given session.
-      script: '|||checkpoint-logout'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      session_id:
-        simple: ${inputs.sid}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 710,
-          "y": 3020
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
     taskid: 5b935b74-d33d-4fd2-8484-845f2fa8a61f
@@ -349,8 +350,6 @@ tasks:
       '#none#':
       - "19"
     scriptarguments:
-      AdditionalPollingCommandArgNames: {}
-      AdditionalPollingCommandArgValues: {}
       Ids:
         complex:
           root: CheckPoint
@@ -370,16 +369,21 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
-          "x": -1960,
-          "y": 2290
+          "x": -560,
+          "y": 1360
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
     taskid: 2d49366e-ead7-4da0-8bde-9ba7c47e45ae
@@ -404,8 +408,6 @@ tasks:
       '#none#':
       - "14"
     scriptarguments:
-      AdditionalPollingCommandArgNames: {}
-      AdditionalPollingCommandArgValues: {}
       Ids:
         complex:
           root: CheckPoint
@@ -425,16 +427,21 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
-          "x": -890,
-          "y": 200
+          "x": 170,
+          "y": -160
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
     taskid: 369c8b3d-cd68-427f-820a-50f9ff0983b7
@@ -462,13 +469,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -890,
-          "y": 370
+          "x": 170,
+          "y": 10
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
     taskid: 4e93f348-cadd-43e0-8c05-fd89ae1d1461
@@ -503,13 +514,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -890,
-          "y": 550
+          "x": 170,
+          "y": 190
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "16":
     id: "16"
     taskid: 50e628b5-bd7e-495f-8ddb-921ed7ac5f07
@@ -525,7 +540,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "17"
+      - "25"
     scriptarguments:
       message:
         simple: Checkpoint publish failed
@@ -533,39 +548,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -430,
-          "y": 815
+          "x": 170,
+          "y": 525
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "17":
-    id: "17"
-    taskid: f03e2ffc-39cb-4963-83fb-a71baaa9db1e
-    type: regular
-    task:
-      id: f03e2ffc-39cb-4963-83fb-a71baaa9db1e
-      version: -1
-      name: Fix error and publish manually
-      description: User manually add resolve.
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -430,
-          "y": 990
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "19":
     id: "19"
     taskid: eb9fa156-bd82-47e9-88b5-95ad7fba8745
@@ -593,13 +586,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1960,
-          "y": 2460
+          "x": -560,
+          "y": 1530
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "20":
     id: "20"
     taskid: af6bf869-c495-4e14-8a65-26f4122a1843
@@ -615,7 +612,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "21"
+      - "25"
     scriptarguments:
       message:
         simple: Checkpoint Install policy failed
@@ -623,39 +620,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -430,
-          "y": 3380
+          "x": -180,
+          "y": 2050
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "21":
-    id: "21"
-    taskid: da2b2a60-42b1-4694-87c0-5a5ef16e08e9
-    type: regular
-    task:
-      id: da2b2a60-42b1-4694-87c0-5a5ef16e08e9
-      version: -1
-      name: Fix error and install policy manually
-      description: User manually add resolve.
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -430,
-          "y": 3540
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "22":
     id: "22"
     taskid: bc0da2d7-6e70-4591-8f34-8b0f09451afc
@@ -672,7 +647,7 @@ tasks:
       '#default#':
       - "20"
       "yes":
-      - "9"
+      - "3"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -690,13 +665,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1960,
-          "y": 2640
+          "x": -560,
+          "y": 1870
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "23":
     id: "23"
     taskid: 96046025-a88e-41e4-8d5f-4b9b4fb4e175
@@ -711,7 +690,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "26"
+      - "29"
       "yes":
       - "12"
     separatecontext: false
@@ -728,13 +707,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1490,
-          "y": 1950
+          "x": -280,
+          "y": 1190
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "24":
     id: "24"
     taskid: d43932f9-a32a-454c-8183-0982b2b748cd
@@ -749,7 +732,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "25"
+      - "27"
       "yes":
       - "13"
     separatecontext: false
@@ -766,21 +749,25 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -150,
-          "y": -10
+          "x": 480,
+          "y": -350
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 0d57217e-6bd2-4bcd-8ded-3fa8edac4f9c
+    taskid: ff470de6-f208-4c38-8dea-a19b0319fdb6
     type: condition
     task:
-      id: 0d57217e-6bd2-4bcd-8ded-3fa8edac4f9c
+      id: ff470de6-f208-4c38-8dea-a19b0319fdb6
       version: -1
-      name: Is action manual handling enable ?
+      name: Is action manual handling enabled?
       description: if action manual handling enable, the Playbook will stop in favor
         of further manual handling.
       type: condition
@@ -788,9 +775,9 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "9"
+      - "3"
       "yes":
-      - "27"
+      - "28"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -807,54 +794,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 500,
-          "y": 200
+          "x": 480,
+          "y": 2240
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "26":
-    id: "26"
-    taskid: cfd1897f-a909-4ddf-822b-d2fde5ded3da
-    type: condition
-    task:
-      id: cfd1897f-a909-4ddf-822b-d2fde5ded3da
-      version: -1
-      name: Is action manual handling enable ?
-      description: if action manual handling enable, the Playbook will stop in favor
-        of further manual handling.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "9"
-      "yes":
-      - "29"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.action_manual_handling
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-    view: |-
-      {
-        "position": {
-          "x": -890,
-          "y": 2290
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "27":
     id: "27"
     taskid: 5a3871f0-1cab-4479-815b-96bb1b9af87b
@@ -870,7 +820,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "28"
+      - "25"
     scriptarguments:
       message:
         simple: Checkpoint publish failed
@@ -878,13 +828,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 30,
-          "y": 370
+          "x": 480,
+          "y": 380
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "28":
     id: "28"
     taskid: 59866ff6-88f8-48ff-8f13-2ec742022e13
@@ -904,13 +858,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 30,
-          "y": 550
+          "x": 280,
+          "y": 2420
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "29":
     id: "29"
     taskid: 957e2e3b-7257-41a6-8f56-245df2f54797
@@ -926,7 +884,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "30"
+      - "25"
     scriptarguments:
       message:
         simple: Checkpoint install policy  failed.
@@ -934,39 +892,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1340,
-          "y": 2460
+          "x": -280,
+          "y": 1700
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "30":
-    id: "30"
-    taskid: 2c9663e5-7d43-4529-8024-c243cc06748a
-    type: regular
-    task:
-      id: 2c9663e5-7d43-4529-8024-c243cc06748a
-      version: -1
-      name: Fix error and install policy manually
-      description: User manually add resolve.
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -1340,
-          "y": 2640
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -974,9 +911,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 4705,
-        "width": 3050,
-        "x": -1960,
+        "height": 3515,
+        "width": 1650,
+        "x": -560,
         "y": -850
       }
     }
@@ -988,17 +925,20 @@ inputs:
   description: SID - Session unique identifier as it returned by the login request
     required for publish /install changes. Change configuration  will be seen by all
     users only after publish is called and finish with the specific SID.
+  playbookInputQuery: null
 - key: install_policy
   value:
     simple: "False"
   required: true
   description: Input True / False for playbook to continue install policy process
     for checkpoint Firewall.
+  playbookInputQuery: null
 - key: policy_package
   value:
     simple: Standard
   required: true
   description: The name of the policy package to be installed.
+  playbookInputQuery: null
 - key: action_manual_handling
   value:
     simple: "True"
@@ -1006,6 +946,5 @@ inputs:
   description: Input True / False. When one of the actions publish/install policy
     stops due to problem or error, the Playbook will stop in favor of further manual
     handling.
+  playbookInputQuery: null
 outputs: []
-tests:
-- No Tests
