@@ -18,5 +18,9 @@
             "mandatory": false,
             "display_name": "Phishing"
         }
-    }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

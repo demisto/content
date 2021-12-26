@@ -1,0 +1,60 @@
+{
+    "data": {
+        "page_number": 1,
+        "results": {
+            "CVE": "",
+            "MD5": "",
+            "SHA256": "",
+            "l1_category_name": "Attack Scenario",
+            "pid": "587400",
+            "threat_name": "CopyCat Tool Defense Evasion Scenario",
+            "vectors": [
+                {
+                    "id": 9,
+                    "name": "Picus_Attacker_3 - Win10-Det1",
+                    "variants": [
+                        {
+                            "destination_port": 0,
+                            "last_time": "2021-11-16T13:44:35.526096Z",
+                            "name": "HTTP",
+                            "result": "Insecure",
+                            "since": "2021-10-07T21:40:53.789504Z",
+                            "source_port": 0
+                        }
+                    ]
+                },
+                {
+                    "id": 2,
+                    "name": "Picus_Attacker_2 - Win10-Det2",
+                    "variants": [
+                        {
+                            "destination_port": 0,
+                            "last_time": "2021-11-15T03:17:07.604664Z",
+                            "name": "HTTP",
+                            "result": "Secure",
+                            "since": "2021-11-15T03:17:07.604664Z",
+                            "source_port": 0
+                        }
+                    ]
+                },
+                {
+                    "id": 3,
+                    "name": "Picus_Attacker_3 - Win10-Det4",
+                    "variants": [
+                        {
+                            "destination_port": 0,
+                            "last_time": "2021-11-04T21:44:29.017492Z",
+                            "name": "HTTP",
+                            "result": "Insecure",
+                            "since": "2021-10-08T12:03:37.165457Z",
+                            "source_port": 0
+                        }
+                    ]
+                }
+            ]
+        },
+        "size": 3,
+        "total_count": 3
+    },
+    "success": true
+}

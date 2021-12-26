@@ -12,5 +12,9 @@
     "tags": [],
     "created": "2020-04-12T11:36:18Z",
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

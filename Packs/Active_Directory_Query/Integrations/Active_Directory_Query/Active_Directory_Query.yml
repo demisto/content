@@ -114,22 +114,24 @@ script:
       description: Sets basic or custom attributes of the user object. For example,
         custom-attributes="{\"notes\":\"a note about the contact\",\"company\":\"company
         name\"}"
-    description: Creates an Active Directory user. This command requires a secure connection (SSL,TLS).
+    description: Creates an Active Directory user. This command requires a secure
+      connection (SSL,TLS).
   - name: ad-search
     arguments:
     - name: filter
       required: true
-      description: 'Enables you to define search criteria in the Query Active Directory using Active Directory syntax. For example, the following query searches for all user objects,
-       except Andy: "(&(objectCategory=person)(objectClass=user)(!(cn=andy)))". NOTE if you have special characters
-       such as "*","(",or "\" the character must be preceded by two backslashes "\\". For example, to use "*",
-       type "\\*". For more information about search filters, see
-       syntax: https://docs.microsoft.com/en-us/windows/win32/adsi/search-filter-syntax'
+      description: 'Enables you to define search criteria in the Query Active Directory
+        using Active Directory syntax. For example, the following query searches for
+        all user objects, except Andy: "(&(objectCategory=person)(objectClass=user)(!(cn=andy)))".
+        NOTE if you have special characters such as "*","(",or "\" the character must
+        be preceded by two backslashes "\\". For example, to use "*", type "\\*".
+        For more information about search filters, see syntax: https://docs.microsoft.com/en-us/windows/win32/adsi/search-filter-syntax'
     - name: base-dn
-      description: Root. For example, DC=domain,DC=com). By default, the Base DN configured for the instance
-        is used.
+      description: Root. For example, DC=domain,DC=com). By default, the Base DN configured
+        for the instance is used.
     - name: attributes
-      description: CSV list of the object attributes to return. For example,
-        "dn,memberOf". To return all object attributes, specify 'ALL'.
+      description: CSV list of the object attributes to return. For example, "dn,memberOf".
+        To return all object attributes, specify 'ALL'.
     - name: size-limit
       description: The maximum number of records to return.
       defaultValue: "50"
@@ -141,7 +143,8 @@ script:
       - "yes"
       - "no"
       defaultValue: "yes"
-      description: Whether to output the search results to the context. Default is yes.
+      description: Whether to output the search results to the context. Default is
+        yes.
     outputs:
     - contextPath: 'ActiveDirectory.Search.dn'
       description: The distinguished names that match the query.
@@ -153,32 +156,32 @@ script:
   - name: ad-add-to-group
     arguments:
     - name: username
-      description: "The username of the user to add to the group. If this argument is not specified,
-        the computer name argument must be specified."
+      description: "The username of the user to add to the group. If this argument\
+        \ is not specified, the computer name argument must be specified."
     - name: computer-name
-      description: The name of the computer to add to the group. If this argument is not specified,
-        the username argument must be specified.
+      description: The name of the computer to add to the group. If this argument
+        is not specified, the username argument must be specified.
     - name: group-cn
       required: true
       description: The name of the group for which to add the user.
     - name: base-dn
-      description: Root. For example, DC=domain,DC=com. By default, the Base DN configured for the instance
-        is used.
+      description: Root. For example, DC=domain,DC=com. By default, the Base DN configured
+        for the instance is used.
     description: Adds an Active Directory user or computer to a group.
   - name: ad-remove-from-group
     arguments:
     - name: username
-      description: "The name of the user to remove from the group. If this argument is not specified,
-        the computer name argument must be specified."
+      description: "The name of the user to remove from the group. If this argument\
+        \ is not specified, the computer name argument must be specified."
     - name: computer-name
-      description: The name of the computer to remove from the group. If this argument is not specified,
-        the username argument must be specified.
+      description: The name of the computer to remove from the group. If this argument
+        is not specified, the username argument must be specified.
     - name: group-cn
       required: true
       description: "The name of the group for which to remove the user."
     - name: base-dn
-      description: Root. For example, DC=domain,DC=com). By default, the Base DN configured for the instance
-        is used.
+      description: Root. For example, DC=domain,DC=com). By default, the Base DN configured
+        for the instance is used.
     description: Removes an Active Directory user or computer from a group.
   - name: ad-update-user
     arguments:
@@ -187,13 +190,14 @@ script:
       description: "The username of the account to update (sAMAccountName)."
     - name: attribute-name
       required: true
-      description: The name of the attribute to modify. For example, sn, displayName, mail, and so on.
+      description: The name of the attribute to modify. For example, sn, displayName,
+        mail, and so on.
     - name: attribute-value
       required: true
       description: "The value of the attribute for which to change."
     - name: base-dn
-      description: Root. For example, DC=domain,DC=com. By default, the Base DN configured for the instance
-        is used.
+      description: Root. For example, DC=domain,DC=com. By default, the Base DN configured
+        for the instance is used.
     description: Updates attributes of an existing Active Directory user.
   - name: ad-delete-user
     arguments:
@@ -239,8 +243,8 @@ script:
       required: true
       description: "The username of the account to disable (sAMAccountName)."
     - name: base-dn
-      description: Root (e.g., DC=domain,DC=com). By default, the Base DN configured for the instance
-        is used.
+      description: Root (e.g., DC=domain,DC=com). By default, the Base DN configured
+        for the instance is used.
     description: Disables an Active Directory user account.
   - name: ad-enable-account
     arguments:
@@ -248,8 +252,8 @@ script:
       required: true
       description: "The username of the account to enable (sAMAccountName)."
     - name: base-dn
-      description: Root. For example, DC=domain,DC=com). By default, the Base DN configured for the instance
-        is used.
+      description: Root. For example, DC=domain,DC=com). By default, the Base DN configured
+        for the instance is used.
     description: Enables a previously disabled Active Directory account.
   - name: ad-unlock-account
     arguments:
@@ -257,8 +261,8 @@ script:
       required: true
       description: "The username of the account to unlock (sAMAccountName)."
     - name: base-dn
-      description: Root. For example, DC=domain,DC=com. By default, the Base DN configured for the instance
-        is used.
+      description: Root. For example, DC=domain,DC=com. By default, the Base DN configured
+        for the instance is used.
     description: Unlocks a previously locked Active Directory user account.
   - name: ad-set-new-password
     arguments:
@@ -269,17 +273,18 @@ script:
       required: true
       description: "The password to set for the user."
     - name: base-dn
-      description: Root. For example, DC=domain,DC=com. Base DN configured for the instance
-        is used as default.
-    description: Sets a new password for an Active Directory user. This command requires a secure connection (SSL,TLS).
+      description: Root. For example, DC=domain,DC=com. Base DN configured for the
+        instance is used as default.
+    description: Sets a new password for an Active Directory user. This command requires
+      a secure connection (SSL,TLS).
   - name: ad-modify-computer-ou
     arguments:
     - name: computer-name
       required: true
       description: "The name of the computer to modify."
     - name: full-superior-dn
-      description: Superior DN. For example, OU=computers,DC=domain,DC=com (the specified domain
-        must be the same as the current computer domain).
+      description: Superior DN. For example, OU=computers,DC=domain,DC=com (the specified
+        domain must be the same as the current computer domain).
     description: Modifies the computer organizational unit within a domain.
   - name: ad-get-user
     arguments:
@@ -293,8 +298,8 @@ script:
     - name: custom-field-type
       description: Queries users by custom field type.
     - name: custom-field-data
-      description: Queries users by custom field data (relevant only if the `custom-field-type` argument
-        is provided).
+      description: Queries users by custom field data (relevant only if the `custom-field-type`
+        argument is provided).
     - name: username
       description: Queries users by the samAccountName attribute.
     - name: sAMAccountName
@@ -309,7 +314,8 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Whether to include verbose translation for UserAccountControl flags. Default is false.
+      description: Whether to include verbose translation for UserAccountControl flags.
+        Default is false.
       defaultValue: "false"
     outputs:
     - contextPath: 'ActiveDirectory.Users.dn'
@@ -355,8 +361,8 @@ script:
       description: The email address of the user.
       type: string
     description: Retrieves detailed information about a user account. The user can
-      be specified by name, email address, or as an Active Directory Distinguished Name (DN).
-      If no filter is specified, all users are returned.
+      be specified by name, email address, or as an Active Directory Distinguished
+      Name (DN). If no filter is specified, all users are returned.
   - name: ad-get-computer
     arguments:
     - name: dn
@@ -366,8 +372,8 @@ script:
     - name: attributes
       description: Adds AD attributes of the resulting objects to the default attributes.
     - name: custom-field-data
-      description: Search computers by custom field data (relevant only if the `customFieldType` argument
-        is provided).
+      description: Search computers by custom field data (relevant only if the `customFieldType`
+        argument is provided).
     - name: custom-field-type
       description: Search the computer by custom field type.
     outputs:
@@ -384,8 +390,8 @@ script:
     - contextPath: 'Endpoint.Groups'
       description: Groups for which the computer is listed as a member.
     description: 'Retrieves detailed information about a computer account. The computer
-      can be specified by name, email address, or as an Active Directory Distinguished Name
-      (DN). If no filters are provided, all computers are returned.'
+      can be specified by name, email address, or as an Active Directory Distinguished
+      Name (DN). If no filters are provided, all computers are returned.'
   - name: ad-get-group-members
     arguments:
     - name: group-dn
@@ -398,11 +404,12 @@ script:
       - person
       - computer
       - group
-      description: 'The type of members to search. Can be: "Person", or "computer". Default is person.'
+      description: 'The type of members to search. Can be: "Person", or "computer".
+        Default is person.'
       defaultValue: person
     - name: attributes
-      description: CSV list of attributes to include in the results, in addition to the
-        default attributes.
+      description: CSV list of attributes to include in the results, in addition to
+        the default attributes.
     - default: false
       defaultValue: '180'
       description: Time limit (in seconds) for the search to run.
@@ -417,8 +424,8 @@ script:
       isArray: false
       name: disable-nested-search
       predefined:
-        - 'false'
-        - 'true'
+      - 'false'
+      - 'true'
       required: false
       secret: false
     - name: sAMAccountName
@@ -451,9 +458,11 @@ script:
       - distribution
     - name: dn
       required: true
-      description: The Full Distinguished Name (DN) of the group. Use double quotes ("") rather than single quotes ('') when initializing this command.
+      description: The Full Distinguished Name (DN) of the group. Use double quotes
+        ("") rather than single quotes ('') when initializing this command.
     - name: members
-      description: The Full DN Of users or groups that will be members of the newly created group.
+      description: The Full DN Of users or groups that will be members of the newly
+        created group.
       isArray: true
     description: Creates a new security or distribution Active Directory group.
     execution: true
@@ -465,23 +474,25 @@ script:
     description: Deletes an existing Active Directory security or distribution group.
     execution: true
   - arguments:
-      - default: false
-        isArray: false
-        name: user-profile
-        required: true
-        secret: false
-        description: A User Profile indicator that contains user information, such as name, email address, etc.
-      - auto: PREDEFINED
-        default: false
-        defaultValue: 'true'
-        description: When set to true, after the command execution the status of the user in the 3rd-party integration will be active.
-        isArray: false
-        name: allow-enable
-        predefined:
-          - 'true'
-          - 'false'
-        required: false
-        secret: false
+    - default: false
+      isArray: false
+      name: user-profile
+      required: true
+      secret: false
+      description: A User Profile indicator that contains user information, such as
+        name, email address, etc.
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: When set to true, after the command execution the status of the
+        user in the 3rd-party integration will be active.
+      isArray: false
+      name: allow-enable
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
     deprecated: false
     description: Creates an Active Directory user. This command requires a secure
       connection (SSL,TLS).
@@ -498,7 +509,8 @@ script:
       description: Name of the integration.
       type: String
     - contextPath: IAM.Vendor.details
-      description: Gives the user information if the API was successful, otherwise error information.
+      description: Gives the user information if the API was successful, otherwise
+        error information.
       type: Unknown
     - contextPath: IAM.Vendor.email
       description: The employee's email address.
@@ -525,12 +537,13 @@ script:
       description: The command name.
       type: String
   - arguments:
-      - default: false
-        isArray: false
-        name: user-profile
-        required: true
-        secret: false
-        description: A User Profile indicator that contains user information, such as name, email address, etc.
+    - default: false
+      isArray: false
+      name: user-profile
+      required: true
+      secret: false
+      description: A User Profile indicator that contains user information, such as
+        name, email address, etc.
     deprecated: false
     execution: false
     description: "Retrieves a single user resource."
@@ -546,7 +559,8 @@ script:
       description: Name of the integration.
       type: String
     - contextPath: IAM.Vendor.details
-      description: Gives the user information if the API was successful, otherwise error information.
+      description: Gives the user information if the API was successful, otherwise
+        error information.
       type: Unknown
     - contextPath: IAM.Vendor.email
       description: The employee's email address.
@@ -573,27 +587,29 @@ script:
       description: The command name.
       type: String
   - arguments:
-      - default: false
-        isArray: false
-        name: user-profile
-        required: true
-        secret: false
-        description: A User Profile indicator that contains user information, such as name, email address, etc.
-      - auto: PREDEFINED
-        default: false
-        defaultValue: 'true'
-        description: When set to true, after the command execution the status of the user in the 3rd-party
-          integration will be active.
-        isArray: false
-        name: allow-enable
-        predefined:
-          - 'true'
-          - 'false'
-        required: false
-        secret: false
+    - default: false
+      isArray: false
+      name: user-profile
+      required: true
+      secret: false
+      description: A User Profile indicator that contains user information, such as
+        name, email address, etc.
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: When set to true, after the command execution the status of the
+        user in the 3rd-party integration will be active.
+      isArray: false
+      name: allow-enable
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
     deprecated: false
     execution: false
-    description: 'Updates an existing user with the data in the User Profile indicator that is passed in the user-profile argument.'
+    description: 'Updates an existing user with the data in the User Profile indicator
+      that is passed in the user-profile argument.'
     name: iam-update-user
     outputs:
     - contextPath: IAM.UserProfile
@@ -606,7 +622,8 @@ script:
       description: Name of the Integration
       type: String
     - contextPath: IAM.Vendor.details
-      description: Gives the user information if the API was successful, otherwise error information.
+      description: Gives the user information if the API was successful, otherwise
+        error information.
       type: Unknown
     - contextPath: IAM.Vendor.email
       description: The employee's email address.
@@ -633,12 +650,13 @@ script:
       description: The command name.
       type: String
   - arguments:
-      - default: false
-        isArray: false
-        name: user-profile
-        required: true
-        secret: false
-        description: "A User Profile indicator that contains user information, such as name, email address, etc."
+    - default: false
+      isArray: false
+      name: user-profile
+      required: true
+      secret: false
+      description: "A User Profile indicator that contains user information, such\
+        \ as name, email address, etc."
     deprecated: false
     description: Disables a user.
     execution: true
@@ -654,7 +672,8 @@ script:
       description: Name of the Integration
       type: String
     - contextPath: IAM.Vendor.details
-      description: Gives the user information if the API was successful, otherwise error information.
+      description: Gives the user information if the API was successful, otherwise
+        error information.
       type: Unknown
     - contextPath: IAM.Vendor.email
       description: The employee's email address.
@@ -681,14 +700,29 @@ script:
       description: The command name.
       type: String
   - deprecated: false
-    description: Retrieves a User Profile schema which holds all of the user fields within the application.
-      Used for outgoing-mapping through the Get Schema option.
+    description: Retrieves a User Profile schema which holds all of the user fields
+      within the application. Used for outgoing-mapping through the Get Schema option.
     execution: false
     name: get-mapping-fields
+  - arguments:
+    - description: The group name of the group to update (sAMAccountName).
+      name: groupname
+    - description: The name of the attribute to modify. For example, Description,
+        displayName and so on.
+      name: attributename
+      required: true
+    - description: The value of the attribute for which to change.
+      name: attributevalue
+      required: true
+    - description: Root. For example, DC=domain,DC=com. By default, the Base DN configured
+        for the instance is used.
+      name: basedn
+    description: Updates attributes of an existing Active Directory group.
+    name: ad-update-group
   dockerimage: demisto/ldap:1.0.0.25149
   runonce: false
   ismappable: true
   isremotesyncout: true
 fromversion: 5.0.0
 tests:
-  - Active Directory Test
+- Active Directory Test
