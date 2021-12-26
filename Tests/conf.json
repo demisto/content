@@ -4808,7 +4808,7 @@
             "fromversion": "5.5.0"
         },
         {
-          "playbookID": "AzureRiskyUsers",
+            "playbookID": "AzureRiskyUsers",
             "fromversion": "6.0.0",
             "integrations": "AzureRiskyUsers"
         },
@@ -4934,7 +4934,8 @@
         "Mimecast test": "Issue 26906",
         "RedLockTest": "Issue 24600",
         "AutoFocus V2 test": "Issue 26464",
-        "SplunkPy_KV_commands_default_handler": "Issue 41419"
+        "SplunkPy_KV_commands_default_handler": "Issue 41419",
+        "LogRhythm REST test": "Issue 40654"
     },
     "skipped_integrations": {
         
