@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import demistomock as demisto
-from ExtractDomainAndFQDNFromUrlAndEmail import extract_fqdn_or_domain, main
+from ExtractDomainAndFQDNFromUrlAndEmail import extract_fqdn, main
 import pytest
 
 
@@ -27,7 +27,7 @@ import pytest
      '%3C', 'twitter.com'),  # noqa: E501 disable-secrets-detection
 ])  # noqa: E124
 def test_extract_fqdn_or_domain(input, fqdn):
-    extracted_fqdn = extract_fqdn_or_domain(input)
+    extracted_fqdn = extract_fqdn(input)
     # extracted_domain = extract_fqdn_or_domain(input, is_domain=True)
 
     assert extracted_fqdn == fqdn
