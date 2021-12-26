@@ -50,5 +50,9 @@
         "Zoom",
         "Slack",
         "MicrosoftTeams"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

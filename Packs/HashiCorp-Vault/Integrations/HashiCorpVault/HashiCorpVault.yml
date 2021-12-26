@@ -271,6 +271,9 @@ script:
     - name: path
       required: true
       description: The engine path, e.g., "secret/"
+    - name: folder
+      description: Specific folder to fetch secrets from, e.g., "secret-folder/".
+       (Supported only for engine type KV2)
     - name: type
       required: true
       description: The engine type, e.g., "KV"

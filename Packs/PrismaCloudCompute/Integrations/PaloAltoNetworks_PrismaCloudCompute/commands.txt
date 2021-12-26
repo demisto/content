@@ -1,0 +1,8 @@
+!prisma-cloud-compute-profile-host-list hostname=*249*
+!prisma-cloud-compute-profile-container-list id=*5f2561fab84*
+!prisma-cloud-compute-profile-container-hosts-list id=container123
+!prisma-cloud-compute-profile-container-forensic-list id=container123 hostname=host123
+!prisma-cloud-compute-host-forensic-list id=hostname123 limit=5
+!prisma-cloud-compute-console-version-info
+!prisma-cloud-compute-custom-feeds-ip-list
+!prisma-cloud-compute-custom-feeds-ip-add IP=1.1.1.1,2.2.2.2

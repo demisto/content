@@ -168,6 +168,24 @@ script:
     - contextPath: Ticket.Status
       description: The status of the ticket.
       type: Unknown
+    - contextPath: Ticket.Priority
+      description: The priority of the ticket.
+      type: String
+    - contextPath: Ticket.ProjectName
+      description: The ticket project name.
+      type: String
+    - contextPath: Ticket.DueDate
+      description: The due date.
+      type: Date
+    - contextPath: Ticket.Created
+      description: The time the ticket was created.
+      type: Date
+    - contextPath: Ticket.LastSeen
+      description: The last time the ticket was viewed.
+      type: Date
+    - contextPath: Ticket.LastUpdate
+      description: The last time the ticket was updated.
+      type: Date
   - arguments:
     - default: false
       description: The user's attribute value. Can be Username or Email address. When
@@ -271,6 +289,24 @@ script:
       description: The SHA1 hash of the file (Jira attachments are saved as files
         in Cortex XSOAR).
       type: Unknown
+    - contextPath: Ticket.Priority
+      description: The priority of the ticket.
+      type: String
+    - contextPath: Ticket.ProjectName
+      description: The ticket project name.
+      type: String
+    - contextPath: Ticket.DueDate
+      description: The due date.
+      type: Date
+    - contextPath: Ticket.Created
+      description: The time the ticket was created.
+      type: Date
+    - contextPath: Ticket.LastSeen
+      description: The last time the ticket was viewed.
+      type: Date
+    - contextPath: Ticket.LastUpdate
+      description: The last time the ticket was updated.
+      type: Date
   - arguments:
     - default: false
       description: The issue object (in JSON format).

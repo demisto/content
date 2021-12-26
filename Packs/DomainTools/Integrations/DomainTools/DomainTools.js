@@ -300,6 +300,10 @@ var callWhoisHistory = function(url, domain){
 }
 
 var url = params.server.replace(/[\/]+$/, '');
+params.key = params.key || params.credentials.password
+if (!params.key) {
+    throw 'API key must be provided.'
+}
 switch (command) {
     case 'test-module':
             var res = sendRequest(url + '/v1/demisto.com/whois/parsed/'+encodeToURLQuery({'api_username':params.username,'api_key':params.key}));
