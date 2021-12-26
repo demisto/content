@@ -152,35 +152,50 @@ Sends an email using Gmail.
 > |Type|ID|To|From|Subject|Body|Labels|ThreadId|
 > |---|---|---|---|---|---|---|---|
 > | Gmail | 16f662789d3a2972 | test@demistodev.com | example@demisto.com | this is the subject | this is the body | SENT |  16f662789d3a2972 |
-### 2. Get an authentication link
----
-Returns a link to use to authenticate to Gmail. It starts the OAuth2 process. 
-##### Base Command
+
+### gmail-auth-link
+***
+Starts the OAuth2 process. Get a link to use to authenticate to Gmail.
+
+
+#### Base Command
 `gmail-auth-link`
-##### Input
+
+#### Input
 There is no input for this command.
-##### Context Output
+
+#### Context Output
 There is no context output for this command.
-##### Command Example
+
+#### Command Example
 ```!gmail-auth-link```
-##### Human Readable Output
-> ## Gmail Auth Link
-> Please follow the following **link**.
-> After Completing the authentication process, copy the received code
->to the **Auth Code** configuration parameter of the integration instance.
-> Save the integration instance and then run *!gmail-auth-test* to test that
-> the authentication is properly set.
+
+#### Human Readable Output
+## Gmail Auth Link
+Please follow the following **link**.
+After Completing the authentication process, copy the received code
+to the **Auth Code** configuration parameter of the integration instance.
+Save the integration instance and then run *!gmail-auth-test* to test that
+the authentication is properly set.
     
-### 3. Test authorization
----
-Tests that Gmail auth is properly configured. Use this command after completing the OAuth2 authentication process.
-##### Base Command
+
+### gmail-auth-test
+***
+Tests that Gmail auth is configured properly. Use this command after completing the OAuth2 authentication process.
+
+
+#### Base Command
 `gmail-auth-test`
-##### Input
+
+#### Input
 There is no input for this command.
-##### Context Output
+
+#### Context Output
 There is no context output for this command.
-##### Command Example
+
+#### Command Example
 ```!gmail-auth-test```
-##### Human Readable Output
+
+#### Human Readable Output
 Authentication test completed successfully.
+

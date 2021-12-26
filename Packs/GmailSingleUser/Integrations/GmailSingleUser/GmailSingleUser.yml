@@ -48,7 +48,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-
 description: Gmail API using OAuth 2.0.
 display: Gmail Single User (Beta)
 name: Gmail Single User
