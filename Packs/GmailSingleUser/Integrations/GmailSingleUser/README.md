@@ -114,11 +114,11 @@ Sends an email using Gmail.
 | Gmail.SentMail.Labels | String | List of IDs of labels applied to this message. | 
 | Gmail.SentMail.ThreadId | String | The ID of the thread in which the message belongs. | 
 | Gmail.SentMail.To | String | The recipient of the email. | 
-| Gmail.SentMail.From | Unknown | The sender of the email. | 
+| Gmail.SentMail.From | String | The sender of the email. | 
 | Gmail.SentMail.Cc | String | Additional recipient email address (CC). | 
 | Gmail.SentMail.Bcc | String | Additional recipient email address (BCC). | 
 | Gmail.SentMail.Subject | String | The subject of the email. | 
-| Gmail.SentMail.Body | Unknown | The plain-text version of the email. | 
+| Gmail.SentMail.Body | String | The plain-text version of the email. | 
 | Gmail.SentMail.MailBox | String | The mailbox from which the mail was sent. | 
 | Gmail.SentMail.BodyHTML | String | The HTML version of the email. |
 
