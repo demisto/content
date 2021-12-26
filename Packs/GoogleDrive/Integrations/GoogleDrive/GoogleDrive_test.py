@@ -931,8 +931,8 @@ class TestFilePermissionMethods:
         mocker.patch('GoogleDrive.handle_response_file_single')
         mocker.patch('GoogleDrive.assign_params', return_value={})
         mocker.patch.object(demisto, 'getFilePath', return_value={'id': 'test_id',
-                                                          'path': 'test_data/drive_changes_hr.txt',
-                                                          'name': 'drive_changes_hr.txt'})
+                                                                  'path': 'test_data/drive_changes_hr.txt',
+                                                                  'name': 'drive_changes_hr.txt'})
 
         args = {
             'parent': 'test_parent',
