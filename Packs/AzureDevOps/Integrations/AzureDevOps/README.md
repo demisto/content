@@ -172,9 +172,9 @@ Run a pipeline. A DevOps pipeline is a set of automated processes and tools that
 | --- | --- | --- |
 | AzureDevOps.PipelineRun.project | String | The name of the project. | 
 | AzureDevOps.PipelineRun.pipeline.id | Number | The ID of the pipeline. | 
-| AzureDevOps.PipelineRun.pipeline.name | String | The pipeline repository name | 
+| AzureDevOps.PipelineRun.pipeline.name | String | The pipeline repository name. | 
 | AzureDevOps.PipelineRun.state | String | The run state. | 
-| AzureDevOps.PipelineRun.createdDate | Date | 'The run creation date, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: '2022-01-01T00:00:00Z'.'| 
+| AzureDevOps.PipelineRun.createdDate | Date | The run creation date, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z". | 
 | AzureDevOps.PipelineRun.run_id | Number | The ID of the run. | 
 | AzureDevOps.PipelineRun.name | String | The name of the run. | 
 | AzureDevOps.PipelineRun.result | String | The result of the pipeline running. If the run is in progress, the default value is 'unknown'. | 
@@ -254,8 +254,8 @@ Add a user, assign the user a license and extensions, and make the user a member
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user_email | The email address of the user to add to the organization. | Required | 
-| account_license_type | The type of account license. More information can be found here: https://docs.microsoft.com/en-us/rest/api/azure/devops/memberentitlementmanagement/user-entitlements/add?view=azure-devops-rest-6.1#accountlicensetype . Possible values are: express, stakeholder, advanced, earlyAdopter, professional. | Required | 
-| group_type | The project group type. More information can be found here: https://docs.microsoft.com/en-us/rest/api/azure/devops/memberentitlementmanagement/user-entitlements/add?view=azure-devops-rest-6.1#grouptype . Possible values are: projectReader, projectContributor, projectAdministrator, projectStakeholder. | Required | 
+| account_license_type | The type of account license. Possible values: "express", "stakeholder", "advanced", "earlyAdopter", and "professional". More information can be found here: https://docs.microsoft.com/en-us/rest/api/azure/devops/memberentitlementmanagement/user-entitlements/add?view=azure-devops-rest-6.1#accountlicensetype. | Required | 
+| group_type | The project group type. Possible values: "projectReader", "projectContributor", "projectAdministrator", and "projectStakeholder". More information can be found here: https://docs.microsoft.com/en-us/rest/api/azure/devops/memberentitlementmanagement/user-entitlements/add?view=azure-devops-rest-6.1#grouptype. | Required | 
 | project_id | The ID of the project. | Required | 
 
 
@@ -393,7 +393,7 @@ Create a new pull request.
 | AzureDevOps.PullRequest.createdBy.displayName | String | The display name of the pull request creator. | 
 | AzureDevOps.PullRequest.createdBy.id | String | The ID of the pull request creator. | 
 | AzureDevOps.PullRequest.createdBy.uniqueName | String | The unique name of the pull request creator. | 
-| AzureDevOps.PullRequest.creationDate | Date | 'The creation date of the pull request, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: '2022-01-01T00:00:00Z'.'| 
+| AzureDevOps.PullRequest.creationDate | Date | The creation date of the pull request, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z". | 
 | AzureDevOps.PullRequest.title | String | The title of the pull request | 
 | AzureDevOps.PullRequest.description | String | The description of the pull request. | 
 | AzureDevOps.PullRequest.sourceRefName | String | The source branch of the pull request. | 
@@ -549,7 +549,7 @@ Update a pull request. At least one of the following arguments must be provided:
 | pull_request_id | The ID of the pull request to update. | Required | 
 | title | The updated pull-request title. | Optional | 
 | description | The updated pull-request description. | Optional | 
-| status | The updated pull-request status. Possible values are: abandoned, completed, active. | Optional | 
+| status | The updated pull-request status. Possible values: "abandoned", "completed", and "active". Possible values are: abandoned, completed, active. | Optional | 
 
 
 #### Context Output
@@ -566,7 +566,7 @@ Update a pull request. At least one of the following arguments must be provided:
 | AzureDevOps.PullRequest.createdBy.displayName | String | The display name of the pull request creator. | 
 | AzureDevOps.PullRequest.createdBy.id | String | The ID of the pull request creator. | 
 | AzureDevOps.PullRequest.createdBy.uniqueName | String | The unique name of the pull request creator. | 
-| AzureDevOps.PullRequest.creationDate | Date | 'The creation date of the pull request, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: '2022-01-01T00:00:00Z'.'| 
+| AzureDevOps.PullRequest.creationDate | Date | The creation date of the pull request, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z". | 
 | AzureDevOps.PullRequest.title | String | The title of the pull request | 
 | AzureDevOps.PullRequest.description | String | The description of the pull request. | 
 | AzureDevOps.PullRequest.sourceRefName | String | The source branch of the pull request. | 
@@ -750,7 +750,7 @@ Retrieve pull requests in repository.
 | AzureDevOps.PullRequest.createdBy.displayName | String | The display name of the pull request creator. | 
 | AzureDevOps.PullRequest.createdBy.id | String | The ID of the pull request creator. | 
 | AzureDevOps.PullRequest.createdBy.uniqueName | String | The unique name of the pull request creator. | 
-| AzureDevOps.PullRequest.creationDate | Date | 'The creation date of the pull request, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: '2022-01-01T00:00:00Z'.'| 
+| AzureDevOps.PullRequest.creationDate | Date | The creation date of the pull request, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z". | 
 | AzureDevOps.PullRequest.title | String | The title of the pull request | 
 | AzureDevOps.PullRequest.description | String | The description of the pull request. | 
 | AzureDevOps.PullRequest.sourceRefName | String | The source branch of the pull request. | 
@@ -951,7 +951,7 @@ Retrieve all projects in the organization that the authenticated user has access
 | AzureDevOps.Project.state | String | The state of the project. | 
 | AzureDevOps.Project.revision | Number | The revision number of the project. | 
 | AzureDevOps.Project.visibility | String | Indicates whom the project is visible to. | 
-| AzureDevOps.Project.lastUpdateTime | Date | 'The project last update time, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: '2022-01-01T00:00:00Z'.'| 
+| AzureDevOps.Project.lastUpdateTime | Date | The project last update time, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z". | 
 | AzureDevOps.Project.id | String | The ID of the Project. | 
 
 
@@ -1068,7 +1068,7 @@ Query users that were added to organization projects.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | Users or organization query prefix. For example, if you want to retrieve information about the user 'Tom', you can enter the value of this argument as 'Tom'. | Required | 
-| page | The page number of the results to retrieve. Minimum value is 1. Possible values are: . Default is 1. | Optional | 
+| page | The page number of the results to retrieve. Minimum value is 1. Default is 1. | Optional | 
 | limit | The number of results to retrieve. Minimum value is 1. Default is 50. | Optional | 
 
 
@@ -1160,7 +1160,7 @@ Retrieve pull-request.
 | AzureDevOps.PullRequest.createdBy.displayName | String | The display name of the pull request creator. | 
 | AzureDevOps.PullRequest.createdBy.id | String | The ID of the pull request creator. | 
 | AzureDevOps.PullRequest.createdBy.uniqueName | String | The unique name of the pull request creator. | 
-| AzureDevOps.PullRequest.creationDate | Date | 'The creation date of the pull request, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: '2022-01-01T00:00:00Z'.'| 
+| AzureDevOps.PullRequest.creationDate | Date | The creation date of the pull request, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z". | 
 | AzureDevOps.PullRequest.title | String | The title of the pull request | 
 | AzureDevOps.PullRequest.description | String | The description of the pull request. | 
 | AzureDevOps.PullRequest.sourceRefName | String | The source branch of the pull request. | 
@@ -1168,9 +1168,9 @@ Retrieve pull-request.
 | AzureDevOps.PullRequest.mergeStatus | String | The current status of the pull request merge. | 
 | AzureDevOps.PullRequest.isDraft | Boolean | Whether the pull request is a draft / WIP. | 
 | AzureDevOps.PullRequest.lastMergeSourceCommit.commitId | String | The ID of the commit at the head of the source branch at the time of the last pull request merge. | 
-| AzureDevOps.PullRequest.lastMergeSourceCommit.url | String | The REST URL for this resource. | 
+| AzureDevOps.PullRequest.lastMergeSourceCommit.url | String | The REST URL for the merge source commit. | 
 | AzureDevOps.PullRequest.lastMergeTargetCommit.commitId | String | The ID of the commit at the head of the target branch at the time of the last pull request merge. | 
-| AzureDevOps.PullRequest.lastMergeTargetCommit.url | String | The REST URL for this resource. | 
+| AzureDevOps.PullRequest.lastMergeTargetCommit.url | String | The REST URL for the merge target commit. | 
 
 
 #### Command Example
@@ -1339,9 +1339,9 @@ Retrieve information for a pipeline run.
 | --- | --- | --- |
 | AzureDevOps.PipelineRun.project | String | The name of the project. | 
 | AzureDevOps.PipelineRun.pipeline.id | Number | The ID of the pipeline. | 
-| AzureDevOps.PipelineRun.pipeline.name | String | The pipeline repository name. | 
+| AzureDevOps.PipelineRun.pipeline.name | String | Pipeline repository name. | 
 | AzureDevOps.PipelineRun.state | String | The run state. | 
-| AzureDevOps.PipelineRun.createdDate | Date | 'The run creation date, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: '2022-01-01T00:00:00Z'.'| 
+| AzureDevOps.PipelineRun.createdDate | Date | The run creation date, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z". | 
 | AzureDevOps.PipelineRun.run_id | Number | The ID of the run. | 
 | AzureDevOps.PipelineRun.name | String | The name of the run. | 
 | AzureDevOps.PipelineRun.result | String | The result of the pipeline running. If the run is in progress, the default value is 'unknown'. | 
@@ -1421,7 +1421,7 @@ Retrieve pipeline runs list. The command retrieves up to the top 10000 runs for 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project | The name of the organizaion project. | Required | 
+| project | The name of the organization project. | Required | 
 | page | The page number of the results to retrieve. Minimum value is 1. Default is 1. | Optional | 
 | limit | The number of results to retrieve. Minimum value is 1. Default is 50. | Optional | 
 | pipeline_id | The ID of the pipeline which the runs belongs to. | Required | 
@@ -1433,9 +1433,9 @@ Retrieve pipeline runs list. The command retrieves up to the top 10000 runs for 
 | --- | --- | --- |
 | AzureDevOps.PipelineRun.project | String | The name of the project. | 
 | AzureDevOps.PipelineRun.pipeline.id | Number | The ID of the pipeline. | 
-| AzureDevOps.PipelineRun.pipeline.name | String | The pipeline repository name | 
+| AzureDevOps.PipelineRun.pipeline.name | String | Pipeline repository name | 
 | AzureDevOps.PipelineRun.state | String | The run state. | 
-| AzureDevOps.PipelineRun.createdDate | Date | 'The run creation date, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: '2022-01-01T00:00:00Z'.'| 
+| AzureDevOps.PipelineRun.createdDate | Date | The run creation date, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z". | 
 | AzureDevOps.PipelineRun.run_id | Number | The ID of the run. | 
 | AzureDevOps.PipelineRun.name | String | The name of the run. | 
 | AzureDevOps.PipelineRun.result | String | The result of the pipeline running. If the run is in progress, the default value is 'unknown'. | 
@@ -1504,7 +1504,7 @@ Retrieve project pipelines list.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project | The name of the organizaion project. | Required | 
+| project | The name of the organization project. | Required | 
 | page | The page number of the results to retrieve. Minimum value is 1. Default is 1. | Optional | 
 | limit | The number of results to retrieve. Minimum value is 1. Default is 50. | Optional | 
 
@@ -1569,7 +1569,7 @@ Retrieve repository branches list.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project | The name of the organizaion project. | Required | 
+| project | The name of the organization project. | Required | 
 | repository | The name of the project repository. | Required | 
 | page | The page number of the results to retrieve. Minimum value is 1. Default is 1. | Optional | 
 | limit | The number of results to retrieve. Minimum value is 1. Default is 50. | Optional | 
