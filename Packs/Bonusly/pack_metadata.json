@@ -18,5 +18,9 @@
     "deprecated": false,
     "useCases": [],
     "keywords": [],
-    "dependencies": {}
+    "dependencies": {},
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }
