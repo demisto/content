@@ -4,7 +4,7 @@
     "tests": [
         {
             "integrations": "VMware Carbon Black EDR v2",
-            "playbookID": "Carbon Black Edr - Test",
+            "playbookID": "pb_test",
             "external_playbook_config": {"playbookID": "Account Enrichment - Generic v2.1",
                 "input1": "1"}
         },

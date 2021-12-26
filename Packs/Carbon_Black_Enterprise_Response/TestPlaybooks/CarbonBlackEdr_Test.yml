@@ -1,8 +1,8 @@
-id: Carbon Black Edr - Test
+id: pb_test
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
-name: Carbon Black Edr - Test
+name: pb_test
 starttaskid: "0"
 tasks:
   "0":
