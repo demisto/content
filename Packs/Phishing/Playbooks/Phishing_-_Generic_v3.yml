@@ -2562,7 +2562,7 @@ inputs:
   playbookInputQuery:
 - key: AuthenticateEmail
   value:
-    simple: "False"
+    simple: "True"
   required: false
   description: Whether the authenticity of the email should be verified, using SPF,
     DKIM and DMARC.
