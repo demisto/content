@@ -19,33 +19,8 @@ DATE_ARGUMENTS = {'launched_after_datetime': '%Y-%m-%d', 'launched_before_dateti
                   'last_modified_before': '%Y-%m-%d', 'last_modified_by_user_after': '%Y-%m-%d',
                   'last_modified_by_user_before': '%Y-%m-%d', 'last_modified_by_service_after': '%Y-%m-%d',
                   'last_modified_by_service_before': '%Y-%m-%d', 'published_after': '%Y-%m-%d',
-                  'published_before': '%Y-%m-%d', 'start_date': '%m/%d/%Y'
+                  'published_before': '%Y-%m-%d', 'start_date': '%m/%d/%Y',
                   }
-
-
-# Markdown Builders
-def build_host_detection_table_to_markdown(parsed_outputs: List[Any]) -> str:
-    """
-    Builds the readable output for host list detection.
-    Args:
-        parsed_outputs (List[Any]): Host detection outputs.
-
-    Returns:
-        (str): Readable output.
-    """
-    readable_outputs = []
-    for output in parsed_outputs:
-        readable_output = {
-            'ID': output.get('ID'),
-            'IP': output.get('IP'),
-            'DNS_DATA': {k: v for k, v in output.get('DNS_DATA', {}).items() if v is not None}
-        }
-        if detections := output.get('DETECTION_LIST', {}).get('DETECTION', []):
-            readable_output['DETECTIONS'] = [{'QID': detection.get('QID'), 'RESULTS': detection.get('RESULTS')} for
-                                             detection in detections]
-        readable_outputs.append(readable_output)
-    return tableToMarkdown('Host Detection List', readable_outputs, removeNull=True)
-
 
 # Data for parsing and creating output
 COMMANDS_PARSE_AND_OUTPUT_DATA: Dict[str, Dict[Any, Any]] = {
@@ -158,18 +133,18 @@ COMMANDS_PARSE_AND_OUTPUT_DATA: Dict[str, Dict[Any, Any]] = {
     'qualys-report-cancel': {
         'table_name': 'Canceled report',
         'json_path': ["SIMPLE_RETURN", "RESPONSE"],
-        'collection_name': 'ITEM_LIST'
+        'collection_name': 'ITEM_LIST',
     },
     'qualys-report-delete': {
         'table_name': 'Deleted report',
         'json_path': ["SIMPLE_RETURN", "RESPONSE"],
         'table_headers': ['Deleted', 'ID'],
-        'collection_name': 'ITEM_LIST'
+        'collection_name': 'ITEM_LIST',
     },
     'qualys-scorecard-launch': {
         'table_name': 'New scorecard launched',
         'json_path': ["SIMPLE_RETURN", "RESPONSE"],
-        'collection_name': 'ITEM_LIST'
+        'collection_name': 'ITEM_LIST',
     },
     'qualys-vm-scan-launch': {
         'collection_name': 'ITEM_LIST',
@@ -206,42 +181,42 @@ COMMANDS_PARSE_AND_OUTPUT_DATA: Dict[str, Dict[Any, Any]] = {
     'qualys-scheduled-report-launch': {
         'table_name': 'Launch Scheduled Report',
         'json_path': ["SIMPLE_RETURN", "RESPONSE"],
-        'collection_name': 'ITEM_LIST'
+        'collection_name': 'ITEM_LIST',
     },
     'qualys-report-launch-map': {
         'table_name': ' New report launched',
         'json_path': ["SIMPLE_RETURN", "RESPONSE"],
-        'collection_name': 'ITEM_LIST'
+        'collection_name': 'ITEM_LIST',
     },
     'qualys-report-launch-scan-based-findings': {
         'table_name': 'Scan Based Findings Report Launch',
         'json_path': ["SIMPLE_RETURN", "RESPONSE"],
-        'collection_name': 'ITEM_LIST'
+        'collection_name': 'ITEM_LIST',
     },
     'qualys-report-launch-host-based-findings': {
         'table_name': 'Host Based Findings Report Launch',
         'json_path': ["SIMPLE_RETURN", "RESPONSE"],
-        'collection_name': 'ITEM_LIST'
+        'collection_name': 'ITEM_LIST',
     },
     'qualys-report-launch-patch': {
         'table_name': 'Patch Report Launch',
         'json_path': ["SIMPLE_RETURN", "RESPONSE"],
-        'collection_name': 'ITEM_LIST'
+        'collection_name': 'ITEM_LIST',
     },
     'qualys-report-launch-remediation': {
         'table_name': 'Remediation Report Launch',
         'json_path': ["SIMPLE_RETURN", "RESPONSE"],
-        'collection_name': 'ITEM_LIST'
+        'collection_name': 'ITEM_LIST',
     },
     'qualys-report-launch-compliance': {
         'table_name': 'Compliance Report Launch',
         'json_path': ["SIMPLE_RETURN", "RESPONSE"],
-        'collection_name': 'ITEM_LIST'
+        'collection_name': 'ITEM_LIST',
     },
     'qualys-report-launch-compliance-policy': {
         'table_name': 'Policy Report Launch',
         'json_path': ["SIMPLE_RETURN", "RESPONSE"],
-        'collection_name': 'ITEM_LIST'
+        'collection_name': 'ITEM_LIST',
     },
     'qualys-virtual-host-manage': {
         'table_name': '',
@@ -250,7 +225,6 @@ COMMANDS_PARSE_AND_OUTPUT_DATA: Dict[str, Dict[Any, Any]] = {
     'qualys-host-list-detection': {
         'json_path': ['HOST_LIST_VM_DETECTION_OUTPUT', 'RESPONSE'],
         'collection_name': 'HOST_LIST',
-        'readable_builder': build_host_detection_table_to_markdown
     },
     'qualys-host-update': {
         'table_name': 'Host updated',
@@ -259,37 +233,37 @@ COMMANDS_PARSE_AND_OUTPUT_DATA: Dict[str, Dict[Any, Any]] = {
     'qualys-asset-group-add': {
         'table_name': 'Asset Group Add',
         'json_path': ['SIMPLE_RETURN', 'RESPONSE'],
-        'collection_name': 'ITEM_LIST'
+        'collection_name': 'ITEM_LIST',
     },
     'qualys-asset-group-delete': {
         'table_name': 'Asset Group Delete',
         'json_path': ['SIMPLE_RETURN', 'RESPONSE'],
-        'collection_name': 'ITEM_LIST'
+        'collection_name': 'ITEM_LIST',
     },
     'qualys-asset-group-edit': {
         'table_name': 'Asset Group Edit',
         'json_path': ['SIMPLE_RETURN', 'RESPONSE'],
-        'collection_name': 'ITEM_LIST'
+        'collection_name': 'ITEM_LIST',
     },
     'qualys-schedule-scan-create': {
         'table_name': 'Schedule Scan Create',
         'json_path': ['SIMPLE_RETURN', 'RESPONSE'],
-        'collection_name': 'ITEM_LIST'
+        'collection_name': 'ITEM_LIST',
     },
     'qualys-schedule-scan-update': {
         'table_name': 'Schedule Scan Update',
         'json_path': ['SIMPLE_RETURN', 'RESPONSE'],
-        'collection_name': 'ITEM_LIST'
+        'collection_name': 'ITEM_LIST',
     },
     'qualys-schedule-scan-delete': {
         'table_name': 'Schedule Scan Delete',
         'json_path': ['SIMPLE_RETURN', 'RESPONSE'],
-        'collection_name': 'ITEM_LIST'
+        'collection_name': 'ITEM_LIST',
     },
     'qualys-time-zone-code': {
         'table_name': 'Time Zone Codes',
-        'json_path': ['TIME_ZONES']
-    }
+        'json_path': ['TIME_ZONES'],
+    },
 }
 
 # Context prefix and key for each command
@@ -440,7 +414,7 @@ COMMANDS_CONTEXT_DATA = {
     },
     'qualys-host-list-detection': {
         'context_prefix': 'Qualys.HostDetections',
-        'context_key': 'ID'
+        'context_key': 'ID',
     },
     'qualys-host-update': {
         'context_prefix': 'Qualys.Endpoint.Update',
@@ -448,11 +422,11 @@ COMMANDS_CONTEXT_DATA = {
     },
     'qualys-asset-group-add': {
         'context_prefix': 'Qualys.AssetGroup',
-        'context_key': 'ID'
+        'context_key': 'ID',
     },
     'qualys-asset-group-edit': {
         'context_prefix': 'Qualys.AssetGroup',
-        'context_key': 'ID'
+        'context_key': 'ID',
     },
     'qualys-asset-group-delete': {
         'context_prefix': 'Qualys.AssetGroup',
@@ -460,20 +434,20 @@ COMMANDS_CONTEXT_DATA = {
     },
     'qualys-schedule-scan-create': {
         'context_prefix': 'Qualys.ScheduleScan',
-        'context_key': 'ID'
+        'context_key': 'ID',
     },
     'qualys-schedule-scan-update': {
         'context_prefix': 'Qualys.ScheduleScan',
-        'context_key': 'ID'
+        'context_key': 'ID',
     },
     'qualys-schedule-scan-delete': {
         'context_prefix': 'Qualys.ScheduleScan',
-        'context_key': 'ID'
+        'context_key': 'ID',
     },
     'qualys-time-zone-code': {
         'context_prefix': 'Qualys.TimeZone',
-        'context_key': 'TIME_ZONE_CODE'
-    }
+        'context_key': 'TIME_ZONE_CODE',
+    },
 }
 
 # Information about the API request of the commands
@@ -671,7 +645,7 @@ COMMANDS_API_DATA: Dict[str, Dict[str, str]] = {
     'qualys-host-list-detection': {
         'api_route': API_SUFFIX + 'asset/host/vm/detection/?action=list',
         'call_method': 'GET',
-        'resp_type': 'text'
+        'resp_type': 'text',
     },
     'qualys-host-update': {
         'api_route': API_SUFFIX + 'asset/host/?action=update',
@@ -681,37 +655,37 @@ COMMANDS_API_DATA: Dict[str, Dict[str, str]] = {
     'qualys-asset-group-add': {
         'api_route': API_SUFFIX + 'asset/group/?action=add',
         'call_method': 'POST',
-        'resp_type': 'text'
+        'resp_type': 'text',
     },
     'qualys-asset-group-edit': {
         'api_route': API_SUFFIX + 'asset/group/?action=edit',
         'call_method': 'POST',
-        'resp_type': 'text'
+        'resp_type': 'text',
     },
     'qualys-asset-group-delete': {
         'api_route': API_SUFFIX + 'asset/group/?action=delete',
         'call_method': 'POST',
-        'resp_type': 'text'
+        'resp_type': 'text',
     },
     'qualys-schedule-scan-create': {
         'api_route': API_SUFFIX + 'schedule/scan/?action=create&active=1',
         'call_method': 'POST',
-        'resp_type': 'text'
+        'resp_type': 'text',
     },
     'qualys-schedule-scan-update': {
         'api_route': API_SUFFIX + 'schedule/scan/?action=update',
         'call_method': 'POST',
-        'resp_type': 'text'
+        'resp_type': 'text',
     },
     'qualys-schedule-scan-delete': {
         'api_route': API_SUFFIX + 'schedule/scan/?action=delete',
         'call_method': 'POST',
-        'resp_type': 'text'
+        'resp_type': 'text',
     },
     'qualys-time-zone-code': {
         'api_route': '/msp/time_zone_code_list.php',
         'call_method': 'GET',
-        'resp_type': 'text'
+        'resp_type': 'text',
     }
 }
 
@@ -956,26 +930,26 @@ COMMANDS_ARGS_DATA: Dict[str, Any] = {
     'qualys-host-list-detection': {
         'args': ['ids', 'ips', 'qids', 'severities', 'use_tags', 'tag_set_by', 'tag_include_selector',
                  'tag_exclude_selector', 'tag_set_include', 'tag_set_exclude', 'detection_processed_before',
-                 'detection_processed_after', 'vm_scan_since', 'no_vm_scan_since', 'truncation_limit']
+                 'detection_processed_after', 'vm_scan_since', 'no_vm_scan_since', 'truncation_limit', ]
     },
     'qualys-host-update': {
         'args': [
             'ids', 'ips', 'network_id', 'host_dns', 'host_netbios', 'tracking_method', 'new_tracking_method',
-            'new_owner', 'new_comment', 'new_ud1', 'new_ud2', 'new_ud3'
+            'new_owner', 'new_comment', 'new_ud1', 'new_ud2', 'new_ud3',
         ],
         'required_groups': [
-            ['ids', 'ips']
+            ['ids', 'ips', ]
         ],
     },
     'qualys-asset-group-add': {
         'args': ['title', 'network_id', 'ips', 'domains', 'dns_names', 'netbios_names', 'cvss_enviro_td',
-                 'cvss_enviro_cr', 'cvss_enviro_ir', 'cvss_enviro_ar', 'appliance_ids']
+                 'cvss_enviro_cr', 'cvss_enviro_ir', 'cvss_enviro_ar', 'appliance_ids', ]
     },
     'qualys-asset-group-edit': {
         'args': ['set_title', 'id', 'add_ips', 'set_ips', 'remove_ips', 'add_domains', 'remove_domains', 'set_domains',
                  'add_dns_names', 'set_dns_names', 'remove_dns_names', 'add_netbios_names', 'set_netbios_names',
                  'remove_netbios_names', 'set_cvss_enviro_td', 'set_cvss_enviro_cr', 'set_cvss_enviro_ir',
-                 'set_cvss_enviro_ar', 'add_appliance_ids', 'set_appliance_ids', 'remove_appliance_ids']
+                 'set_cvss_enviro_ar', 'add_appliance_ids', 'set_appliance_ids', 'remove_appliance_ids', ]
     },
     'qualys-asset-group-delete': {
         'args': ['id']
@@ -984,44 +958,44 @@ COMMANDS_ARGS_DATA: Dict[str, Any] = {
         'args': ['scan_title', 'asset_group_ids', 'asset_groups', 'ip', 'option_title', 'frequency_days', 'weekdays',
                  'frequency_weeks', 'frequency_months', 'day_of_month', 'day_of_week', 'week_of_month', 'start_date',
                  'start_hour', 'start_minute', 'time_zone_code', 'exclude_ip_per_scan', 'default_scanner',
-                 'scanners_in_ag', 'observe_dst'],
-        'required_groups': [['asset_group_ids', 'asset_groups', 'ip'],
-                            ['frequency_days', 'frequency_weeks', 'frequency_months'],
-                            ['scanners_in_ag', 'default_scanner']],
+                 'scanners_in_ag', 'observe_dst', ],
+        'required_groups': [['asset_group_ids', 'asset_groups', 'ip', ],
+                            ['frequency_days', 'frequency_weeks', 'frequency_months', ],
+                            ['scanners_in_ag', 'default_scanner', ]],
         'required_depended_args': {'day_of_month': 'frequency_months', 'day_of_week': 'frequency_months',
-                                   'week_of_month': 'frequency_months', 'weekdays': 'frequency_weeks'},
-        'default_added_depended_args': {'frequency_days': {'occurrence': 'daily'},
-                                        'frequency_weeks': {'occurrence': 'weekly'},
-                                        'frequency_months': {'occurrence': 'monthly'}},
+                                   'week_of_month': 'frequency_months', 'weekdays': 'frequency_weeks', },
+        'default_added_depended_args': {'frequency_days': {'occurrence': 'daily', },
+                                        'frequency_weeks': {'occurrence': 'weekly', },
+                                        'frequency_months': {'occurrence': 'monthly', }},
     },
     'qualys-schedule-scan-update': {
         'args': ['id', 'scan_title', 'asset_group_ids', 'asset_groups', 'ip', 'frequency_days', 'weekdays',
                  'frequency_weeks', 'frequency_months', 'day_of_month', 'day_of_week', 'week_of_month', 'start_date',
                  'start_hour', 'start_minute', 'time_zone_code', 'exclude_ip_per_scan', 'default_scanner',
-                 'scanners_in_ag', 'active', 'observe_dst'],
-        'default_added_depended_args': {'frequency_days': {'occurrence': 'daily'},
-                                        'frequency_weeks': {'occurrence': 'weekly'},
-                                        'frequency_months': {'occurrence': 'monthly'},
-                                        'start_hour': {'set_start_time': 1},
-                                        'start_minute': {'set_start_time': 1},
-                                        'start_date': {'set_start_time': 1},
-                                        'observe_dst': {'set_start_time': 1},
-                                        'time_zone_code': {'set_start_time': 1}
+                 'scanners_in_ag', 'active', 'observe_dst', ],
+        'default_added_depended_args': {'frequency_days': {'occurrence': 'daily', },
+                                        'frequency_weeks': {'occurrence': 'weekly', },
+                                        'frequency_months': {'occurrence': 'monthly', },
+                                        'start_hour': {'set_start_time': 1, },
+                                        'start_minute': {'set_start_time': 1, },
+                                        'start_date': {'set_start_time': 1, },
+                                        'observe_dst': {'set_start_time': 1, },
+                                        'time_zone_code': {'set_start_time': 1, },
                                         },
         'required_depended_args': {'day_of_month': 'frequency_months', 'day_of_week': 'frequency_months',
                                    'week_of_month': 'frequency_months', 'weekdays': 'frequency_weeks',
                                    'start_hour': 'start_date', 'start_minute': 'start_date',
-                                   'time_zone_code': 'start_date', 'observe_dst': 'start_date'},
-        'at_most_one_groups': [['asset_group_ids', 'asset_groups', 'ip'],
-                               ['frequency_days', 'frequency_weeks', 'frequency_months'],
-                               ['scanners_in_ag', 'default_scanner']],
+                                   'time_zone_code': 'start_date', 'observe_dst': 'start_date', },
+        'at_most_one_groups': [['asset_group_ids', 'asset_groups', 'ip', ],
+                               ['frequency_days', 'frequency_weeks', 'frequency_months', ],
+                               ['scanners_in_ag', 'default_scanner', ], ],
     },
     'qualys-schedule-scan-delete': {
-        'args': ['id']
+        'args': ['id', ]
     },
     'qualys-time-zone-code': {
         'args': []
-    }
+    },
 
 }
 
@@ -1039,7 +1013,8 @@ class Client(BaseClient):
     def __init__(self, base_url, username, password, verify=True, proxy=False, headers=None):
         super().__init__(base_url, verify=verify, proxy=proxy, headers=headers, auth=(username, password))
 
-    def error_handler(self, res):
+    @staticmethod
+    def error_handler(res):
         err_msg = f'Error in API call [{res.status_code}] - {res.reason}'
         try:
             simple_response = get_simple_response_from_raw(parse_raw_response(res.text))
@@ -1072,7 +1047,7 @@ class Client(BaseClient):
             params=args_values,
             resp_type=command_api_data['resp_type'],
             timeout=60,
-            # error_handler=self.error_handler
+            error_handler=self.error_handler,
         )
 
 
@@ -1333,6 +1308,46 @@ def limit_ip_results(result: Dict[str, Any], limit: int) -> Dict[str, Any]:
 
 
 @logger
+def validate_depended_args(command_data: Dict) -> None:
+    """
+    Validates that if one arg was given, and other arg is dependant on given arg, that it was given as well.
+    Args:
+        command_data (Dict): Command data.
+
+    Returns:
+        (None): Validates input.
+    Raises:
+        (DemistoException): If expected dependant arg is missing.
+    """
+    # Args that are required depending if other argument was given.
+    for required_depended_arg, depended_on_arg in command_data.get('required_depended_args', {}).items():
+        if depended_on_arg not in args_values and depended_on_arg not in inner_args_values:
+            continue
+        if required_depended_arg not in args_values and required_depended_arg not in inner_args_values:
+            raise DemistoException(
+                f'Argument {required_depended_arg} is required when argument {depended_on_arg} is given.')
+
+
+@logger
+def validate_at_most_one_group(command_data: Dict) -> None:
+    """
+    Validates that for each group, at most one argument was given.
+    Args:
+        command_data (Dict): Command data.
+
+    Returns:
+        (None): Validates input.
+    Raises:
+        (DemistoException): If more than one arg in group was given.
+    """
+    #   At most one argument can be given
+    for group in command_data.get('at_most_one_groups', []):
+        existing_args = [arg for arg in group if arg in inner_args_values or arg in args_values]
+        if len(existing_args) > 1:
+            raise DemistoException(f'At most one of the following args can be given: {existing_args}')
+
+
+@logger
 def input_validation(command_name: str) -> None:
     """
     Takes the arguments received by the user and validates them.
@@ -1359,19 +1374,7 @@ def input_validation(command_name: str) -> None:
         if len(existing_args) != 1:
             raise DemistoException(f'Exactly least one of the arguments {group} must be provided')
 
-    # Args that are required depending if other argument was given.
-    for required_depended_arg, depended_on_arg in command_data.get('required_depended_args', {}).items():
-        if depended_on_arg not in args_values and depended_on_arg not in inner_args_values:
-            continue
-        if required_depended_arg not in args_values and required_depended_arg not in inner_args_values:
-            raise DemistoException(
-                f'Argument {required_depended_arg} is required when argument {depended_on_arg} is given.')
-
-    #   At most one argument can be given
-    for group in command_data.get('at_most_one_groups', []):
-        existing_args = [arg for arg in group if arg in inner_args_values or arg in args_values]
-        if len(existing_args) > 1:
-            raise DemistoException(f'At most one of the following args can be given: {existing_args}')
+    validate_depended_args(command_data)
 
 
 ''' PARSERS '''
@@ -1449,7 +1452,17 @@ def parse_text_value_pairs_list(multiple_key_list: List[Dict[str, Any]]) -> Dict
     return parsed_dict
 
 
-def parse_raw_response(response: Union[bytes, requests.Response]):
+def parse_raw_response(response: Union[bytes, requests.Response]) -> Dict:
+    """
+    Parses raw response from Qualys.
+    Tries to load as JSON. If fails to do so, tries to load as XML.
+    If both fails, returns an empty dict.
+    Args:
+        response (Union[bytes, requests.Response]): Response from Qualys service.
+
+    Returns:
+        (Dict): Dict representing the data returned by Qualys service.
+    """
     try:
         return json.loads(str(response))
     except Exception:
@@ -1461,6 +1474,15 @@ def parse_raw_response(response: Union[bytes, requests.Response]):
 
 @logger
 def get_simple_response_from_raw(raw_response: Any):
+    """
+    Gets the simple response from a given JSON dict structure returned by Qualys service
+    If object is not a dict, returns the response as is.
+    Args:
+        raw_response (Any): Raw response from Qualys service.
+
+    Returns:
+        (Any): Simple response path if object is a dict, else response as is.
+    """
     simple_response = None
     if raw_response and isinstance(raw_response, dict):
         simple_response = raw_response.get('SIMPLE_RETURN', {}).get('RESPONSE', None)
@@ -1681,17 +1703,55 @@ def build_multiple_values_parsed_output(**kwargs) -> Tuple[List[Any], str]:
 
     if original_amount and original_amount > int(inner_args_values['limit']):
         limit_msg = f"Currently displaying {inner_args_values['limit']} out of {original_amount} results."
-    if readable_builder_func := command_parse_and_output_data.get('readable_builder'):
-        readable_output = readable_builder_func(parsed_output)
-    else:
-        headers = command_parse_and_output_data.get('table_headers') if \
-            command_parse_and_output_data.get('table_headers') else None
-        readable_output = tableToMarkdown(
-            name=f"{command_parse_and_output_data['table_name']}\n{limit_msg}",
-            t=parsed_output,
-            headers=headers
-        )
+    headers = command_parse_and_output_data.get('table_headers') if \
+        command_parse_and_output_data.get('table_headers') else None
+    readable_output = tableToMarkdown(
+        name=f"{command_parse_and_output_data['table_name']}\n{limit_msg}",
+        t=parsed_output,
+        headers=headers
+    )
     return parsed_output, readable_output
+
+
+@logger
+def build_host_list_detection_outputs(kwargs) -> Tuple[List[Any], str]:
+    """
+    Builds the outputs and readable output for host list detection.
+    Args:
+        kwargs: Output builder args.
+
+    Returns:
+        (Tuple[List[Any], str]): Outputs and readable outputs.
+    """
+    command_parse_and_output_data = kwargs['command_parse_and_output_data']
+    handled_result = kwargs['handled_result']
+    if collection_name := command_parse_and_output_data.get('collection_name'):
+        asset_collection = handled_result[collection_name]
+    else:
+        asset_collection = handled_result
+    original_amount = None
+    limit_msg = ''
+    parsed_output: List[Any] = generate_list_dicts(asset_collection)
+
+    if 'limit' in inner_args_values and inner_args_values['limit'] and isinstance(parsed_output, list):
+        original_amount = len(parsed_output)
+        parsed_output = limit_result(parsed_output, inner_args_values['limit'])
+
+    if original_amount and original_amount > int(inner_args_values['limit']):
+        limit_msg = f"Currently displaying {inner_args_values['limit']} out of {original_amount} results."
+    readable_outputs = []
+    for output in parsed_output:
+        readable_output = {
+            'ID': output.get('ID'),
+            'IP': output.get('IP'),
+            'DNS_DATA': {k: v for k, v in output.get('DNS_DATA', {}).items() if v is not None}
+        }
+        if detections := output.get('DETECTION_LIST', {}).get('DETECTION', []):
+            readable_output['DETECTIONS'] = [{'QID': detection.get('QID'), 'RESULTS': detection.get('RESULTS')} for
+                                             detection in detections]
+        readable_outputs.append(readable_output)
+    readable = tableToMarkdown(f'Host Detection List\n{limit_msg}', readable_outputs, removeNull=True)
+    return parsed_output, readable
 
 
 @logger
@@ -1934,27 +1994,27 @@ def main():
         },
         'qualys-asset-group-add': {
             'result_handler': handle_general_result,
-            'output_builder': build_one_value_parsed_output
+            'output_builder': build_one_value_parsed_output,
         },
         'qualys-asset-group-edit': {
             'result_handler': handle_general_result,
-            'output_builder': build_one_value_parsed_output
+            'output_builder': build_one_value_parsed_output,
         },
         'qualys-asset-group-delete': {
             'result_handler': handle_general_result,
-            'output_builder': build_one_value_parsed_output
+            'output_builder': build_one_value_parsed_output,
         },
         'qualys-schedule-scan-create': {
             'result_handler': handle_general_result,
-            'output_builder': build_one_value_parsed_output
+            'output_builder': build_one_value_parsed_output,
         },
         'qualys-schedule-scan-update': {
             'result_handler': handle_general_result,
-            'output_builder': build_one_value_parsed_output
+            'output_builder': build_one_value_parsed_output,
         },
         'qualys-schedule-scan-delete': {
             'result_handler': handle_general_result,
-            'output_builder': build_one_value_parsed_output
+            'output_builder': build_one_value_parsed_output,
         },
         # *** Commands which need parsing with multiple values ***
         'qualys-report-list': {
@@ -2001,13 +2061,9 @@ def main():
             'result_handler': handle_general_result,
             'output_builder': build_multiple_values_parsed_output,
         },
-        'qualys-host-list-detection': {
-            'result_handler': handle_general_result,
-            'output_builder': build_multiple_values_parsed_output
-        },
         'qualys-time-zone-code': {
             'result_handler': handle_general_result,
-            'output_builder': build_multiple_values_parsed_output
+            'output_builder': build_multiple_values_parsed_output,
         },
         # *** Commands with no output ***
         'qualys-report-fetch': {
@@ -2047,12 +2103,17 @@ def main():
         # *** Commands with multiple pre-made text options as output ***
         'qualys-vm-scan-action': {
             'result_handler': handle_general_result,
-            'output_builder': build_multiple_text_options_output
+            'output_builder': build_multiple_text_options_output,
         },
         # *** Commands that need a change of the key names ***
         'qualys-vm-scan-fetch': {
             'result_handler': handle_general_result,
             'output_builder': build_changed_names_output,
+        },
+        # *** Host List Detection
+        'qualys-host-list-detection': {
+            'result_handler': handle_general_result,
+            'output_builder': build_host_list_detection_outputs,
         },
     }
 
