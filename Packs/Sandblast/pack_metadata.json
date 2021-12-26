@@ -14,5 +14,9 @@
     "useCases": [],
     "keywords": [
         "checkpoint"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }
