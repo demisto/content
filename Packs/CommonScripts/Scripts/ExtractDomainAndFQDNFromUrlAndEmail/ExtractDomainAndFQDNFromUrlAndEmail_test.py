@@ -7,6 +7,8 @@ import pytest
 @pytest.mark.parametrize('input,fqdn', [  # noqa: E501 disable-secrets-detection
     ('www.static.attackiqtes.com', 'www.static.attackiqtes.com'),
     ('ftp://www.test.com/test2/dev', 'www.test.com'),
+    ('http://www.test.com/test2/dev', 'www.test.com'),
+    ('www.test.fake', ''),
     ('www[.]demisto[.]com', 'www.demisto.com'),
     ('www[.]demisto[.]test2.com', 'www.demisto.test2.com'),
     ('test.zip', ''),
@@ -21,6 +23,8 @@ import pytest
      '=vN1dVSiZvEoM9oExtQqEptm9Dbvq9tnjACDZzrBLaWI&s=zroN7KQdBCPBOfhOmv5SP1DDzZKZ1y9I3x4STS5PbHA&e=',
      'go.getpostman.com'),  # noqa: E501
     ('www[.]demisto[.]com', 'www.demisto.com'),
+    ('hxxp://www[.]demisto[.]com', 'www.demisto.com'),
+    ('www[.]demisto.test[.]com', 'www.demisto.test.com'),
     ('https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Ftwitter.com%2FPhilipsBeLux&data=02|01'
      '||cb2462dc8640484baf7608d638d2a698|1a407a2d76754d178692b3ac285306e4|0|0|636758874714819880&sdata'
      '=dnJiphWFhnAKsk5Ps0bj0p%2FvXVo8TpidtGZcW6t8lDQ%3D&reserved=0%3E%5bcid:image003.gif@01CF4D7F.1DF62650%5d'
