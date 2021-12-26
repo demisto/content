@@ -113,7 +113,7 @@ server {
 class TAXII2Server:
     def __init__(self, url_scheme: str, host: str, port: int, collections: dict, certificate: str, private_key: str,
                  http_server: bool, credentials: dict, version: str, service_address: Optional[str] = None,
-                 fields_to_present: Optional[str] = None):
+                 fields_to_present: Optional[set] = None):
         """
         Class for a TAXII2 Server configuration.
         Args:
@@ -136,6 +136,7 @@ class TAXII2Server:
         self._http_server = http_server
         self._service_address = service_address
         self.fields_to_present = fields_to_present
+        self.has_extention = False if fields_to_present == {'value', 'indicator_type'} else True
         self._auth = None
         if credentials and (identifier := credentials.get('identifier')) and (password := credentials.get('password')):
             self._auth = (identifier, password)
@@ -326,13 +327,16 @@ class TAXII2Server:
 
         first_added = None
         last_added = None
+        limited_extensions = None
 
         limited_iocs = iocs[offset:offset + limit]
-        limited_extensions = extensions[offset:offset + limit]
+        objects = limited_iocs
 
-        objects = [val for pair in zip(limited_iocs, limited_extensions) for val in pair]
+        if SERVER.has_extention:
+            limited_extensions = extensions[offset:offset + limit]
+            objects = [val for pair in zip(limited_iocs, limited_extensions) for val in pair]
 
-        if limited_iocs:
+        if limited_extensions:
             first_added = parse(limited_extensions[0].get('created')).strftime(STIX_DATE_FORMAT)
             last_added = parse(limited_extensions[-1].get('created')).strftime(STIX_DATE_FORMAT)
 
@@ -354,7 +358,7 @@ class TAXII2Server:
         return response, first_added, last_added
 
 
-SERVER: TAXII2Server = None  # type: ignore
+SERVER: TAXII2Server = None  # type: ignore[]
 
 ''' HELPER FUNCTIONS '''
 
@@ -426,18 +430,18 @@ def taxii_validate_url_param(f):
 
 def create_fields_list(fields: str):
     if not fields:
-        return None
+        return {'value', 'indicator_type'}
     elif 'all' in fields.lower():
-        return None
+        return set()
     fields_list = argToList(fields)
-    new_list = []
+    new_list = set()
     for field in fields_list:
         if field == 'name':
             field = 'value'
         elif field == 'type':
             field = 'indicator_type'
-        new_list.append(field)
-    return ','.join(new_list)
+        new_list.add(field)
+    return set(new_list)
 
 
 def handle_long_running_error(error: str):
@@ -516,7 +520,7 @@ def find_indicators(query: str, added_after, limit: int, is_manifest: bool = Fal
     iocs = []
     extensions = []
     indicator_searcher = IndicatorsSearcher(
-        filter_fields=SERVER.fields_to_present,
+        filter_fields=','.join(SERVER.fields_to_present),
         query=query,
         limit=limit,
         from_date=added_after
@@ -531,9 +535,11 @@ def find_indicators(query: str, added_after, limit: int, is_manifest: bool = Fal
                     iocs.append(manifest_entry)
             else:
                 stix_ioc, extension_definition = create_stix_object(xsoar_indicator, xsoar_type)
-                if stix_ioc and extension_definition:
+                if SERVER.has_extention and stix_ioc:
                     iocs.append(stix_ioc)
                     extensions.append(extension_definition)
+                elif stix_ioc:
+                    iocs.append(stix_ioc)
 
     return iocs, extensions
 
@@ -636,45 +642,48 @@ def create_stix_object(xsoar_indicator, xsoar_type):
         demisto.debug(f'No such indicator type: {xsoar_type} in stix format.')
         return {}
 
-    xsoar_indicator['extension_type'] = 'property_extension'
-    extention_id = f'extension-definition--{uuid.uuid4()}'
-    extension_definition = {
-        'id': extention_id,
-        'type': 'extension-definition',
-        'spec_version': SERVER.version,
-        'name': f'XSOAR TIM {xsoar_type}',
-        'description': 'This schema adds TIM data to the object',
-        'created': xsoar_indicator.get('timestamp'),
-        'modified': xsoar_indicator.get('modified'),
-        'created_by_ref': f'identity--{str(PAWN_UUID)}',
-        'schema':
-            'https://github.com/demisto/content/tree/master/Packs/TAXIIServer/doc_files/XSOAR_indicator_schema.json',
-        'version': '1.0',
-        'extension_types': ['property-extension']
+    stix_object = {
+        'id': stix_id,
+        'value': xsoar_indicator.get('value'),
+        'type': object_type,
+        'spec_version': SERVER.version
     }
 
     xsoar_indicator_to_return = dict()
 
     # filter only requested fields
-    if SERVER.fields_to_present:
-        list_fields = argToList(SERVER.fields_to_present)
-        for field in list_fields:
+    if SERVER.has_extention and SERVER.fields_to_present:
+        # if Server fields_to_present is None - no filters, return all. If Existing fields - filter
+        for field in SERVER.fields_to_present:
             value = xsoar_indicator.get(field)
             if not value:
                 value = xsoar_indicator.get('CustomFields', {}).get(field)
             xsoar_indicator_to_return[field] = value
     else:
         xsoar_indicator_to_return = xsoar_indicator
+    extension_definition = {}
 
-    stix_object = {
-        'id': stix_id,
-        'value': xsoar_indicator.get('value'),
-        'type': object_type,
-        'spec_version': SERVER.version,
-        'extensions': {
+    if SERVER.has_extention:
+        xsoar_indicator_to_return['extension_type'] = 'property_extension'
+        extention_id = f'extension-definition--{uuid.uuid4()}'
+        extension_definition = {
+            'id': extention_id,
+            'type': 'extension-definition',
+            'spec_version': SERVER.version,
+            'name': f'XSOAR TIM {xsoar_type}',
+            'description': 'This schema adds TIM data to the object',
+            'created': xsoar_indicator.get('timestamp'),
+            'modified': xsoar_indicator.get('modified'),
+            'created_by_ref': f'identity--{str(PAWN_UUID)}',
+            'schema':
+                'https://github.com/demisto/content/tree/master/Packs/TAXIIServer/doc_files/XSOAR_indicator_schema.json',
+            'version': '1.0',
+            'extension_types': ['property-extension']
+        }
+        stix_object['extensions'] = {
             extention_id: xsoar_indicator_to_return,
-        },
-    }
+        }
+
     if is_sdo:
         stix_object['description'] = xsoar_indicator.get('CustomFields', {}).get('description')
     return stix_object, extension_definition
@@ -689,16 +698,19 @@ def parse_content_range(content_range):
     Returns:
         Offset and limit arguments for the command.
     """
-    range_type, range_count = content_range.split(' ', 1)
+    try:
+        range_type, range_count = content_range.split(' ', 1)
 
-    if range_type != 'items':
+        if range_type != 'items':
+            raise Exception(f'Bad Content-Range header: {content_range}.')
+
+        range_count = range_count.split('/')
+        range_begin, range_end = range_count[0].split('-', 1)
+
+        offset = int(range_begin)
+        limit = int(range_end) - offset
+    except Exception:
         raise Exception(f'Bad Content-Range header: {content_range}.')
-
-    range_count = range_count.split('/')
-    range_begin, range_end = range_count[0].split('-', 1)
-
-    offset = int(range_begin)
-    limit = int(range_end) - offset
 
     return offset, limit
 

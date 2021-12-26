@@ -31,10 +31,10 @@ To access the TAXII service by instance name, make sure ***Instance execute exte
 1. In Cortex XSOAR, go to **Settings > About > Troubleshooting**.
 2. In the **Server Configuration** section, verify that the ***instance.execute.external*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external* and set the value to *true*.
 
-## How to use HTTPS
+### How to use HTTPS
 To use HTTPS, a certificate and private key have to be supplied in the integration configuration. 
 
-## How to use authentication
+### How to use authentication
 The integration allows the use of basic authentication in the requests.
 To enable basic authentication, a user and password have to be supplied in the Credentials parameters in the integration configuration.
 

@@ -9,6 +9,15 @@ configuration:
   required: false
   type: 8
   hidden: true
+- display: TAXII 2 Server version
+  hidden: false
+  name: version
+  defaultvalue: "2.1"
+  options:
+  - "2.0"
+  - "2.1"
+  required: true
+  type: 15
 - additionalinfo: Will run the TAXII2 server on this port from within Demisto. Requires
     a unique port for each long-running integration instance. Do not use the same
     port for multiple instances.
@@ -16,14 +25,6 @@ configuration:
   name: longRunningPort
   required: true
   type: 0
-- display: Certificate (Required for HTTPS)
-  name: certificate
-  required: false
-  type: 12
-- display: Private Key (Required for HTTPS)
-  name: key
-  required: false
-  type: 14
 - display: Username
   hidden: false
   name: credentials
@@ -41,6 +42,19 @@ configuration:
   name: collections
   required: true
   type: 12
+- additionalinfo: Comma seperated fields to return in the extention. Leave empty for no extention fields, 'All' for all exsisting fileds.
+  display: XSOAR Extension fields
+  name: fields_filter
+  required: false
+  type: 0
+- display: Certificate (Required for HTTPS)
+  name: certificate
+  required: false
+  type: 12
+- display: Private Key (Required for HTTPS)
+  name: key
+  required: false
+  type: 14
 - display: TAXII2 Service URL Address
   additionalinfo: The URL address to set in the TAXII2 service response. If not set,
     the integration will try to auto-detect the URL.
@@ -48,20 +62,6 @@ configuration:
   name: service_address
   required: false
   type: 0
-- additionalinfo: Only applies on the jsons and csv formats.
-  display: Additional Fields
-  name: fields_filter
-  required: false
-  type: 0
-- display: TAXII 2 Server version
-  hidden: false
-  name: version
-  defaultvalue: "2.1"
-  options:
-  - "2.0"
-  - "2.1"
-  required: true
-  type: 15
 description: This integration provides TAXII2 Services for system indicators (Outbound
   feed).
 display: TAXII2 Server
