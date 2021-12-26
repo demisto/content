@@ -49,7 +49,7 @@ configuration:
   required: false
   type: 8
 description: Gmail API using OAuth 2.0.
-display: Gmail Single User (Beta)
+display: Gmail Single User
 name: Gmail Single User
 script:
   commands:

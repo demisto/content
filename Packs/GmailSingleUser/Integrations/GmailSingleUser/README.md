@@ -75,18 +75,14 @@ Additional info available at: https://support.google.com/a/answer/7281227
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-1. Send email: send-mail
-2. Get an authentication link: gmail-auth-link
-3. Test authorization: gmail-auth-test
-### 1. Send email
----
+
+### send-mail
 Sends an email using Gmail.
 
 ##### Base Command
-
 `send-mail`
-##### Input
 
+##### Input
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | to | The email addresses of the receiver. | Required | 
