@@ -96,6 +96,8 @@ def main():
             "ContentsFormat": formats["json"],
             "Contents": [extract_fqdn(item)]
         }
+        if input_entry.get("Contents") == ['']:
+            input_entry['Contents'] = []
         entries_list.append(input_entry)
     if entries_list:
         demisto.results(entries_list)
