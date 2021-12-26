@@ -33,6 +33,9 @@ VALID_SUBMIT_TYPE = ['0', '1', '2', '3']
 
 USERNAME = demisto.params().get('username') or (demisto.params().get('credentials').get('identifier'))
 PASSWORD = demisto.params().get('password') or (demisto.params().get('credentials').get('password'))
+if not USERNAME and not PASSWORD:
+    raise Exception('Username and Password must be provided.')
+
 USE_SSL = not demisto.params().get('unsecure')
 BASE_URL = load_server_url()
 LOGIN_HEADERS = {
@@ -798,8 +801,6 @@ def main():
     handle_proxy()  # Remove proxy if not set to true in params
     global API_HEADERS
     API_HEADERS = get_headers()
-    if not USERNAME and not PASSWORD:
-        raise Exception('Username and Password must be provided.')
 
     try:
         if demisto.command() == 'test-module':
