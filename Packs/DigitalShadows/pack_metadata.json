@@ -2,7 +2,7 @@
     "name": "Digital Shadows",
     "description": "Digital Shadows monitors and manages an organization's digital risk across the widest range of data sources within the open, deep, and dark web.",
     "support": "xsoar",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.2",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
