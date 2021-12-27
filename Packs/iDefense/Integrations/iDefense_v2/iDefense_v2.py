@@ -384,7 +384,7 @@ def _get_ia_for_indicator(indicator: str, doc_search_client: Client):
 
     except Exception as e:
         if 'Error in API call [403]' in e.args[0]:
-            return_results(f"Sorry! Intelligence Alert & Intelligence Report enrichment is not possible! As you don't have access to Document API.\n Error: {str(e)}")                                               # noqa: E501
+            return_results(f"Intelligence Alert & Intelligence Report enrichment (if present) is not possible! As your API token is not eligible to access Document API.\n Error: {str(e)}")                                               # noqa: E501
             demisto.debug(e.args[0])
         else:
             raise e
