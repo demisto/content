@@ -4,12 +4,6 @@ from datetime import datetime, timedelta, tzinfo
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-args = demisto.args()
-days_ago = args['days_ago']
-
-
-# http://support.microsoft.com/kb/167296
-# How To Convert a UNIX time_t to a Win32 FILETIME or SYSTEMTIME
 EPOCH_AS_FILETIME = 116444736000000000  # January 1, 1970 as MS file time
 HUNDREDS_OF_NANOSECONDS = 10000000
 
@@ -20,9 +14,6 @@ HOUR = timedelta(hours=1)
 
 class UTC(tzinfo):
     """UTC"""
-
-    def utcoffset(self, dt):
-        return ZERO
 
     def tzname(self, dt):
         return "UTC"
@@ -44,24 +35,33 @@ def dt_to_filetime(dt):
     >>> dt_to_filetime(datetime(1970, 1, 1, 0, 0))
     116444736000000000L
     """
-    if (dt.tzinfo is None) or (dt.tzinfo.utcoffset(dt) is None):
+    if (dt.tzinfo is None):
         dt = dt.replace(tzinfo=utc)
     # return EPOCH_AS_FILETIME + (timegm(dt.timetuple()) * HUNDREDS_OF_NANOSECONDS)
     adTime = EPOCH_AS_FILETIME + (timegm(dt.timetuple()) * HUNDREDS_OF_NANOSECONDS)
     adTimeStr = str(adTime)
-    demisto.results({
+    entry = ({
         "Type": entryTypes["note"],
         "ContentsFormat": formats["json"],
         "Contents": adTime,
         "HumanReadable": adTime,
         "EntryContext": {"ADFileTime": adTime, "ADFileTimeStr": adTimeStr}
     })
+    return entry
 
 
-new_date = datetime.today() - timedelta(int(days_ago))
-dt = new_date.replace(hour=0, minute=0, second=0, microsecond=0)
+'''MAIN FUNCTION'''
 
 
-nt_time = dt_to_filetime(dt)
-nt_time
-nt_time_str = str(nt_time)
+def main():
+    args = demisto.args()
+    days_ago = args['days_ago']
+    new_date = datetime.today() - timedelta(int(days_ago))
+    dt = new_date.replace(hour=0, minute=0, second=0, microsecond=0)
+    entry = dt_to_filetime(dt)
+    demisto.results(entry)
+
+
+'''ENTRY POINT'''
+if __name__ in ['__main__', 'builtin', 'builtins']:
+    main()
