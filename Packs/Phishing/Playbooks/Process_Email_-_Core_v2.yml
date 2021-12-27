@@ -1004,7 +1004,7 @@ tasks:
       id: e5c43ca9-cacd-4b3d-847d-2fb32a3cd1b4
       version: -1
       name: Set reported email origin (attached)
-      description: Set a value in context under the key you entered.
+      description: Sets the value of "ReportedEmailOrigin" to "Attached". This value is set later in the "reportedemailorigin" incident field.
       scriptName: Set
       type: regular
       iscommand: false
