@@ -6,6 +6,8 @@ import pytest
 
 @pytest.mark.parametrize('input,fqdn', [  # noqa: E501 disable-secrets-detection
     ('www.static.attackiqtes.com', 'www.static.attackiqtes.com'),
+    ('http:www.static.attackiqtes.com', 'www.static.attackiqtes.com'),
+    ('attackiqtes.co.il', 'attackiqtes.co.il'),
     ('ftp://www.test.com/test2/dev', 'www.test.com'),
     ('http://www.test.com/test2/dev', 'www.test.com'),
     ('www.test.fake', ''),
