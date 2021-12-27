@@ -31,4 +31,4 @@ Follow these steps for a self-deployed configuration.
 
 ## Get the additional instance parameters
 
-To get the ***Subscription ID***, ***Workspace Name***, ***Workspace ID*** and ***Resource Group*** parameters, navigate in the Azure Portal to ***Azure Sentinel > YOUR-WORKSPACE > Settings*** and click on ***Workspace Settings*** tab.
+To get the ***Subscription ID***, ***Workspace Name***, ***Workspace ID*** and ***Resource Group*** parameters, navigate in the Azure Portal to ***Log Analytics workspaces > YOUR-WORKSPACE > Settings*** and click on ***Workspace Settings*** tab.
