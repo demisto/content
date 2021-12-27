@@ -127,7 +127,7 @@ tasks:
       id: 455f7bbe-da60-444d-854b-93ea59d1f921
       version: -1
       name: Set PCL score
-      description: commands.local.cmd.set.incident
+      description: Sets the value of the "phishingpclscore" incident field.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -206,7 +206,7 @@ tasks:
       id: 21500b48-153f-433b-82e8-7328125a8ace
       version: -1
       name: Set Email Classification to "Spam"
-      description: commands.local.cmd.set.incident
+      description: Sets the "emailclassification" incident field value to "Spam".
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -702,7 +702,7 @@ tasks:
       id: 13d15274-9037-49d9-89d8-231c8acf4296
       version: -1
       name: Set SCL score
-      description: commands.local.cmd.set.incident
+      description: Sets the value of the "phishingsclscore" incident field.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -734,7 +734,7 @@ tasks:
       id: b174d8b2-6573-4774-8198-c02bda8a5222
       version: -1
       name: Set SCL score
-      description: commands.local.cmd.set.incident
+      description: Sets the value of the "phishingsclscore" incident field.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -1147,7 +1147,7 @@ tasks:
       id: 6987092a-727c-4df0-8d23-e1dbdc33a4e3
       version: -1
       name: Set BCL score
-      description: commands.local.cmd.set.incident
+      description: Sets the value of the "phishingbclscore" incident field.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -1373,7 +1373,7 @@ outputs:
     Medium: PCL or BCL scores are equal to or greater than 4.
 
     High: BCL score is equal to or greater than 8.
-  type: unknown
+  type: string
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
