@@ -4815,6 +4815,7 @@
             "integrations": "ACTI",
             "playbookID": "iDefense_v2_Test"
         },
+        {
           "playbookID": "AzureRiskyUsers",
             "fromversion": "6.0.0",
             "integrations": "AzureRiskyUsers"
