@@ -2551,7 +2551,7 @@ def main():
     elif command == 'splunk-submit-event':
         splunk_submit_event_command(service)
     elif command == 'splunk-notable-event-edit':
-        splunk_edit_notable_event_command(base_url, service and service.token, auth_token, demisto.args())
+        splunk_edit_notable_event_command(service, auth_token)
     elif command == 'splunk-submit-event-hec':
         splunk_submit_event_hec_command()
     elif command == 'splunk-job-status':
