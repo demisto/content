@@ -2458,29 +2458,47 @@ Get the list of Prisma Cloud Compute vulnerabilities resources.
 
 ```json
 {
-   "PrismaCloudCompute": {
-      "VulnerabilitiesImpactedResource": {
-         "_id": "CVE-2018-14600",
-         "riskTree": {
-            "image_id_1": [
-               {
-                  "image": "image_name_1",
-                  "factors": {}
-               }
-            ],
-            "image_id_2": [
-               {
-                  "image": "image_name_2",
-                  "factors": {}
-               }
-            ]
-         },
-         "hosts": [
-            "host1",
-            "host2"
-         ]
-      }
-   }
+    "PrismaCloudCompute": {
+        "VulnerabilitiesImpactedResource": [
+            {
+                "_id": "CVE-2021-31535", 
+                "hosts": [
+                    "host1"
+                ], 
+                "riskTree": {
+                    "sha256:c24dea8ef267038c3c1d64b66c7cd660df85563146af841c1b452b291093abdf": [
+                        {
+                            "image": "image1", 
+                            "factors": {}
+                        }
+                    ], 
+                    "sha256:dccfc7e8628161ff6f859cb74aa9de07f1b2650554532b6103658d8831e6991f": [
+                        {
+                            "image": "image2", 
+                            "factors": {}
+                        }
+                    ]
+                }
+            }, 
+            {
+                "_id": "CVE-2018-14600", 
+                "riskTree": {
+                    "sha256:c24dea8ef267038c3c1d64b66c7cd660df85563146af841c1b452b291093abdf": [
+                        {
+                            "image": "image3", 
+                            "factors": {}
+                        }
+                    ], 
+                    "sha256:dccfc7e8628161ff6f859cb74aa9de07f1b2650554532b6103658d8831e6991f": [
+                        {
+                            "image": "image4", 
+                            "factors": {}
+                        }
+                    ]
+                }
+            }
+        ]
+    }
 }
 ```
 
@@ -2488,13 +2506,13 @@ Get the list of Prisma Cloud Compute vulnerabilities resources.
 ### Impacted Images
 |Cve|Image|
 |---|---|
-| CVE-2021-31535 | demisto/python:1.2-alpine |
-| CVE-2021-31535 | demisto/python:1.3-alpine |
-| CVE-2018-14600 | demisto/python:1.2-alpine |
-| CVE-2018-14600 | demisto/python:1.3-alpine |
+| CVE-2021-31535 | image1 |
+| CVE-2021-31535 | image2 |
+| CVE-2018-14600 | image3 |
+| CVE-2018-14600 | image4 |
 ### Impacted Hosts
 |Cve|Hostname|
 |---|---|
-| CVE-2021-31535 | ip-172-31-23-249.eu-west-1.compute.internal |
+| CVE-2021-31535 | host1 |
 
 
