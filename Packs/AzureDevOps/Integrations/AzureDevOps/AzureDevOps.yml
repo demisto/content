@@ -21,14 +21,14 @@ configuration:
   name: max_fetch
   required: false
   type: 0
-- additionalinfo: The name of the project which the pull requests belongs to. This
+- additionalinfo: The name of the project which the pull requests belongs to. A project name can be obtained by running the 'azure-devops-project-list' command. This
     argument is mandatory for Fetch functionality.
   display: Pull-request project name
   hidden: false
   name: project
   required: false
   type: 0
-- additionalinfo: The name of the repository pull request's target branch. This argument
+- additionalinfo: The name of the repository pull request's target branch. A repository name can be obtained by running the 'azure-devops-repository-list' command. This argument
     is mandatory for Fetch functionality.
   display: Pull-request repository name
   hidden: false
@@ -829,7 +829,7 @@ script:
       description: The run state.
       type: String
     - contextPath: AzureDevOps.PipelineRun.createdDate
-      description: 'The run creation date, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".' 
+      description: 'The run creation date, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".
       type: Date
     - contextPath: AzureDevOps.PipelineRun.run_id
       description: The ID of the run.

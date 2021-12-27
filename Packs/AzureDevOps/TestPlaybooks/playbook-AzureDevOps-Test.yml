@@ -1,5 +1,13 @@
 id: playbook-AzureDevOps-Test
-version: -1
+version: 18
+contentitemexportablefields:
+  contentitemfields:
+    packID: AzureDevOps
+    itemVersion: 1.0.0
+    fromServerVersion: 6.0.0
+    toServerVersion: ""
+    definitionid: ""
+vcShouldKeepItemLegacyProdMachine: false
 name: playbook-AzureDevOps-Test
 starttaskid: "0"
 tasks:
@@ -13,7 +21,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "35"
@@ -34,10 +41,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 2a3205c4-d9ea-43dd-8414-723352de6c30
+    taskid: b38f068f-64ba-4985-8207-a839f4446300
     type: regular
     task:
-      id: 2a3205c4-d9ea-43dd-8414-723352de6c30
+      id: b38f068f-64ba-4985-8207-a839f4446300
       version: -1
       name: azure-devops-pipeline-run
       script: AzureDevOps|||azure-devops-pipeline-run
@@ -49,7 +56,7 @@ tasks:
       - "8"
     scriptarguments:
       branch_name:
-        simple: main
+        simple: demisto-branch
       pipeline_id:
         simple: ${AzureDevOps.Pipeline.id}
       project:
@@ -143,10 +150,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 0dbcedd3-b40a-44cd-8f4f-a9f50f5b2b29
+    taskid: 1d9a3eb7-e2b6-46f8-874c-257f31d8e4ef
     type: regular
     task:
-      id: 0dbcedd3-b40a-44cd-8f4f-a9f50f5b2b29
+      id: 1d9a3eb7-e2b6-46f8-874c-257f31d8e4ef
       version: -1
       name: azure-devops-user-add
       script: AzureDevOps|||azure-devops-user-add
@@ -164,7 +171,7 @@ tasks:
       project_id:
         simple: ${AzureDevOps.Project.id}
       user_email:
-        simple: user@xsoar.com
+        simple: bark@demistodev.onmicrosoft.com
     separatecontext: false
     view: |-
       {
@@ -219,10 +226,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 24d126a5-4573-4014-89bb-0d1b1eed98d2
+    taskid: a26dbcf1-0e9f-4180-8fe6-8c6d87adbbcf
     type: regular
     task:
-      id: 24d126a5-4573-4014-89bb-0d1b1eed98d2
+      id: a26dbcf1-0e9f-4180-8fe6-8c6d87adbbcf
       version: -1
       name: azure-devops-user-remove
       script: AzureDevOps|||azure-devops-user-remove
@@ -234,7 +241,18 @@ tasks:
       - "32"
     scriptarguments:
       user_id:
-        simple: 11111-11111
+        complex:
+          root: AzureDevOps.User
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: AzureDevOps.User.user.displayName
+                iscontext: true
+              right:
+                value:
+                  simple: Bar
+          accessor: id
     separatecontext: false
     view: |-
       {
@@ -252,10 +270,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: ea01ec4b-18a2-4c33-88cd-ff2a4c2efd18
+    taskid: a363a803-06ba-430d-8816-30fa9b21dc62
     type: regular
     task:
-      id: ea01ec4b-18a2-4c33-88cd-ff2a4c2efd18
+      id: a363a803-06ba-430d-8816-30fa9b21dc62
       version: -1
       name: azure-devops-pull-request-create
       script: AzureDevOps|||azure-devops-pull-request-create
@@ -269,13 +287,24 @@ tasks:
       description:
         simple: test title
       project:
-        simple: xsoar
+        simple: ${AzureDevOps.Project.id}
       repository_id:
-        simple: xsoar-repository-id
+        simple: ${AzureDevOps.Repository.id}
       reviewers_ids:
-        simple: xsoar-reviewer-id
+        complex:
+          root: AzureDevOps.User
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: AzureDevOps.User.user.displayName
+                iscontext: true
+              right:
+                value:
+                  simple: Bar
+          accessor: id
       source_branch:
-        simple: xsoar-test
+        simple: demisto-branch
       target_branch:
         simple: main
       title:
@@ -434,10 +463,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: f63af3d0-cdf6-440f-8e72-c166ba0d3a88
+    taskid: 88a8b683-0e5b-4a8c-8551-989fdb501e28
     type: regular
     task:
-      id: f63af3d0-cdf6-440f-8e72-c166ba0d3a88
+      id: 88a8b683-0e5b-4a8c-8551-989fdb501e28
       version: -1
       name: azure-devops-pull-request-update
       script: AzureDevOps|||azure-devops-pull-request-update
@@ -449,7 +478,7 @@ tasks:
       - "15"
     scriptarguments:
       project:
-        simple: xsoar
+        simple: ${AzureDevOps.PullRequest.repository.project.name}
       pull_request_id:
         simple: ${AzureDevOps.PullRequest.pullRequestId}
       repository_id:
@@ -966,10 +995,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: f2151910-4b07-453e-8caa-e8c5e4ea5eee
+    taskid: 24e8bb96-14eb-404f-88ad-933264baeae8
     type: regular
     task:
-      id: f2151910-4b07-453e-8caa-e8c5e4ea5eee
+      id: 24e8bb96-14eb-404f-88ad-933264baeae8
       version: -1
       name: azure-devops-user-list
       script: AzureDevOps|||azure-devops-user-list
@@ -981,7 +1010,7 @@ tasks:
       - "23"
     scriptarguments:
       query:
-        simple: user@xsoar.com
+        simple: avishai
     separatecontext: false
     view: |-
       {
@@ -1071,7 +1100,7 @@ tasks:
       {
         "position": {
           "x": 530,
-          "y": 3050
+          "y": 3040
         }
       }
     note: false
@@ -1220,10 +1249,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: b22487b8-d9f0-4e26-8952-8f84655f1a87
+    taskid: c17278fd-2218-407b-8dd7-b8b0170beb8c
     type: regular
     task:
-      id: b22487b8-d9f0-4e26-8952-8f84655f1a87
+      id: c17278fd-2218-407b-8dd7-b8b0170beb8c
       version: -1
       name: azure-devops-pipeline-run-get
       script: AzureDevOps|||azure-devops-pipeline-run-get
@@ -1240,6 +1269,8 @@ tasks:
         simple: ${AzureDevOps.PipelineRun.project}
       run_id:
         simple: ${AzureDevOps.PipelineRun.run_id}
+      scheduled:
+        simple: "True"
     separatecontext: false
     view: |-
       {
@@ -1625,7 +1656,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
@@ -1674,6 +1704,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
@@ -1688,5 +1719,3 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 6.0.0
-description: ''

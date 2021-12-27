@@ -21,6 +21,12 @@ class Client:
     """
 
     def __init__(self, client_id: str, organization: str, verify: bool, proxy: bool):
+        if '@' in client_id:  # for use in test-playbook
+            client_id, refresh_token = client_id.split('@')
+            integration_context = get_integration_context()
+            integration_context.update(current_refresh_token=refresh_token)
+            set_integration_context(integration_context)
+
         self.ms_client = MicrosoftClient(
             self_deployed=True,
             auth_id=client_id,
@@ -563,7 +569,7 @@ def user_add_command(client: Client, args: Dict[str, Any]) -> CommandResults:
             raise ValueError('Error occurred. API response is not in the appropriate format.')
 
         error_message = error[0].get('value')
-        raise ValueError(error_message)
+        raise DemistoException(error_message)
 
     user_information = {
         "id": dict_safe_get(response, ['userEntitlement', 'id']),
@@ -814,7 +820,8 @@ def pull_requests_list_command(client: Client, args: Dict[str, Any]) -> CommandR
 
     response = client.pull_requests_list_request(project, repository, offset, limit)
 
-    readable_message = f'Pull Request List:\n Current page size: {limit}\n Showing page {page} out others that may exist.'
+    readable_message = f'Pull Request List:\n Current page size: {limit}\n Showing page {page} out of ' \
+                       f'others that may exist.'
 
     outputs = copy.deepcopy(response.get('value'))
     for pr in outputs:
@@ -966,6 +973,8 @@ def users_query_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         if len(identities) >= start:
             min_index = min(len(identities), end)
             for identity in identities[start:min_index]:
+                # Updating the id key as well.
+                identity["id"] = identity.get("localId")
                 outputs.append(identity)
                 if identity.get("localDirectory") == "vsd":
                     readable_user_information.append(
@@ -982,7 +991,7 @@ def users_query_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     command_results = CommandResults(
         readable_output=readable_output,
         outputs_prefix='AzureDevOps.User',
-        outputs_key_field='originId',
+        outputs_key_field='id',
         outputs=outputs,
         raw_response=response
     )
@@ -1621,7 +1630,7 @@ def main() -> None:
         elif command == 'test-module':
             return_results(
                 'The test module is not functional, '
-                'run the azure-devops-auth-start command instead.')
+                'run the azure-devops-auth-test command instead.')
 
         elif command == 'fetch-incidents':
             integration_instance = demisto.integrationInstance()
@@ -1645,6 +1654,7 @@ def main() -> None:
             raise NotImplementedError(f'{command} command is not implemented.')
 
     except Exception as e:
+        demisto.error(traceback.format_exc())
         return_error(str(e))
 
 
