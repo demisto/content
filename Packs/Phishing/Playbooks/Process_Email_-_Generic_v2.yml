@@ -417,7 +417,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "2"
+      - "45"
       Email Exist:
       - "47"
     separatecontext: false
@@ -1896,31 +1896,29 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 98372b79-9dc0-43e1-8e1b-19392818bcd7
+    taskid: 4df560a8-e403-4170-84d5-e56a1a92b871
     type: regular
     task:
-      id: 98372b79-9dc0-43e1-8e1b-19392818bcd7
+      id: 4df560a8-e403-4170-84d5-e56a1a92b871
       version: -1
       name: Set reported email origin (none)
-      description: Set a value in context under the key you entered.
-      scriptName: Set
+      description: Set "reportedemailorigin" incident field value to "None".
+      script: Builtin|||setIncident
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "2"
     scriptarguments:
-      key:
-        simple: ReportedEmailOrigin
-      value:
+      reportedemailorigin:
         simple: None
     separatecontext: false
     view: |-
       {
         "position": {
           "x": -470,
-          "y": 885
+          "y": 2325
         }
       }
     note: false
