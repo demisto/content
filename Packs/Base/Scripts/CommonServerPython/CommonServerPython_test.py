@@ -5918,9 +5918,10 @@ class TestSetAndGetLastMirrorRun:
         import demistomock as demisto
         from CommonServerPython import get_last_mirror_run
         mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.5.0"})
-        mocker.patch.object(demisto, 'getLastMirrorRun')
-        result = get_last_mirror_run()
-        assert result == 'You cannot use getLastMirrorRun as your version is below 6.6.0'
+        get_last_run = mocker.patch.object(demisto, 'getLastMirrorRun')
+        with raises(DemistoException, match='You cannot use getLastMirrorRun as your version is below 6.6.0'):
+            get_last_mirror_run()
+            assert get_last_run.called is False
 
     def test_set_mirror_last_run_in_6_6(self, mocker):
         """
@@ -5945,5 +5946,6 @@ class TestSetAndGetLastMirrorRun:
         from CommonServerPython import set_last_mirror_run
         mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.5.0"})
         set_last_run = mocker.patch.object(demisto, 'setLastMirrorRun', return_value={})
-        set_last_mirror_run({"lastMirrorRun": "2018-10-24T14:13:20+00:00"})
-        assert set_last_run.called is False
+        with raises(DemistoException, match='You cannot use setLastMirrorRun as your version is below 6.6.0'):
+            set_last_mirror_run({"lastMirrorRun": "2018-10-24T14:13:20+00:00"})
+            assert set_last_run.called is False
