@@ -58,7 +58,7 @@ Checks the reputation of the given IP address.
         "Reliability": "B - Usually reliable",
         "Score": 2,
         "Type": "ip",
-        "Vendor": "ACTI"
+        "Vendor": "iDefense_v2"
     },
     "IP": {
         "Address": "0.0.0.0"
@@ -114,7 +114,7 @@ Checks the reputation of the given domain.
         "Reliability": "B - Usually reliable",
         "Score": 2,
         "Type": "domain",
-        "Vendor": "ACTI"
+        "Vendor": "iDefense_v2"
     },
     "Domain": {
         "Name": "example.org"
@@ -170,7 +170,7 @@ Checks the reputation of the given URL.
         "Reliability": "B - Usually reliable",
         "Score": 2,
         "Type": "url",
-        "Vendor": "ACTI"
+        "Vendor": "iDefense_v2"
     },
     "URL": {
         "Data": "http://example.com"
@@ -232,7 +232,7 @@ Get specific indicator reputation
         "Reliability": "B - Usually reliable",
         "Score": 2,
         "Type": "domain",
-        "Vendor": "ACTI"
+        "Vendor": "iDefense_v2"
     },
     "Domain": {
         "Name": "example.org"
