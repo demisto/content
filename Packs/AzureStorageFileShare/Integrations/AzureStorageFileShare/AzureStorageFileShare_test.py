@@ -280,3 +280,46 @@ def test_validate_characters():
 
     assert validate_characters(valida_string, "\"\/:|<>*?")
     assert not validate_characters(invalid_string, "\"\/:|<>*?")
+
+
+def test_create_file_command(requests_mock, mocker):
+    """
+    Scenario: Create a file in Share from War room file Entry ID.
+    Given:
+     - User has provided valid credentials.
+    When:
+     - azure-storage-fileshare-file-create called.
+    Then:
+     - Ensure that the output is empty (None).
+     - Ensure readable output message content.
+    """
+    mocker.patch('shutil.copy')
+    mocker.patch('shutil.rmtree')
+    mocker.patch.object(demisto, 'getFilePath', return_value={'path': 'my_local_path', 'name': 'my_file_name'})
+
+    mock_read = mocker.mock_open(read_data="XSOAR-TEST")
+    mocker.patch('AzureStorageFileShare.open', mock_read)
+
+    from AzureStorageFileShare import Client, create_file_command
+    share_name = "test"
+    file_entry_id = "12345"
+    directory_path = "xsoar/path"
+    file_name = "test_file.txt"
+
+    command_arguments = dict(share_name=share_name, file_entry_id=file_entry_id,
+                             directory_path=directory_path, file_name=file_name)
+    url = f'{BASE_URL}{share_name}/{directory_path}/{file_name}{SAS_TOKEN}'
+
+    requests_mock.put(url, text='', status_code=201)
+    url = f'{BASE_URL}{share_name}/{directory_path}/{file_name}{SAS_TOKEN}&comp=range'
+
+    requests_mock.put(url, text='', status_code=201)
+
+    client = Client(server_url=BASE_URL, verify=False, proxy=False,
+                    account_sas_token=SAS_TOKEN,
+                    storage_account_name=ACCOUNT_NAME, api_version=API_VERSION)
+    result = create_file_command(client, command_arguments)
+
+    assert result.outputs is None
+    assert result.outputs_prefix is None
+    assert result.readable_output == f'File successfully created in {share_name}.'
