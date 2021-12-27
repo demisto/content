@@ -15,10 +15,10 @@ To retrieve the email files directly from the email service providers, use one o
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Get Email From Email Gateway - Generic
-* Get Original Email - Gmail v2
-* Get Original Email - Microsoft Graph Mail
 * Get Original Email - EWS v2
+* Get Original Email - Gmail v2
+* Get Email From Email Gateway - Generic
+* Get Original Email - Microsoft Graph Mail
 
 ### Integrations
 This playbook does not use any integrations.
@@ -35,7 +35,7 @@ This playbook does not use any commands.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | MessgaeID | The original email message ID to retrieve. This should hold the value of the "Message-ID" header of the original email. |  | Optional |
-| UserID | The email address of the user to fetch the original email for. For gmail, the authenticated user. |  | Optional |
+| UserID | The email address of the user to fetch the original email for. For Gmail, the authenticated user. |  | Optional |
 | EmailSubject | The original email subject. |  | Optional |
 | EmailBrand | If this value is provided, only the relevant playbook runs. If no value is provided, all sub-playbooks are run.<br/>Possible values:<br/>- Gmail<br/>- EWS v2<br/>- EWSO365<br/>- MicrosoftGraphMail<br/>- EmailSecurityGateway<br/><br/>Choosing EmailSecurityGateway executes the following if enabled:<br/>    - FireEye EX \(Email Security\)<br/>    - Proofpoint TAP<br/>    - Mimecast |  | Optional |
 
@@ -51,12 +51,12 @@ This playbook does not use any commands.
 | Email.CC | The CC address of the email. | string |
 | Email.BCC | The BCC address of the email. | string |
 | Email.HTML | The email HTML. | string |
-| Email.Body | The email text body | string |
+| Email.Body | The email text body. | string |
 | Email.Headers | The email headers. | string |
 | Email.Subject | The email subject. | string |
-| Email.HeadersMap | The email headers map. | unknown |
+| Email.HeadersMap | The email headers map. | string |
 | reportedemailentryid | If the original EML was retrieved, this field holds the file's Entry ID. | string |
 
 ## Playbook Image
 ---
-![Get Original Email - Generic v2](../doc_files/Get_Original_Email_-_Generic_v2.png)
+![Get Original Email - Generic v2](Insert the link to your image here)

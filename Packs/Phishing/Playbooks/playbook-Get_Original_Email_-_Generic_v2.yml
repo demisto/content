@@ -81,6 +81,7 @@ outputs:
   type: string
 - contextPath: Email.HeadersMap
   description: The email headers map.
+  type: string
 - contextPath: reportedemailentryid
   description: If the original EML was retrieved, this field holds the file's
     Entry ID.

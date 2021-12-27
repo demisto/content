@@ -1,7 +1,7 @@
 id: detonate_url_-_generic
 version: -1
 name: Detonate URL - Generic
-description: Detonate URL through active integrations that support URL detonation
+description: Detonate URL through active integrations that support URL detonation.
 starttaskid: "0"
 tasks:
   "0":
