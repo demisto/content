@@ -2,7 +2,7 @@
     "name": "X509Certificate",
     "description": "The X509 Certificate Content Packs provides additional capabilities for handling, parsing and validating X509 Certificates in Cortex XSOAR.",
     "support": "xsoar",
-    "currentVersion": "1.0.9",
+    "currentVersion": "1.0.10",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -21,5 +21,9 @@
     "keywords": [
         "X509",
         "Certificate"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

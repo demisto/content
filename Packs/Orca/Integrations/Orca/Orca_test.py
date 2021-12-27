@@ -2,16 +2,18 @@ from datetime import datetime
 
 import pytest
 import json
-from Orca import OrcaClient, ORCA_API_DNS_NAME, BaseClient, DEMISTO_OCCURRED_FORMAT, fetch_incidents
+from Orca import OrcaClient, BaseClient, DEMISTO_OCCURRED_FORMAT, fetch_incidents, ORCA_HTTP_QUERIES_LIMIT
 
 import demistomock as demisto
+
+DUMMY_ORCA_API_DNS_NAME = "https://dummy.io/api"
 
 
 @pytest.fixture
 def orca_client() -> OrcaClient:
     api_key = "dummy api key"
     client = BaseClient(
-        base_url=ORCA_API_DNS_NAME,
+        base_url=DUMMY_ORCA_API_DNS_NAME,
         verify=True,
         headers={
             'Authorization': f'Bearer {api_key}'
@@ -158,7 +160,7 @@ def test_get_alerts_by_type_malware_should_succeed(requests_mock, orca_client: O
             }
         ]
     }
-    requests_mock.get(f"{ORCA_API_DNS_NAME}/alerts?type=malware", json=mock_response)
+    requests_mock.get(f"{DUMMY_ORCA_API_DNS_NAME}/alerts?type=malware", json=mock_response)
     res = orca_client.get_alerts_by_filter(alert_type="malware")
     assert res[0] == mock_response['data'][0]
 
@@ -173,7 +175,7 @@ def test_get_alerts_by_non_existent_type_should_return_empty_list(requests_mock,
         "total_supported_items": 10000,
         "data": []}
 
-    requests_mock.get(f"{ORCA_API_DNS_NAME}/alerts?type={NON_EXISTENT_ALERT_TYPE}", json=mock_response)
+    requests_mock.get(f"{DUMMY_ORCA_API_DNS_NAME}/alerts?type={NON_EXISTENT_ALERT_TYPE}", json=mock_response)
     res = orca_client.get_alerts_by_filter(alert_type=NON_EXISTENT_ALERT_TYPE)
     assert res == []
 
@@ -434,7 +436,7 @@ def test_fetch_incidents_first_run_should_succeed(mocker, requests_mock, orca_cl
         ]
     }
     mocker.patch.object(demisto, 'getLastRun', return_value={'lastRun': None})
-    requests_mock.get(f"{ORCA_API_DNS_NAME}/query/alerts", json=mock_response)
+    requests_mock.get(f"{DUMMY_ORCA_API_DNS_NAME}/query/alerts", json=mock_response)
     fetched_incidents = fetch_incidents(orca_client, max_fetch=20, pull_existing_alerts=True, first_fetch_time=None)
     assert fetched_incidents[0]['name'] == 'orca-59'
     loaded_raw_alert = json.loads(fetched_incidents[0]['rawJSON'])
@@ -542,14 +544,15 @@ def test_get_asset_should_succeed(requests_mock, orca_client: OrcaClient) -> Non
             "unsafe_since": "2020-11-08T13:04:34+00:00"
         }
     }
-    requests_mock.get(f"{ORCA_API_DNS_NAME}/assets/vmimage_111111e11111_ami-11111c111111d7911", json=mock_response)
+    requests_mock.get(f"{DUMMY_ORCA_API_DNS_NAME}/assets/vmimage_111111e11111_ami-11111c111111d7911",
+                      json=mock_response)
     res = orca_client.get_asset(asset_unique_id="vmimage_111111e11111_ami-11111c111111d7911")
     assert res == mock_response
 
 
 def test_get_asset_nonexistent(requests_mock, orca_client: OrcaClient) -> None:
     mock_response = {"error": ""}
-    requests_mock.get(f"{ORCA_API_DNS_NAME}/assets/1234567", json=mock_response)
+    requests_mock.get(f"{DUMMY_ORCA_API_DNS_NAME}/assets/1234567", json=mock_response)
     res = orca_client.get_asset(asset_unique_id="1234567")
     assert res == "Asset Not Found"
 
@@ -571,7 +574,7 @@ def test_test_module_success(requests_mock, orca_client: OrcaClient) -> None:
             "has_scanned_cloud_accounts": True
         }
     }
-    requests_mock.get(f"{ORCA_API_DNS_NAME}/user/action?", json=mock_response)
+    requests_mock.get(f"{DUMMY_ORCA_API_DNS_NAME}/user/action?", json=mock_response)
     res = orca_client.validate_api_key()
     assert res == "ok"
 
@@ -589,6 +592,24 @@ def test_test_module_fail(requests_mock, orca_client: OrcaClient) -> None:
         ],
         "status_code": 403
     }
-    requests_mock.get(f"{ORCA_API_DNS_NAME}/user/action?", json=mock_response)
+    requests_mock.get(f"{DUMMY_ORCA_API_DNS_NAME}/user/action?", json=mock_response)
     res = orca_client.validate_api_key()
     assert res == "Test failed becasue the Orca API key that was entered is invalid, please provide a valid API key"
+
+
+def test_get_alerts_queries_limit(requests_mock, orca_client: OrcaClient) -> None:
+    mock_response = {
+        "version": "0.1.0",
+        "status": "success",
+        "total_items": 58,
+        "total_ungrouped_items": 58,
+        "total_supported_items": 10000,
+        "next_page_token": "mock_next_page",
+        "data": [{"type": "malware"}]
+    }
+    start_queries_count = len(requests_mock.request_history)
+
+    requests_mock.get(f"{DUMMY_ORCA_API_DNS_NAME}/query/alerts", json=mock_response)
+    orca_client.get_all_alerts(first_fetch=None)
+    end_queries_count = len(requests_mock.request_history)
+    assert end_queries_count - start_queries_count == ORCA_HTTP_QUERIES_LIMIT

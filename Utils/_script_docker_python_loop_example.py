@@ -20,7 +20,7 @@ import json
 import traceback
 
 if sys.version_info[0] < 3:
-    import Queue as queue
+    import Queue as queue  # pylint: disable=E0401
 else:
     import queue
 

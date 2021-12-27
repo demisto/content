@@ -6,6 +6,7 @@ Note that adding code to CommonServerUserPython can override functions in Common
 from __future__ import print_function
 
 import base64
+import gc
 import json
 import logging
 import os
@@ -25,6 +26,16 @@ from threading import Lock
 
 import demistomock as demisto
 import warnings
+
+OS_LINUX = False
+OS_MAC = False
+OS_WINDOWS = False
+if sys.platform.startswith('linux'):
+    OS_LINUX = True
+elif sys.platform.startswith('darwin'):
+    OS_MAC = True
+elif sys.platform.startswith('win32'):
+    OS_WINDOWS = True
 
 
 class WarningsHandler(object):
@@ -74,6 +85,9 @@ STIX_PREFIX = "STIX "
 
 ZERO = timedelta(0)
 HOUR = timedelta(hours=1)
+
+# The max number of profiling related rows to print to the log on memory dump
+PROFILING_DUMP_ROWS_LIMIT = 20
 
 
 if IS_PY3:
@@ -1572,25 +1586,27 @@ def logger(func):
     return func_wrapper
 
 
-def formatCell(data, is_pretty=True):
+def formatCell(data, is_pretty=True, json_transform=None):
     """
        Convert a given object to md while decending multiple levels
 
-       :type data: ``str`` or ``list``
+
+       :type data: ``str`` or ``list`` or ``dict``
        :param data: The cell content (required)
 
        :type is_pretty: ``bool``
        :param is_pretty: Should cell content be prettified (default is True)
 
+       :type json_transform: ``JsonTransformer``
+       :param json_transform: The Json transform object to transform the data
+
        :return: The formatted cell content as a string
        :rtype: ``str``
     """
-    if isinstance(data, STRING_TYPES):
-        return data
-    elif isinstance(data, dict):
-        return '\n'.join([u'{}: {}'.format(k, flattenCell(v, is_pretty)) for k, v in data.items()])
-    else:
-        return flattenCell(data, is_pretty)
+    if json_transform is None:
+        json_transform = JsonTransformer(flatten=True)
+
+    return json_transform.json_to_str(data, is_pretty)
 
 
 def flattenCell(data, is_pretty=True):
@@ -1780,8 +1796,107 @@ def create_clickable_url(url):
     return '[{}]({})'.format(url, url)
 
 
+class JsonTransformer:
+    """
+    A class to transform a json to
+
+    :type flatten: ``bool``
+    :param flatten: Should we flatten the json using `flattenCell` (for BC)
+
+    :type keys: ``Set[str]``
+    :param keys: Set of keys to keep
+
+    :type is_nested: ``bool``
+    :param is_nested: If look for nested
+
+    :type func: ``Callable``
+    :param func: A function to parse the json
+
+    :return: None
+    :rtype: ``None``
+    """
+    def __init__(self, flatten=False, keys=None, is_nested=False, func=None):
+        """
+        Constructor for JsonTransformer
+
+        :type flatten: ``bool``
+        :param flatten:  Should we flatten the json using `flattenCell` (for BC)
+
+        :type keys: ``Iterable[str]``
+        :param keys: an iterable of relevant keys list from the json. Notice we save it as a set in the class
+
+        :type is_nested: ``bool``
+        :param is_nested: Whether to search in nested keys or not
+
+        :type func: ``Callable``
+        :param func: A function to parse the json
+        """
+        if keys is None:
+            keys = []
+        self.keys = set(keys)
+        self.is_nested = is_nested
+        self.func = func
+        self.flatten = flatten
+
+    def json_to_str(self, json_input, is_pretty=True):
+        if self.func:
+            return self.func(json_input)
+        if isinstance(json_input, STRING_TYPES):
+            return json_input
+        if not isinstance(json_input, dict):
+            return flattenCell(json_input, is_pretty)
+        if self.flatten:
+            return '\n'.join(
+                [u'{key}: {val}'.format(key=k, val=flattenCell(v, is_pretty)) for k, v in json_input.items()])  # for BC
+
+        str_lst = []
+        prev_path = None
+        for path, key, val in self.json_to_path_generator(json_input):
+            if path != prev_path:  # need to construct tha `path` string only of it changed from the last one
+                str_path = '\n'.join(["{tabs}**{p}**:".format(p=p, tabs=i * '\t') for i, p in enumerate(path)])
+                str_lst.append(str_path)
+                prev_path = path
+
+            str_lst.append(
+                '{tabs}***{key}***: {val}'.format(tabs=len(path) * '\t', key=key, val=flattenCell(val, is_pretty)))
+
+        return '\n'.join(str_lst)
+
+    def json_to_path_generator(self, json_input, path=None):
+        """
+        :type json_input: ``list`` or ``dict``
+        :param json_input: The json input to transform
+ fca
+        :type path: ``List[str]``
+        :param path: The path of the key, value pair inside the json
+
+        :rtype ``Tuple[List[str], str, str]``
+        :return:  A tuple. the second and third elements are key, values, and the first is their path in the json
+        """
+        if path is None:
+            path = []
+        is_in_path = not self.keys or any(p for p in path if p in self.keys)
+        if isinstance(json_input, dict):
+            for k, v in json_input.items():
+
+                if is_in_path or k in self.keys:
+                    if isinstance(v, dict):
+                        for res in self.json_to_path_generator(v, path + [k]):  # this is yield from for python2 BC
+                            yield res
+                    else:
+                        yield path, k, v
+
+                if self.is_nested:
+                    for res in self.json_to_path_generator(v, path + [k]):  # this is yield from for python2 BC
+                        yield res
+        if isinstance(json_input, list):
+            for item in json_input:
+                for res in self.json_to_path_generator(item, path):  # this is yield from for python2 BC
+                    yield res
+
+
 def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None, url_keys=None,
-                    date_fields=None):
+                    date_fields=None, json_transform_mapping=None, is_auto_json_transform=False):
     """
        Converts a demisto table in JSON form to a Markdown table
 
@@ -1809,6 +1924,12 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
 
        :type date_fields: ``list``
        :param date_fields: A list of date fields to format the value to human-readable output.
+
+        :type json_transform_mapping: ``Dict[str, JsonTransformer]``
+        :param json_transform_mapping: A mapping between a header key to correspoding JsonTransformer
+
+        :type is_auto_json_transform: ``bool``
+        :param is_auto_json_transform: Boolean to try to auto transform complex json
 
        :return: A string representation of the markdown table
        :rtype: ``str``
@@ -1860,6 +1981,10 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
                 headers_aux.remove(header)
         headers = headers_aux
 
+    if not json_transform_mapping:
+        json_transform_mapping = {header: JsonTransformer(flatten=not is_auto_json_transform) for header in
+                                  headers}
+
     if t and len(headers) > 0:
         newHeaders = []
         if headerTransform is None:  # noqa
@@ -1883,7 +2008,8 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
                     except Exception:
                         pass
 
-            vals = [stringEscapeMD((formatCell(entry_copy.get(h, ''), False) if entry_copy.get(h) is not None else ''),
+            vals = [stringEscapeMD((formatCell(entry_copy.get(h, ''), False,
+                                               json_transform_mapping.get(h)) if entry_copy.get(h) is not None else ''),
                                    True, True) for h in headers]
 
             # this pipe is optional
@@ -8213,3 +8339,194 @@ def indicators_value_to_clickable(indicators):
             indicator_url = os.path.join('#', 'indicator', indicator_id)
             res[indicator] = '[{indicator}]({indicator_url})'.format(indicator=indicator, indicator_url=indicator_url)
     return res
+
+
+def get_message_threads_dump(_sig, _frame):
+    """
+    Listener function to dump the threads to log info
+
+    :type _sig: ``int``
+    :param _sig: The signal number
+
+    :type _frame: ``Any``
+    :param _frame: The current stack frame
+
+    :return: Message to print.
+    :rtype: ``str``
+    """
+    code = []
+    for threadId, stack in sys._current_frames().items():
+        code.append("\n# ThreadID: %s" % threadId)
+        for filename, lineno, name, line in traceback.extract_stack(stack):
+            code.append('File: "%s", line %d, in %s' % (filename, lineno, name))
+            if line:
+                code.append("  %s" % (line.strip()))
+
+    ret_value = '\n\n--- Start Threads Dump ---\n'\
+        + '\n'.join(code)\
+        + '\n\n--- End Threads Dump ---\n'
+    return ret_value
+
+
+def get_message_memory_dump(_sig, _frame):
+    """
+    Listener function to dump the memory to log info
+
+    :type _sig: ``int``
+    :param _sig: The signal number
+
+    :type _frame: ``Any``
+    :param _frame: The current stack frame
+
+    :return: Message to print.
+    :rtype: ``str``
+    """
+    classes_dict = {}  # type: Dict[str, Dict]
+    for obj in gc.get_objects():
+        size = sys.getsizeof(obj, 0)
+        if hasattr(obj, '__class__'):
+            cls = str(obj.__class__)[8:-2]
+            if cls in classes_dict:
+                current_class = classes_dict.get(cls, {})  # type: Dict
+                current_class['count'] += 1  # type: ignore
+                current_class['size'] += size  # type: ignore
+                classes_dict[cls] = current_class
+            else:
+                current_class = {
+                    'name': cls,
+                    'count': 1,
+                    'size': size,
+                }
+                classes_dict[cls] = current_class
+
+    classes_as_list = list(classes_dict.values())
+    ret_value = '\n\n--- Start Variables Dump ---\n'
+    ret_value += get_message_classes_dump(classes_as_list)
+    ret_value += '\n--- End Variables Dump ---\n\n'
+
+    ret_value = '\n\n--- Start Variables Dump ---\n'
+    ret_value += get_message_local_vars()
+    ret_value += get_message_global_vars()
+    ret_value += '\n--- End Variables Dump ---\n\n'
+
+    return ret_value
+
+
+def get_message_classes_dump(classes_as_list):
+    """
+    A function that prints the memory dump to log info
+
+    :type classes_as_list: ``list``
+    :param classes_as_list: The classes to print to the log
+
+    :return: Message to print.
+    :rtype: ``str``
+    """
+
+    ret_value = '\n\n--- Start Memory Dump ---\n'
+
+    ret_value += '\n--- Start Top {} Classes by Count ---\n\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+    classes_sorted_by_count = sorted(classes_as_list, key=lambda d: d['count'], reverse=True)
+    ret_value += 'Count\t\tSize\t\tName\n'
+    for current_class in classes_sorted_by_count[:PROFILING_DUMP_ROWS_LIMIT]:
+        ret_value += '{}\t\t{}\t\t{}\n'.format(current_class["count"], current_class["size"], current_class["name"])
+    ret_value += '\n--- End Top {} Classes by Count ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+
+    ret_value += '\n--- Start Top {} Classes by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+    classes_sorted_by_size = sorted(classes_as_list, key=lambda d: d['size'], reverse=True)
+    ret_value += 'Size\t\tCount\t\tName\n'
+    for current_class in classes_sorted_by_size[:PROFILING_DUMP_ROWS_LIMIT]:
+        ret_value += '{}\t\t{}\t\t{}\n'.format(current_class["size"], current_class["count"], current_class["name"])
+    ret_value += '\n--- End Top {} Classes by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+
+    ret_value += '\n--- End Memory Dump ---\n\n'
+
+    return ret_value
+
+
+def get_message_local_vars():
+    """
+    A function that prints the local variables to log info
+
+    :return: Message to print.
+    :rtype: ``str``
+    """
+    local_vars = list(locals().items())
+    ret_value = '\n\n--- Start Local Vars ---\n\n'
+    for current_local_var in local_vars:
+        ret_value += str(current_local_var) + '\n'
+
+    ret_value += '\n--- End Local Vars ---\n\n'
+
+    return ret_value
+
+
+def get_message_global_vars():
+    """
+    A function that prints the global variables to log info
+
+    :return: Message to print.
+    :rtype: ``str``
+    """
+    globals_dict = dict(globals())
+    globals_dict_full = {}
+    for current_key in globals_dict.keys():
+        current_value = globals_dict[current_key]
+        globals_dict_full[current_key] = {
+            'name': current_key,
+            'value': current_value,
+            'size': sys.getsizeof(current_value)
+        }
+
+    ret_value = '\n\n--- Start Top {} Globals by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+    globals_sorted_by_size = sorted(globals_dict_full.values(), key=lambda d: d['size'], reverse=True)
+    ret_value += 'Size\t\tName\t\tValue\n'
+    for current_global in globals_sorted_by_size[:PROFILING_DUMP_ROWS_LIMIT]:
+        ret_value += '{}\t\t{}\t\t{}\n'.format(current_global["size"], current_global["name"], current_global["value"])
+    ret_value += '\n--- End Top {} Globals by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+
+    return ret_value
+
+
+def signal_handler_profiling_dump(_sig, _frame):
+    """
+    Listener function to dump the threads and memory to log info
+
+    :type _sig: ``int``
+    :param _sig: The signal number
+
+    :type _frame: ``Any``
+    :param _frame: The current stack frame
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    msg = '\n\n--- Start Profiling Dump ---\n'
+    msg += get_message_threads_dump(_sig, _frame)
+    msg += get_message_memory_dump(_sig, _frame)
+    msg += '\n--- End Profiling Dump ---\n\n'
+    LOG(msg)
+    LOG.print_log()
+
+
+def register_signal_handler_profiling_dump(signal_type=None, profiling_dump_rows_limit=PROFILING_DUMP_ROWS_LIMIT):
+    """
+    Function that registers the threads and memory dump signal listener
+
+    :type profiling_dump_rows_limit: ``int``
+    :param profiling_dump_rows_limit: The max number of profiling related rows to print to the log
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    if OS_LINUX or OS_MAC:
+
+        import signal
+
+        globals_ = globals()
+        globals_['PROFILING_DUMP_ROWS_LIMIT'] = profiling_dump_rows_limit
+
+        requested_signal = signal_type if signal_type else signal.SIGUSR1
+        signal.signal(requested_signal, signal_handler_profiling_dump)
+    else:
+        demisto.info('Not a Linux or Mac OS, profiling using a signal is not supported.')

@@ -991,7 +991,7 @@ outputs:
   description: The display name of device.
   type: String
 - contextPath: ExtraHop.Device.OnWatchlist
-  description: Whether the device is on the advanced analysis whitelist.
+  description: Whether the device is on the advanced analysis allow list.
   type: Boolean
 - contextPath: ExtraHop.Device.ModTime
   description: The time of the most recent update, expressed in milliseconds since the epoch.

@@ -137,6 +137,7 @@ def main():
                                          'from': args.get('from', str(daysAgo.strftime("%Y-%m-%d"))),
                                          'to': args.get('to'),
                                          'table_result': 'true',
+                                         'ignore_deprecated': 'true'
                                      })
         investigations = raw_output.get('data')
         data = get_extra_data_from_investigations(investigations, is_table_result)
@@ -184,7 +185,6 @@ def main():
                                         'resolution': RESOLUTION[0]
                                         })
             results = CommandResults(
-                readable_output="HealthCheckFileSysLog Done",
                 outputs_prefix="dbstatactionableitems",
                 outputs=actionableItems)
 
