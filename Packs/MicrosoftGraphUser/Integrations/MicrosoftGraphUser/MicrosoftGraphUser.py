@@ -195,6 +195,8 @@ class MsGraphClient:
             resp_type="text"
         )
 
+    #  If successful, this method returns 204 No Content response code.
+    #  Using resp_type=text to avoid parsing error.
     def revoke_user_session(self, user):
         self.ms_client.http_request(
             method='POST',
