@@ -1,10 +1,9 @@
-id: AccessData-Process-Evidence
+id: AccessDataProcessEvidenceAndExport
 version: -1
+vcShouldKeepItemLegacyProdMachine: false
 name: 'AccessData: Process Evidence and Export'
 description: Creates a new case and processes targetted evidence.
 starttaskid: "0"
-fromversion: 6.0.0
-vcShouldKeepItemLegacyProdMachine: false
 tasks:
   "0":
     id: "0"
@@ -38,10 +37,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: d3fe8441-12c2-4de5-88a9-13b90c5431e6
+    taskid: 68df9d39-e5bb-4f2d-81bb-15e233dc7932
     type: regular
     task:
-      id: d3fe8441-12c2-4de5-88a9-13b90c5431e6
+      id: 68df9d39-e5bb-4f2d-81bb-15e233dc7932
       version: -1
       name: Locate Case
       description: Returns a case's information determined by matching names.
@@ -54,7 +53,7 @@ tasks:
       - "2"
     scriptarguments:
       name:
-        simple: Tom Playbook Test Case
+        simple: ${inputs. casename}
     separatecontext: false
     view: |-
       {
@@ -72,10 +71,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 6136a8ac-b3e8-4807-8450-6c64d44b3a89
+    taskid: b99308ca-1f4c-441f-829f-ba342f5cf9b5
     type: regular
     task:
-      id: 6136a8ac-b3e8-4807-8450-6c64d44b3a89
+      id: b99308ca-1f4c-441f-829f-ba342f5cf9b5
       version: -1
       name: Process Evidence
       description: Processes evidence of file, directory or image type within the
@@ -91,272 +90,17 @@ tasks:
       caseid:
         simple: ${Accessdata.Case.ID}
       evidence_path:
-        simple: \\ec2amaz-ka8r2lu\E$\TestData\Mantooth.E01\Mantooth.E01
+        simple: ${inputs.evidencepath}
       evidence_type:
         simple: "2"
       options:
-        simple: |-
-          <?xml version="1.0" encoding="utf-16"?>
-          <processingOptions>
-            <evidenceProcesses>
-              <PreProcessing>
-                <dropIndexes />
-                <dematerializeViews />
-              </PreProcessing>
-              <MD5 />
-              <SHA1 />
-              <FlagBadExtension />
-              <storeThumbnails />
-              <FileBoundFS>
-                <TAR />
-                <ZIP />
-                <GZIP />
-                <BZIP2 />
-                <MSG />
-                <RAR />
-                <PST />
-                <DBX />
-                <MBOX />
-                <EMAIL />
-                <EXCHANGE />
-                <PKCS7 />
-                <SEVENZIP />
-                <PDF />
-                <MRADBS />
-              </FileBoundFS>
-              <identify />
-              <undelete />
-              <indexing>
-                <dtSearchOptions>
-                  <maxMem>250</maxMem>
-                  <maxWordLength>32</maxWordLength>
-                  <autoCommitInterval>0</autoCommitInterval>
-                  <hyphens>LQ==</hyphens>
-                  <ignores>AQIDBAUGBwgLDg8QERITFBUWFxgZ</ignores>
-                  <spaces>CQoMDSAhQCIjJCUmJygpKissLi86Ozw9Pj9bXF1eYHt8fX4=</spaces>
-                  <binaryFilteringOption>
-                    <filterBinaryUnicode />
-                  </binaryFilteringOption>
-                  <dateRecognition>
-                    <Off />
-                  </dateRecognition>
-                  <hyphenTreatment>
-                    <hyphenSpace />
-                  </hyphenTreatment>
-                  <letters>
-                    <letter>0 0 0 0</letter>
-                    <letter>1 1 1 1</letter>
-                    <letter>2 2 2 2</letter>
-                    <letter>3 3 3 3</letter>
-                    <letter>4 4 4 4</letter>
-                    <letter>5 5 5 5</letter>
-                    <letter>6 6 6 6</letter>
-                    <letter>7 7 7 7</letter>
-                    <letter>8 8 8 8</letter>
-                    <letter>9 9 9 9</letter>
-                    <letter>A a A A</letter>
-                    <letter>B b B B</letter>
-                    <letter>C c C C</letter>
-                    <letter>D d D D</letter>
-                    <letter>E e E E</letter>
-                    <letter>F f F F</letter>
-                    <letter>G g G G</letter>
-                    <letter>H h H H</letter>
-                    <letter>I i I I</letter>
-                    <letter>J j J J</letter>
-                    <letter>K k K K</letter>
-                    <letter>L l L L</letter>
-                    <letter>M m M M</letter>
-                    <letter>N n N N</letter>
-                    <letter>O o O O</letter>
-                    <letter>P p P P</letter>
-                    <letter>Q q Q Q</letter>
-                    <letter>R r R R</letter>
-                    <letter>S s S S</letter>
-                    <letter>T t T T</letter>
-                    <letter>U u U U</letter>
-                    <letter>V v V V</letter>
-                    <letter>W w W W</letter>
-                    <letter>X x X X</letter>
-                    <letter>Y y Y Y</letter>
-                    <letter>Z z Z Z</letter>
-                    <letter>_ _ _ _</letter>
-                    <letter>a a A a</letter>
-                    <letter>b b B b</letter>
-                    <letter>c c C c</letter>
-                    <letter>d d D d</letter>
-                    <letter>e e E e</letter>
-                    <letter>f f F f</letter>
-                    <letter>g g G g</letter>
-                    <letter>h h H h</letter>
-                    <letter>i i I i</letter>
-                    <letter>j j J j</letter>
-                    <letter>k k K k</letter>
-                    <letter>l l L l</letter>
-                    <letter>m m M m</letter>
-                    <letter>n n N n</letter>
-                    <letter>o o O o</letter>
-                    <letter>p p P p</letter>
-                    <letter>q q Q q</letter>
-                    <letter>r r R r</letter>
-                    <letter>s s S s</letter>
-                    <letter>t t T t</letter>
-                    <letter>u u U u</letter>
-                    <letter>v v V v</letter>
-                    <letter>w w W w</letter>
-                    <letter>x x X x</letter>
-                    <letter>y y Y y</letter>
-                    <letter>z z Z z</letter>
-                  </letters>
-                  <noiseWords>
-                    <noiseWord>YQ==</noiseWord>
-                    <noiseWord>YWJvdXQ=</noiseWord>
-                    <noiseWord>YWZ0ZXI=</noiseWord>
-                    <noiseWord>YWxs</noiseWord>
-                    <noiseWord>YWxzbw==</noiseWord>
-                    <noiseWord>YW4=</noiseWord>
-                    <noiseWord>YW5k</noiseWord>
-                    <noiseWord>YW55</noiseWord>
-                    <noiseWord>YXJl</noiseWord>
-                    <noiseWord>YXM=</noiseWord>
-                    <noiseWord>YXQ=</noiseWord>
-                    <noiseWord>YmU=</noiseWord>
-                    <noiseWord>YmVlbg==</noiseWord>
-                    <noiseWord>YnV0</noiseWord>
-                    <noiseWord>Ynk=</noiseWord>
-                    <noiseWord>Y2Fu</noiseWord>
-                    <noiseWord>Y29tZQ==</noiseWord>
-                    <noiseWord>Y291bGQ=</noiseWord>
-                    <noiseWord>ZGlk</noiseWord>
-                    <noiseWord>ZG8=</noiseWord>
-                    <noiseWord>ZXZlbg==</noiseWord>
-                    <noiseWord>Zm9y</noiseWord>
-                    <noiseWord>ZnJvbQ==</noiseWord>
-                    <noiseWord>Z2V0</noiseWord>
-                    <noiseWord>Z290</noiseWord>
-                    <noiseWord>aGU=</noiseWord>
-                    <noiseWord>aGVy</noiseWord>
-                    <noiseWord>aGlt</noiseWord>
-                    <noiseWord>aGlz</noiseWord>
-                    <noiseWord>aG93</noiseWord>
-                    <noiseWord>aQ==</noiseWord>
-                    <noiseWord>aWY=</noiseWord>
-                    <noiseWord>aW4=</noiseWord>
-                    <noiseWord>aW50bw==</noiseWord>
-                    <noiseWord>aXQ=</noiseWord>
-                    <noiseWord>aXRz</noiseWord>
-                    <noiseWord>anVzdA==</noiseWord>
-                    <noiseWord>bGlrZQ==</noiseWord>
-                    <noiseWord>bWU=</noiseWord>
-                    <noiseWord>bXk=</noiseWord>
-                    <noiseWord>bm90</noiseWord>
-                    <noiseWord>bm93</noiseWord>
-                    <noiseWord>b2Y=</noiseWord>
-                    <noiseWord>b24=</noiseWord>
-                    <noiseWord>b25seQ==</noiseWord>
-                    <noiseWord>b3I=</noiseWord>
-                    <noiseWord>b3RoZXI=</noiseWord>
-                    <noiseWord>b3Vy</noiseWord>
-                    <noiseWord>b3V0</noiseWord>
-                    <noiseWord>b3Zlcg==</noiseWord>
-                    <noiseWord>c2Vl</noiseWord>
-                    <noiseWord>c2hl</noiseWord>
-                    <noiseWord>c29tZQ==</noiseWord>
-                    <noiseWord>dGFrZQ==</noiseWord>
-                    <noiseWord>dGhhbg==</noiseWord>
-                    <noiseWord>dGhhdA==</noiseWord>
-                    <noiseWord>dGhl</noiseWord>
-                    <noiseWord>dGhlaXI=</noiseWord>
-                    <noiseWord>dGhlbQ==</noiseWord>
-                    <noiseWord>dGhlbg==</noiseWord>
-                    <noiseWord>dGhlcmU=</noiseWord>
-                    <noiseWord>dGhlc2U=</noiseWord>
-                    <noiseWord>dGhleQ==</noiseWord>
-                    <noiseWord>dGhpcw==</noiseWord>
-                    <noiseWord>dGhvc2U=</noiseWord>
-                    <noiseWord>dG8=</noiseWord>
-                    <noiseWord>dG9v</noiseWord>
-                    <noiseWord>dW5kZXI=</noiseWord>
-                    <noiseWord>dXA=</noiseWord>
-                    <noiseWord>dmVyeQ==</noiseWord>
-                    <noiseWord>d2Fz</noiseWord>
-                    <noiseWord>d2F5</noiseWord>
-                    <noiseWord>d2U=</noiseWord>
-                    <noiseWord>d2VsbA==</noiseWord>
-                    <noiseWord>d2VyZQ==</noiseWord>
-                    <noiseWord>d2hhdA==</noiseWord>
-                    <noiseWord>d2hlbg==</noiseWord>
-                    <noiseWord>d2hlcmU=</noiseWord>
-                    <noiseWord>d2hpY2g=</noiseWord>
-                    <noiseWord>d2hpbGU=</noiseWord>
-                    <noiseWord>d2hv</noiseWord>
-                    <noiseWord>d2lsbA==</noiseWord>
-                    <noiseWord>d2l0aA==</noiseWord>
-                    <noiseWord>d291bGQ=</noiseWord>
-                    <noiseWord>eW91</noiseWord>
-                    <noiseWord>eW91cg==</noiseWord>
-                  </noiseWords>
-                </dtSearchOptions>
-                <indexRefinement>
-                  <excludedFileCategoryList />
-                  <conditionalAdd relationship="OR">
-                    <fileType>
-                      <archives />
-                      <databases />
-                      <documents />
-                      <emailMessages />
-                      <executables />
-                      <graphics />
-                      <spreadsheets />
-                      <others />
-                      <unknown />
-                      <multimedia />
-                      <internetChat />
-                      <osFiles />
-                      <mobileDeviceFiles />
-                    </fileType>
-                    <fileStatus />
-                  </conditionalAdd>
-                  <indexDateSizeOptions />
-                </indexRefinement>
-              </indexing>
-              <evidenceRefinement>
-                <applicationData />
-                <excludedFileCategoryList />
-                <conditionalAdd relationship="OR">
-                  <fileStatus />
-                  <fileType>
-                    <archives />
-                    <databases />
-                    <documents />
-                    <emailMessages />
-                    <executables />
-                    <graphics />
-                    <spreadsheets />
-                    <others />
-                    <unknown />
-                    <multimedia />
-                    <internetChat />
-                    <osFiles />
-                    <mobileDeviceFiles />
-                  </fileType>
-                </conditionalAdd>
-                <evidenceDateSizeOptions />
-              </evidenceRefinement>
-              <PostProcessing>
-                <createMaterializedViews />
-                <generateDatabaseStatistics />
-                <createIndexes />
-                <quinC />
-              </PostProcessing>
-            </evidenceProcesses>
-          </processingOptions>
+        simple: ${inputs.processingoptions}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 390
+          "y": 380
         }
       }
     note: false
@@ -440,10 +184,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: a25fec82-556e-41ad-8da6-6703f02c5325
+    taskid: 03fbf504-48fc-490b-8b71-4d430a724380
     type: regular
     task:
-      id: a25fec82-556e-41ad-8da6-6703f02c5325
+      id: 03fbf504-48fc-490b-8b71-4d430a724380
       version: -1
       name: Export Native Files
       description: Exports native files from the case to a directory reduced by the
@@ -457,6 +201,8 @@ tasks:
         simple: ${Accessdata.Case.ID}
       filter_json:
         simple: ${Accessdata.Filter}
+      path:
+        simple: ${inputs.destinationpath}
     separatecontext: false
     view: |-
       {
@@ -474,13 +220,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: a809fec4-b2c5-4c39-84cb-9f7c5f6ad5ed
+    taskid: b2731cdd-ec5e-4015-891e-bb785ac16f53
     type: regular
     task:
-      id: a809fec4-b2c5-4c39-84cb-9f7c5f6ad5ed
+      id: b2731cdd-ec5e-4015-891e-bb785ac16f53
       version: -1
       name: Create Filter
-      description: Creates a new filter for API to reference from.
       script: AccessData|||accessdata-api-create-filter
       type: regular
       iscommand: true
@@ -512,10 +257,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 574efb98-e290-47dc-810a-b5e8c99c4ba7
+    taskid: 4ce8573c-4170-4311-82c8-ec2221093d13
     type: regular
     task:
-      id: 574efb98-e290-47dc-810a-b5e8c99c4ba7
+      id: 4ce8573c-4170-4311-82c8-ec2221093d13
       version: -1
       name: Await Job Status
       description: Called by the GenericPolling playbook, schedules the polling task.
@@ -536,7 +281,7 @@ tasks:
           transformers:
           - operator: Stringify
       dt:
-        simple: ${Accessdata.Case.Job(val.State !== 'JobState.Completed').ID}
+        simple: Accessdata.Case.Job(val.State !== 'JobState.Completed').ID
       ids:
         simple: ${Accessdata.Case.Job.ID}
       interval:
@@ -566,10 +311,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: f6b52d91-14d8-4222-8c17-8105697f5abe
+    taskid: eb90d666-c61d-466c-8989-7959481bf11b
     type: regular
     task:
-      id: f6b52d91-14d8-4222-8c17-8105697f5abe
+      id: eb90d666-c61d-466c-8989-7959481bf11b
       version: -1
       name: Get Job Status
       description: Gathers state and information about the specified job.
@@ -613,24 +358,282 @@ view: |-
     }
   }
 inputs:
-- key: PROTOCOL
-  value: {}
+- key: casename
+  value:
+    simple: Tom Playbook Test Case
   required: true
-  description: The protocol to use for accessing the REST API.
+  description: The name of the case to process evidence within.
   playbookInputQuery: null
-- key: SERVER
-  value: {}
+- key: processingoptions
+  value:
+    simple: |-
+      <?xml version="1.0" encoding="utf-16"?>
+      <processingOptions>
+        <evidenceProcesses>
+          <PreProcessing>
+            <dropIndexes />
+            <dematerializeViews />
+          </PreProcessing>
+          <MD5 />
+          <SHA1 />
+          <FlagBadExtension />
+          <storeThumbnails />
+          <FileBoundFS>
+            <TAR />
+            <ZIP />
+            <GZIP />
+            <BZIP2 />
+            <MSG />
+            <RAR />
+            <PST />
+            <DBX />
+            <MBOX />
+            <EMAIL />
+            <EXCHANGE />
+            <PKCS7 />
+            <SEVENZIP />
+            <PDF />
+            <MRADBS />
+          </FileBoundFS>
+          <identify />
+          <undelete />
+          <indexing>
+            <dtSearchOptions>
+              <maxMem>250</maxMem>
+              <maxWordLength>32</maxWordLength>
+              <autoCommitInterval>0</autoCommitInterval>
+              <hyphens>LQ==</hyphens>
+              <ignores>AQIDBAUGBwgLDg8QERITFBUWFxgZ</ignores>
+              <spaces>CQoMDSAhQCIjJCUmJygpKissLi86Ozw9Pj9bXF1eYHt8fX4=</spaces>
+              <binaryFilteringOption>
+                <filterBinaryUnicode />
+              </binaryFilteringOption>
+              <dateRecognition>
+                <Off />
+              </dateRecognition>
+              <hyphenTreatment>
+                <hyphenSpace />
+              </hyphenTreatment>
+              <letters>
+                <letter>0 0 0 0</letter>
+                <letter>1 1 1 1</letter>
+                <letter>2 2 2 2</letter>
+                <letter>3 3 3 3</letter>
+                <letter>4 4 4 4</letter>
+                <letter>5 5 5 5</letter>
+                <letter>6 6 6 6</letter>
+                <letter>7 7 7 7</letter>
+                <letter>8 8 8 8</letter>
+                <letter>9 9 9 9</letter>
+                <letter>A a A A</letter>
+                <letter>B b B B</letter>
+                <letter>C c C C</letter>
+                <letter>D d D D</letter>
+                <letter>E e E E</letter>
+                <letter>F f F F</letter>
+                <letter>G g G G</letter>
+                <letter>H h H H</letter>
+                <letter>I i I I</letter>
+                <letter>J j J J</letter>
+                <letter>K k K K</letter>
+                <letter>L l L L</letter>
+                <letter>M m M M</letter>
+                <letter>N n N N</letter>
+                <letter>O o O O</letter>
+                <letter>P p P P</letter>
+                <letter>Q q Q Q</letter>
+                <letter>R r R R</letter>
+                <letter>S s S S</letter>
+                <letter>T t T T</letter>
+                <letter>U u U U</letter>
+                <letter>V v V V</letter>
+                <letter>W w W W</letter>
+                <letter>X x X X</letter>
+                <letter>Y y Y Y</letter>
+                <letter>Z z Z Z</letter>
+                <letter>_ _ _ _</letter>
+                <letter>a a A a</letter>
+                <letter>b b B b</letter>
+                <letter>c c C c</letter>
+                <letter>d d D d</letter>
+                <letter>e e E e</letter>
+                <letter>f f F f</letter>
+                <letter>g g G g</letter>
+                <letter>h h H h</letter>
+                <letter>i i I i</letter>
+                <letter>j j J j</letter>
+                <letter>k k K k</letter>
+                <letter>l l L l</letter>
+                <letter>m m M m</letter>
+                <letter>n n N n</letter>
+                <letter>o o O o</letter>
+                <letter>p p P p</letter>
+                <letter>q q Q q</letter>
+                <letter>r r R r</letter>
+                <letter>s s S s</letter>
+                <letter>t t T t</letter>
+                <letter>u u U u</letter>
+                <letter>v v V v</letter>
+                <letter>w w W w</letter>
+                <letter>x x X x</letter>
+                <letter>y y Y y</letter>
+                <letter>z z Z z</letter>
+              </letters>
+              <noiseWords>
+                <noiseWord>YQ==</noiseWord>
+                <noiseWord>YWJvdXQ=</noiseWord>
+                <noiseWord>YWZ0ZXI=</noiseWord>
+                <noiseWord>YWxs</noiseWord>
+                <noiseWord>YWxzbw==</noiseWord>
+                <noiseWord>YW4=</noiseWord>
+                <noiseWord>YW5k</noiseWord>
+                <noiseWord>YW55</noiseWord>
+                <noiseWord>YXJl</noiseWord>
+                <noiseWord>YXM=</noiseWord>
+                <noiseWord>YXQ=</noiseWord>
+                <noiseWord>YmU=</noiseWord>
+                <noiseWord>YmVlbg==</noiseWord>
+                <noiseWord>YnV0</noiseWord>
+                <noiseWord>Ynk=</noiseWord>
+                <noiseWord>Y2Fu</noiseWord>
+                <noiseWord>Y29tZQ==</noiseWord>
+                <noiseWord>Y291bGQ=</noiseWord>
+                <noiseWord>ZGlk</noiseWord>
+                <noiseWord>ZG8=</noiseWord>
+                <noiseWord>ZXZlbg==</noiseWord>
+                <noiseWord>Zm9y</noiseWord>
+                <noiseWord>ZnJvbQ==</noiseWord>
+                <noiseWord>Z2V0</noiseWord>
+                <noiseWord>Z290</noiseWord>
+                <noiseWord>aGU=</noiseWord>
+                <noiseWord>aGVy</noiseWord>
+                <noiseWord>aGlt</noiseWord>
+                <noiseWord>aGlz</noiseWord>
+                <noiseWord>aG93</noiseWord>
+                <noiseWord>aQ==</noiseWord>
+                <noiseWord>aWY=</noiseWord>
+                <noiseWord>aW4=</noiseWord>
+                <noiseWord>aW50bw==</noiseWord>
+                <noiseWord>aXQ=</noiseWord>
+                <noiseWord>aXRz</noiseWord>
+                <noiseWord>anVzdA==</noiseWord>
+                <noiseWord>bGlrZQ==</noiseWord>
+                <noiseWord>bWU=</noiseWord>
+                <noiseWord>bXk=</noiseWord>
+                <noiseWord>bm90</noiseWord>
+                <noiseWord>bm93</noiseWord>
+                <noiseWord>b2Y=</noiseWord>
+                <noiseWord>b24=</noiseWord>
+                <noiseWord>b25seQ==</noiseWord>
+                <noiseWord>b3I=</noiseWord>
+                <noiseWord>b3RoZXI=</noiseWord>
+                <noiseWord>b3Vy</noiseWord>
+                <noiseWord>b3V0</noiseWord>
+                <noiseWord>b3Zlcg==</noiseWord>
+                <noiseWord>c2Vl</noiseWord>
+                <noiseWord>c2hl</noiseWord>
+                <noiseWord>c29tZQ==</noiseWord>
+                <noiseWord>dGFrZQ==</noiseWord>
+                <noiseWord>dGhhbg==</noiseWord>
+                <noiseWord>dGhhdA==</noiseWord>
+                <noiseWord>dGhl</noiseWord>
+                <noiseWord>dGhlaXI=</noiseWord>
+                <noiseWord>dGhlbQ==</noiseWord>
+                <noiseWord>dGhlbg==</noiseWord>
+                <noiseWord>dGhlcmU=</noiseWord>
+                <noiseWord>dGhlc2U=</noiseWord>
+                <noiseWord>dGhleQ==</noiseWord>
+                <noiseWord>dGhpcw==</noiseWord>
+                <noiseWord>dGhvc2U=</noiseWord>
+                <noiseWord>dG8=</noiseWord>
+                <noiseWord>dG9v</noiseWord>
+                <noiseWord>dW5kZXI=</noiseWord>
+                <noiseWord>dXA=</noiseWord>
+                <noiseWord>dmVyeQ==</noiseWord>
+                <noiseWord>d2Fz</noiseWord>
+                <noiseWord>d2F5</noiseWord>
+                <noiseWord>d2U=</noiseWord>
+                <noiseWord>d2VsbA==</noiseWord>
+                <noiseWord>d2VyZQ==</noiseWord>
+                <noiseWord>d2hhdA==</noiseWord>
+                <noiseWord>d2hlbg==</noiseWord>
+                <noiseWord>d2hlcmU=</noiseWord>
+                <noiseWord>d2hpY2g=</noiseWord>
+                <noiseWord>d2hpbGU=</noiseWord>
+                <noiseWord>d2hv</noiseWord>
+                <noiseWord>d2lsbA==</noiseWord>
+                <noiseWord>d2l0aA==</noiseWord>
+                <noiseWord>d291bGQ=</noiseWord>
+                <noiseWord>eW91</noiseWord>
+                <noiseWord>eW91cg==</noiseWord>
+              </noiseWords>
+            </dtSearchOptions>
+            <indexRefinement>
+              <excludedFileCategoryList />
+              <conditionalAdd relationship="OR">
+                <fileType>
+                  <archives />
+                  <databases />
+                  <documents />
+                  <emailMessages />
+                  <executables />
+                  <graphics />
+                  <spreadsheets />
+                  <others />
+                  <unknown />
+                  <multimedia />
+                  <internetChat />
+                  <osFiles />
+                  <mobileDeviceFiles />
+                </fileType>
+                <fileStatus />
+              </conditionalAdd>
+              <indexDateSizeOptions />
+            </indexRefinement>
+          </indexing>
+          <evidenceRefinement>
+            <applicationData />
+            <excludedFileCategoryList />
+            <conditionalAdd relationship="OR">
+              <fileStatus />
+              <fileType>
+                <archives />
+                <databases />
+                <documents />
+                <emailMessages />
+                <executables />
+                <graphics />
+                <spreadsheets />
+                <others />
+                <unknown />
+                <multimedia />
+                <internetChat />
+                <osFiles />
+                <mobileDeviceFiles />
+              </fileType>
+            </conditionalAdd>
+            <evidenceDateSizeOptions />
+          </evidenceRefinement>
+          <PostProcessing>
+            <createMaterializedViews />
+            <generateDatabaseStatistics />
+            <createIndexes />
+            <quinC />
+          </PostProcessing>
+        </evidenceProcesses>
+      </processingOptions>
   required: true
-  description: The address of the REST API service.
+  description: The processing options to supply to the engine.
   playbookInputQuery: null
-- key: PORT
+- key: destinationpath
   value: {}
   required: true
-  description: The port to reach the REST API service.
+  description: The path to which to export the native files.
   playbookInputQuery: null
-- key: APIKEY
-  value: {}
-  required: true
-  description: The API key used for authentication with the REST API.
+- key: evidencepath
+  value:
+    simple: \\ec2amaz-xxxxxx\E$\TestData\Mantooth\Mantooth.E01
+  required: false
+  description: The path to the evidence file to process.
   playbookInputQuery: null
 outputs: []
