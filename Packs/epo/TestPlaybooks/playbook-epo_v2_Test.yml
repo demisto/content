@@ -240,7 +240,7 @@ tasks:
       script: McAfee ePO v2|||epo-command
       type: regular
       iscommand: true
-      brand: epo V2
+      brand: ""
     nexttasks:
       '#none#':
       - "8"
@@ -273,7 +273,7 @@ tasks:
       script: McAfee ePO v2|||epo-update-client-dat
       type: regular
       iscommand: true
-      brand: epo V2
+      brand: ""
     nexttasks:
       '#none#':
       - "9"
@@ -336,7 +336,7 @@ tasks:
       script: McAfee ePO v2|||epo-get-system-tree-group
       type: regular
       iscommand: true
-      brand: epo V2
+      brand: ""
     nexttasks:
       '#none#':
       - "11"
@@ -408,7 +408,7 @@ tasks:
       script: McAfee ePO v2|||epo-find-systems
       type: regular
       iscommand: true
-      brand: epo V2
+      brand: ""
     nexttasks:
       '#none#':
       - "13"
@@ -522,7 +522,7 @@ tasks:
       script: McAfee ePO v2|||epo-find-system
       type: regular
       iscommand: true
-      brand: epo V2
+      brand: ""
     nexttasks:
       '#none#':
       - "15"
@@ -632,7 +632,7 @@ tasks:
       script: McAfee ePO v2|||epo-wakeup-agent
       type: regular
       iscommand: true
-      brand: epo V2
+      brand: ""
     nexttasks:
       '#none#':
       - "17"
@@ -665,7 +665,7 @@ tasks:
       script: McAfee ePO v2|||epo-apply-tag
       type: regular
       iscommand: true
-      brand: epo V2
+      brand: ""
     nexttasks:
       '#none#':
       - "18"
@@ -700,7 +700,7 @@ tasks:
       script: McAfee ePO v2|||epo-clear-tag
       type: regular
       iscommand: true
-      brand: epo V2
+      brand: ""
     nexttasks:
       '#none#':
       - "19"
@@ -842,7 +842,7 @@ tasks:
       script: McAfee ePO v2|||epo-query-table
       type: regular
       iscommand: true
-      brand: epo V2
+      brand: ""
     nexttasks:
       '#none#':
       - "23"
@@ -979,7 +979,7 @@ tasks:
       script: McAfee ePO v2|||epo-move-system
       type: regular
       iscommand: true
-      brand: epo V2
+      brand: ""
     nexttasks:
       '#none#':
       - "40"
@@ -1014,7 +1014,7 @@ tasks:
       script: McAfee ePO v2|||epo-advanced-command
       type: regular
       iscommand: true
-      brand: epo V2
+      brand: ""
     nexttasks:
       '#none#':
       - "28"
@@ -1171,7 +1171,7 @@ tasks:
       script: McAfee ePO v2|||epo-assign-policy-to-group
       type: regular
       iscommand: true
-      brand: epo V2
+      brand: ""
     nexttasks:
       '#none#':
       - "32"
@@ -1208,7 +1208,7 @@ tasks:
       script: McAfee ePO v2|||epo-assign-policy-to-system
       type: regular
       iscommand: true
-      brand: epo V2
+      brand: ""
     nexttasks:
       '#none#':
       - "33"
@@ -1247,7 +1247,7 @@ tasks:
       script: McAfee ePO v2|||epo-list-issues
       type: regular
       iscommand: true
-      brand: epo V2
+      brand: ""
     nexttasks:
       '#none#':
       - "34"
@@ -1394,7 +1394,7 @@ tasks:
       script: McAfee ePO v2|||epo-delete-issue
       type: regular
       iscommand: true
-      brand: epo V2
+      brand: ""
     nexttasks:
       '#none#':
       - "39"
@@ -1427,7 +1427,7 @@ tasks:
       script: McAfee ePO v2|||epo-create-issue
       type: regular
       iscommand: true
-      brand: epo V2
+      brand: ""
     nexttasks:
       '#none#':
       - "37"
@@ -1519,7 +1519,7 @@ tasks:
       script: McAfee ePO v2|||epo-update-issue
       type: regular
       iscommand: true
-      brand: epo V2
+      brand: ""
     nexttasks:
       '#none#':
       - "35"
@@ -1583,7 +1583,7 @@ tasks:
       script: McAfee ePO v2|||epo-move-system
       type: regular
       iscommand: true
-      brand: epo V2
+      brand: ""
     nexttasks:
       '#none#':
       - "27"
