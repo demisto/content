@@ -3,6 +3,10 @@ File transfer between Cortex XSOAR to a remote machine, and execution of command
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration---remoteaccess-v2).
 
+This integration was integrated and tested with remote machine with operation system of centos-7.
+
+Integration does not work with Windows operation system.
+
 ## Configure RemoteAccess v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
