@@ -7,13 +7,20 @@
 
 import argparse
 import os
-from os import path
-import requests
 import tempfile
-from zipfile import ZipFile, ZIP_DEFLATED
+from os import path
+from zipfile import ZIP_DEFLATED, ZipFile
+
+import requests
 
 ID_SET_URL = "https://storage.googleapis.com/marketplace-dist/content/id_set.json"
 BUCKET_PACKS_URL = "https://marketplace-dist.storage.googleapis.com/content/packs"
+
+
+def load_bucket_id_set(verify_ssl: bool) -> dict:
+    """ Loads the bucket id_set.json"""
+    r = requests.request(method='GET', url=ID_SET_URL, verify=verify_ssl)
+    return r.json()
 
 
 def create_content_item_id_set(id_set_list: list) -> dict:
@@ -23,6 +30,14 @@ def create_content_item_id_set(id_set_list: list) -> dict:
         for key, val in item.items():
             res[key] = val
     return res
+
+
+def zip_folder(source_path, output_path):
+    with ZipFile(output_path + '.zip', 'w', ZIP_DEFLATED) as source_zip:
+        for root, dirs, files in os.walk(source_path, topdown=True):
+            for f in files:
+                full_file_path = os.path.join(root, f)
+                source_zip.write(filename=full_file_path, arcname=f)
 
 
 def get_docker_images_with_tag(pack_names: list, id_set_json: dict) -> list:
@@ -87,14 +102,6 @@ def download_and_save_packs(pack_names: list, id_set_json: dict, output_path: st
         temp_dir.cleanup()
 
 
-def zip_folder(source_pah, output_path):
-    with ZipFile(output_path + '.zip', 'w', ZIP_DEFLATED) as packs_zip:
-        for root, dirs, files in os.walk(source_pah, topdown=True):
-            for f in files:
-                full_file_path = os.path.join(root, f)
-                packs_zip.write(filename=full_file_path, arcname=f)
-
-
 def download_and_save_docker_images(pack_names: list, output_path: str, id_set_json: dict) -> None:
     """ Downloads and saves the docker images into docker.zip in output_path"""
     import docker  # import docker only when required
@@ -144,31 +151,21 @@ def options_handler():
     return parser.parse_args()
 
 
-def load_bucket_id_set(verify_ssl: bool) -> dict:
-    """ Loads the bucket id_set.json"""
-    r = requests.request(method='GET', url=ID_SET_URL, verify=verify_ssl)
-    return r.json()
-
-
 def main():
     options = options_handler()
     output_path = options.output_path
     pack_display_names = options.packs.split(',')
     verify_ssl = not options.insecure
-    temp_dir = tempfile.TemporaryDirectory()
-    try:
-        id_set_json = load_bucket_id_set(verify_ssl)
-        pack_names = get_pack_names(pack_display_names, id_set_json)
-        if not options.skip_packs:
-            download_and_save_packs(pack_names, id_set_json, path.join(output_path, 'packs'), verify_ssl)
-        else:
-            print('Skipping packs.zip creation')
-        if not options.skip_docker:
-            download_and_save_docker_images(pack_names, path.join(output_path, 'docker'), id_set_json)
-        else:
-            print('Skipping dockers.zip creation')
-    finally:
-        temp_dir.cleanup()
+    id_set_json = load_bucket_id_set(verify_ssl)
+    pack_names = get_pack_names(pack_display_names, id_set_json)
+    if not options.skip_packs:
+        download_and_save_packs(pack_names, id_set_json, path.join(output_path, 'packs'), verify_ssl)
+    else:
+        print('Skipping packs.zip creation')
+    if not options.skip_docker:
+        download_and_save_docker_images(pack_names, path.join(output_path, 'docker'), id_set_json)
+    else:
+        print('Skipping dockers.zip creation')
 
 
 if __name__ == '__main__':
