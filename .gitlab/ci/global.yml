@@ -21,6 +21,12 @@
   - cp ./Tests/id_set.json $ARTIFACTS_FOLDER
   - section_end "Create ID Set"
 
+.create-id-set-mp-v2: &create-id-set-mp-v2
+  - section_start "Create ID Set" --collapsed
+  - demisto-sdk create-id-set -o ./Tests/id_set.json --marketplace "marketplace-v2" >> $ARTIFACTS_FOLDER/logs/create_id_set.log
+  - cp ./Tests/id_set.json $ARTIFACTS_FOLDER
+  - section_end "Create ID Set"
+
 .download-demisto-conf:
   - section_start "Download content-test-conf" --collapsed
   - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/download_demisto_conf.log
