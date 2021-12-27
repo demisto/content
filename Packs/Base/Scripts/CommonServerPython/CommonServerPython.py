@@ -8273,7 +8273,7 @@ def set_feed_last_run(last_run_indicators):
         demisto.setIntegrationContext(last_run_indicators)
 
 
-def set_last_mirror_run(last_mirror_run: Dict):
+def set_last_mirror_run(last_mirror_run: Dict[Any, Any]):
     """
     This function sets the mirror last run: from XSOAR version 6.6.0: using `demisto.setLastMirrorRun()`.
     Before XSOAR version 6.6.0: we don't set the given data`, an exception will be raised.
@@ -8288,7 +8288,7 @@ def set_last_mirror_run(last_mirror_run: Dict):
         raise DemistoException("You cannot use setLastMirrorRun as your version is below 6.6.0")
 
 
-def get_last_mirror_run() -> Optional[Dict]:
+def get_last_mirror_run() -> Optional[Dict[Any, Any]]:
     """
     This function gets the mirror last run: from XSOAR version 6.6.0: using `demisto.getLastMirrorRun()`.
     Before XSOAR version 6.6.0: we don't get the given data`, an exception will be raised.
