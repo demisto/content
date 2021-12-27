@@ -1,6 +1,8 @@
 import functools
 import uuid
-from flask import Flask, request, make_response, jsonify
+from typing import Callable
+
+from flask import Flask, request, make_response, jsonify, Response
 from urllib.parse import ParseResult, urlparse
 from secrets import compare_digest
 from dateutil.parser import parse
@@ -31,6 +33,8 @@ TAXII_VER_2_1 = '2.1'
 PAWN_UUID = uuid.uuid5(uuid.NAMESPACE_URL, 'https://www.paloaltonetworks.com')
 SCO_DET_ID_NAMESPACE = uuid.UUID('00abedb4-aa42-466c-9c01-fed23315a9b7')
 STIX_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+TAXII_V20_CONTENT_LEN = 9765625
+TAXII_V21_CONTENT_LEN = 104857600
 
 XSOAR_TYPES_TO_STIX_SCO = {
     FeedIndicatorType.CIDR: 'ipv4-addr',
@@ -135,6 +139,8 @@ class TAXII2Server:
         self._private_key = private_key
         self._http_server = http_server
         self._service_address = service_address
+        self.fields_to_present = fields_to_present
+        self.has_extention = False if fields_to_present == {'name', 'type'} else True
         self._auth = None
         if credentials and (identifier := credentials.get('identifier')) and (password := credentials.get('password')):
             self._auth = (identifier, password)
@@ -183,7 +189,7 @@ class TAXII2Server:
     def auth(self):
         return self._auth
 
-    def create_collections(self, collections):
+    def create_collections(self, collections: dict):
         """
         Creates collection resources from collection params.
         """
@@ -212,7 +218,7 @@ class TAXII2Server:
         self._collections_resource = collections_resource
         self.collections_by_id = collections_by_id
 
-    def get_discovery_service(self):
+    def get_discovery_service(self) -> dict:
         """
         Handle discovery request.
 
@@ -243,7 +249,7 @@ class TAXII2Server:
             'api_roots': [default]
         }
 
-    def get_api_root(self):
+    def get_api_root(self) -> dict:
         """
         Handle API Root request.
 
@@ -254,19 +260,19 @@ class TAXII2Server:
             'title': 'Cortex XSOAR TAXII2 Server ThreatIntel',
             'description': 'This API Root provides TAXII Services for system indicators.',
             'versions': [self.api_version],
-            'max_content_length': 9765625 if self.version == TAXII_VER_2_0 else 104857600
+            'max_content_length': TAXII_V20_CONTENT_LEN if self.version == TAXII_VER_2_0 else TAXII_V21_CONTENT_LEN
         }
 
-    def get_collections(self):
+    def get_collections(self) -> dict:
         """
         Handle Collections request.
 
         Returns:
             The Collections response.
         """
-        return self._collections_resource
+        return {'collections': self._collections_resource}
 
-    def get_collection_by_id(self, collection_id):
+    def get_collection_by_id(self, collection_id: str) -> dict:
         """
         Handle Collection ID request.
 
@@ -277,7 +283,7 @@ class TAXII2Server:
         return found_collection
 
     def get_manifest(self, collection_id: str, added_after, limit: int, offset: int,
-                     types: list):
+                     types: list) -> tuple:
         """
         Handle Manifest request.
 
@@ -292,7 +298,7 @@ class TAXII2Server:
 
         first_added = None
         last_added = None
-        objects = iocs[offset:offset + limit]
+        objects = iocs[offset:offset + limit]  # TODO ERROR 416
 
         if objects:
             first_added = parse(objects[0].get('date_added')).strftime(STIX_DATE_FORMAT)
@@ -309,7 +315,7 @@ class TAXII2Server:
 
         return response, first_added, last_added
 
-    def get_objects(self, collection_id: str, added_after, limit: int, offset: int, types: list):
+    def get_objects(self, collection_id: str, added_after, limit: int, offset: int, types: list) -> tuple:
         """
         Handle Objects request.
 
@@ -327,7 +333,7 @@ class TAXII2Server:
         last_added = None
         limited_extensions = None
 
-        limited_iocs = iocs[offset:offset + limit]
+        limited_iocs = iocs[offset:offset + limit]  # TODO ERROR 416
         objects = limited_iocs
 
         if SERVER.has_extention:
@@ -343,7 +349,7 @@ class TAXII2Server:
             response = {
                 'type': 'bundle',
                 'objects': objects,
-                'id': uuid.uuid4()
+                'id': f'bundle--{uuid.uuid4()}'
             }
         elif self.version == TAXII_VER_2_1:
             response = {
@@ -356,12 +362,12 @@ class TAXII2Server:
         return response, first_added, last_added
 
 
-SERVER: TAXII2Server = None  # type: ignore
+SERVER: TAXII2Server = None
 
 ''' HELPER FUNCTIONS '''
 
 
-def taxii_validate_request_headers(f):
+def taxii_validate_request_headers(f: Callable) -> Callable:
     @functools.wraps(f)
     def validate_request_headers(*args, **kwargs):
         """
@@ -374,8 +380,8 @@ def taxii_validate_request_headers(f):
         if SERVER.auth:
             if credentials:
                 try:
-                    auth_success = (compare_digest(credentials.username, SERVER.auth[0])  # type: ignore
-                                    and compare_digest(credentials.password, SERVER.auth[1]))  # type: ignore
+                    auth_success = (compare_digest(credentials.username, SERVER.auth[0])
+                                    and compare_digest(credentials.password, SERVER.auth[1]))
                 except TypeError:
                     auth_success = False
             else:
@@ -397,7 +403,7 @@ def taxii_validate_request_headers(f):
     return validate_request_headers
 
 
-def taxii_validate_url_param(f):
+def taxii_validate_url_param(f: Callable) -> Callable:
     @functools.wraps(f)
     def validate_url_param(*args, **kwargs):
         """
@@ -426,20 +432,23 @@ def taxii_validate_url_param(f):
     return validate_url_param
 
 
-def create_fields_list(fields: str):
+def create_fields_list(fields: str) -> set:
     if not fields:
-        return {'value', 'indicator_type'}
+        return {'name', 'type'}
     elif 'all' in fields.lower():
         return set()
     fields_list = argToList(fields)
     new_list = set()
     for field in fields_list:
-        if field == 'name':
-            field = 'value'
-        elif field == 'type':
-            field = 'indicator_type'
+        if field == 'value':
+            field = 'name'
+        elif field == 'indicator_type':
+            field = 'type'
         new_list.add(field)
-    return set(new_list)
+
+    new_list.add('name')
+    new_list.add('type')
+    return new_list
 
 
 def handle_long_running_error(error: str):
@@ -448,12 +457,12 @@ def handle_long_running_error(error: str):
     Args:
         error: The error message.
     """
-    demisto.error(error)
+    demisto.error(error)  # Todo: check when needed
     demisto.updateModuleHealth(error)
 
 
-def handle_response(status_code, content, date_added_first=None, date_added_last=None,
-                    content_type=None):
+def handle_response(status_code: int, content: dict, date_added_first: str = None, date_added_last: str = None,
+                    content_type: str = None) -> Response:
     """
     Create an HTTP taxii response from a taxii message.
     Args:
@@ -481,7 +490,7 @@ def handle_response(status_code, content, date_added_first=None, date_added_last
     return make_response(jsonify(content), status_code, headers)
 
 
-def create_query(query, types):
+def create_query(query: str, types: list) -> str:
     """
     Args:
         query: collections query
@@ -498,14 +507,14 @@ def create_query(query, types):
         except KeyError as e:
             raise Exception(f'Unsupported object type: {e}.')
         new_query = query + ' '
-        new_query += ' or '.join(['type:' + x for x in xsoar_types])  # type: ignore
+        new_query += ' or '.join(['type:' + x for x in xsoar_types])
         demisto.debug(f'new query: {new_query}')
         return new_query
     else:
         return query
 
 
-def find_indicators(query: str, added_after, limit: int, is_manifest: bool = False):
+def find_indicators(query: str, added_after, limit: int, is_manifest: bool = False) -> tuple:
     """
     Args:
         query: search indicators query
@@ -517,8 +526,9 @@ def find_indicators(query: str, added_after, limit: int, is_manifest: bool = Fal
     """
     iocs = []
     extensions = []
+    field_filters = 'type,name' if is_manifest else ','.join(SERVER.fields_to_present)
     indicator_searcher = IndicatorsSearcher(
-        filter_fields=','.join(SERVER.fields_to_present),
+        filter_fields=field_filters,
         query=query,
         limit=limit,
         from_date=added_after
@@ -542,7 +552,7 @@ def find_indicators(query: str, added_after, limit: int, is_manifest: bool = Fal
     return iocs, extensions
 
 
-def create_sco_stix_uuid(xsoar_indicator, stix_type):
+def create_sco_stix_uuid(xsoar_indicator: dict, stix_type: str) -> str:
     """
     Create uuid for sco objects.
     """
@@ -551,30 +561,29 @@ def create_sco_stix_uuid(xsoar_indicator, stix_type):
         account_type = xsoar_indicator.get('CustomFields', {}).get('accounttype')
         user_id = xsoar_indicator.get('CustomFields', {}).get('userid')
         unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE,
-                               '{"account_login":"' + value + '","account_type":"' + account_type + '","user_id":"'
-                               + user_id + '"}')
+                               f'{{"account_login":"{value}","account_type":"{account_type}","user_id":"{user_id}"}}')
     elif stix_type == 'windows-registry-key':
-        unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, '{"key":"' + value + '"}')
+        unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"key":"{value}"}}')
     elif stix_type == 'file':
         custom_fields = xsoar_indicator.get('CustomFields', {})
         if md5 := custom_fields.get('md5'):
-            unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, '{"hashes":{"MD5":"' + md5 + '"}')
+            unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"hashes":{{"MD5":"{md5}"}}}}')
         elif sha1 := custom_fields.get('sha1'):
-            unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, '{"hashes":{"SHA-1":"' + sha1 + '"}')
+            unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"hashes":{{"SHA-1":"{sha1}"}}}}')
         elif sha256 := custom_fields.get('sha256'):
-            unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, '{"hashes":{"SHA-256":"' + sha256 + '"}')
+            unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"hashes":{{"SHA-256":"{sha256}"}}}}')
         elif sha512 := custom_fields.get('sha512'):
-            unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, '{"hashes":{"SHA-512":"' + sha512 + '"}')
+            unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"hashes":{{"SHA-512":"{sha512}"}}}}')
         else:
-            unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, '{"value":"' + value + '"}')
+            unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"value":"{value}"}}')
     else:
-        unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, '{"value":"' + value + '"}')
+        unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"value":"{value}"}}')
 
     stix_id = f'{stix_type}--{unique_id}'
     return stix_id
 
 
-def create_sdo_stix_uuid(xsoar_indicator, stix_type):
+def create_sdo_stix_uuid(xsoar_indicator: dict, stix_type: str) -> str:
     """
     Create uuid for sdo objects.
     """
@@ -591,7 +600,7 @@ def create_sdo_stix_uuid(xsoar_indicator, stix_type):
     return stix_id
 
 
-def create_manifest_entry(xsoar_indicator, xsoar_type):
+def create_manifest_entry(xsoar_indicator: dict, xsoar_type: str) -> dict:
     """
 
     Args:
@@ -610,14 +619,14 @@ def create_manifest_entry(xsoar_indicator, xsoar_type):
         return {}
     entry = {
         'id': stix_id,
-        'date_added': parse(xsoar_indicator.get('timestamp')).strftime(STIX_DATE_FORMAT),
+        'date_added': parse(xsoar_indicator.get('timestamp')).strftime(STIX_DATE_FORMAT),  # TODO: how to filter it?
     }
     if SERVER.version == TAXII_VER_2_1:
         entry['version'] = xsoar_indicator.get('version')
     return entry
 
 
-def create_stix_object(xsoar_indicator, xsoar_type):
+def create_stix_object(xsoar_indicator: dict, xsoar_type: str) -> tuple:
     """
 
     Args:
@@ -687,15 +696,15 @@ def create_stix_object(xsoar_indicator, xsoar_type):
     return stix_object, extension_definition
 
 
-def parse_content_range(content_range):
+def parse_content_range(content_range: str) -> tuple:
     """
-
     Args:
         content_range: the content-range or range header to parse.
 
     Returns:
         Offset and limit arguments for the command.
     """
+    # todo: return error
     try:
         range_type, range_count = content_range.split(' ', 1)
 
@@ -737,7 +746,7 @@ def get_calling_context():
 @APP.route('/taxii/', methods=['GET'])  # TAXII v2.0
 @APP.route('/taxii2/', methods=['GET'])  # TAXII v2.1
 @taxii_validate_request_headers
-def taxii2_server_discovery():
+def taxii2_server_discovery() -> Response:
     """
     Defines TAXII API - Server Information:
     Server Discovery section (4.1) `here  for v2.1
@@ -760,7 +769,7 @@ def taxii2_server_discovery():
 @APP.route('/<api_root>/', methods=['GET'])
 @taxii_validate_request_headers
 @taxii_validate_url_param
-def taxii2_api_root(api_root: str):
+def taxii2_api_root(api_root: str) -> Response:
     """
      Defines TAXII API - Server Information:
      Get API Root Information section (4.2) `here
@@ -784,7 +793,7 @@ def taxii2_api_root(api_root: str):
 @APP.route('/<api_root>/status/<status_id>/', methods=['GET'])
 @taxii_validate_request_headers
 @taxii_validate_url_param
-def taxii2_status(api_root, status_id):  # noqa: F841
+def taxii2_status(api_root: str, status_id: str) -> Response:  # noqa: F841
     """Status API call used to check status for adding object to the system.
     Our collections are read only. No option to add objects.
     Then All status requests ending with error.
@@ -799,7 +808,7 @@ def taxii2_status(api_root, status_id):  # noqa: F841
 @APP.route('/<api_root>/collections/', methods=['GET'])
 @taxii_validate_request_headers
 @taxii_validate_url_param
-def taxii2_collections(api_root: str):
+def taxii2_collections(api_root: str) -> Response:
     """
     Defines TAXII API - Collections:
     Get Collection section (5.1) `here for v.2
@@ -823,7 +832,7 @@ def taxii2_collections(api_root: str):
 @APP.route('/<api_root>/collections/<collection_id>/', methods=['GET'])
 @taxii_validate_request_headers
 @taxii_validate_url_param
-def taxii2_collection_by_id(api_root: str, collection_id: str):
+def taxii2_collection_by_id(api_root: str, collection_id: str) -> Response:
     """
     Defines TAXII API - Collections:
     Get Collection section (5.2) `here for v.2.0
@@ -848,7 +857,7 @@ def taxii2_collection_by_id(api_root: str, collection_id: str):
 @APP.route('/<api_root>/collections/<collection_id>/manifest/', methods=['GET'])
 @taxii_validate_request_headers
 @taxii_validate_url_param
-def taxii2_manifest(api_root: str, collection_id: str):
+def taxii2_manifest(api_root: str, collection_id: str) -> Response:
     """
     Defines TAXII API - Manifest Objects:
     Get Manifest section (5.3) `here
@@ -860,6 +869,7 @@ def taxii2_manifest(api_root: str, collection_id: str):
         manifest: A Manifest Resource upon successful requests. Additional information
         `here <https://docs.oasis-open.org/cti/taxii/v2.1/os/taxii-v2.1-os.html#_Toc31107538>`__.
     """
+    # todo: avoid code duplication
     try:
         added_after = request.args.get('added_after')
         types = argToList(request.args.get('match[type]'))
@@ -911,7 +921,7 @@ def taxii2_manifest(api_root: str, collection_id: str):
 @APP.route('/<api_root>/collections/<collection_id>/objects/', methods=['GET'])
 @taxii_validate_request_headers
 @taxii_validate_url_param
-def taxii2_objects(api_root: str, collection_id: str):
+def taxii2_objects(api_root: str, collection_id: str) -> Response:
     """
     Defines TAXII API - Collections Objects:
     Get Collection section (5.4) `here
@@ -973,7 +983,7 @@ def taxii2_objects(api_root: str, collection_id: str):
     )
 
 
-def test_module(params):
+def test_module(params: dict) -> str:
     """
     Integration test module.
     """
