@@ -63,7 +63,7 @@ tasks:
           Thank you for reporting the suspicious email, which we are actively investigating. Please do not interact with this email, such as opening or replying, until you hear back from the security team.
 
           Sincerely,
-          Demisto's Security Team
+          Cortex XSOAR's Security Team
       cc: {}
       htmlBody: {}
       replyTo: {}
