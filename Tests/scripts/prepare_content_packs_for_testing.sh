@@ -68,7 +68,8 @@ if [ -z "${BUCKET_UPLOAD}" ]; then
   if [ ! -f $CONTENT_PACKS_TO_INSTALL_FILE ]; then
     echo "Could not find file $CONTENT_PACKS_TO_INSTALL_FILE."
   else
-    CONTENT_PACKS_TO_INSTALL=$(paste -sd, $CONTENT_PACKS_TO_INSTALL_FILE)
+    # CONTENT_PACKS_TO_INSTALL=$(paste -sd, $CONTENT_PACKS_TO_INSTALL_FILE)
+    CONTENT_PACKS_TO_INSTALL=All
     if [[ -z "$CONTENT_PACKS_TO_INSTALL" ]]; then
       echo "Did not get content packs to update in the bucket."
     else

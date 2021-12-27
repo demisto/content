@@ -137,7 +137,6 @@ create-instances-mpv2:
     - section_end "Collect Tests and Content Packs"
     - section_end "Calculate Packs Dependencies"
     - section_start "Prepare Content Packs for Testing"
-    - export PACKS_TO_INSTALL=All
     - ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_V2_BUCKET" "$STORAGE_BASE_PATH" "mp_v2"
     - section_end "Prepare Content Packs for Testing"
     - section_start "Upload Artifacts to GCP"
