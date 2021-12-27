@@ -1,3 +1,5 @@
+import time
+
 import demistomock as demisto
 from CommonServerPython import *
 import requests
@@ -801,15 +803,31 @@ def move_client_to_group_command(token):
         })
 
 
+def get_token():
+    integration_context = demisto.getIntegrationContext()
+    token = integration_context.get('token')
+    token_expiration_date = integration_context.get('token_expiration')
+    current_time = int(time.time())
+    if token_expiration_date and current_time < token_expiration_date:
+        return token
+    else:
+        resp = do_auth(server=demisto.getParam('server'), crads=demisto.getParam(
+            'authentication'), insecure=demisto.getParam('insecure'), domain=demisto.getParam('domain'))
+        token = get_token_from_response(resp)
+        integration_context['token'] = token
+        integration_context['token_expiration'] = current_time + 24 * 60 * 60
+        demisto.setIntegrationContext(integration_context)
+
+    return token
+
+
 def main():
     current_command = demisto.command()
     try:
         '''
         Before EVERY command the following tow lines are performed (do_auth and get_token_from_response)
         '''
-        resp = do_auth(server=demisto.getParam('server'), crads=demisto.getParam(
-            'authentication'), insecure=demisto.getParam('insecure'), domain=demisto.getParam('domain'))
-        token = get_token_from_response(resp)
+        token = get_token()
         if current_command == 'test-module':
             # This is the call made when pressing the integration test button.
             if token:
