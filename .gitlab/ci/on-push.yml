@@ -118,7 +118,7 @@ create-instances-mpv2:
     - ./Documentation/commonServerDocs.sh
     - section_end "Create Release Notes and Common Server Documentation"
     - section_start "Create Content Artifacts and Update Conf" --collapsed
-    - demisto-sdk create-content-artifacts -a $ARTIFACTS_FOLDER --cpus 8 --content_version $CONTENT_VERSION --marketplace-type "marketplace_v2" >> $ARTIFACTS_FOLDER/logs/create_content_artifacts.log
+    - demisto-sdk create-content-artifacts -a $ARTIFACTS_FOLDER --cpus 8 --content_version $CONTENT_VERSION --marketplace "marketplacev2" >> $ARTIFACTS_FOLDER/logs/create_content_artifacts.log
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY"  # Not sure if needed:
     - zip -j $ARTIFACTS_FOLDER/uploadable_packs_mpv2.zip $ARTIFACTS_FOLDER/uploadable_packs/* >> $ARTIFACTS_FOLDER/logs/zipping_uploadable_packs.log || ((($? > 0)) && echo "failed to zip the uploadable packs, ignoring the failure")
     - rm -rf $ARTIFACTS_FOLDER/uploadable_packs
