@@ -11,16 +11,53 @@
         "Network Security"
     ],
     "tags": [
-        "Security", "Compliance", "GDPR", "HIPAA", "PII", "IT", "Machine Learning"
+        "Security",
+        "Compliance",
+        "GDPR",
+        "HIPAA",
+        "PII",
+        "IT",
+        "Machine Learning"
     ],
     "useCases": [
-        "Compliance", "Employee Offboarding", "GDPR Breach Notification",
-        "HIPAA Breach Notification", "Hunting"
+        "Compliance",
+        "Employee Offboarding",
+        "GDPR Breach Notification",
+        "HIPAA Breach Notification",
+        "Hunting"
     ],
     "keywords": [
-        "Gamma", "DLP", "Data loss", "Data Discovery", "Data Exposure","Data Classification", "Slack",
-        "Github", "Gmail", "GDrive", "GSuite", "OneDrive", "Outlook", "O365", "Jira", "Confluence", "ServiceNow",
-        "zendesk", "SaaS", "Compliance", "GDPR", "HIPAA", "PII", "Machine Learning", "User Training"
+        "Gamma",
+        "DLP",
+        "Data loss",
+        "Data Discovery",
+        "Data Exposure",
+        "Data Classification",
+        "Slack",
+        "Github",
+        "Gmail",
+        "GDrive",
+        "GSuite",
+        "OneDrive",
+        "Outlook",
+        "O365",
+        "Jira",
+        "Confluence",
+        "ServiceNow",
+        "zendesk",
+        "SaaS",
+        "Compliance",
+        "GDPR",
+        "HIPAA",
+        "PII",
+        "Machine Learning",
+        "User Training"
     ],
-    "githubUser": ["nargun"]
+    "githubUser": [
+        "nargun"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }
