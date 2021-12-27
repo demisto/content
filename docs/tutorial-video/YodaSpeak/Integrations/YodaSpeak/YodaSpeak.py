@@ -2,9 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
-import requests
-import traceback
-from typing import Dict, Any
+TRANSLATE_OUTPUT_PREFIX = 'TheForce'
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
@@ -59,14 +57,13 @@ def translate_command(client: Client, text: str) -> CommandResults:
         raise DemistoException('Translation failed: the response from server did not include `translated`.',
                                res=response)
 
-    outputs = {'TheForce': {'Original': text,
-                            'Translation': translated}}
+    output = {'Original': text, 'Translation': translated}
 
     return CommandResults(outputs_prefix='YodaSpeak',
-                          outputs_key_field='TheForce.Original',
-                          outputs=outputs,
+                          outputs_key_field=f'{TRANSLATE_OUTPUT_PREFIX}.Original',
+                          outputs={TRANSLATE_OUTPUT_PREFIX: output},
                           raw_response=response,
-                          readable_output=tableToMarkdown(name='Yoda Says...', t=outputs))
+                          readable_output=tableToMarkdown(name='Yoda Says...', t=output))
 
 
 def main() -> None:
