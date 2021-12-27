@@ -37,7 +37,7 @@
       "static": false,
       "w": 3,
       "x": 0,
-      "y": 1
+      "y": 2
      },
      {
       "displayType": "CARD",
@@ -84,7 +84,7 @@
       "static": false,
       "w": 3,
       "x": 0,
-      "y": 6
+      "y": 7
      },
      {
       "displayType": "CARD",
@@ -107,9 +107,9 @@
       "moved": false,
       "name": "Content Pack Options",
       "static": false,
-      "w": 1,
+      "w": 2,
       "x": 0,
-      "y": 0
+      "y": 1
      },
      {
       "description": "",
@@ -120,11 +120,13 @@
       "i": "6vrqyt4zzr-ead06070-51e8-11ec-ba2e-7b97ba20577a",
       "items": [
        {
-        "endCol": 4,
+        "dropEffect": "move",
+        "endCol": 6,
         "fieldId": "usecasedescription",
         "height": 106,
         "id": "2a9be310-66f6-11ec-995d-0d67eb3e51ba",
         "index": 0,
+        "listId": "6vrqyt4zzr-ead06070-51e8-11ec-ba2e-7b97ba20577a",
         "sectionItemType": "field",
         "startCol": 0
        }
@@ -135,7 +137,22 @@
       "name": "Description",
       "static": false,
       "w": 2,
-      "x": 1,
+      "x": 0,
+      "y": 0
+  },
+  {
+      "h": 2,
+      "i": "6vrqyt4zzr-fadc1130-6700-11ec-95c8-ab9c2e6ba2c6",
+      "items": [],
+      "maxW": 3,
+      "minH": 1,
+      "moved": false,
+      "name": "To-Do Tasks",
+      "query": null,
+      "static": false,
+      "type": "todoTasks",
+      "w": 1,
+      "x": 2,
       "y": 0
      }
     ],
