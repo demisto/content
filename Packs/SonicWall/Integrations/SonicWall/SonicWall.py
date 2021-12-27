@@ -43,7 +43,7 @@ class Client(BaseClient):
 
     def http_request(self, method: str, url_suffix: str, params: Optional[Dict] = None,
                      data: Union[Dict, str] = None, additional_headers: Optional[Dict] = None,
-                     timeout: Any = None, json_data: Union[Dict, str] = None):
+                     timeout: Any = None, json_data: Any = None):
         headers = {**self.base_headers, **additional_headers} if additional_headers else self.base_headers
         # print(f"Making Request to {urljoin(self.base_url, url_suffix)}")
         # print(f"Providing Header: {headers}")
@@ -104,8 +104,8 @@ class Client(BaseClient):
             'charset': 'UTF-8'
         }
         suffix = '/config/pending'
-        self.http_request(method='POST', url_suffix=suffix, additional_headers=headers,
-                          data=payload)
+        return self.http_request(method='POST', url_suffix=suffix, additional_headers=headers,
+                                 data=payload)
 
     def add_ipv4_objects(self, add_object):
         payload = json.dumps(add_object)
@@ -173,26 +173,36 @@ def prepare_dict(the_dict):
 
 
 def is_ip_multicast(the_ip):
-    low = IPv4Address('224.0.0.0')
-    high = IPv4Address('239.255.255.255')
+    # low = IPv4Address('224.0.0.0')
+    # high = IPv4Address('239.255.255.255')
 
     test = IPv4Address(str(the_ip).strip())
 
-    if low <= test <= high:
-        # print('Multicast')
+    if test.is_multicast:
+        # print(f'{str(the_ip).strip()} is Multicast')
         return True
     else:
+        # print(f'{str(the_ip).strip()} is Unicast')
+        if test > IPv4Address('240.0.0.0'):
+            return 'invalid'
         return False
 
 
 def process_objects(obj):
     obj_list = []
+    if isinstance(obj, str):
+        obj = json.loads(obj)
     if isinstance(obj, Dict):
         obj = [obj]
     for ob in obj:
-        if ob.get('Type') == 'IP':
+        # print(obj)
+        if str(ob.get('Type')).upper() == 'IP':
             if is_ip_multicast(ob.get('Value')):
-                zone = 'MULTICAST'
+                # print('Skipping')
+                continue
+            if is_ip_multicast(ob.get('Value')) == 'invalid':
+                # print('Skipping')
+                continue
             else:
                 zone = 'WAN'
             add_obj = {
@@ -210,6 +220,7 @@ def process_objects(obj):
     return obj_struct
 
 
+# noinspection DuplicatedCode
 def extract_ipv4_objects(ip_objects):
     # print('Start Extraction')
     obj_list = []
@@ -243,9 +254,14 @@ def add_objects_command(sonic_client: Client, args: Dict):
     objects_to_add = process_objects(obj=obj)
     req = sonic_client.add_ipv4_objects(add_object=objects_to_add)
     sonic_client.commit_config()
+    # print(comm)
     if str(req.get('status').get('success')).lower() == 'true':
         sonic_client.commit_config()
     sonic_client.logout()
+    # print(objects_to_add)
+    if len(objects_to_add) <= 0:
+        command_results = f'No Objects To Add from {objects_to_add}'
+        return command_results
     readable = list_to_md(objects_to_add.get('address_objects')[:10], t_name='Objects Added (Showing 10)')
     if isinstance(obj, Dict):
         obj = [obj]

@@ -36,7 +36,10 @@ Creates IPV4 Address Objects on Sonic Wall
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SonicWall.AddedObjects | Unknown | Objects Added To SonicWall | 
+
 
 #### Command Example
 ``` ```
@@ -61,7 +64,14 @@ Retrieve IPV4 Address Objects From Sonic Wall
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SonicWall.IPV4Objects | Unknown |  | 
+| SonicWall.IPV4Objects.Name | Unknown |  | 
+| SonicWall.IPV4Objects.Value | Unknown |  | 
+| SonicWall.IPV4Objects.UUID | Unknown |  | 
+| SonicWall.IPV4Objects.Zone | Unknown |  | 
+
 
 #### Command Example
 ``` ```

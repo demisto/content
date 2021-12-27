@@ -25,7 +25,7 @@ contentitemexportablefields:
     definitionid: ""
     fromServerVersion: ""
     itemVersion: ""
-    packID: e7d5b18a-05f4-4efb-8652-1b0a7c4020b2
+    packID: f907c0ea-539c-4605-8191-0ad1d29c8586
     propagationLabels:
     - all
     toServerVersion: ""
@@ -48,9 +48,24 @@ script:
       required: true
     description: Creates IPV4 Address Objects on Sonic Wall
     name: sonicwall-add-ipv4-objects
+    outputs:
+    - contextPath: SonicWall.AddedObjects
+      description: Objects Added To SonicWall
+      type: Unknown
   - arguments: []
     description: Retrieve IPV4 Address Objects From Sonic Wall
     name: sonicwall-get-ipv4-objects
+    outputs:
+    - contextPath: SonicWall.IPV4Objects
+      type: Unknown
+    - contextPath: SonicWall.IPV4Objects.Name
+      type: Unknown
+    - contextPath: SonicWall.IPV4Objects.Value
+      type: Unknown
+    - contextPath: SonicWall.IPV4Objects.UUID
+      type: Unknown
+    - contextPath: SonicWall.IPV4Objects.Zone
+      type: Unknown
   dockerimage: demisto/python3:3.9.8.24399
   runonce: false
   script: ''

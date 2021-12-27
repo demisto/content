@@ -1,0 +1,1 @@
+SonicOS API Limits the number of active admin sessions to 1, whether the admin is logged in via GUI or API
