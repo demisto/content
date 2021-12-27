@@ -1,13 +1,7 @@
 id: ExtractDomainAndFQDNFromUrlAndEmail-Test
-version: 5
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: CommonScripts
-    itemVersion: 1.6.11
-    fromServerVersion: 5.0.0
-    toServerVersion: ""
-    definitionid: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: ExtractDomainAndFQDNFromUrlAndEmail-Test
 starttaskid: "0"
 tasks:
@@ -21,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -156,6 +151,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -518,3 +514,5 @@ view: |-
 inputs: []
 outputs: []
 sourceplaybookid: ExtractFQDNFromUrlAndEmail-Test
+fromversion: 5.0.0
+description: ''
