@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Process Email - Core v2
-description: Add email details to the relevant context entities and handle the case
+description: This playbook adds email details to the relevant context entities and handles the case
   where original emails are attached.
 starttaskid: "0"
 tasks:
@@ -45,7 +45,7 @@ tasks:
       version: -1
       name: Is there an email file attached?
       description: Identifies whether the incident includes an email message attached
-        as an eml or msg file, and returns the answer to the playbook. Also saves
+        as an EML or MSG file, and returns the answer to the playbook. Also saves
         the identified entry ID to context for later use. Commonly used in automated
         playbooks that handle phishing reports sent to a special phishing mailbox
         set up by the security team.
@@ -200,7 +200,7 @@ tasks:
       id: 553f9128-f60b-488d-8650-ad9648501964
       version: -1
       name: Set incident with the email object data
-      description: Updates Demisto incident fields using data from the email object.
+      description: Updates Cortex XSOAR incident fields using data from the email object.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -606,7 +606,7 @@ tasks:
       version: -1
       name: Save incident files separately from email attachments
       description: Saves the files that were initially involved with the incident
-        in a separate context key so that they are available separate from email attachment
+        in a separate context key so they are available separate from email attachment
         files.
       scriptName: SetAndHandleEmpty
       type: regular
@@ -839,7 +839,7 @@ tasks:
       id: c8b63a5f-604d-43c0-8e76-150e8af17d2f
       version: -1
       name: Save attachment sizes
-      description: Saves the sizes in bytes of the email attachments.
+      description: Saves the size in bytes of the email attachments.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -949,7 +949,7 @@ tasks:
       id: 68afd2e1-4539-4aff-8aaf-a4ca1811b88d
       version: -1
       name: Save attachment types
-      description: Saves the names of the email attachments.
+      description: Saves the types of the email attachments.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1056,7 +1056,7 @@ inputs:
     complex:
       root: File
   required: false
-  description: An EML or MSG file
+  description: An EML or MSG file.
   playbookInputQuery:
 - key: Email
   value:
@@ -1088,7 +1088,7 @@ inputs:
       root: incident
       accessor: emailsubject
   required: false
-  description: The email’s subject.
+  description: The email subject.
   playbookInputQuery:
 - key: EmailText
   value:
@@ -1096,7 +1096,7 @@ inputs:
       root: incident
       accessor: emailbody
   required: false
-  description: The email text
+  description: The email text.
   playbookInputQuery:
 - key: EmailHtml
   value:
@@ -1104,7 +1104,7 @@ inputs:
       root: incident
       accessor: emailhtml
   required: false
-  description: The html version of the email.
+  description: The HTML version of the email.
   playbookInputQuery:
 - key: EmailHeaders
   value:
@@ -1112,7 +1112,7 @@ inputs:
       root: incident
       accessor: emailheaders
   required: false
-  description: The email’s headers.
+  description: The email headers.
   playbookInputQuery:
 - key: EmailFormat
   value:
@@ -1120,17 +1120,17 @@ inputs:
       root: incident
       accessor: emailformat
   required: false
-  description: The email’s format
+  description: The email format.
   playbookInputQuery:
 outputs:
 - contextPath: Email.HTML
-  description: Email 'html' body, if exists.
+  description: Email HTML body, if it exists.
   type: string
 - contextPath: Email
   description: Email object.
   type: unknown
 - contextPath: Email.CC
-  description: Email 'cc' addresses.
+  description: Email CC addresses.
   type: string
 - contextPath: Email.From
   description: Email 'from' sender.
@@ -1142,7 +1142,7 @@ outputs:
   description: Email 'to' addresses.
   type: string
 - contextPath: Email.Text
-  description: Email 'text' body, if exists.
+  description: Email text body, if it exists.
   type: string
 - contextPath: Email.Headers
   description: The full email headers as a single string.
@@ -1154,7 +1154,7 @@ outputs:
   description: The format of the email, if available.
   type: string
 - contextPath: File
-  description: The File object.
+  description: The file object.
   type: unknown
 tests:
 - Phishing - Core - Test - Incident Starter
