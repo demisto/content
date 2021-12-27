@@ -2,7 +2,7 @@
     "name": "Phishing",
     "description": "Phishing emails still hooking your end users? This Content Pack can drastically reduce the time your security team spends on phishing alerts.",
     "support": "xsoar",
-    "currentVersion": "2.5.1",
+    "currentVersion": "2.5.3",
     "serverMinVersion": "6.0.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
@@ -16,6 +16,7 @@
         "Spam",
         "Email"
     ],
+    "itemPrefix": ["Email"],
     "useCases": [
         "Phishing"
     ],
@@ -61,5 +62,9 @@
             "mandatory": false,
             "display_name": "EWS Mail Sender"
         }
-    }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

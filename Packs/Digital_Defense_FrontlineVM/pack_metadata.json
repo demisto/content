@@ -13,5 +13,9 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
-    "certification": "certified"
+    "certification": "certified",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

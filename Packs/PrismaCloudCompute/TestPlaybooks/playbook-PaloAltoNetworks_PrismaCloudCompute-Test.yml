@@ -1,284 +1,1814 @@
 id: PaloAltoNetworks_PrismaCloudCompute-Test
-version: -1
+inputs: []
 name: PaloAltoNetworks_PrismaCloudCompute-Test
-starttaskid: '0'
+outputs: []
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
-    taskid: 9848d0e6-d227-4185-8234-d921f0ed139f
-    type: start
-    task:
-      id: 9848d0e6-d227-4185-8234-d921f0ed139f
-      version: -1
-      name: ''
-      iscommand: false
-      brand: ''
-      description: ''
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - '1'
+      - "1"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8e23793f-13eb-4596-8169-0c3881b5849b
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 8e23793f-13eb-4596-8169-0c3881b5849b
+    timertriggers: []
+    type: start
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 50
+          "y": -130
         }
       }
-    note: false
-    timertriggers: []
+  "1":
+    id: "1"
     ignoreworker: false
-  '1':
-    id: '1'
-    taskid: 4ebaebc2-0fc4-48fd-8bc5-2a2c2f1edd41
-    type: regular
-    task:
-      id: 4ebaebc2-0fc4-48fd-8bc5-2a2c2f1edd41
-      version: -1
-      name: DeleteContext
-      description: ''
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ''
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - '7'
+      - "7"
+    note: false
+    quietmode: 0
     scriptarguments:
       all:
-        simple: 'yes'
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
+        simple: "yes"
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '2':
-    id: '2'
-    taskid: f587da4e-4249-4fc2-82db-14f9f2653c51
-    type: regular
+    skipunavailable: false
     task:
-      id: f587da4e-4249-4fc2-82db-14f9f2653c51
-      version: -1
-      name: Get alert data using PrismaCloudComputeParseAuditAlert script
-      scriptName: PrismaCloudComputeParseAuditAlert
-      type: regular
+      brand: ""
+      id: 4b9842fb-50a9-4528-8645-6dc8922a393c
       iscommand: false
-      brand: ''
-      description: ''
-    nexttasks:
-      '#none#':
-      - '3'
-    scriptarguments:
-      alert_raw_json:
-        simple: ${FetchedIncidents.[0].rawJSONAlert}
-    separatecontext: false
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 4b9842fb-50a9-4528-8645-6dc8922a393c
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 545
+          "y": 45
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
+  "2":
     fieldMapping:
     - incidentfield: Affected data
       output:
         simple: ${PrismaCloudCompute.AuditAlert}
-  '3':
-    id: '3'
-    taskid: 6b9bb5e3-1a92-494a-8a66-d53b017559d9
-    type: condition
-    task:
-      id: 6b9bb5e3-1a92-494a-8a66-d53b017559d9
-      version: -1
-      name: Verify received audit data
-      description: ''
-      type: condition
-      iscommand: false
-      brand: ''
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
-      '#default#':
-      - '6'
-      'yes':
-      - '5'
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      alert_raw_json:
+        simple: ${FetchedIncidents.[0].rawJSONAlert}
     separatecontext: false
-    conditions:
-    - label: 'yes'
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: PrismaCloudCompute.AuditAlert.category
-            iscontext: true
-          right:
-            value:
-              simple: Custom Rule
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: PrismaCloudCompute.AuditAlert.message
-            iscontext: true
-          right:
-            value:
-              simple: unexpected ls
-      - - operator: isEqualString
-          left:
-            value:
-              simple: PrismaCloudCompute.AuditAlert.rule
-            iscontext: true
-          right:
-            value:
-              simple: auditOnLs
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 29516647-29ce-41d9-8cee-75df4821e46c
+      iscommand: false
+      name: Get alert data using PrismaCloudComputeParseAuditAlert script
+      script: PrismaCloudComputeParseAuditAlert
+      type: regular
+      version: -1
+    taskid: 29516647-29ce-41d9-8cee-75df4821e46c
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 720
+          "y": 400
         }
       }
-    note: false
-    timertriggers: []
+  "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.AuditAlert.category
+          operator: isEqualString
+          right:
+            value:
+              simple: None
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.AuditAlert.message
+          operator: containsGeneral
+          right:
+            value:
+              simple: files modified
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.AuditAlert.rule
+          operator: isEqualString
+          right:
+            value:
+              simple: Default - alert on suspicious runtime behavior
+      label: "yes"
+    id: "3"
     ignoreworker: false
-  '4':
-    id: '4'
-    taskid: 2de0c12e-3544-4319-8223-b88c4e57826f
-    type: regular
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: 2de0c12e-3544-4319-8223-b88c4e57826f
-      version: -1
-      name: Test Failed
-      description: ''
-      scriptName: PrintErrorEntry
-      type: regular
+      brand: ""
+      id: f372bd46-9920-4878-88ad-2b6b37d3f7e0
       iscommand: false
-      brand: ''
+      name: Verify received audit data
+      type: condition
+      version: -1
+    taskid: f372bd46-9920-4878-88ad-2b6b37d3f7e0
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 600
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
     scriptarguments:
       message:
         simple: Test failed, could not verify the expected data
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 3fafb5ca-70c1-428e-8488-1118a6b2a5af
+      iscommand: false
+      name: Test Failed
+      script: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: 3fafb5ca-70c1-428e-8488-1118a6b2a5af
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1070
+          "x": 645,
+          "y": 1115
         }
       }
-    note: false
-    timertriggers: []
+  "5":
+    id: "5"
     ignoreworker: false
-  '5':
-    id: '5'
-    taskid: f5cff24c-5cb7-4c7c-8aa8-ea93c1740c02
-    type: title
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: f5cff24c-5cb7-4c7c-8aa8-ea93c1740c02
-      version: -1
+      brand: ""
+      id: cfea110a-139a-4718-8ac4-8548f989924e
+      iscommand: false
       name: Done
       type: title
-      iscommand: false
-      brand: ''
-      description: ''
-    separatecontext: false
+      version: -1
+    taskid: cfea110a-139a-4718-8ac4-8548f989924e
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 910
+          "x": 40,
+          "y": 7090
         }
       }
-    note: false
-    timertriggers: []
+  "6":
+    id: "6"
     ignoreworker: false
-  '6':
-    id: '6'
-    taskid: a46760fa-0e0d-4c3b-8488-0a85cd09de83
-    type: regular
-    task:
-      id: a46760fa-0e0d-4c3b-8488-0a85cd09de83
-      version: -1
-      name: Print the context
-      description: ''
-      scriptName: PrintContext
-      type: regular
-      iscommand: false
-      brand: ''
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - '4'
+      - "4"
+    note: false
+    quietmode: 0
     scriptarguments:
       outputformat:
         simple: ${PrismaCloudCompute.AuditAlert}
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b7739235-9321-4a70-843d-869300daaf6d
+      iscommand: false
+      name: Print the context
+      script: PrintContext
+      type: regular
+      version: -1
+    taskid: b7739235-9321-4a70-843d-869300daaf6d
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 895
+          "x": 645,
+          "y": 880
         }
       }
-    note: false
-    timertriggers: []
+  "7":
+    id: "7"
     ignoreworker: false
-  '7':
-    id: '7'
-    taskid: 35239aa0-f473-4787-8cd2-2cf40fd90be2
-    type: regular
-    task:
-      id: 35239aa0-f473-4787-8cd2-2cf40fd90be2
-      version: -1
-      name: FetchFromInstance
-      description: ''
-      scriptName: FetchFromInstance
-      type: regular
-      iscommand: false
-      brand: ''
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - '2'
+      - "2"
+    note: false
+    quietmode: 0
     scriptarguments:
       add_to_context:
-        simple: 'true'
+        simple: "true"
       brand_name:
         simple: PaloAltoNetworks_PrismaCloudCompute
-      error_msg_in_incident: {}
-      expect_data: {}
-      instance_name: {}
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ac9ef9b5-d6eb-41f9-8c48-cca663bfe0cb
+      iscommand: false
+      name: FetchFromInstance
+      script: FetchFromInstance
+      type: regular
+      version: -1
+    taskid: ac9ef9b5-d6eb-41f9-8c48-cca663bfe0cb
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 370
+          "y": 220
         }
       }
-    note: false
-    timertriggers: []
+  "8":
+    id: "8"
     ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      hostname:
+        simple: '*163*'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: PaloAltoNetworks_PrismaCloudCompute
+      description: Get information about the hosts and their profile events, this
+        command supports asterisks which allows you to get host profiles that contain
+        a specific substring
+      id: e33570fd-2e17-4692-894a-bd1f95e5e903
+      iscommand: true
+      name: prisma-cloud-compute-profile-host-list
+      script: PaloAltoNetworks_PrismaCloudCompute|||prisma-cloud-compute-profile-host-list
+      type: regular
+      version: -1
+    taskid: e33570fd-2e17-4692-894a-bd1f95e5e903
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 840
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      id:
+        simple: '*5f2561fab84*'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: PaloAltoNetworks_PrismaCloudCompute
+      description: Get information about the containers and their profile events,
+        this command supports asterisks which allows you to get container profiles
+        that contain a specific substring
+      id: da7ea39c-f00d-4f28-8273-4b2b184312ad
+      iscommand: true
+      name: prisma-cloud-compute-profile-container-list
+      script: PaloAltoNetworks_PrismaCloudCompute|||prisma-cloud-compute-profile-container-list
+      type: regular
+      version: -1
+    taskid: da7ea39c-f00d-4f28-8273-4b2b184312ad
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1630
+        }
+      }
+  "10":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.ProfileHost._id
+          operator: containsGeneral
+          right:
+            value:
+              simple: 5-163
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.ProfileHost.accountID
+          operator: isEqualString
+          right:
+            value:
+              simple: "676921422616"
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.ProfileHost.apps
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.ProfileHost.collections
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.ProfileHost.created
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.ProfileHost.hash
+          operator: isEqualString
+          right:
+            value:
+              simple: "1"
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.ProfileHost.labels
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.ProfileHost.sshEvents
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.ProfileHost.time
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.ProfileHost.geoip
+          operator: isNotEmpty
+      label: "yes"
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "yes":
+      - "16"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 855c986c-6f6f-4fb6-84c7-cb71312bdb99
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 855c986c-6f6f-4fb6-84c7-cb71312bdb99
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1030
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      id:
+        simple: ${PrismaCloudCompute.ProfileContainer._id}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: PaloAltoNetworks_PrismaCloudCompute
+      description: Get the hosts where a specific container is running.
+      id: 99862ee3-35cd-4dd0-8f74-58aefb5a86d0
+      iscommand: true
+      name: prisma-cloud-compute-profile-container-hosts-list
+      script: PaloAltoNetworks_PrismaCloudCompute|||prisma-cloud-compute-profile-container-hosts-list
+      type: regular
+      version: -1
+    taskid: 99862ee3-35cd-4dd0-8f74-58aefb5a86d0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1990
+        }
+      }
+  "13":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: hostsIDs
+                root: PrismaCloudCompute.ProfileContainerHost
+                transformers:
+                - operator: FirstArrayElement
+          operator: containsGeneral
+          right:
+            value:
+              simple: 5-163
+      label: "yes"
+    id: "13"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "yes":
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b8d7c088-c817-4d1a-829c-d2fd99713e35
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: b8d7c088-c817-4d1a-829c-d2fd99713e35
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 2180
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "25"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      hostname:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: PrismaCloudCompute.ProfileContainerHost.hostsIDs
+              operator: containsGeneral
+              right:
+                value:
+                  simple: 5-163
+          root: PrismaCloudCompute.ProfileContainerHost.hostsIDs
+      id:
+        simple: ${PrismaCloudCompute.ProfileContainer._id}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: PaloAltoNetworks_PrismaCloudCompute
+      description: Get runtime forensics data for a specific container on a specific
+        host
+      id: a562f31c-19f2-4899-82b8-691b7a0c88d5
+      iscommand: true
+      name: prisma-cloud-compute-profile-container-forensic-list
+      script: PaloAltoNetworks_PrismaCloudCompute|||prisma-cloud-compute-profile-container-forensic-list
+      type: regular
+      version: -1
+    taskid: a562f31c-19f2-4899-82b8-691b7a0c88d5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 2415
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      id:
+        simple: ${PrismaCloudCompute.ProfileHost._id}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: PaloAltoNetworks_PrismaCloudCompute
+      description: Get forensics on a specific host
+      id: 069c342e-b62f-47c3-85b4-7dbfa9413e2b
+      iscommand: true
+      name: prisma-cloud-compute-host-forensic-list
+      script: PaloAltoNetworks_PrismaCloudCompute|||prisma-cloud-compute-host-forensic-list
+      type: regular
+      version: -1
+    taskid: 069c342e-b62f-47c3-85b4-7dbfa9413e2b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1220
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: PaloAltoNetworks_PrismaCloudCompute
+      description: Get the console version
+      id: 272c8e1e-2a86-48de-8da7-177b99a9de70
+      iscommand: true
+      name: prisma-cloud-compute-console-version-info
+      script: PaloAltoNetworks_PrismaCloudCompute|||prisma-cloud-compute-console-version-info
+      type: regular
+      version: -1
+    taskid: 272c8e1e-2a86-48de-8da7-177b99a9de70
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 3490
+        }
+      }
+  "19":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.Console.Version
+          operator: isEqualString
+          right:
+            value:
+              simple: 21.04.439
+      label: "yes"
+    id: "19"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "yes":
+      - "26"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4f1362e4-b389-45e3-879e-452cb247333b
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 4f1362e4-b389-45e3-879e-452cb247333b
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 3690
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: PaloAltoNetworks_PrismaCloudCompute
+      description: Get all the BlackListed IP addresses in the system
+      id: 581f2827-c925-4314-8603-78eb1a12a068
+      iscommand: true
+      name: prisma-cloud-compute-custom-feeds-ip-list
+      script: PaloAltoNetworks_PrismaCloudCompute|||prisma-cloud-compute-custom-feeds-ip-list
+      type: regular
+      version: -1
+    taskid: 581f2827-c925-4314-8603-78eb1a12a068
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 2860
+        }
+      }
+  "21":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.CustomFeedIP.feed
+          operator: hasLength
+          right:
+            value:
+              simple: "2"
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.CustomFeedIP.feed
+          operator: containsGeneral
+          right:
+            value:
+              simple: 1.1.1.1
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.CustomFeedIP.feed
+          operator: containsGeneral
+          right:
+            value:
+              simple: 2.2.2.2
+      label: "yes"
+    id: "21"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "yes":
+      - "22"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c3ec2b46-82c0-4c2f-8a0c-11ba3c8a3fb9
+      iscommand: false
+      name: Verify outputs
+      type: condition
+      version: -1
+    taskid: c3ec2b46-82c0-4c2f-8a0c-11ba3c8a3fb9
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 3070
+        }
+      }
+  "22":
+    id: "22"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ip:
+        simple: 1.1.1.1,2.2.2.2
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: PaloAltoNetworks_PrismaCloudCompute
+      description: Add a list of banned IPs to be blocked by the system
+      id: f38d589f-d38e-45ab-8ec3-9f436ce40aa5
+      iscommand: true
+      name: prisma-cloud-compute-custom-feeds-ip-add
+      script: PaloAltoNetworks_PrismaCloudCompute|||prisma-cloud-compute-custom-feeds-ip-add
+      type: regular
+      version: -1
+    taskid: f38d589f-d38e-45ab-8ec3-9f436ce40aa5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 3280
+        }
+      }
+  "23":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.ProfileContainer._id
+          operator: containsGeneral
+          right:
+            value:
+              simple: 5f2561fab84
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.ProfileContainer.image
+          operator: containsGeneral
+          right:
+            value:
+              simple: private:console
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.ProfileContainer.imageID
+          operator: containsGeneral
+          right:
+            value:
+              simple: 5f2561fab84
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.ProfileContainer.processes
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.ProfileContainer.state
+          operator: isEqualString
+          right:
+            value:
+              simple: active
+      label: "yes"
+    id: "23"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "yes":
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: abdc8740-3fdb-4bf8-887e-818631943785
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: abdc8740-3fdb-4bf8-887e-818631943785
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1810
+        }
+      }
+  "24":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.HostForensic.Forensics.path
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.HostForensic.Forensics.type
+          operator: isNotEmpty
+      label: "yes"
+    id: "24"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "yes":
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6023793f-3f9b-49a6-8bb6-c9e381fef068
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 6023793f-3f9b-49a6-8bb6-c9e381fef068
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1430
+        }
+      }
+  "25":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.ContainerForensic.Forensics.path
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.ContainerForensic.Forensics.type
+          operator: isNotEmpty
+      label: "yes"
+    id: "25"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "yes":
+      - "20"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8ec47e74-6283-4141-82ea-d27854ac0c32
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 8ec47e74-6283-4141-82ea-d27854ac0c32
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 2625
+        }
+      }
+  "26":
+    id: "26"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "27"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: PaloAltoNetworks_PrismaCloudCompute
+      description: List all custom uploaded md5 malwares.
+      id: ca28693a-e7e8-4bde-88b4-805ede6f4318
+      iscommand: true
+      name: prisma-cloud-compute-custom-feeds-malware-list
+      script: PaloAltoNetworks_PrismaCloudCompute|||prisma-cloud-compute-custom-feeds-malware-list
+      type: regular
+      version: -1
+    taskid: ca28693a-e7e8-4bde-88b4-805ede6f4318
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 3905
+        }
+      }
+  "27":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.CustomFeedMalware.digest
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.CustomFeedMalware.modified
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.CustomFeedMalware.feed
+          operator: isNotEmpty
+      label: "yes"
+    id: "27"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "yes":
+      - "42"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0a66b14b-1c9d-4341-8f01-27c73bb8e9ec
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 0a66b14b-1c9d-4341-8f01-27c73bb8e9ec
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 4060
+        }
+      }
+  "28":
+    id: "28"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "29"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      cve:
+        simple: CVE-2021-43332
+      cve_id:
+        simple: CVE-2021-43332
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: PaloAltoNetworks_PrismaCloudCompute
+      description: Get infomration about the cves in the system, will return maximum
+        of 50 records, it is possible to query for partial cve description such as
+        cve-2020 or cve-2014 or by severity/distro/package
+      id: 1e1fc307-84c5-4605-884c-2831823323cc
+      iscommand: true
+      name: cve
+      script: PaloAltoNetworks_PrismaCloudCompute|||cve
+      type: regular
+      version: -1
+    taskid: 1e1fc307-84c5-4605-884c-2831823323cc
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 4380
+        }
+      }
+  "29":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: ID
+                root: CVE
+                transformers:
+                - operator: FirstArrayElement
+          operator: isEqualString
+          right:
+            value:
+              simple: CVE-2021-43332
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: CVSS
+                root: CVE
+                transformers:
+                - operator: FirstArrayElement
+          operator: isEqualString
+          right:
+            value:
+              simple: "6.5"
+      label: "yes"
+    id: "29"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "yes":
+      - "30"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1f7890cb-f11e-42be-8587-53ed3c75ffab
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 1f7890cb-f11e-42be-8587-53ed3c75ffab
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 4550
+        }
+      }
+  "30":
+    id: "30"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "31"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      cve:
+        simple: CVE-2018-14600
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: PaloAltoNetworks_PrismaCloudCompute
+      description: prisma-cloud-compute-vulnerabilities-impacted-resources-list
+      id: c93a1741-7fb2-4879-8be7-6e1ff7ab34f9
+      iscommand: true
+      name: prisma-cloud-compute-vulnerabilities-impacted-resources-list
+      script: PaloAltoNetworks_PrismaCloudCompute|||prisma-cloud-compute-vulnerabilities-impacted-resources-list
+      type: regular
+      version: -1
+    taskid: c93a1741-7fb2-4879-8be7-6e1ff7ab34f9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 4740
+        }
+      }
+  "31":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: PrismaCloudCompute.VulnerabilitiesImpactedResource._id
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: CVE-2018-14600
+                root: PrismaCloudCompute.VulnerabilitiesImpactedResource._id
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.VulnerabilitiesImpactedResource.riskTree
+          operator: isNotEmpty
+      label: "yes"
+    id: "31"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "yes":
+      - "32"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 3bd60728-a7c9-433b-8b02-3572defb462d
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 3bd60728-a7c9-433b-8b02-3572defb462d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 4920
+        }
+      }
+  "32":
+    id: "32"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "33"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      connected:
+        simple: "true"
+      limit:
+        simple: "2"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: PaloAltoNetworks_PrismaCloudCompute
+      description: Retrieve a list of defenders and their information
+      id: 179fc07b-72bc-4962-8d9c-57c76aa2f061
+      iscommand: true
+      name: prisma-cloud-compute-defenders-list
+      script: PaloAltoNetworks_PrismaCloudCompute|||prisma-cloud-compute-defenders-list
+      type: regular
+      version: -1
+    taskid: 179fc07b-72bc-4962-8d9c-57c76aa2f061
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 5110
+        }
+      }
+  "33":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: PrismaCloudCompute.DefenderDetails.hostname
+                    operator: containsGeneral
+                    right:
+                      value:
+                        simple: "163"
+                root: PrismaCloudCompute.DefenderDetails.hostname
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.DefenderDetails.connected
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: PrismaCloudCompute.DefenderDetails.version
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: 21.04.439
+                root: PrismaCloudCompute.DefenderDetails.version
+          operator: isNotEmpty
+      label: "yes"
+    id: "33"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "yes":
+      - "34"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: dcf52d44-c1d5-47d9-80d7-f53354554789
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: dcf52d44-c1d5-47d9-80d7-f53354554789
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 5310
+        }
+      }
+  "34":
+    id: "34"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "35"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: PaloAltoNetworks_PrismaCloudCompute
+      description: Retrieves a list of all collections
+      id: 98076431-5068-450c-805b-adf02834ff98
+      iscommand: true
+      name: prisma-cloud-compute-collections-list
+      script: PaloAltoNetworks_PrismaCloudCompute|||prisma-cloud-compute-collections-list
+      type: regular
+      version: -1
+    taskid: 98076431-5068-450c-805b-adf02834ff98
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 5510
+        }
+      }
+  "35":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: PrismaCloudCompute.Collection.name
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: All
+                root: PrismaCloudCompute.Collection.name
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: PrismaCloudCompute.Collection.description
+                    operator: containsGeneral
+                    right:
+                      value:
+                        simple: System
+                root: PrismaCloudCompute.Collection.description
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: PrismaCloudCompute.Collection.owner
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: system
+                root: PrismaCloudCompute.Collection.owner
+          operator: isNotEmpty
+      label: "yes"
+    id: "35"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "yes":
+      - "36"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9814480c-bbdf-4547-81db-4759b2888605
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 9814480c-bbdf-4547-81db-4759b2888605
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 5690
+        }
+      }
+  "36":
+    id: "36"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "37"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: PaloAltoNetworks_PrismaCloudCompute
+      description: Get the containers namespaces names
+      id: e25cb1ca-964b-4edb-8345-6f332b2ee68e
+      iscommand: true
+      name: prisma-cloud-compute-container-namespace-list
+      script: PaloAltoNetworks_PrismaCloudCompute|||prisma-cloud-compute-container-namespace-list
+      type: regular
+      version: -1
+    taskid: e25cb1ca-964b-4edb-8345-6f332b2ee68e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 5900
+        }
+      }
+  "37":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.RadarContainerNamespace
+          operator: isEmpty
+      label: "yes"
+    id: "37"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "yes":
+      - "38"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: cd4f1c22-8ebc-4322-880a-f9d4867c4735
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: cd4f1c22-8ebc-4322-880a-f9d4867c4735
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 6110
+        }
+      }
+  "38":
+    id: "38"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "39"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      compact:
+        simple: "false"
+      id:
+        simple: '*699*'
+      limit_stats:
+        simple: "2"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: PaloAltoNetworks_PrismaCloudCompute
+      description: Get images scan report, the report includes vulnerabilities, compliance
+        issues, binaries, etc.
+      id: 6c28165f-2273-4b31-88cb-8c781c3cd8d5
+      iscommand: true
+      name: prisma-cloud-compute-images-scan-list
+      script: PaloAltoNetworks_PrismaCloudCompute|||prisma-cloud-compute-images-scan-list
+      type: regular
+      version: -1
+    taskid: 6c28165f-2273-4b31-88cb-8c781c3cd8d5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 6310
+        }
+      }
+  "39":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.ReportsImagesScan._id
+          operator: containsGeneral
+          right:
+            value:
+              simple: "699"
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.ReportsImagesScan.distro
+          operator: containsGeneral
+          right:
+            value:
+              simple: Alpine Linux v3.7
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.ReportsImagesScan.instances.image
+          operator: containsGeneral
+          right:
+            value:
+              simple: demisto/python:1.3-alpine
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.ReportsImagesScan.complianceIssuesCount
+          operator: isEqualNumber
+          right:
+            value:
+              simple: "1"
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.ReportsImagesScan.vulnerabilitiesCount
+          operator: isEqualNumber
+          right:
+            value:
+              simple: "60"
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.ReportsImagesScan.vulnerabilities
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.ReportsImagesScan.complianceIssues
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.ReportsImagesScan.vulnerabilities
+          operator: hasLength
+          right:
+            value:
+              simple: "2"
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.ReportsImagesScan.complianceIssues
+          operator: hasLength
+          right:
+            value:
+              simple: "1"
+      label: "yes"
+    id: "39"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "yes":
+      - "40"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 10a911c4-b5ed-43ce-84a2-1744bbed859d
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 10a911c4-b5ed-43ce-84a2-1744bbed859d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 6490
+        }
+      }
+  "40":
+    id: "40"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "41"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      compact:
+        simple: "false"
+      hostname:
+        simple: '*163*'
+      limit_stats:
+        simple: "2"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: PaloAltoNetworks_PrismaCloudCompute
+      description: Get images scan report, the report includes vulnerabilities, compliance
+        issues, binaries, etc.
+      id: 968989c1-4d98-4074-8ebd-999a1315660e
+      iscommand: true
+      name: prisma-cloud-compute-hosts-scan-list
+      script: PaloAltoNetworks_PrismaCloudCompute|||prisma-cloud-compute-hosts-scan-list
+      type: regular
+      version: -1
+    taskid: 968989c1-4d98-4074-8ebd-999a1315660e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 6670
+        }
+      }
+  "41":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.ReportHostScan._id
+          operator: containsGeneral
+          right:
+            value:
+              simple: "163"
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.ReportHostScan.hostname
+          operator: containsGeneral
+          right:
+            value:
+              simple: "163"
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.ReportHostScan.distro
+          operator: containsGeneral
+          right:
+            value:
+              simple: Amazon Linux 2
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.ReportHostScan.vulnerabilitiesCount
+          operator: isEqualNumber
+          right:
+            value:
+              simple: "209"
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.ReportHostScan.complianceIssuesCount
+          operator: isEqualString
+          right:
+            value:
+              simple: "16"
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.ReportHostScan.vulnerabilities
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.ReportHostScan.complianceIssues
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.ReportHostScan.vulnerabilities
+          operator: hasLength
+          right:
+            value:
+              simple: "2"
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloudCompute.ReportHostScan.complianceIssues
+          operator: hasLength
+          right:
+            value:
+              simple: "2"
+      label: "yes"
+    id: "41"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "yes":
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d551f69c-5d31-4b5f-8fce-bda19507c4e5
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: d551f69c-5d31-4b5f-8fce-bda19507c4e5
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 6880
+        }
+      }
+  "42":
+    id: "42"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "28"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      md5:
+        simple: 1d7b4f1b079c17cc17c5e2a627000c17
+      name:
+        simple: test
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: PaloAltoNetworks_PrismaCloudCompute
+      description: Add custom md5 malware hashes
+      id: 38750952-8e1e-44ad-841d-a85ac176425b
+      iscommand: true
+      name: prisma-cloud-compute-custom-feeds-malware-add
+      script: PaloAltoNetworks_PrismaCloudCompute|||prisma-cloud-compute-custom-feeds-malware-add
+      type: regular
+      version: -1
+    taskid: 38750952-8e1e-44ad-841d-a85ac176425b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 4220
+        }
+      }
+version: -1
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1115,
-        "width": 810,
-        "x": 50,
-        "y": 50
+        "height": 7285,
+        "width": 985,
+        "x": 40,
+        "y": -130
       }
     }
   }
-inputs: []
-outputs: []
-description: ''
 fromversion: 5.0.0
