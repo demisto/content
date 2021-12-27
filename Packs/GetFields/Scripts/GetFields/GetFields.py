@@ -27,7 +27,7 @@ def get_fields(args):
         return reduced_dicts[0]
 
     if argToBoolean(args.get('stringify', 'false')):
-        return json.dumps(reduced_dicts, separators=(',', ':'), ensure_ascii=False)
+        return json.dumps(reduced_dicts, ensure_ascii=False)
     else:
         return reduced_dicts
 
