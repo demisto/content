@@ -238,9 +238,7 @@
       "h": 1,
       "hideName": true,
       "i": "caseinfoid-d6fcf2b0-50ef-11ec-9ea5-7ddd3cc8fbfd",
-      "items": [
-
-      ],
+      "items": [],
       "maxW": 3,
       "minH": 1,
       "moved": false,
@@ -257,9 +255,7 @@
       "h": 1,
       "hideName": true,
       "i": "caseinfoid-df3dae10-50ef-11ec-9ea5-7ddd3cc8fbfd",
-      "items": [
-
-      ],
+      "items": [],
       "maxW": 3,
       "minH": 1,
       "moved": false,
@@ -276,9 +272,7 @@
       "h": 1,
       "hideName": true,
       "i": "caseinfoid-ebe1eaa0-50ef-11ec-9ea5-7ddd3cc8fbfd",
-      "items": [
-
-      ],
+      "items": [],
       "maxW": 3,
       "minH": 1,
       "moved": false,
@@ -300,13 +294,11 @@
       "i": "caseinfoid-97ef6e10-51c9-11ec-86fa-271468642c58",
       "items": [
        {
-        "dropEffect": "move",
-        "endCol": 6,
+        "endCol": 4,
         "fieldId": "usecasedescription",
-        "height": 44,
-        "id": "10886b10-66f1-11ec-be14-cdeffd920bf6",
+        "height": 106,
+        "id": "ac917530-66f4-11ec-995d-0d67eb3e51ba",
         "index": 0,
-        "listId": "caseinfoid-97ef6e10-51c9-11ec-86fa-271468642c58",
         "sectionItemType": "field",
         "startCol": 0
        }
