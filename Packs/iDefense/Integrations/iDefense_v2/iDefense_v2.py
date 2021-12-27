@@ -283,6 +283,7 @@ def uuid_command(client: Client, args: dict, reliability: DBotScoreReliability, 
         CommandResults containing the indicator, the response and a readable output
     """
     uuid: str = str(args.get('uuid'))
+    res = {}
     try:
         res = client.threat_indicator_search(url_suffix=f'/v0/{uuid}')
     except Exception as e:
