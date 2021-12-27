@@ -19,7 +19,7 @@ inputs:
   playbookInputQuery:
   required: false
   value: {}
-- description: The email address of the user to fetch the original email for. For gmail, the authenticated user.
+- description: The email address of the user to fetch the original email for. For Gmail, the authenticated user.
   key: UserID
   playbookInputQuery:
   required: false
@@ -71,7 +71,7 @@ outputs:
   description: The email HTML.
   type: string
 - contextPath: Email.Body
-  description: The email text body
+  description: The email text body.
   type: string
 - contextPath: Email.Headers
   description: The email headers.
@@ -264,7 +264,7 @@ tasks:
     task:
       brand: ""
       description: |
-        This v2 playbook uses the reporter's email headers to retrieve the original email, which helps decrease the number of tasks to retrieve the original email. 
+        This v2 playbook uses the reporter's email headers to retrieve the original email, which helps reduce the number of tasks to retrieve the original email. 
         Use this playbook to retrieve the original email using the Gmail integration, including headers and attachments.
         Note: You must have the necessary Google Apps Domain-Wide Delegation of Authority permissions in your Gmail service to execute global search.
       id: 5481e887-03ee-44b2-8f26-411c0420cd3a
