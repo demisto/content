@@ -2,7 +2,7 @@
     "name": "Salesforce Indicators",
     "description": "This pack contains 1 integration.\n\nThe Salesforce Indicator Integration allows you to pull in Salesforce objects as indicators.",
     "support": "community",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.4",
     "author": "Adam Burt",
     "url": "",
     "email": "",
@@ -15,5 +15,9 @@
     "keywords": [],
     "githubUser": [
         "aburt-demisto"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }
