@@ -529,8 +529,6 @@ tasks:
       File:
         complex:
           root: File
-      GetOriginalEmail:
-        simple: "True"
       UserID:
         complex:
           root: ReporterAddress
