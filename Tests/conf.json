@@ -2042,11 +2042,6 @@
             "timeout": 500
         },
         {
-            "integrations": "iDefense_v2",
-            "playbookID": "iDefense_v2_Test",
-            "fromversion": "5.5.0"
-        },
-        {
             "integrations": "AWS - SQS",
             "playbookID": "AWS - SQS Test Playbook",
             "fromversion": "5.0.0"
@@ -2460,12 +2455,6 @@
         {
             "integrations": "TAXII 2 Feed",
             "playbookID": "TAXII 2 Feed Test",
-            "fromversion": "5.5.0"
-        },
-        {
-            "integrations": "iDefense Feed",
-            "playbookID": "Feed iDefense Test",
-            "memory_threshold": 200,
             "fromversion": "5.5.0"
         },
         {
@@ -4806,14 +4795,6 @@
         {
             "playbookID": "JsonToTable - Test Playbook",
             "fromversion": "5.5.0"
-        },
-        {
-            "integrations": "ACTI",
-            "playbookID": "Feed iDefense Test"
-        },
-        {
-            "integrations": "ACTI",
-            "playbookID": "iDefense_v2_Test"
         },
         {
           "playbookID": "AzureRiskyUsers",
