@@ -1,11 +1,14 @@
-import json
 import io
+import json
 
 import pytest
-from CommonServerPython import urljoin, DemistoException, CommandResults, tableToMarkdown
+
+from CommonServerPython import (CommandResults, DemistoException,
+                                tableToMarkdown, urljoin)
+from YodaSpeak import TRANSLATE_OUTPUT_PREFIX
 
 
-def util_load_json(path):
+def util_load_json(path: str):
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
@@ -32,14 +35,14 @@ def test_translate(requests_mock):
     requests_mock.post(ENDPOINT_URL, json=raw_response)
     command_result = translate_command(client, **args)
 
-    expected_outputs = {'Original': 'this is some sentence for translation',
-                        'Translation': 'Some sentence for translation, this is.'}
+    output = {'Original': 'this is some sentence for translation',
+              'Translation': 'Some sentence for translation, this is.'}
 
     expected_result = CommandResults(outputs_prefix='YodaSpeak',
-                                     outputs_key_field='Original',
-                                     outputs=expected_outputs,
+                                     outputs_key_field=f'{TRANSLATE_OUTPUT_PREFIX}.Original',
+                                     outputs={TRANSLATE_OUTPUT_PREFIX: output},
                                      raw_response=raw_response,
-                                     readable_output=tableToMarkdown(name='Yoda Says...', t=expected_outputs))
+                                     readable_output=tableToMarkdown(name='Yoda Says...', t=output))
 
     assert command_result.to_context() == expected_result.to_context()
 
