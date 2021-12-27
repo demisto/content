@@ -125,6 +125,15 @@ create-instances-mpv2:
     - section_end "Create Content Artifacts and Update Conf"
     - section_start "Calculate Packs Dependencies"
     - python3 ./Tests/Marketplace/packs_dependencies.py -i ./Tests/id_set.json -o $ARTIFACTS_FOLDER/packs_dependencies.json
+    - section_start "Collect Tests and Content Packs"
+    - |
+      if [ -n "${INSTANCE_TESTS}" ]; then
+        echo "Skipping - not running in INSTANCE_TESTS build"
+      else
+        [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
+        python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY
+      fi
+    - section_end "Collect Tests and Content Packs"
     - section_end "Calculate Packs Dependencies"
     - section_start "Prepare Content Packs for Testing"
     - ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_V2_BUCKET" "$STORAGE_BASE_PATH" "mp_v2"
