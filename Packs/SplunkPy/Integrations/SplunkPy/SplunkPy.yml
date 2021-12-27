@@ -204,7 +204,7 @@ configuration:
   type: 0
   required: false
   additionalinfo: Use this parameter to specify a list of comma separated fields, which
-    together are a unique identifier for the events you with to fetch.
+    together are a unique identifier for the events you wish to fetch.
 description: Runs queries on Splunk servers.
 display: SplunkPy
 name: SplunkPy

@@ -129,10 +129,10 @@ def create_incident_custom_id(incident):
         elif field_name in incident:
             incident_custom_id += '{}___{}'.format(field_name, incident[field_name])
 
-    extensive_log('[SplunkPyPreRelease] ID after all fields were added: {}'.format(incident_custom_id))
+    extensive_log('[SplunkPy] ID after all fields were added: {}'.format(incident_custom_id))
 
     unique_id = hashlib.md5(incident_custom_id).hexdigest()
-    extensive_log('[SplunkPyPreRelease] Found incident ID is: {}'.format(unique_id))
+    extensive_log('[SplunkPy] Found incident ID is: {}'.format(unique_id))
     return unique_id
 
 
@@ -206,7 +206,7 @@ def get_fetch_start_times(dem_params, service, last_run_time, occurence_time_loo
         fetch_time_in_minutes = parse_time_to_minutes()
         start_time_for_fetch = current_time_for_fetch - timedelta(minutes=fetch_time_in_minutes)
         last_run_time = start_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
-        extensive_log('[SplunkPyPreRelease] SplunkPyPreRelease last run is None. Last run time is: {}'.format(last_run_time))
+        extensive_log('[SplunkPy] SplunkPy last run is None. Last run time is: {}'.format(last_run_time))
 
     occured_start_time = enforce_look_behind_time(last_run_time, now, occurence_time_look_behind)
 
@@ -217,8 +217,8 @@ def build_fetch_kwargs(dem_params, occured_start_time, now, search_offset):
     occurred_start_time_fieldname = dem_params.get("earliest_occurrence_time_fieldname", "earliest_time")
     occurred_end_time_fieldname = dem_params.get("latest_occurrence_time_fieldname", "latest_time")
 
-    extensive_log('[SplunkPyPreRelease] occurred_start_time_fieldname: {}'.format(occurred_start_time_fieldname))
-    extensive_log('[SplunkPyPreRelease] occured_start_time: {}'.format(occured_start_time))
+    extensive_log('[SplunkPy] occurred_start_time_fieldname: {}'.format(occurred_start_time_fieldname))
+    extensive_log('[SplunkPy] occured_start_time: {}'.format(occured_start_time))
 
     kwargs_oneshot = {
         occurred_start_time_fieldname: occured_start_time,
@@ -246,18 +246,18 @@ def build_fetch_query(dem_params):
 def fetch_notables(service, cache_object=None, enrich_notables=False):
     last_run_data = demisto.getLastRun()
     if not last_run_data:
-        extensive_log('[SplunkPyPreRelease] SplunkPyPreRelease first run')
+        extensive_log('[SplunkPy] SplunkPy first run')
     last_run_time = last_run_data and 'time' in last_run_data and last_run_data['time']
-    extensive_log('[SplunkPyPreRelease] SplunkPyPreRelease last run is:\n {}'.format(last_run_data))
+    extensive_log('[SplunkPy] SplunkPy last run is:\n {}'.format(last_run_data))
 
     search_offset = last_run_data.get('offset', 0)
 
     dem_params = demisto.params()
     occurred_look_behind = int(dem_params.get('occurrence_look_behind', 15) or 15)
-    extensive_log('[SplunkPyPreRelease] occurrence look behind is: {}'.format(occurred_look_behind))
+    extensive_log('[SplunkPy] occurrence look behind is: {}'.format(occurred_look_behind))
 
     occured_start_time, now = get_fetch_start_times(dem_params, service, last_run_time, occurred_look_behind)
-    extensive_log('[SplunkPyPreRelease] SplunkPyPreRelease last run time: {}, now: {}'.format(last_run_time, now))
+    extensive_log('[SplunkPy] SplunkPy last run time: {}, now: {}'.format(last_run_time, now))
 
     kwargs_oneshot = build_fetch_kwargs(dem_params, occured_start_time, now, search_offset)
     fetch_query = build_fetch_query(dem_params)
@@ -271,10 +271,10 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
     notables = []
     incident_ids_to_add = []
     for item in reader:
-        extensive_log('[SplunkPyPreRelease] Incident data before parsing to notable: {}'.format(item))
+        extensive_log('[SplunkPy] Incident data before parsing to notable: {}'.format(item))
         notable_incident = Notable(data=item)
         inc = notable_incident.to_incident()
-        extensive_log('[SplunkPyPreRelease] Incident data after parsing to notable: {}'.format(inc))
+        extensive_log('[SplunkPy] Incident data after parsing to notable: {}'.format(inc))
         incident_id = create_incident_custom_id(inc)
 
         if incident_id not in last_run_fetched_ids:
@@ -282,19 +282,19 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
             incidents.append(inc)
             notables.append(notable_incident)
         else:
-            extensive_log('[SplunkPyPreRelease] SplunkPyPreRelease - Dropped incident {} due to duplication.'.format(incident_id))
+            extensive_log('[SplunkPy] SplunkPy - Dropped incident {} due to duplication.'.format(incident_id))
 
     current_epoch_time = int(time.time())
-    extensive_log('[SplunkPyPreRelease] Size of last_run_fetched_ids before adding new IDs: {}'.format(len(last_run_fetched_ids)))
+    extensive_log('[SplunkPy] Size of last_run_fetched_ids before adding new IDs: {}'.format(len(last_run_fetched_ids)))
     for incident_id in incident_ids_to_add:
         last_run_fetched_ids[incident_id] = current_epoch_time
-    extensive_log('[SplunkPyPreRelease] Size of last_run_fetched_ids after adding new IDs: {}'.format(len(last_run_fetched_ids)))
+    extensive_log('[SplunkPy] Size of last_run_fetched_ids after adding new IDs: {}'.format(len(last_run_fetched_ids)))
     last_run_fetched_ids = remove_old_incident_ids(last_run_fetched_ids, current_epoch_time, occurred_look_behind)
-    extensive_log('[SplunkPyPreRelease] Size of last_run_fetched_ids after '
+    extensive_log('[SplunkPy] Size of last_run_fetched_ids after '
                   'removing old IDs: {}'.format(len(last_run_fetched_ids)))
-    extensive_log('[SplunkPyPreRelease] SplunkPyPreRelease - incidents fetched on last run = {}'.format(last_run_fetched_ids))
+    extensive_log('[SplunkPy] SplunkPy - incidents fetched on last run = {}'.format(last_run_fetched_ids))
 
-    debug_message = 'SplunkPyPreRelease - total number of incidents found: from {}\n to {}\n with the ' \
+    debug_message = 'SplunkPy - total number of incidents found: from {}\n to {}\n with the ' \
                     'query: {} is: {}.'.format(last_run_time, now, fetch_query, len(incidents))
     extensive_log(debug_message)
 
@@ -310,7 +310,7 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
 
     if len(incidents) == 0:
         next_run = get_next_start_time(last_run_time, now, False)
-        extensive_log('[SplunkPyPreRelease] SplunkPyPreRelease - Next run time with no incidents found: {}'.format(next_run))
+        extensive_log('[SplunkPy] SplunkPy - Next run time with no incidents found: {}'.format(next_run))
         new_last_run = {
             'time': next_run,
             'offset': 0,
@@ -319,14 +319,14 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
     elif len(incidents) < FETCH_LIMIT:
         latest_incident_fetched_time = get_latest_incident_time(incidents)
         next_run = get_next_start_time(latest_incident_fetched_time, now)
-        extensive_log('[SplunkPyPreRelease] SplunkPyPreRelease - Next run time with some incidents found: {}'.format(next_run))
+        extensive_log('[SplunkPy] SplunkPy - Next run time with some incidents found: {}'.format(next_run))
         new_last_run = {
             'time': next_run,
             'offset': 0,
             'found_incidents_ids': last_run_fetched_ids
         }
     else:
-        extensive_log('[SplunkPyPreRelease] SplunkPyPreRelease - '
+        extensive_log('[SplunkPy] SplunkPy - '
                       'Next run time with too many incidents:  {}'.format(last_run_time))
         new_last_run = {
             'time': occured_start_time,
