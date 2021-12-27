@@ -1,13 +1,16 @@
-import argparse
-import json
-import os
-import requests
-import docker
-import tempfile
-from Tests.scripts.utils.log_util import install_logging
-from Tests.scripts.utils import logging_wrapper as logging
-from demisto_sdk.commands.common.tools import str2bool
+# Perquisites to run this script:
+#
+# 1. Python 3.8+
+# 2. docker is installed (if not, use the `-sd` option)
+# 3. docker python is installed (install it by running pip install docker or pip3 install docker or use the `-sd` option)
 
+
+import argparse
+import os
+from os import path
+import requests
+import tempfile
+from zipfile import ZipFile, ZIP_DEFLATED
 
 ID_SET_URL = "https://storage.googleapis.com/marketplace-dist/content/id_set.json"
 BUCKET_PACKS_URL = "https://marketplace-dist.storage.googleapis.com/content/packs"
@@ -22,22 +25,24 @@ def create_content_item_id_set(id_set_list: list) -> dict:
     return res
 
 
-def get_docker_images_with_tag(pack_names: str, id_set_json: dict) -> list:
+def get_docker_images_with_tag(pack_names: list, id_set_json: dict) -> list:
     """ Given a pack name returns its docker images with its latest tag"""
     integration_names_id_set = create_content_item_id_set(id_set_json['integrations'])
     script_names_id_set = create_content_item_id_set(id_set_json['scripts'])
     docker_images = set()
     for pack_name in pack_names:
         if pack_name not in id_set_json['Packs']:
-            logging.error(f"Pack {pack_name} was not found in id_set.json.")
+            print(f"Pack {pack_name} was not found in id_set.json.")
             continue
         content_items = id_set_json['Packs'][pack_name]['ContentItems']
         integrations = content_items['integrations'] if 'integrations' in content_items else []
         scripts = content_items['scripts'] if 'scripts' in content_items else []
         for integration in integrations:
-            docker_images.add(integration_names_id_set[integration]['docker_image'])
+            if 'docker_image' in integration_names_id_set[integration]:
+                docker_images.add(integration_names_id_set[integration]['docker_image'])
         for script in scripts:
-            docker_images.add(script_names_id_set[script]['docker_image'])
+            if 'docker_image' in script_names_id_set[script]:
+                docker_images.add(script_names_id_set[script]['docker_image'])
 
     return list(docker_images)
 
@@ -52,44 +57,64 @@ def get_pack_names(pack_display_names, id_set_json) -> list:
         d_names_id_set[pack_value['name']] = pack_name
     for d_name in pack_display_names:
         if d_name not in d_names_id_set:
-            logging.error(f"Couldn't find pack {d_name}. Skipping pack.")
+            print(f"Couldn't find pack {d_name}. Skipping pack.")
             continue
         pack_names.add(d_names_id_set[d_name])
     return list(pack_names)
 
 
 def download_and_save_packs(pack_names: list, id_set_json: dict, output_path: str, verify_ssl: bool) -> None:
+    """ Download and save packs under """
     if 'Packs' not in id_set_json:
         raise ValueError('Packs missing from id_set.json.')
     id_set_packs = id_set_json['Packs']
-    logging.info("Starting to download packs with dependencies")
-    for pack_name in pack_names:
-        if pack_name not in id_set_packs:
-            logging.error(f"Couldn't find {pack_name} in id_set.json. Skipping pack download.")
-            continue
-        pack_version = id_set_packs[pack_name]['current_version']
-        logging.info(f"Downloading {pack_name} Pack.")
-        r = requests.request(method='GET',
-                             url=f'{BUCKET_PACKS_URL}/{pack_name}/{pack_version}/{pack_name}.zip',
-                             verify=verify_ssl)
-        with open(os.path.join(output_path, pack_name + '.zip'), 'wb') as f:
-            f.write(r.content)
-    # TODO: Zip all content packs into a unified zip
+    print("Starting to download packs with dependencies")
+    temp_dir = tempfile.TemporaryDirectory()
+    try:
+        for pack_name in pack_names:
+            if pack_name not in id_set_packs:
+                print(f"\tCouldn't find {pack_name} in id_set.json. Skipping pack download.")
+                continue
+            pack_version = id_set_packs[pack_name]['current_version']
+            print(f"\tDownloading {pack_name} Pack")
+            r = requests.request(method='GET',
+                                 url=f'{BUCKET_PACKS_URL}/{pack_name}/{pack_version}/{pack_name}.zip',
+                                 verify=verify_ssl)
+            with open(path.join(temp_dir.name, pack_name + '.zip'), 'wb') as f:
+                f.write(r.content)
+        zip_folder(temp_dir.name, output_path)
+    finally:
+        temp_dir.cleanup()
 
 
-def download_and_save_docker_images(pack_names: list, output_path: str) -> None:
-    logging.info("Starting to download docker images for given packs")
-    cli = docker.from_env()
-    for pack_name in pack_names:
-        logging.info(f"Fetching docker image: for {pack_name}")
-        docker_image = get_docker_images_with_tag(pack_name)
-        # TODO: docker_images should be a list
-        logging.info(f"Download docker image: {docker_image}")
-        image = cli.images.get(docker_image)
-        with open(os.path.join(output_path, pack_name + '.tar'), 'wb') as f:
-            for chunk in image.save():
-                f.write(chunk)
-    logging.info("Finished docker images download")
+def zip_folder(source_pah, output_path):
+    with ZipFile(output_path + '.zip', 'w', ZIP_DEFLATED) as packs_zip:
+        for root, dirs, files in os.walk(source_pah, topdown=True):
+            for f in files:
+                full_file_path = os.path.join(root, f)
+                packs_zip.write(filename=full_file_path, arcname=f)
+
+
+def download_and_save_docker_images(pack_names: list, output_path: str, id_set_json: dict) -> None:
+    """ Downloads and saves the docker images into docker.zip in output_path"""
+    import docker  # import docker only when required
+    print("Starting to download docker images for given packs")
+    docker_images = get_docker_images_with_tag(pack_names, id_set_json)
+    cli = docker.from_env(timeout=120)
+    temp_dir = tempfile.TemporaryDirectory()
+    try:
+        for image in docker_images:
+            print(f"\tDownloading docker image: {image}")
+            image_pair = image.split(':')
+            image_data = cli.images.pull(image_pair[0], image_pair[1])
+            image_file_name = path.join(temp_dir.name, path.basename(image) + '.tar')
+            with open(image_file_name, 'wb') as f:
+                for chunk in image_data.save(named=True):
+                    f.write(chunk)
+        zip_folder(temp_dir.name, output_path)
+    finally:
+        temp_dir.cleanup()
+    print("Finished docker images download")
 
 
 def options_handler():
@@ -100,36 +125,32 @@ def options_handler():
 
     """
     parser = argparse.ArgumentParser(description="Downloads XSOAR packs as zip and their latest docker images as tar.")
-    # disable-secrets-detection-start
     parser.add_argument('-p', '--packs',
                         help="Comma separated list of pack names as they appear in https://xsoar.pan.dev/marketplace",
                         required=True)
-    parser.add_argument('-dd', '--download_docker_images',
-                        help="Download docker images with the packs.zip",
-                        required=False, type=str2bool, default=False)
     parser.add_argument('-o', '--output_path',
                         help="The path where the files will be saved to.",
-                        required=True, default=".")
+                        required=False, default=".")
+    parser.add_argument('-sp', '--skip_packs',
+                        help="Don't download packs.",
+                        required=False, action='store_true')
+    parser.add_argument('-sd', '--skip_docker',
+                        help="Don't download docker images.",
+                        required=False, action='store_true')
     parser.add_argument('--insecure',
-                        help="Skip certificate validation.", type=str2bool, default=False)
-
-    # TODO: Maybe add an option to choose download mode, i.e. 1. pack, 2. docker, 3. pack+docker
+                        help="Skip certificate validation.", dest='feature', action='store_true')
+    parser.set_defaults(skip_packs=False, skip_docker=False, insecure=False)
 
     return parser.parse_args()
 
 
-def get_last_updated_from_file(min_filename: str) -> str:
-    with open(min_filename, 'r') as min_file:
-        return json.load(min_file)['last_updated']
-
-
-def load_bucket_id_set(verify_ssl) -> dict:
+def load_bucket_id_set(verify_ssl: bool) -> dict:
+    """ Loads the bucket id_set.json"""
     r = requests.request(method='GET', url=ID_SET_URL, verify=verify_ssl)
     return r.json()
 
 
 def main():
-    install_logging("DownloadPacksAndDockerImages.log", logger=logging)
     options = options_handler()
     output_path = options.output_path
     pack_display_names = options.packs.split(',')
@@ -138,9 +159,14 @@ def main():
     try:
         id_set_json = load_bucket_id_set(verify_ssl)
         pack_names = get_pack_names(pack_display_names, id_set_json)
-        download_and_save_packs(pack_names, id_set_json, output_path, verify_ssl)
-        if options.download_docker_images:
-            download_and_save_docker_images(pack_names, output_path)
+        if not options.skip_packs:
+            download_and_save_packs(pack_names, id_set_json, path.join(output_path, 'packs'), verify_ssl)
+        else:
+            print('Skipping packs.zip creation')
+        if not options.skip_docker:
+            download_and_save_docker_images(pack_names, path.join(output_path, 'docker'), id_set_json)
+        else:
+            print('Skipping dockers.zip creation')
     finally:
         temp_dir.cleanup()
 
