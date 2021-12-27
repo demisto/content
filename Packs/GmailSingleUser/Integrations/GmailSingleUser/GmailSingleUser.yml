@@ -4,16 +4,15 @@ commonfields:
   id: Gmail Single User
   version: -1
 configuration:
-- display: Email of user
+- display: Gmail of the user
   name: email
   required: true
   type: 0
-- display: Auth Code (run the !gmail-auth-link command to start the auth flow - see
-    Detailed Instructions (?) section)
+- display: Auth Code (run the !gmail-auth-link command to start the auth flow - see Application Authorization Flow section above)
   name: code
   required: false
   type: 4
-- display: "Client ID (Optional: use your own app - see Detailed Instructions (?)"
+- display: "Client ID (Optional: use your own app - see Application Authorization Flow section - All account Types)"
   name: client_id
   required: false
   type: 0

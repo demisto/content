@@ -25,38 +25,39 @@ To allow Cortex XSOAR to access Gmail, the user has to approve the Demisto App u
 
 Additional info available at: https://support.google.com/a/answer/7281227
 
-**All Acount Types:**
+##**All Acount Types:**
 
-* **Optional**: You can use your own Google App instead of the default Demisto App. To create your own app, follow the [Google instructions for Desktop Apps](https://developers.google.com/identity/protocols/OAuth2InstalledApp#prerequisites). 
-
-* Go to the developers credentials page: https://console.developers.google.com/apis/credentials (you may need to setup a new project if you haven't done so in the past).
-* If needed, configure the Consent Screen. Fill in the Consent Screen information you would like to display to your users.
+* **Optional**: You can use your own Google App instead of the default Demisto App. To create your own app, follow the [Google instructions for Desktop Apps](https://developers.google.com/identity/protocols/OAuth2InstalledApp#prerequisites).
+* Go to the developers credentials page: https://console.developers.google.com/apis/credentials (you may need to set up a [new project](https://cloud.google.com/resource-manager/docs/creating-managing-projects) if you haven't done so in the past).
+* If needed, configure the [Consent Screen](https://developers.google.com/workspace/guides/configure-oauth-consent). Fill in the Consent Screen information you would like to display to your users.
 * In the credentials page choose: `Create Credentials` -> `OAuth client ID`.
   ![Create Credentials](doc_imgs/create-credentials.png)
 * When creating the OAuth client ID, select **iOS** as the type (this type allows Apps to work only with a client id).
-* Name the App and Bundle. You can choose a dummy bundle id such as: `com.demisto.app`.
+* Name the App and Bundle. You can choose a dummy bundle id such as `com.demisto.app`.
   ![OAuth App](doc_imgs/oauth-app.png)
-* Make sure to enable the GMail API at: https://console.developers.google.com/apis/api/gmail.googleapis.com/overview
-* After you create the app, copy the *client id* to the integration configuration. Proceed with the OAuth 2.0 authorization flow detailed above.
+* Make sure to [enable the Gmail API](https://console.developers.google.com/apis/api/gmail.googleapis.com/overview) if you haven't done so
+* After you create the app, copy the *client id* of the app that you created to the integration configuration.
+* Proceed with the OAuth 2.0 authorization flow detailed above.
 
 
 ## Configure Gmail Single User on Cortex XSOAR
 
-1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Gmail Single User.
-3. Click __Add instance__ to create and configure a new integration instance.
-    * __Name__: a textual name for the integration instance.
-    * __Email of user__
-    * __Auth Code (run the !gmail-auth-link command to start the auth flow - see Detailed Instructions (?) section)__
-    * __Client ID (Optional: use your own app - see Detailed Instructions (?)__
-    * __Incident type__
-    * __Fetch incidents__
-    * __First fetch timestamp, in days.__
-    * __Events query (e.g. "from:example@demisto.com")__
-    * __Maximum number of emails to pull per fetch__
-    * __Trust any certificate (not secure)__
-    * __Use system proxy settings__
-4. Click __Test__ to validate the URLs, token, and connection.
+3. Click **Add instance** to create and configure a new integration instance.
+    | **Parameter** | **Required** |
+    | --- | --- |
+    | Gmail of the user | True |
+    | Auth Code (run the !gmail-auth-link command to start the auth flow - see Application Authorization Flow section above) | False |
+    | Client ID (Optional: use your own app - see Application Authorization Flow section - All account Types) | False |
+    | Incident type | False |
+    | Fetch incidents | False |
+    | First fetch timestamp, in days | False |
+    | Events query (e.g., "from:example@demisto.com") | False |
+    | Maximum number of emails to pull per fetch | False | 
+    | Trust any certificate (not secure) | False |
+    | Use system proxy settings | False |
+
 ## Fetched Incidents Data
 * Incident Name
 * Occurred
