@@ -33,6 +33,7 @@ BASIC_AUTH_ERROR_MSG = "For cloud users: As of June 2019, Basic authentication w
                        " longer supported, please use an API Token or OAuth 1.0"
 JIRA_RESOLVE_REASON = 'Issue was marked as "Done"'
 USE_SSL = not demisto.params().get('insecure', False)
+JIRA_V2_API = demisto.params().get('jira_v2_api', False)
 
 
 def jira_req(
@@ -248,6 +249,13 @@ def search_user(query: str, max_results: str = '50'):
         List of users.
     """
     url = f"rest/api/latest/user/search?query={query}&maxResults={max_results}"
+    if JIRA_V2_API:
+        """
+        override user identifier for Jira v2 API
+        https://docs.atlassian.com/software/jira/docs/api/REST/8.13.15/#user-findUsers
+        """
+        url = f"rest/api/latest/user/search?username={query}&maxResults={max_results}"
+
     res = jira_req('GET', url, resp_type='json')
     return res
 
@@ -261,9 +269,17 @@ def get_account_id_from_attribute(attribute: str, max_results: str = '50') -> Un
         max_results (str): The maximum number of items to return. default by the server: 50
     """
     users = search_user(attribute, max_results)
+    user_identifier = "accountId"
+
+    if JIRA_V2_API:
+        """
+        override user identifier for Jira v2 API
+        https://docs.atlassian.com/software/jira/docs/api/REST/8.13.15/#user-findUsers
+        """
+        user_identifier = "name"
     account_ids = {
-        user.get('accountId') for user in users if (attribute.lower() in [user.get('displayName', '').lower(),
-                                                                          user.get('emailAddress', '').lower()])}
+        user.get(user_identifier) for user in users if (attribute.lower() in [user.get('displayName', '').lower(),
+                                                                              user.get('emailAddress', '').lower()])}
 
     if not account_ids:
         return f'No Account ID was found for attribute: {attribute}.'
