@@ -1,6 +1,15 @@
-from GmailSingleUser import Client
 import json
+import pytest
+
+from GmailSingleUser import Client, send_mail_command
 from email.utils import parsedate_to_datetime
+
+
+@pytest.fixture
+def gmail_client(mocker):
+    client = Client()
+    mocker.patch.object(client, 'get_access_token', return_value='token')
+    return client
 
 MOCK_MAIL_NO_LABELS = {
     u'internalDate': u'1572251535000',
@@ -184,3 +193,20 @@ def test_generate_auth_link():
     assert link.startswith('https://accounts.google.com/o/oauth2/v2/auth?')
     assert challange in link
     assert 'code_challenge_method=S256' in link
+
+
+def test_send_mail(gmail_client):
+    """
+    Given:
+        -
+
+    When:
+        -
+
+    Then:
+        -
+    """
+    link, challange = gmail_client.generate_auth_link()
+    subject, to, body = "test", "test@gmail.com", "test"
+    result = send_mail_command(client=gmail_client)
+    print(result)
