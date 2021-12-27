@@ -27,5 +27,9 @@
     "NTA",
     "SAM"
   ],
-  "githubUser": []
+  "githubUser": [],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2"
+  ]
 }
