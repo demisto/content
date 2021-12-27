@@ -1,5 +1,6 @@
 import json
 import pytest
+import demistomock as demisto
 
 from GmailSingleUser import Client, send_mail_command
 from email.utils import parsedate_to_datetime
@@ -10,6 +11,7 @@ def gmail_client(mocker):
     client = Client()
     mocker.patch.object(client, 'get_access_token', return_value='token')
     return client
+
 
 MOCK_MAIL_NO_LABELS = {
     u'internalDate': u'1572251535000',
@@ -195,18 +197,42 @@ def test_generate_auth_link():
     assert 'code_challenge_method=S256' in link
 
 
-def test_send_mail(gmail_client):
+SEND_EMAIL_ARGS = [
+    {"subject": "test", "to": "test@gmail.com", "body": "hello"},
+    {"subject": "test", "to": "test@gmail.com", "htmlBody": "<h1>test</h1>"}
+]
+
+
+@pytest.mark.parametrize("command_args", SEND_EMAIL_ARGS)
+def test_send_mail(gmail_client, mocker, command_args):
     """
     Given:
-        -
+        - send mail command arguments
 
     When:
-        -
+        - executing the send mail function
 
     Then:
-        -
+        - a valid entry is returned
     """
-    link, challange = gmail_client.generate_auth_link()
-    subject, to, body = "test", "test@gmail.com", "test"
-    result = send_mail_command(client=gmail_client)
-    print(result)
+    mocker.patch.object(
+        gmail_client, 'send_email_request', return_value={'id': '123', 'threadId': '123', 'labelIds': ['SENT']}
+    )
+    mocker.patch.object(demisto, 'args', return_value=command_args)
+
+    send_email_entry = send_mail_command(client=gmail_client)
+    context_output = send_email_entry['EntryContext']
+    assert 'Gmail.SentMail(val.ID && val.Type && val.ID == obj.ID && val.Type == obj.Type)' in context_output
+    context_output = context_output['Gmail.SentMail(val.ID && val.Type && val.ID == obj.ID && val.Type == obj.Type)'][0]
+
+    assert context_output.get('To') == command_args.get('to')
+    assert context_output.get('Subject') == command_args.get('subject')
+    assert context_output.get('Body') == command_args.get('body')
+    assert context_output.get('BodyHTML') == command_args.get('htmlBody')
+    assert context_output.get('Mailbox') == command_args.get("to")
+
+    markdown_table = send_email_entry['HumanReadable']
+    assert 'Gmail' in markdown_table
+    assert command_args.get('to') in markdown_table
+    assert command_args.get('subject') in markdown_table
+    assert 'SENT' in markdown_table
