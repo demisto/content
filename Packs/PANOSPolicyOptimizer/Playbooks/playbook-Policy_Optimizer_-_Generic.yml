@@ -355,7 +355,7 @@ tasks:
       - "6"
       - "7"
     scriptarguments:
-      policyoptimizerdescription:
+      usecasedescription:
         simple: |-
           This incident shows information about PAN-OS policy misconfigurations found by the PAN-OS Policy Optimizer that help automate your AppID adoption. See the different use-cases displayed in the layout tabs.
 
