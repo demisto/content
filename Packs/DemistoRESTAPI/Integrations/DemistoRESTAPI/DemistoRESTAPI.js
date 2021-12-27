@@ -124,6 +124,8 @@ switch (command) {
             var body = JSON.parse(args.body);
         else
             logDebug('The body is empty.')
+
+        return sendRequest('POST',args.uri, args.body);
     case 'demisto-api-get':
         return sendRequest('GET',args.uri);
     case 'demisto-api-put':
