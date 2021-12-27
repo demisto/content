@@ -718,7 +718,7 @@ tasks:
           operator: hasLength
           right:
             value:
-              simple: "2"
+              simple: "1"
       - - left:
             iscontext: true
             value:
@@ -727,14 +727,6 @@ tasks:
           right:
             value:
               simple: 1.1.1.1
-      - - left:
-            iscontext: true
-            value:
-              simple: PrismaCloudCompute.CustomFeedIP.feed
-          operator: containsGeneral
-          right:
-            value:
-              simple: 2.2.2.2
       label: "yes"
     id: "21"
     ignoreworker: false
@@ -749,12 +741,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: c3ec2b46-82c0-4c2f-8a0c-11ba3c8a3fb9
+      id: 0a1395cd-39dc-415d-84e1-28ca08ddcd70
       iscommand: false
       name: Verify outputs
       type: condition
       version: -1
-    taskid: c3ec2b46-82c0-4c2f-8a0c-11ba3c8a3fb9
+    taskid: 0a1395cd-39dc-415d-84e1-28ca08ddcd70
     timertriggers: []
     type: condition
     view: |-
@@ -776,19 +768,19 @@ tasks:
     quietmode: 0
     scriptarguments:
       ip:
-        simple: 1.1.1.1,2.2.2.2
+        simple: 1.1.1.1
     separatecontext: false
     skipunavailable: false
     task:
       brand: PaloAltoNetworks_PrismaCloudCompute
       description: Add a list of banned IPs to be blocked by the system
-      id: f38d589f-d38e-45ab-8ec3-9f436ce40aa5
+      id: 36f6e63c-92ef-4a17-8760-4cd681df4d66
       iscommand: true
       name: prisma-cloud-compute-custom-feeds-ip-add
       script: PaloAltoNetworks_PrismaCloudCompute|||prisma-cloud-compute-custom-feeds-ip-add
       type: regular
       version: -1
-    taskid: f38d589f-d38e-45ab-8ec3-9f436ce40aa5
+    taskid: 36f6e63c-92ef-4a17-8760-4cd681df4d66
     timertriggers: []
     type: regular
     view: |-
@@ -1014,12 +1006,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 0a66b14b-1c9d-4341-8f01-27c73bb8e9ec
+      id: 1c70b5d5-f1d9-4289-81ff-3976a4b7636d
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: 0a66b14b-1c9d-4341-8f01-27c73bb8e9ec
+    taskid: 1c70b5d5-f1d9-4289-81ff-3976a4b7636d
     timertriggers: []
     type: condition
     view: |-
@@ -1782,13 +1774,13 @@ tasks:
     task:
       brand: PaloAltoNetworks_PrismaCloudCompute
       description: Add custom md5 malware hashes
-      id: 38750952-8e1e-44ad-841d-a85ac176425b
+      id: 29e21c73-5223-4084-88d4-d24943f89b69
       iscommand: true
       name: prisma-cloud-compute-custom-feeds-malware-add
       script: PaloAltoNetworks_PrismaCloudCompute|||prisma-cloud-compute-custom-feeds-malware-add
       type: regular
       version: -1
-    taskid: 38750952-8e1e-44ad-841d-a85ac176425b
+    taskid: 29e21c73-5223-4084-88d4-d24943f89b69
     timertriggers: []
     type: regular
     view: |-
