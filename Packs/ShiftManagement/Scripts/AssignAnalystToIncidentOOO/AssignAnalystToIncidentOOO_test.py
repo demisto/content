@@ -22,7 +22,7 @@ def execute_command_mock(command, args):
     if command == 'GetUsersOOO':
         return [{'Type': 6, 'EntryContext': {'ShiftManagment.OOOUsers': ooo_user_data}}]
     if command == 'setOwner':
-        assert args['owner'] == 'admin'
+        assert 'admin' in args['owner']
         return [{'Type': 6}]
     if command == 'AssignAnalystToIncident':
         assert args['username'] == 'admin2'
@@ -31,7 +31,7 @@ def execute_command_mock(command, args):
 
 
 @pytest.mark.parametrize('args', [({'assignAll': False}), ({'assignAll': True})])
-def test_tom(mocker, args):
+def test_script_flow(mocker, args):
     """
     Given:
     - Cortex XSOAR args.
