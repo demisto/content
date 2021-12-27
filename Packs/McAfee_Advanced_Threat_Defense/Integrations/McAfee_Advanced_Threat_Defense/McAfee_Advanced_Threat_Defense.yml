@@ -8,13 +8,10 @@ configuration:
   required: true
   type: 0
 - display: Username
-  name: username
-  required: true
-  type: 0
-- display: Password
-  name: password
-  required: true
-  type: 4
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: false
 - defaultvalue: ''
   display: 'Trust any certificate (not secure)'
   name: unsecure
@@ -24,8 +21,17 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: 'Integrated advanced threat detection: Enhancing protection from network
-  edge to endpoint'
+- display: Username (Deprecated)
+  name: username
+  required: false
+  hidden: true
+  type: 0
+- display: Password (Deprecated)
+  name: password
+  required: false
+  hidden: true
+  type: 4
+description: 'Integrated advanced threat detection: Enhancing protection from network edge to endpoint'
 display: McAfee Advanced Threat Defense
 name: McAfee Advanced Threat Defense
 script:
@@ -62,8 +68,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: ' IPv4 address of the source system or gateway from where the file
-        is downloaded.'
+      description: ' IPv4 address of the source system or gateway from where the file is downloaded.'
       isArray: false
       name: srcIp
       required: false
@@ -76,8 +81,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Value '0' indicates corresponding taskid in API response. Value
-        '1' indicates -1 as taskid in API response.
+      description: Value '0' indicates corresponding taskid in API response. Value '1' indicates -1 as taskid in API response.
       isArray: false
       name: skipTaskId
       predefined:
@@ -107,10 +111,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: ' This parameter indicates priority of sample analysis. run_now
-        assigns highest priority (i.e., sample is analyzed right away), add_to_q puts
-        sample in waiting state if there is a waiting queue of samples, default is
-        run_now'
+      description: ' This parameter indicates priority of sample analysis. run_now assigns highest priority (i.e., sample is analyzed right away), add_to_q puts sample in waiting state if there is a waiting queue of samples, default is run_now'
       isArray: false
       name: filePriorityQ
       predefined:
@@ -131,8 +132,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: upload a file/web URL for dynamic analysis by using the provided
-      Analyzer Profile. Only single file/web URL can be submitted at a time.
+    description: upload a file/web URL for dynamic analysis by using the provided Analyzer Profile. Only single file/web URL can be submitted at a time.
     execution: false
     name: atd-file-upload
     outputs:
@@ -189,8 +189,7 @@ script:
       type: number
   - arguments:
     - default: false
-      description: This is the returned TaskId value in the submission step, previously
-        returned value in the File/URL submission step
+      description: This is the returned TaskId value in the submission step, previously returned value in the File/URL submission step
       isArray: false
       name: taskId
       required: false
@@ -204,13 +203,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: pdf
-      description: 'Type can be one of the following types: • html — HTML report •
-        txt — Text report • xml — XML report • zip — All files packaged in a single
-        zip file • json — Same as xml but in the JSON format • ioc - Indicators of
-        Compromise format • stix - Structured Threat Information expression. Stix
-        generation is disabled, by default. Use set stixreportstatus enable to enable
-        it. • pdf - Portable Document Format • sample - Download sample from McAfee
-        Advanced Threat Defense'
+      description: 'Type can be one of the following types: • html — HTML report • txt — Text report • xml — XML report • zip — All files packaged in a single zip file • json — Same as xml but in the JSON format • ioc - Indicators of Compromise format • stix - Structured Threat Information expression. Stix generation is disabled, by default. Use set stixreportstatus enable to enable it. • pdf - Portable Document Format • sample - Download sample from McAfee Advanced Threat Defense'
       isArray: false
       name: type
       predefined:
@@ -476,12 +469,10 @@ script:
       description: The actual score (only in case of report type=json)
       type: number
     - contextPath: ATD.Task.taskId
-      description: This is the returned TaskId value in the submission step, previously
-        returned value in the File/URL submission step
+      description: This is the returned TaskId value in the submission step, previously returned value in the File/URL submission step
       type: number
     - contextPath: ATD.Task.jobId
-      description: This is the returned JobId value in the submission step, previously
-        returned value in the File/URL submission step
+      description: This is the returned JobId value in the submission step, previously returned value in the File/URL submission step
       type: number
     - contextPath: ATD.Task.status
       description: The task ID status (Completed or Analyzing)
@@ -545,8 +536,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: '3'
-      description: If ATD severity is bigger than the threshold we will consider it
-        malicious
+      description: If ATD severity is bigger than the threshold we will consider it malicious
       isArray: false
       name: threshold
       predefined:

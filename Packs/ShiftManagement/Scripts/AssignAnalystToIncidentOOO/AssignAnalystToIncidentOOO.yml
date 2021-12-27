@@ -10,7 +10,9 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'false'
-  description: 'Whether to randomly assign analysts who are on call for the shift handover.  Possible values: "true" and "false". Requires Cortex XSOAR v5.5 or later.'
+  description: 'Whether to randomly assign analysts who are on call for the shift
+    handover.  Possible values: "true" and "false". Requires Cortex XSOAR v5.5 or
+    later.'
   isArray: false
   name: oncall
   predefined:

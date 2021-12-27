@@ -15,5 +15,9 @@
     "keywords": [],
     "githubUser": [
         "drew-russell"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

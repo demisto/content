@@ -749,6 +749,15 @@ script:
     execution: false
     name: proofpoint-tr-add-user-to-incident
   - arguments:
+    - description: The incident id to close
+      name: incident_id
+    - description: The incident closure details
+      name: details
+    - description: The incident closure summary
+      name: summary
+    description: Close a specified incident
+    name: proofpoint-tr-close-incident
+  - arguments:
     - default: false
       description: POST URL of the JSON alert source. You can find it by navigating
         to Sources -> JSON event source -> POST URL.

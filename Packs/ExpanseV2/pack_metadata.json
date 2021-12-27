@@ -76,5 +76,9 @@
             "mandatory": false,
             "display_name": "ServiceNow"
         }
-    }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

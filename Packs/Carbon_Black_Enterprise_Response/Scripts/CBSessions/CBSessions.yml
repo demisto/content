@@ -1,0 +1,22 @@
+commonfields:
+  id: CBSessions
+  version: -1
+name: CBSessions
+script: ''
+type: javascript
+tags:
+- carbon-black
+- endpoint
+comment: List Carbon Black sessions
+system: true
+args:
+- name: verbose
+  description: Show more detailed output
+scripttarget: 0
+dependson:
+  must:
+  - cb-list-sessions
+timeout: 0s
+fromversion: 5.0.0
+tests:
+- No tests

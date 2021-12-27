@@ -1,0 +1,97 @@
+commonfields:
+  id: Demisto REST API
+  version: -1
+name: Demisto REST API
+display: Demisto REST API
+category: Utilities
+description: Use Demisto REST APIs
+configuration:
+- display: Demisto Server URL
+  name: url
+  defaultvalue: https://127.0.0.1
+  type: 0
+  required: true
+- display: Demisto Server API Key
+  name: apikey
+  type: 4
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: demisto-api-post
+    arguments:
+    - name: uri
+      required: true
+      default: true
+      description: Request URI (i.e. /incident)
+    - name: body
+      description: Body of HTTP POST
+    description: send HTTP POST request
+    execution: true
+  - name: demisto-api-get
+    arguments:
+    - name: uri
+      required: true
+      default: true
+      description: Request URI (i.e. /user)
+    description: send HTTP GET requests
+  - name: demisto-api-put
+    arguments:
+    - name: uri
+      required: true
+      default: true
+      description: Request URI (i.e. /user)
+    - name: body
+      description: Request body
+    description: send HTTP PUT request
+    execution: true
+  - name: demisto-api-delete
+    arguments:
+    - name: uri
+      required: true
+      default: true
+      description: Request URI (i.e. /user)
+    description: send HTTP DELETE request
+    execution: true
+  - name: demisto-api-download
+    arguments:
+    - name: uri
+      required: true
+      description: Request URI
+    - name: filename
+      description: File name of download
+    - name: description
+      description: Description of file entry
+    description: Download files from Demisto server
+  - name: demisto-api-multipart
+    arguments:
+    - name: uri
+      required: true
+      description: Request URI
+    - name: entryID
+      required: true
+      description: File entry ID
+    - name: body
+      description: Request body
+    description: Send HTTP Multipart request to upload files to Demisto server
+  - name: demisto-delete-incidents
+    arguments:
+    - name: ids
+      required: true
+      description: IDs of the incidents to delete
+      isArray: true
+    description: Delete Demisto incidents
+    execution: true
+  runonce: false
+tests:
+- DemistoUploadFileV2 Test
+fromversion: 5.0.0
