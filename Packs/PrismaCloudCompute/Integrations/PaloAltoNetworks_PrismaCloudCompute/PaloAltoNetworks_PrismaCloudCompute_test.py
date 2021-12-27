@@ -4,7 +4,9 @@ from PaloAltoNetworks_PrismaCloudCompute import (
     PrismaCloudComputeClient, camel_case_transformer, fetch_incidents, get_headers,
     HEADERS_BY_NAME, get_profile_host_list, get_container_profile_list, get_container_hosts_list,
     get_profile_container_forensic_list, get_profile_host_forensic_list, get_console_version, get_custom_feeds_ip_list,
-    add_custom_ip_feeds, filter_api_response, parse_date_string_format
+    add_custom_ip_feeds, filter_api_response, parse_date_string_format, get_custom_malware_feeds,
+    add_custom_malware_feeds, get_cves, get_defenders, get_collections, get_namespaces, get_images_scan_list,
+    get_hosts_scan_list, get_impacted_resources
 )
 
 from CommonServerPython import DemistoException
@@ -478,6 +480,56 @@ HTTP_REQUEST_URL_WITH_QUERY_PARAMS = [
         get_custom_feeds_ip_list,
         "/feeds/custom/ips",
         "https://test.com/feeds/custom/ips"
+    ),
+    (
+        OrderedDict(cve_id="cve-2104"),
+        get_cves,
+        "/cves",
+        "https://test.com/cves?id=cve-2104"
+    ),
+    (
+        OrderedDict(cluster="cluster", hostname="hostname", type="type", offset="0", limit="20", connected=True),
+        get_defenders,
+        "/defenders",
+        "https://test.com/defenders?cluster=cluster&connected=true&hostname=hostname&type=type&limit=20&offset=0"
+    ),
+    (
+        OrderedDict(limit="20"),
+        get_collections,
+        "/collections",
+        "https://test.com/collections"
+    ),
+    (
+        OrderedDict(limit="20", cluster="cluster", collections="collections"),
+        get_namespaces,
+        "/radar/container/namespaces",
+        "https://test.com/radar/container/namespaces?cluster=cluster&collections=collections"
+    ),
+    (
+        OrderedDict(
+            clusters="clusters", compact="true", fields="fields", hostname="hostname", id="123", name="name",
+            registry="registry", repository="repository", offset="1", limit_record="3", limit_stats="3"
+        ),
+        get_images_scan_list,
+        "/images",
+        "https://test.com/images?limit=3&offset=1&compact=true&clusters=clusters&fields=fields&"
+        "hostname=hostname&id=123&name=name&registry=registry&repository=repository"
+    ),
+    (
+        OrderedDict(
+            clusters="clusters", compact="true", fields="fields",
+            hostname="hostname", provider="provider", offset="1", limit_record="8", limit_stats="2"
+        ),
+        get_hosts_scan_list,
+        "/hosts",
+        "https://test.com/hosts?limit=8&offset=1&compact=true&clusters=clusters&fields=fields"
+        "&hostname=hostname&provider=provider"
+    ),
+    (
+        OrderedDict(cve="cve"),
+        get_impacted_resources,
+        "/stats/vulnerabilities/impacted-resources",
+        "https://test.com/stats/vulnerabilities/impacted-resources?cve=cve"
     )
 ]
 
@@ -540,6 +592,10 @@ INVALID_LIMIT_OFFSET_ARGS = [
     (
         {"limit": "0", "offset": "0", "id": "123"},
         get_container_hosts_list,
+    ),
+    (
+        {"limit": "-1"},
+        get_custom_malware_feeds
     )
 ]
 
@@ -565,16 +621,41 @@ HTTP_BODY_REQUEST_PARAMS = [
         add_custom_ip_feeds,
         "/feeds/custom/ips",
         {
-            "ip": [
-                "1.1.1.1",
+            "ip": "1.1.1.1"
+        },
+        {
+            "feed": ["1.1.1.1"]
+        }
+    ),
+    (
+        add_custom_malware_feeds,
+        "/feeds/custom/malware",
+        {
+            "name": "test",
+            "md5": "1,2,3"
+        },
+        {
+            "feed": [
+                {
+                    "name": "test",
+                    "md5": "1"
+                },
+                {
+                    "name": "test",
+                    "md5": "2"
+                },
+                {
+                    "name": "test",
+                    "md5": "3"
+                }
             ]
         }
     )
 ]
 
 
-@pytest.mark.parametrize("func, url_suffix, args", HTTP_BODY_REQUEST_PARAMS)
-def test_http_body_request_is_valid(requests_mock, func, url_suffix, args, client):
+@pytest.mark.parametrize("func, url_suffix, args, expected_response", HTTP_BODY_REQUEST_PARAMS)
+def test_http_body_request_is_valid(requests_mock, func, url_suffix, args, expected_response, client):
     """
     Given:
         - http body request to an api endpoint.
@@ -590,11 +671,9 @@ def test_http_body_request_is_valid(requests_mock, func, url_suffix, args, clien
     requests_mock.get(url=full_url, json={})
     mocker = requests_mock.put(url=full_url, json={})
 
-    expected_body_request = {"feed": args.get("ip")}
-
     func(client=client, args=args)
 
-    assert expected_body_request == mocker.last_request.json()
+    assert expected_response == mocker.last_request.json()
 
 
 HTTP_FILTERING_BODY_RESPONSE_PARAMS = [
@@ -849,6 +928,324 @@ EXPECTED_CONTEXT_OUTPUT_DATA = [
             ],
             "digest": "1234"
         }
+    ),
+    (
+        {"limit": "1"},
+        get_custom_malware_feeds,
+        "/feeds/custom/malware",
+        {
+            "_id": "",
+            "modified": "2021-12-09T13:31:38.851Z",
+            "feed": [
+                {
+                    "md5": "1234",
+                    "name": "test",
+                    "modified": 0,
+                    "allowed": False
+                },
+                {
+                    "md5": "12345",
+                    "name": "test1",
+                    "modified": 0,
+                    "allowed": False
+                },
+            ],
+            "digest": "1234"
+        },
+        {
+            "modified": "December 09, 2021 13:31:38 PM",
+            "feed": [
+                {
+                    "md5": "1234",
+                    "name": "test",
+                    "allowed": False
+                }
+            ],
+            "digest": "1234"
+        }
+    ),
+    (
+        {"cve_id": "cve_id"},
+        get_cves,
+        "/cves",
+        [
+            {
+                "cve": "cve1",
+                "distro": "distro",
+                "distro_release": "distro_release",
+                "type": "type",
+                "package": "package",
+                "severity": "unimportant",
+                "status": "fixed in 2.22-15",
+                "cvss": 5,
+                "rules": [
+                    "<2.22-15"
+                ],
+                "conditions": None,
+                "modified": 1606135803,
+                "fixDate": 0,
+                "link_id": "",
+                "description": "description1"
+            },
+            {
+                "cve": "cve2",
+                "distro": "distro",
+                "distro_release": "distro_release",
+                "type": "type",
+                "package": "package",
+                "severity": "severity",
+                "status": "fixed in 2.22-100.15",
+                "cvss": 7,
+                "rules": [
+                    "<2.22-100.15"
+                ],
+                "conditions": None,
+                "modified": 1606135803,
+                "fixDate": 0,
+                "link_id": "",
+                "description": "description2"
+            },
+        ],
+        [
+            {
+                "ID": "cve1",
+                "Description": "description1",
+                "CVSS": 5,
+                "Modified": "November 23, 2020 12:50:03 PM"
+            },
+            {
+                "ID": "cve2",
+                "Description": "description2",
+                "CVSS": 7,
+                "Modified": "November 23, 2020 12:50:03 PM"
+            }
+        ]
+    ),
+    (
+        {"limit": "20", "offset": "0"},
+        get_defenders,
+        "/defenders",
+        [
+            {
+                "hostname": "host1",
+                "version": "24.04",
+                "connected": True,
+                "features": {
+                    "proxyListenerType": "none"
+                },
+                "category": "docker",
+                "lastModified": "2021-09-02T11:05:08.8Z",
+            },
+            {
+                "hostname": "host2",
+                "version": "24.04",
+                "connected": False,
+                "features": {
+                    "proxyListenerType": "none"
+                },
+                "category": "docker",
+                "lastModified": "2021-09-02T11:05:08.8Z",
+            }
+        ],
+        [
+            {
+                "hostname": "host1",
+                "version": "24.04",
+                "connected": True,
+                "features": {
+                    "proxyListenerType": "none"
+                },
+                "category": "docker",
+                "lastModified": "September 02, 2021 11:05:08 AM",
+            },
+            {
+                "hostname": "host2",
+                "version": "24.04",
+                "connected": False,
+                "features": {
+                    "proxyListenerType": "none"
+                },
+                "category": "docker",
+                "lastModified": "September 02, 2021 11:05:08 AM",
+            }
+        ],
+    ),
+    (
+        {"limit": "20"},
+        get_collections,
+        "/collections",
+        [
+            {
+                "hosts": ["*"],
+                "images": ["*"],
+                "labels": ["*"],
+                "containers": ["*"],
+                "functions": ["*"],
+                "namespaces": ["*"],
+                "appIDs": ["*"],
+                "accountIDs": ["*"],
+                "codeRepos": ["*"],
+                "clusters": ["*"],
+                "name": "All",
+                "owner": "system",
+                "modified": "2021-12-02T07:54:42.517Z",
+                "color": "#3FA2F7",
+                "description": "System - all resources collection",
+                "system": True,
+            }
+        ],
+        [
+            {
+                "hosts": ["*"],
+                "images": ["*"],
+                "labels": ["*"],
+                "containers": ["*"],
+                "functions": ["*"],
+                "namespaces": ["*"],
+                "appIDs": ["*"],
+                "accountIDs": ["*"],
+                "codeRepos": ["*"],
+                "clusters": ["*"],
+                "name": "All",
+                "owner": "system",
+                "modified": "December 02, 2021 07:54:42 AM",
+                "color": "#3FA2F7",
+                "description": "System - all resources collection",
+                "system": True,
+            }
+        ]
+    ),
+    (
+        {"limit": "20"},
+        get_namespaces,
+        "/radar/container/namespaces",
+        ["namespace1", "namespace2", "namespace3"],
+        ""
+    ),
+    (
+        {"limit_stats": "1", "limit_records": "20"},
+        get_images_scan_list,
+        "/images",
+        [
+            {
+                "id": "123",
+                "osDistro": "alpine",
+                "vulnerabilities": [
+                    {
+                        "cvss": 7.5,
+                        "status": "fixed in 1.30.1-r5",
+                        "cve": "CVE-2018-20679",
+                        "packageName": "busybox",
+                        "fixDate": 1547051340,
+                    },
+                    {
+                        "cvss": 8.5,
+                        "status": "fixed in 1.30.1-r5",
+                        "cve": "CVE-2019-20679",
+                        "packageName": "busybox2",
+                        "fixDate": 1547059999,
+                    },
+                ]
+            }
+        ],
+        [
+            {
+                "id": "123",
+                "osDistro": "alpine",
+                "vulnerabilities": [
+                    {
+                        "cvss": 7.5,
+                        "status": "fixed in 1.30.1-r5",
+                        "cve": "CVE-2018-20679",
+                        "packageName": "busybox",
+                        "fixDate": "January 09, 2019 16:29:00 PM",
+                    }
+                ]
+            }
+        ]
+    ),
+    (
+        {"limit_stats": "1", "limit_records": "20"},
+        get_hosts_scan_list,
+        "/hosts",
+        [
+            {
+                "id": "123",
+                "osDistro": "alpine",
+                "vulnerabilities": [
+                    {
+                        "cvss": 7.5,
+                        "status": "fixed in 1.30.1-r5",
+                        "cve": "CVE-2018-20679",
+                        "packageName": "busybox",
+                        "fixDate": 1547051340,
+                    },
+                    {
+                        "cvss": 8.5,
+                        "status": "fixed in 1.30.1-r5",
+                        "cve": "CVE-2019-20679",
+                        "packageName": "busybox2",
+                        "fixDate": 1547059999,
+                    },
+                ]
+            }
+        ],
+        [
+            {
+                "id": "123",
+                "osDistro": "alpine",
+                "vulnerabilities": [
+                    {
+                        "cvss": 7.5,
+                        "status": "fixed in 1.30.1-r5",
+                        "cve": "CVE-2018-20679",
+                        "packageName": "busybox",
+                        "fixDate": "January 09, 2019 16:29:00 PM",
+                    }
+                ]
+            }
+        ]
+    ),
+    (
+        {"limit": "2", "cve": "CVE-2018-14600"},
+        get_impacted_resources,
+        "/stats/vulnerabilities/impacted-resources",
+        {
+            "_id": "CVE-2018-1270",
+            "riskTree": {
+                "1": [
+                    {
+                        "image": "image1",
+                        "container": "container1",
+                        "host": "host1",
+                        "namespace": "namespace1",
+                        "factors": {
+                            "network": True,
+                            "noSecurityProfile": True
+                        }
+                    }
+                ],
+            },
+        },
+        [
+            {
+                "_id": "CVE-2018-1270",
+                "riskTree": {
+                    "1": [
+                        {
+                            "image": "image1",
+                            "container": "container1",
+                            "host": "host1",
+                            "namespace": "namespace1",
+                            "factors": {
+                                "network": True,
+                                "noSecurityProfile": True
+                            }
+                        }
+                    ],
+                },
+            },
+        ]
     )
 ]
 
@@ -877,4 +1274,8 @@ def test_context_data_output_is_valid(requests_mock, args, func, url_suffix, jso
     requests_mock.get(url=full_url, json=json)
     command_results = func(client=client, args=args) if args else func(client=client)
 
-    assert command_results.outputs == expected_context_output
+    if isinstance(command_results, list):
+        for result, expected_output in zip(command_results, expected_context_output):
+            assert result.outputs == expected_output
+    else:
+        assert command_results.outputs == expected_context_output
