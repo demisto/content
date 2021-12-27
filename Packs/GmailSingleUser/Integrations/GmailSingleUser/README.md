@@ -25,7 +25,7 @@ To allow Cortex XSOAR to access Gmail, the user has to approve the Demisto App u
 
 Additional info available at: https://support.google.com/a/answer/7281227
 
-##**All Acount Types:**
+## *All Acount Types*:
 
 * **Optional**: You can use your own Google App instead of the default Demisto App. To create your own app, follow the [Google instructions for Desktop Apps](https://developers.google.com/identity/protocols/OAuth2InstalledApp#prerequisites).
 * Go to the developers credentials page: https://console.developers.google.com/apis/credentials (you may need to set up a [new project](https://cloud.google.com/resource-manager/docs/creating-managing-projects) if you haven't done so in the past).
