@@ -73,7 +73,7 @@ tasks:
       id: d25bcb22-e6f4-4c92-8b75-c30678b90b99
       version: -1
       name: epo-help
-      script: epo V2|||epo-help
+      script: McAfee ePO v2|||epo-help
       type: regular
       iscommand: true
       brand: ""
