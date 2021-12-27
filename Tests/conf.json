@@ -4808,6 +4808,14 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "ACTI",
+            "playbookID": "Feed iDefense Test"
+        },
+        {
+            "integrations": "ACTI",
+            "playbookID": "iDefense_v2_Test"
+        },
+        {
           "playbookID": "AzureRiskyUsers",
             "fromversion": "6.0.0",
             "integrations": "AzureRiskyUsers"
@@ -4888,10 +4896,8 @@
         "EWS Extension: Powershell Online V2 Test": "Issue 39008",
         "O365 - EWS - Extension - Test": "Issue 39008",
         "Majestic Million Test Playbook": "Issue 30931",
-        "iDefense_v2_Test": "Issue 40126",
         "EWS Mail Sender Test": "Issue 27944",
         "McAfee ESM v2 - Test v10.3.0": "Issue 35616",
-        "Feed iDefense Test": "Issue 34035",
         "McAfee ESM v2 - Test v10.2.0": "Issue 35670",
         "McAfee ESM Watchlists - Test v10.3.0": "Issue 37130",
         "McAfee ESM Watchlists - Test v10.2.0": "Issue 39389",
