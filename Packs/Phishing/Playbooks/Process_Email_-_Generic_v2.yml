@@ -56,8 +56,8 @@ tasks:
       id: aa7ddce2-5a85-46fe-8e35-6c4ebbe62059
       version: -1
       name: Do we have original emails attached?
-      description: Identify whether the incident includes an email message attached
-        as an EML or MSG file and return the answer to playbook. Also saves the identified
+      description: Identifies whether the incident includes an email message attached
+        as an EML or MSG file and returns the answer to playbook. Also saves the identified
         entry ID to context for use for later. Commonly used in automated playbooks
         that handle phishing reports sent to a special phishing mailbox set up by
         the security team.
@@ -1265,8 +1265,8 @@ tasks:
       id: b01edbd3-8f20-4abf-8344-7b28dddc35f9
       version: -1
       name: Normalize Reporter Email Headers
-      description: This task normalizes the keys names of the headers, which are different
-        with each client. It facilitates extracting the relevant values for the next
+      description: Normalizes the keys names of the headers, which are different
+        with each client. This facilitates extracting the relevant values for the next
         tasks.
       scriptName: SetGridField
       type: regular
@@ -1312,7 +1312,7 @@ tasks:
       id: 06309202-bd36-411d-85fb-026d39e3767c
       version: -1
       name: Extract Reporter Email Headers
-      description: Preserves the original state of reporter's headers, which are stored
+      description: Preserves the original state of the reporter's email headers, which are stored
         in the context.
       scriptName: Set
       type: regular
@@ -2147,7 +2147,7 @@ inputs:
       root: incident
       accessor: emailsubject
   required: false
-  description: The email’s subject.
+  description: The email subject.
   playbookInputQuery:
 - key: EmailText
   value:
@@ -2155,7 +2155,7 @@ inputs:
       root: incident
       accessor: emailbody
   required: false
-  description: The email’s text.
+  description: The email text.
   playbookInputQuery:
 - key: EmailHtml
   value:
@@ -2163,7 +2163,7 @@ inputs:
       root: incident
       accessor: emailhtml
   required: false
-  description: The email’s HTML.
+  description: The email HTML.
   playbookInputQuery:
 - key: EmailHeaders
   value:
@@ -2171,7 +2171,7 @@ inputs:
       root: incident
       accessor: phishingreporteremailheaders
   required: false
-  description: The email’s headers.
+  description: The email headers.
   playbookInputQuery:
 - key: EmailFormat
   value:
@@ -2179,7 +2179,7 @@ inputs:
       root: incident
       accessor: emailformat
   required: false
-  description: The email’s format.
+  description: The email format.
   playbookInputQuery:
 - key: GetOriginalEmail
   value:
@@ -2201,8 +2201,8 @@ inputs:
       accessor: emailmessageid
   required: false
   description: The original email message ID to retrieve. Holds the value of the "Message-ID"
-    header of the original email. This value is passed as an input to the Get Original
-    Email - Generic v2 playbook.
+    header of the original email. This value is passed as an input to the "Get Original
+    Email - Generic v2" playbook.
   playbookInputQuery:
 - key: UserID
   value:
@@ -2220,7 +2220,7 @@ inputs:
               simple: $1
   required: false
   description: The user's email address to retrieve the original email. This value
-    is passed as an input to the Get Original Email - Generic v2 playbook.
+    is passed as an input to the "Get Original Email - Generic v2" playbook.
   playbookInputQuery:
 - key: Thread-Topic
   value:
@@ -2230,14 +2230,14 @@ inputs:
   required: false
   description: The value of the "Thread-Topic" header which holds the original email
     subject, needed for forwarded email scenarios. It is passed as an input to the
-    Get Original Email - Generic v2 playbook to use in the relevant sub-playbooks.
+    "Get Original Email - Generic v2" playbook to use in the relevant sub-playbooks.
   playbookInputQuery:
 - key: EmailBrand
   value: {}
   required: false
   description: |-
-    If this value is provided, only the relevant playbook runs. If no value is provided, all sub-playbooks are run.. Possible values: - Gmail - EWS v2 - MicrosoftGraphMail - EmailSecurityGateway
-    Choosing the EmailSecurityGateway executes the following if enabled: - FireEye EX (Email Security) - Proofpoint TAP - Mimecast
+    If this value is provided, only the relevant playbook runs. If no value is provided, all sub-playbooks are run. Possible values: - Gmail - EWS v2 - MicrosoftGraphMail - EmailSecurityGateway
+    Choosing the EmailSecurityGateway executes the following if enabled: - FireEye EX (Email Security) - Proofpoint TAP - Mimecast.
   playbookInputQuery:
 outputs:
 - contextPath: Email.HTML
