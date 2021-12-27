@@ -1646,13 +1646,13 @@ For more details about the authentication used in this integration, see <a href=
 <h5 id="command-example">Command Example</h5>
 </div>
 <div class="cl-preview-section">
-<pre>msgraph-user-account-disable user="oren@demistodev.onmicrosoft.com"</pre>
+<pre>msgraph-user-account-disable user="test@demistodev.onmicrosoft.com"</pre>
 </div>
 <div class="cl-preview-section">
 <h5 id="human-readable-output">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p>user: <a href="mailto:%22oren@demistodev.onmicrosoft.com">"oren@demistodev.onmicrosoft.com</a>" account has been disabled successfully</p>
+<p>user: <a href="mailto:%22test@demistodev.onmicrosoft.com">"test@demistodev.onmicrosoft.com</a>" account has been disabled successfully</p>
 </div>
 <div class="cl-preview-section">
 <h3 id="user-revoke-session">14. Revoke a user session</h3>
@@ -1700,11 +1700,11 @@ For more details about the authentication used in this integration, see <a href=
 <h5 id="command-example">Command Example</h5>
 </div>
 <div class="cl-preview-section">
-<pre>msgraph-user-session-revoke user="oren@demistodev.onmicrosoft.com"</pre>
+<pre>msgraph-user-session-revoke user="test@demistodev.onmicrosoft.com"</pre>
 </div>
 <div class="cl-preview-section">
 <h5 id="human-readable-output">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p>user: <a href="mailto:%22oren@demistodev.onmicrosoft.com">"oren@demistodev.onmicrosoft.com</a>" session has been revoked successfully</p>
+<p>user: <a href="mailto:%22test@demistodev.onmicrosoft.com">"test@demistodev.onmicrosoft.com</a>" session has been revoked successfully</p>
 </div>

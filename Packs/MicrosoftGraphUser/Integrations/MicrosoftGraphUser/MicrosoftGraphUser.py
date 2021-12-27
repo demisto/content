@@ -228,7 +228,7 @@ def test_function(client, _):
 def disable_user_account_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
     client.disable_user_account_session(user)
-    human_readable = f'user: "{user}" account has been disabled successfully'
+    human_readable = f'user: "{user}" account has been disabled successfully.'
     return human_readable, None, None
 
 
@@ -243,7 +243,7 @@ def unblock_user_command(client: MsGraphClient, args: Dict):
 def delete_user_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
     client.delete_user(user)
-    human_readable = f'user: "{user}" was deleted successfully'
+    human_readable = f'user: "{user}" was deleted successfully.'
     return human_readable, None, None
 
 
@@ -396,7 +396,7 @@ def assign_manager_command(client: MsGraphClient, args: Dict):
 def revoke_user_session_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
     client.revoke_user_session(user)
-    human_readable = f'User: "{user}" session has been revoked successfully'
+    human_readable = f'User: "{user}" sessions have been revoked successfully.'
     return human_readable, None, None
 
 
@@ -428,7 +428,7 @@ def main():
         'msgraph-direct-reports': get_direct_reports_command,
         'msgraph-user-get-manager': get_manager_command,
         'msgraph-user-assign-manager': assign_manager_command,
-        'msgraph-user-session-revoke': revoke_user_session_command
+        'msgraph-user-session-revoke': revoke_user_session_command,
     }
     command = demisto.command()
     LOG(f'Command being called is {command}')
