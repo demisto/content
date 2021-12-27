@@ -100,7 +100,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 4530
+          "y": 4690
         }
       }
     note: false
@@ -157,7 +157,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 4715
+          "y": 4875
         }
       }
     note: false
@@ -387,7 +387,7 @@ tasks:
       {
         "position": {
           "x": 2010,
-          "y": 4210
+          "y": 4370
         }
       }
     note: false
@@ -417,7 +417,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 4385
+          "y": 4545
         }
       }
     note: false
@@ -637,7 +637,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 4210
+          "y": 4380
         }
       }
     note: false
@@ -799,7 +799,7 @@ tasks:
       {
         "position": {
           "x": -390,
-          "y": 4210
+          "y": 4370
         }
       }
     note: false
@@ -907,20 +907,34 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 7769a021-d0ef-49f5-819b-6d35e4bb393d
-    type: regular
+    taskid: df5278c5-4c23-4fb4-8e76-43bc0d45cd31
+    type: condition
     task:
-      id: 7769a021-d0ef-49f5-819b-6d35e4bb393d
+      id: df5278c5-4c23-4fb4-8e76-43bc0d45cd31
       version: -1
-      name: Manual - review failed update task
-      description: Sets closing reason and notes for the investigation.
-      type: regular
+      name: Were there any failed updates?
+      description: Were there any failed updates?
+      type: condition
       iscommand: false
       brand: Builtin
     nexttasks:
-      '#none#':
+      '#default#':
       - "19"
+      "yes":
+      - "73"
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: ContentDataPreCheck
+            iscontext: true
+          right:
+            value:
+              simple: None.
     view: |-
       {
         "position": {
@@ -937,10 +951,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 2cee83a9-3329-451a-8618-ff535552f69d
+    taskid: d44eb457-7e91-4bcd-819a-75fbb32609c0
     type: condition
     task:
-      id: 2cee83a9-3329-451a-8618-ff535552f69d
+      id: d44eb457-7e91-4bcd-819a-75fbb32609c0
       version: -1
       name: Is there a user filter?
       description: Checks whether the user provided a specific content
@@ -2360,19 +2374,50 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: 9b4ac1a2-bbb1-49f9-83e3-f1e5fe891374
+    type: regular
+    task:
+      id: 9b4ac1a2-bbb1-49f9-83e3-f1e5fe891374
+      version: -1
+      name: Manual - review failed update task
+      description: Sets closing reason and notes for the investigation.
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 4210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
       "10_43_#default#": 0.23,
       "12_43_#default#": 0.36,
       "13_43_#default#": 0.41,
+      "30_19_#default#": 0.43,
       "36_37_#default#": 0.58,
       "43_40_yes": 0.17,
       "44_40_yes": 0.29
     },
     "paper": {
       "dimensions": {
-        "height": 4970,
+        "height": 5130,
         "width": 2780,
         "x": -390,
         "y": -190
