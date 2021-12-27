@@ -11,7 +11,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - "1"
+      - "43"
     note: false
     quietmode: 0
     separatecontext: false
@@ -29,7 +29,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": -130
+          "y": -270
         }
       }
   "1":
@@ -1790,16 +1790,50 @@ tasks:
           "y": 4220
         }
       }
+  "43":
+    id: "43"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      seconds:
+        simple: "60"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sleep for X seconds
+      id: cf51dd3d-d5bc-4dfb-805e-64172fdf86e5
+      iscommand: false
+      name: Sleep Before Fetching Incidents
+      script: Sleep
+      type: regular
+      version: -1
+    taskid: cf51dd3d-d5bc-4dfb-805e-64172fdf86e5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": -135
+        }
+      }
 version: -1
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 7285,
+        "height": 7425,
         "width": 985,
         "x": 40,
-        "y": -130
+        "y": -270
       }
     }
   }
