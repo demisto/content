@@ -382,7 +382,7 @@ tasks:
       version: -1
       name: Install Marketplace Packs
       description: Marketplace packs installer for the content management pack.
-      scriptName: MarketplacePackInstaller
+      scriptName: ContentPackInstaller
       type: regular
       iscommand: false
       brand: ""
@@ -790,10 +790,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 56b086df-0caf-401f-81df-6a00c2f7074e
+    taskid: 6009275f-d453-4f60-85dd-281d89081cc5
     type: regular
     task:
-      id: 56b086df-0caf-401f-81df-6a00c2f7074e
+      id: 6009275f-d453-4f60-85dd-281d89081cc5
       version: -1
       name: Download Custom Packs using an HTTP request
       description: Sends an HTTP request. Returns the response as a JSON file.
@@ -805,8 +805,19 @@ tasks:
       '#none#':
       - "12"
     scriptarguments:
+      filename:
+        complex:
+          root: ${ConfigurationSetup.CustomPacks
+          accessor: packid}
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: .zip
       method:
-        simple: POST
+        simple: GET
       saveAsFile:
         simple: "yes"
       url:

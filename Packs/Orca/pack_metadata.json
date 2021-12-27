@@ -13,5 +13,9 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
-    "githubUser": "edenorca"
+    "githubUser": "edenorca",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }
