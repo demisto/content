@@ -25,7 +25,7 @@ def execute_command_mock(command, args):
         assert 'admin' in args['owner']
         return [{'Type': 6}]
     if command == 'AssignAnalystToIncident':
-        assert args['username'] == 'admin2'
+        assert 'admin' in args['username']
         return [{'Type': 6}]
     raise Exception(f'Unexpected command: {command}')
 
