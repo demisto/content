@@ -7,6 +7,7 @@ from urllib.parse import ParseResult, urlparse
 from secrets import compare_digest
 from dateutil.parser import parse
 from requests.utils import requote_uri
+from werkzeug.exceptions import RequestedRangeNotSatisfiable
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -17,6 +18,7 @@ HTTP_400_BAD_REQUEST = 400
 HTTP_401_UNAUTHORIZED = 401
 HTTP_404_NOT_FOUND = 404
 HTTP_406_NOT_ACCEPABLE = 406
+HTTP_416_RANGE_NOT_SATISFIABLE = 416
 INTEGRATION_NAME: str = 'TAXII2 Server'
 API_ROOT = 'threatintel'
 APP: Flask = Flask('demisto-taxii2Z')
@@ -35,6 +37,7 @@ SCO_DET_ID_NAMESPACE = uuid.UUID('00abedb4-aa42-466c-9c01-fed23315a9b7')
 STIX_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 TAXII_V20_CONTENT_LEN = 9765625
 TAXII_V21_CONTENT_LEN = 104857600
+TAXII_REQUIRED_FILTER_FIELDS = {'name', 'type', 'modified', 'createdTime', 'description'}
 
 XSOAR_TYPES_TO_STIX_SCO = {
     FeedIndicatorType.CIDR: 'ipv4-addr',
@@ -272,14 +275,14 @@ class TAXII2Server:
         """
         return {'collections': self._collections_resource}
 
-    def get_collection_by_id(self, collection_id: str) -> dict:
+    def get_collection_by_id(self, collection_id: str) -> Optional[dict]:
         """
         Handle Collection ID request.
 
         Returns:
             The Collection with given ID response.
         """
-        found_collection = self.collections_by_id.get(collection_id)
+        found_collection = self.collections_by_id.get(collection_id)  # type: Optional[dict]
         return found_collection
 
     def get_manifest(self, collection_id: str, added_after, limit: int, offset: int,
@@ -292,17 +295,23 @@ class TAXII2Server:
         """
         found_collection = self.collections_by_id.get(collection_id, {})
         query = found_collection.get('query')
-        new_limit = offset + limit + 1  # helps to verify that there is more indicators
-        new_query = create_query(query, types)
-        iocs, _ = find_indicators(query=new_query, added_after=added_after, limit=new_limit, is_manifest=True)
+        iocs, _ = find_indicators(
+            query=query,
+            types=types,
+            added_after=added_after,
+            limit=limit,
+            offset=offset,
+            is_manifest=True)
 
         first_added = None
         last_added = None
-        objects = iocs[offset:offset + limit]  # TODO ERROR 416
+        objects = iocs[offset:offset + limit]
+        if iocs and not objects:
+            raise RequestedRangeNotSatisfiable
 
         if objects:
-            first_added = parse(objects[0].get('date_added')).strftime(STIX_DATE_FORMAT)
-            last_added = parse(objects[-1].get('date_added')).strftime(STIX_DATE_FORMAT)
+            first_added = objects[0].get('date_added')
+            last_added = objects[-1].get('date_added')
 
         response = {
             'objects': objects,
@@ -325,24 +334,30 @@ class TAXII2Server:
 
         found_collection = self.collections_by_id.get(collection_id, {})
         query = found_collection.get('query')
-        new_limit = offset + limit + 1  # helps to verify that there is more indicators
-        new_query = create_query(query, types)
-        iocs, extensions = find_indicators(query=new_query, added_after=added_after, limit=new_limit)
+        iocs, extensions = find_indicators(
+            query=query,
+            types=types,
+            added_after=added_after,
+            limit=limit,
+            offset=offset)
 
         first_added = None
         last_added = None
         limited_extensions = None
 
-        limited_iocs = iocs[offset:offset + limit]  # TODO ERROR 416
+        limited_iocs = iocs[offset:offset + limit]
+        if iocs and not limited_iocs:
+            raise RequestedRangeNotSatisfiable
+
         objects = limited_iocs
 
         if SERVER.has_extention:
             limited_extensions = extensions[offset:offset + limit]
             objects = [val for pair in zip(limited_iocs, limited_extensions) for val in pair]
 
-        if limited_extensions:
-            first_added = parse(limited_extensions[0].get('created')).strftime(STIX_DATE_FORMAT)
-            last_added = parse(limited_extensions[-1].get('created')).strftime(STIX_DATE_FORMAT)
+        if limited_iocs:
+            first_added = limited_iocs[0].get('created')
+            last_added = limited_iocs[-1].get('created')
 
         response = {}
         if self.version == TAXII_VER_2_0:
@@ -362,7 +377,7 @@ class TAXII2Server:
         return response, first_added, last_added
 
 
-SERVER: TAXII2Server = None
+SERVER: TAXII2Server = None  # type: ignore[assignment]
 
 ''' HELPER FUNCTIONS '''
 
@@ -380,8 +395,8 @@ def taxii_validate_request_headers(f: Callable) -> Callable:
         if SERVER.auth:
             if credentials:
                 try:
-                    auth_success = (compare_digest(credentials.username, SERVER.auth[0])
-                                    and compare_digest(credentials.password, SERVER.auth[1]))
+                    auth_success = (compare_digest(credentials.username, SERVER.auth[0])  # type: ignore[type-var]
+                                    and compare_digest(credentials.password, SERVER.auth[1]))  # type: ignore[type-var]
                 except TypeError:
                     auth_success = False
             else:
@@ -445,9 +460,6 @@ def create_fields_list(fields: str) -> set:
         elif field == 'indicator_type':
             field = 'type'
         new_list.add(field)
-
-    new_list.add('name')
-    new_list.add('type')
     return new_list
 
 
@@ -457,7 +469,7 @@ def handle_long_running_error(error: str):
     Args:
         error: The error message.
     """
-    demisto.error(error)  # Todo: check when needed
+    demisto.error(error)
     demisto.updateModuleHealth(error)
 
 
@@ -500,37 +512,51 @@ def create_query(query: str, types: list) -> str:
         New query with types params
     """
     if types:
-        try:
-            xsoar_types = [STIX2_TYPES_TO_XSOAR[t] for t in types if t != 'domain-name']
-            if 'domain-name' in types:
-                xsoar_types.extend(STIX2_TYPES_TO_XSOAR['domain-name'])
-        except KeyError as e:
-            raise Exception(f'Unsupported object type: {e}.')
+        xsoar_types = []
+        if 'domain-name' in types:
+            xsoar_types.extend(STIX2_TYPES_TO_XSOAR['domain-name'])
+        for t in types:
+            if t != 'domain-name':
+                try:
+                    xsoar_type = STIX2_TYPES_TO_XSOAR[t]
+                except KeyError:
+                    xsoar_type = t
+                xsoar_types.append(xsoar_type)
+
         new_query = query + ' '
-        new_query += ' or '.join(['type:' + x for x in xsoar_types])
+        new_query += ' or '.join([f'type:"{x}"' for x in xsoar_types])
+
         demisto.debug(f'new query: {new_query}')
         return new_query
     else:
         return query
 
 
-def find_indicators(query: str, added_after, limit: int, is_manifest: bool = False) -> tuple:
+def find_indicators(query: str, types: list, added_after, limit: int, offset: int, is_manifest: bool = False) -> tuple:
     """
     Args:
         query: search indicators query
+        types: types to query by
         added_after: search indicators after this date
         limit: response items limit
+        offset: response offset
         is_manifest: whether this call is for manifest or indicators
 
     Returns: Created indicators and its extensions.
     """
+    new_query = create_query(query, types)
+    new_limit = offset + limit + 1  # helps to verify that there is more indicators
     iocs = []
     extensions = []
-    field_filters = 'type,name' if is_manifest else ','.join(SERVER.fields_to_present)
+    field_filters = ','.join(TAXII_REQUIRED_FILTER_FIELDS) if is_manifest else ','.join(
+        set.union(SERVER.fields_to_present, TAXII_REQUIRED_FILTER_FIELDS))  # type: ignore[arg-type]
+
+    demisto.debug(f'filter fields: {field_filters}')
+
     indicator_searcher = IndicatorsSearcher(
         filter_fields=field_filters,
-        query=query,
-        limit=limit,
+        query=new_query,
+        limit=new_limit,
         from_date=added_after
     )
     for ioc in indicator_searcher:
@@ -542,6 +568,9 @@ def find_indicators(query: str, added_after, limit: int, is_manifest: bool = Fal
                 if manifest_entry:
                     iocs.append(manifest_entry)
             else:
+
+                demisto.debug(f'found_indicator: {xsoar_indicator}')
+
                 stix_ioc, extension_definition = create_stix_object(xsoar_indicator, xsoar_type)
                 if SERVER.has_extention and stix_ioc:
                     iocs.append(stix_ioc)
@@ -619,10 +648,10 @@ def create_manifest_entry(xsoar_indicator: dict, xsoar_type: str) -> dict:
         return {}
     entry = {
         'id': stix_id,
-        'date_added': parse(xsoar_indicator.get('timestamp')).strftime(STIX_DATE_FORMAT),  # TODO: how to filter it?
+        'date_added': parse(xsoar_indicator.get('timestamp')).strftime(STIX_DATE_FORMAT),  # type: ignore[arg-type]
     }
     if SERVER.version == TAXII_VER_2_1:
-        entry['version'] = xsoar_indicator.get('version')
+        entry['version'] = parse(xsoar_indicator.get('modified')).strftime(STIX_DATE_FORMAT)  # type: ignore[assignment]
     return entry
 
 
@@ -647,13 +676,22 @@ def create_stix_object(xsoar_indicator: dict, xsoar_type: str) -> tuple:
         is_sdo = True
     else:
         demisto.debug(f'No such indicator type: {xsoar_type} in stix format.')
-        return {}
+        return {}, {}
+
+    created_parsed = parse(xsoar_indicator.get('timestamp')).strftime(STIX_DATE_FORMAT)  # type: ignore[arg-type]
+
+    try:
+        modified_parsed = parse(xsoar_indicator.get('modified')).strftime(STIX_DATE_FORMAT)  # type: ignore[arg-type]
+    except Exception:
+        modified_parsed = ''
 
     stix_object = {
         'id': stix_id,
         'value': xsoar_indicator.get('value'),
         'type': object_type,
-        'spec_version': SERVER.version
+        'spec_version': SERVER.version,
+        'created': created_parsed,
+        'modified': modified_parsed,
     }
 
     xsoar_indicator_to_return = dict()
@@ -679,8 +717,8 @@ def create_stix_object(xsoar_indicator: dict, xsoar_type: str) -> tuple:
             'spec_version': SERVER.version,
             'name': f'Cortex XSOAR TIM {xsoar_type}',
             'description': 'This schema adds TIM data to the object',
-            'created': xsoar_indicator.get('timestamp'),
-            'modified': xsoar_indicator.get('modified'),
+            'created': created_parsed,
+            'modified': modified_parsed,
             'created_by_ref': f'identity--{str(PAWN_UUID)}',
             'schema':
                 'https://github.com/demisto/content/tree/master/Packs/TAXIIServer/doc_files/XSOAR_indicator_schema.json',
@@ -704,20 +742,20 @@ def parse_content_range(content_range: str) -> tuple:
     Returns:
         Offset and limit arguments for the command.
     """
-    # todo: return error
     try:
         range_type, range_count = content_range.split(' ', 1)
 
-        if range_type != 'items':
-            raise Exception(f'Bad Content-Range header: {content_range}.')
-
-        range_count = range_count.split('/')
-        range_begin, range_end = range_count[0].split('-', 1)
+        range_count_arr = range_count.split('/')
+        range_begin, range_end = range_count_arr[0].split('-', 1)
 
         offset = int(range_begin)
         limit = int(range_end) - offset
+
+        if range_type != 'items' or range_end < range_begin or limit < 0 or offset < 0:
+            raise Exception
+
     except Exception:
-        raise Exception(f'Bad Content-Range header: {content_range}.')
+        raise RequestedRangeNotSatisfiable(description=f'Range header: {content_range}')
 
     return offset, limit
 
@@ -738,6 +776,37 @@ def get_collections(params: dict = demisto.params()) -> dict:
 
 def get_calling_context():
     return demisto.callingContext.get('context', {})  # type: ignore[attr-defined]
+
+
+def parse_manifest_and_object_args():
+    added_after = request.args.get('added_after')
+    types = argToList(request.args.get('match[type]'))
+    limit = 100
+    offset = 0
+
+    if request.args.get('match[id]') or request.args.get('match[version]'):
+        raise NotImplementedError('Filtering by ID or version is not supported.')
+
+    try:
+        if added_after:
+            datetime.strptime(added_after, STIX_DATE_FORMAT)
+    except Exception as e:
+        raise Exception(f'Added after time format should be YYYY-MM-DDTHH:mm:ss.[s+]Z. {e}')
+
+    if SERVER.version == TAXII_VER_2_0:
+        if content_range := request.headers.get('Content-Range'):
+            offset, limit = parse_content_range(content_range)
+        elif range := request.headers.get('Range'):
+            offset, limit = parse_content_range(range)
+
+    elif SERVER.version == TAXII_VER_2_1:
+        next = request.args.get('next')
+        limit_arg = request.args.get('limit')
+
+        offset = int(next) if next else 0
+        limit = int(limit_arg) if limit_arg else 100
+
+    return added_after, offset, limit, types
 
 
 ''' ROUTE FUNCTIONS '''
@@ -851,7 +920,7 @@ def taxii2_collection_by_id(api_root: str, collection_id: str) -> Response:
         handle_long_running_error(error)
         return handle_response(HTTP_400_BAD_REQUEST, {'title': 'Collection Request Error',
                                                       'description': error})
-    return handle_response(HTTP_200_OK, collection_response)
+    return handle_response(HTTP_200_OK, collection_response)  # type: ignore[arg-type]
 
 
 @APP.route('/<api_root>/collections/<collection_id>/manifest/', methods=['GET'])
@@ -869,33 +938,8 @@ def taxii2_manifest(api_root: str, collection_id: str) -> Response:
         manifest: A Manifest Resource upon successful requests. Additional information
         `here <https://docs.oasis-open.org/cti/taxii/v2.1/os/taxii-v2.1-os.html#_Toc31107538>`__.
     """
-    # todo: avoid code duplication
     try:
-        added_after = request.args.get('added_after')
-        types = argToList(request.args.get('match[type]'))
-        limit = 100
-        offset = 0
-
-        if request.args.get('match[id]') or request.args.get('match[version]'):
-            raise Exception('Filtering by ID or version is not supported.')
-
-        try:
-            if added_after:
-                datetime.strptime(added_after, STIX_DATE_FORMAT)
-        except ValueError as e:
-            raise Exception(f'Added after time format should be YYYY-MM-DDTHH:mm:ss.[s+]Z. {e}')
-
-        if SERVER.version == TAXII_VER_2_0:
-            if content_range := request.headers.get('Content-Range'):
-                offset, limit = parse_content_range(content_range)
-            elif range := request.headers.get('Range'):
-                offset, limit = parse_content_range(range)
-
-        elif SERVER.version == TAXII_VER_2_1:
-            next = request.args.get('next')
-            limit_arg = request.args.get('limit')
-            offset = int(next) if next else 0
-            limit = int(limit_arg) if limit_arg else 100
+        added_after, offset, limit, types = parse_manifest_and_object_args()
 
         manifest_response, date_added_first, date_added_last = SERVER.get_manifest(
             collection_id=collection_id,
@@ -904,6 +948,12 @@ def taxii2_manifest(api_root: str, collection_id: str) -> Response:
             limit=limit,
             types=types,
         )
+    except NotImplementedError as e:
+        return handle_response(HTTP_404_NOT_FOUND, {'title': 'Manifest Request Error',
+                                                    'description': str(e)})
+    except RequestedRangeNotSatisfiable as e:
+        return handle_response(HTTP_416_RANGE_NOT_SATISFIABLE, {'title': 'Manifest Request Error',
+                                                                'description': f'{e}'})
     except Exception as e:
         error = f'Could not perform the manifest request: {str(e)}'
         handle_long_running_error(error)
@@ -934,32 +984,7 @@ def taxii2_objects(api_root: str, collection_id: str) -> Response:
         `here <https://docs.oasis-open.org/cti/taxii/v2.1/csprd01/taxii-v2.1-csprd01.html#_Toc532988038>`__.
     """
     try:
-        added_after = request.args.get('added_after')
-        types = argToList(request.args.get('match[type]'))
-        limit = 100
-        offset = 0
-
-        if request.args.get('match[id]') or request.args.get('match[version]'):
-            raise Exception('Filtering by id or version is not supported.')
-
-        try:
-            if added_after:
-                datetime.strptime(added_after, STIX_DATE_FORMAT)
-        except ValueError as e:
-            raise Exception(f'Added after time format should be YYYY-MM-DDTHH:mm:ss.[s+]Z. {e}')
-
-        if SERVER.version == TAXII_VER_2_0:
-            if content_range := request.headers.get('Content-Range'):
-                offset, limit = parse_content_range(content_range)
-            elif range := request.headers.get('Range'):
-                offset, limit = parse_content_range(range)
-
-        elif SERVER.version == TAXII_VER_2_1:
-            next = request.args.get('next')
-            limit_arg = request.args.get('limit')
-
-            offset = int(next) if next else 0
-            limit = int(limit_arg) if limit_arg else 100
+        added_after, offset, limit, types = parse_manifest_and_object_args()
 
         objects_response, date_added_first, date_added_last = SERVER.get_objects(
             collection_id=collection_id,
@@ -968,6 +993,12 @@ def taxii2_objects(api_root: str, collection_id: str) -> Response:
             limit=limit,
             types=types,
         )
+    except NotImplementedError as e:
+        return handle_response(HTTP_404_NOT_FOUND, {'title': 'Objects Request Error',
+                                                    'description': str(e)})
+    except RequestedRangeNotSatisfiable as e:
+        return handle_response(HTTP_416_RANGE_NOT_SATISFIABLE, {'title': 'Objects Request Error',
+                                                                'description': f'{e}'})
     except Exception as e:
         error = f'Could not perform the objects request: {str(e)}'
         handle_long_running_error(error)
@@ -1027,7 +1058,7 @@ def main():
 
     scheme = 'https' if not http_server else 'http'
 
-    if version == TAXII_VER_2_0:
+    if version == TAXII_VER_2_0 and not params.get('nginx_server_conf'):
         params['nginx_server_conf'] = NGINX_TAXII2SERVER_CONF
 
     demisto.debug(f'Command being called is {command}')
