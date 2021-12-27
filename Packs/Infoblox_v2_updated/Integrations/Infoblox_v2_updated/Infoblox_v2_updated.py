@@ -78,11 +78,8 @@ class Client(BaseClient):
         super(Client, self).__init__(base_url, verify, proxy, ok_codes, headers, auth)
         self.params = params
 
-    def _http_request(self, method, url_suffix='', full_url=None, headers=None, auth=None, json_data=None,
-                      params=None, data=None, files=None, timeout=10, resp_type='json', ok_codes=None,
-                      return_empty_response=False, retries=0, status_list_to_retry=None,
-                      backoff_factor=5, raise_on_redirect=False, raise_on_status=False,
-                      error_handler=None, empty_valid_codes=None, **kwargs):
+    def _http_request(self, method, url_suffix, full_url=None, headers=None, auth=None, json_data=None, params=None,
+                      data=None, files=None, timeout=10, resp_type='json', ok_codes=None, **kwargs):
         if params:
             self.params.update(params)
         try:
@@ -90,7 +87,7 @@ class Client(BaseClient):
                                          auth=auth, json_data=json_data, params=self.params, data=data, files=files,
                                          timeout=timeout, resp_type=resp_type, ok_codes=ok_codes, **kwargs)
         except DemistoException as error:
-            raise parse_demisto_exception(error, 'text')
+            demisto.results(str(error))
 
     def test_module(self) -> Dict:
         """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication
@@ -145,12 +142,11 @@ class Client(BaseClient):
         request_params = assign_params(address=ip, _max_results=max_results)
         return self._http_request('GET', suffix, params=request_params)
 
-    def list_response_policy_zone_rules(self, zone: Optional[str], view: Optional[str], max_results: Optional[str],
+    def list_response_policy_zone_rules(self, zone: Optional[str], max_results: Optional[str],
                                         next_page_id: Optional[str]) -> Dict:
         """List response policy zones rules by a given zone name.
         Args:
             zone: response policy zone name.
-            view: The DNS view in which the records are located. By default, the 'default' DNS view is searched.
             max_results: maximum number of results.
             next_page_id: ID of the next page to retrieve, if given all other arguments are ignored.
 
@@ -160,7 +156,7 @@ class Client(BaseClient):
         # The server endpoint to request from
         suffix = 'allrpzrecords'
         # Dictionary of params for the request
-        request_params = assign_params(zone=zone, view=view, _max_results=max_results, _page_id=next_page_id)
+        request_params = assign_params(zone=zone, _max_results=max_results, _page_id=next_page_id)
         request_params.update(REQUEST_PARAM_PAGING_FLAG)
         request_params.update(REQUEST_PARAM_LIST_RULES)
 
@@ -197,7 +193,7 @@ class Client(BaseClient):
         return self._http_request('DELETE', suffix)
 
     def create_rpz_rule(self, rule_type: Optional[str], object_type: Optional[str], name: Optional[str],
-                        rp_zone: Optional[str], view: Optional[str], substitute_name: Optional[str],
+                        rp_zone: Optional[str], substitute_name: Optional[str],
                         comment: Optional[str] = None) -> Dict:
         """Creates new response policy zone rule.
         Args:
@@ -205,7 +201,6 @@ class Client(BaseClient):
             object_type: Type of object to assign the rule on.
             name: Rule name.
             rp_zone: The zone to assign the rule.
-            view: The DNS view in which the records are located. By default, the 'default' DNS view is searched.
             substitute_name: The substitute name to assign (In case of substitute domain only)
             comment: A comment for this rule.
         Returns:
@@ -219,13 +214,7 @@ class Client(BaseClient):
         elif rule_type == 'Substitute (domain name)':
             canonical = substitute_name
 
-        data = assign_params(name=name, rp_zone=rp_zone, view=view, comment=comment)
-        # if rule_type is 'Block (No such domain)', then 'canonical' is '' (empty string) but API still requires 'canonical'
-        data.update(
-            {
-                'canonical': canonical
-            }
-        )
+        data = assign_params(name=name, canonical=canonical, rp_zone=rp_zone, comment=comment)
         request_params = REQUEST_PARAM_CREATE_RULE
         suffix = demisto.get(RPZ_RULES_DICT, f'{rule_type}.{object_type}.infoblox_object_type')
 
@@ -313,12 +302,87 @@ class Client(BaseClient):
         suffix = reference_id
         return self._http_request('DELETE', suffix)
 
+    def create_record(self, suffix: Optional[str], **kwargs: Union[str, int, None]) -> Dict:
+        """Creates new record.
+        Args:
+            suffix: The infoblox object to be used as a url path.
+            kwargs: A dict of arguments to be passed to the rule body. The following may appear:
+                - name
+                - rp_zone
+                - comment
+                - ipv4addr
+                - ipv6addr
+                - mail_exchanger
+                - preference
+                - order
+                - preference
+                - replacement
+                - ptrdname
+                - priority
+                - target
+                - weight
+                - port
+                - text
+        Returns:
+            Response JSON
+        """
+        request_data = {key: val for key, val in kwargs.items() if val is not None}
+        request_params = {'_return_fields+': ','.join(request_data.keys()) + ',disable,name'}
+        rule = self._http_request('POST', suffix, data=json.dumps(request_data), params=request_params)
+        # demisto.results(str(rule))
+        rule['result']['type'] = suffix
+        return rule
+
     def list_records(self, zone):
         params = {
             "zone": zone,
             "_return_as_object": 1
         }
         res = self._http_request('GET', 'allrecords', params=params)
+        return res
+
+    def add_host(self, host: Optional[str], ipadd: Optional[str]) -> Dict:
+        """Add a host record.
+        Args:
+            host: FQDN to change
+            ipadd: IP Address
+
+        Returns:
+            Response JSON
+        """
+        suffix = "record:host"
+        payload = '{ "name":"' + str(host) + '","ipv4addrs":[{"ipv4addr":"' + str(ipadd) + '"}]}'
+        headers = {'content-type': 'application/json', 'Accept-Charset': 'UTF-8'}
+
+        rule = self._http_request('POST', suffix, headers=headers, data=payload)
+        return rule
+
+    def delete_host(self, refid: Optional[str]) -> Dict:
+        """Deletes a host record.
+        Args:
+            refid: Reference ID from Infoblox
+
+        Returns:
+            Response JSON
+        """
+        headers = {'content-type': 'application/json', 'Accept-Charset': 'UTF-8'}
+
+        suffix = "record:host/" + str(refid)
+
+        rule = self._http_request('DELETE', suffix, headers=headers)
+        return rule
+
+    def update_host_ip(self, ref, ipv4addr):
+        params = {
+            "_return_fields": "ipv4addrs",
+            "_return_as_object": 1
+        }
+        payload = {
+            "ipv4addrs": [
+                {"ipv4addr": str(ipv4addr)}
+            ]
+        }
+        res = self._http_request('PUT', f"{ref}", params=params, json_data=payload)
         return res
 
     def list_hosts(self):
@@ -427,12 +491,11 @@ def list_response_policy_zone_rules_command(client: Client, args: Dict) -> Tuple
         Outputs
     """
     zone = args.get('response_policy_zone_name')
-    view = args.get('view')
     max_results = args.get('page_size', 50)
     next_page_id = args.get('next_page_id')
     if not zone and not next_page_id:
         raise DemistoException('To run this command either a zone or a next page ID must be given')
-    raw_response = client.list_response_policy_zone_rules(zone, view, max_results, next_page_id)
+    raw_response = client.list_response_policy_zone_rules(zone, max_results, next_page_id)
     new_next_page_id = raw_response.get('next_page_id')
 
     rules_list = raw_response.get('result')
@@ -456,7 +519,7 @@ def list_response_policy_zone_rules_command(client: Client, args: Dict) -> Tuple
                 'NextPageID': new_next_page_id}
         })
     human_readable = tableToMarkdown(title, fixed_keys_rule_list,
-                                     headerTransform=pascalToSpace, removeNull=True)
+                                     headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
 
@@ -546,22 +609,16 @@ def create_rpz_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict
     rp_zone = args.get('rp_zone')
     comment = args.get('comment')
     substitute_name = args.get('substitute_name')
-    view = args.get('view')
-
-    # need to append 'rp_zone' or else this error is returned: "'<name>'. FQDN must belong to zone '<rp_zone>'."
-    if name and not name.endswith(f'.{rp_zone}'):
-        name = f'{name}.{rp_zone}'
-
     if rule_type == 'Substitute (domain name)' and not substitute_name:
         raise DemistoException('Substitute (domain name) rules requires a substitute name argument')
-    raw_response = client.create_rpz_rule(rule_type, object_type, name, rp_zone, view, substitute_name, comment)
+    raw_response = client.create_rpz_rule(rule_type, object_type, name, rp_zone, substitute_name, comment)
     rule = raw_response.get('result', {})
     fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
                            rule.items()}
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
-    human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace, removeNull=True)
+    human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
 
@@ -937,10 +994,30 @@ def delete_rpz_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict
     return title, {}, raw_response
 
 
-def list_hosts_command(client: Client, args: Dict):
-    raw_response = client.list_hosts()
+def create_a_record_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """
+    Args:
+        client: Client object
+        args: Usually demisto.args()
 
-    return tableToMarkdown("Hosts", raw_response["result"]), {"Infoblox": raw_response["result"]}, raw_response
+    Returns:
+        Outputs
+    """
+    name = args.get('name')
+    ipv4addr = args.get('ipv4addr')
+    infoblox_object_type = 'record:a'
+
+    raw_response = client.create_record(infoblox_object_type, name=name, ipv4addr=ipv4addr)
+    rule = raw_response.get('result', {})
+    fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
+                           rule.items()}
+    title = f'{INTEGRATION_NAME} - Host Record: {name} has been created:'
+    context = {
+        f'{INTEGRATION_CONTEXT_NAME}.ModifiedHostRecord(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
+    human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
+
+    # return raw_response, raw_response, raw_response
+    return human_readable, context, raw_response
 
 
 def list_records_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
@@ -955,6 +1032,65 @@ def list_records_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     return '', {}, raw_response
 
 
+def add_host_record_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """
+    Args:
+        client: Client object
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
+    host = args.get('host')
+    ipadd = args.get('ipadd')
+
+    raw_response = client.add_host(host, ipadd)
+    demisto.results(raw_response)
+
+    return f'{INTEGRATION_NAME} - ' + raw_response['result'], {}, {}
+
+
+def delete_host_record_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """
+    Args:
+        client: Client object
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
+
+    refid = args.get('refid')
+
+    if "/" in refid:
+        refIDStr = str(refid).split("/")
+        refIDStr = refIDStr[1].split(":")
+        refid = refIDStr[0]
+
+    if refid:
+        raw_response = client.delete_host(refid)
+        demisto.results(raw_response)
+
+        return f'{INTEGRATION_NAME} - ' + raw_response['result'], {}, {}
+    else:
+        return f'{INTEGRATION_NAME} - No RefID', {}, {}
+
+
+def update_host_ip_command(client: Client, args: Dict):
+    ref = args.get("ref")
+    ipv4addr = args.get("ipv4addr")
+
+    raw_response = client.update_host_ip(ref, ipv4addr)
+
+    return tableToMarkdown("Updated Hosts", raw_response["result"]), {"Infoblox": raw_response["result"]}, raw_response
+
+
+def list_hosts_command(client: Client, args: Dict):
+    raw_response = client.list_hosts()
+
+    return tableToMarkdown("Hosts", raw_response["result"]), {"Infoblox": raw_response["result"]}, raw_response
+
+
 def search_host_record_command(client: Client, args: Dict):
     name = args.get("name")
     raw_response = client.search_host_record(name)
@@ -967,7 +1103,8 @@ def search_host_record_command(client: Client, args: Dict):
 
 def main():  # pragma: no cover
     params = demisto.params()
-    base_url = f"{params.get('url', '').rstrip('/')}/wapi/v2.3/"
+    api_version = params.get("api_version")
+    base_url = f"{params.get('url', '').rstrip('/')}/wapi/{api_version}/"
     verify = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     user = demisto.get(params, 'credentials.identifier')
@@ -1003,6 +1140,14 @@ def main():  # pragma: no cover
         f'{INTEGRATION_COMMAND_NAME}-get-object-fields': get_object_fields_command,
         f'{INTEGRATION_COMMAND_NAME}-search-rule': search_rule_command,
         f'{INTEGRATION_COMMAND_NAME}-delete-rpz-rule': delete_rpz_rule_command,
+        # Added by Contribution
+        # POST & PUT
+        f'{INTEGRATION_COMMAND_NAME}-create-a-record': create_a_record_command,
+        f'{INTEGRATION_COMMAND_NAME}-add-host-record': add_host_record_command,
+        f'{INTEGRATION_COMMAND_NAME}-update-host-ip': update_host_ip_command,
+        # DELETE
+        f'{INTEGRATION_COMMAND_NAME}-delete-host-record': delete_host_record_command,
+        # GET
         f'{INTEGRATION_COMMAND_NAME}-list-hosts': list_hosts_command,
         f'{INTEGRATION_COMMAND_NAME}-list-records': list_records_command,
         f'{INTEGRATION_COMMAND_NAME}-search-host-record': search_host_record_command
