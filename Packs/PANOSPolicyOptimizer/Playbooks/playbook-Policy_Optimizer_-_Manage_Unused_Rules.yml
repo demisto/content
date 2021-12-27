@@ -376,7 +376,8 @@ tasks:
     task:
       id: 87b68c73-1d25-4d7c-81d5-c3e5bff91d09
       version: -1
-      name: Slack user?
+      name: Is there a Slack user?
+      description: "Is there a Slack user?"
       type: condition
       iscommand: false
       brand: ""
