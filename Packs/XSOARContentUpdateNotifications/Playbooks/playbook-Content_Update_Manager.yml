@@ -2230,7 +2230,7 @@ tasks:
       '#none#':
       - "21"
     scriptarguments:
-      contentupdatemanagerdescription:
+      usecasedescription:
         simple: |-
           This playbook will check to see if there are any content updates available for chosen installed content packs, and notify users via e-mail or Slack.
           The playbook will also let users decide via playbook inputs or communication tasks on whether they want to trigger an auto-update process to install all updates that were found. The playbook can be used as an XSOAR job to help users track marketplace pack updates and install them regularly.
