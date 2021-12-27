@@ -11,7 +11,7 @@ The content update flow can be triggered in one of the following ways.
     1) Creating a new incident with the type **Content Update Manager**.
     2) Inserting the pack names you want to check and update.
     3) Inserting one of the following: Email/ Slack username/ Slack channel to get notified in the process and choose whether to trigger the auto-update flow.
-- Configure a Cortex XSOAR job using ###documentation link 
+- Configure a Cortex XSOAR job using [Jobs](https://xsoar.pan.dev/docs/incidents/incident-jobs#create-a-job).
 
 ## Configuration & Dependencies
  
