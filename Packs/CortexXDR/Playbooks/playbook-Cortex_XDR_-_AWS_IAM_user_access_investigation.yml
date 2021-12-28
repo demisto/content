@@ -262,7 +262,7 @@ tasks:
       '#none#':
       - "9"
       - "17"
-      - "29"
+      - "44"
     separatecontext: false
     view: |-
       {
@@ -562,7 +562,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 660,
+          "x": 1050,
           "y": 2025
         }
       }
@@ -651,7 +651,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1560,
+          "x": 1950,
           "y": 2415
         }
       }
@@ -824,16 +824,28 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      Delete Profile:
+      '#default#':
+      - "19"
+      Delete profile:
       - "10"
       No profile:
       - "19"
     separatecontext: false
+    conditions:
+    - label: Delete profile
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: AWS.IAM.Users
+                accessor: LoginProfile
+            iscontext: true
     view: |-
       {
         "position": {
           "x": 230,
-          "y": 2025
+          "y": 2215
         }
       }
     note: false
@@ -1116,7 +1128,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 660,
+          "x": 1050,
           "y": 2415
         }
       }
@@ -1160,7 +1172,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 940,
+          "x": 1330,
           "y": 2215
         }
       }
@@ -1190,7 +1202,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1120,
+          "x": 1510,
           "y": 2415
         }
       }
@@ -1279,7 +1291,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1730,
           "y": 2590
         }
       }
@@ -1364,6 +1376,44 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 26a9e1e8-787c-4528-8a78-b164a059d66b
+    type: regular
+    task:
+      id: 26a9e1e8-787c-4528-8a78-b164a059d66b
+      version: -1
+      name: AWS IAM - Get user profile
+      description: Retrieves the user login profile information for AWS management
+        consle
+      script: '|||aws-iam-get-user-login-profile'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      userName:
+        complex:
+          root: AWS.IAM.Users.AccessKeys
+          accessor: UserName
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 2025
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1374,8 +1424,7 @@ view: |-
       "23_16_yes": 0.76,
       "23_26_#default#": 0.47,
       "23_6_yes": 0.62,
-      "29_10_Delete Profile": 0.69,
-      "29_19_No profile": 0.26,
+      "29_19_#default#": 0.8,
       "31_15_#default#": 0.18,
       "34_35_#default#": 0.16,
       "34_43_yes": 0.66,
