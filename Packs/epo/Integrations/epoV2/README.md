@@ -564,11 +564,7 @@ Finds systems in the McAfee ePO system tree.
 | McAfee.ePO.Endpoint.Memory | Number | Endpoint Total Physical Memory | 
 | McAfee.ePO.Endpoint.FreeMemory | Number | Endpoint Free Memory | 
 | McAfee.ePO.Endpoint.FreeDiskSpace | Number | Endpoint Free Disk Space | 
-| McAfee.ePO.Endpoint.TotalDiskSpace | Number | Endpoint Total Disk Space | 
-| McAfee.ePO.Endpoint.IsPortable | Number | Endpoint IS Protable | 
-| McAfee.ePO.Endpoint.Vdi | Number | Endpoint VDI | 
-| McAfee.ePO.Endpoint.OSBitMode | Number | Endpoint OS Bit Mode | 
-| McAfee.ePO.Endpoint.LastAgentHandler | Number | Endpoint Last Agent Handler | 
+| McAfee.ePO.Endpoint.TotalDiskSpace | Number | Endpoint Total Disk Space |
 | McAfee.ePO.Endpoint.UserProperty1 | String | Endpoint User Property 1 | 
 | McAfee.ePO.Endpoint.UserProperty2 | String | Endpoint User Property 2 | 
 | McAfee.ePO.Endpoint.UserProperty3 | String | Endpoint User Property 3 | 
@@ -618,14 +614,11 @@ Finds systems in the McAfee ePO system tree.
                 "Hostname": "tie",
                 "IPV4x": 1084752230,
                 "IPXAddress": "N/A",
-                "IsPortable": -1,
                 "LastAgentHandler": 1,
                 "LastUpdate": "2021-12-16T14:19:25-08:00",
                 "ManagedState": 1,
                 "NetAddress": "000C29B1EE8E",
                 "NumOfCPU": 8,
-                "OSBitMode": 1,
-                "OSBuildNum": 0,
                 "OSOEMID": "McAfee TIE Platform Server 3.0.0.480",
                 "OSPlatform": "Server",
                 "OSServicePackVer": "189-1.mlos2.x86_64",
@@ -646,7 +639,6 @@ Finds systems in the McAfee ePO system tree.
                 "UserProperty2": null,
                 "UserProperty3": null,
                 "UserProperty4": null,
-                "Vdi": 0
             }
         }
     }
@@ -1276,8 +1268,7 @@ list all issues in the McAfee ePO system.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | McAfee.ePO.Issue.activityLog.date | string | Issue Activity Log date | 
-| McAfee.ePO.Issue.activityLog.details | string | Issue Activity Log details | 
-| McAfee.ePO.Issue.activityLog.dirty | string | Issue Activity Log dirty | 
+| McAfee.ePO.Issue.activityLog.details | string | Issue Activity Log details |
 | McAfee.ePO.Issue.activityLog.id | number | Issue Activity Log ID | 
 | McAfee.ePO.Issue.activityLog.issueId | number | Issue Activity Log Issue Id | 
 | McAfee.ePO.Issue.activityLog.title | string | Issue Activity Log Title | 
@@ -1313,7 +1304,6 @@ list all issues in the McAfee ePO system.
                         {
                             "date": "2021-05-09T03:36:56-07:00",
                             "details": "",
-                            "dirty": true,
                             "id": 1,
                             "issueId": 1,
                             "title": "Issue Created",
@@ -1342,7 +1332,6 @@ list all issues in the McAfee ePO system.
                         {
                             "date": "2021-11-23T00:46:25-08:00",
                             "details": "",
-                            "dirty": true,
                             "id": 2,
                             "issueId": 2,
                             "title": "Issue Created",
@@ -1351,7 +1340,6 @@ list all issues in the McAfee ePO system.
                         {
                             "date": "2021-11-23T23:26:20-08:00",
                             "details": "assignee changed from test_api to admin",
-                            "dirty": true,
                             "id": 3,
                             "issueId": 2,
                             "title": "Issue Changed",
@@ -1360,7 +1348,6 @@ list all issues in the McAfee ePO system.
                         {
                             "date": "2021-11-23T23:32:08-08:00",
                             "details": "yakovi",
-                            "dirty": true,
                             "id": 4,
                             "issueId": 2,
                             "title": "User Comment",
@@ -1395,8 +1382,8 @@ list all issues in the McAfee ePO system.
 >### ePO Issue List:
 >|ticketId|dueDate|createdDate|creatorName|resolution|subtype|assigneeName|description|priority|type|ticketServerName|name|assignee|severity|activityLog|id|state|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->|  |  | 2021-05-09T03:36:56-07:00 | admin | NONE |  | dxl | aaaa | MEDIUM | issue.type.untyped |  | aaaa |  | LOWEST | {'date': '2021-05-09T03:36:56-07:00', 'details': '', 'dirty': True, 'id': 1, 'issueId': 1, 'title': 'Issue Created', 'username': 'admin'} | 1 | NEW |
->|  |  | 2021-11-23T00:46:25-08:00 | admin | NONE |  | admin | test1 | HIGH | issue.type.untyped |  | Wissam |  | MEDIUM | {'date': '2021-11-23T00:46:25-08:00', 'details': '', 'dirty': True, 'id': 2, 'issueId': 2, 'title': 'Issue Created', 'username': 'admin'},<br/>{'date': '2021-11-23T23:26:20-08:00', 'details': 'assignee changed from test_api to admin', 'dirty': True, 'id': 3, 'issueId': 2, 'title': 'Issue Changed', 'username': 'admin'},<br/>{'date': '2021-11-23T23:32:08-08:00', 'details': 'yakovi', 'dirty': True, 'id': 4, 'issueId': 2, 'title': 'User Comment', 'username': 'admin'} | 2 | NEW |
+>|  |  | 2021-05-09T03:36:56-07:00 | admin | NONE |  | dxl | aaaa | MEDIUM | issue.type.untyped |  | aaaa |  | LOWEST | {'date': '2021-05-09T03:36:56-07:00', 'details': '', 'id': 1, 'issueId': 1, 'title': 'Issue Created', 'username': 'admin'} | 1 | NEW |
+>|  |  | 2021-11-23T00:46:25-08:00 | admin | NONE |  | admin | test1 | HIGH | issue.type.untyped |  | Wissam |  | MEDIUM | {'date': '2021-11-23T00:46:25-08:00', 'details': '', 'id': 2, 'issueId': 2, 'title': 'Issue Created', 'username': 'admin'},<br/>{'date': '2021-11-23T23:26:20-08:00', 'details': 'assignee changed from test_api to admin', 'dirty': True, 'id': 3, 'issueId': 2, 'title': 'Issue Changed', 'username': 'admin'},<br/>{'date': '2021-11-23T23:32:08-08:00', 'details': 'yakovi', 'dirty': True, 'id': 4, 'issueId': 2, 'title': 'User Comment', 'username': 'admin'} | 2 | NEW |
 
 
 ### epo-delete-issue

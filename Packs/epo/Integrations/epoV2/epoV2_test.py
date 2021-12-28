@@ -244,7 +244,7 @@ def test_epo_find_systems_command(requests_mock):
                                     'NetAddress': '', 'NumOfCPU': 0, 'OSBuildNum': 0, 'OSOEMID': '',
                                     'OSPlatform': '', 'OSServicePackVer': '', 'OSType': '', 'OSVersion': '',
                                     'ParentID': 7, 'SubnetAddress': '', 'SubnetMask': '', 'SystemDescription': None,
-                                    'SysvolFreeSpace': 0, 'SysvolTotalSpace': 0, 'TimeZone': '',  'TotalDiskSpace': 0,
+                                    'SysvolFreeSpace': 0, 'SysvolTotalSpace': 0, 'TimeZone': '', 'TotalDiskSpace': 0,
                                     'TotalPhysicalMemory': 0, 'UserName': '', 'UserProperty1': None,
                                     'UserProperty2': None, 'UserProperty3': None, 'UserProperty4': None,
                                     'AgentGUID': None, 'AgentVersion': None, 'ExcludedTags': '', 'LastUpdate': None,

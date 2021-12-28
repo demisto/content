@@ -1,13 +1,5 @@
 id: TIE - IOC Hunt
-version: 8
-contentitemexportablefields:
-  contentitemfields:
-    packID: McAfee-TIE
-    itemVersion: 1.0.2
-    fromServerVersion: 5.0.0
-    toServerVersion: ""
-    definitionid: ""
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: TIE - IOC Hunt
 description: |-
   Hunt for sightings of MD5, SHA1 and/or SHA256 hashes on endpoints, using McAfee TIE (requires ePO as well).
@@ -30,6 +22,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "7"
@@ -60,6 +53,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: Is the McAfee TIE integration installed and configured?
     nexttasks:
       '#default#':
       - "4"
@@ -95,6 +89,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: Is the McAfee ePO integration installed and configured?
     nexttasks:
       '#default#':
       - "4"
@@ -125,11 +120,12 @@ tasks:
     task:
       id: c906e63c-45c5-4540-8f42-b74db1943725
       version: -1
-      name: List all agents that the Hash has been executed on
+      name: List all agents that the hash has been executed on
       script: McAfee Threat Intelligence Exchange|||tie-file-references
       type: regular
       iscommand: true
       brand: McAfee Threat Intelligence Exchange
+      description: Retrieves the set of systems which have been referenced (typically executed).
     nexttasks:
       '#none#':
       - "5"
@@ -162,6 +158,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -189,6 +186,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: condition
     nexttasks:
       '#default#':
       - "4"
@@ -259,6 +257,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -288,6 +287,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -317,6 +317,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: Is the McAfee ePO v2 integration installed and configured?
     nexttasks:
       '#default#':
       - "2"
@@ -376,6 +377,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: Finds computers within a specified group in the McAfee ePO system.
     nexttasks:
       '#none#':
       - "4"
@@ -423,8 +425,12 @@ inputs:
   description: |-
     The Hash to hunt (Could be MD5,SHA1,SHA256).
     Default is set to all hashes
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: McAfee.ePO.Endpoint
   description: Endpoint information for agents has been executed on.
   type: unknown
+tests:
+- search_endpoints_by_hash_-_tie_-_test
+- McAfee-TIE Test
+fromversion: 5.0.0
