@@ -1,4 +1,0 @@
-{
-  "breakingChanges": true,
-  "breakingChangesNotes": "The `api_key` field now uses the XSOAR Credentials mechanism. Once updated to this version, pre-existing instances of the iDefense integrations will require setting the api_key up again."
-}

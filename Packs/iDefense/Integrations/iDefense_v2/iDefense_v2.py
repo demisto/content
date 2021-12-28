@@ -395,7 +395,9 @@ def _get_ia_for_indicator(indicator: str, doc_search_client: Client):
 
 def main():
     params = demisto.params()
-    api_key = params.get('api_token').get("password")
+    api_key = params.get('api_token')
+    if isinstance(api_key, dict):  # integration version >=3.2.0
+        api_key = api_key.get('password')
     base_url = urljoin(params.get('url', ''))
     reliability = params.get('integrationReliability', 'B - Usually reliable')
 
