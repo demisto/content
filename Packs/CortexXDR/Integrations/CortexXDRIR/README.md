@@ -1,7 +1,7 @@
 ## Overview
 ---
 
-Cortex XDR is the world's first detection and response app that natively integrates network, endpoint, and cloud data to stop sophisticated attacks.
+[Cortex XDR](https://www.paloaltonetworks.com/cortex/cortex-xdr) is the world's first detection and response app that natively integrates network, endpoint, and cloud data to stop sophisticated attacks.
 This integration was integrated and tested with version 2.6.5 of Cortex XDR - IR.
 ## Playbooks
 ---
