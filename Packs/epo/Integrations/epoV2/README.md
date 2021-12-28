@@ -361,10 +361,6 @@ Finds computers within a specified group in the McAfee ePO system tree.
 | McAfee.ePO.Endpoint.FreeMemory | Number | Endpoint Free Memory | 
 | McAfee.ePO.Endpoint.FreeDiskSpace | Number | Endpoint Free Disk Space | 
 | McAfee.ePO.Endpoint.TotalDiskSpace | Number | Endpoint Total Disk Space | 
-| McAfee.ePO.Endpoint.IsPortable | Number | Endpoint IS Protable | 
-| McAfee.ePO.Endpoint.Vdi | Number | Endpoint VDI | 
-| McAfee.ePO.Endpoint.OSBitMode | Number | Endpoint OS Bit Mode | 
-| McAfee.ePO.Endpoint.LastAgentHandler | Number | Endpoint Last Agent Handler | 
 | McAfee.ePO.Endpoint.UserProperty1 | String | Endpoint User Property 1 | 
 | McAfee.ePO.Endpoint.UserProperty2 | String | Endpoint User Property 2 | 
 | McAfee.ePO.Endpoint.UserProperty3 | String | Endpoint User Property 3 | 
@@ -423,14 +419,11 @@ Finds computers within a specified group in the McAfee ePO system tree.
                     "IPSubnetMask": null,
                     "IPV4x": null,
                     "IPV6": null,
-                    "IPXAddress": "",
-                    "IsPortable": -1,
-                    "LastAgentHandler": null,
+                    "IPXAddress": "",                    
                     "LastUpdate": null,
                     "ManagedState": 0,
                     "NetAddress": "",
-                    "NumOfCPU": 0,
-                    "OSBitMode": -1,
+                    "NumOfCPU": 0,                    
                     "OSBuildNum": 0,
                     "OSOEMID": "",
                     "OSPlatform": "",
@@ -451,8 +444,7 @@ Finds computers within a specified group in the McAfee ePO system tree.
                     "UserProperty1": null,
                     "UserProperty2": null,
                     "UserProperty3": null,
-                    "UserProperty4": null,
-                    "Vdi": -1
+                    "UserProperty4": null
                 },
                 {
                     "AgentGUID": "CA0CE11A-DCE8-11E8-0805-000C2994FF62
@@ -470,14 +462,11 @@ Finds computers within a specified group in the McAfee ePO system tree.
                     "Hostname": "",
                     "IPAddress": "",
                     "IPV4x": null,
-                    "IPXAddress": "N/A",
-                    "IsPortable": 0,
-                    "LastAgentHandler": 1,
+                    "IPXAddress": "N/A",                    
                     "LastUpdate": "2021-12-16T14:44:41-08:00",
                     "ManagedState": 1,
                     "NetAddress": "",
                     "NumOfCPU": 4,
-                    "OSBitMode": 1,
                     "OSBuildNum": 9600,
                     "OSOEMID": "00252-00112-50691-AA377",
                     "OSPlatform": "Server",
@@ -498,8 +487,7 @@ Finds computers within a specified group in the McAfee ePO system tree.
                     "UserProperty1": null,
                     "UserProperty2": null,
                     "UserProperty3": null,
-                    "UserProperty4": null,
-                    "Vdi": 0
+                    "UserProperty4": null
                 }
             ]
         }

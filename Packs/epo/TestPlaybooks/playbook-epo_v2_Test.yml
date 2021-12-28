@@ -247,6 +247,7 @@ tasks:
     scriptarguments:
       command:
         simple: core.help
+    continueonerror: true
     separatecontext: false
     view: |-
       {

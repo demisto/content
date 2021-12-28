@@ -242,18 +242,6 @@ script:
     - contextPath: McAfee.ePO.Endpoint.TotalDiskSpace
       description: Endpoint Total Disk Space
       type: Number
-    - contextPath: McAfee.ePO.Endpoint.IsPortable
-      description: Endpoint IS Protable
-      type: Number
-    - contextPath: McAfee.ePO.Endpoint.Vdi
-      description: Endpoint VDI
-      type: Number
-    - contextPath: McAfee.ePO.Endpoint.OSBitMode
-      description: Endpoint OS Bit Mode
-      type: Number
-    - contextPath: McAfee.ePO.Endpoint.LastAgentHandler
-      description: Endpoint Last Agent Handler
-      type: Number
     - contextPath: McAfee.ePO.Endpoint.UserProperty1
       description: Endpoint User Property 1
       type: String
@@ -432,18 +420,6 @@ script:
       type: Number
     - contextPath: McAfee.ePO.Endpoint.TotalDiskSpace
       description: Endpoint Total Disk Space
-      type: Number
-    - contextPath: McAfee.ePO.Endpoint.IsPortable
-      description: Endpoint IS Protable
-      type: Number
-    - contextPath: McAfee.ePO.Endpoint.Vdi
-      description: Endpoint VDI
-      type: Number
-    - contextPath: McAfee.ePO.Endpoint.OSBitMode
-      description: Endpoint OS Bit Mode
-      type: Number
-    - contextPath: McAfee.ePO.Endpoint.LastAgentHandler
-      description: Endpoint Last Agent Handler
       type: Number
     - contextPath: McAfee.ePO.Endpoint.UserProperty1
       description: Endpoint User Property 1
@@ -677,9 +653,6 @@ script:
     - contextPath: McAfee.ePO.Issue.activityLog.details
       description: Issue Activity Log details
       type: string
-    - contextPath: McAfee.ePO.Issue.activityLog.dirty
-      description: Issue Activity Log dirty
-      type: string
     - contextPath: McAfee.ePO.Issue.activityLog.id
       description: Issue Activity Log ID
       type: number
@@ -729,7 +702,7 @@ script:
       description: Issue CreatedDate
       type: string
     - contextPath: McAfee.ePO.Issue.dueDate
-      description: Issue DueDate
+      description: Issue Due Date
       type: string
     - contextPath: McAfee.ePO.Issue.ticketId
       description: Issue TicketId
@@ -799,10 +772,10 @@ script:
       description: issue resolution
     - name: due
       required: false
-      description: issue due
+      description: The due date of the issue in form ["yyyy-mm-dd hh:mm:ss"]
     - name: assignee_name
       required: false
-      description: issue assignee_name
+      description: Issue assignee_name
     - name: ticketServerName
       required: false
       description: issue ticketServerName
@@ -879,7 +852,7 @@ script:
       description: issue resolution
     - name: due
       required: false
-      description: issue due
+      description: The due date of the issue in form ["yyyy-mm-dd hh:mm:ss"]
     - name: assignee_name
       required: false
       description: issue assignee_name
