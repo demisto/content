@@ -1,6 +1,7 @@
 This playbook investigates and remediates a potential phishing incident. It engages with the user that triggered the incident while investigating the incident itself.
 Note: Final remediation tasks are always decided by a human analyst. 
 
+
 Main additions to this version:
 1) Changing all labels to incident fields.
 2) Use "Process Email - Generic v2" (replaces the older version) - the enhancements introduced in this version are:
