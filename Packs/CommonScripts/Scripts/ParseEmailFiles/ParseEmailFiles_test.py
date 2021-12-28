@@ -6,7 +6,7 @@ import pytest
 import demistomock as demisto
 from CommonServerPython import entryTypes
 from ParseEmailFiles import MsOxMessage, main, convert_to_unicode, unfold, handle_msg, get_msg_mail_format, \
-    data_to_md, create_headers_map, DataModel, handle_msg
+    data_to_md, create_headers_map, DataModel
 
 
 def exec_command_for_file(
@@ -820,7 +820,7 @@ def test_handle_msg_with_attachments():
      - A msg file with attachments
 
     When:
-     - The handle_msg
+     - Running the 'handle_msg' method
 
     Then:
      - Ensure that the attachment name is in the results
