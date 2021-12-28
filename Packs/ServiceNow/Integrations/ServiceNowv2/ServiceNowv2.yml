@@ -1346,6 +1346,12 @@ script:
       name: fields_delimiter
       required: false
       secret: false
+    - default: false
+      description: A comma-separated list of fields to clear.
+      isArray: true
+      name: clear_fields
+      required: false
+      secret: false
     deprecated: false
     description: Updates the specified ticket.
     execution: false
@@ -1825,6 +1831,12 @@ script:
         in an argument for this command. Default is ';'.
       isArray: false
       name: fields_delimiter
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of fields to clear.
+      isArray: true
+      name: clear_fields
       required: false
       secret: false
     deprecated: false

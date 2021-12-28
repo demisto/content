@@ -15,6 +15,7 @@ import urllib3
 import dateparser
 import hashlib
 import json
+import ipaddress
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -492,14 +493,60 @@ def ips_to_ranges(ips: Iterable, collapse_ips: str):
     Returns:
         Set. a list to Ranges or CIDRs.
     """
+    invalid_ips = []
+    valid_ips = []
+
+    for ip_or_cidr in ips:
+        if is_valid_cidr(ip_or_cidr) or is_valid_ip(ip_or_cidr):
+            valid_ips.append(ip_or_cidr)
+        else:
+            invalid_ips.append(ip_or_cidr)
 
     if collapse_ips == COLLAPSE_TO_RANGES:
-        ips_range_groups = IPSet(ips).iter_ipranges()
-        return ip_groups_to_ranges(ips_range_groups)
-
+        ips_range_groups = IPSet(valid_ips).iter_ipranges()
+        collapsed_list = ip_groups_to_ranges(ips_range_groups)
     else:
-        cidrs = IPSet(ips).iter_cidrs()
-        return ip_groups_to_cidrs(cidrs)
+        cidrs = IPSet(valid_ips).iter_cidrs()
+        collapsed_list = ip_groups_to_cidrs(cidrs)
+
+    collapsed_list.update(invalid_ips)
+    return collapsed_list
+
+
+def is_valid_ip(ip: str) -> bool:
+    """
+    Args:
+        ip: IP address
+    Returns: True if the string represents an IPv4 or an IPv6 address, false otherwise.
+    """
+    try:
+        ipaddress.IPv4Address(ip)
+        return True
+    except ValueError:
+        try:
+            ipaddress.IPv6Address(ip)
+            return True
+        except ValueError:
+            return False
+
+
+def is_valid_cidr(cidr: str) -> bool:
+    """
+    Args:
+        cidr: CIDR string
+    Returns: True if the string represents an IPv4 network or an IPv6 network, false otherwise.
+    """
+    if '/' not in cidr:
+        return False
+    try:
+        ipaddress.IPv4Network(cidr, strict=False)
+        return True
+    except ValueError:
+        try:
+            ipaddress.IPv6Network(cidr, strict=False)
+            return True
+        except ValueError:
+            return False
 
 
 def list_to_str(inp_list: list, delimiter: str = ',', map_func: Callable = str) -> str:

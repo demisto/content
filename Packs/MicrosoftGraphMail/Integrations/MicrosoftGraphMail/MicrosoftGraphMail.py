@@ -64,11 +64,12 @@ class MsGraphClient:
     FILE_ATTACHMENT = '#microsoft.graph.fileAttachment'
 
     def __init__(self, self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url, use_ssl, proxy,
-                 ok_codes, mailbox_to_fetch, folder_to_fetch, first_fetch_interval, emails_fetch_limit, timeout=10):
+                 ok_codes, mailbox_to_fetch, folder_to_fetch, first_fetch_interval, emails_fetch_limit, timeout=10,
+                 endpoint='com'):
 
         self.ms_client = MicrosoftClient(self_deployed=self_deployed, tenant_id=tenant_id, auth_id=auth_and_token_url,
                                          enc_key=enc_key, app_name=app_name, base_url=base_url, verify=use_ssl,
-                                         proxy=proxy, ok_codes=ok_codes, timeout=timeout)
+                                         proxy=proxy, ok_codes=ok_codes, timeout=timeout, endpoint=endpoint)
 
         self._mailbox_to_fetch = mailbox_to_fetch
         self._folder_to_fetch = folder_to_fetch
@@ -1570,14 +1571,23 @@ def main():
     args: dict = demisto.args()
     params: dict = demisto.params()
     self_deployed: bool = params.get('self_deployed', False)
-    tenant_id: str = params.get('tenant_id', '')
-    auth_and_token_url: str = params.get('auth_id', '')
-    enc_key: str = params.get('enc_key', '')
-    base_url: str = urljoin(params.get('url', ''), '/v1.0')
+    tenant_id: str = params.get('tenant_id', '') or params.get('_tenant_id', '')
+    auth_and_token_url: str = params.get('auth_id', '') or params.get('_auth_id', '')
+    enc_key: str = params.get('enc_key', '') or (params.get('credentials') or {}).get('password', '')
+    server = params.get('url', '')
+    base_url: str = urljoin(server, '/v1.0')
+    endpoint = GRAPH_BASE_ENDPOINTS.get(server, 'com')
     app_name: str = 'ms-graph-mail'
     ok_codes: tuple = (200, 201, 202, 204)
     use_ssl: bool = not params.get('insecure', False)
     proxy: bool = params.get('proxy', False)
+
+    if not enc_key:
+        raise Exception('Key must be provided.')
+    if not auth_and_token_url:
+        raise Exception('ID must be provided.')
+    if not tenant_id:
+        raise Exception('Token must be provided.')
 
     # params related to mailbox to fetch incidents
     mailbox_to_fetch = params.get('mailbox_to_fetch', '')
@@ -1588,7 +1598,7 @@ def main():
 
     client: MsGraphClient = MsGraphClient(self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url,
                                           use_ssl, proxy, ok_codes, mailbox_to_fetch, folder_to_fetch,
-                                          first_fetch_interval, emails_fetch_limit, timeout)
+                                          first_fetch_interval, emails_fetch_limit, timeout, endpoint)
 
     command = demisto.command()
     LOG(f'Command being called is {command}')

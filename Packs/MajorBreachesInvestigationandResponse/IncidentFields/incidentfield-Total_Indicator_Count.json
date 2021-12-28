@@ -25,5 +25,5 @@
     "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "56.0.0"
+    "fromVersion": "6.0.0"
 }

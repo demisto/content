@@ -2,7 +2,7 @@
     "name": "Linkshadow",
     "description": "Fetch Network Anomalies data from LinkShadow and execute the remediation Actions.",
     "support": "partner",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.4",
     "author": "Linkshadow",
     "url": "https://www.linkshadow.com/account/login",
     "email": "support@linkshadow.com",
@@ -16,5 +16,9 @@
         "Linkshadow"
     ],
     "dependencies": {},
-    "githubUser": "Devika-LS"
+    "githubUser": "Devika-LS",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

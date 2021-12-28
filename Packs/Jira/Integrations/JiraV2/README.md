@@ -93,7 +93,12 @@ Queries Jira issues.
 | Ticket.Creator | Unknown | The user who created the ticket. | 
 | Ticket.Summary | Unknown | The summary of the ticket. | 
 | Ticket.Status | Unknown | The status of the ticket. | 
-
+| Ticket.Priority | String | The priority of the ticket. | 
+| Ticket.ProjectName | String | The ticket project name. | 
+| Ticket.DueDate | Date | The due date. | 
+| Ticket.Created | Date | The time the ticket was created. | 
+| Ticket.LastSeen | Date | The last time the ticket was viewed. | 
+| Ticket.LastUpdate | Date | The last time the ticket was updated. | 
 
 #### Command Example
 ```!jira-issue-query query="status=done"```
@@ -160,7 +165,12 @@ Fetches an issue from Jira.
 | File.SHA256 | Unknown | The SHA256 hash of the file \(Jira attachments are saved as files in Cortex XSOAR\). | 
 | File.Name | Unknown | The name of the file \(Jira attachments are saved as files in Cortex XSOAR\). | 
 | File.SHA1 | Unknown | The SHA1 hash of the file \(Jira attachments are saved as files in Cortex XSOAR\). | 
-
+| Ticket.Priority | String | The priority of the ticket. | 
+| Ticket.ProjectName | String | The ticket project name. | 
+| Ticket.DueDate | Date | The due date. | 
+| Ticket.Created | Date | The time the ticket was created. | 
+| Ticket.LastSeen | Date | The last time the ticket was viewed. | 
+| Ticket.LastUpdate | Date | The last time the ticket was updated. | 
 
 ##### Command Example
 ```!jira-get-issue issueId=15572 getAttachments=true```
