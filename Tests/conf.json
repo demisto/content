@@ -1593,19 +1593,22 @@
             "integrations": "SplunkPy",
             "playbookID": "SplunkPy parse-raw - Test",
             "memory_threshold": 100,
-            "instance_names": "use_default_handler"
+            "instance_names": "use_default_handler",
+            "is_mockable": false
         },
         {
             "integrations": "SplunkPy",
             "playbookID": "SplunkPy-Test-V2_default_handler",
             "memory_threshold": 500,
-            "instance_names": "use_default_handler"
+            "instance_names": "use_default_handler",
+            "is_mockable": false
         },
         {
             "integrations": "SplunkPy",
             "playbookID": "Splunk-Test_default_handler",
             "memory_threshold": 200,
-            "instance_names": "use_default_handler"
+            "instance_names": "use_default_handler",
+            "is_mockable": false
         },
         {
             "integrations": "AnsibleTower",
@@ -1616,7 +1619,8 @@
             "integrations": "SplunkPy",
             "playbookID": "SplunkPySearch_Test_default_handler",
             "memory_threshold": 200,
-            "instance_names": "use_default_handler"
+            "instance_names": "use_default_handler",
+            "is_mockable": false
         },
         {
             "integrations": "SplunkPy",
@@ -2964,7 +2968,8 @@
             "playbookID": "Splunk Indicator Hunting Test",
             "fromversion": "5.0.0",
             "memory_threshold": 500,
-            "instance_names": "use_default_handler"
+            "instance_names": "use_default_handler",
+            "is_mockable": false
         },
         {
             "integrations": "BPA",
