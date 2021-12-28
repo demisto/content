@@ -205,7 +205,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "7"
+      - "8"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -220,40 +220,6 @@ tasks:
         "position": {
           "x": 50,
           "y": 1200
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
-    taskid: a6c792f0-9885-4d8d-83ba-369c8056a891
-    type: regular
-    task:
-      id: a6c792f0-9885-4d8d-83ba-369c8056a891
-      version: -1
-      name: epo-command
-      script: McAfee ePO v2|||epo-command
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      command:
-        simple: core.help
-    continueonerror: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1400
         }
       }
     note: false
@@ -454,49 +420,12 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: McAfee.ePO.Endpoint.Name
-            iscontext: true
-          right:
-            value: {}
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: McAfee.ePO.Endpoint.Domain
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: McAfee.ePO.Endpoint.Hostname
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
               simple: McAfee.ePO.Endpoint.IPAddress
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: McAfee.ePO.Endpoint.OS
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: McAfee.ePO.Endpoint.OSVersion
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: McAfee.ePO.Endpoint.Processor
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: McAfee.ePO.Endpoint.Processors
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: McAfee.ePO.Endpoint.Memory
+              simple: McAfee.ePO.Endpoint.OSType
             iscontext: true
     view: |-
       {
@@ -566,47 +495,12 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: McAfee.ePO.Endpoint.Name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: McAfee.ePO.Endpoint.Domain
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: McAfee.ePO.Endpoint.Hostname
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
               simple: McAfee.ePO.Endpoint.IPAddress
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: McAfee.ePO.Endpoint.OS
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: McAfee.ePO.Endpoint.OSVersion
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: McAfee.ePO.Endpoint.Processor
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: McAfee.ePO.Endpoint.Processors
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: McAfee.ePO.Endpoint.Memory
+              simple: McAfee.ePO.Endpoint.OSType
             iscontext: true
     view: |-
       {
@@ -1401,7 +1295,7 @@ tasks:
       - "39"
     scriptarguments:
       id:
-        simple: ${McAfee.ePO.Issue.Created.id}
+        simple: ${McAfee.ePO.Issue.id}
     separatecontext: false
     view: |-
       {
@@ -1483,17 +1377,17 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: McAfee.ePO.Issue.Created.id
+              simple: McAfee.ePO.Issue.id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: McAfee.ePO.Issue.Created.name
+              simple: McAfee.ePO.Issue.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: McAfee.ePO.Issue.Created.description
+              simple: McAfee.ePO.Issue.description
             iscontext: true
     view: |-
       {
@@ -1528,7 +1422,7 @@ tasks:
       description:
         simple: test McAfee ePO integration
       id:
-        simple: ${McAfee.ePO.Issue.Created.id}
+        simple: ${McAfee.ePO.Issue.id}
       name:
         simple: epo-test2-iupdate-issue
     separatecontext: false

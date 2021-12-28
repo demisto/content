@@ -317,63 +317,62 @@ Finds computers within a specified group in the McAfee ePO system tree.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Endpoint.ID | String | The unique ID within the tool retrieving the endpoint. | 
-| Endpoint.Name | string | Endpoint name. | 
-| Endpoint.Domain | string | Endpoint domain. | 
-| Endpoint.Hostname | string | Endpoint hostname. | 
-| Endpoint.IPAddress | string | Endpoint IP address. | 
-| Endpoint.OS | string | Endpoint OS. | 
-| Endpoint.OSVersion | string | Endpoint OS version. | 
-| Endpoint.Processor | string | Processor model. | 
-| Endpoint.Processors | number | Number of processors. | 
-| Endpoint.Memory | number | The amount of memory in the endpoint. | 
-| McAfee.ePO.Endpoint.ParentID | Number | Endpoint parent ID. | 
-| McAfee.ePO.Endpoint.Name | String | Endpoint computer name. | 
-| McAfee.ePO.Endpoint.Description | String | Endpoint description. | 
+| **Path**                              | **Type** | **Description** |
+|---------------------------------------| --- | --- |
+| Endpoint.ID                           | String | The unique ID within the tool retrieving the endpoint. |
+| Endpoint.Domain                       | string | Endpoint domain. | 
+| Endpoint.Hostname                     | string | Endpoint hostname. | 
+| Endpoint.IPAddress                    | string | Endpoint IP address. | 
+| Endpoint.OS                           | string | Endpoint OS. | 
+| Endpoint.OSVersion                    | string | Endpoint OS version. | 
+| Endpoint.Processor                    | string | Processor model. | 
+| Endpoint.Processors                   | number | Number of processors. | 
+| Endpoint.Memory                       | number | The amount of memory in the endpoint. | 
+| McAfee.ePO.Endpoint.ParentID          | Number | Endpoint parent ID. | 
+| McAfee.ePO.Endpoint.ComputerName      | String | Endpoint computer name. | 
+| McAfee.ePO.Endpoint.Description       | String | Endpoint description. | 
 | McAfee.ePO.Endpoint.SystemDescription | String | Endpoint system description. | 
-| McAfee.ePO.Endpoint.TimeZone | String | Endpoint time zone. | 
-| McAfee.ePO.Endpoint.DefaultLangID | String | Endpoint default language ID. | 
-| McAfee.ePO.Endpoint.UserName | String | Endpoint username. | 
-| McAfee.ePO.Endpoint.Domain | String | Endpoint domain name. | 
-| McAfee.ePO.Endpoint.Hostname | String | Endpoint IP host name | 
-| McAfee.ePO.Endpoint.IPV6 | String | Endpoint IPv6 address. | 
-| McAfee.ePO.Endpoint.IPAddress | String | Endpoint IP address. | 
-| McAfee.ePO.Endpoint.IPSubnet | String | Endpoint IP subnet. | 
-| McAfee.ePO.Endpoint.IPSubnetMask | String | Endpoint IP subnet mask | 
-| McAfee.ePO.Endpoint.IPV4x | Number | Endpoint IPV4x address. | 
-| McAfee.ePO.Endpoint.IPXAddress | String | Endpoint IPX address. | 
-| McAfee.ePO.Endpoint.SubnetAddress | String | Endpoint subnet address. | 
-| McAfee.ePO.Endpoint.SubnetMask | String | Endpoint subnet mask. | 
-| McAfee.ePO.Endpoint.NetAddress | String | Endpoint net address. | 
-| McAfee.ePO.Endpoint.OS | String | Endpoint OS type. | 
-| McAfee.ePO.Endpoint.OSVersion | String | Endpoint OS version. | 
-| McAfee.ePO.Endpoint.OSServicePackVer | String | Endpoint OS service pack version. | 
-| McAfee.ePO.Endpoint.OSBuildNum | Number | Endpoint OS build number. | 
-| McAfee.ePO.Endpoint.OSPlatform | String | Endpoint OS platform. | 
-| McAfee.ePO.Endpoint.OSOEMID | String | Endpoint OS OEM ID. | 
-| McAfee.ePO.Endpoint.Processor | String | Endpoint CPU type. | 
-| McAfee.ePO.Endpoint.CPUSpeed | Number | Endpoint CPU speed. | 
-| McAfee.ePO.Endpoint.Processors | Number | The number of CPUs in the endpoint. | 
-| McAfee.ePO.Endpoint.CPUSerialNum | String | The CPU serial number in the endpoint. | 
-| McAfee.ePO.Endpoint.Memory | Number |The total amount of physical memory in the endpoint. | 
-| McAfee.ePO.Endpoint.FreeMemory | Number | The amount of free memory in the endpoint. | 
-| McAfee.ePO.Endpoint.FreeDiskSpace | Number | The amount of free disk space in the endpoint. | 
-| McAfee.ePO.Endpoint.TotalDiskSpace | Number | The total amount of disk space in the endpoint. | 
-| McAfee.ePO.Endpoint.UserProperty1 | String | Endpoint user property 1. | 
-| McAfee.ePO.Endpoint.UserProperty2 | String | Endpoint user property 2. | 
-| McAfee.ePO.Endpoint.UserProperty3 | String | Endpoint user property 3. | 
-| McAfee.ePO.Endpoint.UserProperty4 | String | Endpoint user property 4. | 
-| McAfee.ePO.Endpoint.SysvolFreeSpace | Number | EThe amount of system volume free space in the endpoint. | 
-| McAfee.ePO.Endpoint.SysvolTotalSpace | Number | The amount of system volume total space in the endpoint. | 
-| McAfee.ePO.Endpoint.Tags | String | Endpoint EPO tags. | 
-| McAfee.ePO.Endpoint.ExcludedTags | String | Endpoint EPO excluded tags. | 
-| McAfee.ePO.Endpoint.LastUpdate | Date | The date the endpoint ePO was last updated. | 
-| McAfee.ePO.Endpoint.ManagedState | Number | Endpoint EPO managed state. | 
-| McAfee.ePO.Endpoint.AgentGUID | String | Endpoint EPO agent GUID. | 
-| McAfee.ePO.Endpoint.AgentVersion | String | Endpoint EPO agent version. | 
-| McAfee.ePO.Endpoint.AutoID | Number | Endpoint EPO auto ID. | 
+| McAfee.ePO.Endpoint.TimeZone          | String | Endpoint time zone. | 
+| McAfee.ePO.Endpoint.DefaultLangID     | String | Endpoint default language ID. | 
+| McAfee.ePO.Endpoint.UserName          | String | Endpoint username. | 
+| McAfee.ePO.Endpoint.Domain            | String | Endpoint domain name. | 
+| McAfee.ePO.Endpoint.Hostname          | String | Endpoint IP host name | 
+| McAfee.ePO.Endpoint.IPV6              | String | Endpoint IPv6 address. | 
+| McAfee.ePO.Endpoint.IPAddress         | String | Endpoint IP address. | 
+| McAfee.ePO.Endpoint.IPSubnet          | String | Endpoint IP subnet. | 
+| McAfee.ePO.Endpoint.IPSubnetMask      | String | Endpoint IP subnet mask | 
+| McAfee.ePO.Endpoint.IPV4x             | Number | Endpoint IPV4x address. | 
+| McAfee.ePO.Endpoint.IPXAddress        | String | Endpoint IPX address. | 
+| McAfee.ePO.Endpoint.SubnetAddress     | String | Endpoint subnet address. | 
+| McAfee.ePO.Endpoint.SubnetMask        | String | Endpoint subnet mask. | 
+| McAfee.ePO.Endpoint.NetAddress        | String | Endpoint net address. | 
+| McAfee.ePO.Endpoint.OSType            | String | Endpoint OS type. | 
+| McAfee.ePO.Endpoint.OSVersion         | String | Endpoint OS version. | 
+| McAfee.ePO.Endpoint.OSServicePackVer  | String | Endpoint OS service pack version. | 
+| McAfee.ePO.Endpoint.OSBuildNum        | Number | Endpoint OS build number. | 
+| McAfee.ePO.Endpoint.OSPlatform        | String | Endpoint OS platform. | 
+| McAfee.ePO.Endpoint.OSOEMID           | String | Endpoint OS OEM ID. | 
+| McAfee.ePO.Endpoint.Processor         | String | Endpoint CPU type. | 
+| McAfee.ePO.Endpoint.CPUSpeed          | Number | Endpoint CPU speed. | 
+| McAfee.ePO.Endpoint.Processors        | Number | The number of CPUs in the endpoint. | 
+| McAfee.ePO.Endpoint.CPUSerialNum      | String | The CPU serial number in the endpoint. | 
+| McAfee.ePO.Endpoint.Memory            | Number |The total amount of physical memory in the endpoint. | 
+| McAfee.ePO.Endpoint.FreeMemory        | Number | The amount of free memory in the endpoint. | 
+| McAfee.ePO.Endpoint.FreeDiskSpace     | Number | The amount of free disk space in the endpoint. | 
+| McAfee.ePO.Endpoint.TotalDiskSpace    | Number | The total amount of disk space in the endpoint. | 
+| McAfee.ePO.Endpoint.UserProperty1     | String | Endpoint user property 1. | 
+| McAfee.ePO.Endpoint.UserProperty2     | String | Endpoint user property 2. | 
+| McAfee.ePO.Endpoint.UserProperty3     | String | Endpoint user property 3. | 
+| McAfee.ePO.Endpoint.UserProperty4     | String | Endpoint user property 4. | 
+| McAfee.ePO.Endpoint.SysvolFreeSpace   | Number | EThe amount of system volume free space in the endpoint. | 
+| McAfee.ePO.Endpoint.SysvolTotalSpace  | Number | The amount of system volume total space in the endpoint. | 
+| McAfee.ePO.Endpoint.Tags              | String | Endpoint EPO tags. | 
+| McAfee.ePO.Endpoint.ExcludedTags      | String | Endpoint EPO excluded tags. | 
+| McAfee.ePO.Endpoint.LastUpdate        | Date | The date the endpoint ePO was last updated. | 
+| McAfee.ePO.Endpoint.ManagedState      | Number | Endpoint EPO managed state. | 
+| McAfee.ePO.Endpoint.AgentGUID         | String | Endpoint EPO agent GUID. | 
+| McAfee.ePO.Endpoint.AgentVersion      | String | Endpoint EPO agent version. | 
+| McAfee.ePO.Endpoint.AutoID            | Number | Endpoint EPO auto ID. | 
 
 
 #### Command Example
@@ -521,63 +520,62 @@ Finds systems in the McAfee ePO system tree.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Endpoint.ID | String | The unique ID within the tool retrieving the endpoint. | 
-| Endpoint.Name | string | Endpoint name | 
-| Endpoint.Domain | string | Endpoint domain. | 
-| Endpoint.Hostname | string | Endpoint hostname. | 
-| Endpoint.IPAddress | string | Endpoint IP address. | 
-| Endpoint.OS | string | Endpoint OS. | 
-| Endpoint.OSVersion | string | Endpoint OS version. | 
-| Endpoint.Processor | string | Processor model. | 
-| Endpoint.Processors | number | Number of processors. | 
-| Endpoint.Memory | number | The amount of memory in the endpoint. | 
-| McAfee.ePO.Endpoint.ParentID | Number | Endpoint Parent ID. | 
-| McAfee.ePO.Endpoint.Name | String | Endpoint computer name. | 
-| McAfee.ePO.Endpoint.Description | String | Endpoint description. | 
+| **Path**                              | **Type** | **Description** |
+|---------------------------------------| --- | --- |
+| Endpoint.ID                           | String | The unique ID within the tool retrieving the endpoint. |
+| Endpoint.Domain                       | string | Endpoint domain. | 
+| Endpoint.Hostname                     | string | Endpoint hostname. | 
+| Endpoint.IPAddress                    | string | Endpoint IP address. | 
+| Endpoint.OS                           | string | Endpoint OS. | 
+| Endpoint.OSVersion                    | string | Endpoint OS version. | 
+| Endpoint.Processor                    | string | Processor model. | 
+| Endpoint.Processors                   | number | Number of processors. | 
+| Endpoint.Memory                       | number | The amount of memory in the endpoint. | 
+| McAfee.ePO.Endpoint.ParentID          | Number | Endpoint Parent ID. | 
+| McAfee.ePO.Endpoint.ComputerName      | String | Endpoint computer name. | 
+| McAfee.ePO.Endpoint.Description       | String | Endpoint description. | 
 | McAfee.ePO.Endpoint.SystemDescription | String | Endpoint system description. | 
-| McAfee.ePO.Endpoint.TimeZone | String | Endpoint time zone. | 
-| McAfee.ePO.Endpoint.DefaultLangID | String | Endpoint default language ID. | 
-| McAfee.ePO.Endpoint.UserName | String | Endpoint username. | 
-| McAfee.ePO.Endpoint.Domain | String | Endpoint domain name. | 
-| McAfee.ePO.Endpoint.Hostname | String |  Endpoint IP host name. | 
-| McAfee.ePO.Endpoint.IPV6 | String | Endpoint IPv6 address. | 
-| McAfee.ePO.Endpoint.IPAddress | String | Endpoint IP address. | 
-| McAfee.ePO.Endpoint.IPSubnet | String | Endpoint IP subnet. | 
-| McAfee.ePO.Endpoint.IPSubnetMask | String | Endpoint IP subnet mask. | 
-| McAfee.ePO.Endpoint.IPV4x | Number | Endpoint IPV4x address. | 
-| McAfee.ePO.Endpoint.IPXAddress | String | Endpoint IPX address. | 
-| McAfee.ePO.Endpoint.SubnetAddress | String | Endpoint subnet address. | 
-| McAfee.ePO.Endpoint.SubnetMask | String | Endpoint subnet mask. | 
-| McAfee.ePO.Endpoint.NetAddress | String | Endpoint net address. | 
-| McAfee.ePO.Endpoint.OS | String | Endpoint OS type. | 
-| McAfee.ePO.Endpoint.OSVersion | String | Endpoint OS version. | 
-| McAfee.ePO.Endpoint.OSServicePackVer | String | Endpoint OS service pack version. | 
-| McAfee.ePO.Endpoint.OSBuildNum | Number | Endpoint OS build number. | 
-| McAfee.ePO.Endpoint.OSPlatform | String | Endpoint OS platform. | 
-| McAfee.ePO.Endpoint.OSOEMID | String | Endpoint OS OEM ID. | 
-| McAfee.ePO.Endpoint.Processor | String | Endpoint CPU type. | 
-| McAfee.ePO.Endpoint.CPUSpeed | Number | Endpoint CPU speed. | 
-| McAfee.ePO.Endpoint.Processors | Number | Number of CPUs in the endpoint. | 
-| McAfee.ePO.Endpoint.CPUSerialNum | String | Endpoint CPU serial number. | 
-| McAfee.ePO.Endpoint.Memory | Number | The total amount of physical memory in the endpoint. | 
-| McAfee.ePO.Endpoint.FreeMemory | Number | The amount of free memory in the endpoint. | 
-| McAfee.ePO.Endpoint.FreeDiskSpace | Number | The amount of free disk space in the endpoint. | 
-| McAfee.ePO.Endpoint.TotalDiskSpace | Number | The total amount of disk space in the endpoint. | 
-| McAfee.ePO.Endpoint.UserProperty1 | String | Endpoint user property 1. | 
-| McAfee.ePO.Endpoint.UserProperty2 | String | Endpoint user property 2. | 
-| McAfee.ePO.Endpoint.UserProperty3 | String | Endpoint user property 3. | 
-| McAfee.ePO.Endpoint.UserProperty4 | String | Endpoint user property 4. | 
-| McAfee.ePO.Endpoint.SysvolFreeSpace | Number | The amount of system volume free space in the endpoint. | 
-| McAfee.ePO.Endpoint.SysvolTotalSpace | Number | The total amount of system volume space in the endpoint. | 
-| McAfee.ePO.Endpoint.Tags | String | Endpoint ePO tags. | 
-| McAfee.ePO.Endpoint.ExcludedTags | String | Endpoint EPO excluded tags. | 
-| McAfee.ePO.Endpoint.LastUpdate | Date | Endpoint he date the endpoint was last updated. | 
-| McAfee.ePO.Endpoint.ManagedState | Number | Endpoint managed state. | 
-| McAfee.ePO.Endpoint.AgentGUID | String | Endpoint agent GUID. | 
-| McAfee.ePO.Endpoint.AgentVersion | String | Endpoint agent version. | 
-| McAfee.ePO.Endpoint.AutoID | Number | Endpoint auto ID. | 
+| McAfee.ePO.Endpoint.TimeZone          | String | Endpoint time zone. | 
+| McAfee.ePO.Endpoint.DefaultLangID     | String | Endpoint default language ID. | 
+| McAfee.ePO.Endpoint.UserName          | String | Endpoint username. | 
+| McAfee.ePO.Endpoint.Domain            | String | Endpoint domain name. | 
+| McAfee.ePO.Endpoint.Hostname          | String |  Endpoint IP host name. | 
+| McAfee.ePO.Endpoint.IPV6              | String | Endpoint IPv6 address. | 
+| McAfee.ePO.Endpoint.IPAddress         | String | Endpoint IP address. | 
+| McAfee.ePO.Endpoint.IPSubnet          | String | Endpoint IP subnet. | 
+| McAfee.ePO.Endpoint.IPSubnetMask      | String | Endpoint IP subnet mask. | 
+| McAfee.ePO.Endpoint.IPV4x             | Number | Endpoint IPV4x address. | 
+| McAfee.ePO.Endpoint.IPXAddress        | String | Endpoint IPX address. | 
+| McAfee.ePO.Endpoint.SubnetAddress     | String | Endpoint subnet address. | 
+| McAfee.ePO.Endpoint.SubnetMask        | String | Endpoint subnet mask. | 
+| McAfee.ePO.Endpoint.NetAddress        | String | Endpoint net address. | 
+| McAfee.ePO.Endpoint.OSType            | String | Endpoint OS type. | 
+| McAfee.ePO.Endpoint.OSVersion         | String | Endpoint OS version. | 
+| McAfee.ePO.Endpoint.OSServicePackVer  | String | Endpoint OS service pack version. | 
+| McAfee.ePO.Endpoint.OSBuildNum        | Number | Endpoint OS build number. | 
+| McAfee.ePO.Endpoint.OSPlatform        | String | Endpoint OS platform. | 
+| McAfee.ePO.Endpoint.OSOEMID           | String | Endpoint OS OEM ID. | 
+| McAfee.ePO.Endpoint.Processor         | String | Endpoint CPU type. | 
+| McAfee.ePO.Endpoint.CPUSpeed          | Number | Endpoint CPU speed. | 
+| McAfee.ePO.Endpoint.Processors        | Number | Number of CPUs in the endpoint. | 
+| McAfee.ePO.Endpoint.CPUSerialNum      | String | Endpoint CPU serial number. | 
+| McAfee.ePO.Endpoint.Memory            | Number | The total amount of physical memory in the endpoint. | 
+| McAfee.ePO.Endpoint.FreeMemory        | Number | The amount of free memory in the endpoint. | 
+| McAfee.ePO.Endpoint.FreeDiskSpace     | Number | The amount of free disk space in the endpoint. | 
+| McAfee.ePO.Endpoint.TotalDiskSpace    | Number | The total amount of disk space in the endpoint. | 
+| McAfee.ePO.Endpoint.UserProperty1     | String | Endpoint user property 1. | 
+| McAfee.ePO.Endpoint.UserProperty2     | String | Endpoint user property 2. | 
+| McAfee.ePO.Endpoint.UserProperty3     | String | Endpoint user property 3. | 
+| McAfee.ePO.Endpoint.UserProperty4     | String | Endpoint user property 4. | 
+| McAfee.ePO.Endpoint.SysvolFreeSpace   | Number | The amount of system volume free space in the endpoint. | 
+| McAfee.ePO.Endpoint.SysvolTotalSpace  | Number | The total amount of system volume space in the endpoint. | 
+| McAfee.ePO.Endpoint.Tags              | String | Endpoint ePO tags. | 
+| McAfee.ePO.Endpoint.ExcludedTags      | String | Endpoint EPO excluded tags. | 
+| McAfee.ePO.Endpoint.LastUpdate        | Date | Endpoint he date the endpoint was last updated. | 
+| McAfee.ePO.Endpoint.ManagedState      | Number | Endpoint managed state. | 
+| McAfee.ePO.Endpoint.AgentGUID         | String | Endpoint agent GUID. | 
+| McAfee.ePO.Endpoint.AgentVersion      | String | Endpoint agent version. | 
+| McAfee.ePO.Endpoint.AutoID            | Number | Endpoint auto ID. | 
 
 
 #### Command Example

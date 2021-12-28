@@ -1533,7 +1533,7 @@ def epo_find_client_task_command(client: Client, args: Dict[str, Any]) -> Comman
     Returns:
         CommandResults
     """
-    search_text = args.get('searchText', str)
+    search_text = args.get('searchText')
 
     response_json, response = client.find_client_task(search_text=search_text)
     headers: List[Any] = list(set().union(*(entry.keys() for entry in response_json)))

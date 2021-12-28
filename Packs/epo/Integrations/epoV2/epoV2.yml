@@ -119,9 +119,6 @@ script:
     - contextPath: Endpoint.ID
       description: The unique ID within the tool retrieving the endpoint.
       type: String
-    - contextPath: Endpoint.Name
-      description: Endpoint name.
-      type: string
     - contextPath: Endpoint.Domain
       description: Endpoint domain.
       type: string
@@ -149,7 +146,7 @@ script:
     - contextPath: McAfee.ePO.Endpoint.ParentID
       description: Endpoint parent ID.
       type: Number
-    - contextPath: McAfee.ePO.Endpoint.Name
+    - contextPath: McAfee.ePO.Endpoint.ComputerName
       description: Endpoint computer name.
       type: String
     - contextPath: McAfee.ePO.Endpoint.Description
@@ -200,7 +197,7 @@ script:
     - contextPath: McAfee.ePO.Endpoint.NetAddress
       description: Endpoint net address.
       type: String
-    - contextPath: McAfee.ePO.Endpoint.OS
+    - contextPath: McAfee.ePO.Endpoint.OSType
       description: Endpoint OS type.
       type: String
     - contextPath: McAfee.ePO.Endpoint.OSVersion
@@ -298,9 +295,6 @@ script:
     - contextPath: Endpoint.ID
       description: The unique ID within the tool retrieving the endpoint.
       type: String
-    - contextPath: Endpoint.Name
-      description: Endpoint name.
-      type: string
     - contextPath: Endpoint.Domain
       description: Endpoint domain.
       type: string
@@ -328,7 +322,7 @@ script:
     - contextPath: McAfee.ePO.Endpoint.ParentID
       description: Endpoint parent ID.
       type: Number
-    - contextPath: McAfee.ePO.Endpoint.Name
+    - contextPath: McAfee.ePO.Endpoint.ComputerName
       description: Endpoint computer name.
       type: String
     - contextPath: McAfee.ePO.Endpoint.Description
@@ -379,7 +373,7 @@ script:
     - contextPath: McAfee.ePO.Endpoint.NetAddress
       description: Endpoint net address.
       type: String
-    - contextPath: McAfee.ePO.Endpoint.OS
+    - contextPath: McAfee.ePO.Endpoint.OSType
       description: Endpoint OS type.
       type: String
     - contextPath: McAfee.ePO.Endpoint.OSVersion
