@@ -524,7 +524,7 @@ tasks:
     task:
       id: 80e1935b-d6e6-4fb1-84b3-84298a73728c
       version: -1
-      name: Check Email Subject
+      name: Check Email Body
       type: condition
       iscommand: false
       brand: ""
