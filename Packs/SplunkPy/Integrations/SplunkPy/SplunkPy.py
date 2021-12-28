@@ -2207,8 +2207,8 @@ def splunk_edit_notable_event_command(service, auth_token):
         demisto.results({'ContentsFormat': formats['text'], 'Type': entryTypes['error'],
                          'Contents': "Could not update notable "
                                      "events: " + demisto.args()['eventIDs'] + ' : ' + str(response_info)})
-
-    demisto.results('Splunk ES Notable events: ' + response_info.get('message'))
+    else:
+        demisto.results('Splunk ES Notable events: ' + response_info.get('message'))
 
 
 def splunk_job_status(service, args):
