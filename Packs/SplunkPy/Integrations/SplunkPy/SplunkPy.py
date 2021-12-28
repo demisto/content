@@ -2502,7 +2502,6 @@ def main():
         'verify': VERIFY_CERTIFICATE
     }
 
-    base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
     auth_token = None
     username = demisto.params()['authentication']['identifier']
     password = demisto.params()['authentication']['password']
