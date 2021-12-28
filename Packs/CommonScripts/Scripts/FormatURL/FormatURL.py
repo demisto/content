@@ -97,7 +97,7 @@ def replace_protocol(url_: str) -> str:
     return url_
 
 
-def format_urls(non_formatted_urls: List[str]) -> CommandResults:
+def format_urls(non_formatted_urls: List[str]) -> List[Dict]:
     """
     Formats a single URL.
     Args:
@@ -107,7 +107,7 @@ def format_urls(non_formatted_urls: List[str]) -> CommandResults:
         (Set[str]): Formatted URL, with its expanded URL if such exists.
     """
 
-    def format_single_url(non_formatted_url):
+    def format_single_url(non_formatted_url) -> List[str]:
         parse_results: ParseResult = urlparse(non_formatted_url)
         if re.match(ATP_REGEX, non_formatted_url):
             non_formatted_url = get_redirect_url_from_query(non_formatted_url, parse_results, 'url')
@@ -124,17 +124,20 @@ def format_urls(non_formatted_urls: List[str]) -> CommandResults:
         formatted_url = replace_protocol(non_formatted_url)
         return formatted_url
 
-    formatted_urls = [format_single_url(url_) for url_ in non_formatted_urls]
-    return CommandResults(
-        outputs_prefix='URL',
-        outputs=formatted_urls,
-        readable_output=f'Formatted the following URLs:\n' + '\n'.join(formatted_urls)
-    )
+    formatted_urls_groups = [format_single_url(url_) for url_ in non_formatted_urls]
+    return [{
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': [urls]
+    }  for urls in formatted_urls_groups]
+
 
 
 def main():
     try:
-        return_results(format_urls(argToList(demisto.args().get('input'))))
+        formatted_urls_groups: List[Dict] = format_urls(argToList(demisto.args().get('input')))
+        for formatted_urls_group in formatted_urls_groups:
+            demisto.results(formatted_urls_group)
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute FormatURL. Error: {str(e)}')
