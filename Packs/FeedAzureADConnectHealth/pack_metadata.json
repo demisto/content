@@ -15,5 +15,9 @@
     "keywords": [
         "Azure",
         "Feed"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

@@ -14,10 +14,14 @@
     "githubUser": [
         "mazmat-panw"
     ],
-        "dependencies": {
+    "dependencies": {
         "Demisto REST API": {
             "mandatory": true,
             "display_name": "Demisto REST API"
-       }
-    }
+        }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }
