@@ -4829,7 +4829,7 @@
             "fromversion": "6.0.0"
         },
         {
-          "playbookID": "AzureRiskyUsers",
+            "playbookID": "AzureRiskyUsers",
             "fromversion": "6.0.0",
             "integrations": "AzureRiskyUsers"
         },
