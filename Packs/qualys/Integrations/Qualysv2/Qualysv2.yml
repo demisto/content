@@ -131,6 +131,7 @@ script:
     outputs:
     - contextPath: Qualys.Report.ID
       description: Report ID.
+      type: String
     - contextPath: Qualys.Report.TITLE
       description: Report title.
     - contextPath: Qualys.Report.TYPE
@@ -869,6 +870,7 @@ script:
     outputs:
     - contextPath: Qualys.Report.ID
       description: Report ID.
+      type: String
     - contextPath: Qualys.Report.TITLE
       description: Report title.
     - contextPath: Qualys.Report.TYPE
@@ -1274,6 +1276,7 @@ script:
     outputs:
     - contextPath: Qualys.Report.ID
       description: ID of the canceled report
+      type: String
     - contextPath: Qualys.ScheduleScan.DATETIME
       description: Date of when command was executed.
       type: Date
@@ -1290,6 +1293,7 @@ script:
     outputs:
     - contextPath: Qualys.Report.ID
       description: Deleted Report ID
+      type: String
     - contextPath: Qualys.ScheduleScan.DATETIME
       description: Date of when command was executed.
       type: Date
@@ -1360,6 +1364,7 @@ script:
     outputs:
     - contextPath: Qualys.Report.ID
       description: Report ID.
+      type: String
     - contextPath: Qualys.ScheduleScan.DATETIME
       description: Date of when command was executed.
       type: Date
@@ -1795,8 +1800,10 @@ script:
     outputs:
     - contextPath: Qualys.IP.Add.TEXT
       description: Action result message.
+      type: String
     - contextPath: Qualys.IP.Add.DATETIME
       description: Date & time of the action.
+      type: Date
     description: Add IP addresses to the subscription.
     execution: true
   - name: qualys-ip-update
@@ -1890,6 +1897,7 @@ script:
     outputs:
     - contextPath: Qualys.Report.ID
       description: Launched Report ID
+      type: String
     - contextPath: Qualys.ScheduleScan.DATETIME
       description: Date of when command was executed.
       type: Date
@@ -1962,6 +1970,7 @@ script:
     outputs:
     - contextPath: Qualys.Report.ID
       description: Launched Map Report ID
+      type: String
     - contextPath: Qualys.ScheduleScan.DATETIME
       description: Date of when command was executed.
       type: Date
@@ -2033,6 +2042,7 @@ script:
     outputs:
     - contextPath: Qualys.Report.ID
       description: Report ID.
+      type: String
     - contextPath: Qualys.ScheduleScan.DATETIME
       description: Date of when command was executed.
       type: Date
@@ -2095,6 +2105,7 @@ script:
     outputs:
     - contextPath: Qualys.Report.ID
       description: Report ID.
+      type: String
     description: launches a scan report including scan based findings
   - name: qualys-report-launch-patch
     description: Run patch report
@@ -2152,6 +2163,7 @@ script:
     outputs:
     - contextPath: Qualys.Report.ID
       description: Report ID.
+      type: String
     - contextPath: Qualys.ScheduleScan.DATETIME
       description: Date of when command was executed.
       type: Date
@@ -2219,6 +2231,7 @@ script:
     outputs:
     - contextPath: Qualys.Report.ID
       description: Remediation Report ID
+      type: String
     - contextPath: Qualys.ScheduleScan.DATETIME
       description: Date of when command was executed.
       type: Date
@@ -2286,6 +2299,7 @@ script:
     outputs:
     - contextPath: Qualys.Report.ID
       description: Compliance Report ID
+      type: String
     - contextPath: Qualys.ScheduleScan.DATETIME
       description: Date of when command was executed.
       type: Date
@@ -2360,6 +2374,7 @@ script:
     outputs:
     - contextPath: Qualys.Report.ID
       description: Policy Report ID
+      type: String
     - contextPath: Qualys.ScheduleScan.DATETIME
       description: Date of when command was executed.
       type: Date
@@ -3352,10 +3367,15 @@ script:
   - name: qualys-time-zone-code
     arguments: []
     outputs:
+    - contextPath: Qualys.TimeZone.DST_SUPPORTED
+      description: Whether DST is supported.
+      type: String
     - contextPath: Qualys.TimeZone.TIME_ZONE_CODE
       description: Time zone code.
+      type: String
     - contextPath: Qualys.TimeZone.TIME_ZONE_DETAILS
       description: Timezone code details.
+      type: String
     description: Gets a list of the supported time zone codes.
     execution: true
   dockerimage: demisto/python3:3.9.8.24399

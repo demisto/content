@@ -149,7 +149,7 @@ Get a list of generated reports in the system
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.Report.ID | unknown | Report ID. | 
+| Qualys.Report.ID | String | Report ID. | 
 | Qualys.Report.TITLE | unknown | Report title. | 
 | Qualys.Report.TYPE | unknown | Report type. | 
 | Qualys.Report.LAUNCH_DATETIME | unknown | Date and time the report launched. | 
@@ -1075,7 +1075,7 @@ Get list of scheduled reports
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.Report.ID | unknown | Report ID. | 
+| Qualys.Report.ID | String | Report ID. | 
 | Qualys.Report.TITLE | unknown | Report title. | 
 | Qualys.Report.TYPE | unknown | Report type. | 
 | Qualys.Report.LAUNCH_DATETIME | unknown | Date and time the report launched. | 
@@ -19847,7 +19847,7 @@ Cancel running report
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.Report.ID | unknown | ID of the canceled report | 
+| Qualys.Report.ID | String | ID of the canceled report | 
 | Qualys.ScheduleScan.DATETIME | Date | Date of when command was executed. | 
 | Qualys.ScheduleScan.TEXT | String | Qualys response for report cancellation. | 
 
@@ -19895,7 +19895,7 @@ Delete a saved report in the user’s Report Share
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.Report.ID | unknown | Deleted Report ID | 
+| Qualys.Report.ID | String | Deleted Report ID | 
 | Qualys.ScheduleScan.DATETIME | Date | Date of when command was executed. | 
 | Qualys.ScheduleScan.TEXT | String | Qualys response for report deletion. | 
 
@@ -19958,7 +19958,7 @@ Launch a vulnerability scorecard report
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.Report.ID | unknown | Report ID. | 
+| Qualys.Report.ID | String | Report ID. | 
 | Qualys.ScheduleScan.DATETIME | Date | Date of when command was executed. | 
 | Qualys.ScheduleScan.TEXT | String | Qualys response for scorecard launch. | 
 
@@ -20257,8 +20257,8 @@ Add IP addresses to the subscription.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.IP.Add.TEXT | unknown | Action result message. | 
-| Qualys.IP.Add.DATETIME | unknown | Date &amp; time of the action. | 
+| Qualys.IP.Add.TEXT | String | Action result message. | 
+| Qualys.IP.Add.DATETIME | Date | Date &amp; time of the action. | 
 
 
 #### Command Example
@@ -20407,7 +20407,7 @@ Launch a scheduled report now
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.Report.ID | unknown | Launched Report ID | 
+| Qualys.Report.ID | String | Launched Report ID | 
 | Qualys.ScheduleScan.DATETIME | Date | Date of when command was executed. | 
 | Qualys.ScheduleScan.TEXT | String | Qualys response for scheduled report launch. | 
 
@@ -20464,7 +20464,7 @@ Launches a map report
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.Report.ID | unknown | Launched Map Report ID | 
+| Qualys.Report.ID | String | Launched Map Report ID | 
 | Qualys.ScheduleScan.DATETIME | Date | Date of when command was executed. | 
 | Qualys.ScheduleScan.TEXT | String | Qualys response for report launch map. | 
 
@@ -20520,7 +20520,7 @@ Run host based findings report
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.Report.ID | unknown | Report ID. | 
+| Qualys.Report.ID | String | Report ID. | 
 | Qualys.ScheduleScan.DATETIME | Date | Date of when command was executed. | 
 | Qualys.ScheduleScan.TEXT | String | Qualys response for scan based findings. | 
 
@@ -20576,7 +20576,7 @@ launches a scan report including scan based findings
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.Report.ID | unknown | Report ID. | 
+| Qualys.Report.ID | String | Report ID. | 
 
 
 #### Command Example
@@ -20630,7 +20630,7 @@ Run patch report
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.Report.ID | unknown | Report ID. | 
+| Qualys.Report.ID | String | Report ID. | 
 | Qualys.ScheduleScan.DATETIME | Date | Date of when command was executed. | 
 | Qualys.ScheduleScan.TEXT | String | Qualys response for launch patch. | 
 
@@ -20687,7 +20687,7 @@ Run remediation report
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.Report.ID | unknown | Remediation Report ID | 
+| Qualys.Report.ID | String | Remediation Report ID | 
 | Qualys.ScheduleScan.DATETIME | Date | Date of when command was executed. | 
 | Qualys.ScheduleScan.TEXT | String | Qualys response for launch remediation. | 
 
@@ -20744,7 +20744,7 @@ Run compliance report
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.Report.ID | unknown | Compliance Report ID | 
+| Qualys.Report.ID | String | Compliance Report ID | 
 | Qualys.ScheduleScan.DATETIME | Date | Date of when command was executed. | 
 | Qualys.ScheduleScan.TEXT | String | Qualys response for launch compliance. | 
 
@@ -20803,7 +20803,7 @@ Run compliance policy report
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.Report.ID | unknown | Policy Report ID | 
+| Qualys.Report.ID | String | Policy Report ID | 
 | Qualys.ScheduleScan.DATETIME | Date | Date of when command was executed. | 
 | Qualys.ScheduleScan.TEXT | String | Qualys response for launch compliance policy. | 
 
@@ -21078,55 +21078,6 @@ Get a list of hosts with the hosts latest vulnerability data, based on the host 
                             "STATUS": "Active",
                             "TIMES_FOUND": "396",
                             "TYPE": "Confirmed"
-                        },
-                        {
-                            "FIRST_FOUND_DATETIME": "2017-06-08T09:17:08Z",
-                            "IS_DISABLED": "0",
-                            "IS_IGNORED": "0",
-                            "LAST_FOUND_DATETIME": "2018-10-25T19:13:11Z",
-                            "LAST_PROCESSED_DATETIME": "2018-10-25T19:13:37Z",
-                            "LAST_TEST_DATETIME": "2018-10-25T19:13:11Z",
-                            "LAST_UPDATE_DATETIME": "2018-10-25T19:13:37Z",
-                            "PORT": "3389",
-                            "PROTOCOL": "tcp",
-                            "QID": "38657",
-                            "RESULTS": "CIPHER\tKEY-EXCHANGE\tAUTHENTICATION\tMAC\tENCRYPTION(KEY-STRENGTH)\tGRADE\nTLSv1 WITH 64-BIT CBC CIPHERS IS SUPPORTED\t \t \t \t \t \nDES-CBC3-SHA\tRSA\tRSA\tSHA1\t3DES(168)\tMEDIUM\nTLSv1.1 WITH 64-BIT CBC CIPHERS IS SUPPORTED\t \t \t \t \t \nDES-CBC3-SHA\tRSA\tRSA\tSHA1\t3DES(168)\tMEDIUM\nTLSv1.2 WITH 64-BIT CBC CIPHERS IS SUPPORTED\t \t \t \t \t \nDES-CBC3-SHA\tRSA\tRSA\tSHA1\t3DES(168)\tMEDIUM",
-                            "SEVERITY": "3",
-                            "SSL": "1",
-                            "STATUS": "Active",
-                            "TIMES_FOUND": "396",
-                            "TYPE": "Confirmed"
-                        },
-                        {
-                            "FIRST_FOUND_DATETIME": "2017-06-08T09:17:08Z",
-                            "IS_DISABLED": "0",
-                            "IS_IGNORED": "0",
-                            "LAST_FOUND_DATETIME": "2018-10-25T19:13:11Z",
-                            "LAST_PROCESSED_DATETIME": "2018-10-25T19:13:37Z",
-                            "LAST_TEST_DATETIME": "2018-10-25T19:13:11Z",
-                            "LAST_UPDATE_DATETIME": "2018-10-25T19:13:37Z",
-                            "QID": "70000",
-                            "RESULTS": "WIN-2IDQKTU63RC",
-                            "SEVERITY": "2",
-                            "SSL": "0",
-                            "STATUS": "Active",
-                            "TIMES_FOUND": "396",
-                            "TYPE": "Confirmed"
-                        },
-                        {
-                            "FIRST_FOUND_DATETIME": "2017-06-08T09:17:08Z",
-                            "IS_DISABLED": "0",
-                            "IS_IGNORED": "0",
-                            "LAST_FOUND_DATETIME": "2018-10-25T19:13:11Z",
-                            "LAST_PROCESSED_DATETIME": "2018-10-25T19:13:37Z",
-                            "LAST_TEST_DATETIME": "2018-10-25T19:13:11Z",
-                            "LAST_UPDATE_DATETIME": "2018-10-25T19:13:37Z",
-                            "QID": "90043",
-                            "SEVERITY": "3",
-                            "SSL": "0",
-                            "STATUS": "Active",
-                            "TIMES_FOUND": "396",
-                            "TYPE": "Potential"
                         },
                         {
                             "FIRST_FOUND_DATETIME": "2017-06-08T09:17:08Z",
@@ -21764,8 +21715,9 @@ Gets a list of the supported time zone codes.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.TimeZone.TIME_ZONE_CODE | unknown | Time zone code. | 
-| Qualys.TimeZone.TIME_ZONE_DETAILS | unknown | Timezone code details. | 
+| Qualys.TimeZone.DST_SUPPORTED | String | Whether DST is supported. | 
+| Qualys.TimeZone.TIME_ZONE_CODE | String | Time zone code. | 
+| Qualys.TimeZone.TIME_ZONE_DETAILS | String | Timezone code details. | 
 
 
 #### Command Example

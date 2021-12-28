@@ -1473,7 +1473,7 @@ def parse_raw_response(response: Union[bytes, requests.Response]) -> Dict:
 
 
 @logger
-def get_simple_response_from_raw(raw_response: Any):
+def get_simple_response_from_raw(raw_response: Any) -> Union[Any, Dict]:
     """
     Gets the simple response from a given JSON dict structure returned by Qualys service
     If object is not a dict, returns the response as is.
@@ -1481,11 +1481,11 @@ def get_simple_response_from_raw(raw_response: Any):
         raw_response (Any): Raw response from Qualys service.
 
     Returns:
-        (Any): Simple response path if object is a dict, else response as is.
+        (Union[Any, Dict]): Simple response path if object is a dict, else response as is.
     """
     simple_response = None
     if raw_response and isinstance(raw_response, dict):
-        simple_response = raw_response.get('SIMPLE_RETURN', {}).get('RESPONSE', None)
+        simple_response = raw_response.get('SIMPLE_RETURN', {}).get('RESPONSE', {})
     return simple_response
 
 
