@@ -323,7 +323,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -180,
+          "x": -190,
           "y": 2025
         }
       }
@@ -362,8 +362,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 230,
-          "y": 2415
+          "x": 80,
+          "y": 2550
         }
       }
     note: false
@@ -562,8 +562,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1050,
-          "y": 2025
+          "x": 1030,
+          "y": 2020
         }
       }
     note: false
@@ -589,8 +589,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 230,
-          "y": 2780
+          "x": -190,
+          "y": 2880
         }
       }
     note: false
@@ -652,7 +652,7 @@ tasks:
       {
         "position": {
           "x": 1950,
-          "y": 2415
+          "y": 2360
         }
       }
     note: false
@@ -714,8 +714,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -650,
-          "y": 2640
+          "x": -660,
+          "y": 2735
         }
       }
     note: false
@@ -827,7 +827,7 @@ tasks:
       '#default#':
       - "19"
       Delete profile:
-      - "10"
+      - "45"
     separatecontext: false
     conditions:
     - label: Delete profile
@@ -843,7 +843,7 @@ tasks:
       {
         "position": {
           "x": 230,
-          "y": 2215
+          "y": 2205
         }
       }
     note: false
@@ -1042,8 +1042,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2000,
-          "y": 260
+          "x": 2260,
+          "y": 95
         }
       }
     note: false
@@ -1072,8 +1072,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2000,
-          "y": 2640
+          "x": 2260,
+          "y": 2735
         }
       }
     note: false
@@ -1126,8 +1126,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1050,
-          "y": 2415
+          "x": 1030,
+          "y": 2360
         }
       }
     note: false
@@ -1170,8 +1170,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1330,
-          "y": 2215
+          "x": 1720,
+          "y": 2190
         }
       }
     note: false
@@ -1200,8 +1200,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1510,
-          "y": 2415
+          "x": 1480,
+          "y": 2360
         }
       }
     note: false
@@ -1242,8 +1242,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -180,
-          "y": 2215
+          "x": -190,
+          "y": 2205
         }
       }
     note: false
@@ -1290,7 +1290,7 @@ tasks:
       {
         "position": {
           "x": 1730,
-          "y": 2590
+          "y": 2530
         }
       }
     note: false
@@ -1329,8 +1329,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 230,
-          "y": 2590
+          "x": 80,
+          "y": 2705
         }
       }
     note: false
@@ -1412,6 +1412,68 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 9ca18516-0441-4744-8535-c85fd0aac122
+    type: condition
+    task:
+      id: 9ca18516-0441-4744-8535-c85fd0aac122
+      version: -1
+      name: Automatically delete user login profile?
+      description: Do you want XSOAR to automatically delete the user login profile?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "46"
+      "Yes":
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 2380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 378287be-05c1-47ee-8207-a58e864a7c03
+    type: regular
+    task:
+      id: 378287be-05c1-47ee-8207-a58e864a7c03
+      version: -1
+      name: Delete user login profile - Manual
+      description: "Delete the user login profile manually."
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 2550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1422,18 +1484,19 @@ view: |-
       "23_16_yes": 0.76,
       "23_26_#default#": 0.47,
       "23_6_yes": 0.62,
-      "29_19_#default#": 0.8,
+      "29_19_#default#": 0.11,
       "31_15_#default#": 0.18,
       "34_35_#default#": 0.16,
       "34_43_yes": 0.66,
       "38_20_yes": 0.74,
-      "38_39_#default#": 0.52
+      "38_39_#default#": 0.52,
+      "45_46_#default#": 0.43
     },
     "paper": {
       "dimensions": {
-        "height": 3595,
-        "width": 3030,
-        "x": -650,
+        "height": 3695,
+        "width": 3300,
+        "x": -660,
         "y": -750
       }
     }
