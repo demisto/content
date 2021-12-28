@@ -1308,6 +1308,24 @@ def limit_ip_results(result: Dict[str, Any], limit: int) -> Dict[str, Any]:
 
 
 @logger
+def validate_required_group(command_data: Dict) -> None:
+    """
+    Validates that if exactly one of each `required_group` have been given.
+    Args:
+        command_data (Dict): Command data.
+
+    Returns:
+        (None): Validates input.
+    Raises:
+        (DemistoException): If there exists a group in `required_group` whom arguments were given were not exactly one.
+    """
+    for group in command_data.get('required_groups', []):
+        existing_args = [arg for arg in group if arg in inner_args_values or arg in args_values]
+        if len(existing_args) != 1:
+            raise DemistoException(f'Exactly one of the arguments {group} must be provided.')
+
+
+@logger
 def validate_depended_args(command_data: Dict) -> None:
     """
     Validates that if one arg was given, and other arg is dependant on given arg, that it was given as well.
@@ -1369,12 +1387,9 @@ def input_validation(command_name: str) -> None:
         except ValueError as exc:
             raise DemistoException('Limit parameter must be an integer bigger than 0') from exc
 
-    for group in command_data.get('required_groups', []):
-        existing_args = [arg for arg in group if arg in inner_args_values or arg in args_values]
-        if len(existing_args) != 1:
-            raise DemistoException(f'Exactly least one of the arguments {group} must be provided')
-
+    validate_required_group(command_data)
     validate_depended_args(command_data)
+    validate_at_most_one_group(command_data)
 
 
 ''' PARSERS '''

@@ -7,7 +7,7 @@ from Qualysv2 import is_empty_result, format_and_validate_response, \
     parse_two_keys_dict, create_ip_list_dicts, build_args_dict, handle_general_result, \
     change_dict_keys, COMMANDS_ARGS_DATA, limit_ip_results, Client, build_host_list_detection_outputs, \
     COMMANDS_PARSE_AND_OUTPUT_DATA, validate_depended_args, Dict, validate_at_most_one_group, parse_raw_response, \
-    get_simple_response_from_raw
+    get_simple_response_from_raw, validate_required_group
 
 from CommonServerPython import DemistoException
 
@@ -666,6 +666,17 @@ class TestBuildArgsDict:
         assert Qualysv2.args_values == {}
 
     def test_build_args_dict_date_args(self):
+        """
+        Given:
+        - Cortex XSOAR arguments.
+        - Command arg names.
+
+        When:
+        - Parsing date parameters.
+
+        Then:
+        - Ensure date parameters values are updated accordingly.
+        """
         args = {'published_before': '1640508554',
                 'launched_after_datetime': '2021-12-26T08:49:29Z',
                 'start_date': '2021-12-26T08:49:29Z'}
@@ -674,6 +685,24 @@ class TestBuildArgsDict:
                            'start_date': '12/26/2021'}
 
         build_args_dict(args, {'args': ['published_before', 'launched_after_datetime', 'start_date']}, False)
+        assert Qualysv2.args_values == expected_result
+
+    def test_build_args_dict_default_added_depended_args(self):
+        """
+        Given:
+        - Cortex XSOAR arguments.
+        - Command arg names.
+
+        When:
+        - There are arguments who should be added depending on an arguments.
+
+        Then:
+        - Ensure arguments are added as expected.
+        """
+        args = {'arg_to_depend_on': '1'}
+        expected_result = {'arg_to_depend_on': '1', 'dep1': 2, 'dep2': 3}
+        build_args_dict(args, {'args': ['arg_to_depend_on'],
+                               'default_added_depended_args': {'arg_to_depend_on': {'dep1': 2, 'dep2': 3}}}, False)
         assert Qualysv2.args_values == expected_result
 
 
@@ -824,6 +853,54 @@ class TestInputValidations:
         with pytest.raises(DemistoException,
                            match='Argument day_of_month is required when argument frequency_months is given.'):
             validate_depended_args({'required_depended_args': self.DEPENDANT_ARGS})
+
+    EXACTLY_ONE_GROUP_ARGS = [['asset_group_ids', 'asset_groups', 'ip', ],
+                              ['frequency_days', 'frequency_weeks', 'frequency_months', ],
+                              ['scanners_in_ag', 'default_scanner', ], ]
+    EXACTLY_ONE_ARGS_INPUT = [({}, {}),
+                              ({'required_groups': EXACTLY_ONE_GROUP_ARGS},
+                               {'asset_group_ids': 1, 'scanners_in_ag': 1, 'frequency_days': 1}),
+                              ({'required_groups': EXACTLY_ONE_GROUP_ARGS},
+                               {'asset_groups': 1, 'scanners_in_ag': 1, 'frequency_weeks': 1}),
+                              ({'required_groups': EXACTLY_ONE_GROUP_ARGS},
+                               {'ip': '1.1.1.1', 'default_scanner': 1, 'frequency_months': 1})
+                              ]
+
+    @pytest.mark.parametrize('command_data, args', EXACTLY_ONE_ARGS_INPUT)
+    def test_validate_required_group_valid(self, command_data: Dict, args: Dict):
+        """
+        Given:
+        - Command data.
+        - Cortex XSOAR arguments.
+
+        When:
+        - Validating required groups are supplied as expected.
+
+        Then:
+        - Ensure no exception is thrown.
+        """
+        Qualysv2.args_values = args
+        validate_required_group(command_data)
+
+    EXACTLY_ONE_INVALID_INPUT = [({}), ({'ip': '1.1.1.1', 'asset_group_ids': 1, 'frequency_months': 1})]
+
+    @pytest.mark.parametrize('args', EXACTLY_ONE_INVALID_INPUT)
+    def test_validate_required_group_invalid(self, args):
+        """
+        Given:
+        - Command data.
+        - Cortex XSOAR arguments.
+
+        When:
+        - Validating required groups are not supplied as expected.
+
+        Then:
+        - Ensure exception is thrown.
+        """
+        Qualysv2.args_values = args
+        err_msg = "Exactly one of the arguments ['asset_group_ids', 'asset_groups', 'ip'] must be provided."
+        with pytest.raises(DemistoException, match=re.escape(err_msg)):
+            validate_required_group({'required_groups': self.EXACTLY_ONE_GROUP_ARGS})
 
     AT_MOST_ONE_GROUP_ARGS = [['asset_group_ids', 'asset_groups', 'ip', ],
                               ['frequency_days', 'frequency_weeks', 'frequency_months', ],
