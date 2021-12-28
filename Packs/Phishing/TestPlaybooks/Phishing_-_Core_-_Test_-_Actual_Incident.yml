@@ -1,19 +1,18 @@
 id: Phishing - Core - Test - Actual Incident
-version: -1
-fromversion: 6.0.0
+version: 6
+vcShouldKeepItemLegacyProdMachine: false
 name: Phishing - Core - Test - Actual Incident
 description: This playbooks runs on an incident of type Phishing.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: dede0f49-cb50-454e-84c7-9b9b4ea43f0e
+    taskid: fff6c57a-2ebc-426c-80b6-44e556efebfb
     type: start
     task:
-      id: dede0f49-cb50-454e-84c7-9b9b4ea43f0e
+      id: fff6c57a-2ebc-426c-80b6-44e556efebfb
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -32,24 +31,25 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 0d1a284b-aeed-4a0b-8e30-92af648efc63
+    taskid: d7c250f9-04d5-4061-8cbb-5b61ae45af82
     type: title
     task:
-      id: 0d1a284b-aeed-4a0b-8e30-92af648efc63
+      id: d7c250f9-04d5-4061-8cbb-5b61ae45af82
       version: -1
       name: Done
       type: title
-      description: ""
       iscommand: false
       brand: ""
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 855
+          "x": 390,
+          "y": 2175
         }
       }
     note: false
@@ -57,53 +57,16 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "16":
-    id: "16"
-    taskid: 7d7b4274-7059-4367-8b62-b5ea595ce7b5
-    type: regular
-    task:
-      id: 7d7b4274-7059-4367-8b62-b5ea595ce7b5
-      version: -1
-      name: Close manual review in the new incident
-      description: ""
-      scriptName: ScheduleCommand
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      command:
-        simple: '!CompleteManualTask id=${incident.id}'
-      cron:
-        simple: '*/1 * * * *'
-      endDate: {}
-      times:
-        simple: "20"
-    reputationcalc: 1
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 680
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 3e6ef98e-211d-485c-8153-9a6c0d53fbfc
+    taskid: 32fbe44a-f6bb-469d-864b-8fd36f012fbd
     type: regular
     task:
-      id: 3e6ef98e-211d-485c-8153-9a6c0d53fbfc
+      id: 32fbe44a-f6bb-469d-864b-8fd36f012fbd
       version: -1
       name: Delete Context
-      description: ""
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -114,10 +77,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -132,12 +91,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 60df83ab-a994-4acf-8b34-0d0d833a00e1
+    taskid: 638d6bcf-4e2a-4fde-831e-6a2a4d914149
     type: regular
     task:
-      id: 60df83ab-a994-4acf-8b34-0d0d833a00e1
+      id: 638d6bcf-4e2a-4fde-831e-6a2a4d914149
       version: -1
       name: Download EML file
       description: Sends http request. Returns the response as json.
@@ -147,24 +108,17 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "16"
       - "24"
+      - "25"
     scriptarguments:
-      body: {}
       filename:
         simple: attachment.eml
-      headers: {}
-      insecure: {}
       method:
         simple: GET
-      password: {}
-      proxy: {}
       saveAsFile:
         simple: "yes"
-      unsecure: {}
       url:
         simple: https://raw.githubusercontent.com/demisto/content/master/TestData/attachment_malicious_url.eml
-      username: {}
     separatecontext: false
     view: |-
       {
@@ -178,12 +132,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: b451083c-485d-4959-8a35-4224a30fa543
+    taskid: f28882b4-942f-4e6b-83c5-1297e033c9cd
     type: regular
     task:
-      id: b451083c-485d-4959-8a35-4224a30fa543
+      id: f28882b4-942f-4e6b-83c5-1297e033c9cd
       version: -1
       name: Create malicious URL indicator
       description: commands.local.cmd.new.indicator
@@ -195,108 +151,14 @@ tasks:
       '#none#':
       - "23"
     scriptarguments:
-      accounttype: {}
-      actor: {}
-      admincountry: {}
-      adminemail: {}
-      adminname: {}
-      adminphone: {}
-      asn: {}
-      associatedfilenames: {}
-      associations: {}
-      biosversion: {}
-      campaign: {}
-      creationdate: {}
-      customFields: {}
-      cvedescription: {}
-      cvemodified: {}
-      cvss: {}
-      description: {}
-      detectionengines: {}
-      devicemodel: {}
-      dhcpserver: {}
-      displayname: {}
-      dns: {}
-      domainname: {}
-      domainstatus: {}
-      emailaddress: {}
-      entryid: {}
-      expirationdate: {}
-      fileextension: {}
-      filetype: {}
-      firstseenbysource: {}
-      geocountry: {}
-      geolocation: {}
-      groups: {}
-      hostname: {}
-      imphash: {}
-      indicatoridentification: {}
-      internal: {}
-      ipaddress: {}
-      lastseenbysource: {}
-      macaddress: {}
-      malwarefamily: {}
-      md5: {}
-      memory: {}
-      merge: {}
-      mitreexternalreferences: {}
-      name: {}
-      namefield: {}
-      nameservers: {}
-      office365category: {}
-      office365expressroute: {}
-      office365required: {}
-      operatingsystem: {}
-      operatingsystemversion: {}
-      organization: {}
-      organizationalunitou: {}
-      osversion: {}
-      path: {}
-      port: {}
-      positivedetections: {}
-      processor: {}
-      processors: {}
-      published: {}
-      quarantined: {}
-      region: {}
-      registrantcountry: {}
-      registrantemail: {}
-      registrantname: {}
-      registrantphone: {}
-      registrarabuseemail: {}
-      registrarabusephone: {}
-      registrarname: {}
-      relateToIncident: {}
-      relatedIncidents: {}
-      reportedby: {}
       reputation:
         simple: Bad
-      seenNow: {}
-      service: {}
-      sha1: {}
-      sha256: {}
-      sha512: {}
-      signatureauthentihash: {}
-      signaturecopyright: {}
-      signaturedescription: {}
-      signaturefileversion: {}
-      signatureinternalname: {}
-      signed: {}
-      size: {}
-      source: {}
-      sourceTimeStamp: {}
-      sourceoriginalseverity: {}
-      ssdeep: {}
-      subdomains: {}
-      tags: {}
-      threattypes: {}
-      trafficlightprotocol: {}
       type:
         simple: URL
-      updateddate: {}
-      username: {}
       value:
         simple: http://www.desktop-style.de
+      verdict:
+        simple: Malicious
     reputationcalc: 1
     continueonerror: true
     separatecontext: false
@@ -312,12 +174,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 32c0308d-1dcc-4ec5-8841-195880f39186
+    taskid: 046e0da5-608c-4e7f-8f92-7ce7c0a29c07
     type: regular
     task:
-      id: 32c0308d-1dcc-4ec5-8841-195880f39186
+      id: 046e0da5-608c-4e7f-8f92-7ce7c0a29c07
       version: -1
       name: Set phishing incident fields
       description: commands.local.cmd.set.incident
@@ -329,165 +193,14 @@ tasks:
       '#none#':
       - "19"
     scriptarguments:
-      accountid: {}
-      accountname: {}
-      addLabels: {}
-      agentid: {}
-      app: {}
-      appendMultiSelect: {}
-      assetid: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      blockedaction: {}
-      bugtraq: {}
-      city: {}
-      closeNotes: {}
-      closeReason: {}
-      commandline: {}
-      country: {}
-      criticalassets: {}
-      customFields: {}
-      cve: {}
-      cvss: {}
-      dbotMirrorDirection: {}
-      dbotMirrorId: {}
-      dbotMirrorInstance: {}
-      dbotMirrorTags: {}
-      dbotprediction: {}
-      dbotpredictionprobability: {}
-      dbottextsuggestionhighlighted: {}
-      deleteEmptyField: {}
-      dest: {}
-      desthostname: {}
-      destinationhostname: {}
-      destinationip: {}
-      destinationport: {}
-      destntdomain: {}
-      destos: {}
-      details: {}
-      detectionendtime: {}
-      detectionid: {}
-      detectionupdatetime: {}
-      detectionurl: {}
-      devicename: {}
-      duration: {}
-      emailauthenticitycheck: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailcc: {}
-      emailclassification: {}
-      emailclientname: {}
       emailfrom:
         simple: test@demistodev.com
-      emailheaders: {}
-      emailhtml: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
       emailsubject:
         simple: Hello! This is not the phishing one.
       emailto:
         simple: admin@demistodev.com
-      emailtocount: {}
-      emailurlclicked: {}
-      employeedisplayname: {}
-      employeeemail: {}
-      employeemanageremail: {}
-      eventid: {}
-      eventtype: {}
-      filehash: {}
-      filename: {}
-      filepath: {}
-      filesize: {}
-      firstseen: {}
-      helloworldid: {}
-      helloworldstatus: {}
-      helloworldtype: {}
-      hostname: {}
-      id: {}
-      infectedhosts: {}
-      investigationstage: {}
-      isolated: {}
       labels:
         simple: '[{"Email/from":"test@demistodev.com"}, {"Email/to": "admin@demistodev.com"}]'
-      lastmodifiedby: {}
-      lastmodifiedon: {}
-      lastseen: {}
-      logsource: {}
-      macaddress: {}
-      maliciousbehavior: {}
-      malwarefamily: {}
-      name: {}
-      occurred: {}
-      os: {}
-      owner: {}
-      parentprocessid: {}
-      phase: {}
-      phishingsubtype: {}
-      pid: {}
-      policydeleted: {}
-      policydescription: {}
-      policydetails: {}
-      policyid: {}
-      policyrecommendation: {}
-      policyremediable: {}
-      policyseverity: {}
-      policytype: {}
-      protocol: {}
-      quarantined: {}
-      rating: {}
-      region: {}
-      regionid: {}
-      replacePlaybook: {}
-      reporteremailaddress: {}
-      resourceid: {}
-      resourcename: {}
-      resourcetype: {}
-      riskrating: {}
-      riskscore: {}
-      roles: {}
-      samaccountname: {}
-      severity: {}
-      signature: {}
-      skuname: {}
-      skutier: {}
-      sla: {}
-      slaField: {}
-      sourcehostname: {}
-      sourceip: {}
-      sourceport: {}
-      sourceusername: {}
-      src: {}
-      srchostname: {}
-      srcntdomain: {}
-      srcos: {}
-      srcuser: {}
-      subtype: {}
-      systems: {}
-      tenantname: {}
-      terminatedaction: {}
-      threatactor: {}
-      triggeredsecurityprofile: {}
-      type: {}
-      urlsslverification: {}
-      user: {}
-      username: {}
-      vendorid: {}
-      vendorproduct: {}
-      vulnerabilitycategory: {}
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -502,12 +215,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 67e1adaf-7153-4297-8122-66df66f819fe
+    taskid: ef7f3149-4798-4d21-8962-f0216beff1e8
     type: playbook
     task:
-      id: 67e1adaf-7153-4297-8122-66df66f819fe
+      id: ef7f3149-4798-4d21-8962-f0216beff1e8
       version: -1
       name: Phishing - Core
       description: |-
@@ -521,9 +236,6 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
     scriptarguments:
       GetURLScreenshots:
         simple: "True"
@@ -536,8 +248,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 475,
-          "y": 680
+          "x": 730,
+          "y": 730
         }
       }
     note: false
@@ -545,15 +257,519 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-system: true
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 8992ff65-c24a-47ed-8bdd-23dd7ec8020e
+    type: playbook
+    task:
+      id: 8992ff65-c24a-47ed-8bdd-23dd7ec8020e
+      version: -1
+      name: Complete manual remediation
+      description: Waits for a certain task status, and/or completes the task.
+      playbookName: Wait And Complete Task By Status
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      CompleteTask:
+        simple: "True"
+      IncidentID:
+        complex:
+          root: incident
+          accessor: id
+      TaskName:
+        simple: Manually remediate the incident
+      TaskStates:
+        simple: Waiting
+    separatecontext: true
+    loop:
+      iscommand: false
+      builtincondition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: FoundTaskNames
+            iscontext: true
+          right:
+            value:
+              simple: Manually remediate the incident
+      exitCondition: ""
+      wait: 8
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: a3ecdcf6-6bd0-4101-8a07-0c46fa3d2413
+    type: playbook
+    task:
+      id: a3ecdcf6-6bd0-4101-8a07-0c46fa3d2413
+      version: -1
+      name: Wait for incident to close
+      description: Waits for a certain task status, and/or completes the task.
+      playbookName: Wait And Complete Task By Status
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      CompleteTask:
+        simple: "False"
+      IncidentID:
+        complex:
+          root: incident
+          accessor: id
+      TaskName:
+        simple: Close investigation
+      TaskStates:
+        simple: Completed
+    separatecontext: true
+    loop:
+      iscommand: false
+      builtincondition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: FoundTaskNames
+            iscontext: true
+          right:
+            value:
+              simple: Close investigation
+      exitCondition: ""
+      wait: 3
+      max: 20
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: e23fdb4a-3a2f-42a9-8327-6db3b6ac10f6
+    type: regular
+    task:
+      id: e23fdb4a-3a2f-42a9-8327-6db3b6ac10f6
+      version: -1
+      name: Get final incident fields
+      description: Searches Demisto incidents
+      scriptName: SearchIncidentsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      id:
+        complex:
+          root: incident
+          accessor: id
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 702569c2-e668-4e5d-8f8a-44f9fe9d2824
+    type: condition
+    task:
+      id: 702569c2-e668-4e5d-8f8a-44f9fe9d2824
+      version: -1
+      name: Check Email Subject
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "30"
+      OK:
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: OK
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: foundIncidents.emailsubject
+            iscontext: true
+          right:
+            value:
+              simple: Test email
+    view: |-
+      {
+        "position": {
+          "x": -950,
+          "y": 1520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 11d69a46-5368-460e-8aa2-7283fc0eae0d
+    type: title
+    task:
+      id: 11d69a46-5368-460e-8aa2-7283fc0eae0d
+      version: -1
+      name: Incident Field Checks
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+      - "31"
+      - "33"
+      - "35"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -210,
+          "y": 1340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: cd6db655-f7bb-489a-8696-fd3220227c8a
+    type: regular
+    task:
+      id: cd6db655-f7bb-489a-8696-fd3220227c8a
+      version: -1
+      name: Error about email subject
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The Email Subject field was not set correctly. This can be for several reasons:
+          1. Something in the playbook broke and we no longer setIncident for the correct field.
+          2. The ParseEmailFiles script is bugged and doesn't output the correct data from the attached EML file
+          3. The EML file attachment was not added to the incident for some reason (GitHub is down?).
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -960,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 80e1935b-d6e6-4fb1-84b3-84298a73728c
+    type: condition
+    task:
+      id: 80e1935b-d6e6-4fb1-84b3-84298a73728c
+      version: -1
+      name: Check Email Subject
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "32"
+      OK:
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: OK
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: foundIncidents.emailbody
+            iscontext: true
+          right:
+            value:
+              simple: Body of the text
+    view: |-
+      {
+        "position": {
+          "x": -470,
+          "y": 1520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: cf1d1de6-07bb-408f-8e16-aff4c0e982ed
+    type: regular
+    task:
+      id: cf1d1de6-07bb-408f-8e16-aff4c0e982ed
+      version: -1
+      name: Error about email body
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      message:
+        simple: |-
+          The Email Body field was not set correctly. This can be for several reasons:
+          1. Something in the playbook broke and we no longer setIncident for the correct field.
+          2. The ParseEmailFiles script is bugged and doesn't output the correct data from the attached EML file
+          3. The EML file attachment was not added to the incident for some reason (GitHub is down?).
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -470,
+          "y": 1700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 79afd271-669e-4c26-822e-8111f3adf120
+    type: condition
+    task:
+      id: 79afd271-669e-4c26-822e-8111f3adf120
+      version: -1
+      name: Check Email From + To
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "34"
+      OK:
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: OK
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: foundIncidents.emailfrom
+            iscontext: true
+          right:
+            value:
+              simple: example@example.com
+      - - operator: isEqualString
+          left:
+            value:
+              simple: foundIncidents.emailto
+            iscontext: true
+          right:
+            value:
+              simple: example1@example.com
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 1520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: a3ee8d32-1931-41ce-86b4-de0a46a30dda
+    type: regular
+    task:
+      id: a3ee8d32-1931-41ce-86b4-de0a46a30dda
+      version: -1
+      name: Error about email from / to
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      message:
+        simple: |-
+          The Email From or Email To field was not set correctly. This can be for several reasons:
+          1. Something in the playbook broke and we no longer setIncident for the correct field.
+          2. The ParseEmailFiles script is bugged and doesn't output the correct data from the attached EML file
+          3. The EML file attachment was not added to the incident for some reason (GitHub is down?).
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 1690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: be05b15a-b434-485c-876d-347678a1db9f
+    type: condition
+    task:
+      id: be05b15a-b434-485c-876d-347678a1db9f
+      version: -1
+      name: Check Email Headers
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "36"
+      OK:
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: OK
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              simple: foundIncidents.emailheaders
+            iscontext: true
+          right:
+            value:
+              simple: "9"
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 1520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: a6356ba7-93d3-449b-8b42-8968c9908a8b
+    type: regular
+    task:
+      id: a6356ba7-93d3-449b-8b42-8968c9908a8b
+      version: -1
+      name: Error about email headers
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          Not all of the email headers were set correctly. This can be for several reasons:
+          1. Something in the playbook broke and we no longer use SetGridField properly.
+          2. The SetGridField script is bugged and doesn't set the headers correctly.
+          3. The EML file attachment was not added to the incident for some reason (GitHub is down?).
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 1700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1060,
-        "width": 805,
-        "x": 50,
+        "height": 2380,
+        "width": 2070,
+        "x": -960,
         "y": -140
       }
     }
