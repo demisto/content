@@ -6,13 +6,11 @@ args:
 comment: Converts unix time to AD Integer8 time. This is used in many AD date fields
   like pwdLastSet
 commonfields:
-  id: e3409e8b-ebb0-4b26-869c-8c26713d5569
+  id: DateTimeToADTime
   version: -1
 dockerimage: demisto/python3:3.9.8.24399
 enabled: true
-engineinfo: {}
 name: DateTimeToADTime
-pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''
@@ -22,3 +20,6 @@ tags:
 - active directory
 - date
 type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
