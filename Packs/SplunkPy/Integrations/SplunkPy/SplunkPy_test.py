@@ -1,6 +1,5 @@
 from copy import deepcopy
 import pytest
-import io
 from splunklib.binding import AuthenticationError
 
 import SplunkPy as splunk
