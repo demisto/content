@@ -87,33 +87,6 @@ STIX2_TYPES_TO_XSOAR = {
     'file': FeedIndicatorType.File,
     'windows-registry-key': FeedIndicatorType.Registry,
 }
-# todo: add accept header cache.
-NGINX_TAXII2SERVER_CONF = '''
-server {
-
-    listen $port default_server $ssl;
-
-    $sslcerts
-
-    proxy_cache_key $scheme$proxy_host$request_uri$extra_cache_key$http_range$http_content_range;
-    proxy_set_header Range $http_range;
-
-    # Static test file
-    location = /nginx-test {
-        alias /var/lib/nginx/html/index.html;
-        default_type text/html;
-    }
-
-    # Proxy everything to python
-    location / {
-        proxy_pass http://localhost:$serverport/;
-        add_header X-Proxy-Cache $upstream_cache_status;
-        # allow bypassing the cache with an arg of nocache=1 ie http://server:7000/?nocache=1
-        proxy_cache_bypass $arg_nocache;
-    }
-}
-
-'''
 
 ''' TAXII2 Server '''
 
@@ -1074,9 +1047,6 @@ def main():  # pragma: no cover
     http_server = not (certificate and private_key)  # False if (certificate and private_key) else True
 
     scheme = 'https' if not http_server else 'http'
-
-    # if version == TAXII_VER_2_0 and not params.get('nginx_server_conf'):
-    #     params['nginx_server_conf'] = NGINX_TAXII2SERVER_CONF
 
     demisto.debug(f'Command being called is {command}')
 

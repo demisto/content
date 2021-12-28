@@ -50,6 +50,7 @@ server {
     $sslcerts
 
     proxy_cache_key $scheme$proxy_host$request_uri$extra_cache_key;
+    $proxy_set_range_header
 
     # Static test file
     location = /nginx-test {
@@ -87,7 +88,8 @@ def create_nginx_server_conf(file_path: str, port: int, params: Dict):
     ssl = ''
     sslcerts = ''
     serverport = port + 1
-    extra_cache_key = ''
+    proxy_set_range_header = ''
+    extra_cache_keys = []
     if (certificate and not private_key) or (private_key and not certificate):
         raise DemistoException('If using HTTPS connection, both certificate and private key should be provided.')
     if certificate and private_key:
@@ -100,9 +102,17 @@ def create_nginx_server_conf(file_path: str, port: int, params: Dict):
         sslcerts = NGINX_SSL_CERTS
     credentials = params.get('credentials') or {}
     if credentials.get('identifier'):
-        extra_cache_key = "$http_authorization"
+        extra_cache_keys.append("$http_authorization")
+    if INTEGRATION_NAME == 'TAXII2 Server':
+        extra_cache_keys.append("$http_accept")
+        if params.get('version') == '2.0':
+            proxy_set_range_header = 'proxy_set_header Range $http_range;'
+            extra_cache_keys.extend(['$http_range', '$http_content_range'])
+
+    extra_cache_keys_str = ''.join(extra_cache_keys)
     server_conf = Template(template_str).safe_substitute(port=port, serverport=serverport, ssl=ssl,
-                                                         sslcerts=sslcerts, extra_cache_key=extra_cache_key)
+                                                         sslcerts=sslcerts, extra_cache_key=extra_cache_keys_str,
+                                                         proxy_set_range_header=proxy_set_range_header)
     with open(file_path, mode='wt+') as f:
         f.write(server_conf)
 
