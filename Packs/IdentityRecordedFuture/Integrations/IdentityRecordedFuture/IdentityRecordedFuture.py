@@ -1,6 +1,5 @@
 """Recorded Future Integration for Demisto."""
-from typing import Dict, Any, List, Tuple, Union
-from urllib import parse
+from typing import Dict, Any, List, Union
 import requests
 import json
 import re

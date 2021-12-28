@@ -10,7 +10,7 @@ from IdentityRecordedFuture import Actions, Client, period_to_date, ISO_DATE_FOR
 
 import vcr as vcrpy
 
-CASSETTES = Path(__file__).parent / "cassettes"
+CASSETTES = Path(__file__).parent / "test_data"
 DATETIME_STR_VALUE = "2021-12-08T12:10:21.837Z"
 
 
@@ -103,7 +103,7 @@ class RFTestIdentity(unittest.TestCase):
         limit_identities = 33
         action_prefix = "RecordedFuture.Credentials.SearchIdentities"
         search_response = util_load_json(
-            "./cassettes/identity_search_response.json"
+            "./test_data/identity_search_response.json"
         )
         client = create_client()
         client.identity_search = Mock(return_value=search_response)
@@ -143,7 +143,7 @@ class RFTestIdentity(unittest.TestCase):
         identities = "realname@fake.com; notreal; afafa12344afafa12344afafa12344afafa12344"
 
         lookup_response = util_load_json(
-            "./cassettes/identity_lookup_response.json"
+            "./test_data/identity_lookup_response.json"
         )
         action_prefix = "RecordedFuture.Credentials.Identities"
         client = create_client()
