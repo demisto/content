@@ -173,6 +173,15 @@ tasks:
       subject:
         complex:
           root: inputs.Subject
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '"'
+              suffix:
+                value:
+                  simple: '"'
     separatecontext: false
     view: |-
       {
