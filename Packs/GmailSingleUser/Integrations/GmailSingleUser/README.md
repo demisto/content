@@ -46,9 +46,10 @@ Additional info available at: https://support.google.com/a/answer/7281227
 
 ### All Account Types:
 
-* **Optional**: You can use your own Google App instead of the default Demisto App. To create your own app, follow the [Google instructions for Desktop Apps](https://developers.google.com/identity/protocols/OAuth2InstalledApp#prerequisites) or follow the steps below.
+* **Optional**: You can use your own Google App instead of the default Demisto App. Follow the steps below.
 * Go to the developers credentials page: https://console.developers.google.com/apis/credentials (you may need to set up a [new project](https://cloud.google.com/resource-manager/docs/creating-managing-projects) if you haven't done so in the past).
 * If needed, configure the [Consent Screen](https://developers.google.com/workspace/guides/configure-oauth-consent). Fill in the Consent Screen information you would like to display to your users.
+* Make sure in the consent screen that you publish the app ![OAuth-Consent-Screen-Publication](doc_imgs/publish-OAuth-consent-screen.png) --> Press on 'Publish App' and confirm.
 * In the credentials page choose: `Create Credentials` -> `OAuth client ID`.
   ![Create Credentials](doc_imgs/create-credentials.png)
 * When creating the OAuth client ID, select **iOS** as the type (this type allows Apps to work only with a client id). **iOS** is the type used for all apps which are not Android (including desktop types)
