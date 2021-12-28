@@ -1,4 +1,3 @@
-id: Phishing - Core - Test - Actual Incident
 version: -1
 name: Phishing - Core - Test - Actual Incident
 description: This playbooks runs on an incident of type Phishing.
@@ -249,8 +248,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 730,
-          "y": 730
+          "x": 640,
+          "y": 860
         }
       }
     note: false
@@ -398,8 +397,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1130
+          "x": -210,
+          "y": 1170
         }
       }
     note: false
@@ -411,10 +410,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 702569c2-e668-4e5d-8f8a-44f9fe9d2824
+    taskid: 2d1ae422-de09-4317-88a7-d229a71968bc
     type: condition
     task:
-      id: 702569c2-e668-4e5d-8f8a-44f9fe9d2824
+      id: 2d1ae422-de09-4317-88a7-d229a71968bc
       version: -1
       name: Check Email Subject
       type: condition
@@ -432,7 +431,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: foundIncidents.emailsubject
+              simple: foundIncidents.CustomFields.emailsubject
             iscontext: true
           right:
             value:
@@ -469,6 +468,7 @@ tasks:
       - "31"
       - "33"
       - "35"
+      - "37"
     separatecontext: false
     view: |-
       {
@@ -521,10 +521,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 80e1935b-d6e6-4fb1-84b3-84298a73728c
+    taskid: 1f0c3d81-a333-40b2-8672-60dc702d49aa
     type: condition
     task:
-      id: 80e1935b-d6e6-4fb1-84b3-84298a73728c
+      id: 1f0c3d81-a333-40b2-8672-60dc702d49aa
       version: -1
       name: Check Email Body
       type: condition
@@ -542,7 +542,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: foundIncidents.emailbody
+              simple: foundIncidents.CustomFields.emailbody
             iscontext: true
           right:
             value:
@@ -601,10 +601,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 79afd271-669e-4c26-822e-8111f3adf120
+    taskid: c903b22f-f324-4567-8531-a39dfd24fe28
     type: condition
     task:
-      id: 79afd271-669e-4c26-822e-8111f3adf120
+      id: c903b22f-f324-4567-8531-a39dfd24fe28
       version: -1
       name: Check Email From + To
       type: condition
@@ -622,7 +622,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: foundIncidents.emailfrom
+              simple: foundIncidents.CustomFields.emailfrom
             iscontext: true
           right:
             value:
@@ -630,7 +630,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: foundIncidents.emailto
+              simple: foundIncidents.CustomFields.emailto
             iscontext: true
           right:
             value:
@@ -689,10 +689,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: be05b15a-b434-485c-876d-347678a1db9f
+    taskid: a4e07aa5-fc3b-4100-8feb-e995a27c40b8
     type: condition
     task:
-      id: be05b15a-b434-485c-876d-347678a1db9f
+      id: a4e07aa5-fc3b-4100-8feb-e995a27c40b8
       version: -1
       name: Check Email Headers
       type: condition
@@ -710,7 +710,7 @@ tasks:
       - - operator: hasLength
           left:
             value:
-              simple: foundIncidents.emailheaders
+              simple: foundIncidents.CustomFields.emailheaders
             iscontext: true
           right:
             value:
@@ -764,14 +764,89 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: d693ea84-a289-4647-8af9-f18314fc13db
+    type: condition
+    task:
+      id: d693ea84-a289-4647-8af9-f18314fc13db
+      version: -1
+      name: Check incident severity
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "38"
+      OK:
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: OK
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: foundIncidents.severity
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    view: |-
+      {
+        "position": {
+          "x": -1400,
+          "y": 1520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 507d5c22-9496-4f39-82f0-50de8e0b00f2
+    type: regular
+    task:
+      id: 507d5c22-9496-4f39-82f0-50de8e0b00f2
+      version: -1
+      name: Error about incident severity
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The severity of the incident was not set correctly. This could mean that the malicious indicator which we created in the system, was not extracted and enriched in the Phishing - Core playbook.
+          If this is not the case, then the way we calculate severity for the incident might have changed.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1400,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 2380,
-        "width": 2070,
-        "x": -960,
+        "width": 2420,
+        "x": -1400,
         "y": -140
       }
     }
