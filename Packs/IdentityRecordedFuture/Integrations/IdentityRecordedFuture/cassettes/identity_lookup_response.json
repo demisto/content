@@ -15,7 +15,20 @@
                 "name": "Dark Web Dump 2018",
                 "description": "This combo list of email addresses and clear passwords is not associated with any specific breach. It was obtained through Recorded Future’s proprietary sources. No further information is available about the source of this data.",
                 "downloaded": "2018-06-07T00:00:00.000Z",
-                "type": "Combo List"
+                "type": "Combo List",
+                "breaches": [
+                  {
+                    "name": "string",
+                    "domain": "string",
+                    "type": "string",
+                    "breached": "2021-12-28T13:38:40.030Z",
+                    "start": "2021-12-28T13:38:40.030Z",
+                    "stop": "2021-12-28T13:38:40.030Z",
+                    "precision": "year",
+                    "description": "string",
+                    "site_description": "string"
+                  }
+                ]
               }
             ],
             "first_downloaded": "2018-06-07T00:00:00.000Z",
@@ -73,7 +86,6 @@
             "first_downloaded": "2021-09-09T19:40:56.000Z",
             "latest_downloaded": "2021-09-09T19:40:56.000Z",
             "exposed_secret": {
-              "type": "clear",
               "hashes": [
                 {
                   "algorithm": "SHA1",
@@ -99,10 +111,9 @@
                   "UpperCase",
                   "LowerCase",
                   "AtLeast16Characters"
-                ],
-                "clear_text_hint": "Aa"
+                ]
               },
-              "effectively_clear": true
+              "effectively_clear": false
             },
             "compromise": {
               "exfiltration_date": "2021-09-09T19:40:56.000Z"
