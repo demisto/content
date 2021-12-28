@@ -4846,6 +4846,13 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": [
+                "RemoteAccess v2"
+            ],
+            "playbookID": "RemoteAccessTest",
+            "fromversion": "6.0.0"
+        },
+        {
             "playbookID": "AzureRiskyUsers",
             "fromversion": "6.0.0",
             "integrations": "AzureRiskyUsers"
@@ -4948,6 +4955,7 @@
         "Phishing v2 - Test - Actual Incident": "Issue 41322",
         "Kaspersky Security Center - Test": "Issue 36487",
         "carbonBlackEndpointStandardTestPlaybook": "Issue 36936",
+        "RemoteAccessTest": "Issue 44245",
         "test_Qradar_v2": "the integration is deprecated as we released Qradar V3",
         "XsoarPowershellTesting-Test": "Issue 32689",
         "Unit42 Intel Objects Feed - Test": "Issue 44100",
