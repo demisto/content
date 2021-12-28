@@ -1,6 +1,5 @@
-Use this playbook to investigate and remediate a potential phishing incident. The playbook simultaneously engages with the user that triggered the incident, while investigating the incident itself.
-
-The final remediation tasks are always decided by a human analyst.
+This playbook investigates and remediates a potential phishing incident. It engages with the user that triggered the incident while investigating the incident itself.
+Note: Final remediation tasks are always decided by a human analyst. 
 
 Main additions to this version:
 1) Changing all labels to incident fields.
@@ -45,32 +44,32 @@ These tasks have the following names:
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Detonate URL - Generic
-* Search And Delete Emails - Generic v2
-* Process Email - Generic v2
-* Calculate Severity - Generic v2
-* Detonate File - Generic
-* Entity Enrichment - Phishing v2
-* Block Indicators - Generic v2
 * Email Address Enrichment - Generic v2.1
-* Process Microsoft's Anti-Spam Headers
 * Detect & Manage Phishing Campaigns
+* Block Indicators - Generic v2
+* Process Email - Generic v2
+* Detonate File - Generic
 * Extract Indicators From File - Generic v2
+* Entity Enrichment - Phishing v2
+* Process Microsoft's Anti-Spam Headers
+* Calculate Severity - Generic v2
+* Search And Delete Emails - Generic v2
+* Detonate URL - Generic
 
 ### Integrations
 This playbook does not use any integrations.
 
 ### Scripts
 * DBotPredictPhishingWords
-* AssignAnalystToIncident
 * Set
+* AssignAnalystToIncident
 * CheckEmailAuthenticity
 
 ### Commands
-* closeInvestigation
+* setIncident
 * extractIndicators
 * send-mail
-* setIncident
+* closeInvestigation
 
 ## Playbook Inputs
 ---
@@ -99,4 +98,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Phishing - Generic v3](../doc_files/Phishing_-_Generic_v3.png)
+![Phishing - Generic v3](Insert the link to your image here)
