@@ -692,10 +692,10 @@ def gitlab_trigger_contribution_build_command(client: Client, args: Dict[str, An
     Returns:
         (CommandResults).
     """
-    base_branch = args.get('base_branch')
-    contrib_branch = args.get('contrib_branch')
-    pr_number = args.get('pr_number')
-    trigger_token = args.get('trigger_token')
+    base_branch = args.get('base_branch', '')
+    contrib_branch = args.get('contrib_branch', '')
+    pr_number = args.get('pr_number', '')
+    trigger_token = args.get('trigger_token', '')
 
     response = client.trigger_contrib_build(base_branch, contrib_branch, pr_number, trigger_token)
 

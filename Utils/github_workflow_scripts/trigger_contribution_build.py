@@ -8,7 +8,9 @@ import urllib3
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-CONTRIBUTION_BUILD_INSTANCE_URL = "https://content-gold.paloaltonetworks.com/instance/execute/GenericWebhook_contribution_build"
+CONTRIBUTION_BUILD_INSTANCE_URL = "https://content-gold.paloaltonetworks.com/instance/" \
+                                  "execute/GenericWebhook_contribution_build"
+
 
 def arguments_handler():
     """ Validates and parses script arguments.
@@ -43,17 +45,6 @@ def trigger_generic_webhook(options):
         print(
             f"Trigger Contribution Build playbook failed. Post request to Content Gold has status code of {res.status_code}")
         sys.exit(1)
-
-    # res_json = res.json()
-    # if res_json and isinstance(res_json, list):
-    #     res_json_response_data = res.json()[0]
-    #     if res_json_response_data:
-    #         investigation_id = res_json_response_data.get("id")
-    #         print(investigation_id)
-    #         return
-    #
-    # print("Secrets detection playbook has failed")
-    # sys.exit(1)
 
 
 def main():
