@@ -4817,7 +4817,6 @@
             "fromversion": "5.5.0"
         },
         {
-<<<<<<< HEAD
             "integrations": [
                 "RemoteAccess v2"
             ],
@@ -4826,9 +4825,6 @@
         },
         {
           "playbookID": "AzureRiskyUsers",
-=======
-            "playbookID": "AzureRiskyUsers",
->>>>>>> master
             "fromversion": "6.0.0",
             "integrations": "AzureRiskyUsers"
         },
