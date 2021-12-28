@@ -58,4 +58,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Recorded Future External Usecase Playbook](https://github.com/demisto/content/raw/master/Packs/IdentityRecordedFuture/doc_files/external_playbook.png)
+![Recorded Future External Usecase Playbook](../doc_files/external_playbook.png)

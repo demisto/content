@@ -58,4 +58,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Recorded Future Workforce Usecase Playbook](https://github.com/demisto/content/raw/master/Packs/IdentityRecordedFuture/doc_files/workforce_playbook.png)
+![Recorded Future Workforce Usecase Playbook](../doc_files/workforce_playbook.png)
