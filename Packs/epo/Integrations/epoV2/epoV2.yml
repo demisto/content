@@ -591,8 +591,7 @@ script:
     arguments:
     - name: searchText
       required: false
-      description: List policies that contains the searchText in their name field. 
-      If no searchText is specified, list all policies in the ePO system.
+      description: List policies that contains the searchText in their name field. If no searchText is specified, list all policies in the ePO system.
     description: Finds policy.
   - name: epo-assign-policy-to-group
     arguments:
