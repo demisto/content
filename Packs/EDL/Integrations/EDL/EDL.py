@@ -192,7 +192,7 @@ class RequestArguments:
         # based on func ToIoC https://github.com/demisto/server/blob/master/domain/insight.go
 
         if fields_to_present == 'use_legacy_query':
-            return None
+            return ''
 
         fields_for_format = {
             FORMAT_TEXT: self.FILTER_FIELDS_ON_FORMAT_TEXT,
@@ -207,7 +207,7 @@ class RequestArguments:
         if self.out_format in [FORMAT_CSV, FORMAT_JSON, FORMAT_XSOAR_JSON, FORMAT_JSON_SEQ, FORMAT_XSOAR_JSON_SEQ] and\
                 fields_to_present:
             if 'all' in argToList(fields_to_present):
-                return None
+                return ''
             else:
                 list_fields = argToList(fields_to_present)
                 if 'value' in list_fields:
@@ -901,8 +901,8 @@ def update_edl_command(args: Dict, params: Dict):
     category_attribute = args.get('category_attribute', '')
     fields_to_present = args.get('fields_filter', '')
     out_format = args.get('format', FORMAT_TEXT)
-    csv_text = args.get('csv_text') == 'True'
-    url_truncate = args.get('url_truncate', '')
+    csv_text = get_bool_arg_or_param(args, params, 'csv_text') == 'True'
+    url_truncate = get_bool_arg_or_param(args, params, 'url_truncate')
 
     if params.get('use_legacy_query'):
         # workaround for "msgpack: invalid code" error
