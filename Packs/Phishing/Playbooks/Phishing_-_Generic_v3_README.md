@@ -99,4 +99,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Phishing - Generic v3](Insert the link to your image here)
+![Phishing - Generic v3](../doc_files/Phishing_-_Generic_v3.png)
